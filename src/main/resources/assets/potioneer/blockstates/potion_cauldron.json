@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "level=1": {"model": "potioneer:block/potion_cauldron_1"},
+    "level=2":  {"model": "potioneer:block/potion_cauldron_2"},
+    "level=3":  {"model": "potioneer:block/potion_cauldron_3"}
+  }
+}
