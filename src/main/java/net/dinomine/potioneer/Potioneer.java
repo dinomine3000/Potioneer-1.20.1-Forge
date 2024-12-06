@@ -2,6 +2,7 @@ package net.dinomine.potioneer;
 
 import com.mojang.logging.LogUtils;
 import net.dinomine.potioneer.block.ModBlocks;
+import net.dinomine.potioneer.block.entity.ModBlockEntities;
 import net.dinomine.potioneer.item.ModCreativeModTabs;
 import net.dinomine.potioneer.item.ModItems;
 import net.minecraft.client.Minecraft;
@@ -39,6 +40,8 @@ public class Potioneer
         ModItems.register(eventBus);
 
         ModBlocks.register(eventBus);
+
+        ModBlockEntities.register(eventBus);
 
         // Register the commonSetup method for modloading
         eventBus.addListener(this::commonSetup);
