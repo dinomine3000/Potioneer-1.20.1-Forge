@@ -4,6 +4,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import net.dinomine.potioneer.block.ModBlocks;
 import net.dinomine.potioneer.block.entity.PotionCauldronBlockEntity;
+import net.dinomine.potioneer.util.PotioneerMathHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -12,6 +13,7 @@ import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.ItemDisplayContext;
@@ -19,14 +21,40 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.phys.Vec3;
+import org.lwjgl.system.MathUtil;
 
 import java.util.function.Supplier;
 
+import static net.dinomine.potioneer.block.custom.PotionCauldronBlock.DIRECTION;
 import static net.dinomine.potioneer.block.custom.PotionCauldronBlock.WATER_LEVEL;
 
 public class PotionCauldronBlockEntityRenderer implements BlockEntityRenderer<PotionCauldronBlockEntity> {
 
     private boolean inside = false;
+    private static float[][] transformMatrix90 = new float[][]{
+            {0, 0, 1, 0},
+            {0, 1, 0, 0},
+            {-1, 0, 0, 1},
+            {0, 0, 0, 1}
+    };
+    private static float[][] transformMatrix270 = new float[][]{
+            {0, 0, -1, 1},
+            {0, 1, 0, 0},
+            {1, 0, 0, 0},
+            {0, 0, 0, 1}
+    };
+    private static float[][] transformMatrix180 = new float[][]{
+            {-1, 0, 0, 1},
+            {0, 1, 0, 0},
+            {0, 0, -1, 1},
+            {0, 0, 0, 1}
+    };
+    private static float[][] transformMatrix0 = new float[][]{
+            {1, 0, 0, 0},
+            {0, 1, 0, 0},
+            {0, 0, 1, 0},
+            {0, 0, 0, 1}
+    };
 
     public PotionCauldronBlockEntityRenderer(BlockEntityRendererProvider.Context context){
 
@@ -40,11 +68,29 @@ public class PotionCauldronBlockEntityRenderer implements BlockEntityRenderer<Po
 
         BlockPos pos = bEntity.getBlockPos();
         Level level = bEntity.getLevel();
-
         if(bEntity instanceof PotionCauldronBlockEntity && !level.getBlockState(pos).isAir()){
+
+            PotioneerMathHelper.MatrixHelper mathHelper = new PotioneerMathHelper.MatrixHelper();
+            //float[][] translationMat = mathHelper.getTranslationMatrix(-0.5f, 0, -0.5f);
+            Direction dir = level.getBlockState(pos).getValue(DIRECTION);
+            float theta = switch(dir){
+                case NORTH -> (float) Math.PI;
+                case SOUTH -> 0;
+                case EAST -> (float) Math.PI/2;
+                case WEST -> (float) Math.PI*3/2;
+                default -> 0;
+            };
+            float[][] rotationMatrix = switch(dir){
+                case NORTH -> transformMatrix180;
+                case EAST -> transformMatrix90;
+                case WEST -> transformMatrix270;
+                default -> transformMatrix0;
+            };
+            //float[][] rotationMat = mathHelper.getRotationMatrixY(theta);
+            //float[][] invTranslationMat = mathHelper.getTranslationMatrix(0.5f, 0, 0.5f);
+
             float scale = 0.25f;
-            int waterLevel = level.getBlockState(pos).getValue(WATER_LEVEL);
-            float y = switch (waterLevel) {
+            float y = switch (level.getBlockState(pos).getValue(WATER_LEVEL)) {
                 case 1 -> 0.3f;
                 case 2 -> 0.55f;
                 default -> 0.8f;
@@ -99,9 +145,16 @@ public class PotionCauldronBlockEntityRenderer implements BlockEntityRenderer<Po
                 } else {
                     poseStack.pushPose();
 
-                    poseStack.translate(0.3f + (j%3)*0.2f, 1.5f - Math.floorDiv(j, 3)*0.2f,
-                            0.3f + Math.floorDiv(j, 3)*0.2f + (j%3)*0.02f);
+                    float posX = 0.3f + (j%3)*0.2f;
+                    float posY = 1.5f - Math.floorDiv(j, 3)*0.2f;
+                    float posZ = 0.3f + Math.floorDiv(j, 3)*0.2f + (j%3)*0.02f;
+                    float[][] posMat = mathHelper.getPositionMatrix(posX, posY, posZ);
+                    //float[][] resMat = mathHelper.multiply(invTranslationMat,mathHelper.multiply(rotationMat,mathHelper.multiply(translationMat, posMat)));
+                    float[][] resMat = mathHelper.multiply(rotationMatrix, posMat);
+
+                    poseStack.translate(resMat[0][0], resMat[1][0], resMat[2][0]);
                     poseStack.scale(scale, scale, scale);
+                    poseStack.mulPose(Axis.YP.rotationDegrees((float) (theta*180/Math.PI)));
                     poseStack.mulPose(Axis.XP.rotationDegrees(335));
 
                     itemRenderer.renderStatic(itemStacks.get(j), ItemDisplayContext.FIXED,

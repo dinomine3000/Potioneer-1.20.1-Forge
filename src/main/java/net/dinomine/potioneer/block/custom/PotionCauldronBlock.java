@@ -1,7 +1,9 @@
 package net.dinomine.potioneer.block.custom;
 
 import net.dinomine.potioneer.block.entity.PotionCauldronBlockEntity;
+import net.dinomine.potioneer.util.PotioneerMathHelper;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.stats.Stats;
@@ -11,17 +13,14 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.BaseEntityBlock;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.RenderShape;
+import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
-import net.minecraft.world.level.block.state.properties.BlockStateProperties;
-import net.minecraft.world.level.block.state.properties.BooleanProperty;
-import net.minecraft.world.level.block.state.properties.IntegerProperty;
+import net.minecraft.world.level.block.state.properties.*;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
@@ -30,24 +29,29 @@ import org.jetbrains.annotations.Nullable;
 
 public class PotionCauldronBlock extends BaseEntityBlock {
 
-    public static final IntegerProperty WATER_LEVEL = BlockStateProperties.LEVEL_CAULDRON;
     public static final BooleanProperty RESULT = BlockStateProperties.TRIGGERED;
+    public static final IntegerProperty WATER_LEVEL = BlockStateProperties.LEVEL_CAULDRON;
+    public static final DirectionProperty DIRECTION = BlockStateProperties.FACING;
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> pBuilder) {
         super.createBlockStateDefinition(pBuilder);
-        pBuilder.add(WATER_LEVEL);
-        pBuilder.add(RESULT);
+        pBuilder.add(new Property[]{RESULT, WATER_LEVEL, DIRECTION});
     }
 
     public PotionCauldronBlock(Properties pProperties) {
         super(pProperties);
-        this.registerDefaultState(this.stateDefinition.any().setValue(WATER_LEVEL, 1));
-        this.registerDefaultState(this.stateDefinition.any().setValue(RESULT, false));
+        this.registerDefaultState(this.stateDefinition.any().setValue(WATER_LEVEL, 1)
+                .setValue(RESULT, false)
+                .setValue(DIRECTION, Direction.NORTH));
     }
 
+    @Override
+    public BlockState getStateForPlacement(BlockPlaceContext pContext) {
+        return (BlockState)this.defaultBlockState().setValue(DIRECTION, pContext.getHorizontalDirection().getOpposite());
+    }
 
-    private static final VoxelShape SHAPE = Block.box(0, 1, 0, 16, 14, 16);
+    private static final VoxelShape SHAPE = Block.box(0, 0, 0, 16, 14, 16);
     public VoxelShape getShape(BlockState pState, BlockGetter pLevel, BlockPos pPos, CollisionContext pContext) {
         return SHAPE;
     }
@@ -154,7 +158,6 @@ public class PotionCauldronBlock extends BaseEntityBlock {
     @Override
     public boolean onDestroyedByPlayer(BlockState state, Level level, BlockPos pos, Player player, boolean willHarvest, FluidState fluid) {
         boolean result = state.getValue(RESULT);
-        System.out.println("Destroyed. Did it have result?:" + result);
         if(!result && !level.isClientSide()){
             PotionCauldronBlockEntity be = (PotionCauldronBlockEntity) level.getBlockEntity(pos);
             assert be != null;
