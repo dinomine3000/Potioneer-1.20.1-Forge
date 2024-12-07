@@ -6,6 +6,9 @@ public class PotioneerMathHelper {
         public float[][] multiply(float[][] mat1, float[][] mat2){
             int[] dim1 = getDim(mat1);
             int[] dim2 = getDim(mat2);
+            if(mat1 == null || mat2 == null){
+                return null;
+            }
             if(dim1[1] != dim2[0]){
                 throw new RuntimeException("Matrices have incompatible dimensions: "
                         + dim1[0] + "x" + dim1[1] + " vs "
@@ -76,6 +79,16 @@ public class PotioneerMathHelper {
                     {(float) Math.cos(theta), 0, (float) Math.sin(theta), 0},
                     {0, 1, 0, 0},
                     {(float) (-1f * Math.sin(theta)), 0, (float) Math.cos(theta), 0},
+                    {0, 0, 0, 1}
+            };
+            return res;
+        }
+
+        public float[][] getScaleMatrix(float scale){
+            float[][] res = new float[][]{
+                    {scale, 0, 0, 0},
+                    {0, scale, 0, 0},
+                    {0, 0, scale, 0},
                     {0, 0, 0, 1}
             };
             return res;

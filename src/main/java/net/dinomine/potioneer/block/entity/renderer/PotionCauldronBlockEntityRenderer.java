@@ -15,6 +15,7 @@ import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
+import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
@@ -31,30 +32,31 @@ import static net.dinomine.potioneer.block.custom.PotionCauldronBlock.WATER_LEVE
 public class PotionCauldronBlockEntityRenderer implements BlockEntityRenderer<PotionCauldronBlockEntity> {
 
     private boolean inside = false;
-    private static float[][] transformMatrix90 = new float[][]{
+    private static final float[][] transformMatrix90 = new float[][]{
             {0, 0, 1, 0},
             {0, 1, 0, 0},
             {-1, 0, 0, 1},
             {0, 0, 0, 1}
     };
-    private static float[][] transformMatrix270 = new float[][]{
+    private static final float[][] transformMatrix270 = new float[][]{
             {0, 0, -1, 1},
             {0, 1, 0, 0},
             {1, 0, 0, 0},
             {0, 0, 0, 1}
     };
-    private static float[][] transformMatrix180 = new float[][]{
+    private static final float[][] transformMatrix180 = new float[][]{
             {-1, 0, 0, 1},
             {0, 1, 0, 0},
             {0, 0, -1, 1},
             {0, 0, 0, 1}
     };
-    private static float[][] transformMatrix0 = new float[][]{
+    private static final float[][] transformMatrix0 = new float[][]{
             {1, 0, 0, 0},
             {0, 1, 0, 0},
             {0, 0, 1, 0},
             {0, 0, 0, 1}
     };
+    private static float g = 20f;
 
     public PotionCauldronBlockEntityRenderer(BlockEntityRendererProvider.Context context){
 
@@ -68,8 +70,7 @@ public class PotionCauldronBlockEntityRenderer implements BlockEntityRenderer<Po
 
         BlockPos pos = bEntity.getBlockPos();
         Level level = bEntity.getLevel();
-        if(bEntity instanceof PotionCauldronBlockEntity && !level.getBlockState(pos).isAir()){
-
+        if(!level.getBlockState(pos).isAir() && !level.getBlockState(pos.above()).canOcclude()){
             PotioneerMathHelper.MatrixHelper mathHelper = new PotioneerMathHelper.MatrixHelper();
             //float[][] translationMat = mathHelper.getTranslationMatrix(-0.5f, 0, -0.5f);
             Direction dir = level.getBlockState(pos).getValue(DIRECTION);
@@ -95,6 +96,21 @@ public class PotionCauldronBlockEntityRenderer implements BlockEntityRenderer<Po
                 case 2 -> 0.55f;
                 default -> 0.8f;
             };
+            int size = bEntity.caretPosition();
+            float invScale = 25f/8;
+
+            float[][] concoctMat = null;
+            float[][] tFall = null;
+            if(bEntity.countDown > 0){
+                float prog1 = Mth.clamp(bEntity.countDown, 0, 20)/20f;
+                float prog2 = Mth.clamp(bEntity.countDown-20, 0, 20)/20f;
+                float[][] t1 = mathHelper.getTranslationMatrix(-0.5f, -1.3f, -0.5f);
+                float[][] sc = mathHelper.getScaleMatrix(-0.9f*prog1*prog1*prog1*prog1 + 1f);
+                float[][] t2 = mathHelper.getTranslationMatrix(0.5f, 1.3f, 0.5f);
+                concoctMat = mathHelper.multiply(t2, mathHelper.multiply(sc, t1));
+                float calcPosition = -g*prog2*prog2*prog2*prog2/2f;
+                tFall = mathHelper.getTranslationMatrix(0, Mth.clamp(calcPosition, -1f, 0), 0);
+            }
             for (int j = 0; j < itemStacks.size(); j++) {
                 if(inside){
                     if(!itemStacks.get(j).isEmpty() && j%2 == 0){
@@ -152,9 +168,19 @@ public class PotionCauldronBlockEntityRenderer implements BlockEntityRenderer<Po
                     //float[][] resMat = mathHelper.multiply(invTranslationMat,mathHelper.multiply(rotationMat,mathHelper.multiply(translationMat, posMat)));
                     float[][] resMat = mathHelper.multiply(rotationMatrix, posMat);
 
+                    float zShaking = (float)(Math.random()*((size - 1)*invScale) - ((size - 1)*invScale/2));
+                    if(bEntity.countDown > 0){
+                        resMat = mathHelper.multiply(concoctMat, resMat);
+                        if(bEntity.countDown >= 20){
+                            resMat = mathHelper.multiply(tFall, resMat);
+                            zShaking = 0;
+                        }
+                    }
+
                     poseStack.translate(resMat[0][0], resMat[1][0], resMat[2][0]);
                     poseStack.scale(scale, scale, scale);
                     poseStack.mulPose(Axis.YP.rotationDegrees((float) (theta*180/Math.PI)));
+                    poseStack.mulPose(Axis.ZP.rotationDegrees(zShaking));
                     poseStack.mulPose(Axis.XP.rotationDegrees(335));
 
                     itemRenderer.renderStatic(itemStacks.get(j), ItemDisplayContext.FIXED,

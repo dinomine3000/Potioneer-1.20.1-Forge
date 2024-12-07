@@ -5,6 +5,8 @@ import net.dinomine.potioneer.block.ModBlocks;
 import net.dinomine.potioneer.block.entity.ModBlockEntities;
 import net.dinomine.potioneer.item.ModCreativeModTabs;
 import net.dinomine.potioneer.item.ModItems;
+import net.dinomine.potioneer.particle.ModParticles;
+import net.dinomine.potioneer.recipe.ModRecipes;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraftforge.api.distmarker.Dist;
@@ -42,6 +44,10 @@ public class Potioneer
         ModBlocks.register(eventBus);
 
         ModBlockEntities.register(eventBus);
+
+        ModRecipes.register(eventBus);
+
+        ModParticles.register(eventBus);
 
         // Register the commonSetup method for modloading
         eventBus.addListener(this::commonSetup);

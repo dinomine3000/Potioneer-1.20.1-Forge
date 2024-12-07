@@ -1,5 +1,6 @@
 package net.dinomine.potioneer.block.custom;
 
+import net.dinomine.potioneer.block.entity.ModBlockEntities;
 import net.dinomine.potioneer.block.entity.PotionCauldronBlockEntity;
 import net.dinomine.potioneer.util.PotioneerMathHelper;
 import net.minecraft.core.BlockPos;
@@ -16,8 +17,11 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityTicker;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.*;
@@ -70,55 +74,44 @@ public class PotionCauldronBlock extends BaseEntityBlock {
 
         BlockEntity be = pLevel.getBlockEntity(pPos);
         if(be instanceof PotionCauldronBlockEntity cauldron){
-            if(item == Items.WATER_BUCKET){
-                if(level < 3 && !pLevel.isClientSide()){
-                    if(!pPlayer.isCreative()){
-                        pPlayer.setItemInHand(pHand, new ItemStack(Items.BUCKET));
-                    }
-                    pPlayer.awardStat(Stats.FILL_CAULDRON);
-                    changeWaterLevel(pLevel, pPos, pState, 1);
-                    pLevel.playSound(null, pPos, SoundEvents.BUCKET_EMPTY, SoundSource.BLOCKS, 1f, 1f);
-                }
-                cauldron.craft();
-                return InteractionResult.SUCCESS;
-            } else if(item == Items.BUCKET){
-                if(level > 1 && !pLevel.isClientSide() && !cauldron.hasResult()){
-                    if(!pPlayer.isCreative()){
-                        heldItemStack.shrink(1);
-                        if(heldItemStack.isEmpty()){
-                            pPlayer.setItemInHand(pHand, new ItemStack(Items.WATER_BUCKET));
-                        } else if(!pPlayer.getInventory().add(new ItemStack(Items.WATER_BUCKET))){
-                            pPlayer.drop(new ItemStack(Items.WATER_BUCKET), false);
+            if(!pLevel.isClientSide() && cauldron.state == PotionCauldronBlockEntity.State.STANDBY){
+                if(item == Items.WATER_BUCKET){
+                    if(level < 3){
+                        if(!pPlayer.isCreative()){
+                            pPlayer.setItemInHand(pHand, new ItemStack(Items.BUCKET));
                         }
+                        pPlayer.awardStat(Stats.FILL_CAULDRON);
+                        changeWaterLevel(pLevel, pPos, pState, 1);
+                        pLevel.playSound(null, pPos, SoundEvents.BUCKET_EMPTY, SoundSource.BLOCKS, 1f, 1f);
                     }
-
-                    pPlayer.awardStat(Stats.USE_CAULDRON);
-                    changeWaterLevel(pLevel, pPos, pState, -1);
-                    pLevel.playSound(null, pPos, SoundEvents.BUCKET_FILL, SoundSource.BLOCKS, 1f, 1f);
+                    cauldron.craft();
+                    return InteractionResult.SUCCESS;
                 }
-                cauldron.craft();
-                return InteractionResult.SUCCESS;
-            } else {
-                if(item == Items.GLASS_BOTTLE && !pLevel.isClientSide()){
-                    if(cauldron.hasResult()){
-                        ItemStack res = cauldron.extractResult();
-                        heldItemStack.shrink(1);
-                        setWaterLevel(pLevel, pPos, 1);
-                        pLevel.playSound(null, pPos, SoundEvents.BOTTLE_FILL, SoundSource.BLOCKS, 1f, 1f);
-
-                        if(heldItemStack.isEmpty()){
-                            pPlayer.setItemInHand(pHand, res);
-                        } else if(!pPlayer.getInventory().add(res)){
-                            pPlayer.drop(res, false);
+                else if(item == Items.BUCKET){
+                    if(level > 1){
+                        if(!pPlayer.isCreative()){
+                            heldItemStack.shrink(1);
+                            if(heldItemStack.isEmpty()){
+                                pPlayer.setItemInHand(pHand, new ItemStack(Items.WATER_BUCKET));
+                            } else if(!pPlayer.getInventory().add(new ItemStack(Items.WATER_BUCKET))){
+                                pPlayer.drop(new ItemStack(Items.WATER_BUCKET), false);
+                            }
                         }
+
+                        pPlayer.awardStat(Stats.USE_CAULDRON);
+                        changeWaterLevel(pLevel, pPos, pState, -1);
+                        pLevel.playSound(null, pPos, SoundEvents.BUCKET_FILL, SoundSource.BLOCKS, 1f, 1f);
                     }
-                } else if(!pLevel.isClientSide()){
+                    cauldron.craft();
+                    return InteractionResult.SUCCESS;
+                }
+                else if(!pLevel.isClientSide()){
                     if(heldItemStack.isEmpty()){
                         ItemStack rem = cauldron.removeItem();
                         if(!pPlayer.getInventory().add(rem)){
                             pPlayer.drop(rem, false);
                         }
-                    } else {
+                    } else if (item != Items.GLASS_BOTTLE){
                         if(pPlayer.isCreative()){
                             cauldron.addIngredient(heldItemStack, false);
                         } else {
@@ -126,6 +119,28 @@ public class PotionCauldronBlock extends BaseEntityBlock {
                         }
                     }
                 }
+
+            }
+            else if(item == Items.GLASS_BOTTLE && !pLevel.isClientSide()){
+                if(cauldron.hasResult()){
+                    ItemStack res = cauldron.extractResult();
+                    heldItemStack.shrink(1);
+                    setWaterLevel(pLevel, pPos, 1);
+                    pLevel.playSound(null, pPos, SoundEvents.BEACON_POWER_SELECT, SoundSource.BLOCKS, 1f, 1f);
+                        /*
+                        use one of these sounds for beyonder potions
+                        pLevel.playSound(null, pPos, SoundEvents.BOTTLE_FILL_DRAGONBREATH, SoundSource.BLOCKS, 1f, 1f);
+                        */
+                    pLevel.playSound(null, pPos, SoundEvents.BOTTLE_FILL, SoundSource.BLOCKS, 1f, 1f);
+
+                    if(heldItemStack.isEmpty()){
+                        pPlayer.setItemInHand(pHand, res);
+                    } else if(!pPlayer.getInventory().add(res)){
+                        pPlayer.drop(res, false);
+                    }
+                }
+            }
+            else {
 
                 return InteractionResult.SUCCESS;
             }
@@ -147,13 +162,15 @@ public class PotionCauldronBlock extends BaseEntityBlock {
     @Override
     public void onRemove(BlockState pState, Level pLevel, BlockPos pPos, BlockState pNewState, boolean pIsMoving) {
         boolean result = pState.getValue(RESULT);
-        if(pLevel.getBlockState(pPos).getBlock() != this.asBlock() && !result && !pLevel.isClientSide()){
+        if(pState.getBlock() != pNewState.getBlock() && !result && !pLevel.isClientSide()){
             PotionCauldronBlockEntity be = (PotionCauldronBlockEntity) pLevel.getBlockEntity(pPos);
-            assert be != null;
-            be.dropIngredients(pLevel, pPos);
+            if(be instanceof PotionCauldronBlockEntity){
+                be.dropIngredients(pLevel, pPos);
+            }
         }
         super.onRemove(pState, pLevel, pPos, pNewState, pIsMoving);
     }
+
 
     @Override
     public boolean onDestroyedByPlayer(BlockState state, Level level, BlockPos pos, Player player, boolean willHarvest, FluidState fluid) {
@@ -171,5 +188,15 @@ public class PotionCauldronBlock extends BaseEntityBlock {
     @Override
     public @Nullable BlockEntity newBlockEntity(BlockPos blockPos, BlockState blockState) {
         return new PotionCauldronBlockEntity(blockPos, blockState);
+    }
+
+    @Override
+    public @Nullable <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level pLevel, BlockState pState, BlockEntityType<T> pBlockEntityType) {
+        if(pLevel.isClientSide()){
+            return createTickerHelper(pBlockEntityType, ModBlockEntities.POTION_CAULDRON_BLOCK_ENTITY.get(), PotionCauldronBlockEntity::particleTick);
+        }
+
+        return createTickerHelper(pBlockEntityType, ModBlockEntities.POTION_CAULDRON_BLOCK_ENTITY.get(),
+                ((pLevel1, pPos1, pState1, be1) -> be1.tick(pLevel1, pPos1, pState1)));
     }
 }
