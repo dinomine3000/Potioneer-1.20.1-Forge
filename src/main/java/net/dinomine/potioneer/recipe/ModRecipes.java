@@ -1,6 +1,8 @@
 package net.dinomine.potioneer.recipe;
 
 import net.dinomine.potioneer.Potioneer;
+import net.minecraft.data.DataGenerator;
+import net.minecraft.data.tags.TagsProvider;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.registries.DeferredRegister;

@@ -4,6 +4,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
+import com.mojang.serialization.Decoder;
 import net.dinomine.potioneer.Potioneer;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.RegistryAccess;
@@ -17,14 +18,16 @@ import net.minecraft.world.item.crafting.*;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Arrays;
+
 public class PotionCauldronRecipe implements Recipe<SimpleContainer> {
-    private final NonNullList<Ingredient> inputItems;
+    private final NonNullList<ItemStack> inputItems;
     private final ItemStack output;
     private final ResourceLocation id;
     private final int waterLevel;
     private final boolean needsFire;
 
-    public PotionCauldronRecipe(NonNullList<Ingredient> inputItems, ItemStack output, ResourceLocation id, int waterLevel, boolean needsFire) {
+    public PotionCauldronRecipe(NonNullList<ItemStack> inputItems, ItemStack output, ResourceLocation id, int waterLevel, boolean needsFire) {
         this.inputItems = inputItems;
         this.output = output;
         this.id = id;
@@ -37,19 +40,20 @@ public class PotionCauldronRecipe implements Recipe<SimpleContainer> {
         if(level.isClientSide()) return false;
 
         //will return true if every item in the recipe is contained in the container
-        for(Ingredient recipeItem: inputItems){
+        for(ItemStack recipeItem: inputItems){
             if(!contains(simpleContainer, recipeItem)) return false;
         }
         return true;
     }
 
-    private boolean contains(SimpleContainer container, Ingredient item){
+    private boolean contains(SimpleContainer container, ItemStack item){
+        int hold = 0;
         for(int i = 0; i < container.getContainerSize(); ++i) {
-            if (item.test(container.getItem(i))) {
-                return true;
+            if (item.is(container.getItem(i).getItem())) {
+                hold++;
             }
         }
-        return false;
+        return hold >= item.getCount();
     }
 
     @Override
@@ -101,7 +105,7 @@ public class PotionCauldronRecipe implements Recipe<SimpleContainer> {
 
         @Override
         public PotionCauldronRecipe fromJson(ResourceLocation pRecipeId, JsonObject pJson) {
-            NonNullList<Ingredient> ingredients = itemsFromJson(GsonHelper.getAsJsonArray(pJson, "ingredients"));
+            NonNullList<ItemStack> ingredients = itemsFromJson(GsonHelper.getAsJsonArray(pJson, "ingredients"));
             int waterLevel = GsonHelper.getAsInt(pJson, "water_level");
             boolean needsFire = GsonHelper.getAsBoolean(pJson, "needs_fire");
 
@@ -115,11 +119,11 @@ public class PotionCauldronRecipe implements Recipe<SimpleContainer> {
             }
         }
 
-        private static NonNullList<Ingredient> itemsFromJson(JsonArray pIngredientArray) {
-            NonNullList<Ingredient> nonnulllist = NonNullList.create();
+        private static NonNullList<ItemStack> itemsFromJson(JsonArray pItemArray) {
+            NonNullList<ItemStack> nonnulllist = NonNullList.create();
 
-            for(int i = 0; i < pIngredientArray.size(); ++i) {
-                Ingredient ingredient = Ingredient.fromJson(pIngredientArray.get(i), false);
+            for(int i = 0; i < pItemArray.size(); ++i) {
+                ItemStack ingredient = ShapedRecipe.itemStackFromJson(pItemArray.get(i).getAsJsonObject());
                 nonnulllist.add(ingredient);
             }
 
@@ -129,9 +133,9 @@ public class PotionCauldronRecipe implements Recipe<SimpleContainer> {
         @Override
         public @Nullable PotionCauldronRecipe fromNetwork(ResourceLocation resourceLocation, FriendlyByteBuf friendlyByteBuf) {
 
-            NonNullList<Ingredient> inputs = NonNullList.withSize(friendlyByteBuf.readInt(), Ingredient.EMPTY);
+            NonNullList<ItemStack> inputs = NonNullList.withSize(friendlyByteBuf.readInt(), ItemStack.EMPTY);
             for (int i = 0; i < inputs.size(); i++) {
-                inputs.set(i, Ingredient.fromNetwork(friendlyByteBuf));
+                inputs.set(i, friendlyByteBuf.readItem());
             }
 
             int waterLevel = friendlyByteBuf.readInt();
@@ -146,8 +150,8 @@ public class PotionCauldronRecipe implements Recipe<SimpleContainer> {
         @Override
         public void toNetwork(FriendlyByteBuf friendlyByteBuf, PotionCauldronRecipe potionCauldronRecipe) {
             friendlyByteBuf.writeInt(potionCauldronRecipe.inputItems.size());
-            for (Ingredient i: potionCauldronRecipe.inputItems) {
-                i.toNetwork(friendlyByteBuf);
+            for (ItemStack i: potionCauldronRecipe.inputItems) {
+                friendlyByteBuf.writeItemStack(i, false);
             }
 
             friendlyByteBuf.writeInt(potionCauldronRecipe.getWaterLevel());

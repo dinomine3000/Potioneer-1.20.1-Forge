@@ -3,6 +3,7 @@ package net.dinomine.potioneer.block.entity;
 import net.dinomine.potioneer.Potioneer;
 import net.dinomine.potioneer.particle.ModParticles;
 import net.dinomine.potioneer.recipe.PotionCauldronRecipe;
+import net.dinomine.potioneer.util.ModTags;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
@@ -36,6 +37,7 @@ import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -74,7 +76,12 @@ public class PotionCauldronBlockEntity extends BlockEntity {
             setChanged();
             if(!level.isClientSide()){
                 level.sendBlockUpdated(getBlockPos(), getBlockState(), getBlockState(), 3);
+                craft();
             }
+        }
+        @Override
+        public boolean isItemValid(int slot, @NotNull ItemStack stack) {
+            return(stack.is(ModTags.Items.POTION_INGREDIENTS));
         }
     };
     private LazyOptional<IItemHandler> handler = LazyOptional.of(() -> itemHandler);
@@ -103,6 +110,7 @@ public class PotionCauldronBlockEntity extends BlockEntity {
     @Nonnull
     @Override
     public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
+        System.out.println("Capability goten");
         if(cap == ForgeCapabilities.ITEM_HANDLER){
             return handler.cast();
         }
@@ -144,9 +152,7 @@ public class PotionCauldronBlockEntity extends BlockEntity {
     public ItemStack removeItem(){
         if(!hasResult() && !isEmpty()){
             int pos = caretPosition() - 1;
-            ItemStack rem = itemHandler.getStackInSlot(pos).copy();
-            itemHandler.setStackInSlot(pos, ItemStack.EMPTY);
-            return rem;
+            return itemHandler.extractItem(pos, 1, false);
         }
         return ItemStack.EMPTY;
     }
@@ -177,27 +183,27 @@ public class PotionCauldronBlockEntity extends BlockEntity {
                 int waterLevel = level.getBlockState(getBlockPos()).getValue(WATER_LEVEL);
                 boolean onFire = blockBelowIsHot();
                 ItemStack output = iRecipe.getResultItem(null);
-                System.out.println("output: " + output);
+                /*System.out.println("output: " + output);
                 System.out.println("Water level: " + waterLevel);
-                System.out.println("Is hot: " + onFire);
+                System.out.println("Is hot: " + onFire);*/
 
                 if (iRecipe.getWaterLevel() == waterLevel && !(iRecipe.needsFire() && !onFire)) {
                     //result = PotionUtils.addPotionToItemStack(new ItemStack(Items.POTION), Potions.NIGHT_VISION);
 
                     if (!recipeSuccess) {
-                        System.out.println("Recipe succeeded");
+                        //System.out.println("Recipe succeeded");
                         recipeSuccess = true;
                         tempResult = output.copy();
                     } else {
-                        System.out.println("Result is already defined...");
+                        //System.out.println("Result is already defined...");
                         if (!level.isClientSide()) {
                             if(this.tempResult.is(output.getItem())){
-                                System.out.println("Its the same result");
+                                //System.out.println("Its the same result");
                             } else {
                                 conflict = true;
-                                System.out.println("Incoming shit result - " + iRecipe.getId() +
+                                /*System.out.println("Incoming shit result - " + iRecipe.getId() +
                                         " " + iRecipe.getResultItem(null).getDisplayName().getString() +
-                                        " " + this.tempResult.getDisplayName().getString());
+                                        " " + this.tempResult.getDisplayName().getString());*/
                             }
                         }
 
@@ -228,9 +234,10 @@ public class PotionCauldronBlockEntity extends BlockEntity {
            return false;
         } else  {
             BlockState state = level.getBlockState(worldPosition.below());
-            if(state.getBlock() instanceof BaseFireBlock) return true; //change to tags
+            if(state.getBlock() instanceof BaseFireBlock) return true;
+            if(state.is(ModTags.Blocks.FIRE_BLOCKS)) return true;
             if(!state.hasProperty(BlockStateProperties.LIT)) return false;
-            return state.getValue(BlockStateProperties.LIT) && !state.getValue(BlockStateProperties.WATERLOGGED);
+            return state.getValue(BlockStateProperties.LIT);
         }
     }
 
@@ -313,7 +320,7 @@ public class PotionCauldronBlockEntity extends BlockEntity {
     }
 
     private void concoct(){
-        System.out.println("Concocting...");
+        //System.out.println("Concocting...");
         recipeSuccess = false;
         state = State.CONCOCTING;
         countDown = 0;

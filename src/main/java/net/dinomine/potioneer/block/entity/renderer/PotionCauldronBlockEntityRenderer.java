@@ -17,6 +17,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -32,31 +33,6 @@ import static net.dinomine.potioneer.block.custom.PotionCauldronBlock.WATER_LEVE
 public class PotionCauldronBlockEntityRenderer implements BlockEntityRenderer<PotionCauldronBlockEntity> {
 
     private boolean inside = false;
-    private static final float[][] transformMatrix90 = new float[][]{
-            {0, 0, 1, 0},
-            {0, 1, 0, 0},
-            {-1, 0, 0, 1},
-            {0, 0, 0, 1}
-    };
-    private static final float[][] transformMatrix270 = new float[][]{
-            {0, 0, -1, 1},
-            {0, 1, 0, 0},
-            {1, 0, 0, 0},
-            {0, 0, 0, 1}
-    };
-    private static final float[][] transformMatrix180 = new float[][]{
-            {-1, 0, 0, 1},
-            {0, 1, 0, 0},
-            {0, 0, -1, 1},
-            {0, 0, 0, 1}
-    };
-    private static final float[][] transformMatrix0 = new float[][]{
-            {1, 0, 0, 0},
-            {0, 1, 0, 0},
-            {0, 0, 1, 0},
-            {0, 0, 0, 1}
-    };
-    private static float g = 20f;
 
     public PotionCauldronBlockEntityRenderer(BlockEntityRendererProvider.Context context){
 
@@ -82,10 +58,10 @@ public class PotionCauldronBlockEntityRenderer implements BlockEntityRenderer<Po
                 default -> 0;
             };
             float[][] rotationMatrix = switch(dir){
-                case NORTH -> transformMatrix180;
-                case EAST -> transformMatrix90;
-                case WEST -> transformMatrix270;
-                default -> transformMatrix0;
+                case NORTH -> mathHelper.transformMatrix180;
+                case EAST -> mathHelper.transformMatrix90;
+                case WEST -> mathHelper.transformMatrix270;
+                default -> mathHelper.transformMatrix0;
             };
             //float[][] rotationMat = mathHelper.getRotationMatrixY(theta);
             //float[][] invTranslationMat = mathHelper.getTranslationMatrix(0.5f, 0, 0.5f);
@@ -101,6 +77,19 @@ public class PotionCauldronBlockEntityRenderer implements BlockEntityRenderer<Po
 
             float[][] concoctMat = null;
             float[][] tFall = null;
+            /*Player nearestPlayer = level.getNearestPlayer((double)pos.getX() + (double)0.5F,
+                                                          (double)pos.getY() + (double)0.5F,
+                                                          (double)pos.getZ() + (double)0.5F,
+                                                              (double)3.0F, false);
+            if(nearestPlayer != null){
+                float[][] playerPos = mathHelper.getPositionMatrix(nearestPlayer.position());
+                float[][] blockPos = mathHelper.getPositionMatrix(pos.getX(), pos.getY(), pos.getZ());
+                float[][] pointingVector = mathHelper.subMatrices(blockPos, playerPos);
+                System.out.println(mathHelper.getString(pointingVector));
+                float[][] baseVector = mathHelper.multiply(mathHelper.getRotationMatrixY(theta), new float[][]{{1}, {0}, {0}, {0}});
+                rotationMatrix = mathHelper.multiply(rotationMatrix, mathHelper.getRotationMatrixY(mathHelper.getAngleFromVector(baseVector, pointingVector)));
+            }*/
+
             if(bEntity.countDown > 0){
                 float prog1 = Mth.clamp(bEntity.countDown, 0, 20)/20f;
                 float prog2 = Mth.clamp(bEntity.countDown-20, 0, 20)/20f;
@@ -108,7 +97,7 @@ public class PotionCauldronBlockEntityRenderer implements BlockEntityRenderer<Po
                 float[][] sc = mathHelper.getScaleMatrix(-0.9f*prog1*prog1*prog1*prog1 + 1f);
                 float[][] t2 = mathHelper.getTranslationMatrix(0.5f, 1.3f, 0.5f);
                 concoctMat = mathHelper.multiply(t2, mathHelper.multiply(sc, t1));
-                float calcPosition = -g*prog2*prog2*prog2*prog2/2f;
+                float calcPosition = -20*prog2*prog2*prog2*prog2/2f;
                 tFall = mathHelper.getTranslationMatrix(0, Mth.clamp(calcPosition, -1f, 0), 0);
             }
             for (int j = 0; j < itemStacks.size(); j++) {

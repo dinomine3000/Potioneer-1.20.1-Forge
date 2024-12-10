@@ -1,8 +1,37 @@
 package net.dinomine.potioneer.util;
 
+import net.minecraft.util.Mth;
+import net.minecraft.world.phys.Vec3;
+
+import java.util.Arrays;
+
 public class PotioneerMathHelper {
 
     public static class MatrixHelper{
+        public static final float[][] transformMatrix90 = new float[][]{
+                {0, 0, 1, 0},
+                {0, 1, 0, 0},
+                {-1, 0, 0, 1},
+                {0, 0, 0, 1}
+        };
+        public static final float[][] transformMatrix270 = new float[][]{
+                {0, 0, -1, 1},
+                {0, 1, 0, 0},
+                {1, 0, 0, 0},
+                {0, 0, 0, 1}
+        };
+        public static final float[][] transformMatrix180 = new float[][]{
+                {-1, 0, 0, 1},
+                {0, 1, 0, 0},
+                {0, 0, -1, 1},
+                {0, 0, 0, 1}
+        };
+        public static final float[][] transformMatrix0 = new float[][]{
+                {1, 0, 0, 0},
+                {0, 1, 0, 0},
+                {0, 0, 1, 0},
+                {0, 0, 0, 1}
+        };
         public float[][] multiply(float[][] mat1, float[][] mat2){
             int[] dim1 = getDim(mat1);
             int[] dim2 = getDim(mat2);
@@ -10,7 +39,7 @@ public class PotioneerMathHelper {
                 return null;
             }
             if(dim1[1] != dim2[0]){
-                throw new RuntimeException("Matrices have incompatible dimensions: "
+                throw new RuntimeException("Matrices have incompatible dimensions for multiplication: "
                         + dim1[0] + "x" + dim1[1] + " vs "
                         + dim2[0] + "x" + dim2[1]);
             }
@@ -72,6 +101,64 @@ public class PotioneerMathHelper {
                     {1}
             };
             return res;
+        }
+
+        public float[][] subMatrices(float[][] mat1, float[][] mat2){
+            int[] dim1 = getDim(mat1);
+            int[] dim2 = getDim(mat2);
+            if(dim1[0] != dim2[0] || dim1[1] != dim2[1]){
+                throw new RuntimeException("Matrices have incompatible dimensions for subtraction: "
+                        + dim1[0] + "x" + dim1[1] + " vs "
+                        + dim2[0] + "x" + dim2[1]);
+            } else {
+                float[][] res = new float[dim1[0]][dim1[1]];
+                for (int i = 0; i < dim1[0]; i++) {
+                    for (int j = 0; j < dim1[1]; j++) {
+                        res[i][j] = mat2[i][j] - mat1[i][j];
+                    }
+                }
+                return res;
+            }
+
+        }
+
+        public float getVectorMag(float[][] vector){
+            float sum = 0;
+            for (int i = 0; i < vector.length; i++) {
+                sum += vector[i][0] * vector[i][0];
+            }
+            return (float) Math.sqrt(sum);
+        }
+
+        public float[][] getMatrixTranspose(float[][] mat){
+            int[] dim = getDim(mat);
+            float[][] res = new float[dim[1]][dim[0]];
+            for (int i = 0; i < dim[0]; i++) {
+                for (int j = 0; j < dim[1]; j++) {
+                    res[j][i] = mat[i][j];
+                }
+            }
+            return res;
+        }
+
+        public float getAngleFromVector(float[][] vecMat1, float[][] vecMat2){
+            float[][] dotProduct = multiply(getMatrixTranspose(vecMat1), vecMat2);
+            float newMag = dotProduct[0][0] / (getVectorMag(vecMat1) * getVectorMag(vecMat2));
+            System.out.println(getString(dotProduct));
+            float result = (float) Math.acos(Mth.clamp(newMag, -1, 1));
+            return result;
+        }
+
+        public float[][] getPositionMatrix(Vec3 vector){
+            if(vector == null) return null;
+            float[][] res = new float[][]{
+                    {(float) vector.x()},
+                    {(float) vector.x()},
+                    {(float) vector.x()},
+                    {1}
+            };
+            return res;
+
         }
 
         public float[][] getRotationMatrixY(float theta){

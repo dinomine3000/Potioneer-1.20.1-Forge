@@ -2,7 +2,9 @@ package net.dinomine.potioneer.block.custom;
 
 import net.dinomine.potioneer.block.entity.ModBlockEntities;
 import net.dinomine.potioneer.block.entity.PotionCauldronBlockEntity;
+import net.dinomine.potioneer.util.ModTags;
 import net.dinomine.potioneer.util.PotioneerMathHelper;
+import net.minecraft.client.color.block.BlockColor;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.sounds.SoundEvents;
@@ -29,6 +31,7 @@ import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import net.minecraftforge.fml.common.Mod;
 import org.jetbrains.annotations.Nullable;
 
 public class PotionCauldronBlock extends BaseEntityBlock {
@@ -111,12 +114,13 @@ public class PotionCauldronBlock extends BaseEntityBlock {
                         if(!pPlayer.getInventory().add(rem)){
                             pPlayer.drop(rem, false);
                         }
-                    } else if (item != Items.GLASS_BOTTLE){
+                    } else if (item != Items.GLASS_BOTTLE && heldItemStack.is(ModTags.Items.POTION_INGREDIENTS)){
                         if(pPlayer.isCreative()){
                             cauldron.addIngredient(heldItemStack, false);
                         } else {
                             cauldron.addIngredient(heldItemStack, true);
                         }
+                        return InteractionResult.SUCCESS;
                     }
                 }
 
@@ -141,7 +145,6 @@ public class PotionCauldronBlock extends BaseEntityBlock {
                 }
             }
             else {
-
                 return InteractionResult.SUCCESS;
             }
         }

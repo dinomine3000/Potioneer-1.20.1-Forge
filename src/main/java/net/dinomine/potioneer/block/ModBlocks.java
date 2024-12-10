@@ -45,9 +45,7 @@ public class ModBlocks {
             () -> new SoundBlock(BlockBehaviour.Properties.copy(Blocks.NOTE_BLOCK)));
 
     public static final RegistryObject<Block> POTION_CAULDRON= registerBlock("potion_cauldron",
-            () -> new PotionCauldronBlock(BlockBehaviour.Properties.of().mapColor(MapColor.STONE).requiresCorrectToolForDrops().strength(2.0F).noOcclusion()));
-
-
+            () -> new PotionCauldronBlock(BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK).mapColor(MapColor.STONE).requiresCorrectToolForDrops().strength(2.0F).noOcclusion()));
 
     private static <T extends Block> RegistryObject<T> registerBlock(String name, Supplier<T> block){
         RegistryObject<T> toReturn = BLOCKS.register(name, block);
