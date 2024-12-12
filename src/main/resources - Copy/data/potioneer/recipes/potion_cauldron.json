@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "# #",
+    "# #",
+    "S#S"
+  ],
+  "key": {
+    "S": {
+      "item": "potioneer:sapphire"
+    },
+    "#": {
+      "item": "minecraft:iron_ingot"
+    }
+  },
+  "result": {
+    "item": "potioneer:potion_cauldron"
+  }
+}

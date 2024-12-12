@@ -1,0 +1,22 @@
+{
+  "type": "potioneer:potion_cauldron_brew",
+  "ingredients": [
+    {
+      "item": "potioneer:sapphire"
+    },
+    {
+      "item": "minecraft:gold_ingot"
+    },
+    {
+      "item": "minecraft:diamond"
+    },
+    {
+      "item": "minecraft:copper_ingot"
+    }
+  ],
+  "water_level": 3,
+  "needs_fire": false,
+  "output": {
+    "item": "minecraft:heart_of_the_sea"
+  }
+}

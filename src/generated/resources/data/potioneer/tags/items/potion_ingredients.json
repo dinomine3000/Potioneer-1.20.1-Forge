@@ -1,0 +1,12 @@
+{
+  "values": [
+    "potioneer:sapphire",
+    "minecraft:diamond",
+    "minecraft:coal",
+    "minecraft:redstone",
+    "minecraft:glowstone_dust",
+    "minecraft:iron_ingot",
+    "minecraft:gold_ingot",
+    "minecraft:copper_ingot"
+  ]
+}

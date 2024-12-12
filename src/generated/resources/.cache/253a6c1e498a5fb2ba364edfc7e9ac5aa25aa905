@@ -1,0 +1,13 @@
+// 1.20.1	2024-12-10T21:24:25.4028275	Block States: potioneer
+82825f1b39d296d74fcb0d4645bde032d83d5d7f assets/potioneer/blockstates/deepslate_sapphire_ore.json
+fe7331a7ebd77fa77a431a129f124d463c586b9a assets/potioneer/blockstates/raw_sapphire_block.json
+ac1bd36e90abc4856ff22af515932e0aa1644ab5 assets/potioneer/blockstates/sapphire_block.json
+9f4fdb9c5121c5003d09ae866a48861816fe3d8c assets/potioneer/blockstates/sapphire_ore.json
+763871674b3d1cf1627b6b514c087f818a859c0b assets/potioneer/models/block/deepslate_sapphire_ore.json
+04c41ddcde4edebb3575291512617954a8bed859 assets/potioneer/models/block/raw_sapphire_block.json
+99bfd7ac61d5e29a2861fab7bfda5159f71ea677 assets/potioneer/models/block/sapphire_block.json
+5638b6cfbd595ece90f8c70623447f33d18984f3 assets/potioneer/models/block/sapphire_ore.json
+3de02f4e06dd0e23417ae947cb4d4ece78f5429a assets/potioneer/models/item/deepslate_sapphire_ore.json
+46f34536f9961218ef052233f708b9a37a27c4d1 assets/potioneer/models/item/raw_sapphire_block.json
+94f71dd3573c64603c7fb97b8860c5c9b41b96db assets/potioneer/models/item/sapphire_block.json
+c3e3d76a5fb80bb689b8cc57017d429ccd59fef4 assets/potioneer/models/item/sapphire_ore.json

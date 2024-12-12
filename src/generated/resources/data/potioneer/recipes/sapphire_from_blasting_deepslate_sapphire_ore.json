@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:blasting",
+  "category": "misc",
+  "cookingtime": 200,
+  "experience": 0.25,
+  "group": "sapphire",
+  "ingredient": {
+    "item": "potioneer:deepslate_sapphire_ore"
+  },
+  "result": "potioneer:sapphire"
+}
