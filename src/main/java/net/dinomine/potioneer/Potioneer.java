@@ -8,6 +8,7 @@ import net.dinomine.potioneer.entities.client.ChryonRenderer;
 import net.dinomine.potioneer.entities.custom.ChryonEntity;
 import net.dinomine.potioneer.item.ModCreativeModTabs;
 import net.dinomine.potioneer.item.ModItems;
+import net.dinomine.potioneer.item.ModPotions;
 import net.dinomine.potioneer.particle.ModParticles;
 import net.dinomine.potioneer.recipe.ModRecipes;
 import net.minecraft.client.Minecraft;
@@ -55,6 +56,7 @@ public class Potioneer
         ModParticles.register(eventBus);
 
         ModEntities.register(eventBus);
+
 
         // Register the commonSetup method for modloading
         eventBus.addListener(this::commonSetup);

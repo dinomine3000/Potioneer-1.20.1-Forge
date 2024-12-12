@@ -41,9 +41,6 @@ public class ModBlocks {
             () -> new DropExperienceBlock(BlockBehaviour.Properties.copy(Blocks.DEEPSLATE)
                     .strength(5f).requiresCorrectToolForDrops(), UniformInt.of(3, 7)));
 
-    public static final RegistryObject<Block> SOUND_BLOCK= registerBlock("sound_block",
-            () -> new SoundBlock(BlockBehaviour.Properties.copy(Blocks.NOTE_BLOCK)));
-
     public static final RegistryObject<Block> POTION_CAULDRON= registerBlock("potion_cauldron",
             () -> new PotionCauldronBlock(BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK).mapColor(MapColor.STONE).requiresCorrectToolForDrops().strength(2.0F).noOcclusion()));
 

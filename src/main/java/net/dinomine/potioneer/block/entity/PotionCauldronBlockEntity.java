@@ -1,6 +1,7 @@
 package net.dinomine.potioneer.block.entity;
 
 import net.dinomine.potioneer.Potioneer;
+import net.dinomine.potioneer.item.ModItems;
 import net.dinomine.potioneer.particle.ModParticles;
 import net.dinomine.potioneer.recipe.PotionCauldronRecipe;
 import net.dinomine.potioneer.util.ModTags;
@@ -350,7 +351,8 @@ public class PotionCauldronBlockEntity extends BlockEntity {
     }
 
     private void finishPotion(Level pLevel, BlockPos pPos, BlockState pState){
-        this.result = conflict ? PotionUtils.setPotion(new ItemStack(Items.POTION), Potions.POISON) : tempResult;
+        //this.result = conflict ? PotionUtils.setPotion(new ItemStack(Items.POTION), Potions.POISON) : tempResult;
+        this.result = conflict ? new ItemStack(ModItems.BEYONDER_POTION.get()): tempResult;
         pLevel.playSound(null, pPos, SoundEvents.ZOMBIE_VILLAGER_CURE, SoundSource.BLOCKS, 1f, 1f);
         pLevel.setBlockAndUpdate(pPos, pState.setValue(RESULT, true));
         conflict = false;

@@ -31,6 +31,7 @@ public class ModCreativeModTabs {
                         output.accept(ModBlocks.DEEPSLATE_SAPPHIRE_ORE.get());
                         output.accept(ModBlocks.POTION_CAULDRON.get());
                         output.accept(ModItems.CHRYON_SPAWN_EGG.get());
+                        output.accept(ModItems.BEYONDER_POTION.get());
                     })
                     .build());
 

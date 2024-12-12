@@ -17,7 +17,8 @@ public class ModBlockStateProvider extends BlockStateProvider {
     protected void registerStatesAndModels() {
         blockWithItem(ModBlocks.RAW_SAPPHIRE_BLOCK);
         blockWithItem(ModBlocks.SAPPHIRE_BLOCK);
-        blockWithItem(ModBlocks.SOUND_BLOCK);
+        blockWithItem(ModBlocks.DEEPSLATE_SAPPHIRE_ORE);
+        blockWithItem(ModBlocks.SAPPHIRE_ORE);
     }
 
     private void blockWithItem(RegistryObject<Block> blockRegistryObject){

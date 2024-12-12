@@ -114,11 +114,13 @@ public class PotionCauldronBlock extends BaseEntityBlock {
                         if(!pPlayer.getInventory().add(rem)){
                             pPlayer.drop(rem, false);
                         }
-                    } else if (item != Items.GLASS_BOTTLE && heldItemStack.is(ModTags.Items.POTION_INGREDIENTS)){
-                        if(pPlayer.isCreative()){
-                            cauldron.addIngredient(heldItemStack, false);
-                        } else {
-                            cauldron.addIngredient(heldItemStack, true);
+                    } else if (item != Items.GLASS_BOTTLE){
+                        if(heldItemStack.is(ModTags.Items.POTION_INGREDIENTS)){
+                            if(pPlayer.isCreative()){
+                                cauldron.addIngredient(heldItemStack, false);
+                            } else {
+                                cauldron.addIngredient(heldItemStack, true);
+                            }
                         }
                         return InteractionResult.SUCCESS;
                     }
