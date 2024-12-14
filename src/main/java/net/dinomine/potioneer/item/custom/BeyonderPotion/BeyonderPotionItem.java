@@ -1,36 +1,14 @@
 package net.dinomine.potioneer.item.custom.BeyonderPotion;
 
-import net.minecraft.advancements.CriteriaTriggers;
+import net.dinomine.potioneer.beyonder.client.AdvanceSequenceClient;
+import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
-import net.minecraft.stats.Stats;
-import net.minecraft.tags.BlockTags;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
-import net.minecraft.world.InteractionResultHolder;
-import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.food.Foods;
-import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.*;
-import net.minecraft.world.item.alchemy.Potion;
-import net.minecraft.world.item.alchemy.PotionUtils;
-import net.minecraft.world.item.alchemy.Potions;
-import net.minecraft.world.item.context.UseOnContext;
-import net.minecraft.world.item.crafting.ShapedRecipe;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraftforge.client.extensions.common.IClientItemExtensions;
 import software.bernie.geckolib.animatable.GeoItem;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
@@ -41,8 +19,6 @@ import software.bernie.geckolib.util.RenderUtils;
 
 import javax.annotation.Nullable;
 import java.util.List;
-import java.util.Optional;
-import java.util.Properties;
 import java.util.function.Consumer;
 
 public class BeyonderPotionItem extends PotionItem implements GeoItem {
@@ -51,6 +27,7 @@ public class BeyonderPotionItem extends PotionItem implements GeoItem {
     public BeyonderPotionItem(Properties pProperties) {
         super(pProperties);
     }
+
 
     private PlayState predicate(AnimationState animationState) {
         return PlayState.CONTINUE;
@@ -84,6 +61,34 @@ public class BeyonderPotionItem extends PotionItem implements GeoItem {
     public void appendHoverText(ItemStack pStack, @Nullable Level pLevel, List<Component> pTooltip, TooltipFlag pFlag) {
     }
 
+    @Override
+    public ItemStack finishUsingItem(ItemStack pStack, Level pLevel, LivingEntity pEntityLiving) {
+        if(pEntityLiving instanceof Player player && !pLevel.isClientSide()){
+            if(pStack.hasTag() && pStack.getTag().getBoolean("conflict")){
+                    if(!player.isCreative()){
+                        player.kill();
+                        //reduce sequence
+                    }
+                player.sendSystemMessage(Component.literal("Lost control on the spot. oh well."));
+            }
+        }
+        if(pEntityLiving instanceof Player player && pLevel.isClientSide()){
+            player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(stats -> {
+                if(pStack.hasTag()){
+                    if(!pStack.getTag().getBoolean("conflict")){
+                        AdvanceSequenceClient.advance(pStack.getTag().getInt("pathwayId"), player);
+                    }
+                } else {
+                    if(stats.getPathwayId() > 9){
+                        AdvanceSequenceClient.advance(9, player);
+                    } else {
+                        AdvanceSequenceClient.advance(19, player);
+                    }
+                }
+            });
+        }
+        return super.finishUsingItem(pStack, pLevel, pEntityLiving);
+    }
 
     @Override
     public AnimatableInstanceCache getAnimatableInstanceCache() {

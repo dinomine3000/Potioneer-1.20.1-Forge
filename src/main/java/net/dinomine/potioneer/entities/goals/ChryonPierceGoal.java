@@ -11,7 +11,9 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.pathfinder.Node;
 import net.minecraft.world.level.pathfinder.Path;
 
+import java.util.ArrayList;
 import java.util.EnumSet;
+import java.util.List;
 
 public class ChryonPierceGoal extends Goal {
     protected final ChryonEntity mob;
@@ -28,44 +30,31 @@ public class ChryonPierceGoal extends Goal {
     private static final long COOLDOWN_BETWEEN_CAN_USE_CHECKS = 20L;
     private int failedPathFindingPenalty = 0;
     private boolean canPenalize = false;
+    private int MAX_COOLDOWN = 100;
+    private int cooldown;
+
 
     public ChryonPierceGoal(ChryonEntity pMob, double pSpeedModifier) {
         this.mob = pMob;
+        this.cooldown = -1;
         this.speedModifier = pSpeedModifier;
         this.followingTargetEvenIfNotSeen = false;
         this.setFlags(EnumSet.of(Flag.MOVE, Flag.LOOK));
     }
 
+    @Override
     public boolean canUse() {
-        long i = this.mob.level().getGameTime();
-        if (i - this.lastCanUseCheck < 20L) {
-            return false;
-        } else {
-            this.lastCanUseCheck = i;
-            LivingEntity livingentity = this.mob.getTarget();
-            if (livingentity == null) {
-                return false;
-            } else if (!livingentity.isAlive()) {
-                return false;
-            }
-            else if (this.canPenalize) {
-                if (--this.ticksUntilNextPathRecalculation <= 0) {
-                    this.path = this.mob.getNavigation().createPath(livingentity, 0);
-                    this.ticksUntilNextPathRecalculation = 4 + this.mob.getRandom().nextInt(7);
-                    return this.path != null;
-                } else {
-                    return true;
-                }
-            } else {
-                this.path = this.mob.getNavigation().createPath(livingentity, 0);
-                if (this.path != null) {
-                    return true;
-                } else {
-                    return this.getAttackReachSqr(livingentity) >= this.mob.distanceToSqr(livingentity.getX(), livingentity.getY(), livingentity.getZ());
-                }
-            }
-        }
+        return Math.max(this.cooldown--, -1) < 0 && !this.getNearbyEnemies().isEmpty();
     }
+
+    private List<LivingEntity> getNearbyEnemies() {
+        List<LivingEntity> enemies = new ArrayList<>();
+        if(this.mob.getTarget() != null && this.mob.getTarget().isAlive()){
+            enemies.add(this.mob.getTarget());
+        }
+        return enemies;
+    }
+
 
     public boolean canContinueToUse() {
         LivingEntity livingentity = this.mob.getTarget();
@@ -73,78 +62,27 @@ public class ChryonPierceGoal extends Goal {
             return false;
         } else if (!livingentity.isAlive()) {
             return false;
-        } else if (!this.followingTargetEvenIfNotSeen) {
-            return !this.mob.getNavigation().isDone();
-        } else if (!this.mob.isWithinRestriction(livingentity.blockPosition())) {
-            return false;
         } else {
+            checkAndPerformAttack(livingentity, this.mob.getPerceivedTargetDistanceSquareForMeleeAttack(livingentity));
+            this.ticksUntilNextAttack--;
             return !(livingentity instanceof Player) || !livingentity.isSpectator() && !((Player)livingentity).isCreative();
         }
     }
 
     public void start() {
-        this.mob.getNavigation().moveTo(this.path, this.speedModifier);
         this.mob.setAggressive(true);
-        this.ticksUntilNextPathRecalculation = 0;
         this.ticksUntilNextAttack = 0;
+        if(this.mob.getTarget() != null){
+            checkAndPerformAttack(this.mob.getTarget(), this.mob.getPerceivedTargetDistanceSquareForMeleeAttack(this.mob.getTarget()));
+        }
     }
 
     public void stop() {
-        LivingEntity livingentity = this.mob.getTarget();
-        if (!EntitySelector.NO_CREATIVE_OR_SPECTATOR.test(livingentity)) {
-            this.mob.setTarget((LivingEntity)null);
-        }
-
-        this.mob.setAggressive(false);
-        this.mob.getNavigation().stop();
+        this.cooldown = MAX_COOLDOWN;
     }
 
     public boolean requiresUpdateEveryTick() {
         return true;
-    }
-
-    public void tick() {
-        LivingEntity target = this.mob.getTarget();
-        if (target != null) {
-            this.mob.getLookControl().setLookAt(target, 30.0F, 30.0F);
-            double d0 = this.mob.getPerceivedTargetDistanceSquareForMeleeAttack(target);
-            this.ticksUntilNextPathRecalculation = Math.max(this.ticksUntilNextPathRecalculation - 1, 0);
-            if ((this.followingTargetEvenIfNotSeen || this.mob.getSensing().hasLineOfSight(target)) && this.ticksUntilNextPathRecalculation <= 0 && (this.pathedTargetX == (double)0.0F && this.pathedTargetY == (double)0.0F && this.pathedTargetZ == (double)0.0F || target.distanceToSqr(this.pathedTargetX, this.pathedTargetY, this.pathedTargetZ) >= (double)1.0F || this.mob.getRandom().nextFloat() < 0.05F)) {
-                this.pathedTargetX = target.getX();
-                this.pathedTargetY = target.getY();
-                this.pathedTargetZ = target.getZ();
-                this.ticksUntilNextPathRecalculation = 4 + this.mob.getRandom().nextInt(7);
-                if (this.canPenalize) {
-                    this.ticksUntilNextPathRecalculation += this.failedPathFindingPenalty;
-                    if (this.mob.getNavigation().getPath() != null) {
-                        Node finalPathPoint = this.mob.getNavigation().getPath().getEndNode();
-                        if (finalPathPoint != null && target.distanceToSqr((double)finalPathPoint.x, (double)finalPathPoint.y, (double)finalPathPoint.z) < (double)1.0F) {
-                            this.failedPathFindingPenalty = 0;
-                        } else {
-                            this.failedPathFindingPenalty += 10;
-                        }
-                    } else {
-                        this.failedPathFindingPenalty += 10;
-                    }
-                }
-
-                if (d0 > (double)1024.0F) {
-                    this.ticksUntilNextPathRecalculation += 10;
-                } else if (d0 > (double)256.0F) {
-                    this.ticksUntilNextPathRecalculation += 5;
-                }
-
-                if (!this.mob.getNavigation().moveTo(target, this.speedModifier)) {
-                    this.ticksUntilNextPathRecalculation += 15;
-                }
-
-                this.ticksUntilNextPathRecalculation = this.adjustedTickDelay(this.ticksUntilNextPathRecalculation);
-            }
-
-            this.ticksUntilNextAttack = Math.max(this.ticksUntilNextAttack - 1, 0);
-            this.checkAndPerformAttack(target, d0);
-        }
-
     }
 
     protected void checkAndPerformAttack(LivingEntity pEnemy, double pDistToEnemySqr) {
@@ -152,27 +90,17 @@ public class ChryonPierceGoal extends Goal {
         if (pDistToEnemySqr <= d0 && this.ticksUntilNextAttack <= 0) {
             this.resetAttackCooldown();
             this.mob.swing(InteractionHand.MAIN_HAND);
-        }
-        if(this.ticksUntilNextAttack == 50){
+        } else if (this.ticksUntilNextAttack == 40) {
             this.mob.doHurtTarget(pEnemy);
         }
-
     }
 
     protected void resetAttackCooldown() {
         this.ticksUntilNextAttack = this.adjustedTickDelay(60);
     }
 
-    protected boolean isTimeToAttack() {
-        return this.ticksUntilNextAttack <= 0;
-    }
-
-    protected int getTicksUntilNextAttack() {
-        return this.ticksUntilNextAttack;
-    }
-
     protected int getAttackInterval() {
-        return this.adjustedTickDelay(20);
+        return this.adjustedTickDelay(60);
     }
 
     protected double getAttackReachSqr(LivingEntity pAttackTarget) {

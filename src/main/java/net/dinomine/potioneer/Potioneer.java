@@ -9,6 +9,7 @@ import net.dinomine.potioneer.entities.custom.ChryonEntity;
 import net.dinomine.potioneer.item.ModCreativeModTabs;
 import net.dinomine.potioneer.item.ModItems;
 import net.dinomine.potioneer.item.ModPotions;
+import net.dinomine.potioneer.network.PacketHandler;
 import net.dinomine.potioneer.particle.ModParticles;
 import net.dinomine.potioneer.recipe.ModRecipes;
 import net.minecraft.client.Minecraft;
@@ -71,6 +72,7 @@ public class Potioneer
 
     private void commonSetup(final FMLCommonSetupEvent event)
     {
+        PacketHandler.init();
     }
 
     // You can use SubscribeEvent and let the Event Bus discover methods to call

@@ -16,6 +16,7 @@ import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.Containers;
 import net.minecraft.world.SimpleContainer;
@@ -38,6 +39,7 @@ import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
+import org.checkerframework.checker.units.qual.C;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
@@ -45,6 +47,7 @@ import javax.annotation.Nullable;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Random;
 
 import static net.dinomine.potioneer.block.custom.PotionCauldronBlock.RESULT;
 import static net.dinomine.potioneer.block.custom.PotionCauldronBlock.WATER_LEVEL;
@@ -54,6 +57,7 @@ public class PotionCauldronBlockEntity extends BlockEntity {
     private static final int MAX_CAPACITY= 9;
     private ItemStack result;
     private ItemStack tempResult = ItemStack.EMPTY;
+    private ItemStack conflictingResult;
     private boolean recipeSuccess = false;
     private boolean conflict = false;
     public int countDown;
@@ -92,12 +96,23 @@ public class PotionCauldronBlockEntity extends BlockEntity {
     public PotionCauldronBlockEntity(BlockEntityType<?> pType, BlockPos pPos, BlockState pBlockState) {
         super(pType, pPos, pBlockState);
 
+        CompoundTag nbt = new CompoundTag();
+        nbt.putBoolean("conflict", true);
+        conflictingResult = new ItemStack(ModItems.BEYONDER_POTION.get());
+        conflictingResult.setTag(nbt);
+
         state = State.STANDBY;
         this.result = ItemStack.EMPTY;
     }
 
     public PotionCauldronBlockEntity(BlockPos pPos, BlockState pState){
         super(ModBlockEntities.POTION_CAULDRON_BLOCK_ENTITY.get(), pPos, pState);
+
+
+        CompoundTag nbt = new CompoundTag();
+        nbt.putBoolean("conflict", true);
+        conflictingResult = new ItemStack(ModItems.BEYONDER_POTION.get());
+        conflictingResult.setTag(nbt);
 
         state = State.STANDBY;
         this.result = ItemStack.EMPTY;
@@ -111,7 +126,6 @@ public class PotionCauldronBlockEntity extends BlockEntity {
     @Nonnull
     @Override
     public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
-        System.out.println("Capability goten");
         if(cap == ForgeCapabilities.ITEM_HANDLER){
             return handler.cast();
         }
@@ -192,19 +206,20 @@ public class PotionCauldronBlockEntity extends BlockEntity {
                     //result = PotionUtils.addPotionToItemStack(new ItemStack(Items.POTION), Potions.NIGHT_VISION);
 
                     if (!recipeSuccess) {
-                        //System.out.println("Recipe succeeded");
+                        System.out.println("Recipe succeeded");
                         recipeSuccess = true;
                         tempResult = output.copy();
                     } else {
-                        //System.out.println("Result is already defined...");
+                        System.out.println("Result is already defined...");
                         if (!level.isClientSide()) {
-                            if(this.tempResult.is(output.getItem())){
-                                //System.out.println("Its the same result");
+                            if(this.tempResult.is(output.getItem())
+                                    && this.tempResult.getTag().getInt("pathwayId") == output.getTag().getInt("pathwayId")){
+                                System.out.println("Its the same result");
                             } else {
                                 conflict = true;
-                                /*System.out.println("Incoming shit result - " + iRecipe.getId() +
+                                System.out.println("Incoming shit result - " + iRecipe.getId() +
                                         " " + iRecipe.getResultItem(null).getDisplayName().getString() +
-                                        " " + this.tempResult.getDisplayName().getString());*/
+                                        " " + this.tempResult.getDisplayName().getString());
                             }
                         }
 
@@ -352,7 +367,7 @@ public class PotionCauldronBlockEntity extends BlockEntity {
 
     private void finishPotion(Level pLevel, BlockPos pPos, BlockState pState){
         //this.result = conflict ? PotionUtils.setPotion(new ItemStack(Items.POTION), Potions.POISON) : tempResult;
-        this.result = conflict ? new ItemStack(ModItems.BEYONDER_POTION.get()): tempResult;
+        this.result = conflict ? addRandomNbtTags(conflictingResult): addRandomNbtTags(tempResult);
         pLevel.playSound(null, pPos, SoundEvents.ZOMBIE_VILLAGER_CURE, SoundSource.BLOCKS, 1f, 1f);
         pLevel.setBlockAndUpdate(pPos, pState.setValue(RESULT, true));
         conflict = false;
@@ -375,6 +390,15 @@ public class PotionCauldronBlockEntity extends BlockEntity {
 
     }
 
+    private ItemStack addRandomNbtTags(ItemStack stack){
+        int num = (int) Math.ceil(Math.random()*3);
+        CompoundTag nbt = stack.getTag();
+        for (int i = 0; i < num; i++) {
+            nbt.putInt("filler" + String.valueOf(i), i);
+        }
+        stack.setTag(nbt);
+        return stack;
+    }
 
     public void sendData() {
         if (level instanceof ServerLevel serverLevel)

@@ -12,8 +12,8 @@
   "needs_fire": true,
   "output": {
     "type": "forge:nbt",
-    "item": "minecraft:potion",
+    "item": "potioneer:beyonder_potion",
     "count": 1,
-    "nbt": "{Potion:\"minecraft:night_vision\"}"
+    "nbt": "{pathwayId:9}"
   }
 }

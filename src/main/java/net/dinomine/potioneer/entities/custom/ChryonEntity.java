@@ -73,20 +73,25 @@ public class ChryonEntity extends Monster implements GeoEntity {
     }
 
     private <T extends GeoAnimatable> PlayState predicate(AnimationState<ChryonEntity> chryonEntityAnimationState) {
-        chryonEntityAnimationState.getController().setAnimation(RawAnimation.begin().then("idle", Animation.LoopType.LOOP));
-        return PlayState.CONTINUE;
+        if(this.swinging){
+            return chryonEntityAnimationState.setAndContinue(RawAnimation.begin().thenPlay("pierce"));
+        } else {
+            return chryonEntityAnimationState.setAndContinue(RawAnimation.begin().thenPlay("idle"));
+        }
     }
 
+    @Override
     public int getCurrentSwingDuration() {
-        return 1000; //to match our attack animation speed + 1 tick
+        return 60;
     }
 
     public static AttributeSupplier setAttributes(){
         return Monster.createMonsterAttributes()
-                .add(Attributes.MAX_HEALTH, 40d)
+                .add(Attributes.MAX_HEALTH, 50d)
                 .add(Attributes.ATTACK_DAMAGE, 11)
-                .add(Attributes.ATTACK_SPEED, 0.6f)
+                .add(Attributes.ATTACK_SPEED, 0.2f)
                 .add(Attributes.ARMOR, 20f)
+                .add(Attributes.KNOCKBACK_RESISTANCE, 5f)
                 .add(Attributes.MOVEMENT_SPEED, 0.2f).build();
     }
 

@@ -11,7 +11,9 @@
   "water_level": 3,
   "needs_fire": true,
   "output": {
-    "item": "minecraft:diamond",
-    "count": 3
+    "type": "forge:nbt",
+    "item": "potioneer:beyonder_potion",
+    "count": 1,
+    "nbt": "{pathwayId:19}"
   }
 }
