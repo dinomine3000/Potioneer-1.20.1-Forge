@@ -217,9 +217,9 @@ public class PotionCauldronBlockEntity extends BlockEntity {
                                 System.out.println("Its the same result");
                             } else {
                                 conflict = true;
-                                System.out.println("Incoming shit result - " + iRecipe.getId() +
+                                /*System.out.println("Incoming shit result - " + iRecipe.getId() +
                                         " " + iRecipe.getResultItem(null).getDisplayName().getString() +
-                                        " " + this.tempResult.getDisplayName().getString());
+                                        " " + this.tempResult.getDisplayName().getString());*/
                             }
                         }
 

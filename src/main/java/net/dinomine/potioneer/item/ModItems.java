@@ -22,9 +22,6 @@ public class ModItems {
     public static final RegistryObject<Item> SAPPHIRE = ITEMS.register("sapphire",
             () -> new Item(new Item.Properties()));
 
-    public static final RegistryObject<Item> RAW_SAPPHIRE = ITEMS.register("raw_sapphire",
-            () -> new Item(new Item.Properties()));
-
     public static final RegistryObject<Item> CHRYON_SPAWN_EGG = ITEMS.register("chryon_spawn_egg",
             () -> new ForgeSpawnEggItem(ModEntities.CHRYON, 0x8FFA93, 0x384254, new Item.Properties()));
 

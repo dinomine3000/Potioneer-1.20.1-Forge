@@ -1,10 +1,16 @@
 package net.dinomine.potioneer.event;
 
 import net.dinomine.potioneer.Potioneer;
+import net.dinomine.potioneer.beyonder.client.KeyBindings;
+import net.dinomine.potioneer.beyonder.screen.BeyonderScreen;
 import net.dinomine.potioneer.block.entity.ModBlockEntities;
 import net.dinomine.potioneer.block.entity.renderer.PotionCauldronBlockEntityRenderer;
+import net.minecraft.client.Minecraft;
+import net.minecraft.network.chat.Component;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.EntityRenderersEvent;
+import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
+import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
@@ -15,4 +21,10 @@ public class ModEventBusClient {
     public static void registerBER(EntityRenderersEvent.RegisterRenderers event){
         event.registerBlockEntityRenderer(ModBlockEntities.POTION_CAULDRON_BLOCK_ENTITY.get(), PotionCauldronBlockEntityRenderer::new);
     }
+
+    @SubscribeEvent
+    public static void registerKeys(RegisterKeyMappingsEvent event){
+        event.register(KeyBindings.INSTANCE.beyonderMenuKey);
+    }
+
 }

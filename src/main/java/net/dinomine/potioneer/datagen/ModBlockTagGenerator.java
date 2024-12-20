@@ -22,7 +22,6 @@ public class ModBlockTagGenerator extends BlockTagsProvider {
     @Override
     protected void addTags(HolderLookup.Provider provider) {
         this.tag(ModTags.Blocks.FIRE_BLOCKS).add(Blocks.LAVA).add(Blocks.MAGMA_BLOCK);
-        this.tag(ModTags.Blocks.METAL_DETECTOR_VALUABLES).add(ModBlocks.SAPPHIRE_ORE.get()).addTags(Tags.Blocks.ORES);
         this.tag(BlockTags.MINEABLE_WITH_PICKAXE).add(ModBlocks.POTION_CAULDRON.get());
 
     }

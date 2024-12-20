@@ -12,5 +12,15 @@
   "item.potioneer.chryon_spawn_egg": "Chryon Spawn Egg",
   "item.potioneer.beyonder_potion": "Mystery Potion",
 
+  "key.potioneer.beyonder_menu_key": "Beyonder Menu",
+  "key.categories.potioneer": "Potioneer",
+  "gui.potioneer.beyonder_menu": "Beyonder",
+  "potioneer.beyonder.pathway.tyrant": "Tyrant Pathway",
+  "potioneer.beyonder.sequence.swimmer": "Sequence 9 Swimmer",
+  "potioneer.beyonder.pathway.wheel_of_fortune": "Wheel of Fortune Pathway",
+  "potioneer.beyonder.sequence.miner": "Sequence 9 Miner",
+  "potioneer.beyonder.pathway.beyonderless": "Not a beyonder",
+  "potioneer.beyonder.sequence.none": "",
+
   "creativetab.potioneer_tab": "Potioneer"
 }
