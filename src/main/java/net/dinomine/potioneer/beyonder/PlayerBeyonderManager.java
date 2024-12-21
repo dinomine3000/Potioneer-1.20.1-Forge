@@ -46,6 +46,7 @@ public class PlayerBeyonderManager {
         event.player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent( stats -> {
             stats.onTick(event.player);
             if(event.side == LogicalSide.SERVER){
+
                 /*PacketHandler.INSTANCE.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) event.player),
                         new PlayerAdvanceMessage(stats.getPathwayId()));*/
             }

@@ -57,7 +57,9 @@ public class WheelOfFortunePathway extends Beyonder{
     public static void giveNightVision(Player player){
         if(!player.level().isClientSide()){
             if(!player.hasEffect(MobEffects.NIGHT_VISION)){
-                player.addEffect(new MobEffectInstance(MobEffects.NIGHT_VISION, -1, 0, false, false));
+                player.addEffect(new MobEffectInstance(MobEffects.NIGHT_VISION, 230, 0, false, false));
+            } else if(player.getEffect(MobEffects.NIGHT_VISION).endsWithin(205)){
+                player.addEffect(new MobEffectInstance(MobEffects.NIGHT_VISION, 230, 0, false, false));
             }
         }
     }

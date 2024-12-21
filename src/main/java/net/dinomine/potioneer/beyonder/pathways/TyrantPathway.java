@@ -78,26 +78,29 @@ public class TyrantPathway extends Beyonder{
         if(!player.level().isClientSide()){
             if(isInWater(player)){
                 if(!player.hasEffect(MobEffects.WATER_BREATHING)){
-                    player.addEffect(new MobEffectInstance(MobEffects.WATER_BREATHING, -1, 0, false, false));
+                    player.addEffect(new MobEffectInstance(MobEffects.WATER_BREATHING, 38, 0, false, false));
+                } else if(player.getEffect(MobEffects.WATER_BREATHING).endsWithin(25)){
+                    player.addEffect(new MobEffectInstance(MobEffects.WATER_BREATHING, 38, 0, false, false));
                 }
                 if(!player.hasEffect(MobEffects.NIGHT_VISION)){
-                    player.addEffect(new MobEffectInstance(MobEffects.NIGHT_VISION, 240, 0, false, false));
+                    player.addEffect(new MobEffectInstance(MobEffects.NIGHT_VISION, 230, 0, false, false));
                 } else if(player.getEffect(MobEffects.NIGHT_VISION).endsWithin(205)){
-                    player.addEffect(new MobEffectInstance(MobEffects.NIGHT_VISION, 240, 0, false, false));
+                    player.addEffect(new MobEffectInstance(MobEffects.NIGHT_VISION, 230, 0, false, false));
                 }
             }
         }
     }
 
     private static void mayFlyPlayer(Player player){
-        if(isInWater(player)){
-            if(!player.isCreative() && !player.isSpectator()){
-                player.getAbilities().mayfly = true;
+        player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
+            if(isInWater(player)){
+                if(!player.isCreative() && !player.isSpectator()){
+                    cap.mayFly = true;
+                }
+            } else if((player.getAbilities().flying || player.getAbilities().mayfly) && !player.isCreative() && !player.isSpectator()){
+                cap.mayFly = false;
             }
-        } else if((player.getAbilities().flying || player.getAbilities().mayfly) && !player.isCreative() && !player.isSpectator()){
-            player.getAbilities().mayfly = false;
-            player.getAbilities().flying = false;
-        }
+        });
     }
 
     private static void replenishStatsWhileUnderwater(Player player){

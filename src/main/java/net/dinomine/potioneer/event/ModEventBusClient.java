@@ -2,6 +2,7 @@ package net.dinomine.potioneer.event;
 
 import net.dinomine.potioneer.Potioneer;
 import net.dinomine.potioneer.beyonder.client.KeyBindings;
+import net.dinomine.potioneer.beyonder.client.MagicOrbOverlay;
 import net.dinomine.potioneer.beyonder.screen.BeyonderScreen;
 import net.dinomine.potioneer.block.entity.ModBlockEntities;
 import net.dinomine.potioneer.block.entity.renderer.PotionCauldronBlockEntityRenderer;
@@ -9,6 +10,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.EntityRenderersEvent;
+import net.minecraftforge.client.event.RegisterGuiOverlaysEvent;
 import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -27,4 +29,8 @@ public class ModEventBusClient {
         event.register(KeyBindings.INSTANCE.beyonderMenuKey);
     }
 
+    @SubscribeEvent
+    public static void registerGuiOverlays(RegisterGuiOverlaysEvent event){
+        event.registerAboveAll("beyonder", MagicOrbOverlay.HUD_MAGIC );
+    }
 }

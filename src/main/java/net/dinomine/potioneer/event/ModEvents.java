@@ -3,6 +3,7 @@ package net.dinomine.potioneer.event;
 import net.dinomine.potioneer.Potioneer;
 import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
 import net.dinomine.potioneer.beyonder.player.PlayerBeyonderStats;
+import net.dinomine.potioneer.commands.ChangeSpiritualityCommand;
 import net.dinomine.potioneer.commands.ResetBeyonderCommand;
 import net.dinomine.potioneer.entities.ModEntities;
 import net.dinomine.potioneer.entities.custom.ChryonEntity;
@@ -35,6 +36,7 @@ public class ModEvents {
     @SubscribeEvent
     public static void commandsRegister(RegisterCommandsEvent event){
         new ResetBeyonderCommand(event.getDispatcher());
+        new ChangeSpiritualityCommand(event.getDispatcher());
 
         ConfigCommand.register(event.getDispatcher());
     }

@@ -2,6 +2,7 @@ package net.dinomine.potioneer.network;
 
 import net.dinomine.potioneer.Potioneer;
 import net.dinomine.potioneer.network.messages.PlayerAdvanceMessage;
+import net.dinomine.potioneer.network.messages.PlayerSTCHudStatsSync;
 import net.dinomine.potioneer.network.messages.SequenceSTCSyncRequest;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.network.NetworkRegistry;
@@ -19,5 +20,6 @@ public class PacketHandler {
     public static void init() {
         INSTANCE.registerMessage(0, PlayerAdvanceMessage.class, PlayerAdvanceMessage::encode, PlayerAdvanceMessage::decode, PlayerAdvanceMessage::handle);
         INSTANCE.registerMessage(1, SequenceSTCSyncRequest.class, SequenceSTCSyncRequest::encode, SequenceSTCSyncRequest::decode, SequenceSTCSyncRequest::handle);
+        INSTANCE.registerMessage(2, PlayerSTCHudStatsSync.class, PlayerSTCHudStatsSync::encode, PlayerSTCHudStatsSync::decode, PlayerSTCHudStatsSync::handle);
     }
 }
