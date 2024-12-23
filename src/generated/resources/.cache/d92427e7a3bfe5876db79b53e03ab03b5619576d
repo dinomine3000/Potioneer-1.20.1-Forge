@@ -1,4 +1,3 @@
-// 1.20.1	2024-12-10T21:24:25.4008274	Tags for minecraft:block mod id potioneer
+// 1.20.1	2024-12-22T19:35:36.8752222	Tags for minecraft:block mod id potioneer
 905a04389b6ed5dd73db9a97e47322ab437d4ea5 data/minecraft/tags/blocks/mineable/pickaxe.json
 f0d1e33c8e830aa7154795e8999e14eaad3836d8 data/potioneer/tags/blocks/fire_blocks.json
-7b8977850417852124379c8ac4513adf50d8b2d9 data/potioneer/tags/blocks/metal_detector_valuables.json

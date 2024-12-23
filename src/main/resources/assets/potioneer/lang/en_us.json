@@ -10,15 +10,32 @@
   "item.potioneer.metal_detector": "Metal Detector",
   "block.potioneer.potion_cauldron": "Potion Cauldron",
   "item.potioneer.chryon_spawn_egg": "Chryon Spawn Egg",
+  "item.potioneer.pecan_spawn_egg": "Pecan Spawn Egg",
   "item.potioneer.beyonder_potion": "Mystery Potion",
+  "item.potioneer.pecan_leaf": "Pecan Leaf",
+  "item.potioneer.pecan_shell": "Pecan Shell",
 
   "key.potioneer.beyonder_menu_key": "Beyonder Menu",
   "key.categories.potioneer": "Potioneer",
   "gui.potioneer.beyonder_menu": "Beyonder",
+
   "potioneer.beyonder.pathway.tyrant": "Tyrant Pathway",
   "potioneer.beyonder.sequence.swimmer": "Sequence 9 Swimmer",
+  "potioneer.beyonder.sequence.water-blessed": "Sequence 8 Water-Blessed",
+
   "potioneer.beyonder.pathway.wheel_of_fortune": "Wheel of Fortune Pathway",
   "potioneer.beyonder.sequence.miner": "Sequence 9 Miner",
+
+  "potioneer.beyonder.pathway.mystery": "Mystery Pathway",
+  "potioneer.beyonder.sequence.tormenter": "Sequence 9 Tormenter",
+
+  "potioneer.beyonder.pathway.red_priest": "Red Priest Pathway",
+  "potioneer.beyonder.sequence.warrior": "Sequence 9 Warrior",
+
+  "potioneer.beyonder.pathway.paragon": "Paragon Pathway",
+  "potioneer.beyonder.sequence.crafter": "Sequence 9 Crafter",
+  "potioneer.beyonder.sequence.enchanter": "Sequence 8 Enchanter",
+
   "potioneer.beyonder.pathway.beyonderless": "Not a beyonder",
   "potioneer.beyonder.sequence.none": "",
 

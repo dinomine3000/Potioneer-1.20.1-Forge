@@ -9,6 +9,7 @@ import net.minecraftforge.network.PacketDistributor;
 
 import java.util.function.Supplier;
 
+//sent from client to server on world join to request a STC sync
 public class SequenceSTCSyncRequest {
 
     public SequenceSTCSyncRequest(){
@@ -30,7 +31,7 @@ public class SequenceSTCSyncRequest {
             player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
                 if(!context.getDirection().getReceptionSide().isClient()){
                     PacketHandler.INSTANCE.send(PacketDistributor.PLAYER.with(() -> player),
-                            new PlayerAdvanceMessage(cap.getPathwayId()));
+                            new PlayerAdvanceMessage(cap.getPathwayId(), false));
                 }
             });
         });

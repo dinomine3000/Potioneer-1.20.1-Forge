@@ -1,12 +1,12 @@
 package net.dinomine.potioneer.beyonder.client;
 
 public class ClientStatsData {
-    private static int spirituality;
-    private static int maxSpirituality;
-    private static int sanity;
+    private static float spirituality = 100f;
+    private static int maxSpirituality = 100;
+    private static int sanity = 100;
     private static int pathwayId;
 
-    public static void setSpirituality(int spir){
+    public static void setSpirituality(float spir){
         ClientStatsData.spirituality = spir;
     }
 
@@ -24,7 +24,7 @@ public class ClientStatsData {
     }
 
 
-    public static int getPlayerSpirituality(){
+    public static float getPlayerSpirituality(){
         return spirituality;
     }
 

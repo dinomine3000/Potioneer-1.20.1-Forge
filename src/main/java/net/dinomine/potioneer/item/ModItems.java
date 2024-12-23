@@ -22,8 +22,19 @@ public class ModItems {
     public static final RegistryObject<Item> SAPPHIRE = ITEMS.register("sapphire",
             () -> new Item(new Item.Properties()));
 
+    public static final RegistryObject<Item> PECAN_SHELL = ITEMS.register("pecan_shell",
+            () -> new Item(new Item.Properties()));
+
+    public static final RegistryObject<Item> PECAN_LEAF = ITEMS.register("pecan_leaf",
+            () -> new Item(new Item.Properties()));
+
+    public static final RegistryObject<Item> PECAN_SPAWN_EGG = ITEMS.register("pecan_spawn_egg",
+            () -> new ForgeSpawnEggItem(ModEntities.PECAN, 0xC68D83, 0x387F65, new Item.Properties()));
+
     public static final RegistryObject<Item> CHRYON_SPAWN_EGG = ITEMS.register("chryon_spawn_egg",
-            () -> new ForgeSpawnEggItem(ModEntities.CHRYON, 0x8FFA93, 0x384254, new Item.Properties()));
+            () -> new ForgeSpawnEggItem(ModEntities.CHRYON, 0x8F2AF3, 0x324294, new Item.Properties()));
+
+
 
     public static final RegistryObject<Item> BEYONDER_POTION = ITEMS.register("beyonder_potion",
             () -> new BeyonderPotionItem(new Item.Properties().stacksTo(1).fireResistant().rarity(Rarity.UNCOMMON)));

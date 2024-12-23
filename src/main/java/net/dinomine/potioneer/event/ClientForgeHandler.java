@@ -19,6 +19,8 @@ public class ClientForgeHandler {
         if(KeyBindings.INSTANCE.beyonderMenuKey.consumeClick() && minecraft.player != null){
             Minecraft.getInstance().setScreen(new BeyonderScreen());
             //DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> Minecraft.getInstance().setScreen(new BeyonderScreen()));
+        } else if(KeyBindings.INSTANCE.quickAbilityKey.consumeClick() && minecraft.player != null){
+
         }
     }
 }

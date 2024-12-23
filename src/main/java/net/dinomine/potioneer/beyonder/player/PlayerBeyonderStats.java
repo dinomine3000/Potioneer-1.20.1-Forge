@@ -1,25 +1,28 @@
 package net.dinomine.potioneer.beyonder.player;
 
-import net.dinomine.potioneer.beyonder.pathways.Beyonder;
-import net.dinomine.potioneer.beyonder.pathways.TyrantPathway;
-import net.dinomine.potioneer.beyonder.pathways.WheelOfFortunePathway;
+import net.dinomine.potioneer.beyonder.pathways.*;
 import net.dinomine.potioneer.network.PacketHandler;
 import net.dinomine.potioneer.network.messages.PlayerAdvanceMessage;
 import net.dinomine.potioneer.network.messages.PlayerSTCHudStatsSync;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.common.capabilities.AutoRegisterCapability;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.network.PacketDistributor;
+import org.apache.logging.log4j.core.pattern.AbstractStyleNameConverter;
 
 import java.util.ArrayList;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 @AutoRegisterCapability
 public class PlayerBeyonderStats {
-    private int spirituality = 100;
+    private float spirituality = 100;
+    private float spiritualityCost = 0;
+    private float spiritualityPerSecond = 0;
     private int maxSpirituality = 100;
     private int sanity = 100;
     private int acting = 0;
@@ -27,7 +30,7 @@ public class PlayerBeyonderStats {
     private float miningSpeedMult = 1;
     public boolean mayFly = false;
 
-    private ArrayList<Consumer<Player>> passiveAbilities = new ArrayList<>();
+    private ArrayList<BiConsumer<Player, PlayerBeyonderStats>> passiveAbilities = new ArrayList<>();
     private Beyonder pathway = new Beyonder(10);
     private int syncCD = 20;
 
@@ -51,20 +54,28 @@ public class PlayerBeyonderStats {
         return this.pathway.getId() > -1;
     }
 
-    public int getSpirituality(){
+    public float getSpirituality(){
         return this.spirituality;
     }
 
-    public void setSpirituality(int spirituality){
-        this.spirituality = spirituality;
+    public void changeSpirituality(float val){
+        setSpirituality(Mth.clamp(getSpirituality()+val, 0, maxSpirituality));
     }
 
-    public void decreaseSpirituality(int sub){
-        this.spirituality -= sub;
+    public void setSpirituality(float spirituality){
+        if(spirituality < 0){
+            this.spirituality = this.maxSpirituality;
+        } else this.spirituality = spirituality;
     }
 
-    public void increaseSpirituality(int add){
-        this.spirituality += add;
+    public void requestSpiritualityCost(float cost){
+        this.spiritualityCost += cost;
+    }
+
+    private void applyCost(){
+        setSpirituality(Mth.clamp(Math.round((1000*(getSpirituality() - spiritualityCost/20f + maxSpirituality/1200f))) / 1000f,
+                0f, this.maxSpirituality));
+        this.spiritualityCost = 0;
     }
 
     public void onTick(Player player){
@@ -72,14 +83,25 @@ public class PlayerBeyonderStats {
         //TODO default state for flying and whatnot should be set on the artifacts themselves
         //also make a TRUE set default function for advancing
         //could also try to have the abilities define dummy values and set the true variables to the final dummy values
+
+        /*player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
+            passiveAbilities.forEach(a -> {
+                a.accept(player, this);
+            });
+        });*/
+
         passiveAbilities.forEach(a -> {
-            a.accept(player);
+            a.accept(player, this);
         });
+
         player.getAbilities().mayfly = this.mayFly;
         if(!this.mayFly) player.getAbilities().flying = false;
+
+
         if(!player.level().isClientSide()){
-            if(syncCD-- < 1){
+            if(syncCD-- < 0){
                 syncCD = 20;
+                applyCost();
                 PacketHandler.INSTANCE.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) player),
                         new PlayerSTCHudStatsSync(this.spirituality, this.maxSpirituality, this.sanity, this.getPathwayId()));
             }
@@ -100,32 +122,32 @@ public class PlayerBeyonderStats {
     }
 
 
-    public boolean advance(int id, Player player, boolean sync){
+    public boolean advance(int id, Player player, boolean sync, boolean advancing){
         if(id < 0){
             //setDefaultStats(player);
             this.pathway = new Beyonder(10);
             this.passiveAbilities = new ArrayList<>();
-            if(sync) syncSequenceData(player);
+            if(sync) syncSequenceData(player, advancing);
             return true;
         }
         int seq = id%10;
 
 
         //setDefaultStats(player);
-        setPathway(id);
+        setPathway(id, advancing);
 
         //not translated. either make it translatable or delete it for final version
-        if(player.level().isClientSide){
+        if(player.level().isClientSide && advancing){
             player.sendSystemMessage(Component.literal("Successfully advanced to Sequence " + String.valueOf(seq)
                     + " " + this.pathway.getSequenceName(seq, true) + "!"));
         }
-        if(sync) syncSequenceData(player);
+        if(sync) syncSequenceData(player, advancing);
 
         return true;
     }
 
 
-    public void setPathway(int id){
+    public void setPathway(int id, boolean advancing){
         if(id < 0){
             this.pathway = new Beyonder(10);
         } else {
@@ -133,14 +155,28 @@ public class PlayerBeyonderStats {
             int seq = id%10;
             switch(pathway){
                 case 0:
-                    this.pathway = new TyrantPathway(seq);
-                    this.passiveAbilities = TyrantPathway.getPassiveAbilities(seq);
-                    break;
-                case 1:
                     this.pathway = new WheelOfFortunePathway(seq);
                     this.passiveAbilities = WheelOfFortunePathway.getPassiveAbilities(seq);
                     break;
+                case 1:
+                    this.pathway = new TyrantPathway(seq);
+                    this.passiveAbilities = TyrantPathway.getPassiveAbilities(seq);
+                    break;
+                case 2:
+                    this.pathway = new MysteryPathway(seq);
+                    this.passiveAbilities = MysteryPathway.getPassiveAbilities(seq);
+                    break;
+                case 3:
+                    this.pathway = new RedPriestPathway(seq);
+                    this.passiveAbilities = RedPriestPathway.getPassiveAbilities(seq);
+                    break;
+                case 4:
+                    this.pathway = new ParagonPathway(seq);
+                    this.passiveAbilities = ParagonPathway.getPassiveAbilities(seq);
+                    break;
             }
+            this.maxSpirituality = this.pathway.getMaxSpirituality(seq);
+            if(advancing) setSpirituality(this.maxSpirituality);
         }
     }
 
@@ -159,25 +195,25 @@ public class PlayerBeyonderStats {
     public void copyFrom(PlayerBeyonderStats source){
 
         this.spirituality = source.getSpirituality();
-        setPathway(source.getPathwayId());
+        setPathway(source.getPathwayId(), false);
     }
 
     public void saveNBTData(CompoundTag nbt){
-        nbt.putInt("spirituality", spirituality);
+        nbt.putFloat("spirituality", spirituality);
         nbt.putInt("pathwayId", pathway.getId());
     }
 
     public void loadNBTData(CompoundTag nbt){
-        this.spirituality = nbt.getInt("spirituality");
-        setPathway(nbt.getInt("pathwayId"));
+        this.spirituality = nbt.getFloat("spirituality");
+        setPathway(nbt.getInt("pathwayId"), false);
     }
 
-    public void syncSequenceData(Player player){
+    public void syncSequenceData(Player player, boolean advancing){
         if(!player.level().isClientSide()){
             PacketHandler.INSTANCE.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) player),
-                    new PlayerAdvanceMessage(this.pathway.getId()));
+                    new PlayerAdvanceMessage(this.pathway.getId(), advancing));
         } else {
-            PacketHandler.INSTANCE.sendToServer(new PlayerAdvanceMessage(this.pathway.getId()));
+            PacketHandler.INSTANCE.sendToServer(new PlayerAdvanceMessage(this.pathway.getId(), advancing));
         }
     }
 }

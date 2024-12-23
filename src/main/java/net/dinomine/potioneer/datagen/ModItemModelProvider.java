@@ -43,6 +43,8 @@ public class ModItemModelProvider extends ItemModelProvider {
     @Override
     protected void registerModels() {
         simpleItem(ModItems.SAPPHIRE);
+        simpleItem(ModItems.PECAN_SHELL);
+        simpleItem(ModItems.PECAN_LEAF);
 
         /*simpleItem(ModItems.METAL_DETECTOR);
         simpleItem(ModItems.PINE_CONE);
@@ -81,6 +83,7 @@ public class ModItemModelProvider extends ItemModelProvider {
         simpleBlockItemBlockTexture(ModBlocks.CATMINT);*/
 
         withExistingParent(ModItems.CHRYON_SPAWN_EGG.getId().getPath(), mcLoc("item/template_spawn_egg"));
+        withExistingParent(ModItems.PECAN_SPAWN_EGG.getId().getPath(), mcLoc("item/template_spawn_egg"));
     }
 
     // Shoutout to El_Redstoniano for making this

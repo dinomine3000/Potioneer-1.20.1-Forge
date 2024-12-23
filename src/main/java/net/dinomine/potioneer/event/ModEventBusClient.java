@@ -27,6 +27,7 @@ public class ModEventBusClient {
     @SubscribeEvent
     public static void registerKeys(RegisterKeyMappingsEvent event){
         event.register(KeyBindings.INSTANCE.beyonderMenuKey);
+        event.register(KeyBindings.INSTANCE.quickAbilityKey);
     }
 
     @SubscribeEvent

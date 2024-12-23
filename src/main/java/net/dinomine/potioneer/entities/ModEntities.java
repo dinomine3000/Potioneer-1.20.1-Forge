@@ -2,6 +2,7 @@ package net.dinomine.potioneer.entities;
 
 import net.dinomine.potioneer.Potioneer;
 import net.dinomine.potioneer.entities.custom.ChryonEntity;
+import net.dinomine.potioneer.entities.custom.PecanEntity;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -20,6 +21,13 @@ public class ModEntities {
                     () -> EntityType.Builder.of(ChryonEntity::new, MobCategory.MONSTER)
                             .sized(1.5f, 1.75f)
                             .build(new ResourceLocation(Potioneer.MOD_ID, "chryon").toString()));
+
+
+    public static final RegistryObject<EntityType<PecanEntity>> PECAN =
+            ENTITY_TYPES.register("pecan",
+                    () -> EntityType.Builder.of(PecanEntity::new, MobCategory.MONSTER)
+                            .sized(1f, 1f)
+                            .build(new ResourceLocation(Potioneer.MOD_ID, "pecan").toString()));
 
     public static void register(IEventBus eventBus){
         ENTITY_TYPES.register(eventBus);

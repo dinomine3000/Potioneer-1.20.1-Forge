@@ -12,13 +12,14 @@ import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
+//called frequently to update the client stats for the hud display
 public class PlayerSTCHudStatsSync {
-    public int spirituality;
+    public float spirituality;
     public int maxSpirituality;
     public int sanity;
     public int pathwayId;
 
-    public PlayerSTCHudStatsSync(int spirituality, int maxSpirituality, int sanity, int pathwayId) {
+    public PlayerSTCHudStatsSync(float spirituality, int maxSpirituality, int sanity, int pathwayId) {
         this.spirituality = spirituality;
         this.maxSpirituality = maxSpirituality;
         this.sanity = sanity;
@@ -26,14 +27,14 @@ public class PlayerSTCHudStatsSync {
     }
 
     public static void encode(PlayerSTCHudStatsSync msg, FriendlyByteBuf buffer){
-        buffer.writeInt(msg.spirituality);
+        buffer.writeFloat(msg.spirituality);
         buffer.writeInt(msg.maxSpirituality);
         buffer.writeInt(msg.sanity);
         buffer.writeInt(msg.pathwayId);
     }
 
     public static PlayerSTCHudStatsSync decode(FriendlyByteBuf buffer){
-        int spir = buffer.readInt();
+        float spir = buffer.readFloat();
         int max = buffer.readInt();
         int san = buffer.readInt();
         int id = buffer.readInt();

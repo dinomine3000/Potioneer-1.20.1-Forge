@@ -11,19 +11,25 @@ import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
+//called on world load and general syncing for advancing and updating the players pathway on both server and client
 public class PlayerAdvanceMessage {
     public int id;
+    public boolean advancing;
 
-    public PlayerAdvanceMessage(int pathwayId){
+    public PlayerAdvanceMessage(int pathwayId, boolean advancing){
         this.id = pathwayId;
+        this.advancing = advancing;
     }
 
     public static void encode(PlayerAdvanceMessage msg, FriendlyByteBuf buffer){
         buffer.writeInt(msg.id);
+        buffer.writeBoolean(msg.advancing);
     }
 
     public static PlayerAdvanceMessage decode(FriendlyByteBuf buffer){
-        return new PlayerAdvanceMessage(buffer.readInt());
+        int id = buffer.readInt();
+        boolean adv = buffer.readBoolean();
+        return new PlayerAdvanceMessage(id, adv);
     }
 
     public static void handle(PlayerAdvanceMessage msg, Supplier<NetworkEvent.Context> contextSupplier){
@@ -38,7 +44,7 @@ public class PlayerAdvanceMessage {
                 System.out.println("Receiving on server side");
                 Player player = context.getSender();
                 player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
-                    cap.advance(msg.id, player, false);
+                    cap.advance(msg.id, player, false, msg.advancing);
                 });
             }
         });
@@ -58,7 +64,7 @@ class ClientSyncMessage
         if (player != null)
         {
             player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
-                cap.advance(msg.id, player, false);
+                cap.advance(msg.id, player, false, msg.advancing);
             });
         }
     }

@@ -5,6 +5,7 @@ import net.dinomine.potioneer.block.ModBlocks;
 import net.dinomine.potioneer.block.entity.ModBlockEntities;
 import net.dinomine.potioneer.entities.ModEntities;
 import net.dinomine.potioneer.entities.client.ChryonRenderer;
+import net.dinomine.potioneer.entities.client.PecanRenderer;
 import net.dinomine.potioneer.entities.custom.ChryonEntity;
 import net.dinomine.potioneer.item.ModCreativeModTabs;
 import net.dinomine.potioneer.item.ModItems;
@@ -94,6 +95,7 @@ public class Potioneer
         public static void onClientSetup(FMLClientSetupEvent event)
         {
             EntityRenderers.register(ModEntities.CHRYON.get(), ChryonRenderer::new);
+            EntityRenderers.register(ModEntities.PECAN.get(), PecanRenderer::new);
             // Some client setup code
             LOGGER.info("HELLO FROM CLIENT SETUP");
             LOGGER.info("MINECRAFT NAME >> {}", Minecraft.getInstance().getUser().getName());

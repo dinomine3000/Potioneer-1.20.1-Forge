@@ -11,6 +11,7 @@ public class Beyonder {
     protected int sequence;
     protected String name;
     protected int color;
+    protected int[] maxSpirituality = new int[]{0, 0, 0, 0, 0, 0, 0, 0, 500, 100};
 
     public Beyonder(int sequence){
         this(sequence, "Beyonderless");
@@ -23,10 +24,16 @@ public class Beyonder {
     }
 
     public static void init(){
-        TyrantPathway.init();
         WheelOfFortunePathway.init();
+        TyrantPathway.init();
+        MysteryPathway.init();
+        RedPriestPathway.init();
+        ParagonPathway.init();
     }
 
+    public int getMaxSpirituality(int seq){
+        return maxSpirituality[seq%10];
+    }
 
     public int getId(){
         return -1;

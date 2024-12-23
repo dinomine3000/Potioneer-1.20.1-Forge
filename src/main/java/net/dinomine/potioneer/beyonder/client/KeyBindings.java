@@ -18,4 +18,11 @@ public final class KeyBindings {
             InputConstants.getKey(InputConstants.KEY_G, -1),
             CATEGORY
     );
+
+    public final KeyMapping quickAbilityKey = new KeyMapping(
+            "key." + Potioneer.MOD_ID + ".quick_ability_key",
+            KeyConflictContext.IN_GAME,
+            InputConstants.getKey(InputConstants.KEY_R, -1),
+            CATEGORY
+    );
 }

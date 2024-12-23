@@ -75,13 +75,7 @@ public class BeyonderPotionItem extends PotionItem implements GeoItem {
             player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(stats -> {
                 if(pStack.hasTag()){
                     if(!pStack.getTag().getBoolean("conflict")){
-                        if(player.level().isClientSide()) stats.advance(pStack.getTag().getInt("pathwayId"), player, true);
-                    }
-                } else {
-                    if(stats.getPathwayId() > 9){
-                        if(player.level().isClientSide()) stats.advance(9, player, true);
-                    } else {
-                        if(player.level().isClientSide()) stats.advance(19, player, true);
+                        if(player.level().isClientSide()) stats.advance(pStack.getTag().getInt("pathwayId"), player, true, true);
                     }
                 }
             });

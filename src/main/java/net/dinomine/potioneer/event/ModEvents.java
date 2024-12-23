@@ -7,6 +7,7 @@ import net.dinomine.potioneer.commands.ChangeSpiritualityCommand;
 import net.dinomine.potioneer.commands.ResetBeyonderCommand;
 import net.dinomine.potioneer.entities.ModEntities;
 import net.dinomine.potioneer.entities.custom.ChryonEntity;
+import net.dinomine.potioneer.entities.custom.PecanEntity;
 import net.dinomine.potioneer.network.PacketHandler;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
@@ -28,10 +29,6 @@ import net.minecraftforge.server.command.ConfigCommand;
 
 @Mod.EventBusSubscriber(modid = Potioneer.MOD_ID)
 public class ModEvents {
-    @SubscribeEvent
-    public static void entityAttributeEvent(EntityAttributeCreationEvent event){
-        event.put(ModEntities.CHRYON.get(), ChryonEntity.setAttributes());
-    }
 
     @SubscribeEvent
     public static void commandsRegister(RegisterCommandsEvent event){
