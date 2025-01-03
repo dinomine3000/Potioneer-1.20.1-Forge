@@ -13,6 +13,7 @@ import net.dinomine.potioneer.item.ModPotions;
 import net.dinomine.potioneer.network.PacketHandler;
 import net.dinomine.potioneer.particle.ModParticles;
 import net.dinomine.potioneer.recipe.ModRecipes;
+import net.dinomine.potioneer.sound.ModSounds;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.entity.EntityRenderers;
 import net.minecraft.world.item.CreativeModeTabs;
@@ -56,6 +57,8 @@ public class Potioneer
         ModRecipes.register(eventBus);
 
         ModParticles.register(eventBus);
+
+        ModSounds.register(eventBus);
 
         ModEntities.register(eventBus);
 

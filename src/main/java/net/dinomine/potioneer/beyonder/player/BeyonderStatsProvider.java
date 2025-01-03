@@ -13,14 +13,14 @@ import org.jetbrains.annotations.Nullable;
 
 public class BeyonderStatsProvider implements ICapabilityProvider, INBTSerializable<CompoundTag> {
 
-    public static Capability<PlayerBeyonderStats> BEYONDER_STATS = CapabilityManager.get(new CapabilityToken<PlayerBeyonderStats>() {});
+    public static Capability<EntityBeyonderManager> BEYONDER_STATS = CapabilityManager.get(new CapabilityToken<EntityBeyonderManager>() {});
 
-    private PlayerBeyonderStats beyonderStats = null;
-    private final LazyOptional<PlayerBeyonderStats> optional = LazyOptional.of(this::createBeyonderStats);
+    private EntityBeyonderManager beyonderStats = null;
+    private final LazyOptional<EntityBeyonderManager> optional = LazyOptional.of(this::createBeyonderStats);
 
-    private PlayerBeyonderStats createBeyonderStats() {
+    private EntityBeyonderManager createBeyonderStats() {
         if(this.beyonderStats == null){
-            this.beyonderStats = new PlayerBeyonderStats();
+            this.beyonderStats = new EntityBeyonderManager();
         }
         return this.beyonderStats;
     }

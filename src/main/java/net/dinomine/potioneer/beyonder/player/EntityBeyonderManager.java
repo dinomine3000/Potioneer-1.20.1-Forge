@@ -1,49 +1,56 @@
 package net.dinomine.potioneer.beyonder.player;
 
+import net.dinomine.potioneer.beyonder.client.ClientAdvancementManager;
 import net.dinomine.potioneer.beyonder.pathways.*;
+import net.dinomine.potioneer.beyonder.screen.AdvancementScreen;
 import net.dinomine.potioneer.network.PacketHandler;
 import net.dinomine.potioneer.network.messages.PlayerAdvanceMessage;
 import net.dinomine.potioneer.network.messages.PlayerSTCHudStatsSync;
+import net.dinomine.potioneer.network.messages.PlayerStatsSyncMessage;
+import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.common.capabilities.AutoRegisterCapability;
-import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.network.PacketDistributor;
-import org.apache.logging.log4j.core.pattern.AbstractStyleNameConverter;
-
-import java.util.ArrayList;
-import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 
 @AutoRegisterCapability
-public class PlayerBeyonderStats {
+public class EntityBeyonderManager {
     private float spirituality = 100;
     private float spiritualityCost = 0;
-    private float spiritualityPerSecond = 0;
     private int maxSpirituality = 100;
     private int sanity = 100;
     private int acting = 0;
 
-    private float miningSpeedMult = 1;
-    public boolean mayFly = false;
-
-    private ArrayList<BiConsumer<Player, PlayerBeyonderStats>> passiveAbilities = new ArrayList<>();
+    private BeyonderStats beyonderStats;
+    private PlayerAbilitiesManager abilitiesManager;
+    private PlayerEffectsManager effectsManager;
     private Beyonder pathway = new Beyonder(10);
     private int syncCD = 20;
 
+    public EntityBeyonderManager(){
+        beyonderStats = new BeyonderStats();
+        abilitiesManager = new PlayerAbilitiesManager();
+        effectsManager = new PlayerEffectsManager();
+    }
+
+    public PlayerEffectsManager getEffectsManager(){
+        return effectsManager;
+    }
+
+    public PlayerAbilitiesManager getAbilitiesManager(){
+        return abilitiesManager;
+    }
+
+    public BeyonderStats getBeyonderStats(){
+        return beyonderStats;
+    }
+
     public int getSequenceLevel(){
         return pathway.getSequence();
-    }
-
-    public void multMiningSpeed(float mult){
-        this.miningSpeedMult *= mult;
-    }
-
-    public void getMiningSpeed(PlayerEvent.BreakSpeed event){
-        event.setNewSpeed(event.getOriginalSpeed()*miningSpeedMult);
     }
 
     public int getPathwayId(){
@@ -52,6 +59,25 @@ public class PlayerBeyonderStats {
 
     public boolean isBeyonder(){
         return this.pathway.getId() > -1;
+    }
+
+    public void setSanity(int san){
+        if(san < 0){
+            this.sanity = 100;
+        } else this.sanity = san;
+    }
+
+    public void changeSanity(int val){
+        setSanity(Mth.clamp(getSanity() + val, 0, 100));
+    }
+
+    public int getSanity(){
+        return this.sanity;
+    }
+
+    public void playerSleep(){
+        changeSpirituality(this.maxSpirituality/3f);
+        if(sanity > 25) changeSanity(30);
     }
 
     public float getSpirituality(){
@@ -78,55 +104,29 @@ public class PlayerBeyonderStats {
         this.spiritualityCost = 0;
     }
 
-    public void onTick(Player player){
-        setDefaultStats(player);
-        //TODO default state for flying and whatnot should be set on the artifacts themselves
-        //also make a TRUE set default function for advancing
-        //could also try to have the abilities define dummy values and set the true variables to the final dummy values
-
-        /*player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
-            passiveAbilities.forEach(a -> {
-                a.accept(player, this);
-            });
-        });*/
-
-        passiveAbilities.forEach(a -> {
-            a.accept(player, this);
-        });
-
-        player.getAbilities().mayfly = this.mayFly;
-        if(!this.mayFly) player.getAbilities().flying = false;
-
-
-        if(!player.level().isClientSide()){
+    public void onTick(LivingEntity entity){
+        if(entity instanceof Player player){
+            abilitiesManager.onTick(this, player);
+            effectsManager.onTick(this, player);
+            PacketHandler.INSTANCE.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) player),
+                    new PlayerStatsSyncMessage(this.beyonderStats.getMiningSpeed()));
             if(syncCD-- < 0){
                 syncCD = 20;
-                applyCost();
                 PacketHandler.INSTANCE.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) player),
                         new PlayerSTCHudStatsSync(this.spirituality, this.maxSpirituality, this.sanity, this.getPathwayId()));
             }
-        }
-    }
-
-
-    //used to start the players anew every tick
-    private void setDefaultStats(Player player){
-        /*if(!player.isSpectator() && !player.isCreative()){
-            player.getAbilities().mayfly = false;
-            player.getAbilities().flying = false;
-        }*/
-        this.miningSpeedMult = 1;
-        this.mayFly = player.isCreative() || player.isSpectator();
-        if(!player.level().isClientSide()){
+        } else {
+            abilitiesManager.onTick(this, entity);
+            effectsManager.onTick(this, entity);
         }
     }
 
 
     public boolean advance(int id, Player player, boolean sync, boolean advancing){
+        this.abilitiesManager.clear(true, this, player);
         if(id < 0){
             //setDefaultStats(player);
             this.pathway = new Beyonder(10);
-            this.passiveAbilities = new ArrayList<>();
             if(sync) syncSequenceData(player, advancing);
             return true;
         }
@@ -156,28 +156,41 @@ public class PlayerBeyonderStats {
             switch(pathway){
                 case 0:
                     this.pathway = new WheelOfFortunePathway(seq);
-                    this.passiveAbilities = WheelOfFortunePathway.getPassiveAbilities(seq);
+                    this.abilitiesManager.setPathwayPassives(WheelOfFortunePathway.getPassiveAbilities(seq));
                     break;
                 case 1:
                     this.pathway = new TyrantPathway(seq);
-                    this.passiveAbilities = TyrantPathway.getPassiveAbilities(seq);
+                    this.abilitiesManager.setPathwayPassives(TyrantPathway.getPassiveAbilities(seq));
                     break;
                 case 2:
                     this.pathway = new MysteryPathway(seq);
-                    this.passiveAbilities = MysteryPathway.getPassiveAbilities(seq);
+                    this.abilitiesManager.setPathwayPassives(MysteryPathway.getPassiveAbilities(seq));
                     break;
                 case 3:
                     this.pathway = new RedPriestPathway(seq);
-                    this.passiveAbilities = RedPriestPathway.getPassiveAbilities(seq);
+                    this.abilitiesManager.setPathwayPassives(RedPriestPathway.getPassiveAbilities(seq));
                     break;
                 case 4:
                     this.pathway = new ParagonPathway(seq);
-                    this.passiveAbilities = ParagonPathway.getPassiveAbilities(seq);
+                    this.abilitiesManager.setPathwayPassives(ParagonPathway.getPassiveAbilities(seq));
                     break;
             }
             this.maxSpirituality = this.pathway.getMaxSpirituality(seq);
             if(advancing) setSpirituality(this.maxSpirituality);
         }
+    }
+
+    public void attemptAdvancement(int newSeq){
+        //difference between the new sequence and current sequence
+        //plus one more difficulty for every 25% sanity lost
+        //plus 1 for each group of 9-7, 6-4 and 3-1 sequence levels
+        //plus 1 or 2 for undigested potions
+        ClientAdvancementManager.setDifficulty((Math.max(this.getSequenceLevel() - newSeq%10, 1) //adds the difference in levels. from 1 to 10
+                + Math.round(4f-sanity/25f) //from 0 to 4 more points
+                + 3-Math.floorDiv(newSeq%10, 3))); //adds from 0 to 3 points of difficulty
+//        ClientAdvancementManager.difficulty = 10;     //Debug
+        ClientAdvancementManager.targetSequence = newSeq;
+        Minecraft.getInstance().setScreen(new AdvancementScreen());
     }
 
     public String getPathwayName(boolean capitalize){
@@ -192,20 +205,24 @@ public class PlayerBeyonderStats {
         return this.pathway.getSequenceName(show);
     }
 
-    public void copyFrom(PlayerBeyonderStats source){
-
+    public void copyFrom(EntityBeyonderManager source, Player player){
         this.spirituality = source.getSpirituality();
-        setPathway(source.getPathwayId(), false);
+        advance(source.getPathwayId(), player, true, false);
     }
 
     public void saveNBTData(CompoundTag nbt){
         nbt.putFloat("spirituality", spirituality);
         nbt.putInt("pathwayId", pathway.getId());
+        //this.abilitiesManager.saveNBTData(nbt);
+        this.effectsManager.saveNBTData(nbt);
     }
 
     public void loadNBTData(CompoundTag nbt){
         this.spirituality = nbt.getFloat("spirituality");
         setPathway(nbt.getInt("pathwayId"), false);
+        //TODO make abilities manager actually save and load item abilities.
+        //this.abilitiesManager.loadNBTData(nbt);
+        this.effectsManager.loadNBTData(nbt);
     }
 
     public void syncSequenceData(Player player, boolean advancing){

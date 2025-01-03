@@ -1,19 +1,16 @@
 package net.dinomine.potioneer.beyonder.pathways;
 
-import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
-import net.dinomine.potioneer.beyonder.player.PlayerBeyonderStats;
-import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.effect.MobEffects;
+import net.dinomine.potioneer.beyonder.pathways.powers.Ability;
+import net.dinomine.potioneer.beyonder.player.EntityBeyonderManager;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import org.checkerframework.checker.units.qual.A;
 
 import java.util.ArrayList;
 import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 
 public class MysteryPathway extends Beyonder{
 
-    private static ArrayList<BiConsumer<Player, PlayerBeyonderStats>> passiveAbilities = new ArrayList<>();
+    private static ArrayList<Ability> passiveAbilities9;
 
     public MysteryPathway(int sequence){
         super(sequence, "Mystery");
@@ -21,10 +18,11 @@ public class MysteryPathway extends Beyonder{
     }
 
     public static void init(){
+        passiveAbilities9 = new ArrayList<>();
     }
 
-    public static ArrayList<BiConsumer<Player, PlayerBeyonderStats>> getPassiveAbilities(int sequence) {
-        return passiveAbilities;
+    public static ArrayList<Ability> getPassiveAbilities(int sequence) {
+        return passiveAbilities9;
     }
 
 

@@ -28,11 +28,17 @@ public class ModItems {
     public static final RegistryObject<Item> PECAN_LEAF = ITEMS.register("pecan_leaf",
             () -> new Item(new Item.Properties()));
 
+    public static final RegistryObject<Item> SOLSEER = ITEMS.register("solseer",
+            () -> new Item(new Item.Properties()));
+
+    public static final RegistryObject<Item> WANDERING_CACTUS_PRICK = ITEMS.register("wandering_cactus_prick",
+            () -> new Item(new Item.Properties()));
+
     public static final RegistryObject<Item> PECAN_SPAWN_EGG = ITEMS.register("pecan_spawn_egg",
             () -> new ForgeSpawnEggItem(ModEntities.PECAN, 0xC68D83, 0x387F65, new Item.Properties()));
 
     public static final RegistryObject<Item> CHRYON_SPAWN_EGG = ITEMS.register("chryon_spawn_egg",
-            () -> new ForgeSpawnEggItem(ModEntities.CHRYON, 0x8F2AF3, 0x324294, new Item.Properties()));
+            () -> new ForgeSpawnEggItem(ModEntities.CHRYON, 0xA5f8ff, 0x66AFD4, new Item.Properties()));
 
 
 

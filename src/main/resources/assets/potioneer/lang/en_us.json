@@ -14,6 +14,11 @@
   "item.potioneer.beyonder_potion": "Mystery Potion",
   "item.potioneer.pecan_leaf": "Pecan Leaf",
   "item.potioneer.pecan_shell": "Pecan Shell",
+  "item.potioneer.solseer": "Solseer",
+  "item.potioneer.wandering_cactus_prick": "Wandering Cactus Prick",
+
+  "entity.potioneer.pecan": "Pecan",
+  "entity.potioneer.chryon": "Chryon",
 
   "key.potioneer.beyonder_menu_key": "Beyonder Menu",
   "key.categories.potioneer": "Potioneer",

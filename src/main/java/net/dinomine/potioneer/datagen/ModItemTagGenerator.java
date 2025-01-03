@@ -30,6 +30,10 @@ public class ModItemTagGenerator extends ItemTagsProvider {
                 .add(Items.GLOWSTONE_DUST)
                 .add(Items.IRON_INGOT)
                 .add(Items.GOLD_INGOT)
-                .add(Items.COPPER_INGOT);
+                .add(Items.COPPER_INGOT)
+                .add(ModItems.PECAN_LEAF.get())
+                .add(ModItems.PECAN_SHELL.get())
+                .add(ModItems.SOLSEER.get())
+                .add(ModItems.WANDERING_CACTUS_PRICK.get());
     }
 }

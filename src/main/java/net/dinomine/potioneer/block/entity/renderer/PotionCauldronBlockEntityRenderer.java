@@ -51,10 +51,10 @@ public class PotionCauldronBlockEntityRenderer implements BlockEntityRenderer<Po
             //float[][] translationMat = mathHelper.getTranslationMatrix(-0.5f, 0, -0.5f);
             Direction dir = level.getBlockState(pos).getValue(DIRECTION);
             float theta = switch(dir){
-                case NORTH -> (float) Math.PI;
-                case SOUTH -> 0;
-                case EAST -> (float) Math.PI/2;
-                case WEST -> (float) Math.PI*3/2;
+                //North defaults to 0
+                case SOUTH -> (float) Math.PI;
+                case EAST -> (float) Math.PI*3/2;
+                case WEST -> (float) Math.PI/2;
                 default -> 0;
             };
             float[][] rotationMatrix = switch(dir){
@@ -168,9 +168,9 @@ public class PotionCauldronBlockEntityRenderer implements BlockEntityRenderer<Po
 
                     poseStack.translate(resMat[0][0], resMat[1][0], resMat[2][0]);
                     poseStack.scale(scale, scale, scale);
-                    poseStack.mulPose(Axis.YP.rotationDegrees((float) (theta*180/Math.PI)));
+                    poseStack.mulPose(Axis.YP.rotationDegrees((float) ((theta*180)/Math.PI)));
                     poseStack.mulPose(Axis.ZP.rotationDegrees(zShaking));
-                    poseStack.mulPose(Axis.XP.rotationDegrees(335));
+                    poseStack.mulPose(Axis.XP.rotationDegrees(25));
 
                     itemRenderer.renderStatic(itemStacks.get(j), ItemDisplayContext.FIXED,
                             getLightLevel(bEntity.getLevel(), bEntity.getBlockPos()), OverlayTexture.NO_OVERLAY, poseStack, multiBufferSource,

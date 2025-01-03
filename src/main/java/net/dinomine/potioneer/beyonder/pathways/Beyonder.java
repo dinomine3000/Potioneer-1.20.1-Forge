@@ -1,12 +1,5 @@
 package net.dinomine.potioneer.beyonder.pathways;
 
-import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
-import net.dinomine.potioneer.beyonder.player.PlayerBeyonderStats;
-import net.minecraft.world.entity.player.Player;
-
-import java.util.ArrayList;
-import java.util.function.Consumer;
-
 public class Beyonder {
     protected int sequence;
     protected String name;

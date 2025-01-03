@@ -1,6 +1,7 @@
 package net.dinomine.potioneer.beyonder.pathways;
 
-import net.dinomine.potioneer.beyonder.player.PlayerBeyonderStats;
+import net.dinomine.potioneer.beyonder.pathways.powers.Ability;
+import net.dinomine.potioneer.beyonder.player.EntityBeyonderManager;
 import net.minecraft.world.entity.player.Player;
 
 import java.util.ArrayList;
@@ -8,7 +9,7 @@ import java.util.function.BiConsumer;
 
 public class ParagonPathway extends Beyonder{
 
-    private static ArrayList<BiConsumer<Player, PlayerBeyonderStats>> passiveAbilities = new ArrayList<>();
+    private static ArrayList<Ability> passiveAbilities9;
 
     public ParagonPathway(int sequence){
         super(sequence, "Paragon");
@@ -16,12 +17,12 @@ public class ParagonPathway extends Beyonder{
     }
 
     public static void init(){
+        passiveAbilities9 = new ArrayList<>();
     }
 
-    public static ArrayList<BiConsumer<Player, PlayerBeyonderStats>> getPassiveAbilities(int sequence) {
-        return passiveAbilities;
+    public static ArrayList<Ability> getPassiveAbilities(int sequence) {
+        return passiveAbilities9;
     }
-
 
     @Override
     public int getId() {
@@ -43,9 +44,6 @@ public class ParagonPathway extends Beyonder{
             case 0 -> "Paragon";
             default -> "";
         };
-    }
-
-    public static void giveArmor(Player player, PlayerBeyonderStats cap){
     }
 
 }

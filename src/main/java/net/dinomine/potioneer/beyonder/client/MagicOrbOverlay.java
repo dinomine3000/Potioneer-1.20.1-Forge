@@ -28,7 +28,7 @@ public class MagicOrbOverlay {
 
 
         int yOffset = minecraft.getWindow().getGuiScaledHeight() - 62;
-        int offsetLeft = minecraft.getWindow().getGuiScaledWidth() - 107;
+        int offsetLeft = minecraft.getWindow().getGuiScaledWidth()/2 + 100;
 
         /*RenderSystem.setShader(GameRenderer::getPositionColorTexShader);
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
@@ -39,11 +39,18 @@ public class MagicOrbOverlay {
         int frame = ((int) (tick / slowdown)) % 31;
 
         float mana_percent = Mth.clamp(Math.round(100f*ClientStatsData.getPlayerSpirituality() / ClientStatsData.getPlayerMaxSpirituality())/100f, 0, 1);
+        float sanity = Mth.clamp(ClientStatsData.getPlayerSanity()/100f, 0f, 1f);
+        int sanity_percent = switch((int)(sanity*4)){
+            case 0 -> 3;
+            case 1 -> 2;
+            case 2 -> 1;
+            default -> 0;
+        };
 
         guiGraphics.blit(ORB, offsetLeft, yOffset, ((id/10) %4)*64, id > 40 ? 64:0, 64, 64,256, 128);
 
         guiGraphics.blit(MANA, offsetLeft+10, yOffset + 10 + (int)(43-mana_percent*43),
-                10, 10 + frame*64 + (int)((1-mana_percent)*43),
+                10 + sanity_percent*64, 10 + frame*64 + (int)((1-mana_percent)*43),
                 43, 43 - (int)(43-43*mana_percent),
                 256, 1984);
 

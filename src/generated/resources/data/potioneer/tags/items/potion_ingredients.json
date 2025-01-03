@@ -7,6 +7,10 @@
     "minecraft:glowstone_dust",
     "minecraft:iron_ingot",
     "minecraft:gold_ingot",
-    "minecraft:copper_ingot"
+    "minecraft:copper_ingot",
+    "potioneer:pecan_leaf",
+    "potioneer:pecan_shell",
+    "potioneer:solseer",
+    "potioneer:wandering_cactus_prick"
   ]
 }

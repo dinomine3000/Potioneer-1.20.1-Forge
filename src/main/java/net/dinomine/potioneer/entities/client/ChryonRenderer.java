@@ -5,6 +5,8 @@ import net.dinomine.potioneer.Potioneer;
 import net.dinomine.potioneer.entities.custom.ChryonEntity;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
+import net.minecraft.client.renderer.entity.FoxRenderer;
+import net.minecraft.client.renderer.entity.SheepRenderer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemDisplayContext;
@@ -22,10 +24,9 @@ import java.util.Objects;
 public class ChryonRenderer extends GeoEntityRenderer<ChryonEntity> {
     public ChryonRenderer(EntityRendererProvider.Context renderManager) {
         super(renderManager, new ChryonModel());
-
         this.addRenderLayer(new AutoGlowingGeoLayer<>(this));
         this.addRenderLayer(new BlockAndItemGeoLayer<>(this, (bone, animatable) -> {
-            if (Objects.equals(bone.getName(), "bone6")) //left hand
+            if (Objects.equals(bone.getName(), "sword")) //left hand
                 return animatable.getItemInHand(InteractionHand.MAIN_HAND);
             return null;
         }, (bone, animatable) -> null) {
@@ -37,7 +38,7 @@ public class ChryonRenderer extends GeoEntityRenderer<ChryonEntity> {
 
             protected void renderStackForBone(PoseStack poseStack, GeoBone bone, ItemStack stack, ChryonEntity animatable, MultiBufferSource bufferSource, float partialTick, int packedLight, int packedOverlay) {
                 poseStack.pushPose();
-                poseStack.translate(0, -0.9, -0.4);
+                poseStack.translate(0, -0.8, -0.5);
 
                 super.renderStackForBone(poseStack, bone, stack, animatable, bufferSource, partialTick, packedLight, packedOverlay);
                 poseStack.popPose();

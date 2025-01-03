@@ -35,14 +35,16 @@ public class ModBlocks {
 
     public static final RegistryObject<Block> SAPPHIRE_ORE = registerBlock("sapphire_ore",
             () -> new DropExperienceBlock(BlockBehaviour.Properties.copy(Blocks.STONE)
-                    .strength(2f).requiresCorrectToolForDrops(), UniformInt.of(3, 6)));
+                    .strength(2f).requiresCorrectToolForDrops(), UniformInt.of(1, 2)));
 
     public static final RegistryObject<Block> DEEPSLATE_SAPPHIRE_ORE = registerBlock("deepslate_sapphire_ore",
             () -> new DropExperienceBlock(BlockBehaviour.Properties.copy(Blocks.DEEPSLATE)
-                    .strength(5f).requiresCorrectToolForDrops(), UniformInt.of(3, 7)));
+                    .strength(5f).requiresCorrectToolForDrops(), UniformInt.of(2, 3)));
 
     public static final RegistryObject<Block> POTION_CAULDRON= registerBlock("potion_cauldron",
-            () -> new PotionCauldronBlock(BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK).mapColor(MapColor.STONE).requiresCorrectToolForDrops().strength(2.0F).noOcclusion()));
+            () -> new PotionCauldronBlock(BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK)
+                    .mapColor(MapColor.STONE).requiresCorrectToolForDrops()
+                    .strength(2.0F).noOcclusion()));
 
     private static <T extends Block> RegistryObject<T> registerBlock(String name, Supplier<T> block){
         RegistryObject<T> toReturn = BLOCKS.register(name, block);

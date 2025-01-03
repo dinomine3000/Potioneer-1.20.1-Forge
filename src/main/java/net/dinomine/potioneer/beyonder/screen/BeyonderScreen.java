@@ -13,7 +13,7 @@ import net.minecraft.resources.ResourceLocation;
 public class BeyonderScreen extends Screen {
     private static final Component TITLE = Component.translatable("gui." + Potioneer.MOD_ID + ".beyonder_menu");
     private static final Component ABILITIES_BUTTON = Component.translatable("gui." + Potioneer.MOD_ID + ".beyonder_menu.abilities_button");
-    private static final ResourceLocation TEXTURE = new ResourceLocation(Potioneer.MOD_ID, "gui/beyonder_menu_screen.png");
+    private static final ResourceLocation TEXTURE = new ResourceLocation(Potioneer.MOD_ID, "textures/gui/beyonder_menu_screen.png");
 
     private Component PATHWAY;
     private Component SEQUENCE;

@@ -1,15 +1,15 @@
 package net.dinomine.potioneer.beyonder.pathways;
 
-import net.dinomine.potioneer.beyonder.player.PlayerBeyonderStats;
+import net.dinomine.potioneer.beyonder.pathways.powers.Ability;
+import net.dinomine.potioneer.beyonder.player.EntityBeyonderManager;
 import net.minecraft.world.entity.player.Player;
 
 import java.util.ArrayList;
 import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 
 public class RedPriestPathway extends Beyonder{
 
-    private static ArrayList<BiConsumer<Player, PlayerBeyonderStats>> passiveAbilities = new ArrayList<>();
+    private static ArrayList<Ability> passiveAbilities9;
 
     public RedPriestPathway(int sequence){
         super(sequence, "Red_Priest");
@@ -17,10 +17,11 @@ public class RedPriestPathway extends Beyonder{
     }
 
     public static void init(){
+        passiveAbilities9 = new ArrayList<>();
     }
 
-    public static ArrayList<BiConsumer<Player, PlayerBeyonderStats>> getPassiveAbilities(int sequence) {
-        return passiveAbilities;
+    public static ArrayList<Ability> getPassiveAbilities(int sequence) {
+        return passiveAbilities9;
     }
 
 

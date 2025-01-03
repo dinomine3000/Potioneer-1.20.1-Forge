@@ -1,19 +1,18 @@
 package net.dinomine.potioneer.beyonder.pathways;
 
-import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
-import net.dinomine.potioneer.beyonder.player.PlayerBeyonderStats;
+import net.dinomine.potioneer.beyonder.pathways.powers.Ability;
+import net.dinomine.potioneer.beyonder.pathways.powers.wheeloffortune.MiningSpeedAbility;
+import net.dinomine.potioneer.beyonder.player.EntityBeyonderManager;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.player.Player;
-import net.minecraftforge.event.entity.player.PlayerEvent;
 
 import java.util.ArrayList;
 import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 
 public class WheelOfFortunePathway extends Beyonder{
 
-    public static ArrayList<BiConsumer<Player, PlayerBeyonderStats>> passiveAbilities = new ArrayList<>();
+    public static ArrayList<Ability> passiveAbilities9;
 
     public WheelOfFortunePathway(int sequence) {
         super(sequence, "Wheel_of_Fortune");
@@ -22,9 +21,8 @@ public class WheelOfFortunePathway extends Beyonder{
     }
 
     public static void init(){
-        passiveAbilities = new ArrayList<>();
-        passiveAbilities.add(WheelOfFortunePathway::giveNightVision);
-        passiveAbilities.add(WheelOfFortunePathway::miningSpeedIncrease);
+        passiveAbilities9 = new ArrayList<>();
+        passiveAbilities9.add(new MiningSpeedAbility(9, true));
     }
 
     @Override
@@ -47,15 +45,11 @@ public class WheelOfFortunePathway extends Beyonder{
         return sequence;
     }
 
-    public static ArrayList<BiConsumer<Player, PlayerBeyonderStats>> getPassiveAbilities(int sequence) {
-        return passiveAbilities;
+    public static ArrayList<Ability> getPassiveAbilities(int sequence) {
+        return passiveAbilities9;
     }
 
-    public static void miningSpeedIncrease(Player player, PlayerBeyonderStats cap){
-        cap.multMiningSpeed(2f+(9-cap.getSequenceLevel()));
-    }
-
-    public static void giveNightVision(Player player, PlayerBeyonderStats cap){
+    public static void giveNightVision(Player player, EntityBeyonderManager cap){
         int cost = 1;
         if(!player.level().isClientSide()){
             if(!player.hasEffect(MobEffects.NIGHT_VISION)){
