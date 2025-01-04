@@ -1,0 +1,103 @@
+{
+	"format_version": "1.12.0",
+	"minecraft:geometry": [
+		{
+			"description": {
+				"identifier": "geometry.unknown",
+				"texture_width": 64,
+				"texture_height": 64,
+				"visible_bounds_width": 2,
+				"visible_bounds_height": 3.5,
+				"visible_bounds_offset": [0, 1.25, 0]
+			},
+			"bones": [
+				{
+					"name": "Corpse",
+					"pivot": [0, 0, 0]
+				},
+				{
+					"name": "Nut",
+					"parent": "Corpse",
+					"pivot": [0, 7, 0],
+					"cubes": [
+						{"origin": [-5, 2, -5], "size": [10, 10, 10], "pivot": [0, 8, 0], "rotation": [-180, 0, 180], "uv": [0, 0]}
+					]
+				},
+				{
+					"name": "Feet",
+					"parent": "Nut",
+					"pivot": [0, 0, 0]
+				},
+				{
+					"name": "FootR",
+					"parent": "Feet",
+					"pivot": [-4.05, 2, 1],
+					"cubes": [
+						{"origin": [-6.1, 0, -3], "size": [4.1, 2, 5], "uv": [0, 20]}
+					]
+				},
+				{
+					"name": "FootL",
+					"parent": "Feet",
+					"pivot": [4.05, 2, 1],
+					"cubes": [
+						{"origin": [1.9, 0.13594, -3.08629], "size": [4.1, 2, 5], "uv": [18, 20]}
+					]
+				},
+				{
+					"name": "Stem",
+					"parent": "Nut",
+					"pivot": [0.05, 12, 0],
+					"cubes": [
+						{
+							"origin": [0.15, 12, -0.8],
+							"size": [0.2, 2, 1.2],
+							"pivot": [0.05, 15, -0.2],
+							"rotation": [0, -90, 0],
+							"uv": {
+								"north": {"uv": [22, 29], "uv_size": [0.5, 2]},
+								"east": {"uv": [20, 29], "uv_size": [1, 2]},
+								"south": {"uv": [23, 29], "uv_size": [0.5, 2]},
+								"west": {"uv": [21, 29], "uv_size": [1, 2]},
+								"up": {"uv": [24, 29], "uv_size": [0.5, 1]},
+								"down": {"uv": [25, 30], "uv_size": [0.5, -1]}
+							}
+						}
+					]
+				},
+				{
+					"name": "LeafStart",
+					"parent": "Stem",
+					"pivot": [0.05, 14, 0],
+					"cubes": [
+						{"origin": [-1.85, 14, 0], "size": [3.8, 2.5, 0], "uv": [20, 27]}
+					]
+				},
+				{
+					"name": "LeafBottomMiddle",
+					"parent": "LeafStart",
+					"pivot": [0.05, 16.5, 0],
+					"cubes": [
+						{"origin": [-2.45, 16.5, 0], "size": [5, 3, 0], "uv": [0, 27]}
+					]
+				},
+				{
+					"name": "LeafTopMiddle",
+					"parent": "LeafBottomMiddle",
+					"pivot": [0.05, 19.5, 0],
+					"cubes": [
+						{"origin": [-2.45, 19.5, 0], "size": [5, 3, 0], "uv": [10, 27]}
+					]
+				},
+				{
+					"name": "LeafEnd",
+					"parent": "LeafTopMiddle",
+					"pivot": [0.05, 22.5, 0],
+					"cubes": [
+						{"origin": [-1.55, 22.5, 0], "size": [3.2, 2, 0], "uv": [26, 27]}
+					]
+				}
+			]
+		}
+	]
+}
