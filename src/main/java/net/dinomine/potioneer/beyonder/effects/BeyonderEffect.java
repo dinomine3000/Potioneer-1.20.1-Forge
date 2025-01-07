@@ -9,9 +9,14 @@ public abstract class BeyonderEffect {
     protected float cost;
     protected int lifetime = 0;
     protected int maxLife;
+    public String name;
     protected BeyonderEffects.EFFECT ID;
 
     protected boolean active;
+
+    public int getSequenceLevel() {
+        return sequenceLevel;
+    }
 
     public BeyonderEffects.EFFECT getId(){
         return this.ID;

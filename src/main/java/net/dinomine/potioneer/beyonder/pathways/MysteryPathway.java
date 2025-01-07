@@ -1,14 +1,11 @@
 package net.dinomine.potioneer.beyonder.pathways;
 
-import net.dinomine.potioneer.beyonder.pathways.powers.Ability;
-import net.dinomine.potioneer.beyonder.player.EntityBeyonderManager;
-import net.minecraft.world.entity.player.Player;
-import org.checkerframework.checker.units.qual.A;
+import net.dinomine.potioneer.beyonder.abilities.Ability;
+import net.dinomine.potioneer.beyonder.abilities.Beyonder;
 
 import java.util.ArrayList;
-import java.util.function.BiConsumer;
 
-public class MysteryPathway extends Beyonder{
+public class MysteryPathway extends Beyonder {
 
     private static ArrayList<Ability> passiveAbilities9;
 

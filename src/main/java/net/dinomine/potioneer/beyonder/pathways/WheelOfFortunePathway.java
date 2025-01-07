@@ -1,16 +1,16 @@
 package net.dinomine.potioneer.beyonder.pathways;
 
-import net.dinomine.potioneer.beyonder.pathways.powers.Ability;
-import net.dinomine.potioneer.beyonder.pathways.powers.wheeloffortune.MiningSpeedAbility;
+import net.dinomine.potioneer.beyonder.abilities.Ability;
+import net.dinomine.potioneer.beyonder.abilities.Beyonder;
+import net.dinomine.potioneer.beyonder.abilities.wheeloffortune.MiningSpeedAbility;
 import net.dinomine.potioneer.beyonder.player.EntityBeyonderManager;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.player.Player;
 
 import java.util.ArrayList;
-import java.util.function.BiConsumer;
 
-public class WheelOfFortunePathway extends Beyonder{
+public class WheelOfFortunePathway extends Beyonder {
 
     public static ArrayList<Ability> passiveAbilities9;
 

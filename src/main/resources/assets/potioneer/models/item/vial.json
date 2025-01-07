@@ -1,0 +1,9 @@
+{
+  "parent": "item/generated",
+  "textures": {
+    "layer0": "potioneer:item/vial"
+  },
+  "overrides": [
+    { "predicate": { "potioneer:level": 1 }, "model": "potioneer:item/full_vial" }
+  ]
+}

@@ -1,13 +1,14 @@
 package net.dinomine.potioneer.beyonder.pathways;
 
-import net.dinomine.potioneer.beyonder.pathways.powers.Ability;
-import net.dinomine.potioneer.beyonder.player.EntityBeyonderManager;
-import net.minecraft.world.entity.player.Player;
+import net.dinomine.potioneer.beyonder.abilities.Ability;
+import net.dinomine.potioneer.beyonder.abilities.Beyonder;
+import net.dinomine.potioneer.beyonder.abilities.paragon.CraftingBonusAbility;
+import net.minecraft.world.inventory.CraftingContainer;
+import net.minecraft.world.inventory.CraftingMenu;
 
 import java.util.ArrayList;
-import java.util.function.BiConsumer;
 
-public class ParagonPathway extends Beyonder{
+public class ParagonPathway extends Beyonder {
 
     private static ArrayList<Ability> passiveAbilities9;
 
@@ -18,6 +19,7 @@ public class ParagonPathway extends Beyonder{
 
     public static void init(){
         passiveAbilities9 = new ArrayList<>();
+        passiveAbilities9.add(new CraftingBonusAbility(9, true));
     }
 
     public static ArrayList<Ability> getPassiveAbilities(int sequence) {

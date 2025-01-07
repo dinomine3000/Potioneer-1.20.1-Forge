@@ -3,10 +3,12 @@ package net.dinomine.potioneer.item;
 import net.dinomine.potioneer.Potioneer;
 import net.dinomine.potioneer.block.ModBlocks;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.alchemy.Potions;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.registries.DeferredRegister;
@@ -20,7 +22,6 @@ public class ModCreativeModTabs {
             () -> CreativeModeTab.builder().icon( () -> new ItemStack(ModItems.SAPPHIRE.get()))
                     .title(Component.translatable("creativetab.potioneer_tab"))
                     .displayItems((itemDisplayParameters, output) -> {
-
                         output.accept(ModItems.SAPPHIRE.get());
 
                         output.accept(ModBlocks.SAPPHIRE_BLOCK.get());
@@ -36,6 +37,14 @@ public class ModCreativeModTabs {
                         output.accept(ModItems.PECAN_SHELL.get());
                         output.accept(ModItems.SOLSEER.get());
                         output.accept(ModItems.WANDERING_CACTUS_PRICK.get());
+                        output.accept(ModItems.VIAL.get());
+                        ItemStack vial = new ItemStack(ModItems.VIAL.get());
+                        CompoundTag tag = new CompoundTag();
+                        tag.putInt("level", 1);
+                        tag.putString("name", "cactus_sap");
+                        vial.setTag(tag);
+                        output.accept(vial);
+                        output.accept(ModItems.FLASK.get());
                     })
                     .build());
 

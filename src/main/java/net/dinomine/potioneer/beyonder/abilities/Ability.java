@@ -1,4 +1,4 @@
-package net.dinomine.potioneer.beyonder.pathways.powers;
+package net.dinomine.potioneer.beyonder.abilities;
 
 import net.dinomine.potioneer.beyonder.player.EntityBeyonderManager;
 import net.minecraft.world.entity.LivingEntity;

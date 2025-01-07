@@ -3,25 +3,19 @@ package net.dinomine.potioneer.event;
 import net.dinomine.potioneer.Potioneer;
 import net.dinomine.potioneer.beyonder.client.KeyBindings;
 import net.dinomine.potioneer.beyonder.client.MagicOrbOverlay;
-import net.dinomine.potioneer.beyonder.screen.BeyonderScreen;
 import net.dinomine.potioneer.block.entity.ModBlockEntities;
 import net.dinomine.potioneer.block.entity.renderer.PotionCauldronBlockEntityRenderer;
-import net.minecraft.client.Minecraft;
-import net.minecraft.network.chat.Component;
-import net.minecraft.world.entity.EntityEvent;
-import net.minecraft.world.entity.item.ItemEntity;
-import net.minecraft.world.entity.monster.WitherSkeleton;
-import net.minecraft.world.item.FishingRodItem;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.phys.Vec3;
+import net.dinomine.potioneer.item.custom.AbstractLiquidContainer;
 import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.EntityRenderersEvent;
+import net.minecraftforge.client.event.RegisterColorHandlersEvent;
 import net.minecraftforge.client.event.RegisterGuiOverlaysEvent;
 import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
-import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
+@OnlyIn(Dist.CLIENT)
 @Mod.EventBusSubscriber(modid = Potioneer.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
 public class ModEventBusClient {
 
@@ -35,6 +29,11 @@ public class ModEventBusClient {
     public static void registerKeys(RegisterKeyMappingsEvent event){
         event.register(KeyBindings.INSTANCE.beyonderMenuKey);
         event.register(KeyBindings.INSTANCE.quickAbilityKey);
+    }
+
+    @SubscribeEvent
+    public static void registerItemColors(RegisterColorHandlersEvent.Item event){
+        AbstractLiquidContainer.registerColor(event);
     }
 
     @SubscribeEvent

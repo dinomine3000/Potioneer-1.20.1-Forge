@@ -1,4 +1,6 @@
-package net.dinomine.potioneer.beyonder.pathways;
+package net.dinomine.potioneer.beyonder.abilities;
+
+import net.dinomine.potioneer.beyonder.pathways.*;
 
 public class Beyonder {
     protected int sequence;

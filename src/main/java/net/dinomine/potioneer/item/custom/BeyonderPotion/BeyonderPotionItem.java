@@ -1,5 +1,6 @@
 package net.dinomine.potioneer.item.custom.BeyonderPotion;
 
+import net.dinomine.potioneer.beyonder.client.ClientStatsData;
 import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.network.chat.Component;
@@ -72,13 +73,11 @@ public class BeyonderPotionItem extends PotionItem implements GeoItem {
             }
         }
         if(pEntityLiving instanceof Player player && pLevel.isClientSide()){
-            player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(stats -> {
-                if(pStack.hasTag()){
-                    if(!pStack.getTag().getBoolean("conflict")){
-                        if(player.level().isClientSide()) stats.attemptAdvancement(pStack.getTag().getInt("pathwayId"));
-                    }
+            if(pStack.hasTag()){
+                if(!pStack.getTag().getBoolean("conflict")){
+                    ClientStatsData.attemptAdvancement(pStack.getTag().getInt("pathwayId"));
                 }
-            });
+            }
         }
         return super.finishUsingItem(pStack, pLevel, pEntityLiving);
     }

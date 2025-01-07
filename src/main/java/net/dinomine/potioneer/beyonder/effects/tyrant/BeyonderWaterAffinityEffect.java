@@ -19,6 +19,7 @@ public class BeyonderWaterAffinityEffect extends BeyonderEffect {
         this.ID = id;
         this.lifetime = 0;
         this.active = active;
+        this.name = "Tyrant Affinity";
     }
 
     @Override

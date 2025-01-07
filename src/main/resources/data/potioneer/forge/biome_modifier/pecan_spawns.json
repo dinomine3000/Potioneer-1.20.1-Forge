@@ -11,8 +11,8 @@
   ],
   "spawners":{
     "type": "potioneer:pecan",
-    "weight": 100,
+    "weight": 20,
     "minCount": 2,
-    "maxCount": 5
+    "maxCount": 4
   }
 }

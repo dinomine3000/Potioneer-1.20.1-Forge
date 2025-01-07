@@ -20,4 +20,5 @@ public class ClientForgeHandler {
         } else if(KeyBindings.INSTANCE.quickAbilityKey.consumeClick() && minecraft.player != null){
         }
     }
+
 }

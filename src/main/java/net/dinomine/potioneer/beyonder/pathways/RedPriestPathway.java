@@ -1,13 +1,13 @@
 package net.dinomine.potioneer.beyonder.pathways;
 
-import net.dinomine.potioneer.beyonder.pathways.powers.Ability;
-import net.dinomine.potioneer.beyonder.player.EntityBeyonderManager;
-import net.minecraft.world.entity.player.Player;
+import net.dinomine.potioneer.beyonder.abilities.Ability;
+import net.dinomine.potioneer.beyonder.abilities.Beyonder;
+import net.dinomine.potioneer.beyonder.abilities.redpriest.WeaponProficiencyAbility;
+import net.dinomine.potioneer.beyonder.effects.redpriest.BeyonderWeaponProficiencyEffect;
 
 import java.util.ArrayList;
-import java.util.function.BiConsumer;
 
-public class RedPriestPathway extends Beyonder{
+public class RedPriestPathway extends Beyonder {
 
     private static ArrayList<Ability> passiveAbilities9;
 
@@ -18,6 +18,7 @@ public class RedPriestPathway extends Beyonder{
 
     public static void init(){
         passiveAbilities9 = new ArrayList<>();
+        passiveAbilities9.add(new WeaponProficiencyAbility(9, true));
     }
 
     public static ArrayList<Ability> getPassiveAbilities(int sequence) {

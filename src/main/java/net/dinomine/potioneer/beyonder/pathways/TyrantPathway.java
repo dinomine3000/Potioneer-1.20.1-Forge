@@ -1,17 +1,14 @@
 package net.dinomine.potioneer.beyonder.pathways;
 
-import net.dinomine.potioneer.beyonder.pathways.powers.Ability;
-import net.dinomine.potioneer.beyonder.pathways.powers.tyrant.WaterAffinityAbility;
+import net.dinomine.potioneer.beyonder.abilities.Ability;
+import net.dinomine.potioneer.beyonder.abilities.Beyonder;
+import net.dinomine.potioneer.beyonder.abilities.tyrant.WaterAffinityAbility;
 import net.dinomine.potioneer.beyonder.player.EntityBeyonderManager;
-import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.enchantment.EnchantmentHelper;
 
 import java.util.ArrayList;
-import java.util.function.BiConsumer;
 
-public class TyrantPathway extends Beyonder{
+public class TyrantPathway extends Beyonder {
 
     private static ArrayList<Ability> passiveAbilities9;
 

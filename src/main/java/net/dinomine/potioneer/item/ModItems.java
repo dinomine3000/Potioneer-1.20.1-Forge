@@ -3,10 +3,8 @@ package net.dinomine.potioneer.item;
 import net.dinomine.potioneer.Potioneer;
 import net.dinomine.potioneer.entities.ModEntities;
 import net.dinomine.potioneer.item.custom.BeyonderPotion.BeyonderPotionItem;
-import net.dinomine.potioneer.item.custom.BeyonderPotion.BeyonderPotionItemRenderer;
-import net.dinomine.potioneer.item.custom.MetalDetectorItem;
-import net.minecraft.client.renderer.item.ItemProperties;
-import net.minecraft.world.food.FoodProperties;
+import net.dinomine.potioneer.item.custom.Flask;
+import net.dinomine.potioneer.item.custom.Vial;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Rarity;
 import net.minecraftforge.common.ForgeSpawnEggItem;
@@ -40,7 +38,8 @@ public class ModItems {
     public static final RegistryObject<Item> CHRYON_SPAWN_EGG = ITEMS.register("chryon_spawn_egg",
             () -> new ForgeSpawnEggItem(ModEntities.CHRYON, 0xA5f8ff, 0x66AFD4, new Item.Properties()));
 
-
+    public static final RegistryObject<Item> VIAL = ITEMS.register("vial", () -> new Vial(new Item.Properties()));
+    public static final RegistryObject<Item> FLASK = ITEMS.register("flask", () -> new Flask(new Item.Properties()));
 
     public static final RegistryObject<Item> BEYONDER_POTION = ITEMS.register("beyonder_potion",
             () -> new BeyonderPotionItem(new Item.Properties().stacksTo(1).fireResistant().rarity(Rarity.UNCOMMON)));

@@ -2,6 +2,7 @@ package net.dinomine.potioneer.beyonder.player;
 
 import net.dinomine.potioneer.beyonder.client.ClientAdvancementManager;
 import net.dinomine.potioneer.beyonder.pathways.*;
+import net.dinomine.potioneer.beyonder.abilities.Beyonder;
 import net.dinomine.potioneer.beyonder.screen.AdvancementScreen;
 import net.dinomine.potioneer.network.PacketHandler;
 import net.dinomine.potioneer.network.messages.PlayerAdvanceMessage;
@@ -14,7 +15,10 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.capabilities.AutoRegisterCapability;
+import net.minecraftforge.event.entity.living.LivingDamageEvent;
 import net.minecraftforge.network.PacketDistributor;
 
 @AutoRegisterCapability
@@ -126,6 +130,8 @@ public class EntityBeyonderManager {
         this.abilitiesManager.clear(true, this, player);
         if(id < 0){
             //setDefaultStats(player);
+            getEffectsManager().clearEffects(this, player);
+            getAbilitiesManager().clear(true, this, player);
             this.pathway = new Beyonder(10);
             if(sync) syncSequenceData(player, advancing);
             return true;
@@ -134,6 +140,7 @@ public class EntityBeyonderManager {
 
 
         //setDefaultStats(player);
+        getAbilitiesManager().clear(true, this, player);
         setPathway(id, advancing);
 
         //not translated. either make it translatable or delete it for final version
@@ -142,7 +149,7 @@ public class EntityBeyonderManager {
                     + " " + this.pathway.getSequenceName(seq, true) + "!"));
         }
         if(sync) syncSequenceData(player, advancing);
-
+        System.out.println(getEffectsManager());
         return true;
     }
 
@@ -178,19 +185,6 @@ public class EntityBeyonderManager {
             this.maxSpirituality = this.pathway.getMaxSpirituality(seq);
             if(advancing) setSpirituality(this.maxSpirituality);
         }
-    }
-
-    public void attemptAdvancement(int newSeq){
-        //difference between the new sequence and current sequence
-        //plus one more difficulty for every 25% sanity lost
-        //plus 1 for each group of 9-7, 6-4 and 3-1 sequence levels
-        //plus 1 or 2 for undigested potions
-        ClientAdvancementManager.setDifficulty((Math.max(this.getSequenceLevel() - newSeq%10, 1) //adds the difference in levels. from 1 to 10
-                + Math.round(4f-sanity/25f) //from 0 to 4 more points
-                + 3-Math.floorDiv(newSeq%10, 3))); //adds from 0 to 3 points of difficulty
-//        ClientAdvancementManager.difficulty = 10;     //Debug
-        ClientAdvancementManager.targetSequence = newSeq;
-        Minecraft.getInstance().setScreen(new AdvancementScreen());
     }
 
     public String getPathwayName(boolean capitalize){

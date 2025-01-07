@@ -27,6 +27,7 @@ public class ModEventBus {
     public static void commonSetup(FMLCommonSetupEvent event){
         event.enqueueWork(() -> {
             SpawnPlacements.register(ModEntities.CHRYON.get(), SpawnPlacements.Type.ON_GROUND, Heightmap.Types.WORLD_SURFACE, ChryonEntity::canSpawn);
+            SpawnPlacements.register(ModEntities.PECAN.get(), SpawnPlacements.Type.ON_GROUND, Heightmap.Types.WORLD_SURFACE, PecanEntity::canSpawn);
         });
     }
 

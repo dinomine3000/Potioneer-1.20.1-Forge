@@ -7,18 +7,22 @@
   "block.potioneer.sapphire_ore": "Sapphire Ore",
   "block.potioneer.deepslate_sapphire_ore": "Deepslate Sapphire Ore",
 
-  "item.potioneer.metal_detector": "Metal Detector",
+  "item.potioneer.vial": "Vial",
+  "item.potioneer.flask": "Flask",
   "block.potioneer.potion_cauldron": "Potion Cauldron",
+
   "item.potioneer.chryon_spawn_egg": "Chryon Spawn Egg",
   "item.potioneer.pecan_spawn_egg": "Pecan Spawn Egg",
+  "entity.potioneer.pecan": "Pecan",
+  "entity.potioneer.chryon": "Chryon",
+
   "item.potioneer.beyonder_potion": "Mystery Potion",
   "item.potioneer.pecan_leaf": "Pecan Leaf",
   "item.potioneer.pecan_shell": "Pecan Shell",
   "item.potioneer.solseer": "Solseer",
   "item.potioneer.wandering_cactus_prick": "Wandering Cactus Prick",
+  "item.potioneer.vial.cactus_sap": "Wandering Cactus Sap Vial",
 
-  "entity.potioneer.pecan": "Pecan",
-  "entity.potioneer.chryon": "Chryon",
 
   "key.potioneer.beyonder_menu_key": "Beyonder Menu",
   "key.categories.potioneer": "Potioneer",

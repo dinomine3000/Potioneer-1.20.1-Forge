@@ -1,6 +1,6 @@
 package net.dinomine.potioneer.beyonder.player;
 
-import net.dinomine.potioneer.beyonder.pathways.powers.Ability;
+import net.dinomine.potioneer.beyonder.abilities.Ability;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.LivingEntity;
 
@@ -27,10 +27,11 @@ public class PlayerAbilitiesManager {
     public void clear(boolean pathway, EntityBeyonderManager cap, LivingEntity target){
         if(pathway) {
             pathwayPassives.forEach(ability -> ability.deactivate(cap, target));
+            pathwayPassives = new ArrayList<>();
         }
         else {
             otherPassives.forEach(ability -> ability.deactivate(cap, target));
-            otherPassives.clear();
+            otherPassives = new ArrayList<>();
         }
     }
 

@@ -1,22 +1,20 @@
 package net.dinomine.potioneer.beyonder;
 
 import net.dinomine.potioneer.Potioneer;
-import net.dinomine.potioneer.beyonder.pathways.Beyonder;
+import net.dinomine.potioneer.beyonder.abilities.Beyonder;
 import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
 import net.dinomine.potioneer.beyonder.player.EntityBeyonderManager;
 import net.dinomine.potioneer.network.PacketHandler;
 import net.dinomine.potioneer.network.messages.SequenceSTCSyncRequest;
-import net.minecraft.client.telemetry.events.WorldLoadEvent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.event.entity.EntityEvent;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
+import net.minecraftforge.event.entity.living.LivingDamageEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
-import net.minecraftforge.event.entity.player.PlayerSleepInBedEvent;
 import net.minecraftforge.event.entity.player.PlayerWakeUpEvent;
 import net.minecraftforge.event.level.LevelEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -66,7 +64,7 @@ public class PlayerBeyonderManager {
     public static void onEntityTick(LivingEvent.LivingTickEvent event){
         if(!(event.getEntity() instanceof Player)){
             event.getEntity().getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(stats -> {
-                stats.onTick(event.getEntity());
+                 stats.onTick(event.getEntity());
             });
         }
     }
@@ -86,6 +84,21 @@ public class PlayerBeyonderManager {
         Beyonder.init();
     }
 
+    @SubscribeEvent
+    public static void onCraft(PlayerEvent.ItemCraftedEvent event){
+        if(event.getEntity().level().isClientSide()) return;
+        event.getEntity().getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
+            cap.getEffectsManager().onCraft(event);
+        });
+    }
+
+    @SubscribeEvent
+    public static void onAttack(LivingDamageEvent event){
+        if(event.getSource().getEntity().level().isClientSide()) return;
+        event.getSource().getEntity().getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
+            cap.getEffectsManager().onAttack(event);
+        });
+    }
 
     @SubscribeEvent
     public static void mine(PlayerEvent.BreakSpeed breakSpeed){

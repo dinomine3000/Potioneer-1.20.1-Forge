@@ -1,13 +1,13 @@
-package net.dinomine.potioneer.beyonder.pathways.powers.wheeloffortune;
+package net.dinomine.potioneer.beyonder.abilities.redpriest;
 
+import net.dinomine.potioneer.beyonder.abilities.Ability;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
-import net.dinomine.potioneer.beyonder.pathways.powers.Ability;
 import net.dinomine.potioneer.beyonder.player.EntityBeyonderManager;
 import net.minecraft.world.entity.LivingEntity;
 
-public class MiningSpeedAbility extends Ability {
+public class WeaponProficiencyAbility extends Ability {
 
-    public MiningSpeedAbility(int sequence, boolean enabled){
+    public WeaponProficiencyAbility(int sequence, boolean enabled){
         this.sequence = sequence;
         this.enabled = enabled;
     }
@@ -19,8 +19,8 @@ public class MiningSpeedAbility extends Ability {
 
     @Override
     public void passive(EntityBeyonderManager cap, LivingEntity target) {
-        if(enabled && !cap.getEffectsManager().hasEffect(BeyonderEffects.EFFECT.WHEEL_MINING, this.sequence)){
-            cap.getEffectsManager().addEffect(BeyonderEffects.byId(BeyonderEffects.EFFECT.WHEEL_MINING,
+        if(enabled && !cap.getEffectsManager().hasEffect(BeyonderEffects.EFFECT.RED_WEAPON_PROFICIENCY, this.sequence)){
+            cap.getEffectsManager().addEffect(BeyonderEffects.byId(BeyonderEffects.EFFECT.RED_WEAPON_PROFICIENCY,
                     this.sequence, 0, -1, true));
         }
 
@@ -33,8 +33,8 @@ public class MiningSpeedAbility extends Ability {
 
     @Override
     public void deactivate(EntityBeyonderManager cap, LivingEntity target) {
-        if(enabled && cap.getEffectsManager().hasEffect(BeyonderEffects.EFFECT.WHEEL_MINING, this.sequence)){
-            cap.getEffectsManager().removeEffect(BeyonderEffects.EFFECT.WHEEL_MINING, this.sequence, cap, target);
+        if(enabled && cap.getEffectsManager().hasEffect(BeyonderEffects.EFFECT.RED_WEAPON_PROFICIENCY, this.sequence)){
+            cap.getEffectsManager().removeEffect(BeyonderEffects.EFFECT.RED_WEAPON_PROFICIENCY, this.sequence, cap, target);
         }
     }
 }

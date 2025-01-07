@@ -6,7 +6,10 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
+@OnlyIn(Dist.CLIENT)
 public class ClientAdvancementManager {
     public static int count = 30;
     public static int maxCount = 30;
@@ -43,7 +46,7 @@ public class ClientAdvancementManager {
         count--;
         progress = 1;
         if(Minecraft.getInstance().player != null){
-            Minecraft.getInstance().player.playSound(ModSounds.ADVANCEMENT_CLICK.get(), 1, 1);
+            Minecraft.getInstance().player.playSound(ModSounds.ADVANCEMENT_CLICK.get(), 10, 1);
         }
         x = (int) (Math.random() * (screen.width - 80) + 40);
         y = (int) (Math.random() * (screen.height - 80) + 40);

@@ -2,8 +2,18 @@ package net.dinomine.potioneer.beyonder.player;
 
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffect;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
+import net.dinomine.potioneer.sound.ModSounds;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraftforge.common.Tags;
+import net.minecraftforge.common.data.ForgeItemTagsProvider;
+import net.minecraftforge.event.entity.living.LivingDamageEvent;
+import net.minecraftforge.event.entity.living.LivingEvent;
+import net.minecraftforge.event.entity.player.PlayerEvent;
 
 import java.util.ArrayList;
 
@@ -11,12 +21,50 @@ public class PlayerEffectsManager {
     private ArrayList<BeyonderEffect> passives = new ArrayList<BeyonderEffect>();
     public BeyonderStats statsHolder;
 
+    public void onAttack(LivingDamageEvent event){
+        Entity attacker = event.getSource().getEntity();
+        System.out.println("gotten attacker");
+        //TODO change this to account for multiple instances of similar effects
+        if(attacker instanceof Player player && hasEffect(BeyonderEffects.EFFECT.RED_WEAPON_PROFICIENCY)){
+            BeyonderEffect eff = getEffect(BeyonderEffects.EFFECT.RED_WEAPON_PROFICIENCY);
+            InteractionHand hand = player.getUsedItemHand();
+            if(player.getItemInHand(hand).is(Tags.Items.TOOLS)){
+                float dmg = event.getAmount()*((10-eff.getSequenceLevel()) * 0.4f + 1f);
+                System.out.println("Buffing red priest damage to: " + dmg);
+                event.setAmount(dmg);
+            }
+        }
+    }
+
+    public void onCraft(PlayerEvent.ItemCraftedEvent event){
+        //TODO change this to account for multiple instances of similar effects
+        if(hasEffect(BeyonderEffects.EFFECT.PARAGON_CRAFTING_BONUS)){
+            BeyonderEffect eff = getEffect(BeyonderEffects.EFFECT.PARAGON_CRAFTING_BONUS);
+            int og = event.getCrafting().getCount();
+            ItemStack stack = event.getCrafting().copy();
+            stack.setCount((int)(Math.round(og*((10-eff.getSequenceLevel())*0.4))));
+            event.getEntity().addItem(stack);
+        }
+    }
+
+    @Override
+    public String toString(){
+        String res = "";
+        for(BeyonderEffect eff : passives){
+            res = res.concat(eff.name.concat("\n"));
+        }
+        return res;
+    }
+
     public PlayerEffectsManager(){
         statsHolder = new BeyonderStats();
     }
 
-    public void clearEffects(){
-        this.passives.clear();
+    public void clearEffects(EntityBeyonderManager cap, Player player){
+        for(BeyonderEffect eff : passives){
+            eff.stopEffects(cap, player);
+        }
+        this.passives = new ArrayList<>();
     }
 
     public boolean hasEffectOrBetter(BeyonderEffect effect){
@@ -48,6 +96,10 @@ public class PlayerEffectsManager {
 
     public boolean hasEffect(BeyonderEffects.EFFECT effect){
         return passives.stream().anyMatch(eff -> eff.is(effect));
+    }
+
+    public BeyonderEffect getEffect(BeyonderEffects.EFFECT effect){
+        return passives.get(indexOf(effect));
     }
 
     public BeyonderEffect getEffect(BeyonderEffects.EFFECT effect, int seq){

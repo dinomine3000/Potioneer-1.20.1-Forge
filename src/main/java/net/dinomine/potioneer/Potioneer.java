@@ -16,6 +16,8 @@ import net.dinomine.potioneer.recipe.ModRecipes;
 import net.dinomine.potioneer.sound.ModSounds;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.entity.EntityRenderers;
+import net.minecraft.client.renderer.item.ItemProperties;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
@@ -100,6 +102,15 @@ public class Potioneer
             EntityRenderers.register(ModEntities.CHRYON.get(), ChryonRenderer::new);
             EntityRenderers.register(ModEntities.PECAN.get(), PecanRenderer::new);
             // Some client setup code
+            ItemProperties.register(ModItems.VIAL.get(),
+                    new ResourceLocation(Potioneer.MOD_ID, "level"),
+                    ((itemStack, clientLevel, livingEntity, i) ->
+                            itemStack.getTag() != null ? itemStack.getTag().getInt("level") : 0));
+
+            ItemProperties.register(ModItems.FLASK.get(),
+                    new ResourceLocation(Potioneer.MOD_ID, "level"),
+                    ((itemStack, clientLevel, livingEntity, i) ->
+                            itemStack.getTag() != null ? itemStack.getTag().getInt("level") : 0));
             LOGGER.info("HELLO FROM CLIENT SETUP");
             LOGGER.info("MINECRAFT NAME >> {}", Minecraft.getInstance().getUser().getName());
         }
