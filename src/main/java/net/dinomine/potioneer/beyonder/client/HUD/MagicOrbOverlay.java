@@ -1,12 +1,10 @@
-package net.dinomine.potioneer.beyonder.client;
+package net.dinomine.potioneer.beyonder.client.HUD;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.dinomine.potioneer.Potioneer;
+import net.dinomine.potioneer.beyonder.client.ClientStatsData;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
-import net.minecraft.world.level.block.RenderShape;
 import net.minecraftforge.client.gui.overlay.IGuiOverlay;
 
 public class MagicOrbOverlay {

@@ -12,6 +12,11 @@ public class WaterAffinityAbility extends Ability {
         this.enabled = enabled;
     }
 
+    @Override
+    public String toString() {
+        return "water";
+    }
+
     public void active(EntityBeyonderManager cap, LivingEntity target) {
         flipEnable(cap, target);
     }
@@ -31,7 +36,7 @@ public class WaterAffinityAbility extends Ability {
 
     @Override
     public void deactivate(EntityBeyonderManager cap, LivingEntity target) {
-        if(enabled && cap.getEffectsManager().hasEffect(BeyonderEffects.EFFECT.TYRANT_WATER_AFFINITY, this.sequence)){
+        if(cap.getEffectsManager().hasEffect(BeyonderEffects.EFFECT.TYRANT_WATER_AFFINITY, this.sequence)){
             cap.getEffectsManager().removeEffect(BeyonderEffects.EFFECT.TYRANT_WATER_AFFINITY, this.sequence, cap, target);
         }
     }

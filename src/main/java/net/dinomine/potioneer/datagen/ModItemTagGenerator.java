@@ -34,6 +34,7 @@ public class ModItemTagGenerator extends ItemTagsProvider {
                 .add(ModItems.PECAN_LEAF.get())
                 .add(ModItems.PECAN_SHELL.get())
                 .add(ModItems.SOLSEER.get())
-                .add(ModItems.WANDERING_CACTUS_PRICK.get());
+                .add(ModItems.WANDERING_CACTUS_PRICK.get())
+                .add(ModItems.VIAL.get());
     }
 }

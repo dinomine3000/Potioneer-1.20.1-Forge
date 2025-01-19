@@ -2,8 +2,13 @@ package net.dinomine.potioneer.beyonder.pathways;
 
 import net.dinomine.potioneer.beyonder.abilities.Ability;
 import net.dinomine.potioneer.beyonder.abilities.Beyonder;
+import net.dinomine.potioneer.beyonder.abilities.DummyAbility;
+import net.dinomine.potioneer.beyonder.abilities.tyrant.WaterAffinityAbility;
 import net.dinomine.potioneer.beyonder.abilities.wheeloffortune.MiningSpeedAbility;
+import net.dinomine.potioneer.beyonder.client.ClientAbilitiesData;
+import net.dinomine.potioneer.beyonder.client.ClientStatsData;
 import net.dinomine.potioneer.beyonder.player.EntityBeyonderManager;
+import net.dinomine.potioneer.beyonder.player.PlayerAbilitiesManager;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.player.Player;
@@ -13,6 +18,7 @@ import java.util.ArrayList;
 public class WheelOfFortunePathway extends Beyonder {
 
     public static ArrayList<Ability> passiveAbilities9;
+    public static ArrayList<Ability> activeAbilities9;
 
     public WheelOfFortunePathway(int sequence) {
         super(sequence, "Wheel_of_Fortune");
@@ -21,8 +27,24 @@ public class WheelOfFortunePathway extends Beyonder {
     }
 
     public static void init(){
+    }
+
+
+    public static void getAbilities(int sequence, PlayerAbilitiesManager mng){
+        MiningSpeedAbility abl = new MiningSpeedAbility(sequence, true);
+        DummyAbility dummy = new DummyAbility(sequence, true);
         passiveAbilities9 = new ArrayList<>();
-        passiveAbilities9.add(new MiningSpeedAbility(9, true));
+        passiveAbilities9.add(abl);
+        activeAbilities9 = new ArrayList<>();
+        activeAbilities9.add(dummy);
+        activeAbilities9.add(abl);
+        ArrayList<Integer> hotbar = new ArrayList<>();
+        hotbar.add(0);
+        hotbar.add(1);
+
+        mng.setPathwayActives(activeAbilities9);
+        mng.setPathwayPassives(passiveAbilities9);
+
     }
 
     @Override

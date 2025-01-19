@@ -18,7 +18,7 @@ public class RedPriestPathway extends Beyonder {
 
     public static void init(){
         passiveAbilities9 = new ArrayList<>();
-        passiveAbilities9.add(new WeaponProficiencyAbility(9, true));
+        passiveAbilities9.add(new WeaponProficiencyAbility(0, true));
     }
 
     public static ArrayList<Ability> getPassiveAbilities(int sequence) {

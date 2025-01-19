@@ -2,8 +2,11 @@ package net.dinomine.potioneer.beyonder.pathways;
 
 import net.dinomine.potioneer.beyonder.abilities.Ability;
 import net.dinomine.potioneer.beyonder.abilities.Beyonder;
+import net.dinomine.potioneer.beyonder.abilities.DummyAbility;
 import net.dinomine.potioneer.beyonder.abilities.tyrant.WaterAffinityAbility;
+import net.dinomine.potioneer.beyonder.client.ClientAbilitiesData;
 import net.dinomine.potioneer.beyonder.player.EntityBeyonderManager;
+import net.dinomine.potioneer.beyonder.player.PlayerAbilitiesManager;
 import net.minecraft.world.entity.player.Player;
 
 import java.util.ArrayList;
@@ -11,6 +14,7 @@ import java.util.ArrayList;
 public class TyrantPathway extends Beyonder {
 
     private static ArrayList<Ability> passiveAbilities9;
+    private static ArrayList<Ability> activeAbilities9;
 
     public TyrantPathway(int sequence){
         super(sequence, "Tyrant");
@@ -20,14 +24,33 @@ public class TyrantPathway extends Beyonder {
     }
 
     public static void init(){
+
+    }
+
+    public static void getAbilities(int sequence, PlayerAbilitiesManager mng){
+        WaterAffinityAbility abl = new WaterAffinityAbility(sequence, true);
         passiveAbilities9 = new ArrayList<>();
-        passiveAbilities9.add(new WaterAffinityAbility(9, true));
+        passiveAbilities9.add(abl);
+        activeAbilities9 = new ArrayList<>();
+        activeAbilities9.add(abl);
+        ArrayList<Integer> hotbar = new ArrayList<>();
+        hotbar.add(0);
+
+        mng.setPathwayActives(activeAbilities9);
+        mng.setPathwayPassives(passiveAbilities9);
     }
 
     public static ArrayList<Ability> getPassiveAbilities(int sequence) {
+        passiveAbilities9 = new ArrayList<>();
+        passiveAbilities9.add(new WaterAffinityAbility(sequence, true));
         return passiveAbilities9;
     }
 
+    public static ArrayList<Ability> getActiveAbilities(int sequence) {
+        activeAbilities9 = new ArrayList<>();
+        activeAbilities9.add(new DummyAbility(sequence, true));
+        return activeAbilities9;
+    }
 
     @Override
     public int getId() {

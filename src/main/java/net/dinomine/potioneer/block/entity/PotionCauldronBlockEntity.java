@@ -1,9 +1,12 @@
 package net.dinomine.potioneer.block.entity;
 
 import net.dinomine.potioneer.Potioneer;
+import net.dinomine.potioneer.block.custom.PotionCauldronBlock;
 import net.dinomine.potioneer.item.ModItems;
 import net.dinomine.potioneer.particle.ModParticles;
+import net.dinomine.potioneer.recipe.PotionCauldronContainer;
 import net.dinomine.potioneer.recipe.PotionCauldronRecipe;
+import net.dinomine.potioneer.recipe.PotionRecipeData;
 import net.dinomine.potioneer.util.ModTags;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -19,7 +22,10 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.Containers;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.SimpleContainer;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -34,6 +40,7 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.entity.CampfireBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.phys.BlockHitResult;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
@@ -55,11 +62,9 @@ import static net.dinomine.potioneer.block.custom.PotionCauldronBlock.WATER_LEVE
 public class PotionCauldronBlockEntity extends BlockEntity {
 
     private static final int MAX_CAPACITY= 9;
-    private ItemStack result;
-    private ItemStack tempResult = ItemStack.EMPTY;
-    private ItemStack conflictingResult;
-    private boolean recipeSuccess = false;
-    private boolean conflict = false;
+    private PotionRecipeData result;
+    private PotionRecipeData tempResult = PotionRecipeData.EMPTY;
+    //private boolean conflict = false;
     public int countDown;
     public enum State {
         STANDBY,
@@ -95,27 +100,14 @@ public class PotionCauldronBlockEntity extends BlockEntity {
 
     public PotionCauldronBlockEntity(BlockEntityType<?> pType, BlockPos pPos, BlockState pBlockState) {
         super(pType, pPos, pBlockState);
-
-        CompoundTag nbt = new CompoundTag();
-        nbt.putBoolean("conflict", true);
-        conflictingResult = new ItemStack(ModItems.BEYONDER_POTION.get());
-        conflictingResult.setTag(nbt);
-
         state = State.STANDBY;
-        this.result = ItemStack.EMPTY;
+        this.result = PotionRecipeData.EMPTY.copy();
     }
 
     public PotionCauldronBlockEntity(BlockPos pPos, BlockState pState){
         super(ModBlockEntities.POTION_CAULDRON_BLOCK_ENTITY.get(), pPos, pState);
-
-
-        CompoundTag nbt = new CompoundTag();
-        nbt.putBoolean("conflict", true);
-        conflictingResult = new ItemStack(ModItems.BEYONDER_POTION.get());
-        conflictingResult.setTag(nbt);
-
         state = State.STANDBY;
-        this.result = ItemStack.EMPTY;
+        this.result = PotionRecipeData.EMPTY.copy();
     }
 
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state){
@@ -131,6 +123,91 @@ public class PotionCauldronBlockEntity extends BlockEntity {
         }
 
         return super.getCapability(cap);
+    }
+
+    public InteractionResult onPlayerInteract(Item item, ItemStack heldItemStack, PotionCauldronBlock cauldron, Level pLevel, BlockPos pPos, Player pPlayer, InteractionHand pHand){
+        //if on standby, checks if you can add the item to the inventory
+        if(this.state == State.STANDBY){
+            if(this.itemHandler.isItemValid(0, heldItemStack)){
+                addIngredient(heldItemStack, !pPlayer.isCreative());
+                return InteractionResult.SUCCESS;
+            }
+            return InteractionResult.PASS;
+
+        //if on finished, checks if there is a result and you can extract it
+        } if(this.state == State.FINISHED && hasResult()){
+            PotionRecipeData output = result.copy();
+            if(output.isValidContainer(heldItemStack)){
+                if(item == ModItems.VIAL.get()){
+                    cauldron.changeWaterLevel(pLevel, pPos, -1);
+                    result.amount = result.amount - 1;
+                } else {
+                    if(heldItemStack.getTag() != null && item == ModItems.FLASK.get()){
+                        CompoundTag info = heldItemStack.getTag().getCompound("potion_info");
+                        int level = info.getInt("amount");
+                        result.amount = result.amount - 2 + level;
+                        cauldron.changeWaterLevel(pLevel, pPos, -2 + level);
+
+                    }
+                    cauldron.changeWaterLevel(pLevel, pPos, -2);
+                    result.amount = 0;
+                }
+                //if the cauldron becomes empty then clear the result variable
+                if(level.getBlockState(getBlockPos()).getValue(WATER_LEVEL) < 2) {
+                    this.state = State.STANDBY;
+                    result = PotionRecipeData.EMPTY.copy();
+                    countDown = 0;
+                    level.setBlockAndUpdate(worldPosition, level.getBlockState(worldPosition).setValue(RESULT, false));
+                    setChanged();
+                }
+
+                pLevel.playSound(null, pPos, SoundEvents.BEACON_POWER_SELECT, SoundSource.BLOCKS, 1f, 1f);
+                pLevel.playSound(null, pPos, SoundEvents.BOTTLE_FILL, SoundSource.BLOCKS, 1f, 1f);
+
+                //adding result to inventory
+                ItemStack res;
+                if(heldItemStack.is(Items.GLASS_BOTTLE)){
+                    res = new ItemStack(ModItems.BEYONDER_POTION.get());
+                } else {
+                    res = heldItemStack.copy();
+                }
+                res.setCount(1);
+                applyTags(res, output);
+                heldItemStack.shrink(1);
+                if(heldItemStack.isEmpty()){
+                    pPlayer.setItemInHand(pHand, item == Items.GLASS_BOTTLE ? addRandomNbtTags(res) : res);
+                } else if(!pPlayer.getInventory().add(res)){
+                    pPlayer.drop(res, false);
+                }
+
+                return InteractionResult.SUCCESS;
+            }
+        }
+        //fix for stuff like redstone being placed if the cauldron is finished
+        if(this.itemHandler.isItemValid(0, heldItemStack)) return InteractionResult.SUCCESS;
+
+        return InteractionResult.PASS;
+    }
+
+    private void applyTags(ItemStack stack, PotionRecipeData data){
+        if(stack.hasTag()){
+            CompoundTag info = stack.getTag().getCompound("potion_info");
+            int level = info.getInt("amount");
+            int newLevel = Math.max(2, level + data.amount);
+            info.putInt("amount", newLevel);
+
+            CompoundTag modData = stack.getTag();
+            modData.put("potion_info", info);
+            stack.setTag(modData);
+        } else {
+            CompoundTag tag = new CompoundTag();
+            tag.putString("name", data.name);
+            tag.putInt("amount", stack.is(ModItems.VIAL.get()) ? 1 : data.amount);
+            tag.putInt("color", data.color);
+            CompoundTag modData = new CompoundTag();
+            modData.put("potion_info", tag);
+            stack.setTag(modData);
+        }
     }
 
     public void addIngredient(ItemStack itemStack, boolean shrink){
@@ -176,73 +253,69 @@ public class PotionCauldronBlockEntity extends BlockEntity {
         return !this.result.isEmpty();
     }
 
-    public ItemStack getResult(){
+    public PotionRecipeData getResult(){
         return this.result;
-    }
-
-    public ItemStack extractResult(){
-        ItemStack output = getResult();
-        this.result = ItemStack.EMPTY;
-        clearContent();
-        countDown = 0;
-        level.setBlockAndUpdate(worldPosition, level.getBlockState(worldPosition).setValue(RESULT, false));
-        this.state = State.STANDBY;
-        setChanged();
-        return output;
     }
 
     public void craft(){
         List<PotionCauldronRecipe> recipe = getCurrentRecipe();
+        if(recipe.isEmpty()){
+            return;
+        }
+
         if(state == State.STANDBY) {
-            recipe.forEach(iRecipe -> {
-                int waterLevel = level.getBlockState(getBlockPos()).getValue(WATER_LEVEL);
-                boolean onFire = blockBelowIsHot();
-                ItemStack output = iRecipe.getResultItem(null);
-                /*System.out.println("output: " + output);
-                System.out.println("Water level: " + waterLevel);
-                System.out.println("Is hot: " + onFire);*/
-
-                if (iRecipe.getWaterLevel() == waterLevel && !(iRecipe.needsFire() && !onFire)) {
-                    //result = PotionUtils.addPotionToItemStack(new ItemStack(Items.POTION), Potions.NIGHT_VISION);
-
-                    if (!recipeSuccess) {
-                        System.out.println("Recipe succeeded");
-                        recipeSuccess = true;
-                        tempResult = output.copy();
-                    } else {
-                        System.out.println("Result is already defined...");
-                        if (!level.isClientSide()) {
-                            if(this.tempResult.is(output.getItem())
-                                    && this.tempResult.getTag().getInt("pathwayId") == output.getTag().getInt("pathwayId")){
-                                System.out.println("Its the same result");
-                            } else {
-                                conflict = true;
-                                /*System.out.println("Incoming shit result - " + iRecipe.getId() +
-                                        " " + iRecipe.getResultItem(null).getDisplayName().getString() +
-                                        " " + this.tempResult.getDisplayName().getString());*/
-                            }
-                        }
-
+            System.out.println("Attempting craft...");
+            //list of all recipes that can conflict
+            List<PotionCauldronRecipe> possibleConflicts = recipe.stream().filter(rec -> rec.getOutput().canConflict).toList();
+            if(possibleConflicts.size() > 1) {
+                System.out.println("Found a conflict");
+                tempResult = PotionRecipeData.getConflictingResult(possibleConflicts.get(0).getOutput().bottle);
+            }
+                //no conflicts found so itll save the result
+            else {
+                //prioritizes the recipes that can conflict, so every other recipe is ignored
+                System.out.println("attempting to craft conflicts...");
+                if(!possibleConflicts.isEmpty()
+                    && possibleConflicts.get(0).canCraft(getContainer())){
+                    //checks if it can craft the recipe
+                    System.out.println("conflict crafted");
+                    tempResult = possibleConflicts.get(0).getOutput();
+                } else {
+                    System.out.println("no conflicts works. checking standard matches...");
+                    List<PotionCauldronRecipe> matches = recipe.stream().filter(pRec -> pRec.canCraft(getContainer())).toList();
+                    if(matches.isEmpty()) {
+                        System.out.println("no matches found, exiting");
+                        return;
+                    }
+                    else {
+                        System.out.println("match crafted");
+                        tempResult = matches.get(0).getOutput();
                     }
                 }
-            });
 
-            if(recipeSuccess){
-                concoct();
             }
+
+            System.out.println("concocting");
+            concoct();
             setChanged();
 
         }
 
     }
 
-    private List<PotionCauldronRecipe> getCurrentRecipe() {
-        SimpleContainer items = new SimpleContainer(itemHandler.getSlots());
+    private PotionCauldronContainer getContainer(){
+        int waterLevel = level.getBlockState(getBlockPos()).getValue(WATER_LEVEL);
+        boolean onFire = blockBelowIsHot();
+        PotionCauldronContainer items = new PotionCauldronContainer(onFire, waterLevel);
+
         for(int i = 0; i < itemHandler.getSlots(); i++){
             items.setItem(i, itemHandler.getStackInSlot(i));
         }
+        return items;
+    }
 
-        return level.getRecipeManager().getRecipesFor(PotionCauldronRecipe.Type.INSTANCE, items, level);
+    private List<PotionCauldronRecipe> getCurrentRecipe() {
+        return level.getRecipeManager().getRecipesFor(PotionCauldronRecipe.Type.INSTANCE, getContainer(), level);
     }
 
     public boolean blockBelowIsHot(){
@@ -303,7 +376,7 @@ public class PotionCauldronBlockEntity extends BlockEntity {
     public void load(CompoundTag pTag) {
         super.load(pTag);
         CompoundTag modData = pTag.getCompound(Potioneer.MOD_ID);
-        this.result = ItemStack.of(modData.getCompound("result"));
+        this.result = PotionRecipeData.load(modData.getCompound("result"));
         itemHandler.deserializeNBT(modData.getCompound("inventory"));
         this.countDown = modData.getInt("countdown");
         String name = modData.getString("state");
@@ -337,7 +410,6 @@ public class PotionCauldronBlockEntity extends BlockEntity {
 
     private void concoct(){
         //System.out.println("Concocting...");
-        recipeSuccess = false;
         state = State.CONCOCTING;
         countDown = 0;
         sendData();
@@ -347,7 +419,6 @@ public class PotionCauldronBlockEntity extends BlockEntity {
     public void tick(Level pLevel, BlockPos pPos, BlockState pState) {
         switch(state){
             case STANDBY:
-                if(checkCraftsEveryTick) craft();
                 break;
             case CONCOCTING:
                 countDown++;
@@ -367,11 +438,11 @@ public class PotionCauldronBlockEntity extends BlockEntity {
 
     private void finishPotion(Level pLevel, BlockPos pPos, BlockState pState){
         //this.result = conflict ? PotionUtils.setPotion(new ItemStack(Items.POTION), Potions.POISON) : tempResult;
-        this.result = conflict ? addRandomNbtTags(conflictingResult): addRandomNbtTags(tempResult);
+        this.result = tempResult.copy();
         pLevel.playSound(null, pPos, SoundEvents.ZOMBIE_VILLAGER_CURE, SoundSource.BLOCKS, 1f, 1f);
         pLevel.setBlockAndUpdate(pPos, pState.setValue(RESULT, true));
-        conflict = false;
-        tempResult = ItemStack.EMPTY;
+        tempResult = PotionRecipeData.EMPTY.copy();
+        clearContent();
         setChanged();
     }
 

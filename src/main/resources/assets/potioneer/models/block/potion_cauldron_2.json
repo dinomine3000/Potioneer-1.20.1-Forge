@@ -3,7 +3,7 @@
 	"texture_size": [32, 32],
 	"textures": {
 		"0": "potioneer:block/potion_cauldron",
-		"1": "potioneer:block/potion_cauldron_liquid",
+		"1": "minecraft:block/water_still",
 		"particle": "potioneer:block/potion_cauldron"
 	},
 	"elements": [
@@ -25,12 +25,12 @@
 			"to": [15, 8, 15],
 			"rotation": {"angle": 0, "axis": "y", "origin": [0, 8, 0]},
 			"faces": {
-				"north": {"uv": [5, 0, 10, 0.5], "texture": "#1"},
-				"east": {"uv": [5, 0.5, 10, 1], "texture": "#1"},
-				"south": {"uv": [5, 1, 10, 1.5], "texture": "#1"},
-				"west": {"uv": [5, 1.5, 10, 2], "texture": "#1"},
-				"up": {"uv": [16, 16, 0, 0], "texture": "#1"},
-				"down": {"uv": [5, 5, 0, 10], "texture": "#1"}
+				"north": {"uv": [5, 0, 10, 0.5], "texture": "#1", "tintindex": 1},
+				"east": {"uv": [5, 0.5, 10, 1], "texture": "#1", "tintindex": 1},
+				"south": {"uv": [5, 1, 10, 1.5], "texture": "#1", "tintindex": 1},
+				"west": {"uv": [5, 1.5, 10, 2], "texture": "#1", "tintindex": 1},
+				"up": {"uv": [16, 16, 0, 0], "texture": "#1", "tintindex": 1},
+				"down": {"uv": [5, 5, 0, 10], "texture": "#1", "tintindex": 1}
 			}
 		},
 		{

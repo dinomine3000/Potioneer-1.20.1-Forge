@@ -5,6 +5,6 @@ import net.minecraft.world.item.ItemStack;
 
 public class Vial extends AbstractLiquidContainer  {
     public Vial(Properties pProperties) {
-        super(pProperties, 1);
+        super(pProperties.stacksTo(1), 1);
     }
 }

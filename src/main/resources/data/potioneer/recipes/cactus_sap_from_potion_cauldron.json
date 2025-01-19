@@ -1,0 +1,19 @@
+{
+  "type": "potioneer:potion_cauldron_brew",
+  "main_ingredients": [
+    {
+    "item": "potioneer:wandering_cactus_prick",
+    "count": 9
+    }
+  ],
+  "supplementary_ingredients": [],
+  "water_level": 2,
+  "needs_fire": false,
+  "output": {
+    "name": "cactus_sap",
+    "amount": 1,
+    "bottle": false,
+    "color": 65280,
+    "can_conflict": false
+  }
+}

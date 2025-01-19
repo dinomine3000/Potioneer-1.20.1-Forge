@@ -1,5 +1,6 @@
 package net.dinomine.potioneer.beyonder.abilities.wheeloffortune;
 
+import net.dinomine.potioneer.beyonder.abilities.AbilityInfo;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
 import net.dinomine.potioneer.beyonder.abilities.Ability;
 import net.dinomine.potioneer.beyonder.player.EntityBeyonderManager;
@@ -10,6 +11,7 @@ public class MiningSpeedAbility extends Ability {
     public MiningSpeedAbility(int sequence, boolean enabled){
         this.sequence = sequence;
         this.enabled = enabled;
+        this.info = new AbilityInfo(32, 0, "Mining Speed");
     }
 
     @Override
@@ -33,7 +35,7 @@ public class MiningSpeedAbility extends Ability {
 
     @Override
     public void deactivate(EntityBeyonderManager cap, LivingEntity target) {
-        if(enabled && cap.getEffectsManager().hasEffect(BeyonderEffects.EFFECT.WHEEL_MINING, this.sequence)){
+        if(cap.getEffectsManager().hasEffect(BeyonderEffects.EFFECT.WHEEL_MINING, this.sequence)){
             cap.getEffectsManager().removeEffect(BeyonderEffects.EFFECT.WHEEL_MINING, this.sequence, cap, target);
         }
     }

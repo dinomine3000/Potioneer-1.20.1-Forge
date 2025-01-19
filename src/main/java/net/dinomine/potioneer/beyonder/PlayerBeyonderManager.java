@@ -12,6 +12,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
+import net.minecraftforge.event.entity.living.LivingChangeTargetEvent;
 import net.minecraftforge.event.entity.living.LivingDamageEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
@@ -20,6 +21,8 @@ import net.minecraftforge.event.level.LevelEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.fml.common.Mod;
+
+import java.awt.event.MouseEvent;
 
 @Mod.EventBusSubscriber
 public class PlayerBeyonderManager {
@@ -42,6 +45,7 @@ public class PlayerBeyonderManager {
             event.getOriginal().invalidateCaps();
         });
     }
+
 
     @SubscribeEvent
     public static void onPlayerSleep(PlayerWakeUpEvent event){
@@ -72,12 +76,18 @@ public class PlayerBeyonderManager {
 
     @SubscribeEvent
     public static void onWorldLoad(EntityJoinLevelEvent event){
-        if(event.getEntity() instanceof Player player && player.level().isClientSide()){
-            player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(stats -> {
-                PacketHandler.INSTANCE.sendToServer(new SequenceSTCSyncRequest());
-            });
+        if(event.getEntity() instanceof Player player){
+            if(player.level().isClientSide()){
+                player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(stats -> {
+                    PacketHandler.INSTANCE.sendToServer(new SequenceSTCSyncRequest());
+                });
+            } else {
+
+            }
         }
     }
+
+
 
     @SubscribeEvent
     public static void worldLoad(LevelEvent.Load event){
@@ -94,10 +104,12 @@ public class PlayerBeyonderManager {
 
     @SubscribeEvent
     public static void onAttack(LivingDamageEvent event){
-        if(event.getSource().getEntity().level().isClientSide()) return;
-        event.getSource().getEntity().getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
-            cap.getEffectsManager().onAttack(event);
-        });
+        if(event.getSource().getEntity() != null){
+            if(event.getSource().getEntity().level().isClientSide()) return;
+            event.getSource().getEntity().getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
+                cap.getEffectsManager().onAttack(event);
+            });
+        }
     }
 
     @SubscribeEvent

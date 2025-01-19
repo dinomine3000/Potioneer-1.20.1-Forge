@@ -1,6 +1,6 @@
 {
   "type": "potioneer:potion_cauldron_brew",
-  "ingredients": [
+  "main_ingredients": [
     {
       "item": "potioneer:sapphire"
     },
@@ -8,12 +8,21 @@
       "item": "potioneer:pecan_shell"
     }
   ],
+  "supplementary_ingredients": [
+    {
+      "item": "potioneer:vial",
+      "nbt": {
+        "name": "cactus_sap"
+      }
+    }
+  ],
   "water_level": 3,
   "needs_fire": true,
   "output": {
-    "type": "forge:nbt",
-    "item": "potioneer:beyonder_potion",
-    "count": 1,
-    "nbt": "{pathwayId:9}"
+    "name": "9",
+    "amount": 1,
+    "bottle": true,
+    "color": 10724259,
+    "can_conflict": true
   }
 }

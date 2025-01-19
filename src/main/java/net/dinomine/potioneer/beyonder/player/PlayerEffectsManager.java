@@ -9,6 +9,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.common.Tags;
 import net.minecraftforge.common.data.ForgeItemTagsProvider;
 import net.minecraftforge.event.entity.living.LivingDamageEvent;
@@ -23,18 +24,20 @@ public class PlayerEffectsManager {
 
     public void onAttack(LivingDamageEvent event){
         Entity attacker = event.getSource().getEntity();
-        System.out.println("gotten attacker");
         //TODO change this to account for multiple instances of similar effects
         if(attacker instanceof Player player && hasEffect(BeyonderEffects.EFFECT.RED_WEAPON_PROFICIENCY)){
             BeyonderEffect eff = getEffect(BeyonderEffects.EFFECT.RED_WEAPON_PROFICIENCY);
             InteractionHand hand = player.getUsedItemHand();
             if(player.getItemInHand(hand).is(Tags.Items.TOOLS)){
+                System.out.println(event.getAmount());
+                System.out.println(eff.getSequenceLevel());
                 float dmg = event.getAmount()*((10-eff.getSequenceLevel()) * 0.4f + 1f);
-                System.out.println("Buffing red priest damage to: " + dmg);
+                System.out.println(dmg);
                 event.setAmount(dmg);
             }
         }
     }
+
 
     public void onCraft(PlayerEvent.ItemCraftedEvent event){
         //TODO change this to account for multiple instances of similar effects
@@ -119,9 +122,11 @@ public class PlayerEffectsManager {
 
     public void onTick(EntityBeyonderManager cap, LivingEntity target){
         statsHolder.resetStats();
-        passives.forEach(effect -> {
-            effect.effectTick(cap, target);
-        });
+        if(!passives.isEmpty()){
+            passives.forEach(effect -> {
+                effect.effectTick(cap, target);
+            });
+        }
         cap.getBeyonderStats().setStats(statsHolder);
     }
 

@@ -1,10 +1,12 @@
 package net.dinomine.potioneer.beyonder.player;
 
+import net.dinomine.potioneer.beyonder.abilities.Ability;
 import net.dinomine.potioneer.beyonder.client.ClientAdvancementManager;
 import net.dinomine.potioneer.beyonder.pathways.*;
 import net.dinomine.potioneer.beyonder.abilities.Beyonder;
 import net.dinomine.potioneer.beyonder.screen.AdvancementScreen;
 import net.dinomine.potioneer.network.PacketHandler;
+import net.dinomine.potioneer.network.messages.PlayerAbilityInfoSyncSTC;
 import net.dinomine.potioneer.network.messages.PlayerAdvanceMessage;
 import net.dinomine.potioneer.network.messages.PlayerSTCHudStatsSync;
 import net.dinomine.potioneer.network.messages.PlayerStatsSyncMessage;
@@ -109,9 +111,9 @@ public class EntityBeyonderManager {
     }
 
     public void onTick(LivingEntity entity){
+        abilitiesManager.onTick(this, entity);
+        effectsManager.onTick(this, entity);
         if(entity instanceof Player player){
-            abilitiesManager.onTick(this, player);
-            effectsManager.onTick(this, player);
             PacketHandler.INSTANCE.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) player),
                     new PlayerStatsSyncMessage(this.beyonderStats.getMiningSpeed()));
             if(syncCD-- < 0){
@@ -119,19 +121,17 @@ public class EntityBeyonderManager {
                 PacketHandler.INSTANCE.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) player),
                         new PlayerSTCHudStatsSync(this.spirituality, this.maxSpirituality, this.sanity, this.getPathwayId()));
             }
-        } else {
-            abilitiesManager.onTick(this, entity);
-            effectsManager.onTick(this, entity);
         }
     }
 
 
     public boolean advance(int id, Player player, boolean sync, boolean advancing){
+        System.out.println(getEffectsManager());
         this.abilitiesManager.clear(true, this, player);
         if(id < 0){
             //setDefaultStats(player);
-            getEffectsManager().clearEffects(this, player);
-            getAbilitiesManager().clear(true, this, player);
+            //getEffectsManager().clearEffects(this, player);
+            //getAbilitiesManager().clear(true, this, player);
             this.pathway = new Beyonder(10);
             if(sync) syncSequenceData(player, advancing);
             return true;
@@ -140,8 +140,9 @@ public class EntityBeyonderManager {
 
 
         //setDefaultStats(player);
-        getAbilitiesManager().clear(true, this, player);
+        //getAbilitiesManager().clear(true, this, player);
         setPathway(id, advancing);
+
 
         //not translated. either make it translatable or delete it for final version
         if(player.level().isClientSide && advancing){
@@ -149,7 +150,7 @@ public class EntityBeyonderManager {
                     + " " + this.pathway.getSequenceName(seq, true) + "!"));
         }
         if(sync) syncSequenceData(player, advancing);
-        System.out.println(getEffectsManager());
+
         return true;
     }
 
@@ -163,11 +164,11 @@ public class EntityBeyonderManager {
             switch(pathway){
                 case 0:
                     this.pathway = new WheelOfFortunePathway(seq);
-                    this.abilitiesManager.setPathwayPassives(WheelOfFortunePathway.getPassiveAbilities(seq));
+                    WheelOfFortunePathway.getAbilities(seq, getAbilitiesManager());
                     break;
                 case 1:
                     this.pathway = new TyrantPathway(seq);
-                    this.abilitiesManager.setPathwayPassives(TyrantPathway.getPassiveAbilities(seq));
+                    TyrantPathway.getAbilities(seq, getAbilitiesManager());
                     break;
                 case 2:
                     this.pathway = new MysteryPathway(seq);
@@ -221,9 +222,12 @@ public class EntityBeyonderManager {
 
     public void syncSequenceData(Player player, boolean advancing){
         if(!player.level().isClientSide()){
+            System.out.println("syncing from server side");
+            //server side to client. messages are sent when client joins world and when he advanced by means controlled by the server
             PacketHandler.INSTANCE.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) player),
                     new PlayerAdvanceMessage(this.pathway.getId(), advancing));
         } else {
+            //client side to server. messages are sent when client advances after succeeding in the minigame
             PacketHandler.INSTANCE.sendToServer(new PlayerAdvanceMessage(this.pathway.getId(), advancing));
         }
     }

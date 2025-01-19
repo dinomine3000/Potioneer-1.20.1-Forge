@@ -33,20 +33,34 @@ public class ModCreativeModTabs {
                         output.accept(ModItems.PECAN_SPAWN_EGG.get());
                         output.accept(ModItems.CHRYON_SPAWN_EGG.get());
                         output.accept(ModItems.BEYONDER_POTION.get());
+                        output.accept(ModItems.VIAL.get());
+                        output.accept(ModItems.FLASK.get());
+                    })
+                    .build());
+
+    public static final RegistryObject<CreativeModeTab> POTIONEER_INGREDIENTS_TAB = CREATIVE_MODE_TABS.register("ingredients_tab",
+            () -> CreativeModeTab.builder().icon( () -> new ItemStack(ModItems.SOLSEER.get()))
+                    .title(Component.translatable("creativetab.potioneer_ingredients_tab"))
+                    .displayItems(( itemDisplayParameters, output) -> {
+                        output.accept(ModItems.SAPPHIRE.get());
                         output.accept(ModItems.PECAN_LEAF.get());
                         output.accept(ModItems.PECAN_SHELL.get());
                         output.accept(ModItems.SOLSEER.get());
                         output.accept(ModItems.WANDERING_CACTUS_PRICK.get());
-                        output.accept(ModItems.VIAL.get());
+
+                        //cactus sap item
                         ItemStack vial = new ItemStack(ModItems.VIAL.get());
                         CompoundTag tag = new CompoundTag();
-                        tag.putInt("level", 1);
-                        tag.putString("name", "cactus_sap");
+                        CompoundTag potionInfo = new CompoundTag();
+                        potionInfo.putInt("amount", 1);
+                        potionInfo.putString("name", "cactus_sap");
+                        potionInfo.putInt("color", 0xFF00FF00);
+                        tag.put("potion_info", potionInfo);
                         vial.setTag(tag);
                         output.accept(vial);
-                        output.accept(ModItems.FLASK.get());
-                    })
-                    .build());
+
+
+                    }).build());
 
     public static void register(IEventBus eventBus){
         CREATIVE_MODE_TABS.register(eventBus);

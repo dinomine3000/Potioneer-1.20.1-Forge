@@ -1,0 +1,28 @@
+package net.dinomine.potioneer.commands;
+
+import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.arguments.IntegerArgumentType;
+import com.mojang.brigadier.context.CommandContext;
+import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.Commands;
+import net.minecraft.server.level.ServerPlayer;
+
+public class ResetBeyonderEffectsCommand {
+
+    public ResetBeyonderEffectsCommand(CommandDispatcher<CommandSourceStack> dispatcher){
+        dispatcher.register(Commands.literal("beyondereffects")
+                .then(Commands.literal("clear")
+                        .executes(this::cleareffects))
+        );
+    }
+
+    private int cleareffects(CommandContext<CommandSourceStack> cmd){
+        ServerPlayer player = cmd.getSource().getPlayer();
+        player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap ->{
+            cap.getEffectsManager().clearEffects(cap, player);
+        });
+        return 1;
+    }
+
+}

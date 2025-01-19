@@ -12,7 +12,7 @@ import net.minecraft.world.level.Level;
 
 public class Flask extends AbstractLiquidContainer {
     public Flask(Properties pProperties) {
-        super(pProperties.stacksTo(1),2);
+        super(pProperties.stacksTo(16),2);
     }
 
 

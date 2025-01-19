@@ -1,15 +1,22 @@
 package net.dinomine.potioneer.block.custom;
 
+import net.dinomine.potioneer.block.ModBlocks;
 import net.dinomine.potioneer.block.entity.ModBlockEntities;
 import net.dinomine.potioneer.block.entity.PotionCauldronBlockEntity;
+import net.dinomine.potioneer.item.ModItems;
+import net.dinomine.potioneer.item.custom.BeyonderPotion.BeyonderPotionItem;
 import net.dinomine.potioneer.util.ModTags;
 import net.dinomine.potioneer.util.PotioneerMathHelper;
 import net.minecraft.client.color.block.BlockColor;
+import net.minecraft.client.color.item.ItemColor;
+import net.minecraft.client.renderer.debug.WaterDebugRenderer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.stats.Stats;
+import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
@@ -17,6 +24,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
@@ -28,10 +36,14 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.*;
 import net.minecraft.world.level.material.FluidState;
+import net.minecraft.world.level.material.WaterFluid;
 import net.minecraft.world.level.pathfinder.PathComputationType;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.client.event.RegisterColorHandlersEvent;
 import net.minecraftforge.fml.common.Mod;
 import org.jetbrains.annotations.Nullable;
 
@@ -46,6 +58,7 @@ public class PotionCauldronBlock extends BaseEntityBlock {
         super.createBlockStateDefinition(pBuilder);
         pBuilder.add(new Property[]{RESULT, WATER_LEVEL, DIRECTION});
     }
+
 
 
     public PotionCauldronBlock(Properties pProperties) {
@@ -84,20 +97,28 @@ public class PotionCauldronBlock extends BaseEntityBlock {
 
         BlockEntity be = pLevel.getBlockEntity(pPos);
         if(be instanceof PotionCauldronBlockEntity cauldron){
-            if(!pLevel.isClientSide() && cauldron.state == PotionCauldronBlockEntity.State.STANDBY){
+//            if(pLevel.isClientSide()) return InteractionResult.SUCCESS;
+            if(cauldron.state == PotionCauldronBlockEntity.State.STANDBY){
+                if(heldItemStack.isEmpty()){
+                    ItemStack rem = cauldron.removeItem();
+                    if(!pPlayer.getInventory().add(rem)){
+                        pPlayer.drop(rem, false);
+                    }
+                    return InteractionResult.SUCCESS;
+                }
                 if(item == Items.WATER_BUCKET){
                     if(level < 3){
                         if(!pPlayer.isCreative()){
                             pPlayer.setItemInHand(pHand, new ItemStack(Items.BUCKET));
                         }
                         pPlayer.awardStat(Stats.FILL_CAULDRON);
-                        changeWaterLevel(pLevel, pPos, pState, 1);
+                        changeWaterLevel(pLevel, pPos, 1);
                         pLevel.playSound(null, pPos, SoundEvents.BUCKET_EMPTY, SoundSource.BLOCKS, 1f, 1f);
                     }
                     cauldron.craft();
                     return InteractionResult.SUCCESS;
                 }
-                else if(item == Items.BUCKET){
+                if(item == Items.BUCKET){
                     if(level > 1){
                         if(!pPlayer.isCreative()){
                             heldItemStack.shrink(1);
@@ -109,66 +130,28 @@ public class PotionCauldronBlock extends BaseEntityBlock {
                         }
 
                         pPlayer.awardStat(Stats.USE_CAULDRON);
-                        changeWaterLevel(pLevel, pPos, pState, -1);
+                        changeWaterLevel(pLevel, pPos, -1);
                         pLevel.playSound(null, pPos, SoundEvents.BUCKET_FILL, SoundSource.BLOCKS, 1f, 1f);
                     }
                     cauldron.craft();
                     return InteractionResult.SUCCESS;
                 }
-                else if(!pLevel.isClientSide()){
-                    if(heldItemStack.isEmpty()){
-                        ItemStack rem = cauldron.removeItem();
-                        if(!pPlayer.getInventory().add(rem)){
-                            pPlayer.drop(rem, false);
-                        }
-                    } else if (item != Items.GLASS_BOTTLE){
-                        if(heldItemStack.is(ModTags.Items.POTION_INGREDIENTS)){
-                            if(pPlayer.isCreative()){
-                                cauldron.addIngredient(heldItemStack, false);
-                            } else {
-                                cauldron.addIngredient(heldItemStack, true);
-                            }
-                        }
-                        return InteractionResult.SUCCESS;
-                    }
-                }
+            }
 
-            }
-            else if(item == Items.GLASS_BOTTLE && !pLevel.isClientSide()){
-                if(cauldron.hasResult()){
-                    ItemStack res = cauldron.extractResult();
-                    heldItemStack.shrink(1);
-                    setWaterLevel(pLevel, pPos, 1);
-                    pLevel.playSound(null, pPos, SoundEvents.BEACON_POWER_SELECT, SoundSource.BLOCKS, 1f, 1f);
-                        /*
-                        use one of these sounds for beyonder potions
-                        pLevel.playSound(null, pPos, SoundEvents.BOTTLE_FILL_DRAGONBREATH, SoundSource.BLOCKS, 1f, 1f);
-                        */
-                    pLevel.playSound(null, pPos, SoundEvents.BOTTLE_FILL, SoundSource.BLOCKS, 1f, 1f);
-
-                    if(heldItemStack.isEmpty()){
-                        pPlayer.setItemInHand(pHand, res);
-                    } else if(!pPlayer.getInventory().add(res)){
-                        pPlayer.drop(res, false);
-                    }
-                }
-            }
-            else {
-                return InteractionResult.SUCCESS;
-            }
+            return cauldron.onPlayerInteract(item, heldItemStack, this, pLevel, pPos, pPlayer, pHand);
         }
 
         return super.use(pState, pLevel, pPos, pPlayer, pHand, pHit);
     }
 
 
-    private void setWaterLevel(Level pLevel, BlockPos pPos, int level){
+    public void setWaterLevel(Level pLevel, BlockPos pPos, int level){
         pLevel.setBlockAndUpdate(pPos, pLevel.getBlockState(pPos).setValue(WATER_LEVEL, level));
     }
 
-    private void changeWaterLevel(Level pLevel, BlockPos pPos, BlockState pState, int diff){
+    public void changeWaterLevel(Level pLevel, BlockPos pPos, int diff){
         //pState.trySetValue(LEVEL, diff);
-        setWaterLevel(pLevel, pPos, pLevel.getBlockState(pPos).getValue(WATER_LEVEL)+ diff);
+        setWaterLevel(pLevel, pPos, Mth.clamp(pLevel.getBlockState(pPos).getValue(WATER_LEVEL) + diff, 1, 3));
     }
 
     @Override
@@ -211,4 +194,22 @@ public class PotionCauldronBlock extends BaseEntityBlock {
         return createTickerHelper(pBlockEntityType, ModBlockEntities.POTION_CAULDRON_BLOCK_ENTITY.get(),
                 ((pLevel1, pPos1, pState1, be1) -> be1.tick(pLevel1, pPos1, pState1)));
     }
+
+    @OnlyIn(Dist.CLIENT)
+    public static class PotionCauldronTint implements BlockColor {
+
+        @Override
+        public int getColor(BlockState blockState, @Nullable BlockAndTintGetter blockAndTintGetter, @Nullable BlockPos blockPos, int i) {
+            if(i != 1) return -1;
+            if(blockState.getValue(RESULT)){
+                BlockEntity be = blockAndTintGetter.getBlockEntity(blockPos);
+                if(be instanceof PotionCauldronBlockEntity cauldron){
+                    return cauldron.getResult().color;
+                }
+                return 0x00D91EFF;
+            }
+            return 0x003F76E4;
+        }
+    }
+
 }

@@ -25,4 +25,11 @@ public final class KeyBindings {
             InputConstants.getKey(InputConstants.KEY_R, -1),
             CATEGORY
     );
+
+    public final KeyMapping showHotbarKey = new KeyMapping(
+            "key." + Potioneer.MOD_ID + ".show_hotbar_key",
+            KeyConflictContext.IN_GAME,
+            InputConstants.getKey(InputConstants.KEY_LALT, -1),
+            CATEGORY
+    );
 }

@@ -9,7 +9,6 @@ import net.dinomine.potioneer.entities.client.PecanRenderer;
 import net.dinomine.potioneer.entities.custom.ChryonEntity;
 import net.dinomine.potioneer.item.ModCreativeModTabs;
 import net.dinomine.potioneer.item.ModItems;
-import net.dinomine.potioneer.item.ModPotions;
 import net.dinomine.potioneer.network.PacketHandler;
 import net.dinomine.potioneer.particle.ModParticles;
 import net.dinomine.potioneer.recipe.ModRecipes;
@@ -105,12 +104,13 @@ public class Potioneer
             ItemProperties.register(ModItems.VIAL.get(),
                     new ResourceLocation(Potioneer.MOD_ID, "level"),
                     ((itemStack, clientLevel, livingEntity, i) ->
-                            itemStack.getTag() != null ? itemStack.getTag().getInt("level") : 0));
+                            itemStack.getTag() != null ? itemStack.getTag().getCompound("potion_info").getInt("amount") : 0));
 
             ItemProperties.register(ModItems.FLASK.get(),
                     new ResourceLocation(Potioneer.MOD_ID, "level"),
                     ((itemStack, clientLevel, livingEntity, i) ->
-                            itemStack.getTag() != null ? itemStack.getTag().getInt("level") : 0));
+                            itemStack.getTag() != null ? itemStack.getTag().getCompound("potion_info").getInt("amount") : 0));
+
             LOGGER.info("HELLO FROM CLIENT SETUP");
             LOGGER.info("MINECRAFT NAME >> {}", Minecraft.getInstance().getUser().getName());
         }

@@ -13,7 +13,6 @@ import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
-//called frequently to update the client stats for the hud display
 public class PlayerStatsSyncMessage {
     public float miningSpeed;
 

@@ -11,6 +11,7 @@ public class ClientStatsData {
     private static int maxSpirituality = 100;
     private static int sanity = 100;
     private static int pathwayId;
+    public static boolean keyPressed = false;
 
     public static void attemptAdvancement(int newSeq){
         //difference between the new sequence and current sequence
@@ -37,11 +38,9 @@ public class ClientStatsData {
         ClientStatsData.sanity = sanity;
     }
 
-
     public static void setPathwayId(int id){
         ClientStatsData.pathwayId = id;
     }
-
 
     public static float getPlayerSpirituality(){
         return spirituality;

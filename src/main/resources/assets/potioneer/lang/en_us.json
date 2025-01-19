@@ -22,6 +22,7 @@
   "item.potioneer.solseer": "Solseer",
   "item.potioneer.wandering_cactus_prick": "Wandering Cactus Prick",
   "item.potioneer.vial.cactus_sap": "Wandering Cactus Sap Vial",
+  "item.potioneer.flask.cactus_sap": "Wandering Cactus Sap Flask",
 
 
   "key.potioneer.beyonder_menu_key": "Beyonder Menu",
@@ -48,5 +49,6 @@
   "potioneer.beyonder.pathway.beyonderless": "Not a beyonder",
   "potioneer.beyonder.sequence.none": "",
 
-  "creativetab.potioneer_tab": "Potioneer"
+  "creativetab.potioneer_tab": "Potioneer",
+  "creativetab.potioneer_ingredients_tab": "Ingredients"
 }

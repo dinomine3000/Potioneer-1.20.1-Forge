@@ -44,7 +44,7 @@ public class PlayerAdvanceMessage {
                 System.out.println("Receiving on server side");
                 Player player = context.getSender();
                 player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
-                    cap.advance(msg.id, player, false, msg.advancing);
+                    cap.advance(msg.id, player, true, msg.advancing);
                 });
             }
         });

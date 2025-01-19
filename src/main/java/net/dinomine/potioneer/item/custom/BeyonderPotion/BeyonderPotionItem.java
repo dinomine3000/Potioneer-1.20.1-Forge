@@ -2,13 +2,17 @@ package net.dinomine.potioneer.item.custom.BeyonderPotion;
 
 import net.dinomine.potioneer.beyonder.client.ClientStatsData;
 import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
+import net.dinomine.potioneer.item.ModItems;
+import net.minecraft.client.color.item.ItemColor;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.*;
 import net.minecraft.world.level.Level;
+import net.minecraftforge.client.event.RegisterColorHandlersEvent;
 import net.minecraftforge.client.extensions.common.IClientItemExtensions;
 import software.bernie.geckolib.animatable.GeoItem;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
@@ -63,19 +67,27 @@ public class BeyonderPotionItem extends PotionItem implements GeoItem {
 
     @Override
     public ItemStack finishUsingItem(ItemStack pStack, Level pLevel, LivingEntity pEntityLiving) {
-        if(pEntityLiving instanceof Player player && !pLevel.isClientSide()){
-            if(pStack.hasTag() && pStack.getTag().getBoolean("conflict")){
+        if(pStack.hasTag()){
+            CompoundTag info = pStack.getTag().getCompound("potion_info");
+            String name = info.getString("name");
+            if(pEntityLiving instanceof Player player && !pLevel.isClientSide()){
+                if(name.equals("conflict")){
                     if(!player.isCreative()){
                         player.kill();
                         //reduce sequence
                     }
-                player.sendSystemMessage(Component.literal("Lost control on the spot. oh well."));
+                    player.sendSystemMessage(Component.literal("Lost control on the spot. oh well."));
+                }
             }
-        }
-        if(pEntityLiving instanceof Player player && pLevel.isClientSide()){
-            if(pStack.hasTag()){
-                if(!pStack.getTag().getBoolean("conflict")){
-                    ClientStatsData.attemptAdvancement(pStack.getTag().getInt("pathwayId"));
+            if(pEntityLiving instanceof Player && pLevel.isClientSide()){
+                boolean beyonder = true;
+                try {
+                    Integer.parseInt(name);
+                } catch (Exception e){
+                    beyonder = false;
+                }
+                if(beyonder){
+                    ClientStatsData.attemptAdvancement(Integer.parseInt(name));
                 }
             }
         }

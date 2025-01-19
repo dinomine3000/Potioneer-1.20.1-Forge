@@ -1,6 +1,6 @@
 {
   "type": "potioneer:potion_cauldron_brew",
-  "ingredients": [
+  "main_ingredients": [
     {
       "item": "potioneer:sapphire"
     },
@@ -8,12 +8,14 @@
       "item": "potioneer:pecan_leaf"
     }
   ],
+  "supplementary_ingredients": [],
   "water_level": 3,
   "needs_fire": true,
   "output": {
-    "type": "forge:nbt",
-    "item": "potioneer:beyonder_potion",
-    "count": 1,
-    "nbt": "{pathwayId:19}"
+    "name": "19",
+    "amount": 1,
+    "bottle": true,
+    "color": 2146549,
+    "can_conflict": true
   }
 }
