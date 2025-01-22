@@ -17,38 +17,31 @@ import java.util.ArrayList;
 
 public class WheelOfFortunePathway extends Beyonder {
 
-    public static ArrayList<Ability> passiveAbilities9;
-    public static ArrayList<Ability> activeAbilities9;
-
     public WheelOfFortunePathway(int sequence) {
         super(sequence, "Wheel_of_Fortune");
         this.color = 0x808080;
         this.maxSpirituality = new int[]{0, 0, 0, 0, 0, 0, 0, 0, 500, 100};
     }
 
-    public static void init(){
-    }
-
-
     public static void getAbilities(int sequence, PlayerAbilitiesManager mng){
-        MiningSpeedAbility abl = new MiningSpeedAbility(sequence, true);
-        DummyAbility dummy = new DummyAbility(sequence, true);
-        passiveAbilities9 = new ArrayList<>();
+        MiningSpeedAbility abl = new MiningSpeedAbility(sequence);
+        DummyAbility dummy = new DummyAbility(sequence);
+        ArrayList<Ability> passiveAbilities9 = new ArrayList<>();
         passiveAbilities9.add(abl);
-        activeAbilities9 = new ArrayList<>();
+        ArrayList<Ability> activeAbilities9 = new ArrayList<>();
         activeAbilities9.add(dummy);
         activeAbilities9.add(abl);
-        ArrayList<Integer> hotbar = new ArrayList<>();
-        hotbar.add(0);
-        hotbar.add(1);
 
         mng.setPathwayActives(activeAbilities9);
         mng.setPathwayPassives(passiveAbilities9);
 
     }
 
-    @Override
-    public String getSequenceName(int seq){
+    public static String getSequenceName(int seq, boolean show){
+        return show ? getSequenceName(seq).replace("_", " ") : getSequenceName(seq).toLowerCase();
+    }
+
+    public static String getSequenceName(int seq){
         return switch (seq) {
             case 9 -> "Miner";
             case 8 -> "Appraiser";
@@ -67,9 +60,6 @@ public class WheelOfFortunePathway extends Beyonder {
         return sequence;
     }
 
-    public static ArrayList<Ability> getPassiveAbilities(int sequence) {
-        return passiveAbilities9;
-    }
 
     public static void giveNightVision(Player player, EntityBeyonderManager cap){
         int cost = 1;

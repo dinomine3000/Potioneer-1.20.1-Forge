@@ -1,0 +1,28 @@
+{
+  "type": "potioneer:potion_cauldron_brew",
+  "main_ingredients": [
+    {
+      "item": "potioneer:sapphire"
+    },
+    {
+      "item": "potioneer:pecan_shell"
+    }
+  ],
+  "supplementary_ingredients": [
+    {
+      "item": "minecraft:redstone"
+    },
+    {
+      "item": "minecraft:iron_ingot"
+    }
+  ],
+  "water_level": 3,
+  "needs_fire": true,
+  "output": {
+    "name": "49",
+    "amount": 1,
+    "bottle": true,
+    "color": 16770989,
+    "can_conflict": true
+  }
+}

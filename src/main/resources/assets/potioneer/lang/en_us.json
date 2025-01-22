@@ -9,6 +9,7 @@
 
   "item.potioneer.vial": "Vial",
   "item.potioneer.flask": "Flask",
+  "item.potioneer.formula": "Potion Formula",
   "block.potioneer.potion_cauldron": "Potion Cauldron",
 
   "item.potioneer.chryon_spawn_egg": "Chryon Spawn Egg",
@@ -32,23 +33,33 @@
   "potioneer.beyonder.pathway.tyrant": "Tyrant Pathway",
   "potioneer.beyonder.sequence.swimmer": "Sequence 9 Swimmer",
   "potioneer.beyonder.sequence.water-blessed": "Sequence 8 Water-Blessed",
+  "potioneer.beyonder.sequence.hydro_shaman": "Sequence 7 Hydro Shaman",
 
   "potioneer.beyonder.pathway.wheel_of_fortune": "Wheel of Fortune Pathway",
   "potioneer.beyonder.sequence.miner": "Sequence 9 Miner",
+  "potioneer.beyonder.sequence.appraiser": "Sequence 8 Appraiser",
+  "potioneer.beyonder.sequence.gambling_man": "Sequence 7 Gambling Man",
 
   "potioneer.beyonder.pathway.mystery": "Mystery Pathway",
-  "potioneer.beyonder.sequence.tormenter": "Sequence 9 Tormenter",
+  "potioneer.beyonder.sequence.trickmaster": "Sequence 9 Trickmaster",
+  "potioneer.beyonder.sequence.voodoo_assassin": "Sequence 8 Voodoo Assassin",
+  "potioneer.beyonder.sequence.plague_doctor": "Sequence 7 Plague Doctor",
 
   "potioneer.beyonder.pathway.red_priest": "Red Priest Pathway",
   "potioneer.beyonder.sequence.warrior": "Sequence 9 Warrior",
+  "potioneer.beyonder.sequence.pyromaniac": "Sequence 8 Pyromaniac",
+  "potioneer.beyonder.sequence.priest_of_light": "Sequence 7 Priest of Light",
 
   "potioneer.beyonder.pathway.paragon": "Paragon Pathway",
   "potioneer.beyonder.sequence.crafter": "Sequence 9 Crafter",
   "potioneer.beyonder.sequence.enchanter": "Sequence 8 Enchanter",
+  "potioneer.beyonder.sequence.conjurer": "Sequence 7 Conjurer",
 
   "potioneer.beyonder.pathway.beyonderless": "Not a beyonder",
   "potioneer.beyonder.sequence.none": "",
 
   "creativetab.potioneer_tab": "Potioneer",
-  "creativetab.potioneer_ingredients_tab": "Ingredients"
+  "creativetab.potioneer_ingredients_tab": "Ingredients",
+  "potioneer.gui.main_ingredients": "Main Ingredients:",
+  "potioneer.gui.supplementary_ingredients": "Supplementary Ingredients:"
 }

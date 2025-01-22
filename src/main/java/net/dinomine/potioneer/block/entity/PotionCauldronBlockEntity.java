@@ -6,12 +6,11 @@ import net.dinomine.potioneer.item.ModItems;
 import net.dinomine.potioneer.particle.ModParticles;
 import net.dinomine.potioneer.recipe.PotionCauldronContainer;
 import net.dinomine.potioneer.recipe.PotionCauldronRecipe;
-import net.dinomine.potioneer.recipe.PotionRecipeData;
+import net.dinomine.potioneer.recipe.PotionContentData;
 import net.dinomine.potioneer.util.ModTags;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
@@ -19,42 +18,31 @@ import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.Containers;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.alchemy.Potion;
-import net.minecraft.world.item.alchemy.PotionUtils;
-import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BaseFireBlock;
-import net.minecraft.world.level.block.CampfireBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.minecraft.world.level.block.entity.CampfireBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
-import net.minecraft.world.phys.BlockHitResult;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
-import org.checkerframework.checker.units.qual.C;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import java.util.List;
-import java.util.Optional;
-import java.util.Random;
 
 import static net.dinomine.potioneer.block.custom.PotionCauldronBlock.RESULT;
 import static net.dinomine.potioneer.block.custom.PotionCauldronBlock.WATER_LEVEL;
@@ -62,8 +50,8 @@ import static net.dinomine.potioneer.block.custom.PotionCauldronBlock.WATER_LEVE
 public class PotionCauldronBlockEntity extends BlockEntity {
 
     private static final int MAX_CAPACITY= 9;
-    private PotionRecipeData result;
-    private PotionRecipeData tempResult = PotionRecipeData.EMPTY;
+    private PotionContentData result;
+    private PotionContentData tempResult = PotionContentData.EMPTY;
     //private boolean conflict = false;
     public int countDown;
     public enum State {
@@ -101,13 +89,13 @@ public class PotionCauldronBlockEntity extends BlockEntity {
     public PotionCauldronBlockEntity(BlockEntityType<?> pType, BlockPos pPos, BlockState pBlockState) {
         super(pType, pPos, pBlockState);
         state = State.STANDBY;
-        this.result = PotionRecipeData.EMPTY.copy();
+        this.result = PotionContentData.EMPTY.copy();
     }
 
     public PotionCauldronBlockEntity(BlockPos pPos, BlockState pState){
         super(ModBlockEntities.POTION_CAULDRON_BLOCK_ENTITY.get(), pPos, pState);
         state = State.STANDBY;
-        this.result = PotionRecipeData.EMPTY.copy();
+        this.result = PotionContentData.EMPTY.copy();
     }
 
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state){
@@ -136,7 +124,7 @@ public class PotionCauldronBlockEntity extends BlockEntity {
 
         //if on finished, checks if there is a result and you can extract it
         } if(this.state == State.FINISHED && hasResult()){
-            PotionRecipeData output = result.copy();
+            PotionContentData output = result.copy();
             if(output.isValidContainer(heldItemStack)){
                 if(item == ModItems.VIAL.get()){
                     cauldron.changeWaterLevel(pLevel, pPos, -1);
@@ -155,7 +143,7 @@ public class PotionCauldronBlockEntity extends BlockEntity {
                 //if the cauldron becomes empty then clear the result variable
                 if(level.getBlockState(getBlockPos()).getValue(WATER_LEVEL) < 2) {
                     this.state = State.STANDBY;
-                    result = PotionRecipeData.EMPTY.copy();
+                    result = PotionContentData.EMPTY.copy();
                     countDown = 0;
                     level.setBlockAndUpdate(worldPosition, level.getBlockState(worldPosition).setValue(RESULT, false));
                     setChanged();
@@ -189,7 +177,7 @@ public class PotionCauldronBlockEntity extends BlockEntity {
         return InteractionResult.PASS;
     }
 
-    private void applyTags(ItemStack stack, PotionRecipeData data){
+    private void applyTags(ItemStack stack, PotionContentData data){
         if(stack.hasTag()){
             CompoundTag info = stack.getTag().getCompound("potion_info");
             int level = info.getInt("amount");
@@ -253,7 +241,7 @@ public class PotionCauldronBlockEntity extends BlockEntity {
         return !this.result.isEmpty();
     }
 
-    public PotionRecipeData getResult(){
+    public PotionContentData getResult(){
         return this.result;
     }
 
@@ -269,20 +257,20 @@ public class PotionCauldronBlockEntity extends BlockEntity {
             List<PotionCauldronRecipe> possibleConflicts = recipe.stream().filter(rec -> rec.getOutput().canConflict).toList();
             if(possibleConflicts.size() > 1) {
                 System.out.println("Found a conflict");
-                tempResult = PotionRecipeData.getConflictingResult(possibleConflicts.get(0).getOutput().bottle);
+                tempResult = PotionContentData.getConflictingResult(possibleConflicts.get(0).getOutput().bottle);
             }
                 //no conflicts found so itll save the result
             else {
                 //prioritizes the recipes that can conflict, so every other recipe is ignored
                 System.out.println("attempting to craft conflicts...");
                 if(!possibleConflicts.isEmpty()
-                    && possibleConflicts.get(0).canCraft(getContainer())){
+                    && possibleConflicts.get(0).canCraft(getContainer(), level)){
                     //checks if it can craft the recipe
                     System.out.println("conflict crafted");
                     tempResult = possibleConflicts.get(0).getOutput();
                 } else {
                     System.out.println("no conflicts works. checking standard matches...");
-                    List<PotionCauldronRecipe> matches = recipe.stream().filter(pRec -> pRec.canCraft(getContainer())).toList();
+                    List<PotionCauldronRecipe> matches = recipe.stream().filter(pRec -> pRec.canCraft(getContainer(), level)).toList();
                     if(matches.isEmpty()) {
                         System.out.println("no matches found, exiting");
                         return;
@@ -376,7 +364,7 @@ public class PotionCauldronBlockEntity extends BlockEntity {
     public void load(CompoundTag pTag) {
         super.load(pTag);
         CompoundTag modData = pTag.getCompound(Potioneer.MOD_ID);
-        this.result = PotionRecipeData.load(modData.getCompound("result"));
+        this.result = PotionContentData.load(modData.getCompound("result"));
         itemHandler.deserializeNBT(modData.getCompound("inventory"));
         this.countDown = modData.getInt("countdown");
         String name = modData.getString("state");
@@ -441,7 +429,7 @@ public class PotionCauldronBlockEntity extends BlockEntity {
         this.result = tempResult.copy();
         pLevel.playSound(null, pPos, SoundEvents.ZOMBIE_VILLAGER_CURE, SoundSource.BLOCKS, 1f, 1f);
         pLevel.setBlockAndUpdate(pPos, pState.setValue(RESULT, true));
-        tempResult = PotionRecipeData.EMPTY.copy();
+        tempResult = PotionContentData.EMPTY.copy();
         clearContent();
         setChanged();
     }

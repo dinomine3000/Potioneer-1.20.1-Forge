@@ -1,0 +1,25 @@
+{
+  "type": "potioneer:potion_cauldron_brew",
+  "main_ingredients": [
+    {
+      "item": "potioneer:sapphire"
+    },
+    {
+      "item": "potioneer:solseer"
+    }
+  ],
+  "supplementary_ingredients": [
+    {
+      "item": "minecraft:blaze_powder"
+    }
+  ],
+  "water_level": 3,
+  "needs_fire": true,
+  "output": {
+    "name": "39",
+    "amount": 1,
+    "bottle": true,
+    "color": 10251629,
+    "can_conflict": true
+  }
+}

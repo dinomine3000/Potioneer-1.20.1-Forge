@@ -13,9 +13,6 @@ import java.util.ArrayList;
 
 public class TyrantPathway extends Beyonder {
 
-    private static ArrayList<Ability> passiveAbilities9;
-    private static ArrayList<Ability> activeAbilities9;
-
     public TyrantPathway(int sequence){
         super(sequence, "Tyrant");
         this.color = 0x404080;
@@ -23,42 +20,41 @@ public class TyrantPathway extends Beyonder {
 
     }
 
-    public static void init(){
-
-    }
-
     public static void getAbilities(int sequence, PlayerAbilitiesManager mng){
-        WaterAffinityAbility abl = new WaterAffinityAbility(sequence, true);
-        passiveAbilities9 = new ArrayList<>();
+        WaterAffinityAbility abl = new WaterAffinityAbility(sequence);
+
+        ArrayList<Ability> passiveAbilities9 = new ArrayList<>();
         passiveAbilities9.add(abl);
-        activeAbilities9 = new ArrayList<>();
+        ArrayList<Ability> activeAbilities9 = new ArrayList<>();
         activeAbilities9.add(abl);
-        ArrayList<Integer> hotbar = new ArrayList<>();
-        hotbar.add(0);
 
         mng.setPathwayActives(activeAbilities9);
         mng.setPathwayPassives(passiveAbilities9);
     }
 
-    public static ArrayList<Ability> getPassiveAbilities(int sequence) {
-        passiveAbilities9 = new ArrayList<>();
-        passiveAbilities9.add(new WaterAffinityAbility(sequence, true));
-        return passiveAbilities9;
-    }
-
-    public static ArrayList<Ability> getActiveAbilities(int sequence) {
-        activeAbilities9 = new ArrayList<>();
-        activeAbilities9.add(new DummyAbility(sequence, true));
-        return activeAbilities9;
-    }
+//    public static ArrayList<Ability> getPassiveAbilities(int sequence) {
+//        passiveAbilities9 = new ArrayList<>();
+//        passiveAbilities9.add(new WaterAffinityAbility(sequence, true));
+//        return passiveAbilities9;
+//    }
+//
+//    public static ArrayList<Ability> getActiveAbilities(int sequence) {
+//        activeAbilities9 = new ArrayList<>();
+//        activeAbilities9.add(new DummyAbility(sequence));
+//        return activeAbilities9;
+//    }
 
     @Override
     public int getId() {
         return 10 + this.sequence;
     }
 
-    @Override
-    public String getSequenceName(int seq){
+
+    public static String getSequenceName(int seq, boolean show){
+        return show ? getSequenceName(seq).replace("_", " ") : getSequenceName(seq).toLowerCase();
+    }
+
+    public static String getSequenceName(int seq){
         return switch (seq) {
             case 9 -> "Swimmer";
             case 8 -> "Water-Blessed";

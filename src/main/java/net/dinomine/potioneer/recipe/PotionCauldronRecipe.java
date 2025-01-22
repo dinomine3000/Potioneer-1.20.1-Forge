@@ -4,44 +4,58 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import net.dinomine.potioneer.Potioneer;
+import net.dinomine.potioneer.savedata.PotionFormulaSaveData;
+import net.dinomine.potioneer.savedata.PotionRecipeData;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.tags.TagKey;
 import net.minecraft.util.GsonHelper;
-import net.minecraft.world.SimpleContainer;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.*;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
 
-public class PotionCauldronRecipe implements Recipe<PotionCauldronContainer> {
-    private final NonNullList<ItemStack> mainIngredients;
-    private final NonNullList<ItemStack> suppIngredients;
-    private final PotionRecipeData output;
-    private final ResourceLocation id;
-    private final int waterLevel;
-    private final boolean needsFire;
+import java.util.ArrayList;
 
-    public PotionCauldronRecipe(NonNullList<ItemStack> mainIngredients, NonNullList<ItemStack> suppIngredients,
-                                PotionRecipeData output, ResourceLocation id, int waterLevel, boolean needsFire) {
-        this.mainIngredients = mainIngredients;
-        this.suppIngredients = suppIngredients;
+public class PotionCauldronRecipe implements Recipe<PotionCauldronContainer> {
+    private final PotionContentData output;
+    private final ResourceLocation id;
+    public final PotionRecipeData recipeData;
+    public PotionRecipeData alternateRecipeData;
+
+    @Override
+    public String toString() {
+        return recipeData.toString();
+    }
+
+    public PotionCauldronRecipe(PotionContentData output, ResourceLocation id,
+                                PotionRecipeData recData) {
+        this(output, id, recData, recData.copy());
+        System.out.println("Read json...");
+    }
+
+    public PotionCauldronRecipe(PotionContentData output, ResourceLocation id,
+                                PotionRecipeData recData, PotionRecipeData alt){
         this.output = output;
         this.id = id;
-        this.waterLevel = waterLevel;
-        this.needsFire = needsFire;
+        this.recipeData = recData;
+        this.alternateRecipeData = alt;
+        System.out.println("Created a recipe instance...");
     }
 
     @Override
     public boolean matches(PotionCauldronContainer simpleContainer, Level level) {
         if(level.isClientSide()) return false;
-        if(this.needsFire && !simpleContainer.isOnFire()) return false;
-        if(this.waterLevel != simpleContainer.getWaterLevel()) return false;
+        if(this.alternateRecipeData.fire() && !simpleContainer.isOnFire()) return false;
+        if(this.alternateRecipeData.waterLevel() != simpleContainer.getWaterLevel()) return false;
 
         //will return true if every item in the recipe is contained in the container
-        for(ItemStack recipeItem: mainIngredients){
+        for(ItemStack recipeItem: alternateRecipeData.main()){
             if(!contains(simpleContainer, recipeItem)) {
                 return false;
             }
@@ -49,28 +63,39 @@ public class PotionCauldronRecipe implements Recipe<PotionCauldronContainer> {
         return true;
     }
 
-    public boolean canCraft(PotionCauldronContainer container){
-        if(this.needsFire && !container.isOnFire()) return false;
-        if(this.waterLevel != container.getWaterLevel()) return false;
+    public boolean canCraft(PotionCauldronContainer container, Level level){
+        if(this.alternateRecipeData.fire() && !container.isOnFire()) return false;
+        if(this.alternateRecipeData.waterLevel() != container.getWaterLevel()) return false;
 
-        for(ItemStack recipeItem: mainIngredients){
+        for(ItemStack recipeItem: alternateRecipeData.main()){
             if(!contains(container, recipeItem)) return false;
         }
 
-        for(ItemStack recipeItem: suppIngredients){
+        for(ItemStack recipeItem: alternateRecipeData.supplementary()){
             if(!contains(container, recipeItem)) return false;
         }
         return true;
     }
 
+//    private PotionRecipeData checkWorldSavedData(Level level){
+//        if(recipeData.id() > -1) {
+//            PotionFormulaSaveData data = PotionFormulaSaveData.from((ServerLevel) level);
+//            //TODO remove this if check. supposedly, any recipe would already be in saved data, so it would never be null
+//            if(data.getDataFromId(recipeData.id()) != null){
+//                return data.getDataFromId(recipeData.id()).copy();
+//            }
+//        }
+//        return recipeData;
+//    }
+
     private boolean contains(PotionCauldronContainer container, ItemStack item){
         int hold = 0;
         if(item.hasTag()){
             CompoundTag tag = item.getTag();
-            String name = tag.getString("name");
             for(int i = 0; i < container.getContainerSize(); ++i) {
                 if (item.is(container.getItem(i).getItem())
-                        && container.getItem(i).getTag().getCompound("potion_info").getString("name").equals(name)) {
+                        && container.getItem(i).hasTag()
+                        && containsTag(item, container.getItem(i))) {
                     hold++;
                 }
             }
@@ -82,6 +107,21 @@ public class PotionCauldronRecipe implements Recipe<PotionCauldronContainer> {
             }
         }
         return hold >= item.getCount();
+    }
+
+    private boolean containsTag(ItemStack reference, ItemStack test){
+        CompoundTag testTag = test.getTag();
+        if(testTag == null) return false;
+        ArrayList<String> keys = new ArrayList<>(reference.getTag().getAllKeys().stream().toList());
+        ArrayList<String> testKeys = new ArrayList<>(test.getTag().getAllKeys().stream().toList());
+        if(testKeys.size() < keys.size()) return false;
+        for (int i = 0; i < keys.size(); i++) {
+            String key = keys.get(i);
+            if(!reference.getTag().get(key).equals(testTag.get(key))){
+                return false;
+            }
+        }
+        return true;
     }
 
     @Override
@@ -115,14 +155,14 @@ public class PotionCauldronRecipe implements Recipe<PotionCauldronContainer> {
     }
 
     public int getWaterLevel(){
-        return this.waterLevel;
+        return this.recipeData.waterLevel();
     }
 
     public boolean needsFire(){
-        return this.needsFire;
+        return this.recipeData.fire();
     }
 
-    public PotionRecipeData getOutput(){
+    public PotionContentData getOutput(){
         return this.output;
     }
 
@@ -146,18 +186,30 @@ public class PotionCauldronRecipe implements Recipe<PotionCauldronContainer> {
             if ((count(mainIngredients) + count(suppIngredients)) > 9) {
                 throw new JsonParseException("Too many ingredients for shapeless recipe. The maximum is 9");
             } else {
-                PotionRecipeData output = getOutputFromJson(GsonHelper.getAsJsonObject(pJson, "output"));
-                return new PotionCauldronRecipe(mainIngredients, suppIngredients, output, pRecipeId, waterLevel, needsFire);
+                PotionContentData output = getOutputFromJson(GsonHelper.getAsJsonObject(pJson, "output"));
+
+                return new PotionCauldronRecipe(output, pRecipeId,
+                                new PotionRecipeData(new ArrayList<>(mainIngredients), new ArrayList<>(suppIngredients),
+                                waterLevel, needsFire, isNumeric(output.name) ? Integer.parseInt(output.name) : -1));
             }
         }
 
-        public PotionRecipeData getOutputFromJson(JsonObject obj) {
+        private static boolean isNumeric(String str) {
+            try {
+                Double.parseDouble(str);
+                return true;
+            } catch(NumberFormatException e){
+                return false;
+            }
+        }
+
+        public PotionContentData getOutputFromJson(JsonObject obj) {
             String name = GsonHelper.getAsString(obj, "name");
             int count = GsonHelper.getAsInt(obj, "amount");
             boolean bottle = GsonHelper.getAsBoolean(obj, "bottle");
             int color = GsonHelper.getAsInt(obj, "color");
             boolean canConflict = GsonHelper.getAsBoolean(obj, "can_conflict");
-            return new PotionRecipeData(name, count, bottle, color, canConflict);
+            return new PotionContentData(name, count, bottle, color, canConflict);
         }
 
         private long convertToHex(String string){
@@ -201,9 +253,7 @@ public class PotionCauldronRecipe implements Recipe<PotionCauldronContainer> {
         @Override
         public @Nullable PotionCauldronRecipe fromNetwork(ResourceLocation resourceLocation, FriendlyByteBuf friendlyByteBuf) {
             NonNullList<ItemStack> mainIngredients = NonNullList.withSize(friendlyByteBuf.readInt(), ItemStack.EMPTY);
-            for (int i = 0; i < mainIngredients.size(); i++) {
-                mainIngredients.set(i, friendlyByteBuf.readItem());
-            }
+            mainIngredients.replaceAll(ignored -> friendlyByteBuf.readItem());
 
             NonNullList<ItemStack> suppIngredients = NonNullList.withSize(friendlyByteBuf.readInt(), ItemStack.EMPTY);
             suppIngredients.replaceAll(ignored -> friendlyByteBuf.readItem());
@@ -212,28 +262,56 @@ public class PotionCauldronRecipe implements Recipe<PotionCauldronContainer> {
 
             boolean needsFire = friendlyByteBuf.readBoolean();
 
-            PotionRecipeData output = PotionRecipeData.readFromByteBuf(friendlyByteBuf);
+            PotionContentData output = PotionContentData.readFromByteBuf(friendlyByteBuf);
 
-            return new PotionCauldronRecipe(mainIngredients, suppIngredients, output, resourceLocation, waterLevel, needsFire);
+            NonNullList<ItemStack> altMainIngredients = NonNullList.withSize(friendlyByteBuf.readInt(), ItemStack.EMPTY);
+            altMainIngredients.replaceAll(ignored -> friendlyByteBuf.readItem());
+
+            NonNullList<ItemStack> altSuppIngredients = NonNullList.withSize(friendlyByteBuf.readInt(), ItemStack.EMPTY);
+            altSuppIngredients.replaceAll(ignored -> friendlyByteBuf.readItem());
+
+            int altWaterLevel = friendlyByteBuf.readInt();
+
+            boolean altNeedsFire = friendlyByteBuf.readBoolean();
+
+            int id = isNumeric(output.name) ? Integer.parseInt(output.name) : -1;
+
+            return new PotionCauldronRecipe(output, resourceLocation,
+                    new PotionRecipeData(new ArrayList<>(mainIngredients), new ArrayList<>(suppIngredients), waterLevel, needsFire, id),
+                    new PotionRecipeData(new ArrayList<>(altMainIngredients), new ArrayList<>(altSuppIngredients), altWaterLevel, altNeedsFire, id));
         }
 
         @Override
         public void toNetwork(FriendlyByteBuf friendlyByteBuf, PotionCauldronRecipe potionCauldronRecipe) {
-            friendlyByteBuf.writeInt(potionCauldronRecipe.mainIngredients.size());
-            for (ItemStack i: potionCauldronRecipe.mainIngredients) {
+            friendlyByteBuf.writeInt(potionCauldronRecipe.recipeData.main().size());
+            for (ItemStack i: potionCauldronRecipe.recipeData.main()) {
                 friendlyByteBuf.writeItemStack(i, false);
             }
 
-            friendlyByteBuf.writeInt(potionCauldronRecipe.suppIngredients.size());
-            for (ItemStack i: potionCauldronRecipe.suppIngredients) {
+            friendlyByteBuf.writeInt(potionCauldronRecipe.recipeData.supplementary().size());
+            for (ItemStack i: potionCauldronRecipe.recipeData.supplementary()) {
                 friendlyByteBuf.writeItemStack(i, false);
             }
-
             friendlyByteBuf.writeInt(potionCauldronRecipe.getWaterLevel());
 
             friendlyByteBuf.writeBoolean(potionCauldronRecipe.needsFire());
 
             potionCauldronRecipe.output.writeIntoByteBuf(friendlyByteBuf);
-        }
+
+            friendlyByteBuf.writeInt(potionCauldronRecipe.alternateRecipeData.main().size());
+            for (ItemStack i: potionCauldronRecipe.alternateRecipeData.main()) {
+                friendlyByteBuf.writeItemStack(i, false);
+            }
+
+            friendlyByteBuf.writeInt(potionCauldronRecipe.alternateRecipeData.supplementary().size());
+            for (ItemStack i: potionCauldronRecipe.alternateRecipeData.supplementary()) {
+                friendlyByteBuf.writeItemStack(i, false);
+            }
+
+            friendlyByteBuf.writeInt(potionCauldronRecipe.alternateRecipeData.waterLevel());
+
+            friendlyByteBuf.writeBoolean(potionCauldronRecipe.alternateRecipeData.fire());
+
+    }
     }
 }

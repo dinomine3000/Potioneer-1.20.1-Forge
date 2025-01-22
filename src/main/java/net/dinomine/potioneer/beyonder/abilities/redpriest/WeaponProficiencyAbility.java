@@ -1,27 +1,28 @@
 package net.dinomine.potioneer.beyonder.abilities.redpriest;
 
 import net.dinomine.potioneer.beyonder.abilities.Ability;
+import net.dinomine.potioneer.beyonder.abilities.AbilityInfo;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
 import net.dinomine.potioneer.beyonder.player.EntityBeyonderManager;
 import net.minecraft.world.entity.LivingEntity;
 
 public class WeaponProficiencyAbility extends Ability {
 
-    public WeaponProficiencyAbility(int sequence, boolean enabled){
-        this.sequence = sequence;
-        this.enabled = enabled;
+    public WeaponProficiencyAbility(int sequence){
+        this.info = new AbilityInfo(64, 0, "Weapon Proficiency", sequence, 0, this.getCooldown());
     }
 
     @Override
-    public void active(EntityBeyonderManager cap, LivingEntity target) {
+    public boolean active(EntityBeyonderManager cap, LivingEntity target) {
         flipEnable(cap, target);
+        return true;
     }
 
     @Override
     public void passive(EntityBeyonderManager cap, LivingEntity target) {
-        if(enabled && !cap.getEffectsManager().hasEffect(BeyonderEffects.EFFECT.RED_WEAPON_PROFICIENCY, this.sequence)){
+        if(isEnabled(cap.getAbilitiesManager()) && !cap.getEffectsManager().hasEffect(BeyonderEffects.EFFECT.RED_WEAPON_PROFICIENCY, getSequence())){
             cap.getEffectsManager().addEffect(BeyonderEffects.byId(BeyonderEffects.EFFECT.RED_WEAPON_PROFICIENCY,
-                    this.sequence, 0, -1, true));
+                    getSequence(), 0, -1, true));
         }
 
     }
@@ -33,8 +34,8 @@ public class WeaponProficiencyAbility extends Ability {
 
     @Override
     public void deactivate(EntityBeyonderManager cap, LivingEntity target) {
-        if(enabled && cap.getEffectsManager().hasEffect(BeyonderEffects.EFFECT.RED_WEAPON_PROFICIENCY, this.sequence)){
-            cap.getEffectsManager().removeEffect(BeyonderEffects.EFFECT.RED_WEAPON_PROFICIENCY, this.sequence, cap, target);
+        if(cap.getEffectsManager().hasEffect(BeyonderEffects.EFFECT.RED_WEAPON_PROFICIENCY, getSequence())){
+            cap.getEffectsManager().removeEffect(BeyonderEffects.EFFECT.RED_WEAPON_PROFICIENCY, getSequence(), cap, target);
         }
     }
 }

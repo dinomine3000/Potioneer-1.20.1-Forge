@@ -2,24 +2,24 @@ package net.dinomine.potioneer.beyonder.pathways;
 
 import net.dinomine.potioneer.beyonder.abilities.Ability;
 import net.dinomine.potioneer.beyonder.abilities.Beyonder;
+import net.dinomine.potioneer.beyonder.abilities.redpriest.WeaponProficiencyAbility;
+import net.dinomine.potioneer.beyonder.player.PlayerAbilitiesManager;
 
 import java.util.ArrayList;
 
 public class MysteryPathway extends Beyonder {
-
-    private static ArrayList<Ability> passiveAbilities9;
 
     public MysteryPathway(int sequence){
         super(sequence, "Mystery");
         this.color = 0x408040;
     }
 
-    public static void init(){
-        passiveAbilities9 = new ArrayList<>();
-    }
+    public static void getAbilities(int sequence, PlayerAbilitiesManager mng){
+        ArrayList<Ability> passiveAbilities9 = new ArrayList<>();
+        ArrayList<Ability> activeAbilities9 = new ArrayList<>();
 
-    public static ArrayList<Ability> getPassiveAbilities(int sequence) {
-        return passiveAbilities9;
+        mng.setPathwayActives(activeAbilities9);
+        mng.setPathwayPassives(passiveAbilities9);
     }
 
 
@@ -28,10 +28,13 @@ public class MysteryPathway extends Beyonder {
         return 20 + this.sequence;
     }
 
-    @Override
-    public String getSequenceName(int seq){
+    public static String getSequenceName(int seq, boolean show){
+        return show ? getSequenceName(seq).replace("_", " ") : getSequenceName(seq).toLowerCase();
+    }
+
+    public static String getSequenceName(int seq){
         return switch (seq) {
-            case 9 -> "Tormenter";
+            case 9 -> "Trickmaster";
             case 8 -> "Voodoo_Assassin";
             case 7 -> "Plague_Doctor";
             case 6 -> "Parasite";

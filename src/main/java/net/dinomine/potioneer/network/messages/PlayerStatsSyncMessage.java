@@ -13,6 +13,7 @@ import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
+//syncs data that needs to be referenced from both a client and server perspective, ie. mining speed
 public class PlayerStatsSyncMessage {
     public float miningSpeed;
 

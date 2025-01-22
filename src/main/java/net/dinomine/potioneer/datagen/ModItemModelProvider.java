@@ -47,6 +47,7 @@ public class ModItemModelProvider extends ItemModelProvider {
         simpleItem(ModItems.PECAN_LEAF);
         simpleItem(ModItems.SOLSEER);
         simpleItem(ModItems.WANDERING_CACTUS_PRICK);
+        simpleItem(ModItems.FORMULA);
 
         /*simpleItem(ModItems.METAL_DETECTOR);
         simpleItem(ModItems.PINE_CONE);

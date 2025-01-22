@@ -4,6 +4,7 @@ import net.dinomine.potioneer.Potioneer;
 import net.dinomine.potioneer.entities.ModEntities;
 import net.dinomine.potioneer.item.custom.BeyonderPotion.BeyonderPotionItem;
 import net.dinomine.potioneer.item.custom.Flask;
+import net.dinomine.potioneer.item.custom.FormulaItem;
 import net.dinomine.potioneer.item.custom.Vial;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Rarity;
@@ -40,6 +41,7 @@ public class ModItems {
 
     public static final RegistryObject<Item> VIAL = ITEMS.register("vial", () -> new Vial(new Item.Properties()));
     public static final RegistryObject<Item> FLASK = ITEMS.register("flask", () -> new Flask(new Item.Properties()));
+    public static final RegistryObject<Item> FORMULA = ITEMS.register("formula", () -> new FormulaItem(new Item.Properties()));
 
     public static final RegistryObject<Item> BEYONDER_POTION = ITEMS.register("beyonder_potion",
             () -> new BeyonderPotionItem(new Item.Properties().stacksTo(1).fireResistant().rarity(Rarity.UNCOMMON)));

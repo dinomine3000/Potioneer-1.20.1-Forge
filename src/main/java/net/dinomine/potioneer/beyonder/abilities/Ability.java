@@ -1,38 +1,60 @@
 package net.dinomine.potioneer.beyonder.abilities;
 
 import net.dinomine.potioneer.beyonder.player.EntityBeyonderManager;
+import net.dinomine.potioneer.beyonder.player.PlayerAbilitiesManager;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.LivingEntity;
 
 public abstract class Ability {
     private boolean isActive;
     private boolean isPassive;
-    public boolean enabled = true;
-    protected int sequence;
-    protected AbilityInfo info = new AbilityInfo(0, 0, "default");
+//    public boolean enabled = true;
+//    protected int sequence;
+    protected AbilityInfo info = new AbilityInfo(0, 0, "default", 9, 0, 40);
 
     public AbilityInfo getInfo(){
         return info;
     }
 
+    public int getCooldown(){
+        return info.maxCooldown();
+    }
+
+    public int getSequence(){
+        return info.sequence();
+    }
+
+    public boolean isEnabled(PlayerAbilitiesManager mng){
+        return mng.isEnabled(this);
+    }
+
     public void disable(EntityBeyonderManager cap, LivingEntity target){
-        if(enabled){
-            enabled = false;
+        PlayerAbilitiesManager mng = cap.getAbilitiesManager();
+        if(mng.isEnabled(this)){
+            mng.setEnabled(this, false);
             deactivate(cap, target);
         }
     }
 
     public void enable(EntityBeyonderManager cap, LivingEntity target){
-        if(!enabled){
-            enabled = true;
+        PlayerAbilitiesManager mng = cap.getAbilitiesManager();
+        if(!mng.isEnabled(this)){
+            mng.setEnabled(this, true);
             activate(cap, target);
         }
     }
 
     public void flipEnable(EntityBeyonderManager cap, LivingEntity target){
-        if (enabled) disable(cap, target);
+        boolean en = cap.getAbilitiesManager().isEnabled(this);
+        if (en) disable(cap, target);
         else enable(cap, target);
-        target.sendSystemMessage(Component.literal("Ability " + info.name() + " was turned " + (this.enabled ? "on" : "off") + "."));
+        target.sendSystemMessage(Component.literal("Ability " + info.name() + " was turned " + (!en ? "on" : "off") + "."));
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if(!(obj instanceof Ability abl)) return false;
+        return this.info.name().equals(abl.info.name()) && this.info.sequence() == abl.info.sequence();
     }
 
     /**
@@ -40,7 +62,7 @@ public abstract class Ability {
      * @param cap
      * @param target
      */
-    public abstract void active(EntityBeyonderManager cap, LivingEntity target);
+    public abstract boolean active(EntityBeyonderManager cap, LivingEntity target);
 
     /**
      * function that runs every tick

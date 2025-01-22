@@ -19,11 +19,6 @@ public class Beyonder {
     }
 
     public static void init(){
-        WheelOfFortunePathway.init();
-        TyrantPathway.init();
-        MysteryPathway.init();
-        RedPriestPathway.init();
-        ParagonPathway.init();
     }
 
     public int getMaxSpirituality(int seq){
@@ -42,25 +37,44 @@ public class Beyonder {
         return this.sequence;
     }
 
-    public String getSequenceName(boolean show){
-        return getSequenceName(getSequence(), show);
-    }
-
     /**
      * returns the id string of the sequence. it should be written like "Duke_of_Entropy", with capitalized words and underscores for spaces
-     * this way the names can be procedurally gotten
-     * @param seq
+     * this way the names can be procedurally acquired
      * @return
      */
-    public String getSequenceName(int seq){
-        return "None";
+
+    public static String getPathwayName(int id, boolean capitalize){
+        if(capitalize){
+            return switch(Math.floorDiv(id, 10)){
+                case 0 -> "Wheel_of_Fortune";
+                case 1 -> "Tyrant";
+                case 2 -> "Mystery";
+                case 3 -> "Red_Priest";
+                case 4 -> "Paragon";
+                default -> "None";
+            };
+        } else {
+            return switch(Math.floorDiv(id, 10)){
+                case 0 -> "wheel_of_fortune";
+                case 1 -> "tyrant";
+                case 2 -> "mystery";
+                case 3 -> "red_priest";
+                case 4 -> "paragon";
+                default -> "None";
+            };
+        }
     }
 
-    public String getSequenceName(int seq, boolean show){
-        return show ? getSequenceName(this.sequence).replace("_", " ") : getSequenceName(seq).toLowerCase();
-    }
-    public String getPathwayName(){
-        return this.name;
+    public static String getSequenceNameFromId(int id, boolean show){
+        int seq = id % 10;
+        return switch(Math.floorDiv(id, 10)){
+            case 0 -> WheelOfFortunePathway.getSequenceName(seq, show);
+            case 1 -> TyrantPathway.getSequenceName(seq, show);
+            case 2 -> MysteryPathway.getSequenceName(seq, show);
+            case 3 -> RedPriestPathway.getSequenceName(seq, show);
+            case 4 -> ParagonPathway.getSequenceName(seq, show);
+            default -> "None";
+        };
     }
 
 }

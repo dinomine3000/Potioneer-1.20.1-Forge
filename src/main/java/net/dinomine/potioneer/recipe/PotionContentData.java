@@ -9,9 +9,9 @@ import net.minecraft.world.item.Items;
 
 import java.util.Objects;
 
-public class PotionRecipeData {
+public class PotionContentData {
 
-    public PotionRecipeData(String name, int amount, boolean bottle, int color, boolean canConflict) {
+    public PotionContentData(String name, int amount, boolean bottle, int color, boolean canConflict) {
         this.name = name;
         this.amount = amount;
         this.bottle = bottle;
@@ -27,20 +27,20 @@ public class PotionRecipeData {
         tag.putBoolean("canConflict", canConflict);
     }
 
-    public static PotionRecipeData load(CompoundTag tag){
-        return new PotionRecipeData(tag.getString("name"), tag.getInt("amount"),
+    public static PotionContentData load(CompoundTag tag){
+        return new PotionContentData(tag.getString("name"), tag.getInt("amount"),
                 tag.getBoolean("bottle"), tag.getInt("color"), tag.getBoolean("canConflict"));
     }
 
-    public static PotionRecipeData EMPTY = new PotionRecipeData("EMPTY", 0, false, 0, false);
+    public static PotionContentData EMPTY = new PotionContentData("EMPTY", 0, false, 0, false);
 
-    public static PotionRecipeData getConflictingResult(boolean bottle){
+    public static PotionContentData getConflictingResult(boolean bottle){
         int color = (int) (0x00FFFFFF * Math.random());
-        return new PotionRecipeData("conflict", 0, bottle, color, false);
+        return new PotionContentData("conflict", 0, bottle, color, false);
     }
 
-    public PotionRecipeData copy(){
-        return new PotionRecipeData(this.name, this.amount, this.bottle, this.color, this.canConflict);
+    public PotionContentData copy(){
+        return new PotionContentData(this.name, this.amount, this.bottle, this.color, this.canConflict);
     }
 
     public boolean isEmpty(){
@@ -99,13 +99,13 @@ public class PotionRecipeData {
         friendlyByteBuf.writeBoolean(this.canConflict);
     }
 
-    public static PotionRecipeData readFromByteBuf(FriendlyByteBuf friendlyByteBuf){
+    public static PotionContentData readFromByteBuf(FriendlyByteBuf friendlyByteBuf){
         String name = readStringFromBuffer(friendlyByteBuf);
         int amount = friendlyByteBuf.readInt();
         boolean bottle = friendlyByteBuf.readBoolean();
         int color = friendlyByteBuf.readInt();
         boolean canConflict = friendlyByteBuf.readBoolean();
-        return new PotionRecipeData(name, amount, bottle, color, canConflict);
+        return new PotionContentData(name, amount, bottle, color, canConflict);
     }
 
 }

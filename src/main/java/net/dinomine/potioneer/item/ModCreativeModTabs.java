@@ -35,6 +35,7 @@ public class ModCreativeModTabs {
                         output.accept(ModItems.BEYONDER_POTION.get());
                         output.accept(ModItems.VIAL.get());
                         output.accept(ModItems.FLASK.get());
+                        output.accept(ModItems.FORMULA.get());
                     })
                     .build());
 
@@ -54,7 +55,7 @@ public class ModCreativeModTabs {
                         CompoundTag potionInfo = new CompoundTag();
                         potionInfo.putInt("amount", 1);
                         potionInfo.putString("name", "cactus_sap");
-                        potionInfo.putInt("color", 0xFF00FF00);
+                        potionInfo.putInt("color", 65280);
                         tag.put("potion_info", potionInfo);
                         vial.setTag(tag);
                         output.accept(vial);

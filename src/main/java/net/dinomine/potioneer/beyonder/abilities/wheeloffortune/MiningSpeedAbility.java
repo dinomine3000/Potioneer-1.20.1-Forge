@@ -8,22 +8,22 @@ import net.minecraft.world.entity.LivingEntity;
 
 public class MiningSpeedAbility extends Ability {
 
-    public MiningSpeedAbility(int sequence, boolean enabled){
-        this.sequence = sequence;
-        this.enabled = enabled;
-        this.info = new AbilityInfo(32, 0, "Mining Speed");
+    public MiningSpeedAbility(int sequence){
+        this.info = new AbilityInfo(32, 0, "Mining Speed", sequence, 0, this.getCooldown());
     }
 
     @Override
-    public void active(EntityBeyonderManager cap, LivingEntity target) {
+    public boolean active(EntityBeyonderManager cap, LivingEntity target) {
         flipEnable(cap, target);
+        return true;
     }
 
     @Override
     public void passive(EntityBeyonderManager cap, LivingEntity target) {
-        if(enabled && !cap.getEffectsManager().hasEffect(BeyonderEffects.EFFECT.WHEEL_MINING, this.sequence)){
+        if(cap.getAbilitiesManager().isEnabled(this)
+                && !cap.getEffectsManager().hasEffect(BeyonderEffects.EFFECT.WHEEL_MINING, getSequence())){
             cap.getEffectsManager().addEffect(BeyonderEffects.byId(BeyonderEffects.EFFECT.WHEEL_MINING,
-                    this.sequence, 0, -1, true));
+                    getSequence(), 0, -1, true));
         }
 
     }
@@ -35,8 +35,8 @@ public class MiningSpeedAbility extends Ability {
 
     @Override
     public void deactivate(EntityBeyonderManager cap, LivingEntity target) {
-        if(cap.getEffectsManager().hasEffect(BeyonderEffects.EFFECT.WHEEL_MINING, this.sequence)){
-            cap.getEffectsManager().removeEffect(BeyonderEffects.EFFECT.WHEEL_MINING, this.sequence, cap, target);
+        if(cap.getEffectsManager().hasEffect(BeyonderEffects.EFFECT.WHEEL_MINING, getSequence())){
+            cap.getEffectsManager().removeEffect(BeyonderEffects.EFFECT.WHEEL_MINING, getSequence(), cap, target);
         }
     }
 }

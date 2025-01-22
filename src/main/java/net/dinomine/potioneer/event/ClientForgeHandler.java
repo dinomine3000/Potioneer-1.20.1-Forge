@@ -28,7 +28,7 @@ public class ClientForgeHandler {
         if(KeyBindings.INSTANCE.beyonderMenuKey.consumeClick() && minecraft.player != null){
             Minecraft.getInstance().setScreen(new BeyonderScreen());
             //DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> Minecraft.getInstance().setScreen(new BeyonderScreen()));
-        } else if(KeyBindings.INSTANCE.quickAbilityKey.consumeClick() && minecraft.player != null){
+        } else if(ClientStatsData.getPathwayId() > -1 && KeyBindings.INSTANCE.quickAbilityKey.consumeClick() && minecraft.player != null){
             if (!ClientStatsData.keyPressed){
                 ClientAbilitiesData.useAbility(minecraft.player);
                 ClientStatsData.keyPressed = true;
@@ -36,6 +36,7 @@ public class ClientForgeHandler {
         }
 
         ClientAbilitiesData.showHotbar = KeyBindings.INSTANCE.showHotbarKey.isDown();
+        ClientAbilitiesData.tick(minecraft.getPartialTick());
 
     }
 
@@ -50,10 +51,13 @@ public class ClientForgeHandler {
     public static void onLeftClick(InputEvent.MouseButton event){
         if(!ClientAbilitiesData.showHotbar) return;
         Minecraft minecraft = Minecraft.getInstance();
+        boolean success = false;
         if(minecraft.player != null && event.getButton() == 0 && event.getAction() == 1){
-            ClientAbilitiesData.useAbility(minecraft.player);
+            success = ClientAbilitiesData.useAbility(minecraft.player);
         }
-        event.setCanceled(true);
+        if(success){
+            event.setCanceled(true);
+        }
     }
 
 }

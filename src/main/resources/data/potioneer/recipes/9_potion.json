@@ -5,14 +5,18 @@
       "item": "potioneer:sapphire"
     },
     {
-      "item": "potioneer:pecan_shell"
+      "item": "minecraft:diamond"
     }
   ],
   "supplementary_ingredients": [
     {
       "item": "potioneer:vial",
       "nbt": {
-        "name": "cactus_sap"
+        "potion_info": {
+          "name": "cactus_sap",
+          "amount": 1,
+          "color": 65280
+        }
       }
     }
   ],

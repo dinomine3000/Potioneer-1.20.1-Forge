@@ -1,0 +1,32 @@
+{
+  "type": "potioneer:potion_cauldron_brew",
+  "main_ingredients": [
+    {
+      "item": "potioneer:sapphire"
+    },
+    {
+      "item": "potioneer:wandering_cactus_prick"
+    }
+  ],
+  "supplementary_ingredients": [
+    {
+      "item": "potioneer:vial",
+      "nbt": {
+        "potion_info": {
+          "name": "cactus_sap",
+          "amount": 1,
+          "color": 65280
+        }
+      }
+    }
+  ],
+  "water_level": 3,
+  "needs_fire": true,
+  "output": {
+    "name": "29",
+    "amount": 1,
+    "bottle": true,
+    "color": 12117700,
+    "can_conflict": true
+  }
+}

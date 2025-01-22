@@ -119,7 +119,7 @@ public class EntityBeyonderManager {
             if(syncCD-- < 0){
                 syncCD = 20;
                 PacketHandler.INSTANCE.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) player),
-                        new PlayerSTCHudStatsSync(this.spirituality, this.maxSpirituality, this.sanity, this.getPathwayId()));
+                        new PlayerSTCHudStatsSync(this.spirituality, this.maxSpirituality, this.sanity, this.getPathwayId(), getAbilitiesManager().enabledDisabled));
             }
         }
     }
@@ -142,12 +142,16 @@ public class EntityBeyonderManager {
         //setDefaultStats(player);
         //getAbilitiesManager().clear(true, this, player);
         setPathway(id, advancing);
+        if(!player.level().isClientSide()){
+            PacketHandler.INSTANCE.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) player),
+                    new PlayerAbilityInfoSyncSTC(getAbilitiesManager().getPathwayActives().stream().map(Ability::getInfo).toList()));
+        }
 
 
         //not translated. either make it translatable or delete it for final version
-        if(player.level().isClientSide && advancing){
+        if(!player.level().isClientSide && advancing){
             player.sendSystemMessage(Component.literal("Successfully advanced to Sequence " + String.valueOf(seq)
-                    + " " + this.pathway.getSequenceName(seq, true) + "!"));
+                    + " " + Beyonder.getSequenceNameFromId(id, true) + "!"));
         }
         if(sync) syncSequenceData(player, advancing);
 
@@ -172,15 +176,15 @@ public class EntityBeyonderManager {
                     break;
                 case 2:
                     this.pathway = new MysteryPathway(seq);
-                    this.abilitiesManager.setPathwayPassives(MysteryPathway.getPassiveAbilities(seq));
+                    MysteryPathway.getAbilities(seq, getAbilitiesManager());
                     break;
                 case 3:
                     this.pathway = new RedPriestPathway(seq);
-                    this.abilitiesManager.setPathwayPassives(RedPriestPathway.getPassiveAbilities(seq));
+                    RedPriestPathway.getAbilities(seq, getAbilitiesManager());
                     break;
                 case 4:
                     this.pathway = new ParagonPathway(seq);
-                    this.abilitiesManager.setPathwayPassives(ParagonPathway.getPassiveAbilities(seq));
+                    ParagonPathway.getAbilities(seq, getAbilitiesManager());
                     break;
             }
             this.maxSpirituality = this.pathway.getMaxSpirituality(seq);
@@ -189,7 +193,7 @@ public class EntityBeyonderManager {
     }
 
     public String getPathwayName(boolean capitalize){
-        return capitalize ? this.pathway.getPathwayName() : this.pathway.getPathwayName().toLowerCase();
+        return Beyonder.getPathwayName(this.pathway.getId(), capitalize);
     }
 
     public int getPathwayColor(){
@@ -197,7 +201,7 @@ public class EntityBeyonderManager {
     }
 
     public String getSequenceName(boolean show){
-        return this.pathway.getSequenceName(show);
+        return Beyonder.getSequenceNameFromId(this.pathway.getId(), show);
     }
 
     public void copyFrom(EntityBeyonderManager source, Player player){
@@ -210,11 +214,13 @@ public class EntityBeyonderManager {
         nbt.putInt("pathwayId", pathway.getId());
         //this.abilitiesManager.saveNBTData(nbt);
         this.effectsManager.saveNBTData(nbt);
+        this.abilitiesManager.saveNBTData(nbt);
     }
 
     public void loadNBTData(CompoundTag nbt){
         this.spirituality = nbt.getFloat("spirituality");
         setPathway(nbt.getInt("pathwayId"), false);
+        this.abilitiesManager.loadNBTData(nbt);
         //TODO make abilities manager actually save and load item abilities.
         //this.abilitiesManager.loadNBTData(nbt);
         this.effectsManager.loadNBTData(nbt);
