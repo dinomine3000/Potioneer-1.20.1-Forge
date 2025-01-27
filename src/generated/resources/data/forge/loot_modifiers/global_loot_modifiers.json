@@ -1,0 +1,19 @@
+{
+  "entries": [
+    "potioneer:formula_from_mineshaft",
+    "potioneer:formula_from_pyramid",
+    "potioneer:formula_from_village_temple",
+    "potioneer:formula_from_village_blacksmith",
+    "potioneer:formula_from_archeology_cold",
+    "potioneer:formula_from_archeology_well",
+    "potioneer:formula_from_archeology_pyramid",
+    "potioneer:formula_from_mansion",
+    "potioneer:formula_from_dungeon",
+    "potioneer:formula_from_village_toolsmith",
+    "potioneer:formula_from_archeology_warm",
+    "potioneer:formula_from_temple",
+    "potioneer:formula_from_ancient_city",
+    "potioneer:formula_from_shipwreck"
+  ],
+  "replace": false
+}

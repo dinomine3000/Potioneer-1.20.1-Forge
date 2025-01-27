@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "#": {
+      "item": "minecraft:glass"
+    },
+    "S": {
+      "item": "potioneer:sapphire"
+    }
+  },
+  "pattern": [
+    "#  ",
+    "S  ",
+    "S  "
+  ],
+  "result": {
+    "item": "potioneer:flask"
+  },
+  "show_notification": true
+}
