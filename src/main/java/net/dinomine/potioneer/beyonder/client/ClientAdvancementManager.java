@@ -5,7 +5,9 @@ import net.dinomine.potioneer.sound.ModSounds;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
+import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -45,8 +47,10 @@ public class ClientAdvancementManager {
     public static void onButtonSucceed(Screen screen) {
         count--;
         progress = 1;
-        if(Minecraft.getInstance().player != null){
-            Minecraft.getInstance().player.playSound(ModSounds.ADVANCEMENT_CLICK.get(), 10, 1);
+        Player player = Minecraft.getInstance().player;
+        if(player != null){
+//            Minecraft.getInstance().level.playSound(player, player, ModSounds.ADVANCEMENT_CLICK.get(), SoundSource.MASTER, 1, 1);
+            Minecraft.getInstance().player.playSound(ModSounds.ADVANCEMENT_CLICK.get(), 1 , 1);
         }
         x = (int) (Math.random() * (screen.width - 80) + 40);
         y = (int) (Math.random() * (screen.height - 80) + 40);

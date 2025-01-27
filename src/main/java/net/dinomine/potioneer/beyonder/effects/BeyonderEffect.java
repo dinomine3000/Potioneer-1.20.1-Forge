@@ -80,7 +80,7 @@ public abstract class BeyonderEffect {
             if(this.maxLife < 1){
                 doTick(cap, target);
                 return;
-            } else if(lifetime++ > maxLife){
+            } else if(lifetime > maxLife){
                 stopEffects(cap, target);
                 return;
             }
@@ -92,6 +92,7 @@ public abstract class BeyonderEffect {
     }
 
 
+    public abstract void onAcquire(EntityBeyonderManager cap, LivingEntity target);
     protected abstract void doTick(EntityBeyonderManager cap, LivingEntity target);
     public abstract void stopEffects(EntityBeyonderManager cap, LivingEntity target);
 
@@ -103,6 +104,8 @@ public abstract class BeyonderEffect {
         nbt.putBoolean("active", active);
         nbt.putString("ID", ID.name());
     }
+
+    public void loadNBTData(CompoundTag nbt){}
 
 
 }

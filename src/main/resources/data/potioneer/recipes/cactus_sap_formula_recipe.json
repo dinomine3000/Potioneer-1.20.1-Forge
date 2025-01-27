@@ -1,0 +1,29 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "potioneer:wandering_cactus_prick"
+    },
+    {
+      "item": "minecraft:paper"
+    }
+  ],
+  "result": {
+    "item": "potioneer:formula",
+    "nbt": {
+      "error": false,
+      "recipe_data": {
+        "id": -1,
+        "water": 2,
+        "fire": false,
+        "size_main": 1,
+        "main_0": {
+          "id": "potioneer:wandering_cactus_prick",
+          "Count": 9
+        },
+        "size_supp": 0
+      }
+    }
+  }
+}

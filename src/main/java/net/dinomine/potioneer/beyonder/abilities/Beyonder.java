@@ -18,9 +18,6 @@ public class Beyonder {
         this.color = 0x404040;
     }
 
-    public static void init(){
-    }
-
     public int getMaxSpirituality(int seq){
         return maxSpirituality[seq%10];
     }
@@ -51,6 +48,7 @@ public class Beyonder {
                 case 2 -> "Mystery";
                 case 3 -> "Red_Priest";
                 case 4 -> "Paragon";
+                case 5 -> "Dev";
                 default -> "None";
             };
         } else {
@@ -60,6 +58,7 @@ public class Beyonder {
                 case 2 -> "mystery";
                 case 3 -> "red_priest";
                 case 4 -> "paragon";
+                case 5 -> "dev";
                 default -> "None";
             };
         }
@@ -73,6 +72,7 @@ public class Beyonder {
             case 2 -> MysteryPathway.getSequenceName(seq, show);
             case 3 -> RedPriestPathway.getSequenceName(seq, show);
             case 4 -> ParagonPathway.getSequenceName(seq, show);
+            case 5 -> DevPathway.getSequenceName(seq, show);
             default -> "None";
         };
     }

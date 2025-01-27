@@ -6,11 +6,11 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.LivingEntity;
 
 public abstract class Ability {
-    private boolean isActive;
-    private boolean isPassive;
+    public boolean isActive = false;
+    public boolean isPassive;
 //    public boolean enabled = true;
 //    protected int sequence;
-    protected AbilityInfo info = new AbilityInfo(0, 0, "default", 9, 0, 40);
+    protected AbilityInfo info = new AbilityInfo(0, 0, "default", 9, 0, 20);
 
     public AbilityInfo getInfo(){
         return info;
@@ -21,7 +21,7 @@ public abstract class Ability {
     }
 
     public int getSequence(){
-        return info.sequence();
+        return info.id()%10;
     }
 
     public boolean isEnabled(PlayerAbilitiesManager mng){
@@ -31,16 +31,14 @@ public abstract class Ability {
     public void disable(EntityBeyonderManager cap, LivingEntity target){
         PlayerAbilitiesManager mng = cap.getAbilitiesManager();
         if(mng.isEnabled(this)){
-            mng.setEnabled(this, false);
-            deactivate(cap, target);
+            mng.setEnabled(this, false, cap, target);
         }
     }
 
     public void enable(EntityBeyonderManager cap, LivingEntity target){
         PlayerAbilitiesManager mng = cap.getAbilitiesManager();
         if(!mng.isEnabled(this)){
-            mng.setEnabled(this, true);
-            activate(cap, target);
+            mng.setEnabled(this, true, cap, target);
         }
     }
 
@@ -54,8 +52,15 @@ public abstract class Ability {
     @Override
     public boolean equals(Object obj) {
         if(!(obj instanceof Ability abl)) return false;
-        return this.info.name().equals(abl.info.name()) && this.info.sequence() == abl.info.sequence();
+        return this.info.name().equals(abl.info.name()) && this.getSequence() == abl.getSequence();
     }
+
+    /**
+     * function that runs when the player acquires the ability
+     * @param cap
+     * @param target
+     */
+    public abstract void onAcquire(EntityBeyonderManager cap, LivingEntity target);
 
     /**
      * function that runs whenever the player casts the ability

@@ -44,7 +44,7 @@ public class ModEvents {
 
     @SubscribeEvent
     public static void onWorldLoad(LevelEvent.Load event){
-        System.out.println("--------------world lodead call-------------");
+//        System.out.println("--------------world lodead call-------------");
         if(event.getLevel() != null){
             MinecraftServer lvl = event.getLevel().getServer();
             if(lvl == null || lvl.overworld() != event.getLevel()) return;

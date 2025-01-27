@@ -2,6 +2,7 @@ package net.dinomine.potioneer.item;
 
 import net.dinomine.potioneer.Potioneer;
 import net.dinomine.potioneer.block.ModBlocks;
+import net.dinomine.potioneer.savedata.PotionRecipeData;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -59,7 +60,6 @@ public class ModCreativeModTabs {
                         tag.put("potion_info", potionInfo);
                         vial.setTag(tag);
                         output.accept(vial);
-
 
                     }).build());
 

@@ -48,6 +48,8 @@ public class ModItemModelProvider extends ItemModelProvider {
         simpleItem(ModItems.SOLSEER);
         simpleItem(ModItems.WANDERING_CACTUS_PRICK);
         simpleItem(ModItems.FORMULA);
+        handheldItem(ModItems.MINER_PICKAXE);
+
 
         /*simpleItem(ModItems.METAL_DETECTOR);
         simpleItem(ModItems.PINE_CONE);

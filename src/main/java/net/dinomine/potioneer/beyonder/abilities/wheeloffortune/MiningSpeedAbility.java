@@ -9,13 +9,19 @@ import net.minecraft.world.entity.LivingEntity;
 public class MiningSpeedAbility extends Ability {
 
     public MiningSpeedAbility(int sequence){
-        this.info = new AbilityInfo(32, 0, "Mining Speed", sequence, 0, this.getCooldown());
+        this.info = new AbilityInfo(5, 32, "Mining Speed", sequence, 0, this.getCooldown());
     }
 
     @Override
     public boolean active(EntityBeyonderManager cap, LivingEntity target) {
+        if(target.level().isClientSide()) return false;
         flipEnable(cap, target);
         return true;
+    }
+
+    @Override
+    public void onAcquire(EntityBeyonderManager cap, LivingEntity target) {
+
     }
 
     @Override
@@ -23,7 +29,7 @@ public class MiningSpeedAbility extends Ability {
         if(cap.getAbilitiesManager().isEnabled(this)
                 && !cap.getEffectsManager().hasEffect(BeyonderEffects.EFFECT.WHEEL_MINING, getSequence())){
             cap.getEffectsManager().addEffect(BeyonderEffects.byId(BeyonderEffects.EFFECT.WHEEL_MINING,
-                    getSequence(), 0, -1, true));
+                    getSequence(), 0, -1, true), cap, target);
         }
 
     }

@@ -136,4 +136,11 @@ public record PotionRecipeData(ArrayList<ItemStack> main, ArrayList<ItemStack> s
                 ", id=" + id +
                 '}';
     }
+
+    public static String getNameById(int id){
+        return switch (id){
+            case -1 -> "vial.cactus_sap";
+            default -> "None";
+        };
+    }
 }

@@ -2,6 +2,7 @@ package net.dinomine.potioneer.beyonder.pathways;
 
 import net.dinomine.potioneer.beyonder.abilities.Ability;
 import net.dinomine.potioneer.beyonder.abilities.Beyonder;
+import net.dinomine.potioneer.beyonder.abilities.redpriest.StatBonusAbility;
 import net.dinomine.potioneer.beyonder.abilities.redpriest.WeaponProficiencyAbility;
 import net.dinomine.potioneer.beyonder.effects.redpriest.BeyonderWeaponProficiencyEffect;
 import net.dinomine.potioneer.beyonder.player.PlayerAbilitiesManager;
@@ -17,11 +18,13 @@ public class RedPriestPathway extends Beyonder {
 
     public static void getAbilities(int sequence, PlayerAbilitiesManager mng){
         WeaponProficiencyAbility abl = new WeaponProficiencyAbility(sequence);
+//        StatBonusAbility stats = new StatBonusAbility(sequence);
 
         ArrayList<Ability> passiveAbilities9 = new ArrayList<>();
         passiveAbilities9.add(abl);
         ArrayList<Ability> activeAbilities9 = new ArrayList<>();
         activeAbilities9.add(abl);
+//        activeAbilities9.add(stats);
 
         mng.setPathwayActives(activeAbilities9);
         mng.setPathwayPassives(passiveAbilities9);

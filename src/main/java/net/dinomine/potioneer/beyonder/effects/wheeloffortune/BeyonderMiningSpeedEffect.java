@@ -21,6 +21,11 @@ public class BeyonderMiningSpeedEffect extends BeyonderEffect {
 
 
     @Override
+    public void onAcquire(EntityBeyonderManager cap, LivingEntity target) {
+
+    }
+
+    @Override
     protected void doTick(EntityBeyonderManager cap, LivingEntity target) {
             cap.getEffectsManager().statsHolder.multMiningSpeed(1.2f + 1.7f*(9-sequenceLevel) + Math.max(5-sequenceLevel, 0)*2.5f);
     }

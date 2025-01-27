@@ -64,6 +64,7 @@ class ClientSyncMessage
         if (player != null)
         {
             player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
+                System.out.println("Handling sequence syncing on client side...");
                 cap.advance(msg.id, player, false, msg.advancing);
             });
         }

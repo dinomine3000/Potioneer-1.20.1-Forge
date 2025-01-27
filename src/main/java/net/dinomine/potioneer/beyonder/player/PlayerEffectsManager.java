@@ -2,12 +2,21 @@ package net.dinomine.potioneer.beyonder.player;
 
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffect;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
+import net.dinomine.potioneer.beyonder.effects.mystery.BeyonderRegenEffect;
+import net.dinomine.potioneer.registry.DamageTypesRegistry;
 import net.dinomine.potioneer.sound.ModSounds;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.damagesource.DamageSources;
+import net.minecraft.world.damagesource.DamageType;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.projectile.Arrow;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.common.Tags;
@@ -22,20 +31,39 @@ public class PlayerEffectsManager {
     private ArrayList<BeyonderEffect> passives = new ArrayList<BeyonderEffect>();
     public BeyonderStats statsHolder;
 
-    public void onAttack(LivingDamageEvent event){
+    public void onAttack(LivingDamageEvent event, EntityBeyonderManager cap){
         Entity attacker = event.getSource().getEntity();
+        float dmg = event.getAmount();
         //TODO change this to account for multiple instances of similar effects
-        if(attacker instanceof Player player && hasEffect(BeyonderEffects.EFFECT.RED_WEAPON_PROFICIENCY)){
-            BeyonderEffect eff = getEffect(BeyonderEffects.EFFECT.RED_WEAPON_PROFICIENCY);
-            InteractionHand hand = player.getUsedItemHand();
-            if(player.getItemInHand(hand).is(Tags.Items.TOOLS)){
-                System.out.println(event.getAmount());
-                System.out.println(eff.getSequenceLevel());
-                float dmg = event.getAmount()*((10-eff.getSequenceLevel()) * 0.4f + 1f);
-                System.out.println(dmg);
-                event.setAmount(dmg);
+        if(attacker instanceof Player player){
+            if(hasEffect(BeyonderEffects.EFFECT.RED_WEAPON_PROFICIENCY)){
+                BeyonderEffect eff = getEffect(BeyonderEffects.EFFECT.RED_WEAPON_PROFICIENCY);
+                InteractionHand hand = player.getUsedItemHand();
+
+                boolean arrow = false;
+                if(event.getSource().getDirectEntity() != null){
+                    arrow = event.getSource().getDirectEntity().getType().is(EntityType.ARROW.getTags().toList().get(0));
+                }
+                if(player.getItemInHand(hand).is(Tags.Items.TOOLS) || arrow){
+                    System.out.println(event.getAmount());
+                    dmg *= ((10-eff.getSequenceLevel()) * 0.4f + 1f);
+                    System.out.println(dmg);
+                }
+            }
+            if(hasEffect(BeyonderEffects.EFFECT.MYSTERY_REGEN)){
+                BeyonderRegenEffect eff = (BeyonderRegenEffect) getEffect(BeyonderEffects.EFFECT.MYSTERY_REGEN);
+                if(attacker == event.getEntity().getLastAttacker()){
+                    eff.combo = Math.min(3, eff.combo+1);
+                } else {
+                    eff.combo = 0;
+                }
+                int max = cap.getMaxSpirituality();
+                cap.requestActiveSpiritualityCost(-1 * (0.007f*max*(eff.combo+1)));
+                player.addEffect(new MobEffectInstance(MobEffects.REGENERATION, 20, (1+eff.combo), true, true, true));
+                player.getFoodData().eat(1, 0);
             }
         }
+        event.setAmount(dmg*this.statsHolder.getDamageBonus());
     }
 
 
@@ -74,6 +102,12 @@ public class PlayerEffectsManager {
         return passives.stream().anyMatch(effect::isBetter);
     }
 
+    public boolean addEffect(BeyonderEffect effect, EntityBeyonderManager cap, LivingEntity target){
+        passives.add(effect);
+        effect.onAcquire(cap, target);
+        return true;
+    }
+
     public boolean addEffect(BeyonderEffect effect){
         passives.add(effect);
         return true;
@@ -93,6 +127,12 @@ public class PlayerEffectsManager {
         return -1;
     }
 
+    /**
+     * returns true if it finds an effect of the same ID and sequence
+     * @param effect
+     * @param seq
+     * @return
+     */
     public boolean hasEffect(BeyonderEffects.EFFECT effect, int seq){
         return passives.stream().anyMatch(eff -> eff.is(effect, seq));
     }
@@ -127,7 +167,16 @@ public class PlayerEffectsManager {
                 effect.effectTick(cap, target);
             });
         }
+        sweepEffects(cap, target);
         cap.getBeyonderStats().setStats(statsHolder);
+    }
+
+    private void sweepEffects(EntityBeyonderManager cap, LivingEntity target){
+        for (int i = passives.size()-1; i >= 0; i--) {
+            if(passives.get(i).endsWithin(0)){
+                passives.remove(i);
+            }
+        }
     }
 
     public void saveNBTData(CompoundTag nbt){
@@ -153,6 +202,7 @@ public class PlayerEffectsManager {
                     iterator.getInt("maxLife"),
                     iterator.getBoolean("active"));
             effect.setDuration(iterator.getInt("lifetime"));
+            effect.loadNBTData(iterator);
             addEffect(effect);
         }
     }

@@ -18,6 +18,11 @@ public class BeyonderWeaponProficiencyEffect extends BeyonderEffect {
     }
 
     @Override
+    public void onAcquire(EntityBeyonderManager cap, LivingEntity target) {
+
+    }
+
+    @Override
     protected void doTick(EntityBeyonderManager cap, LivingEntity target) {
     }
 

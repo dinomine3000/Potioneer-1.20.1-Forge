@@ -35,7 +35,7 @@ public class PlayerCastAbilityMessageCTS {
         //potion advancement
         context.enqueueWork(() -> {
             if(!context.getDirection().getReceptionSide().isClient()){
-                System.out.println("Receiving ability cast on server side");
+//                System.out.println("Receiving ability cast on server side");
                 Player player = context.getSender();
                 player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
                     cap.getAbilitiesManager().useAbility(cap, player, msg.caretPos);

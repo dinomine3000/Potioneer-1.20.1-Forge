@@ -3,11 +3,11 @@ package net.dinomine.potioneer.item;
 import net.dinomine.potioneer.Potioneer;
 import net.dinomine.potioneer.entities.ModEntities;
 import net.dinomine.potioneer.item.custom.BeyonderPotion.BeyonderPotionItem;
+import net.dinomine.potioneer.item.custom.ConjuredPickaxeItem;
 import net.dinomine.potioneer.item.custom.Flask;
 import net.dinomine.potioneer.item.custom.FormulaItem;
 import net.dinomine.potioneer.item.custom.Vial;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.Rarity;
+import net.minecraft.world.item.*;
 import net.minecraftforge.common.ForgeSpawnEggItem;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.registries.DeferredRegister;
@@ -38,6 +38,10 @@ public class ModItems {
 
     public static final RegistryObject<Item> CHRYON_SPAWN_EGG = ITEMS.register("chryon_spawn_egg",
             () -> new ForgeSpawnEggItem(ModEntities.CHRYON, 0xA5f8ff, 0x66AFD4, new Item.Properties()));
+
+    public static final RegistryObject<Item> MINER_PICKAXE = ITEMS.register("conjured_pickaxe",
+            () -> new ConjuredPickaxeItem(new Item.Properties().setNoRepair().durability(10)));
+
 
     public static final RegistryObject<Item> VIAL = ITEMS.register("vial", () -> new Vial(new Item.Properties()));
     public static final RegistryObject<Item> FLASK = ITEMS.register("flask", () -> new Flask(new Item.Properties()));

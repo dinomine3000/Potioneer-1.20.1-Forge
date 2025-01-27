@@ -88,6 +88,8 @@ class ClientHudStatsSyncMessage
         ClientAbilitiesData.setEnabledList(msg.enabledList);
         contextSupplier.get().getSender().getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
             cap.getAbilitiesManager().setEnabledList(msg.enabledList);
+            cap.setSpirituality(msg.spirituality);
+            cap.setSanity(msg.sanity);
         });
     }
 }

@@ -35,7 +35,7 @@ public class ClientForgeHandler {
             }
         }
 
-        ClientAbilitiesData.showHotbar = KeyBindings.INSTANCE.showHotbarKey.isDown();
+        ClientAbilitiesData.setShowHotbar(KeyBindings.INSTANCE.showHotbarKey.isDown());
         ClientAbilitiesData.tick(minecraft.getPartialTick());
 
     }

@@ -1,9 +1,11 @@
 package net.dinomine.potioneer.block;
 
 import net.dinomine.potioneer.Potioneer;
+import net.dinomine.potioneer.block.custom.MinerLightSourceBlock;
 import net.dinomine.potioneer.item.ModItems;
 import net.dinomine.potioneer.block.custom.PotionCauldronBlock;
 import net.dinomine.potioneer.block.custom.SoundBlock;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.util.valueproviders.UniformInt;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
@@ -13,6 +15,7 @@ import net.minecraft.world.level.block.DropExperienceBlock;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.MapColor;
+import net.minecraft.world.level.material.PushReaction;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -45,6 +48,11 @@ public class ModBlocks {
             () -> new PotionCauldronBlock(BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK)
                     .mapColor(MapColor.STONE).requiresCorrectToolForDrops()
                     .strength(2.0F).noOcclusion()));
+
+    public static final RegistryObject<Block> MINER_LIGHT = registerBlock("miner_light",
+            () -> new MinerLightSourceBlock(
+                    BlockBehaviour.Properties.copy(Blocks.ACACIA_FENCE).instabreak().noCollission()
+                            .lightLevel((p_50755_) -> 14).sound(SoundType.STONE).pushReaction(PushReaction.DESTROY)));
 
     private static <T extends Block> RegistryObject<T> registerBlock(String name, Supplier<T> block){
         RegistryObject<T> toReturn = BLOCKS.register(name, block);

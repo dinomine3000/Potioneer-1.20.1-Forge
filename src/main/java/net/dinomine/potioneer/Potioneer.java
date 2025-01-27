@@ -9,6 +9,7 @@ import net.dinomine.potioneer.entities.client.PecanRenderer;
 import net.dinomine.potioneer.entities.custom.ChryonEntity;
 import net.dinomine.potioneer.item.ModCreativeModTabs;
 import net.dinomine.potioneer.item.ModItems;
+import net.dinomine.potioneer.loot.ModLootModifiers;
 import net.dinomine.potioneer.network.PacketHandler;
 import net.dinomine.potioneer.particle.ModParticles;
 import net.dinomine.potioneer.recipe.ModRecipes;
@@ -62,6 +63,8 @@ public class Potioneer
         ModSounds.register(eventBus);
 
         ModEntities.register(eventBus);
+
+        ModLootModifiers.register(eventBus);
 
 
         // Register the commonSetup method for modloading

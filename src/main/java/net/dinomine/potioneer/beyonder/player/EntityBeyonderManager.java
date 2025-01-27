@@ -1,26 +1,20 @@
 package net.dinomine.potioneer.beyonder.player;
 
 import net.dinomine.potioneer.beyonder.abilities.Ability;
-import net.dinomine.potioneer.beyonder.client.ClientAdvancementManager;
 import net.dinomine.potioneer.beyonder.pathways.*;
 import net.dinomine.potioneer.beyonder.abilities.Beyonder;
-import net.dinomine.potioneer.beyonder.screen.AdvancementScreen;
 import net.dinomine.potioneer.network.PacketHandler;
 import net.dinomine.potioneer.network.messages.PlayerAbilityInfoSyncSTC;
 import net.dinomine.potioneer.network.messages.PlayerAdvanceMessage;
 import net.dinomine.potioneer.network.messages.PlayerSTCHudStatsSync;
 import net.dinomine.potioneer.network.messages.PlayerStatsSyncMessage;
-import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.capabilities.AutoRegisterCapability;
-import net.minecraftforge.event.entity.living.LivingDamageEvent;
 import net.minecraftforge.network.PacketDistributor;
 
 @AutoRegisterCapability
@@ -31,24 +25,36 @@ public class EntityBeyonderManager {
     private int sanity = 100;
     private int acting = 0;
 
-    private BeyonderStats beyonderStats;
-    private PlayerAbilitiesManager abilitiesManager;
-    private PlayerEffectsManager effectsManager;
+    private final BeyonderStats beyonderStats;
+    private final PlayerAbilitiesManager abilitiesManager;
+    private final PlayerEffectsManager effectsManager;
+    private final PlayerLuckManager luckManager;
     private Beyonder pathway = new Beyonder(10);
+    private final LivingEntity entity;
     private int syncCD = 20;
 
-    public EntityBeyonderManager(){
+    public EntityBeyonderManager(LivingEntity entity){
         beyonderStats = new BeyonderStats();
         abilitiesManager = new PlayerAbilitiesManager();
         effectsManager = new PlayerEffectsManager();
+        luckManager = new PlayerLuckManager();
+        this.entity = entity;
     }
 
     public PlayerEffectsManager getEffectsManager(){
         return effectsManager;
     }
 
+    public PlayerLuckManager getLuckManager(){
+        return luckManager;
+    }
+
     public PlayerAbilitiesManager getAbilitiesManager(){
         return abilitiesManager;
+    }
+
+    public int getMaxSpirituality(){
+        return maxSpirituality;
     }
 
     public BeyonderStats getBeyonderStats(){
@@ -81,7 +87,7 @@ public class EntityBeyonderManager {
         return this.sanity;
     }
 
-    public void playerSleep(){
+    public void onPlayerSleep(){
         changeSpirituality(this.maxSpirituality/3f);
         if(sanity > 25) changeSanity(30);
     }
@@ -91,6 +97,7 @@ public class EntityBeyonderManager {
     }
 
     public void changeSpirituality(float val){
+//        System.out.println(getSpirituality());
         setSpirituality(Mth.clamp(getSpirituality()+val, 0, maxSpirituality));
     }
 
@@ -100,7 +107,11 @@ public class EntityBeyonderManager {
         } else this.spirituality = spirituality;
     }
 
-    public void requestSpiritualityCost(float cost){
+    public void requestActiveSpiritualityCost(float cost){
+        this.spiritualityCost += 20*cost;
+    }
+
+    public void requestPassiveSpiritualityCost(float cost){
         this.spiritualityCost += cost;
     }
 
@@ -110,46 +121,51 @@ public class EntityBeyonderManager {
         this.spiritualityCost = 0;
     }
 
-    public void onTick(LivingEntity entity){
-        abilitiesManager.onTick(this, entity);
-        effectsManager.onTick(this, entity);
-        if(entity instanceof Player player){
-            PacketHandler.INSTANCE.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) player),
-                    new PlayerStatsSyncMessage(this.beyonderStats.getMiningSpeed()));
-            if(syncCD-- < 0){
-                syncCD = 20;
+    public void onTick(LivingEntity entity, boolean serverSide){
+        if(serverSide){
+            abilitiesManager.onTick(this, entity);
+            effectsManager.onTick(this, entity);
+            luckManager.onTick(this, entity);
+            if(entity instanceof Player player){
                 PacketHandler.INSTANCE.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) player),
-                        new PlayerSTCHudStatsSync(this.spirituality, this.maxSpirituality, this.sanity, this.getPathwayId(), getAbilitiesManager().enabledDisabled));
+                        new PlayerStatsSyncMessage(getBeyonderStats().getMiningSpeed()));
+                if(syncCD-- < 0){
+                    applyCost();
+                    syncCD = 20;
+                    PacketHandler.INSTANCE.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) player),
+                            new PlayerSTCHudStatsSync(this.spirituality, this.maxSpirituality, this.sanity, this.getPathwayId(), getAbilitiesManager().enabledDisabled));
+                }
             }
         }
+//        getBeyonderStats().onTick(this, entity);
     }
 
 
     public boolean advance(int id, Player player, boolean sync, boolean advancing){
-        System.out.println(getEffectsManager());
+//        System.out.println(getEffectsManager());
         this.abilitiesManager.clear(true, this, player);
-        if(id < 0){
-            //setDefaultStats(player);
-            //getEffectsManager().clearEffects(this, player);
-            //getAbilitiesManager().clear(true, this, player);
-            this.pathway = new Beyonder(10);
-            if(sync) syncSequenceData(player, advancing);
-            return true;
-        }
+//        if(id < 0){
+//            //setDefaultStats(player);
+//            //getEffectsManager().clearEffects(this, player);
+//            //getAbilitiesManager().clear(true, this, player);
+//            this.pathway = new Beyonder(10);
+//            if(sync) syncSequenceData(player, advancing);
+//            return true;
+//        }
         int seq = id%10;
 
 
         //setDefaultStats(player);
         //getAbilitiesManager().clear(true, this, player);
         setPathway(id, advancing);
-        if(!player.level().isClientSide()){
+        if(!player.level().isClientSide() && id > -1){
             PacketHandler.INSTANCE.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) player),
                     new PlayerAbilityInfoSyncSTC(getAbilitiesManager().getPathwayActives().stream().map(Ability::getInfo).toList()));
         }
 
 
         //not translated. either make it translatable or delete it for final version
-        if(!player.level().isClientSide && advancing){
+        if(!player.level().isClientSide && advancing && id > -1){
             player.sendSystemMessage(Component.literal("Successfully advanced to Sequence " + String.valueOf(seq)
                     + " " + Beyonder.getSequenceNameFromId(id, true) + "!"));
         }
@@ -186,8 +202,22 @@ public class EntityBeyonderManager {
                     this.pathway = new ParagonPathway(seq);
                     ParagonPathway.getAbilities(seq, getAbilitiesManager());
                     break;
+                case 5:
+                    System.out.println("Advancing as Dev.");
+                    this.pathway = new DevPathway(seq);
+                    DevPathway.getAbilities(seq, getAbilitiesManager());
+                    break;
+                default:
+                    System.out.println("Invalid pathway Id. Defaulting to beyonderless...");
+                    this.pathway = new Beyonder(10);
+                    break;
             }
             this.maxSpirituality = this.pathway.getMaxSpirituality(seq);
+            //TODO if effect also need an "on acquire" funciton, add it here
+            //TODO move this into the "set active abilities" in the ability manager, will require changint the getAbilities
+            //in the pathway classes
+            //TODO make the effects manager also do the "on Acquire" abilities
+            if(advancing) this.abilitiesManager.onAcquireAbilities(this, entity);
             if(advancing) setSpirituality(this.maxSpirituality);
         }
     }
@@ -207,23 +237,33 @@ public class EntityBeyonderManager {
     public void copyFrom(EntityBeyonderManager source, Player player){
         this.spirituality = source.getSpirituality();
         advance(source.getPathwayId(), player, true, false);
+        this.abilitiesManager.copyFrom(source.getAbilitiesManager());
+        this.abilitiesManager.onAcquireAbilities(this, player);
     }
 
     public void saveNBTData(CompoundTag nbt){
+//        System.out.println("saving nbt data for beyonder capability...");
         nbt.putFloat("spirituality", spirituality);
         nbt.putInt("pathwayId", pathway.getId());
+//        System.out.println("Saving pathway id: " + pathway.getId());
         //this.abilitiesManager.saveNBTData(nbt);
         this.effectsManager.saveNBTData(nbt);
         this.abilitiesManager.saveNBTData(nbt);
+        this.luckManager.saveNBTData(nbt);
     }
 
     public void loadNBTData(CompoundTag nbt){
+//        System.out.println("-------------loading capability nbt-------------------");
+//        System.out.println("loading nbt data for beyonder capability...");
         this.spirituality = nbt.getFloat("spirituality");
+//        System.out.println("Loading pathway id: " + nbt.getInt("pathwayId"));
         setPathway(nbt.getInt("pathwayId"), false);
         this.abilitiesManager.loadNBTData(nbt);
+        this.abilitiesManager.onAcquireAbilities(this, entity);
         //TODO make abilities manager actually save and load item abilities.
         //this.abilitiesManager.loadNBTData(nbt);
         this.effectsManager.loadNBTData(nbt);
+        this.luckManager.loadNBTData(nbt);
     }
 
     public void syncSequenceData(Player player, boolean advancing){

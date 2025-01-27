@@ -9,11 +9,17 @@ import net.minecraft.world.entity.LivingEntity;
 public class CraftingBonusAbility extends Ability {
 
     public CraftingBonusAbility(int sequence){
-        this.info = new AbilityInfo(80, 0, "Crafting Bonus", sequence, 0, this.getCooldown());
+        this.info = new AbilityInfo(109, 56, "Crafting Bonus", 40 + sequence, 0, this.getCooldown());
+    }
+
+    @Override
+    public void onAcquire(EntityBeyonderManager cap, LivingEntity target) {
+
     }
 
     @Override
     public boolean active(EntityBeyonderManager cap, LivingEntity target) {
+        if(target.level().isClientSide()) return false;
         flipEnable(cap, target);
         return true;
     }
@@ -22,7 +28,7 @@ public class CraftingBonusAbility extends Ability {
     public void passive(EntityBeyonderManager cap, LivingEntity target) {
         if(isEnabled(cap.getAbilitiesManager()) && !cap.getEffectsManager().hasEffect(BeyonderEffects.EFFECT.PARAGON_CRAFTING_BONUS, getSequence())){
             cap.getEffectsManager().addEffect(BeyonderEffects.byId(BeyonderEffects.EFFECT.PARAGON_CRAFTING_BONUS,
-                    getSequence(), 0, -1, true));
+                    getSequence(), 0, -1, true), cap, target);
         }
 
     }

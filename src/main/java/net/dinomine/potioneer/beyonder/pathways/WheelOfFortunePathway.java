@@ -3,10 +3,10 @@ package net.dinomine.potioneer.beyonder.pathways;
 import net.dinomine.potioneer.beyonder.abilities.Ability;
 import net.dinomine.potioneer.beyonder.abilities.Beyonder;
 import net.dinomine.potioneer.beyonder.abilities.DummyAbility;
-import net.dinomine.potioneer.beyonder.abilities.tyrant.WaterAffinityAbility;
+import net.dinomine.potioneer.beyonder.abilities.wheeloffortune.ConjurePickaxeAbility;
+import net.dinomine.potioneer.beyonder.abilities.wheeloffortune.HideInBlockAbility;
+import net.dinomine.potioneer.beyonder.abilities.wheeloffortune.MinerLightAbility;
 import net.dinomine.potioneer.beyonder.abilities.wheeloffortune.MiningSpeedAbility;
-import net.dinomine.potioneer.beyonder.client.ClientAbilitiesData;
-import net.dinomine.potioneer.beyonder.client.ClientStatsData;
 import net.dinomine.potioneer.beyonder.player.EntityBeyonderManager;
 import net.dinomine.potioneer.beyonder.player.PlayerAbilitiesManager;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -25,12 +25,19 @@ public class WheelOfFortunePathway extends Beyonder {
 
     public static void getAbilities(int sequence, PlayerAbilitiesManager mng){
         MiningSpeedAbility abl = new MiningSpeedAbility(sequence);
-        DummyAbility dummy = new DummyAbility(sequence);
+        MinerLightAbility light = new MinerLightAbility(sequence);
+//        HideInBlockAbility block = new HideInBlockAbility(sequence);
+//        DummyAbility dummy = new DummyAbility(sequence);
+        ConjurePickaxeAbility pick = new ConjurePickaxeAbility(sequence);
         ArrayList<Ability> passiveAbilities9 = new ArrayList<>();
         passiveAbilities9.add(abl);
+
         ArrayList<Ability> activeAbilities9 = new ArrayList<>();
-        activeAbilities9.add(dummy);
+//        activeAbilities9.add(dummy);
         activeAbilities9.add(abl);
+        activeAbilities9.add(light);
+        activeAbilities9.add(pick);
+//        activeAbilities9.add(block);
 
         mng.setPathwayActives(activeAbilities9);
         mng.setPathwayPassives(passiveAbilities9);
@@ -58,20 +65,6 @@ public class WheelOfFortunePathway extends Beyonder {
     @Override
     public int getId() {
         return sequence;
-    }
-
-
-    public static void giveNightVision(Player player, EntityBeyonderManager cap){
-        int cost = 1;
-        if(!player.level().isClientSide()){
-            if(!player.hasEffect(MobEffects.NIGHT_VISION)){
-                player.addEffect(new MobEffectInstance(MobEffects.NIGHT_VISION, 230, 0, false, false));
-                cap.requestSpiritualityCost(cost);
-            } else if(player.getEffect(MobEffects.NIGHT_VISION).endsWithin(205)){
-                player.addEffect(new MobEffectInstance(MobEffects.NIGHT_VISION, 230, 0, false, false));
-                cap.requestSpiritualityCost(cost);
-            }
-        }
     }
 
 }

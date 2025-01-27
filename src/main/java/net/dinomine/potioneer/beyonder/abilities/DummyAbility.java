@@ -13,7 +13,13 @@ public class DummyAbility extends Ability{
     }
 
     @Override
+    public void onAcquire(EntityBeyonderManager cap, LivingEntity target) {
+
+    }
+
+    @Override
     public boolean active(EntityBeyonderManager cap, LivingEntity target) {
+        if(target.level().isClientSide()) return false;
         target.addEffect(new MobEffectInstance(MobEffects.NIGHT_VISION, 100, 1, false, false));
         target.sendSystemMessage(Component.literal("Night vision granted"));
         return true;

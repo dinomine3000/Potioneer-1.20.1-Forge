@@ -20,17 +20,20 @@ import java.util.function.Supplier;
 //called frequently to update the client stats for the hud display
 public class PlayerFormulaScreenSTCMessage {
     public PotionRecipeData data;
+    public boolean error;
 
-    public PlayerFormulaScreenSTCMessage(PotionRecipeData data) {
+    public PlayerFormulaScreenSTCMessage(PotionRecipeData data, boolean error) {
         this.data = data;
     }
 
     public static void encode(PlayerFormulaScreenSTCMessage msg, FriendlyByteBuf buffer){
+        buffer.writeBoolean(msg.error);
         msg.data.encode(buffer);
     }
 
     public static PlayerFormulaScreenSTCMessage decode(FriendlyByteBuf buffer){
-        return new PlayerFormulaScreenSTCMessage(PotionRecipeData.decode(buffer));
+        boolean error = buffer.readBoolean();
+        return new PlayerFormulaScreenSTCMessage(PotionRecipeData.decode(buffer), error);
     }
 
     public static void handle(PlayerFormulaScreenSTCMessage msg, Supplier<NetworkEvent.Context> contextSupplier){
@@ -53,6 +56,6 @@ class ClientFormulaScreenHandler
 {
     public static void handlePacket(PlayerFormulaScreenSTCMessage msg, Supplier<NetworkEvent.Context> contextSupplier)
     {
-        Minecraft.getInstance().setScreen(new FormulaScreen(msg.data));
+        Minecraft.getInstance().setScreen(new FormulaScreen(msg.data, msg.error));
     }
 }

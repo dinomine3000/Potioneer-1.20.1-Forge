@@ -1,34 +1,17 @@
 package net.dinomine.potioneer.savedata;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import net.dinomine.potioneer.Potioneer;
-import net.dinomine.potioneer.recipe.ModRecipes;
 import net.dinomine.potioneer.recipe.PotionCauldronRecipe;
-import net.minecraft.client.Minecraft;
-import net.minecraft.data.recipes.RecipeProvider;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.MinecraftServer;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.util.GsonHelper;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.saveddata.SavedData;
-import net.minecraftforge.common.ForgeConfig;
-import org.apache.logging.log4j.core.jmx.Server;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 
 public class PotionFormulaSaveData extends SavedData {
     private ArrayList<PotionRecipeData> formulas = new ArrayList<>();
-    public boolean refresh = false;
+    public boolean refresh;
     public ArrayList<PotionRecipeData> getFormulas() {
         return formulas;
     }
@@ -43,7 +26,7 @@ public class PotionFormulaSaveData extends SavedData {
 
     public PotionFormulaSaveData(ServerLevel level){
         //this is the standard initialization of the formulas, aka, just reads the json files for the recipes
-        System.out.println("reading jsons");
+//        System.out.println("reading jsons");
         refresh = false;
 
         ArrayList<PotionCauldronRecipe> recipes = new ArrayList<>(level.getRecipeManager().getAllRecipesFor(PotionCauldronRecipe.Type.INSTANCE));
@@ -93,23 +76,27 @@ public class PotionFormulaSaveData extends SavedData {
 
     @Override
     public CompoundTag save(CompoundTag compoundTag) {
-        System.out.println("saving to nbt");
+//        System.out.println("saving to nbt");
         compoundTag.putBoolean("refresh", refresh);
+
         compoundTag.putInt("size", formulas.size());
         for(int i = 0; i < formulas.size(); i++){
             CompoundTag temp = new CompoundTag();
             formulas.get(i).save(temp);
             compoundTag.put("formula_" + i, temp);
         }
+
         return compoundTag;
     }
 
     public static PotionFormulaSaveData load(CompoundTag nbt, Level level){
-        System.out.println("loading nbt...");
+//        System.out.println("loading nbt...");
+        //refresh variable
         boolean refresh = nbt.getBoolean("refresh");
         if(refresh){
             return null;
         }
+        //formulas data
         int size = nbt.getInt("size");
         ArrayList<PotionRecipeData> found = new ArrayList<>();
         if(size != 0){
@@ -117,9 +104,10 @@ public class PotionFormulaSaveData extends SavedData {
                 found.add(PotionRecipeData.load(nbt.getCompound("formula_" + i)));
             }
         } else {
-            System.out.println("initiating WSD with standard values");
+//            System.out.println("initiating WSD with standard values");
             return null;
         }
+
         PotionFormulaSaveData res = new PotionFormulaSaveData(false);
         res.setFormulas(found);
         res.refresh = false;
@@ -136,7 +124,11 @@ public class PotionFormulaSaveData extends SavedData {
                 if(result != null){
                     rec.alternateRecipeData = result.copy();
                 } else {
-                    System.out.println("ERROR: Could not update potion recipe. Data read was null.");
+                    level.players().forEach(player -> {
+                        player.sendSystemMessage(Component.literal("Recipe wasn't found in old data. Will refresh on next NBT data save"));
+                    });
+                    data.refresh = true;
+                    System.out.println("ERROR: Could not update potion recipe. Recipe was not fData read was null.");
                 }
             }
         });

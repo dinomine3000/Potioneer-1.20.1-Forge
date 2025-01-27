@@ -2,9 +2,7 @@ package net.dinomine.potioneer.beyonder.pathways;
 
 import net.dinomine.potioneer.beyonder.abilities.Ability;
 import net.dinomine.potioneer.beyonder.abilities.Beyonder;
-import net.dinomine.potioneer.beyonder.abilities.DummyAbility;
 import net.dinomine.potioneer.beyonder.abilities.tyrant.WaterAffinityAbility;
-import net.dinomine.potioneer.beyonder.client.ClientAbilitiesData;
 import net.dinomine.potioneer.beyonder.player.EntityBeyonderManager;
 import net.dinomine.potioneer.beyonder.player.PlayerAbilitiesManager;
 import net.minecraft.world.entity.player.Player;
@@ -85,7 +83,7 @@ public class TyrantPathway extends Beyonder {
         if(isInWater(player)){
             //cap.requestSpiritualityCost(-4);
             if(player.getFoodData().needsFood() && Math.random() < 0.02){
-                cap.requestSpiritualityCost(20);
+                cap.requestPassiveSpiritualityCost(20);
                 player.getFoodData().eat(1, 0);
             }
         }

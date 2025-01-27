@@ -1,9 +1,0 @@
-{
-  "variants": {
-    "level=1": {"model": "potioneer:block/potion_cauldron_1"},
-    "level=2,triggered=false":  {"model": "potioneer:block/potion_cauldron_2"},
-    "level=2,triggered=true":  {"model": "potioneer:block/potion_cauldron_2_done"},
-    "level=3,triggered=false":  {"model": "potioneer:block/potion_cauldron_3"},
-    "level=3,triggered=true":  {"model": "potioneer:block/potion_cauldron_3_done"}
-  }
-}

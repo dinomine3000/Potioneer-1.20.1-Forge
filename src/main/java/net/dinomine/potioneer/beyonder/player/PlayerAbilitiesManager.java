@@ -25,6 +25,10 @@ public class PlayerAbilitiesManager {
     private ArrayList<Ability> pathwayPassives = new ArrayList<Ability>();
     private ArrayList<Ability> otherPassives = new ArrayList<Ability>();
 
+    public void copyFrom(PlayerAbilitiesManager mng){
+        this.enabledDisabled = new ArrayList<>(mng.enabledDisabled);
+    }
+
     public void onTick(EntityBeyonderManager cap, LivingEntity target){
         if(!pathwayPassives.isEmpty()){
             pathwayPassives.forEach(ability -> {
@@ -36,7 +40,7 @@ public class PlayerAbilitiesManager {
                 ability.passive(cap, target);
             });
         }
-        //TODO check if this should be removed, since the CD could be counted only in client side
+
         for(int i = 0; i < activeCooldowns.size(); i++){
             if(activeCooldowns.get(i) > 0) activeCooldowns.set(i, activeCooldowns.get(i)-1);
         }
@@ -68,10 +72,11 @@ public class PlayerAbilitiesManager {
         if(tar instanceof Player player){
             if(tar.level().isClientSide()){
                 PacketHandler.INSTANCE.sendToServer(new PlayerCastAbilityMessageCTS(caret));
+                pathwayActives.get(caret).active(cap, tar);
             } else {
-                System.out.println(cap.getEffectsManager());
-                System.out.println(pathwayActives);
-                System.out.println(pathwayActives.get(caret));
+//                System.out.println(cap.getEffectsManager());
+//                System.out.println(pathwayActives);
+//                System.out.println(pathwayActives.get(caret));
                 if(pathwayActives.get(caret).active(cap, tar)){
                     putOnCooldown(player, caret);
                 }
@@ -81,10 +86,30 @@ public class PlayerAbilitiesManager {
     }
 
     public void setEnabledList(ArrayList<Boolean> list){
-        this.enabledDisabled = list;
+        if(this.enabledDisabled.size() > list.size()){
+            for (int i = 0; i < list.size(); i++) {
+                this.enabledDisabled.set(i, list.get(i));
+            }
+        } else {
+            this.enabledDisabled = list;
+        }
+        if(enabledDisabled.size() != pathwayActives.size()){
+            System.out.println("WARNING: EnabledDisabled list is NOT the same size as the pathwayActives list.\nProceed with caution!!!");
+//            System.out.println("List size: " + list.size());
+//            System.out.println("EnabledDisabled list size: " + enabledDisabled.size());
+//            System.out.println("pathwayActives list size: " + pathwayActives.size());
+        }
+        for (int i = 0; i < Math.min(enabledDisabled.size(), pathwayActives.size()); i++) {
+            if(pathwayActives.get(i).isActive) enabledDisabled.set(i, true);
+        }
     }
 
-    public void setEnabled(Ability abl, boolean bol){
+    public void setEnabled(Ability abl, boolean bol, EntityBeyonderManager cap, LivingEntity target){
+        if(enabledDisabled.get(pathwayActives.indexOf(abl)) && !bol){
+            abl.deactivate(cap, target);
+        } else if(!enabledDisabled.get(pathwayActives.indexOf(abl)) && bol){
+            abl.activate(cap, target);
+        }
         enabledDisabled.set(pathwayActives.indexOf(abl), bol);
     }
 
@@ -106,9 +131,17 @@ public class PlayerAbilitiesManager {
     }
 
     public void setPathwayActives(ArrayList<Ability> abilities){
-        pathwayActives = abilities;
+//        System.out.println("Active abilities updates. Size is: " + abilities.size());
+        pathwayActives = new ArrayList<>(abilities);
         activeCooldowns = new ArrayList<>(abilities.stream().map(c -> 0).toList());
         enabledDisabled = new ArrayList<>(abilities.stream().map(c -> true).toList());
+    }
+
+    public void onAcquireAbilities(EntityBeyonderManager cap, LivingEntity target){
+        //only going through actives. if you want for passives, youll need to add it
+        for (int i = 0; i < pathwayActives.size(); i++) {
+            if(enabledDisabled.get(i)) pathwayActives.get(i).onAcquire(cap, target);
+        }
     }
 
     public ArrayList<Ability> getPathwayActives() {
@@ -116,6 +149,7 @@ public class PlayerAbilitiesManager {
     }
 
     public void setPathwayPassives(ArrayList<Ability> abilities){
+//        System.out.println("Passive abilities updates. Size is: " + abilities.size());
         pathwayPassives = abilities;
     }
 
@@ -126,6 +160,13 @@ public class PlayerAbilitiesManager {
             enabled.putBoolean(String.valueOf(i), enabledDisabled.get(i));
         }
         nbt.put("enabled_abilities", enabled);
+
+        CompoundTag cooldowns = new CompoundTag();
+        cooldowns.putInt("size", activeCooldowns.size());
+        for(int i = 0; i < activeCooldowns.size(); i++){
+            cooldowns.putInt(String.valueOf(i), activeCooldowns.get(i));
+        }
+        nbt.put("cooldowns", cooldowns);
     }
 
     public void loadNBTData(CompoundTag nbt){
@@ -136,8 +177,22 @@ public class PlayerAbilitiesManager {
             for(int i = 0; i < size; i++){
                 enabled.add(enabledAbilities.getBoolean(String.valueOf(i)));
             }
-            this.enabledDisabled = enabled;
+            //syncing with the abilities you had from pathway
+            //this is important if pathway abilities change between world loads,
+            //so itll at least try to keep the info on what abilities were on or off
+//            System.out.println(enabled.size());
+            setEnabledList(enabled);
         }
+
+        CompoundTag cds = nbt.getCompound("cooldowns");
+        int sizeCd = cds.getInt("size");
+        ArrayList<Integer> cooldowns = new ArrayList<>();
+        if(sizeCd != 0){
+            for (int i = 0; i < sizeCd; i++) {
+                cooldowns.add(cds.getInt(String.valueOf(i)));
+            }
+        }
+
     }
 
 }

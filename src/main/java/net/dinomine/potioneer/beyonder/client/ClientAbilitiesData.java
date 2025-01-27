@@ -3,7 +3,9 @@ package net.dinomine.potioneer.beyonder.client;
 import net.dinomine.potioneer.beyonder.abilities.Ability;
 import net.dinomine.potioneer.beyonder.abilities.AbilityInfo;
 import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
+import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -15,6 +17,20 @@ import java.util.List;
 public class ClientAbilitiesData {
     public static ArrayList<AbilityInfo> getAbilities() {
         return abilities;
+    }
+
+    public static void setShowHotbar(boolean val){
+        if(!showHotbar && val && !hotbar.isEmpty()){
+            assert Minecraft.getInstance().player != null;
+            Minecraft.getInstance().player.displayClientMessage(Component.literal(abilities.get(caret).name()), true);
+            openAnimation = true;
+            openingAnimationPercent = 0;
+            showHotbar = true;
+        }
+        if(showHotbar && !val){
+            openAnimation = false;
+            openingAnimationPercent = 1;
+        }
     }
 
     public static void setCooldown(int caret, int cd){
@@ -30,7 +46,9 @@ public class ClientAbilitiesData {
             hotbar.add(i);
             cooldowns.add(0);
         }
-        caret = Math.min(caret, hotbar.size()-1);
+        if(!hotbar.isEmpty()){
+            caret = Math.max(Math.min(caret, hotbar.size()-1), 0);
+        }
     }
 
     public static void setEnabledList(ArrayList<Boolean> list){
@@ -53,6 +71,10 @@ public class ClientAbilitiesData {
             }
             time = 0;
         }
+        scaleAnimationTime += dt;
+        if(scaleAnimationTime > 5){
+            scaleAnimationTime = -5;
+        }
     }
 
     public static int getCooldown(){
@@ -74,11 +96,18 @@ public class ClientAbilitiesData {
     public static void animationTick(float dt){
         if(animationTime > 0) animationTime = Math.max(animationTime - dt, 0);
         if(animationTime < 0) animationTime = Math.min(animationTime + dt, 0);
+        openingAnimationPercent = Mth.clamp(openingAnimationPercent + (openAnimation ? dt : -dt)/4, 0, 1);
+        if(openingAnimationPercent <= 0){
+            showHotbar = false;
+        }
     }
 
+    public static boolean openAnimation = false;
+    public static float openingAnimationPercent = 0;
     public static final float maxAnimationtime = 0.65f*20;
     public static float animationTime = 0;
     private static float time = 0;
+    public static float scaleAnimationTime = 0;
     private static ArrayList<AbilityInfo> abilities;
     private static ArrayList<Integer> cooldowns = new ArrayList<>(0);
     private static ArrayList<Boolean> enabledList = new ArrayList<>(0);
@@ -90,6 +119,8 @@ public class ClientAbilitiesData {
         if(animationTime != 0 || hotbar.isEmpty()) return;
         caret = Math.floorMod(caret + diff, hotbar.size());
         animationTime = diff < 0 ? -maxAnimationtime : maxAnimationtime;
+        if(Minecraft.getInstance().player == null) return;
+        Minecraft.getInstance().player.displayClientMessage(Component.literal(abilities.get(caret).name()), true);
     }
 
     public static int getCaret(){
@@ -105,6 +136,10 @@ public class ClientAbilitiesData {
     }
 
     public static boolean isEnabled(int pos){
+        if(enabledList.isEmpty()){
+            System.out.println("enabled list is empty");
+            return false;
+        }
         return enabledList.get(Math.floorMod(pos, enabledList.size()));
     }
 
@@ -117,9 +152,10 @@ public class ClientAbilitiesData {
         if(cooldowns.get(caret) == 0){
             if(ClientStatsData.getPlayerSpirituality() >= abilities.get(caret).cost()){
                 player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
-                    System.out.println(caret);
-                    ClientStatsData.setSpirituality(ClientStatsData.getPlayerSpirituality() - abilities.get(caret).cost());
+//                    System.out.println(caret);
+//                    ClientStatsData.setSpirituality(ClientStatsData.getPlayerSpirituality() - abilities.get(caret).cost());
                     cap.getAbilitiesManager().useAbility(cap, player, caret);
+                    enabledList.set(caret, false);
                 });
             } else {
                 player.sendSystemMessage(Component.literal("Not enough spirituality to cast ability"));

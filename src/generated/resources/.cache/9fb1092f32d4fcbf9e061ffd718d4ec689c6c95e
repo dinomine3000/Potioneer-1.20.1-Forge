@@ -1,7 +1,11 @@
-// 1.20.1	2024-12-22T19:35:36.8762232	Recipes
+// 1.20.1	2025-01-27T14:05:50.7493654	Recipes
+95781ed3fe91abbea4ad4d67e4c96ec81d83b5fc data/potioneer/advancements/recipes/misc/flask.json
 4d8c5d1ca1d6bb9fed5aaaa66554aed7d04e0ef9 data/potioneer/advancements/recipes/misc/potion_cauldron.json
 1ca961e43434bb3864d12b72407e6393cc3ebbf9 data/potioneer/advancements/recipes/misc/sapphire.json
 2e1c44770bcb45ad52431197284703239fc19816 data/potioneer/advancements/recipes/misc/sapphire_block.json
+86a100494e052437fb1b68951dce7d093ceb2dbb data/potioneer/advancements/recipes/misc/vial.json
+46521296d348aee9dde5724b6688b2da49f9c5c4 data/potioneer/recipes/flask.json
 8aaf1c2c363af4f7ed0d8613a21ec216565756cc data/potioneer/recipes/potion_cauldron.json
 27c618dad6f9ca00f60db58b662e8a491eed7cd7 data/potioneer/recipes/sapphire.json
 01e5015c0098d335907c005d7e1965625a2f0262 data/potioneer/recipes/sapphire_block.json
+a6f985b7f34efd5ef939ca76258f514393e6642d data/potioneer/recipes/vial.json
