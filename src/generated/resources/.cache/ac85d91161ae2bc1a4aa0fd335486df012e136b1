@@ -1,4 +1,4 @@
-// 1.20.1	2025-01-27T14:44:08.3147371	Global Loot Modifiers : potioneer
+// 1.20.1	2025-01-29T10:20:57.4057568	Global Loot Modifiers : potioneer
 7bed89b01bc4a4d106569095e0e0707246104941 data/forge/loot_modifiers/global_loot_modifiers.json
 f139b0707aa290e05b16126d41425b72e7b9ef73 data/potioneer/loot_modifiers/formula_from_ancient_city.json
 57275f8604326be07688b2a7546c4137c861a1c6 data/potioneer/loot_modifiers/formula_from_archeology_cold.json

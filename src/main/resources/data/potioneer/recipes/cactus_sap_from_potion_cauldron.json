@@ -7,7 +7,7 @@
     }
   ],
   "supplementary_ingredients": [],
-  "water_level": 2,
+  "water_level": 1,
   "needs_fire": false,
   "output": {
     "name": "cactus_sap",

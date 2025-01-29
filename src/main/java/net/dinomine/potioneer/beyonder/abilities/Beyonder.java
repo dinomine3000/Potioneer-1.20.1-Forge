@@ -59,7 +59,7 @@ public class Beyonder {
                 case 3 -> "red_priest";
                 case 4 -> "paragon";
                 case 5 -> "dev";
-                default -> "None";
+                default -> "none";
             };
         }
     }
@@ -73,7 +73,7 @@ public class Beyonder {
             case 3 -> RedPriestPathway.getSequenceName(seq, show);
             case 4 -> ParagonPathway.getSequenceName(seq, show);
             case 5 -> DevPathway.getSequenceName(seq, show);
-            default -> "None";
+            default -> show ? "None" : "none";
         };
     }
 

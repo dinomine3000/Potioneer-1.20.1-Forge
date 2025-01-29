@@ -51,11 +51,6 @@ public class ParagonPathway extends Beyonder {
             case 7 -> "Conjurer";
             case 6 -> "Artisan";
             case 5 -> "Alchemist";
-            case 4 -> "Mechanical_Creationist";
-            case 3 -> "Knowledge_Magister";
-            case 2 -> "";
-            case 1 -> "";
-            case 0 -> "Paragon";
             default -> "";
         };
     }

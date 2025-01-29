@@ -1,9 +1,11 @@
 package net.dinomine.potioneer.savedata;
 
+import net.dinomine.potioneer.config.PotioneerCommonConfig;
 import net.dinomine.potioneer.recipe.PotionCauldronRecipe;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.saveddata.SavedData;
 
@@ -31,11 +33,110 @@ public class PotionFormulaSaveData extends SavedData {
 
         ArrayList<PotionCauldronRecipe> recipes = new ArrayList<>(level.getRecipeManager().getAllRecipesFor(PotionCauldronRecipe.Type.INSTANCE));
 
-        recipes.forEach(rec -> {
-            if(rec.recipeData.id() > -1){
-                formulas.add(rec.recipeData.copy());
+        boolean generateRandom = PotioneerCommonConfig.RANDOM_FORMULAS.get();
+
+        if(generateRandom){
+            ArrayList<ItemStack> possibleIngredients = new ArrayList<>(
+                    PotioneerCommonConfig.INGREDIENTS.get()
+                    .stream().map(string -> {
+                        CompoundTag temp = new CompoundTag();
+                        temp.putString("id", string);
+                        temp.putInt("Count", 1);
+                        return ItemStack.of(temp);
+                    }).toList()
+            );
+
+            int maxIterations = 20;
+            int mainIngredientsNumber = 2;
+            int attemptLimit = 5;
+            int attempt = 0;
+            int suppIngredientsNumber;
+            outerlopp:
+            for (int i = 0; i < recipes.size(); i++) {
+                if(i == 0){
+                    attempt++;
+                    if(attempt > attemptLimit){
+                        generateRandom = false;
+                        break outerlopp;
+                    }
+                }
+                System.out.println("Generating recipe " + i);
+                ArrayList<ItemStack> newMain = null;
+                ArrayList<ItemStack> newSupp = null;
+                boolean found = false;
+                int iteration = 0;
+
+                suppIngredientsNumber = level.random.nextInt(3);
+
+                while(!found){
+//                    System.out.println("Iteration: " + (iteration + 1));
+                    newMain = new ArrayList<>();
+                    newSupp = new ArrayList<>();
+                    if(iteration++ > maxIterations){
+                        i = -1;
+                        formulas = new ArrayList<>();
+                        continue outerlopp;
+                    }
+
+                    for(int idx = 0; idx < mainIngredientsNumber; idx++){
+                        int ingId = level.random.nextInt(possibleIngredients.size());
+                        if(contains(newMain, possibleIngredients.get(ingId))){
+//                            System.out.println("generated the same ingredient. adding on to self main.");
+                            int copyIndex = indexOf(newMain, possibleIngredients.get(ingId));
+                            newMain.set(copyIndex,
+                                    newMain.get(copyIndex).copyWithCount(newMain.get(copyIndex).getCount() + 1));
+                        } else {
+                            newMain.add(possibleIngredients.get(ingId).copy());
+                        }
+                    }
+
+                    for(int idx = 0; idx < suppIngredientsNumber; idx++){
+                        int ingId = level.random.nextInt(possibleIngredients.size());
+                        if(contains(newSupp, possibleIngredients.get(ingId))){
+//                            System.out.println("generated the same ingredient. adding on to self supp.");
+                            int copyIndex = indexOf(newSupp, possibleIngredients.get(ingId));
+                            newSupp.set(copyIndex,
+                                    newSupp.get(copyIndex).copyWithCount(newSupp.get(copyIndex).getCount() + 1));
+                        } else if(contains(newMain, possibleIngredients.get(ingId))){
+//                            System.out.println("generated the same ingredient. adding on to main.");
+                            int copyIndex = indexOf(newMain, possibleIngredients.get(ingId));
+                            newMain.set(copyIndex,
+                                    newMain.get(copyIndex).copyWithCount(newMain.get(copyIndex).getCount() + 1));
+                        } else {
+                            newSupp.add(possibleIngredients.get(ingId).copy());
+                        }
+                    }
+
+                    ArrayList<ItemStack> total = new ArrayList<>(newMain);
+                    total.addAll(newSupp);
+
+                    found = true;
+                    for (PotionRecipeData form : formulas){
+
+                        ArrayList<ItemStack> tempTotal = new ArrayList<>(form.main());
+                        tempTotal.addAll(new ArrayList<>(form.supplementary()));
+                        if (isContainedIn(form.main(), total) || isContainedIn(newMain, tempTotal)) {
+//                            System.out.println("Found a conflict");
+                            found = false;
+                            break;
+                        }
+                    }
+                }
+//                System.out.println("Valid recipe");
+                formulas.add(new PotionRecipeData(new ArrayList<>(newMain), new ArrayList<>(newSupp), level.random.nextInt(3) + 1,
+                        level.random.nextBoolean(), recipes.get(i).recipeData.id()));
             }
-        });
+
+        } if(!generateRandom) {
+
+
+            recipes.forEach(rec -> {
+                if(rec.recipeData.id() > -1){
+                    formulas.add(rec.recipeData.copy());
+                }
+            });
+
+        }
 
 
         updateEveryRecipe(this, level);
@@ -57,6 +158,31 @@ public class PotionFormulaSaveData extends SavedData {
 //        } catch (IOException e) {
 //            System.out.println("File name doesnt exist");
 //        }
+    }
+
+    private int indexOf(ArrayList<ItemStack> list, ItemStack item){
+        for (int i = 0; i < list.size(); i++) {
+            if(list.get(i).is(item.getItem())) return i;
+        }
+        return -1;
+    }
+
+    private boolean contains(ArrayList<ItemStack> list, ItemStack item){
+        for (ItemStack stack : list){
+            if(stack.is(item.getItem())) return true;
+        }
+        return false;
+    }
+
+    private boolean isContainedIn(ArrayList<ItemStack> main, ArrayList<ItemStack> list){
+        for(ItemStack stack : main){
+            int match = 0;
+            for(ItemStack ing : list){
+                if(ing.is(stack.getItem())) match += ing.getCount();
+            }
+            if(match < stack.getCount() || match == 0) return false;
+        }
+        return true;
     }
 
     public PotionFormulaSaveData(Boolean readFiles){

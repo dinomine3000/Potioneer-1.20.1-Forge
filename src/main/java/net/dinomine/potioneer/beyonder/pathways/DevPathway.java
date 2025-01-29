@@ -4,9 +4,11 @@ import net.dinomine.potioneer.beyonder.abilities.Ability;
 import net.dinomine.potioneer.beyonder.abilities.Beyonder;
 import net.dinomine.potioneer.beyonder.abilities.mystery.*;
 import net.dinomine.potioneer.beyonder.abilities.paragon.CraftingGuiAbility;
+import net.dinomine.potioneer.beyonder.abilities.paragon.DurabilityRegenAbility;
 import net.dinomine.potioneer.beyonder.abilities.redpriest.StatBonusAbility;
 import net.dinomine.potioneer.beyonder.abilities.redpriest.WeaponProficiencyAbility;
 import net.dinomine.potioneer.beyonder.abilities.tyrant.WaterAffinityAbility;
+import net.dinomine.potioneer.beyonder.abilities.wheeloffortune.ConjurePickaxeAbility;
 import net.dinomine.potioneer.beyonder.abilities.wheeloffortune.MinerLightAbility;
 import net.dinomine.potioneer.beyonder.abilities.wheeloffortune.MiningSpeedAbility;
 import net.dinomine.potioneer.beyonder.player.PlayerAbilitiesManager;
@@ -24,6 +26,7 @@ public class DevPathway extends Beyonder {
     public static void getAbilities(int sequence, PlayerAbilitiesManager mng){
         MiningSpeedAbility mining = new MiningSpeedAbility(sequence);
         MinerLightAbility light = new MinerLightAbility(sequence);
+        ConjurePickaxeAbility pick = new ConjurePickaxeAbility(sequence);
 
         WaterAffinityAbility water = new WaterAffinityAbility(sequence);
 
@@ -36,6 +39,7 @@ public class DevPathway extends Beyonder {
 //        StatBonusAbility stats = new StatBonusAbility(sequence);
 
         CraftingGuiAbility craft = new CraftingGuiAbility(sequence);
+        DurabilityRegenAbility dur = new DurabilityRegenAbility(sequence);
 
         ArrayList<Ability> activeAbilities9 = new ArrayList<>();
         activeAbilities9.add(reach);
@@ -48,6 +52,8 @@ public class DevPathway extends Beyonder {
         activeAbilities9.add(water);
         activeAbilities9.add(mining);
         activeAbilities9.add(light);
+        activeAbilities9.add(dur);
+        activeAbilities9.add(pick);
 
         ArrayList<Ability> passiveAbilities9 = new ArrayList<>();
         passiveAbilities9.add(regen);

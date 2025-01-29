@@ -1,6 +1,7 @@
 {
   "values": [
     "potioneer:sapphire_ore",
-    "potioneer:deepslate_sapphire_ore"
+    "potioneer:deepslate_sapphire_ore",
+    "potioneer:sapphire_block"
   ]
 }

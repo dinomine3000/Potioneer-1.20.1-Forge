@@ -51,7 +51,7 @@ public class FormulaScreen extends Screen {
     public void render(GuiGraphics pGuiGraphics, int pMouseX, int pMouseY, float pPartialTick) {
 //        renderBackground(pGuiGraphics);
         super.render(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
-        pGuiGraphics.blit(TEXTURE, this.leftPos, this.topPos-15, 200, 230, error ? 180 : 0, 0, 180, 220, imageWidth, imageHeight);
+        pGuiGraphics.blit(TEXTURE, this.leftPos, this.topPos-15, 200, 230, error ? 179 : 0, 0, 178, 220, imageWidth, imageHeight);
 
         int topOffset = 5;
         //title with potion name
@@ -79,7 +79,7 @@ public class FormulaScreen extends Screen {
 
         //fire and water status
         drawFire(pGuiGraphics, this.leftPos+30, this.topPos+160, 32, 32, data, pMouseX, pMouseY);
-        drawWater(pGuiGraphics, this.leftPos+140, this.topPos+160, 32, 32, data, pMouseX, pMouseY);
+        if(!error)drawWater(pGuiGraphics, this.leftPos+140, this.topPos+160, 32, 32, data, pMouseX, pMouseY);
 //        pGuiGraphics.blit(TEXTURE, this.leftPos + 140, this.topPos + 128, 32, 32, 185 + (data.waterLevel() - 1)*32, 0, 32, 32, 512, 512);
 //        pGuiGraphics.blit(TEXTURE, this.leftPos + 140, this.topPos + 160, 32, 32, 185 + (data.fire() ? 0 : 1)*32, 32, 32, 32, 512, 512);
     }

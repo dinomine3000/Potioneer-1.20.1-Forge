@@ -105,6 +105,7 @@ public class PlayerAbilitiesManager {
     }
 
     public void setEnabled(Ability abl, boolean bol, EntityBeyonderManager cap, LivingEntity target){
+        if(!pathwayActives.contains(abl)) return;
         if(enabledDisabled.get(pathwayActives.indexOf(abl)) && !bol){
             abl.deactivate(cap, target);
         } else if(!enabledDisabled.get(pathwayActives.indexOf(abl)) && bol){
@@ -118,15 +119,23 @@ public class PlayerAbilitiesManager {
         return enabledDisabled.get(pathwayActives.indexOf(abl) % enabledDisabled.size());
     }
 
+    public int getCaretForAbility(Ability abl){
+        return pathwayActives.indexOf(abl);
+    }
+
     public void putOnCooldown(Player player, int caret){
         putOnCooldown(player, caret, pathwayActives.get(caret).getCooldown());
     }
 
     public void putOnCooldown(Player player, int caret, int cd){
+        putOnCooldown(player, caret, cd, pathwayActives.get(caret).getInfo().maxCooldown());
+    }
+
+    public void putOnCooldown(Player player, int caret, int cd, int maxCd){
         activeCooldowns.set(caret, cd);
         if(cd != 0){
             PacketHandler.INSTANCE.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) player),
-                    new PlayerAbilityCooldownSTC(caret, cd));
+                    new PlayerAbilityCooldownSTC(caret, cd, maxCd));
         }
     }
 

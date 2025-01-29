@@ -3,6 +3,7 @@ package net.dinomine.potioneer;
 import com.mojang.logging.LogUtils;
 import net.dinomine.potioneer.block.ModBlocks;
 import net.dinomine.potioneer.block.entity.ModBlockEntities;
+import net.dinomine.potioneer.config.PotioneerCommonConfig;
 import net.dinomine.potioneer.entities.ModEntities;
 import net.dinomine.potioneer.entities.client.ChryonRenderer;
 import net.dinomine.potioneer.entities.client.PecanRenderer;
@@ -71,6 +72,8 @@ public class Potioneer
         eventBus.addListener(this::commonSetup);
 
         GeckoLib.initialize();
+
+        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, PotioneerCommonConfig.SPEC, "potioneer-common.toml");
 
         // Register ourselves for server and other game events we are interested in
         MinecraftForge.EVENT_BUS.register(this);

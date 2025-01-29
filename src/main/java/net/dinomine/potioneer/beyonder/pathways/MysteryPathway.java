@@ -17,22 +17,29 @@ public class MysteryPathway extends Beyonder {
     }
 
     public static void getAbilities(int sequence, PlayerAbilitiesManager mng){
-//        AirBulletAbility abl = new AirBulletAbility(sequence);
-        InvisibilityAbility abl = new InvisibilityAbility(sequence);
-        DoorOpeningAbility door = new DoorOpeningAbility(sequence);
-        ReachAbility reach = new ReachAbility(sequence);
-        SpiritualityRegenAbility regen = new SpiritualityRegenAbility(sequence);
-
-        ArrayList<Ability> passiveAbilities9 = new ArrayList<>();
+        ArrayList<Ability> passiveAbilities = new ArrayList<>();
         ArrayList<Ability> activeAbilities9 = new ArrayList<>();
-        activeAbilities9.add(reach);
-        activeAbilities9.add(abl);
-        activeAbilities9.add(door);
-        activeAbilities9.add(regen);
-        passiveAbilities9.add(regen);
 
+        switch(sequence){
+            case 0:
+            case 1:
+            case 2:
+            case 3:
+            case 4:
+            case 5:
+            case 6:
+            case 7:
+            case 8:
+                activeAbilities9.add(new AirBulletAbility(sequence));
+            case 9:
+                activeAbilities9.add(new ReachAbility(sequence));
+                activeAbilities9.add(new DoorOpeningAbility(sequence));
+                activeAbilities9.add(new SpiritualityRegenAbility(sequence));
+                activeAbilities9.add(new InvisibilityAbility(sequence));
+                passiveAbilities.add(new SpiritualityRegenAbility(sequence));
+        }
         mng.setPathwayActives(activeAbilities9);
-        mng.setPathwayPassives(passiveAbilities9);
+        mng.setPathwayPassives(passiveAbilities);
     }
 
 
@@ -48,15 +55,10 @@ public class MysteryPathway extends Beyonder {
     public static String getSequenceName(int seq){
         return switch (seq) {
             case 9 -> "Trickmaster";
-            case 8 -> "Voodoo_Assassin";
-            case 7 -> "Plague_Doctor";
+            case 8 -> "Acrobat";
+            case 7 -> "Voodoo_Assassin";
             case 6 -> "Parasite";
-            case 5 -> "Flyer";
-            case 4 -> "Ice_Duke";
-            case 3 -> "Prosperous_Prince";
-            case 2 -> "Nature_Dictator";
-            case 1 -> "Cataclysm_King";
-            case 0 -> "Tyrant";
+            case 5 -> "Traveler";
             default -> "";
         };
     }

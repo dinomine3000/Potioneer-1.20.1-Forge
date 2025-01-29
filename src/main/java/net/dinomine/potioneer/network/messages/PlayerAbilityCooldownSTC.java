@@ -16,21 +16,25 @@ import java.util.function.Supplier;
 public class PlayerAbilityCooldownSTC {
     public int caret;
     public int cd;
+    public int maxCd;
 
-    public PlayerAbilityCooldownSTC(int caret, int cd){
+    public PlayerAbilityCooldownSTC(int caret, int cd, int maxCd){
         this.cd = cd;
         this.caret = caret;
+        this.maxCd = maxCd;
     }
 
     public static void encode(PlayerAbilityCooldownSTC msg, FriendlyByteBuf buffer){
         buffer.writeInt(msg.caret);
         buffer.writeInt(msg.cd);
+        buffer.writeInt(msg.maxCd);
     }
 
     public static PlayerAbilityCooldownSTC decode(FriendlyByteBuf buffer){
         int caret = buffer.readInt();
         int cd = buffer.readInt();
-        return new PlayerAbilityCooldownSTC(caret, cd);
+        int maxCd = buffer.readInt();
+        return new PlayerAbilityCooldownSTC(caret, cd, maxCd);
     }
 
     public static void handle(PlayerAbilityCooldownSTC msg, Supplier<NetworkEvent.Context> contextSupplier){
@@ -56,7 +60,7 @@ class ClientAbilityCooldownSTC
     public static void handlePacket(PlayerAbilityCooldownSTC msg, Supplier<NetworkEvent.Context> contextSupplier)
     {
 //                ClientAbilitiesData.setAbilities(msg.list.stream().map(Ability::getInfo).toList());
-        ClientAbilitiesData.setCooldown(msg.caret, msg.cd);
+        ClientAbilitiesData.setCooldown(msg.caret, msg.cd, msg.maxCd);
     }
 
 }

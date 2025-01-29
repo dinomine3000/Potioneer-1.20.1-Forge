@@ -21,6 +21,7 @@ import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.Containers;
 import net.minecraft.world.InteractionHand;
@@ -434,7 +435,7 @@ public class PotionCauldronBlockEntity extends BlockEntity {
         //this.result = conflict ? PotionUtils.setPotion(new ItemStack(Items.POTION), Potions.POISON) : tempResult;
         this.result = tempResult.copy();
         pLevel.playSound(null, pPos, SoundEvents.ZOMBIE_VILLAGER_CURE, SoundSource.BLOCKS, 1f, 1f);
-        pLevel.setBlockAndUpdate(pPos, pState.setValue(RESULT, true));
+        pLevel.setBlockAndUpdate(pPos, pState.setValue(RESULT, true).setValue(WATER_LEVEL, Mth.clamp(pState.getValue(WATER_LEVEL), 2, 3)));
         tempResult = PotionContentData.EMPTY.copy();
         clearContent();
         setChanged();

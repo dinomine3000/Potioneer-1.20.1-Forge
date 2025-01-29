@@ -29,4 +29,8 @@ public record AbilityInfo(int posX, int posY, String name, int id, int cost, int
         }
         return new AbilityInfo(x, y, stringBuilder.toString(), id, cost, maxCd);
     }
+
+    public AbilityInfo copy(int maxCd){
+        return new AbilityInfo(posX(), posY(), name(), id(), cost(), maxCd);
+    }
 }

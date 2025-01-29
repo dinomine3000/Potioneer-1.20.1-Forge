@@ -27,14 +27,15 @@ public class ClientAbilitiesData {
             openingAnimationPercent = 0;
             showHotbar = true;
         }
-        if(showHotbar && !val){
+        if(openAnimation && !val){
             openAnimation = false;
             openingAnimationPercent = 1;
         }
     }
 
-    public static void setCooldown(int caret, int cd){
+    public static void setCooldown(int caret, int cd, int maxCd){
         cooldowns.set(caret, cd);
+        abilities.set(caret, abilities.get(caret).copy(maxCd));
     }
 
     public static void setAbilities(List<AbilityInfo> abilities2) {
@@ -96,7 +97,7 @@ public class ClientAbilitiesData {
     public static void animationTick(float dt){
         if(animationTime > 0) animationTime = Math.max(animationTime - dt, 0);
         if(animationTime < 0) animationTime = Math.min(animationTime + dt, 0);
-        openingAnimationPercent = Mth.clamp(openingAnimationPercent + (openAnimation ? dt : -dt)/4, 0, 1);
+        openingAnimationPercent = Mth.clamp(openingAnimationPercent + (openAnimation ? dt : -dt)/10, 0, 1);
         if(openingAnimationPercent <= 0){
             showHotbar = false;
         }

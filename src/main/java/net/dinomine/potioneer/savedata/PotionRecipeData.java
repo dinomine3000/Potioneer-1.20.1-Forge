@@ -13,6 +13,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.ShapedRecipe;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 import java.io.BufferedReader;
 import java.io.IOException;

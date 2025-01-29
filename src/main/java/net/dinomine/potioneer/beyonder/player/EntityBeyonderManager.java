@@ -158,7 +158,7 @@ public class EntityBeyonderManager {
         //setDefaultStats(player);
         //getAbilitiesManager().clear(true, this, player);
         setPathway(id, advancing);
-        if(!player.level().isClientSide() && id > -1){
+        if(!player.level().isClientSide()){
             PacketHandler.INSTANCE.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) player),
                     new PlayerAbilityInfoSyncSTC(getAbilitiesManager().getPathwayActives().stream().map(Ability::getInfo).toList()));
         }

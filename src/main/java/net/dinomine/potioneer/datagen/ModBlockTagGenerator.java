@@ -6,6 +6,8 @@ import net.dinomine.potioneer.util.ModTags;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
 import net.minecraft.tags.BlockTags;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraftforge.common.Tags;
 import net.minecraftforge.common.data.BlockTagsProvider;
@@ -24,9 +26,12 @@ public class ModBlockTagGenerator extends BlockTagsProvider {
         this.tag(ModTags.Blocks.FIRE_BLOCKS).add(Blocks.LAVA, Blocks.MAGMA_BLOCK);
         this.tag(BlockTags.MINEABLE_WITH_PICKAXE).add(ModBlocks.POTION_CAULDRON.get(),
                 ModBlocks.SAPPHIRE_ORE.get(),
-                ModBlocks.DEEPSLATE_SAPPHIRE_ORE.get());
+                ModBlocks.DEEPSLATE_SAPPHIRE_ORE.get(),
+                ModBlocks.SAPPHIRE_BLOCK.get());
 
         this.tag(BlockTags.NEEDS_IRON_TOOL)
-                .add(ModBlocks.SAPPHIRE_ORE.get(), ModBlocks.DEEPSLATE_SAPPHIRE_ORE.get());
+                .add(ModBlocks.SAPPHIRE_ORE.get(),
+                        ModBlocks.DEEPSLATE_SAPPHIRE_ORE.get(),
+                        ModBlocks.SAPPHIRE_BLOCK.get());
     }
 }

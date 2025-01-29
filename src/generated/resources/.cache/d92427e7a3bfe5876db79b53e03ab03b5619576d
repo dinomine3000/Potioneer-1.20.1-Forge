@@ -1,4 +1,4 @@
-// 1.20.1	2024-12-23T22:34:08.2613895	Tags for minecraft:block mod id potioneer
-8601635cbd4632694fa43e95616f92d7e24f15ae data/minecraft/tags/blocks/mineable/pickaxe.json
-a68bc069fc07506be33ceb53ac4ad443922a98c6 data/minecraft/tags/blocks/needs_iron_tool.json
+// 1.20.1	2025-01-27T19:20:37.3030315	Tags for minecraft:block mod id potioneer
+3be40c350edd3c04cb867b1a1de553d30e2d3dd6 data/minecraft/tags/blocks/mineable/pickaxe.json
+90efe9204fa7310544770ba817810a68aaa58da5 data/minecraft/tags/blocks/needs_iron_tool.json
 f0d1e33c8e830aa7154795e8999e14eaad3836d8 data/potioneer/tags/blocks/fire_blocks.json

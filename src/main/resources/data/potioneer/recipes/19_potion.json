@@ -13,7 +13,7 @@
   "needs_fire": true,
   "output": {
     "name": "19",
-    "amount": 1,
+    "amount": 2,
     "bottle": true,
     "color": 2146549,
     "can_conflict": true

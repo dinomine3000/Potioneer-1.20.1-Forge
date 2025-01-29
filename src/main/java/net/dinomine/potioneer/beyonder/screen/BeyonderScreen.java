@@ -1,6 +1,7 @@
 package net.dinomine.potioneer.beyonder.screen;
 
 import net.dinomine.potioneer.Potioneer;
+import net.dinomine.potioneer.beyonder.client.KeyBindings;
 import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -33,7 +34,7 @@ public class BeyonderScreen extends Screen {
 
     @Override
     public boolean keyPressed(int pKeyCode, int pScanCode, int pModifiers) {
-        if(pKeyCode == 69) {
+        if(pKeyCode == 69 || pKeyCode == KeyBindings.INSTANCE.beyonderMenuKey.getKey().getValue()) {
             this.onClose();
             return true;
         }

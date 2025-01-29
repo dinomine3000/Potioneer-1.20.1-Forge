@@ -55,9 +55,6 @@ public class WheelOfFortunePathway extends Beyonder {
             case 7 -> "Gambling_Man";
             case 6 -> "Lucky_One";
             case 5 -> "Source_of_Misfortune";
-            case 4 -> "Commander_of_Fate";
-            case 3 -> "Abuser";
-            case 0 -> "Wheel_of_Fortune";
             default -> "";
         };
     }

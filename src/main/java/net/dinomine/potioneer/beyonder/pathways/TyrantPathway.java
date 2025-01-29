@@ -55,15 +55,10 @@ public class TyrantPathway extends Beyonder {
     public static String getSequenceName(int seq){
         return switch (seq) {
             case 9 -> "Swimmer";
-            case 8 -> "Water-Blessed";
-            case 7 -> "Hydro_Shaman";
+            case 8 -> "Hydro_Shaman";
+            case 7 -> "Water-Born";
             case 6 -> "Tempest";
             case 5 -> "Punisher";
-            case 4 -> "Ice_Duke";
-            case 3 -> "Prosperous_Prince";
-            case 2 -> "Nature_Dictator";
-            case 1 -> "Cataclysm_King";
-            case 0 -> "Tyrant";
             default -> "";
         };
     }

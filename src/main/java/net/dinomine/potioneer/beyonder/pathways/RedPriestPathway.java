@@ -47,11 +47,6 @@ public class RedPriestPathway extends Beyonder {
             case 7 -> "Priest_of_Light";
             case 6 -> "Sun-Blessed";
             case 5 -> "Hunter";
-            case 4 -> "Ice_Duke";
-            case 3 -> "Prosperous_Prince";
-            case 2 -> "Nature_Dictator";
-            case 1 -> "Cataclysm_King";
-            case 0 -> "Tyrant";
             default -> "";
         };
     }
