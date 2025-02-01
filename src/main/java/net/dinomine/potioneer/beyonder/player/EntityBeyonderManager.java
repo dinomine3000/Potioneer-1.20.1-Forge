@@ -143,6 +143,7 @@ public class EntityBeyonderManager {
 
     public boolean advance(int id, Player player, boolean sync, boolean advancing){
 //        System.out.println(getEffectsManager());
+        boolean changingPathway = Math.floorDiv(getPathwayId(), 10) != Math.floorDiv(id, 10);
         this.abilitiesManager.clear(true, this, player);
 //        if(id < 0){
 //            //setDefaultStats(player);
@@ -160,7 +161,7 @@ public class EntityBeyonderManager {
         setPathway(id, advancing);
         if(!player.level().isClientSide()){
             PacketHandler.INSTANCE.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) player),
-                    new PlayerAbilityInfoSyncSTC(getAbilitiesManager().getPathwayActives().stream().map(Ability::getInfo).toList()));
+                    new PlayerAbilityInfoSyncSTC(getAbilitiesManager().getPathwayActives().stream().map(Ability::getInfo).toList(), changingPathway));
         }
 
 
@@ -258,7 +259,7 @@ public class EntityBeyonderManager {
         this.spirituality = nbt.getFloat("spirituality");
 //        System.out.println("Loading pathway id: " + nbt.getInt("pathwayId"));
         setPathway(nbt.getInt("pathwayId"), false);
-        this.abilitiesManager.loadNBTData(nbt);
+        this.abilitiesManager.loadNBTData(nbt, entity);
         this.abilitiesManager.onAcquireAbilities(this, entity);
         //TODO make abilities manager actually save and load item abilities.
         //this.abilitiesManager.loadNBTData(nbt);

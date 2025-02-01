@@ -19,16 +19,19 @@ import java.util.function.Supplier;
 //it assumes the server data is the true data and sets the data on client side to that
 public class PlayerAbilityInfoSyncSTC {
     public ArrayList<AbilityInfo> list;
+    public boolean changing;
 
-    public PlayerAbilityInfoSyncSTC(ArrayList<AbilityInfo> list){
+    public PlayerAbilityInfoSyncSTC(ArrayList<AbilityInfo> list, boolean changing){
         this.list = list;
+        this.changing = changing;
     }
 
-    public PlayerAbilityInfoSyncSTC(List<AbilityInfo> list){
-        this(new ArrayList<>(list));
+    public PlayerAbilityInfoSyncSTC(List<AbilityInfo> list, boolean changing){
+        this(new ArrayList<>(list), changing);
     }
 
     public static void encode(PlayerAbilityInfoSyncSTC msg, FriendlyByteBuf buffer){
+        buffer.writeBoolean(msg.changing);
         buffer.writeInt(msg.list.size());
         for(AbilityInfo i : msg.list){
             i.encode(buffer);
@@ -36,12 +39,13 @@ public class PlayerAbilityInfoSyncSTC {
     }
 
     public static PlayerAbilityInfoSyncSTC decode(FriendlyByteBuf buffer){
+        boolean changing = buffer.readBoolean();
         ArrayList<AbilityInfo> res = new ArrayList<>();
         int size = buffer.readInt();
         for(int i = 0; i < size; i++){
             res.add(AbilityInfo.decode(buffer));
         }
-        return new PlayerAbilityInfoSyncSTC(res);
+        return new PlayerAbilityInfoSyncSTC(res ,changing);
     }
 
     public static void handle(PlayerAbilityInfoSyncSTC msg, Supplier<NetworkEvent.Context> contextSupplier){
@@ -67,7 +71,7 @@ class ClientAbilityInfoSyncMessage
     public static void handlePacket(PlayerAbilityInfoSyncSTC msg, Supplier<NetworkEvent.Context> contextSupplier)
     {
 //                ClientAbilitiesData.setAbilities(msg.list.stream().map(Ability::getInfo).toList());
-        ClientAbilitiesData.setAbilities(msg.list);
+        ClientAbilitiesData.setAbilities(msg.list, msg.changing);
     }
 
 }

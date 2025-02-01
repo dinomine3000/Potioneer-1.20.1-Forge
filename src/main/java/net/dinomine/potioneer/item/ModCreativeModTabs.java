@@ -44,6 +44,7 @@ public class ModCreativeModTabs {
             () -> CreativeModeTab.builder().icon( () -> new ItemStack(ModItems.SOLSEER.get()))
                     .title(Component.translatable("creativetab.potioneer_ingredients_tab"))
                     .displayItems(( itemDisplayParameters, output) -> {
+//                        output.accept(ModBlocks.MUTATED_MUSHROOM.get());
                         output.accept(ModItems.SAPPHIRE.get());
                         output.accept(ModItems.PECAN_LEAF.get());
                         output.accept(ModItems.PECAN_SHELL.get());

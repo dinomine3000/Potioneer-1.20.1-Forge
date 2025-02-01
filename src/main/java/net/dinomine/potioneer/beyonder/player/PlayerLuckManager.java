@@ -8,16 +8,28 @@ public class PlayerLuckManager {
     private static final int UNFORTUNATE_EVENT_THRESHOLD = -100;
 
     private boolean eventGoingOn = false;
+    private int luckEventCountdown;
     private int luck;
     private int tick = 0;
 
     public PlayerLuckManager(){
         this.luck = 0;
+        luckEventCountdown = -1;
     }
 
     public void onTick(EntityBeyonderManager cap, LivingEntity target){
         if(tick++ > 400){
             tick = 0;
+            if(eventGoingOn){
+                luckEventCountdown--;
+
+                if(luckEventCountdown == 0){
+                    eventGoingOn = false;
+                }
+
+            } else {
+
+            }
 //            if(!hasEvent()){
 //                if(luck > FORTUNATE_EVENT_THRESHOLD){
 //                    createFortunateEvent(luck);

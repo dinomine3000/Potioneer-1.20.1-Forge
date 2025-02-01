@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/cross",
+  "textures": {
+    "cross": "potioneer:block/wheat_mushroom"
+  }
+}

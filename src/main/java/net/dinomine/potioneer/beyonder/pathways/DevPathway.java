@@ -24,45 +24,46 @@ public class DevPathway extends Beyonder {
     }
 
     public static void getAbilities(int sequence, PlayerAbilitiesManager mng){
-        MiningSpeedAbility mining = new MiningSpeedAbility(sequence);
-        MinerLightAbility light = new MinerLightAbility(sequence);
-        ConjurePickaxeAbility pick = new ConjurePickaxeAbility(sequence);
+        ArrayList<Ability> passiveAbilities = new ArrayList<>();
+        ArrayList<Ability> activeAbilities = new ArrayList<>();
 
-        WaterAffinityAbility water = new WaterAffinityAbility(sequence);
+        switch(sequence){
+            case 0:
+            case 1:
+            case 2:
+            case 3:
+            case 4:
+            case 5:
+            case 6:
+            case 7:
+            case 8:
+                activeAbilities.add(new AirBulletAbility(sequence));
+            case 9:
+                MiningSpeedAbility mining = new MiningSpeedAbility(sequence);
+                WaterAffinityAbility water = new WaterAffinityAbility(sequence);
+                SpiritualityRegenAbility regen = new SpiritualityRegenAbility(sequence);
+                WeaponProficiencyAbility weapon = new WeaponProficiencyAbility(sequence);
 
-        InvisibilityAbility invis = new InvisibilityAbility(sequence);
-        DoorOpeningAbility door = new DoorOpeningAbility(sequence);
-        ReachAbility reach = new ReachAbility(sequence);
-        SpiritualityRegenAbility regen = new SpiritualityRegenAbility(sequence);
+                passiveAbilities.add(mining);
+                passiveAbilities.add(water);
+                passiveAbilities.add(regen);
+                passiveAbilities.add(weapon);
 
-        WeaponProficiencyAbility weapon = new WeaponProficiencyAbility(sequence);
-//        StatBonusAbility stats = new StatBonusAbility(sequence);
+                activeAbilities.add(new MinerLightAbility(sequence));
+                activeAbilities.add(new ConjurePickaxeAbility(sequence));
+                activeAbilities.add(mining);
+                activeAbilities.add(water);
+                activeAbilities.add(new ReachAbility(sequence));
+                activeAbilities.add(new DoorOpeningAbility(sequence));
+                activeAbilities.add(regen);
+                activeAbilities.add(new InvisibilityAbility(sequence));
+                activeAbilities.add(weapon);
+                activeAbilities.add(new CraftingGuiAbility(sequence));
+                activeAbilities.add(new DurabilityRegenAbility(sequence));
+        }
 
-        CraftingGuiAbility craft = new CraftingGuiAbility(sequence);
-        DurabilityRegenAbility dur = new DurabilityRegenAbility(sequence);
-
-        ArrayList<Ability> activeAbilities9 = new ArrayList<>();
-        activeAbilities9.add(reach);
-        activeAbilities9.add(invis);
-        activeAbilities9.add(door);
-        activeAbilities9.add(regen);
-        activeAbilities9.add(craft);
-        activeAbilities9.add(weapon);
-//        activeAbilities9.add(stats);
-        activeAbilities9.add(water);
-        activeAbilities9.add(mining);
-        activeAbilities9.add(light);
-        activeAbilities9.add(dur);
-        activeAbilities9.add(pick);
-
-        ArrayList<Ability> passiveAbilities9 = new ArrayList<>();
-        passiveAbilities9.add(regen);
-        passiveAbilities9.add(weapon);
-        passiveAbilities9.add(water);
-        passiveAbilities9.add(mining);
-
-        mng.setPathwayActives(activeAbilities9);
-        mng.setPathwayPassives(passiveAbilities9);
+        mng.setPathwayActives(activeAbilities);
+        mng.setPathwayPassives(passiveAbilities);
     }
 
 

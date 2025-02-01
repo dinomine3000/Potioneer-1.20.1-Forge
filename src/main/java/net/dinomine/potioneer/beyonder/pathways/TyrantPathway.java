@@ -2,6 +2,7 @@ package net.dinomine.potioneer.beyonder.pathways;
 
 import net.dinomine.potioneer.beyonder.abilities.Ability;
 import net.dinomine.potioneer.beyonder.abilities.Beyonder;
+import net.dinomine.potioneer.beyonder.abilities.redpriest.WeaponProficiencyAbility;
 import net.dinomine.potioneer.beyonder.abilities.tyrant.WaterAffinityAbility;
 import net.dinomine.potioneer.beyonder.player.EntityBeyonderManager;
 import net.dinomine.potioneer.beyonder.player.PlayerAbilitiesManager;
@@ -19,15 +20,27 @@ public class TyrantPathway extends Beyonder {
     }
 
     public static void getAbilities(int sequence, PlayerAbilitiesManager mng){
-        WaterAffinityAbility abl = new WaterAffinityAbility(sequence);
+        ArrayList<Ability> passiveAbilities = new ArrayList<>();
+        ArrayList<Ability> activeAbilities = new ArrayList<>();
 
-        ArrayList<Ability> passiveAbilities9 = new ArrayList<>();
-        passiveAbilities9.add(abl);
-        ArrayList<Ability> activeAbilities9 = new ArrayList<>();
-        activeAbilities9.add(abl);
+        switch(sequence){
+            case 0:
+            case 1:
+            case 2:
+            case 3:
+            case 4:
+            case 5:
+            case 6:
+            case 7:
+            case 8:
+            case 9:
+                WaterAffinityAbility water = new WaterAffinityAbility(sequence);
+                activeAbilities.add(water);
+                passiveAbilities.add(water);
+        }
 
-        mng.setPathwayActives(activeAbilities9);
-        mng.setPathwayPassives(passiveAbilities9);
+        mng.setPathwayActives(activeAbilities);
+        mng.setPathwayPassives(passiveAbilities);
     }
 
 //    public static ArrayList<Ability> getPassiveAbilities(int sequence) {

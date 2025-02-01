@@ -8,6 +8,7 @@ import net.dinomine.potioneer.item.custom.Flask;
 import net.dinomine.potioneer.item.custom.FormulaItem;
 import net.dinomine.potioneer.item.custom.Vial;
 import net.minecraft.world.item.*;
+import net.minecraft.world.level.block.MushroomBlock;
 import net.minecraftforge.common.ForgeSpawnEggItem;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.registries.DeferredRegister;

@@ -3,6 +3,7 @@ package net.dinomine.potioneer.beyonder.effects.mystery;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffect;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
 import net.dinomine.potioneer.beyonder.player.EntityBeyonderManager;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
@@ -24,18 +25,22 @@ public class BeyonderInvisibilityEffect extends BeyonderEffect {
 
     @Override
     public void onAcquire(EntityBeyonderManager cap, LivingEntity target) {
-        target.addEffect(new MobEffectInstance(MobEffects.INVISIBILITY, this.maxLife, 1, false, false));
+        target.addEffect(new MobEffectInstance(MobEffects.INVISIBILITY, this.maxLife/2, 1, false, false));
+        target.sendSystemMessage(Component.literal(String.valueOf(this.maxLife)));
     }
 
     @Override
     protected void doTick(EntityBeyonderManager cap, LivingEntity target) {
         if(!target.hasEffect(MobEffects.INVISIBILITY)){
-            target.addEffect(new MobEffectInstance(MobEffects.INVISIBILITY, (this.maxLife-lifetime), 1, false, false));
+            target.addEffect(new MobEffectInstance(MobEffects.INVISIBILITY, (this.maxLife-lifetime)/2, 1, false, false));
         }
     }
 
     @Override
     public void stopEffects(EntityBeyonderManager cap, LivingEntity target) {
+        if(target.hasEffect(MobEffects.INVISIBILITY)){
+            target.removeEffect(MobEffects.INVISIBILITY);
+        }
     }
 
 }

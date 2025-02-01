@@ -5,6 +5,7 @@ import net.dinomine.potioneer.beyonder.client.ClientAbilitiesData;
 import net.dinomine.potioneer.beyonder.client.ClientStatsData;
 import net.dinomine.potioneer.beyonder.client.KeyBindings;
 import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
+import net.dinomine.potioneer.beyonder.screen.BeyonderAbilitiesScreen;
 import net.dinomine.potioneer.beyonder.screen.BeyonderScreen;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.MouseHandler;
@@ -26,7 +27,7 @@ public class ClientForgeHandler {
         if(!KeyBindings.INSTANCE.quickAbilityKey.isDown()) ClientStatsData.keyPressed = false;
 
         if(KeyBindings.INSTANCE.beyonderMenuKey.consumeClick() && minecraft.player != null){
-            Minecraft.getInstance().setScreen(new BeyonderScreen());
+            Minecraft.getInstance().setScreen(new BeyonderAbilitiesScreen());
             //DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> Minecraft.getInstance().setScreen(new BeyonderScreen()));
         } else if(ClientStatsData.getPathwayId() > -1 && KeyBindings.INSTANCE.quickAbilityKey.consumeClick() && minecraft.player != null){
             if (!ClientStatsData.keyPressed){

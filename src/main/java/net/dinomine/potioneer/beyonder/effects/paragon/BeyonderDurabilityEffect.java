@@ -53,6 +53,12 @@ public class BeyonderDurabilityEffect extends BeyonderEffect {
         if(lifetime == maxLife){
             target.sendSystemMessage(Component.literal("Ability Durability Regen was turned off."));
             cap.getAbilitiesManager().setEnabled(new DurabilityRegenAbility(sequenceLevel), false, cap, target);
+
+            if (target instanceof Player player){
+                DurabilityRegenAbility abl = new DurabilityRegenAbility(sequenceLevel);
+                int caret = cap.getAbilitiesManager().getCaretForAbility(abl);
+                if(caret > -1) cap.getAbilitiesManager().putOnCooldown(player, caret, abl.getInfo().maxCooldown(), abl.getInfo().maxCooldown());
+            }
         }
 
     }

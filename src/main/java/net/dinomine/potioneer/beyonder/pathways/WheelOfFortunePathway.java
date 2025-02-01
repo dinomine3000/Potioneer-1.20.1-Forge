@@ -3,6 +3,7 @@ package net.dinomine.potioneer.beyonder.pathways;
 import net.dinomine.potioneer.beyonder.abilities.Ability;
 import net.dinomine.potioneer.beyonder.abilities.Beyonder;
 import net.dinomine.potioneer.beyonder.abilities.DummyAbility;
+import net.dinomine.potioneer.beyonder.abilities.tyrant.WaterAffinityAbility;
 import net.dinomine.potioneer.beyonder.abilities.wheeloffortune.ConjurePickaxeAbility;
 import net.dinomine.potioneer.beyonder.abilities.wheeloffortune.HideInBlockAbility;
 import net.dinomine.potioneer.beyonder.abilities.wheeloffortune.MinerLightAbility;
@@ -24,24 +25,29 @@ public class WheelOfFortunePathway extends Beyonder {
     }
 
     public static void getAbilities(int sequence, PlayerAbilitiesManager mng){
-        MiningSpeedAbility abl = new MiningSpeedAbility(sequence);
-        MinerLightAbility light = new MinerLightAbility(sequence);
-//        HideInBlockAbility block = new HideInBlockAbility(sequence);
-//        DummyAbility dummy = new DummyAbility(sequence);
-        ConjurePickaxeAbility pick = new ConjurePickaxeAbility(sequence);
-        ArrayList<Ability> passiveAbilities9 = new ArrayList<>();
-        passiveAbilities9.add(abl);
+        ArrayList<Ability> passiveAbilities = new ArrayList<>();
+        ArrayList<Ability> activeAbilities = new ArrayList<>();
 
-        ArrayList<Ability> activeAbilities9 = new ArrayList<>();
-//        activeAbilities9.add(dummy);
-        activeAbilities9.add(abl);
-        activeAbilities9.add(light);
-        activeAbilities9.add(pick);
-//        activeAbilities9.add(block);
+        switch(sequence){
+            case 0:
+            case 1:
+            case 2:
+            case 3:
+            case 4:
+            case 5:
+            case 6:
+            case 7:
+            case 8:
+            case 9:
+                MiningSpeedAbility mining = new MiningSpeedAbility(sequence);
+                activeAbilities.add(new MinerLightAbility(sequence));
+                activeAbilities.add(new ConjurePickaxeAbility(sequence));
+                activeAbilities.add(mining);
+                passiveAbilities.add(mining);
+        }
 
-        mng.setPathwayActives(activeAbilities9);
-        mng.setPathwayPassives(passiveAbilities9);
-
+        mng.setPathwayActives(activeAbilities);
+        mng.setPathwayPassives(passiveAbilities);
     }
 
     public static String getSequenceName(int seq, boolean show){

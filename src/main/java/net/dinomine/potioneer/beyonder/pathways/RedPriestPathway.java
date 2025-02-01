@@ -2,6 +2,8 @@ package net.dinomine.potioneer.beyonder.pathways;
 
 import net.dinomine.potioneer.beyonder.abilities.Ability;
 import net.dinomine.potioneer.beyonder.abilities.Beyonder;
+import net.dinomine.potioneer.beyonder.abilities.paragon.CraftingGuiAbility;
+import net.dinomine.potioneer.beyonder.abilities.paragon.DurabilityRegenAbility;
 import net.dinomine.potioneer.beyonder.abilities.redpriest.StatBonusAbility;
 import net.dinomine.potioneer.beyonder.abilities.redpriest.WeaponProficiencyAbility;
 import net.dinomine.potioneer.beyonder.effects.redpriest.BeyonderWeaponProficiencyEffect;
@@ -17,17 +19,27 @@ public class RedPriestPathway extends Beyonder {
     }
 
     public static void getAbilities(int sequence, PlayerAbilitiesManager mng){
-        WeaponProficiencyAbility abl = new WeaponProficiencyAbility(sequence);
-//        StatBonusAbility stats = new StatBonusAbility(sequence);
+        ArrayList<Ability> passiveAbilities = new ArrayList<>();
+        ArrayList<Ability> activeAbilities = new ArrayList<>();
 
-        ArrayList<Ability> passiveAbilities9 = new ArrayList<>();
-        passiveAbilities9.add(abl);
-        ArrayList<Ability> activeAbilities9 = new ArrayList<>();
-        activeAbilities9.add(abl);
-//        activeAbilities9.add(stats);
+        switch(sequence){
+            case 0:
+            case 1:
+            case 2:
+            case 3:
+            case 4:
+            case 5:
+            case 6:
+            case 7:
+            case 8:
+            case 9:
+                WeaponProficiencyAbility weapon = new WeaponProficiencyAbility(sequence);
+                activeAbilities.add(weapon);
+                passiveAbilities.add(weapon);
+        }
 
-        mng.setPathwayActives(activeAbilities9);
-        mng.setPathwayPassives(passiveAbilities9);
+        mng.setPathwayActives(activeAbilities);
+        mng.setPathwayPassives(passiveAbilities);
     }
 
     @Override

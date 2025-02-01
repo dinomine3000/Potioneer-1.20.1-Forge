@@ -6,7 +6,9 @@ import net.dinomine.potioneer.network.PacketHandler;
 import net.dinomine.potioneer.network.messages.PlayerAbilityCooldownSTC;
 import net.dinomine.potioneer.network.messages.PlayerAdvanceMessage;
 import net.dinomine.potioneer.network.messages.PlayerCastAbilityMessageCTS;
+import net.dinomine.potioneer.network.messages.PlayerSyncHotbarMessage;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
@@ -24,6 +26,8 @@ public class PlayerAbilitiesManager {
 
     private ArrayList<Ability> pathwayPassives = new ArrayList<Ability>();
     private ArrayList<Ability> otherPassives = new ArrayList<Ability>();
+
+    public ArrayList<Integer> clientHotbar = new ArrayList<>();
 
     public void copyFrom(PlayerAbilitiesManager mng){
         this.enabledDisabled = new ArrayList<>(mng.enabledDisabled);
@@ -176,9 +180,16 @@ public class PlayerAbilitiesManager {
             cooldowns.putInt(String.valueOf(i), activeCooldowns.get(i));
         }
         nbt.put("cooldowns", cooldowns);
+
+        CompoundTag hotbar = new CompoundTag();
+        hotbar.putInt("size", clientHotbar.size());
+        for(int i = 0; i < clientHotbar.size(); i++){
+            hotbar.putInt(String.valueOf(i), clientHotbar.get(i));
+        }
+        nbt.put("hotbar", hotbar);
     }
 
-    public void loadNBTData(CompoundTag nbt){
+    public void loadNBTData(CompoundTag nbt, LivingEntity target){
         CompoundTag enabledAbilities = nbt.getCompound("enabled_abilities");
         int size = enabledAbilities.getInt("size");
         ArrayList<Boolean> enabled = new ArrayList<>();
@@ -202,6 +213,13 @@ public class PlayerAbilitiesManager {
             }
         }
 
+        CompoundTag hot = nbt.getCompound("hotbar");
+        int sizeHot = hot.getInt("size");
+        if(sizeHot != 0){
+            for(int i = 0; i < sizeHot; i++){
+                clientHotbar.add(hot.getInt(String.valueOf(i)));
+            }
+        }
     }
 
 }

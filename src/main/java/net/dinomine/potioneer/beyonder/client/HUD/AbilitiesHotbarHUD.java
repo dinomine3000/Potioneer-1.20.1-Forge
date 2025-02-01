@@ -5,28 +5,24 @@ import net.dinomine.potioneer.beyonder.abilities.AbilityInfo;
 import net.dinomine.potioneer.beyonder.client.ClientAbilitiesData;
 import net.dinomine.potioneer.beyonder.client.ClientStatsData;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
-import net.minecraft.world.entity.monster.Creeper;
 import net.minecraftforge.client.gui.overlay.IGuiOverlay;
-import org.apache.logging.log4j.core.layout.HtmlLayout;
-import org.joml.Matrix4f;
 
 public class AbilitiesHotbarHUD {
     private static final ResourceLocation ICONS = new ResourceLocation(Potioneer.MOD_ID, "textures/gui/ability_icon_atlas.png");
-    private static int WIDTH = 146;
-    private static int HEIGHT = 256;
-    private static int ICON_WIDTH = 16;
-    private static int ICON_HEIGHT = 24;
+    public static int ICONS_WIDTH = 146;
+    public static int ICONS_HEIGHT = 256;
+    public static int ICON_WIDTH = 16;
+    public static int ICON_HEIGHT = 24;
     private static int CASE_WIDTH = 26;
     private static int CASE_HEIGHT = 32;
 
     private static final Minecraft minecraft = Minecraft.getInstance();
 
     public static boolean shouldDisplayBar() {
-        return ClientAbilitiesData.showHotbar && ClientStatsData.getPathwayId() > -1 && ClientAbilitiesData.hasAbilities();
+        return ClientAbilitiesData.showHotbar && ClientStatsData.getPathwayId() > -1 && !ClientAbilitiesData.getHotbar().isEmpty();
     }
 
 
@@ -72,9 +68,9 @@ public class AbilitiesHotbarHUD {
         //48 x 60 - case
         int pathway = Math.floorDiv(info.id(), 10);
         int caseX = xPos - (int) (CASE_HEIGHT * scale / 2);
-        guiGraphics.blit(ICONS, caseX, yPos, (int) (CASE_WIDTH*scale), (int) (CASE_HEIGHT*scale), 26*pathway, 0, CASE_WIDTH, CASE_HEIGHT, WIDTH, HEIGHT);
+        guiGraphics.blit(ICONS, caseX, yPos, (int) (CASE_WIDTH*scale), (int) (CASE_HEIGHT*scale), 26*pathway, 0, CASE_WIDTH, CASE_HEIGHT, ICONS_WIDTH, ICONS_HEIGHT);
         //ability icon
-        guiGraphics.blit(ICONS, caseX + (int) (5*scale), yPos + (int)(4*scale), (int)(ICON_WIDTH*scale), (int)(ICON_HEIGHT*scale), info.posX(), info.posY(), ICON_WIDTH, ICON_HEIGHT, WIDTH, HEIGHT);
+        guiGraphics.blit(ICONS, caseX + (int) (5*scale), yPos + (int)(4*scale), (int)(ICON_WIDTH*scale), (int)(ICON_HEIGHT*scale), info.posX(), info.posY(), ICON_WIDTH, ICON_HEIGHT, ICONS_WIDTH, ICONS_HEIGHT);
         //name render
 //        String name = info.name();
 //        float size = 0.6f*scale;
@@ -91,22 +87,22 @@ public class AbilitiesHotbarHUD {
 //                15728880, minecraft.font.isBidirectional());
 //        guiGraphics.drawString(minecraft.font, name, offset, yPos + (24*scale), 0, false);
 
-        if(!ClientAbilitiesData.isEnabled(caret)){
+        //enabled gradient
+        if(!ClientAbilitiesData.isEnabled(caret, true)){
             guiGraphics.fillGradient(caseX + (int) (5*scale), yPos + (int) (4*scale),
                     (int) (caseX + (int) (5*scale) + ICON_WIDTH*scale), (int) (yPos  + (int) (4*scale) + ICON_HEIGHT*scale), 0xDD999999, 0xDD666666);
         }
 
         //cooldown gradient
-        float percent = Mth.clamp(1 - ((float) ClientAbilitiesData.getCooldown(caret) / ClientAbilitiesData.getMaxCooldown(caret)), 0, 1);
+        float percent = Mth.clamp(1 - ((float) ClientAbilitiesData.getCooldown(caret, true) / ClientAbilitiesData.getMaxCooldown(caret, true)), 0, 1);
 
         guiGraphics.fillGradient(caseX + (int) (5*scale), (int) (yPos + (int) (4*scale) + (percent)*ICON_HEIGHT*scale),
                 (int) (caseX + (int) (5*scale) + ICON_WIDTH*scale), (int) (yPos + (int) (4*scale) + ICON_HEIGHT*scale), 0xDD696969, 0xDD424242);
 
         //barrier symbol if ability is disabled
-        if(ClientAbilitiesData.getCooldown(caret) < 0){
+        if(ClientAbilitiesData.getCooldown(caret, true) < 0){
             //Copied from the icons part
-            guiGraphics.blit(ICONS, caseX + (int) (5*scale), yPos + (int)(4*scale), (int)(ICON_WIDTH*scale), (int)(ICON_HEIGHT*scale), 130, 4, ICON_WIDTH, ICON_HEIGHT, WIDTH, HEIGHT);
-
+            guiGraphics.blit(ICONS, caseX + (int) (5*scale), yPos + (int)(4*scale), (int)(ICON_WIDTH*scale), (int)(ICON_HEIGHT*scale), 130, 4, ICON_WIDTH, ICON_HEIGHT, ICONS_WIDTH, ICONS_HEIGHT);
         }
     }
 }

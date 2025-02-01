@@ -2,6 +2,7 @@ package net.dinomine.potioneer.beyonder.pathways;
 
 import net.dinomine.potioneer.beyonder.abilities.Ability;
 import net.dinomine.potioneer.beyonder.abilities.Beyonder;
+import net.dinomine.potioneer.beyonder.abilities.mystery.*;
 import net.dinomine.potioneer.beyonder.abilities.paragon.CraftingBonusAbility;
 import net.dinomine.potioneer.beyonder.abilities.paragon.CraftingGuiAbility;
 import net.dinomine.potioneer.beyonder.abilities.paragon.DurabilityRegenAbility;
@@ -20,19 +21,26 @@ public class ParagonPathway extends Beyonder {
     }
 
     public static void getAbilities(int sequence, PlayerAbilitiesManager mng){
+        ArrayList<Ability> passiveAbilities = new ArrayList<>();
+        ArrayList<Ability> activeAbilities = new ArrayList<>();
+
+        switch(sequence){
+            case 0:
+            case 1:
+            case 2:
+            case 3:
+            case 4:
+            case 5:
+            case 6:
+            case 7:
+            case 8:
+            case 9:
+                activeAbilities.add(new CraftingGuiAbility(sequence));
+                activeAbilities.add(new DurabilityRegenAbility(sequence));
+        }
 //        CraftingBonusAbility abl = new CraftingBonusAbility(sequence);
-        CraftingGuiAbility craft = new CraftingGuiAbility(sequence);
-        DurabilityRegenAbility durability = new DurabilityRegenAbility(sequence);
-
-        ArrayList<Ability> passiveAbilities9 = new ArrayList<>();
-//        passiveAbilities9.add(abl);
-        ArrayList<Ability> activeAbilities9 = new ArrayList<>();
-//        activeAbilities9.add(abl);
-        activeAbilities9.add(craft);
-        activeAbilities9.add(durability);
-
-        mng.setPathwayActives(activeAbilities9);
-        mng.setPathwayPassives(passiveAbilities9);
+        mng.setPathwayActives(activeAbilities);
+        mng.setPathwayPassives(passiveAbilities);
     }
 
     @Override

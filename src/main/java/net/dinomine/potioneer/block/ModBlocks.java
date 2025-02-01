@@ -2,6 +2,7 @@ package net.dinomine.potioneer.block;
 
 import net.dinomine.potioneer.Potioneer;
 import net.dinomine.potioneer.block.custom.MinerLightSourceBlock;
+import net.dinomine.potioneer.block.custom.MutatedMushroom;
 import net.dinomine.potioneer.item.ModItems;
 import net.dinomine.potioneer.block.custom.PotionCauldronBlock;
 import net.dinomine.potioneer.block.custom.SoundBlock;
@@ -54,6 +55,9 @@ public class ModBlocks {
             () -> new MinerLightSourceBlock(
                     BlockBehaviour.Properties.copy(Blocks.ACACIA_FENCE).instabreak().noCollission()
                             .lightLevel((p_50755_) -> 14).sound(SoundType.STONE).pushReaction(PushReaction.DESTROY)));
+
+    public static final RegistryObject<Block> MUTATED_MUSHROOM = registerBlock("wheat_mushroom",
+            () -> new MutatedMushroom(BlockBehaviour.Properties.copy(Blocks.BROWN_MUSHROOM)));
 
     private static <T extends Block> RegistryObject<T> registerBlock(String name, Supplier<T> block){
         RegistryObject<T> toReturn = BLOCKS.register(name, block);

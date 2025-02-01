@@ -18,7 +18,7 @@ public class MysteryPathway extends Beyonder {
 
     public static void getAbilities(int sequence, PlayerAbilitiesManager mng){
         ArrayList<Ability> passiveAbilities = new ArrayList<>();
-        ArrayList<Ability> activeAbilities9 = new ArrayList<>();
+        ArrayList<Ability> activeAbilities = new ArrayList<>();
 
         switch(sequence){
             case 0:
@@ -30,15 +30,16 @@ public class MysteryPathway extends Beyonder {
             case 6:
             case 7:
             case 8:
-                activeAbilities9.add(new AirBulletAbility(sequence));
+                activeAbilities.add(new AirBulletAbility(sequence));
             case 9:
-                activeAbilities9.add(new ReachAbility(sequence));
-                activeAbilities9.add(new DoorOpeningAbility(sequence));
-                activeAbilities9.add(new SpiritualityRegenAbility(sequence));
-                activeAbilities9.add(new InvisibilityAbility(sequence));
-                passiveAbilities.add(new SpiritualityRegenAbility(sequence));
+                SpiritualityRegenAbility regen = new SpiritualityRegenAbility(sequence);
+                activeAbilities.add(new ReachAbility(sequence));
+                activeAbilities.add(new DoorOpeningAbility(sequence));
+                activeAbilities.add(regen);
+                activeAbilities.add(new InvisibilityAbility(sequence));
+                passiveAbilities.add(regen);
         }
-        mng.setPathwayActives(activeAbilities9);
+        mng.setPathwayActives(activeAbilities);
         mng.setPathwayPassives(passiveAbilities);
     }
 
