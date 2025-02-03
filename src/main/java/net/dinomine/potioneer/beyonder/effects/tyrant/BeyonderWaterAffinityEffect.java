@@ -71,11 +71,7 @@ public class BeyonderWaterAffinityEffect extends BeyonderEffect {
 
     @Override
     public void stopEffects(EntityBeyonderManager cap, LivingEntity target) {
-        if(target.hasEffect(MobEffects.WATER_BREATHING)){
-            target.removeEffect(MobEffects.WATER_BREATHING);
-        }
-        if(target.hasEffect(MobEffects.NIGHT_VISION)){
-            target.removeEffect(MobEffects.NIGHT_VISION);
-        }
+        target.removeEffect(MobEffects.WATER_BREATHING);
+        target.removeEffect(MobEffects.NIGHT_VISION);
     }
 }

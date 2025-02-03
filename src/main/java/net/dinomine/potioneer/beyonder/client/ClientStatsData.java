@@ -22,7 +22,7 @@ public class ClientStatsData {
                 + Math.round(4f-sanity/25f) //from 0 to 4 more points
                 + 3-Math.floorDiv(newSeq%10, 3))); //adds from 0 to 3 points of difficulty
 //        ClientAdvancementManager.difficulty = 10;     //Debug
-        ClientAdvancementManager.targetSequence = newSeq;
+        ClientAdvancementManager.targetSequence = Math.min(newSeq, pathwayId);
         Minecraft.getInstance().setScreen(new AdvancementScreen());
     }
 

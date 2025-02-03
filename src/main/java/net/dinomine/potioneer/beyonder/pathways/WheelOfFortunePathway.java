@@ -4,10 +4,7 @@ import net.dinomine.potioneer.beyonder.abilities.Ability;
 import net.dinomine.potioneer.beyonder.abilities.Beyonder;
 import net.dinomine.potioneer.beyonder.abilities.DummyAbility;
 import net.dinomine.potioneer.beyonder.abilities.tyrant.WaterAffinityAbility;
-import net.dinomine.potioneer.beyonder.abilities.wheeloffortune.ConjurePickaxeAbility;
-import net.dinomine.potioneer.beyonder.abilities.wheeloffortune.HideInBlockAbility;
-import net.dinomine.potioneer.beyonder.abilities.wheeloffortune.MinerLightAbility;
-import net.dinomine.potioneer.beyonder.abilities.wheeloffortune.MiningSpeedAbility;
+import net.dinomine.potioneer.beyonder.abilities.wheeloffortune.*;
 import net.dinomine.potioneer.beyonder.player.EntityBeyonderManager;
 import net.dinomine.potioneer.beyonder.player.PlayerAbilitiesManager;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -21,7 +18,16 @@ public class WheelOfFortunePathway extends Beyonder {
     public WheelOfFortunePathway(int sequence) {
         super(sequence, "Wheel_of_Fortune");
         this.color = 0x808080;
-        this.maxSpirituality = new int[]{0, 0, 0, 0, 0, 0, 0, 0, 500, 100};
+        this.maxSpirituality = new int[]{0, 0, 0, 0, 0, 0, 0, 1000, 500, 100};
+    }
+
+    public static float[] getStatsFor(int sequence){
+        return switch (sequence){
+            case 9 -> new float[]{0, 0, 0, 0, 0};
+            case 8 -> new float[]{0, 0, 4, 0, 2};
+            case 7 -> new float[]{5, 0, 8, 2, 2};
+            default -> new float[]{0, 0, 0, 0, 0};
+        };
     }
 
     public static void getAbilities(int sequence, PlayerAbilitiesManager mng){
@@ -38,6 +44,16 @@ public class WheelOfFortunePathway extends Beyonder {
             case 6:
             case 7:
             case 8:
+                FortuneAbility fortune = new FortuneAbility(sequence);
+                SilkTouchAbility silk = new SilkTouchAbility(sequence);
+                activeAbilities.add(new BlockSniffAbility(sequence));
+                activeAbilities.add(new LuckBoostAbility(sequence));
+                activeAbilities.add(new CheckLuckAbility(sequence));
+                activeAbilities.add(fortune);
+                activeAbilities.add(silk);
+
+                passiveAbilities.add(fortune);
+                passiveAbilities.add(silk);
             case 9:
                 MiningSpeedAbility mining = new MiningSpeedAbility(sequence);
                 activeAbilities.add(new MinerLightAbility(sequence));

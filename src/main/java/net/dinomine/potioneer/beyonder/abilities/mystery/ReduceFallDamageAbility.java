@@ -5,12 +5,11 @@ import net.dinomine.potioneer.beyonder.abilities.AbilityInfo;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
 import net.dinomine.potioneer.beyonder.player.EntityBeyonderManager;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.phys.Vec3;
 
-public class SpiritualityRegenAbility extends Ability {
+public class ReduceFallDamageAbility extends Ability {
 
-    public SpiritualityRegenAbility(int sequence){
-        this.info = new AbilityInfo(57, 32, "Regen on Damage", 20 + sequence, 0, this.getCooldown());
+    public ReduceFallDamageAbility(int sequence){
+        this.info = new AbilityInfo(57, 32, "Reduce Fall Damage", 20 + sequence, 0, this.getCooldown());
     }
 
     @Override
@@ -27,9 +26,10 @@ public class SpiritualityRegenAbility extends Ability {
 
     @Override
     public void passive(EntityBeyonderManager cap, LivingEntity target) {
-        if(isEnabled(cap.getAbilitiesManager()) && !cap.getEffectsManager().hasEffect(BeyonderEffects.EFFECT.MYSTERY_REGEN, getSequence())){
+        if(cap.getSpirituality() < 50) disable(cap, target);
+        if(isEnabled(cap.getAbilitiesManager()) && !cap.getEffectsManager().hasEffect(BeyonderEffects.EFFECT.MYSTERY_FALL, getSequence())){
 //            System.out.println("given regen effect");
-            cap.getEffectsManager().addEffect(BeyonderEffects.byId(BeyonderEffects.EFFECT.MYSTERY_REGEN,
+            cap.getEffectsManager().addEffect(BeyonderEffects.byId(BeyonderEffects.EFFECT.MYSTERY_FALL,
                     getSequence(), 0, -1, true), cap, target);
         }
 
@@ -42,9 +42,9 @@ public class SpiritualityRegenAbility extends Ability {
 
     @Override
     public void deactivate(EntityBeyonderManager cap, LivingEntity target) {
-        if(cap.getEffectsManager().hasEffect(BeyonderEffects.EFFECT.MYSTERY_REGEN, getSequence())){
+        if(cap.getEffectsManager().hasEffect(BeyonderEffects.EFFECT.MYSTERY_FALL, getSequence())){
 //            System.out.println("taketh away");
-            cap.getEffectsManager().removeEffect(BeyonderEffects.EFFECT.MYSTERY_REGEN, getSequence(), cap, target);
+            cap.getEffectsManager().removeEffect(BeyonderEffects.EFFECT.MYSTERY_FALL, getSequence(), cap, target);
         }
     }
 }

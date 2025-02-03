@@ -8,6 +8,9 @@ import net.dinomine.potioneer.beyonder.abilities.redpriest.StatBonusAbility;
 import net.dinomine.potioneer.beyonder.abilities.redpriest.WeaponProficiencyAbility;
 import net.dinomine.potioneer.beyonder.effects.redpriest.BeyonderWeaponProficiencyEffect;
 import net.dinomine.potioneer.beyonder.player.PlayerAbilitiesManager;
+import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.player.Player;
+import net.minecraftforge.common.ForgeMod;
 
 import java.util.ArrayList;
 
@@ -16,6 +19,16 @@ public class RedPriestPathway extends Beyonder {
     public RedPriestPathway(int sequence){
         super(sequence, "Red_Priest");
         this.color = 0x804040;
+        this.maxSpirituality = new int[]{0, 0, 0, 0, 1000, 1000, 1000, 1000, 500, 100};
+    }
+
+    public static float[] getStatsFor(int sequence){
+        return switch (sequence){
+            case 9 -> new float[]{5, 1, 0, 0, 1};
+            case 8 -> new float[]{8, 2, 0, 0, 2};
+            case 7 -> new float[]{12, 3, 5, 0, 4};
+            default -> new float[]{0, 0, 0, 0, 0};
+        };
     }
 
     public static void getAbilities(int sequence, PlayerAbilitiesManager mng){

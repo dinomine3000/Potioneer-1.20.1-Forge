@@ -33,5 +33,9 @@ public class ModBlockTagGenerator extends BlockTagsProvider {
                 .add(ModBlocks.SAPPHIRE_ORE.get(),
                         ModBlocks.DEEPSLATE_SAPPHIRE_ORE.get(),
                         ModBlocks.SAPPHIRE_BLOCK.get());
+
+        this.tag(Tags.Blocks.ORES)
+                .add(ModBlocks.SAPPHIRE_ORE.get(),
+                        ModBlocks.DEEPSLATE_SAPPHIRE_ORE.get());
     }
 }

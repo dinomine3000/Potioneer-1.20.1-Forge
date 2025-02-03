@@ -18,7 +18,9 @@ import net.minecraft.world.item.ItemStack;
 public class RefreshFormulasCommand {
 
     public RefreshFormulasCommand(CommandDispatcher<CommandSourceStack> dispatcher){
-        dispatcher.register(Commands.literal("formula")
+        dispatcher.register(Commands.literal("formula").requires(stack -> {
+                            return stack.getPlayer().hasPermissions(2);
+                        })
                 .then(Commands.literal("refresh")
                         .executes(this::refresh))
                 .then(Commands.literal("generate")

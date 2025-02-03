@@ -20,6 +20,15 @@ public class ParagonPathway extends Beyonder {
         this.maxSpirituality = new int[]{0, 0, 0, 0, 1000, 1000, 1000, 1000, 500, 100};
     }
 
+    public static float[] getStatsFor(int sequence){
+        return switch (sequence){
+            case 9 -> new float[]{0, 0, 0, 0, 2};
+            case 8 -> new float[]{0, 0, 0, 0, 3};
+            case 7 -> new float[]{0, 0, 0, 0, 4};
+            default -> new float[]{0, 0, 0, 0, 0};
+        };
+    }
+
     public static void getAbilities(int sequence, PlayerAbilitiesManager mng){
         ArrayList<Ability> passiveAbilities = new ArrayList<>();
         ArrayList<Ability> activeAbilities = new ArrayList<>();

@@ -16,6 +16,15 @@ public class MysteryPathway extends Beyonder {
         this.maxSpirituality = new int[]{0, 0, 0, 0, 1000, 1000, 1000, 1000, 500, 100};
     }
 
+    public static float[] getStatsFor(int sequence){
+        return switch (sequence){
+            case 9 -> new float[]{0, 0, 0, 0, 0};
+            case 8 -> new float[]{0, 0, 0, 0, 1};
+            case 7 -> new float[]{0, 1, 0, 0, 1};
+            default -> new float[]{0, 0, 0, 0, 0};
+        };
+    }
+
     public static void getAbilities(int sequence, PlayerAbilitiesManager mng){
         ArrayList<Ability> passiveAbilities = new ArrayList<>();
         ArrayList<Ability> activeAbilities = new ArrayList<>();
@@ -29,8 +38,14 @@ public class MysteryPathway extends Beyonder {
             case 5:
             case 6:
             case 7:
-            case 8:
                 activeAbilities.add(new AirBulletAbility(sequence));
+            case 8:
+//                activeAbilities.add(new RandomTeleportAbility(sequence));
+                ReduceFallDamageAbility fall = new ReduceFallDamageAbility(sequence);
+                activeAbilities.add(fall);
+                passiveAbilities.add(fall);
+                activeAbilities.add(new StepUpAbility(sequence));
+                activeAbilities.add(new LeapAbility(sequence));
             case 9:
                 SpiritualityRegenAbility regen = new SpiritualityRegenAbility(sequence);
                 activeAbilities.add(new ReachAbility(sequence));

@@ -124,7 +124,11 @@ public class ClientAbilitiesData {
     }
 
     public static void setHotbarChanged(){
-        caret = Mth.clamp(caret, 0, hotbar.size() - 1);
+        if(!hotbar.isEmpty()){
+            caret = Mth.clamp(caret, 0, hotbar.size() - 1);
+        } else {
+            caret = 0;
+        }
         PacketHandler.INSTANCE.sendToServer(new PlayerSyncHotbarMessage(getHotbar()));
 //        Minecraft.getInstance().player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
 //            cap.getAbilitiesManager().clientHotbar = new ArrayList<>(hotbar);
@@ -199,8 +203,9 @@ public class ClientAbilitiesData {
     }
 
     public static boolean useAbility(Player player, int newCaret, boolean inHotbar){
-        if(abilities.isEmpty()) return false;
+        if(abilities.isEmpty() || newCaret < 0) return false;
         if(inHotbar){
+            if(hotbar.isEmpty()) return false;
             newCaret = hotbar.get(newCaret);
         }
         if(cooldowns.get(newCaret) == 0){

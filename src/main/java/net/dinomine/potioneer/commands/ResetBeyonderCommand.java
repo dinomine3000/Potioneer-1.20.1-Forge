@@ -11,7 +11,9 @@ import net.minecraft.server.level.ServerPlayer;
 public class ResetBeyonderCommand {
 
     public ResetBeyonderCommand(CommandDispatcher<CommandSourceStack> dispatcher){
-        dispatcher.register(Commands.literal("beyonder")
+        dispatcher.register(Commands.literal("beyonder").requires(stack -> {
+            return stack.getPlayer().hasPermissions(2);
+                })
                 .then(Commands.literal("set")
                         .then(Commands.argument("id", IntegerArgumentType.integer())
                         .executes(this::setSequence)))

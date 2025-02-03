@@ -63,7 +63,7 @@ public class PlayerEffectsManager {
                 player.getFoodData().eat(1, 0);
             }
         }
-        event.setAmount(dmg*this.statsHolder.getDamageBonus());
+        event.setAmount(dmg);
     }
 
 
@@ -109,7 +109,11 @@ public class PlayerEffectsManager {
     }
 
     public boolean addEffect(BeyonderEffect effect){
-        passives.add(effect);
+        if(hasEffect(effect.getId())){
+            getEffect(effect.getId()).refreshTime();
+        } else {
+            passives.add(effect);
+        }
         return true;
     }
 
@@ -174,6 +178,7 @@ public class PlayerEffectsManager {
     private void sweepEffects(EntityBeyonderManager cap, LivingEntity target){
         for (int i = passives.size()-1; i >= 0; i--) {
             if(passives.get(i).endsWithin(0)){
+                passives.get(i).stopEffects(cap, target);
                 passives.remove(i);
             }
         }
@@ -198,10 +203,10 @@ public class PlayerEffectsManager {
             BeyonderEffect effect = BeyonderEffects.byId(
                     BeyonderEffects.EFFECT.valueOf(iterator.getString("ID")),
                     iterator.getInt("level"),
-                    iterator.getInt("cost"),
+                    iterator.getFloat("cost"),
                     iterator.getInt("maxLife"),
                     iterator.getBoolean("active"));
-            effect.setDuration(iterator.getInt("lifetime"));
+            effect.setLifetime(iterator.getInt("lifetime"));
             effect.loadNBTData(iterator);
             addEffect(effect);
         }

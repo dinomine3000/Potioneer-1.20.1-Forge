@@ -27,7 +27,10 @@ public class AbilitiesHotbarHUD {
 
 
     public static final IGuiOverlay ABILITY_HOTBAR = ((forgeGui, guiGraphics, partialTick, width, height) -> {
-        if(minecraft.isPaused()) return;
+        if(minecraft.isPaused()){
+            ClientAbilitiesData.showHotbar = false;
+            return;
+        }
         ClientAbilitiesData.animationTick(partialTick);
         if(!shouldDisplayBar()) return;
 

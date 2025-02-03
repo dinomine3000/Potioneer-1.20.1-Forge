@@ -1,5 +1,6 @@
 package net.dinomine.potioneer.beyonder.client;
 
+import com.eliotlash.mclib.math.functions.limit.Min;
 import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
 import net.dinomine.potioneer.sound.ModSounds;
 import net.minecraft.client.Minecraft;
@@ -21,16 +22,19 @@ public class ClientAdvancementManager {
     public static int x;
     public static int y;
     public static int difficulty;
+    public static boolean start;
 
     public static void setDifficulty(int diff){
         difficulty = Mth.clamp(diff, 0, 10);
     }
 
     public static void render(Screen screen, float partialTick){
-        progress -= partialTick*0.05f/maxTime;
-        if(progress < 0){
-            gameOver(screen, false);
-            Minecraft.getInstance().player.sendSystemMessage(Component.literal("Failed advancement"));
+        if(!start){
+            progress -= partialTick*0.05f/maxTime;
+            if(progress < 0){
+                gameOver(screen, false);
+                Minecraft.getInstance().player.sendSystemMessage(Component.literal("Failed advancement"));
+            }
         }
     }
 
@@ -39,12 +43,14 @@ public class ClientAdvancementManager {
         maxCount = count;
         maxTime = 1.5f-difficulty*0.1f;
         progress = 1;
-        x = (int) (Math.random() * (screen.width - 80) + 40);
-        y = (int) (Math.random() * (screen.height - 80) + 40);
+        start = true;
+        x = screen.width/2 - 15;
+        y = screen.height/2 + 5;
         Minecraft.getInstance().player.sendSystemMessage(Component.literal("Difficulty: " + String.valueOf(difficulty)));
     }
 
     public static void onButtonSucceed(Screen screen) {
+        start = false;
         count--;
         progress = 1;
         Player player = Minecraft.getInstance().player;
@@ -63,6 +69,13 @@ public class ClientAdvancementManager {
             Minecraft.getInstance().player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
                 cap.advance(targetSequence, Minecraft.getInstance().player, true, true);
             });
+        } else {
+            Player player = Minecraft.getInstance().player;
+            if(!player.isCreative()){
+                player.kill();
+                //reduce sequence
+            }
+            player.sendSystemMessage(Component.literal("Lost control on the spot. oh well."));
         }
     }
 }

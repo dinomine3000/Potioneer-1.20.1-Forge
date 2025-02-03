@@ -15,8 +15,17 @@ public class TyrantPathway extends Beyonder {
     public TyrantPathway(int sequence){
         super(sequence, "Tyrant");
         this.color = 0x404080;
-        this.maxSpirituality = new int[]{0, 0, 0, 0, 0, 0, 0, 0, 250, 100};
+        this.maxSpirituality = new int[]{0, 0, 0, 0, 0, 0, 0, 750, 250, 100};
 
+    }
+
+    public static float[] getStatsFor(int sequence){
+        return switch (sequence){
+            case 9 -> new float[]{6, 1, 0, 0, 4};
+            case 8 -> new float[]{10, 1, 0, 0, 4};
+            case 7 -> new float[]{16, 1, 0, 0, 4};
+            default -> new float[]{0, 0, 0, 0, 0};
+        };
     }
 
     public static void getAbilities(int sequence, PlayerAbilitiesManager mng){

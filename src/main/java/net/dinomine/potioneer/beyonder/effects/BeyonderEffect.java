@@ -39,6 +39,7 @@ public abstract class BeyonderEffect {
     }
 
     public boolean endsWithin(int time){
+        if(maxLife < 1) return false;
         return this.maxLife - this.lifetime < time;
     }
 
@@ -105,7 +106,9 @@ public abstract class BeyonderEffect {
         nbt.putString("ID", ID.name());
     }
 
-    public void loadNBTData(CompoundTag nbt){}
+    public void loadNBTData(CompoundTag nbt){
+        System.out.println(lifetime + " / " + maxLife);
+    }
 
 
 }

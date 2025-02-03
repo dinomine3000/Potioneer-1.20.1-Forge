@@ -4,16 +4,7 @@ import net.dinomine.potioneer.beyonder.abilities.Ability;
 import net.dinomine.potioneer.beyonder.abilities.AbilityInfo;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
 import net.dinomine.potioneer.beyonder.player.EntityBeyonderManager;
-import net.dinomine.potioneer.block.ModBlocks;
-import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.phys.AABB;
-import net.minecraft.world.phys.BlockHitResult;
-import net.minecraft.world.phys.HitResult;
-import net.minecraftforge.common.ForgeMod;
 
 public class HideInBlockAbility extends Ability {
 
@@ -49,14 +40,14 @@ public class HideInBlockAbility extends Ability {
 
     @Override
     public void activate(EntityBeyonderManager cap, LivingEntity target) {
-        cap.getEffectsManager().addEffect(BeyonderEffects.byId(BeyonderEffects.EFFECT.WHEEL_BLOCK, getSequence(), 0, -1, true),
+        cap.getEffectsManager().addEffect(BeyonderEffects.byId(BeyonderEffects.EFFECT.WHEEL_FORTUNE, getSequence(), 0, -1, true),
                 cap, target);
     }
 
     @Override
     public void deactivate(EntityBeyonderManager cap, LivingEntity target) {
-        if(cap.getEffectsManager().hasEffect(BeyonderEffects.EFFECT.WHEEL_BLOCK)){
-            cap.getEffectsManager().removeEffect(BeyonderEffects.EFFECT.WHEEL_BLOCK,
+        if(cap.getEffectsManager().hasEffect(BeyonderEffects.EFFECT.WHEEL_FORTUNE)){
+            cap.getEffectsManager().removeEffect(BeyonderEffects.EFFECT.WHEEL_FORTUNE,
                     getSequence(), cap, target);
         }
     }

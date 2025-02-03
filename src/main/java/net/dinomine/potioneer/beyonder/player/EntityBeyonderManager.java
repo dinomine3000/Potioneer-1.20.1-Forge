@@ -177,31 +177,38 @@ public class EntityBeyonderManager {
 
 
     public void setPathway(int id, boolean advancing){
+        getBeyonderStats().setAttributes(Beyonder.getStatsFor(0));
         if(id < 0){
             this.pathway = new Beyonder(10);
         } else {
             int pathway = Math.floorDiv(id, 10);
+            if(id > 59) pathway = 7;
             int seq = id%10;
             switch(pathway){
                 case 0:
                     this.pathway = new WheelOfFortunePathway(seq);
                     WheelOfFortunePathway.getAbilities(seq, getAbilitiesManager());
+                    getBeyonderStats().setAttributes(WheelOfFortunePathway.getStatsFor(seq));
                     break;
                 case 1:
                     this.pathway = new TyrantPathway(seq);
                     TyrantPathway.getAbilities(seq, getAbilitiesManager());
+                    getBeyonderStats().setAttributes(TyrantPathway.getStatsFor(seq));
                     break;
                 case 2:
                     this.pathway = new MysteryPathway(seq);
                     MysteryPathway.getAbilities(seq, getAbilitiesManager());
+                    getBeyonderStats().setAttributes(MysteryPathway.getStatsFor(seq));
                     break;
                 case 3:
                     this.pathway = new RedPriestPathway(seq);
                     RedPriestPathway.getAbilities(seq, getAbilitiesManager());
+                    getBeyonderStats().setAttributes(RedPriestPathway.getStatsFor(seq));
                     break;
                 case 4:
                     this.pathway = new ParagonPathway(seq);
                     ParagonPathway.getAbilities(seq, getAbilitiesManager());
+                    getBeyonderStats().setAttributes(ParagonPathway.getStatsFor(seq));
                     break;
                 case 5:
                     System.out.println("Advancing as Dev.");
@@ -221,6 +228,8 @@ public class EntityBeyonderManager {
             if(advancing) this.abilitiesManager.onAcquireAbilities(this, entity);
             if(advancing) setSpirituality(this.maxSpirituality);
         }
+        if(entity instanceof Player player) getBeyonderStats().applyStats(player);
+        //if hp changes, add a heal to the player here IF ADVANCING!!
     }
 
     public String getPathwayName(boolean capitalize){
@@ -236,8 +245,10 @@ public class EntityBeyonderManager {
     }
 
     public void copyFrom(EntityBeyonderManager source, Player player){
+        //TODO have this account for everything
         this.spirituality = source.getSpirituality();
         advance(source.getPathwayId(), player, true, false);
+        player.setHealth(player.getMaxHealth());
         this.abilitiesManager.copyFrom(source.getAbilitiesManager());
         this.abilitiesManager.onAcquireAbilities(this, player);
     }
@@ -261,6 +272,7 @@ public class EntityBeyonderManager {
         setPathway(nbt.getInt("pathwayId"), false);
         this.abilitiesManager.loadNBTData(nbt, entity);
         this.abilitiesManager.onAcquireAbilities(this, entity);
+        this.abilitiesManager.loadEnabledListFromTag(nbt);
         //TODO make abilities manager actually save and load item abilities.
         //this.abilitiesManager.loadNBTData(nbt);
         this.effectsManager.loadNBTData(nbt);

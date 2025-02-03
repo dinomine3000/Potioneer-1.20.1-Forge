@@ -77,4 +77,7 @@ public class Beyonder {
         };
     }
 
+    public static float[] getStatsFor(int sequence){
+        return new float[]{0, 0, 0, 0, 0};
+    }
 }

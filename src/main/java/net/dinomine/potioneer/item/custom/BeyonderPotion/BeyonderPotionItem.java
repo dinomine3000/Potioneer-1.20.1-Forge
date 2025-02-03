@@ -79,7 +79,7 @@ public class BeyonderPotionItem extends PotionItem implements GeoItem {
                     player.sendSystemMessage(Component.literal("Lost control on the spot. oh well."));
                 }
             }
-            if(pEntityLiving instanceof Player && pLevel.isClientSide()){
+            if(pEntityLiving instanceof Player player && pLevel.isClientSide()){
                 boolean beyonder = true;
                 try {
                     Integer.parseInt(name);
@@ -87,7 +87,17 @@ public class BeyonderPotionItem extends PotionItem implements GeoItem {
                     beyonder = false;
                 }
                 if(beyonder){
-                    ClientStatsData.attemptAdvancement(Integer.parseInt(name));
+                    player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
+                        if(Math.floorDiv(Integer.parseInt(name), 10) != Math.floorDiv(cap.getPathwayId(), 10)){
+                            if(!player.isCreative()){
+                                player.kill();
+                                //reduce sequence
+                            }
+                            player.sendSystemMessage(Component.literal("Lost control on the spot. oh well."));
+                        } else {
+                            ClientStatsData.attemptAdvancement(Integer.parseInt(name));
+                        }
+                    });
                 }
             }
         }

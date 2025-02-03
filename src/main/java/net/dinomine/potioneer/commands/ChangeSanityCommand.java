@@ -11,7 +11,9 @@ import net.minecraft.server.level.ServerPlayer;
 public class ChangeSanityCommand {
 
     public ChangeSanityCommand(CommandDispatcher<CommandSourceStack> dispatcher){
-        dispatcher.register(Commands.literal("sanity")
+        dispatcher.register(Commands.literal("sanity").requires(stack -> {
+                            return stack.getPlayer().hasPermissions(2);
+                        })
                 .then(Commands.literal("set")
                         .then(Commands.argument("value", IntegerArgumentType.integer())
                         .executes(this::setValue)))

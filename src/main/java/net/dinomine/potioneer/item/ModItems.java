@@ -2,11 +2,8 @@ package net.dinomine.potioneer.item;
 
 import net.dinomine.potioneer.Potioneer;
 import net.dinomine.potioneer.entities.ModEntities;
+import net.dinomine.potioneer.item.custom.*;
 import net.dinomine.potioneer.item.custom.BeyonderPotion.BeyonderPotionItem;
-import net.dinomine.potioneer.item.custom.ConjuredPickaxeItem;
-import net.dinomine.potioneer.item.custom.Flask;
-import net.dinomine.potioneer.item.custom.FormulaItem;
-import net.dinomine.potioneer.item.custom.Vial;
 import net.minecraft.world.item.*;
 import net.minecraft.world.level.block.MushroomBlock;
 import net.minecraftforge.common.ForgeSpawnEggItem;
@@ -42,6 +39,9 @@ public class ModItems {
 
     public static final RegistryObject<Item> MINER_PICKAXE = ITEMS.register("conjured_pickaxe",
             () -> new ConjuredPickaxeItem(new Item.Properties().setNoRepair().durability(10)));
+
+    public static final RegistryObject<Item> GHOST_FISHING_ROD = ITEMS.register("ghostly_fishing_rod",
+            () -> new GhastlyFishingRod(new Item.Properties().rarity(Rarity.COMMON)));
 
 
     public static final RegistryObject<Item> VIAL = ITEMS.register("vial", () -> new Vial(new Item.Properties()));

@@ -2,6 +2,7 @@ package net.dinomine.potioneer.beyonder.player;
 
 import net.dinomine.potioneer.beyonder.abilities.Ability;
 import net.dinomine.potioneer.beyonder.client.ClientAbilitiesData;
+import net.dinomine.potioneer.beyonder.pathways.RedPriestPathway;
 import net.dinomine.potioneer.network.PacketHandler;
 import net.dinomine.potioneer.network.messages.PlayerAbilityCooldownSTC;
 import net.dinomine.potioneer.network.messages.PlayerAdvanceMessage;
@@ -31,6 +32,7 @@ public class PlayerAbilitiesManager {
 
     public void copyFrom(PlayerAbilitiesManager mng){
         this.enabledDisabled = new ArrayList<>(mng.enabledDisabled);
+        this.clientHotbar = mng.clientHotbar;
     }
 
     public void onTick(EntityBeyonderManager cap, LivingEntity target){
@@ -189,13 +191,29 @@ public class PlayerAbilitiesManager {
         nbt.put("hotbar", hotbar);
     }
 
-    public void loadNBTData(CompoundTag nbt, LivingEntity target){
+    public void loadEnabledListFromTag(CompoundTag nbt){
         CompoundTag enabledAbilities = nbt.getCompound("enabled_abilities");
         int size = enabledAbilities.getInt("size");
         ArrayList<Boolean> enabled = new ArrayList<>();
         if(size != 0){
             for(int i = 0; i < size; i++){
                 enabled.add(enabledAbilities.getBoolean(String.valueOf(i)));
+            }
+            //syncing with the abilities you had from pathway
+            //this is important if pathway abilities change between world loads,
+            //so itll at least try to keep the info on what abilities were on or off
+//            System.out.println(enabled.size());
+            setEnabledList(enabled);
+        }
+    }
+
+    public void loadNBTData(CompoundTag nbt, LivingEntity target){
+        CompoundTag enabledAbilities = nbt.getCompound("enabled_abilities");
+        int size = enabledAbilities.getInt("size");
+        ArrayList<Boolean> enabled = new ArrayList<>();
+        if(size != 0){
+            for(int i = 0; i < size; i++){
+                enabled.add(true);
             }
             //syncing with the abilities you had from pathway
             //this is important if pathway abilities change between world loads,

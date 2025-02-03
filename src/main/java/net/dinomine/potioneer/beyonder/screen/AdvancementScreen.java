@@ -68,14 +68,23 @@ public class AdvancementScreen extends Screen {
     @Override
     public void render(GuiGraphics pGuiGraphics, int pMouseX, int pMouseY, float pPartialTick) {
         renderBackground(pGuiGraphics);
-        pGuiGraphics.blit(TEXTURE, this.leftPos - 65, this.topPos - 100, 30, 0, 132 ,14);
-        pGuiGraphics.blit(TEXTURE, this.leftPos - 65, this.topPos - 100, 30, 14, (int)(ClientAdvancementManager.progress * 132) ,14);
+        ClientAdvancementManager.render(this, pPartialTick);
+        if(ClientAdvancementManager.start){
+            pGuiGraphics.drawString(this.font, Component.literal("Press the targets in time."), this.leftPos - 55, this.topPos - 75, 0xFFFFFFFF, false);
+            pGuiGraphics.drawString(this.font, Component.literal("You will die if you miss one."), this.leftPos - 55, this.topPos - 45, 0xFFFFFFFF, false);
+            pGuiGraphics.drawString(this.font, Component.literal("Click on this one to start."), this.leftPos - 55, this.topPos - 15, 0xFFFFFFFF, false);
+        } else {
+            pGuiGraphics.blit(TEXTURE, this.leftPos - 65, this.topPos - 100, 30, 0, 132 ,14);
+            pGuiGraphics.blit(TEXTURE, this.leftPos - 65, this.topPos - 100, 30, 14, (int)(ClientAdvancementManager.progress * 132) ,14);
 
-        pGuiGraphics.drawString(this.font, Component.literal(String.format("%s/%s", ClientAdvancementManager.count, ClientAdvancementManager.maxCount)), this.leftPos, this.topPos - 120, 0x404040, false);
+            pGuiGraphics.drawString(this.font,
+                    Component.literal(String.format("%s/%s", ClientAdvancementManager.count, ClientAdvancementManager.maxCount)),
+                    this.leftPos - 15, this.topPos - 60, 0xFF909090, false);
 
+
+        }
         this.button.setX(ClientAdvancementManager.x);
         this.button.setY(ClientAdvancementManager.y);
-        ClientAdvancementManager.render(this, pPartialTick);
 
         super.render(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
     }
