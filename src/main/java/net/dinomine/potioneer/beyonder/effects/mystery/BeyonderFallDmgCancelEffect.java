@@ -4,6 +4,7 @@ import net.dinomine.potioneer.beyonder.effects.BeyonderEffect;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
 import net.dinomine.potioneer.beyonder.player.EntityBeyonderManager;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.inventory.AnvilMenu;
 
 public class BeyonderFallDmgCancelEffect extends BeyonderEffect {
     public boolean flag = false;
@@ -25,8 +26,8 @@ public class BeyonderFallDmgCancelEffect extends BeyonderEffect {
 
     @Override
     protected void doTick(EntityBeyonderManager cap, LivingEntity target) {
-        if(target.onGround() && !flag){
-            maxLife = 1;
+        if(!target.onGround() && !flag){
+            maxLife = 5;
             lifetime = 0;
             flag = true;
         }

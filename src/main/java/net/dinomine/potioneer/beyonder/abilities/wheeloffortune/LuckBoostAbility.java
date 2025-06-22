@@ -11,7 +11,7 @@ import net.minecraft.world.entity.LivingEntity;
 public class LuckBoostAbility extends Ability {
 
     public LuckBoostAbility(int sequence){
-        this.info = new AbilityInfo(5, 32, "Luck Boost", sequence, 30*(10-sequence), 5*20);
+        this.info = new AbilityInfo(5, 128, "Luck Boost", sequence, 30*(10-sequence), 5*20);
     }
 
     @Override

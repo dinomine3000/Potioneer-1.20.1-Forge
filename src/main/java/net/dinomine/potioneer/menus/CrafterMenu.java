@@ -1,0 +1,185 @@
+package net.dinomine.potioneer.menus;
+
+import net.dinomine.potioneer.item.ModItems;
+import net.minecraft.client.gui.screens.inventory.CraftingScreen;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.protocol.game.ClientboundContainerSetSlotPacket;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.Container;
+import net.minecraft.world.SimpleContainer;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.player.StackedContents;
+import net.minecraft.world.inventory.*;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.crafting.CraftingRecipe;
+import net.minecraft.world.item.crafting.CustomRecipe;
+import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.item.crafting.RecipeType;
+import net.minecraft.world.level.Level;
+
+import java.util.Optional;
+
+public class CrafterMenu extends CraftingMenu {
+    private final TransientCraftingContainer fuelContainer;
+    private final int sequence;
+    public boolean consumeFuel = false;
+
+    //client constructor
+    public CrafterMenu(int i, Inventory inventory, FriendlyByteBuf friendlyByteBuf) {
+        this(i, inventory, friendlyByteBuf.readInt());
+    }
+
+    public CrafterMenu(int pContainerId, Inventory pPlayerInventory, int sequence) {
+        this(pContainerId, pPlayerInventory, ContainerLevelAccess.NULL, sequence);
+    }
+
+    public CrafterMenu(int pContainerId, Inventory pPlayerInventory, ContainerLevelAccess pLevelAccess, int sequence) {
+        super(pContainerId, pPlayerInventory, pLevelAccess);
+        this.menuType = ModMenuTypes.CRAFTER_MENU.get();
+
+        fuelContainer = new TransientCraftingContainer(this, 1, 1);
+        this.addSlot(new Slot(fuelContainer, 0, 124, 60));
+        this.sequence = sequence;
+    }
+
+    public void consumeFuelIfAvailable(Player player, ItemStack crafting){
+        if(consumeFuel){
+            fuelContainer.removeItem(0, 1);
+            ItemStack base = crafting.copy();
+            while(base.getCount() > base.getMaxStackSize()){
+                crafting.setCount(crafting.getMaxStackSize());
+
+                ItemStack extra = base.copy();
+                extra.setCount(base.getCount() - base.getMaxStackSize());
+
+                base.setCount(base.getMaxStackSize());
+                player.addItem(base);
+
+                base = extra;
+            }
+        }
+    }
+
+    @Override
+    public boolean stillValid(Player pPlayer) {
+        return true;
+    }
+
+    @Override
+    public ItemStack quickMoveStack(Player pPlayer, int pIndex) {
+        Slot slot = this.slots.get(pIndex);
+        if(pIndex != 46 && slot.hasItem() && slot.getItem().is(Items.CHARCOAL) && fuelContainer.canPlaceItem(0, slot.getItem())){
+            ItemStack item = slot.getItem();
+            if(this.moveItemStackTo(item, 46, 47, true)){
+                return ItemStack.EMPTY;
+            }
+        }
+
+
+        ItemStack $$2 = ItemStack.EMPTY;
+        Slot $$3 = (Slot)this.slots.get(pIndex);
+        if ($$3 != null && $$3.hasItem()) {
+            ItemStack $$4 = $$3.getItem();
+            $$2 = $$4.copy();
+            if (pIndex == 0) {
+                this.access.execute((p_39378_, p_39379_) -> $$4.getItem().onCraftedBy($$4, p_39378_, pPlayer));
+                if (!this.moveItemStackTo($$4, 10, 46, true)) {
+                    return ItemStack.EMPTY;
+                }
+
+                $$3.onQuickCraft($$4, $$2);
+            } else if (pIndex >= 10 && pIndex < 46) {
+                if (!this.moveItemStackTo($$4, 1, 10, false)) {
+                    if (pIndex < 37) {
+                        if (!this.moveItemStackTo($$4, 37, 46, false)) {
+                            return ItemStack.EMPTY;
+                        }
+                    } else if (!this.moveItemStackTo($$4, 10, 37, false)) {
+                        return ItemStack.EMPTY;
+                    }
+                }
+            } else if (!this.moveItemStackTo($$4, 10, 46, false)) {
+                return ItemStack.EMPTY;
+            }
+
+            if ($$4.isEmpty()) {
+                $$3.setByPlayer(ItemStack.EMPTY);
+            } else {
+                $$3.setChanged();
+            }
+
+            if ($$4.getCount() == $$2.getCount()) {
+                return ItemStack.EMPTY;
+            }
+
+            $$3.onTake(pPlayer, $$4);
+            if (pIndex == 0) {
+                pPlayer.drop($$4, false);
+            }
+        }
+
+        return $$2;
+
+    }
+
+    @Override
+    public void slotsChanged(Container pInventory) {
+        this.access.execute((p_39386_, p_39387_) -> slotChangedCraftingGrid(this, p_39386_, this.player, this.craftSlots, this.resultSlots, this.fuelContainer));
+    }
+
+
+    protected static void slotChangedCraftingGrid(CrafterMenu pMenu, Level pLevel, Player pPlayer, CraftingContainer pContainer, ResultContainer pResult, TransientCraftingContainer fuelContainer) {
+        if (!pLevel.isClientSide) {
+            ServerPlayer player = (ServerPlayer)pPlayer;
+            ItemStack result = ItemStack.EMPTY;
+            Optional<CraftingRecipe> recipe = pLevel.getServer().getRecipeManager().getRecipeFor(RecipeType.CRAFTING, pContainer, pLevel);
+            pMenu.consumeFuel = false;
+            if (recipe.isPresent()) {
+                CraftingRecipe successfulRecipe = (CraftingRecipe)recipe.get();
+                if (pResult.setRecipeUsed(pLevel, player, successfulRecipe)) {
+                    ItemStack assembledItem = successfulRecipe.assemble(pContainer, pLevel.registryAccess());
+                    if (assembledItem.isItemEnabled(pLevel.enabledFeatures())) {
+                        result = assembledItem;
+
+                        if(fuelContainer.getItem(0).is(ModItems.GOLDEN_ROP.get()) && !(recipe.get() instanceof CustomRecipe)){
+                            int count = (int)Math.round(result.getCount()*(1+(10-pMenu.sequence)*0.4)-0.5f);
+                            pMenu.consumeFuel = count != result.getCount();
+                            result.setCount(count);
+                        }
+                    }
+                }
+            }
+
+
+            pResult.setItem(0, result);
+            pMenu.setRemoteSlot(0, result);
+            player.connection.send(new ClientboundContainerSetSlotPacket(pMenu.containerId, pMenu.incrementStateId(), 0, result));
+        }
+    }
+
+    @Override
+    public void clearCraftingContent() {
+        super.clearCraftingContent();
+        this.fuelContainer.clearContent();
+    }
+
+    @Override
+    public boolean recipeMatches(Recipe<? super CraftingContainer> pRecipe) {
+        return pRecipe.matches(this.craftSlots, this.player.level());
+    }
+
+    public void removed(Player pPlayer) {
+        super.removed(pPlayer);
+        this.access.execute((p_39371_, p_39372_) -> {
+            this.clearContainer(pPlayer, this.fuelContainer);
+        });
+    }
+
+    @Override
+    public int getSize() {
+        return 11;
+    }
+}

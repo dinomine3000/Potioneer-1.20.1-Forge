@@ -23,7 +23,6 @@ public class EntityBeyonderManager {
     private float spiritualityCost = 0;
     private int maxSpirituality = 100;
     private int sanity = 100;
-    private int acting = 0;
 
     private final BeyonderStats beyonderStats;
     private final PlayerAbilitiesManager abilitiesManager;
@@ -272,7 +271,7 @@ public class EntityBeyonderManager {
         setPathway(nbt.getInt("pathwayId"), false);
         this.abilitiesManager.loadNBTData(nbt, entity);
         this.abilitiesManager.onAcquireAbilities(this, entity);
-        this.abilitiesManager.loadEnabledListFromTag(nbt);
+        this.abilitiesManager.loadEnabledListFromTag(nbt, this, entity);
         //TODO make abilities manager actually save and load item abilities.
         //this.abilitiesManager.loadNBTData(nbt);
         this.effectsManager.loadNBTData(nbt);

@@ -42,9 +42,7 @@ public class PlayerLuckManager {
 
             } else {
                 if(luck > FORTUNATE_EVENT_THRESHOLD || luck < UNFORTUNATE_EVENT_THRESHOLD){
-                    eventGoingOn = true;
-//                    luckEventCountdown = target.getRandom().nextInt(10*6);
-                    luckEventCountdown = target.getRandom().nextInt(1);
+                    castEvent(target);
                     target.sendSystemMessage(Component.literal("The gears of fate turn to you"));
                 }
             }
@@ -53,18 +51,24 @@ public class PlayerLuckManager {
                 grantLuck(1);
             } else if(!eventGoingOn){
                 if(baseEventPity++ > PITY_EVENT_THRESHOLD){
-                    baseEventPity = 0;
-                    eventGoingOn = true;
-//                    luckEventCountdown = target.getRandom().nextInt(10*6);
-                    luckEventCountdown = target.getRandom().nextInt(1);
+                    castEvent(target);
                     target.sendSystemMessage(Component.literal("Fate pities you..."));
                 }
             }
         }
     }
 
-    public void instantlyCastEvent(){
+    private void castEvent(LivingEntity target){
         eventGoingOn = true;
+//      luckEventCountdown = target.getRandom().nextInt(10*6);
+        luckEventCountdown = target.getRandom().nextInt(1);
+        if(luck > FORTUNATE_EVENT_THRESHOLD){
+            baseEventPity = 0;
+        }
+    }
+
+    public void instantlyCastEvent(LivingEntity target){
+        castEvent(target);
         luckEventCountdown = 0;
     }
 
@@ -79,7 +83,7 @@ public class PlayerLuckManager {
     private void triggerEvent(EntityBeyonderManager cap, LivingEntity target){
         int event = target.getRandom().nextInt(3);
         if(luck > 0){
-            target.sendSystemMessage(Component.literal("Fate gives you a blessing."));
+            target.sendSystemMessage(Component.literal("Fate bestows a blessing upon thee."));
             consumeLuck(40);
             switch(event){
                 case 0:
@@ -99,7 +103,7 @@ public class PlayerLuckManager {
             }
         } else {
             grantLuck(15);
-            target.sendSystemMessage(Component.literal("Fate gives you a curse."));
+            target.sendSystemMessage(Component.literal("Fate curses thee."));
             switch(event){
                 case 0:
                     if(target instanceof Player player){
@@ -122,12 +126,14 @@ public class PlayerLuckManager {
 
     public float checkLuck(float chance){
         float newChance;
+        float b = 3.6f;
+        float d = 20f;
         if(luck == 0) newChance = chance;
         else if(luck > 0){
-            float a = 3.6f * (float) Math.pow(10, luck/100f - 1);
+            float a = b * (float) Math.pow(10, luck/100f - 1);
             newChance = (float) (Math.log(a*chance + 1) / Math.log(a + 1));
         } else {
-            float c = chance / (20 - chance);
+            float c = chance / (d - chance);
             newChance = (float) (Math.log(c*chance) / Math.log(c+1));
         }
         return newChance;

@@ -11,11 +11,14 @@ import net.dinomine.potioneer.entities.custom.ChryonEntity;
 import net.dinomine.potioneer.item.ModCreativeModTabs;
 import net.dinomine.potioneer.item.ModItems;
 import net.dinomine.potioneer.loot.ModLootModifiers;
+import net.dinomine.potioneer.menus.CraftingScreen;
+import net.dinomine.potioneer.menus.ModMenuTypes;
 import net.dinomine.potioneer.network.PacketHandler;
 import net.dinomine.potioneer.particle.ModParticles;
 import net.dinomine.potioneer.recipe.ModRecipes;
 import net.dinomine.potioneer.sound.ModSounds;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.renderer.entity.EntityRenderers;
 import net.minecraft.client.renderer.item.ItemProperties;
 import net.minecraft.resources.ResourceLocation;
@@ -67,6 +70,8 @@ public class Potioneer
 
         ModLootModifiers.register(eventBus);
 
+        ModMenuTypes.MENU_TYPES.register(eventBus);
+
 
         // Register the commonSetup method for modloading
         eventBus.addListener(this::commonSetup);
@@ -116,6 +121,11 @@ public class Potioneer
                     new ResourceLocation(Potioneer.MOD_ID, "level"),
                     ((itemStack, clientLevel, livingEntity, i) ->
                             itemStack.getTag() != null ? itemStack.getTag().getCompound("potion_info").getInt("amount") : 0));
+
+            event.enqueueWork(() -> {
+                MenuScreens.register(ModMenuTypes.CRAFTER_MENU.get(), CraftingScreen::new);
+            });
+
 
             LOGGER.info("HELLO FROM CLIENT SETUP");
             LOGGER.info("MINECRAFT NAME >> {}", Minecraft.getInstance().getUser().getName());

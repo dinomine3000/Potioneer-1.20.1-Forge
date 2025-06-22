@@ -16,8 +16,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
-import org.lwjgl.glfw.GLFW;
-
 import java.awt.event.MouseMotionAdapter;
 
 public class AdvancementScreen extends Screen {

@@ -8,6 +8,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.ImageButton;
+import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.LoomScreen;
 import net.minecraft.network.chat.Component;
@@ -39,6 +40,7 @@ public class BeyonderAbilitiesScreen extends Screen {
     private float dClickCountdown = 0;
 
     private Button addToHotbarButton;
+    private Button removeFromHotbarButton;
 
     public BeyonderAbilitiesScreen() {
         super(TITLE);
@@ -80,10 +82,14 @@ public class BeyonderAbilitiesScreen extends Screen {
             });
             addRenderableWidget(castAbilityButton);
 
-            addToHotbarButton = Button.builder(Component.literal("button"), btn -> {
-                addAbilityToHotbar();
-            }).bounds(leftPos + 100, topPos + 57, 63, 11).build();
+            addToHotbarButton = new ImageButton(leftPos + 145, topPos + 50, 18, 18,
+                    176, 105, 18, TEXTURE, TEXTURE_WIDTH, TEXTURE_HEIGHT, btn -> {addAbilityToHotbar();});
+            addToHotbarButton.setTooltip(Tooltip.create(Component.literal("Add to hotbar")));
+            removeFromHotbarButton = new ImageButton(leftPos + 145, topPos + 50, 18, 18,
+                    194, 105, 18, TEXTURE, TEXTURE_WIDTH, TEXTURE_HEIGHT, btn -> {addAbilityToHotbar();});
+            removeFromHotbarButton.setTooltip(Tooltip.create(Component.literal("Remove from hotbar")));
             addRenderableWidget(addToHotbarButton);
+            addRenderableWidget(removeFromHotbarButton);
             updateHotbarButton();
         }
     }
@@ -129,9 +135,15 @@ public class BeyonderAbilitiesScreen extends Screen {
     private void updateHotbarButton(){
         int abilityCaret = abilities.size() - 1 - selectedCaret;
         if(!ClientAbilitiesData.getHotbar().contains(abilityCaret)){
-            addToHotbarButton.setMessage(Component.literal("Add to hotbar"));
+            addToHotbarButton.active = true;
+            addToHotbarButton.visible = true;
+            removeFromHotbarButton.active = false;
+            removeFromHotbarButton.visible = false;
         } else {
-            addToHotbarButton.setMessage(Component.literal("Remove from hotbar"));
+            addToHotbarButton.active = false;
+            addToHotbarButton.visible = false;
+            removeFromHotbarButton.active = true;
+            removeFromHotbarButton.visible = true;
         }
     }
 

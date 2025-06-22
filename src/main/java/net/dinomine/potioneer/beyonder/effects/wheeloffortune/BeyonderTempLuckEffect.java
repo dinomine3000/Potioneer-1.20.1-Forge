@@ -36,7 +36,7 @@ public class BeyonderTempLuckEffect extends BeyonderEffect {
         target.sendSystemMessage(Component.literal("All is not without its price. Your luck has been taken back."));
         if (cap.getLuckManager().getLuck() < 0){
             target.sendSystemMessage(Component.literal("Unlucky..."));
-            cap.getLuckManager().instantlyCastEvent();
+            cap.getLuckManager().instantlyCastEvent(target);
         }
     }
 }

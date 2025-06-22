@@ -191,19 +191,21 @@ public class PlayerAbilitiesManager {
         nbt.put("hotbar", hotbar);
     }
 
-    public void loadEnabledListFromTag(CompoundTag nbt){
+    public void loadEnabledListFromTag(CompoundTag nbt, EntityBeyonderManager cap, LivingEntity target){
         CompoundTag enabledAbilities = nbt.getCompound("enabled_abilities");
         int size = enabledAbilities.getInt("size");
         ArrayList<Boolean> enabled = new ArrayList<>();
         if(size != 0){
             for(int i = 0; i < size; i++){
-                enabled.add(enabledAbilities.getBoolean(String.valueOf(i)));
+                boolean val = enabledAbilities.getBoolean(String.valueOf(i));
+                if(enabledDisabled.get(i) && !val) pathwayActives.get(i).disable(cap, target);
+                enabled.add(val);
             }
             //syncing with the abilities you had from pathway
             //this is important if pathway abilities change between world loads,
             //so itll at least try to keep the info on what abilities were on or off
 //            System.out.println(enabled.size());
-            setEnabledList(enabled);
+//            setEnabledList(enabled);
         }
     }
 

@@ -28,6 +28,9 @@ public class ModItems {
     public static final RegistryObject<Item> SOLSEER = ITEMS.register("solseer",
             () -> new Item(new Item.Properties()));
 
+    public static final RegistryObject<Item> PARAGON_FUEL = ITEMS.register("paragon_cake",
+            () -> new Item(new Item.Properties().stacksTo(1)));
+
     public static final RegistryObject<Item> WANDERING_CACTUS_PRICK = ITEMS.register("wandering_cactus_prick",
             () -> new Item(new Item.Properties()));
 
@@ -50,6 +53,9 @@ public class ModItems {
 
     public static final RegistryObject<Item> BEYONDER_POTION = ITEMS.register("beyonder_potion",
             () -> new BeyonderPotionItem(new Item.Properties().stacksTo(1).fireResistant().rarity(Rarity.UNCOMMON)));
+
+    public static final RegistryObject<Item> GOLDEN_ROP = ITEMS.register("golden_drop",
+            () -> new Item(new Item.Properties().rarity(Rarity.RARE).stacksTo(16).fireResistant()));
 
     /*ublic static final RegistryObject<Item> METAL_ROD = ITEMS.register("metal_detector",
             () -> new MetalDetectorItem(new Item.Properties().stacksTo(1).durability(20)));*/

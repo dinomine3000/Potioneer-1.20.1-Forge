@@ -88,11 +88,12 @@ public class BeyonderPotionItem extends PotionItem implements GeoItem {
                 }
                 if(beyonder){
                     player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
-                        if(Math.floorDiv(Integer.parseInt(name), 10) != Math.floorDiv(cap.getPathwayId(), 10)){
+                        if(Math.floorDiv(Integer.parseInt(name), 10) != Math.floorDiv(cap.getPathwayId(), 10) && cap.isBeyonder()){
                             if(!player.isCreative()){
                                 player.kill();
                                 //reduce sequence
                             }
+                            System.out.println("Pathway mismatch: " + name + " for pathway " + Math.floorDiv(cap.getPathwayId(), 10));
                             player.sendSystemMessage(Component.literal("Lost control on the spot. oh well."));
                         } else {
                             ClientStatsData.attemptAdvancement(Integer.parseInt(name));

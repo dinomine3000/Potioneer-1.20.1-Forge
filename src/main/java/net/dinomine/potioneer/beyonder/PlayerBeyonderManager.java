@@ -48,6 +48,7 @@ import net.minecraft.world.level.pathfinder.WalkNodeEvaluator;
 import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.common.Tags;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
@@ -55,6 +56,7 @@ import net.minecraftforge.event.entity.EntityStruckByLightningEvent;
 import net.minecraftforge.event.entity.living.*;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerWakeUpEvent;
+import net.minecraftforge.event.entity.player.PlayerXpEvent;
 import net.minecraftforge.event.level.BlockEvent;
 import net.minecraftforge.event.level.LevelEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -193,10 +195,29 @@ public class PlayerBeyonderManager {
 //    }
 
     @SubscribeEvent
+    public static void onExperienceChange(PlayerXpEvent.XpChange event){
+        System.out.println(event.getAmount());
+        System.out.println(event.getAmount()/2);
+        System.out.println(event.getEntity());
+        event.setAmount(event.getAmount()/2);
+    }
+
+    @SubscribeEvent
+    public static void onExperienceChange(PlayerXpEvent.LevelChange event){
+        System.out.println(event.getEntity());
+        System.out.println(event.getLevels());
+        event.setLevels(event.getLevels() / 3);
+    }
+
+
+    @SubscribeEvent
     public static void onFall(LivingFallEvent event){
         event.getEntity().getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
             if(cap.getEffectsManager().hasEffect(BeyonderEffects.EFFECT.MYSTERY_FALL_NEGATE)){
                 event.setDamageMultiplier(0);
+                cap.getEffectsManager().removeEffect(BeyonderEffects.EFFECT.MYSTERY_FALL_NEGATE,
+                        cap.getEffectsManager().getEffect(BeyonderEffects.EFFECT.MYSTERY_FALL_NEGATE).getSequenceLevel(),
+                        cap, event.getEntity());
             }
             else if(event.getDistance() > 5 && cap.getEffectsManager().hasEffect(BeyonderEffects.EFFECT.MYSTERY_FALL)){
                 if(cap.getSpirituality() > 50){
@@ -218,7 +239,7 @@ public class PlayerBeyonderManager {
             boolean fortune = cap.getEffectsManager().hasEffect(BeyonderEffects.EFFECT.WHEEL_FORTUNE);
             boolean silk = cap.getEffectsManager().hasEffect(BeyonderEffects.EFFECT.WHEEL_SILK_TOUCH);
 
-            if(fortune){
+            if(fortune && event.getState().is(Tags.Blocks.ORES)){
                 int lvl = (9 - cap.getEffectsManager().getEffect(BeyonderEffects.EFFECT.WHEEL_FORTUNE).getSequenceLevel())/2;
                 while(lvl > 1){
                     lvl--;

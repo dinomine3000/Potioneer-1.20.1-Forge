@@ -72,6 +72,15 @@ public class AbilitiesHotbarHUD {
         int pathway = Math.floorDiv(info.id(), 10);
         int caseX = xPos - (int) (CASE_HEIGHT * scale / 2);
         guiGraphics.blit(ICONS, caseX, yPos, (int) (CASE_WIDTH*scale), (int) (CASE_HEIGHT*scale), 26*pathway, 0, CASE_WIDTH, CASE_HEIGHT, ICONS_WIDTH, ICONS_HEIGHT);
+
+        //enabled gradient
+        if(!ClientAbilitiesData.isEnabled(caret, true)){
+//            guiGraphics.blit(ICONS, caseX + (int) (5*scale), yPos + (int)(4*scale), (int)(ICON_WIDTH*scale), (int)(ICON_HEIGHT*scale), 130, 32, ICON_WIDTH, ICON_HEIGHT, ICONS_WIDTH, ICONS_HEIGHT);
+
+            guiGraphics.fillGradient(caseX + (int) (5*scale), yPos + (int) (4*scale),
+                    (int) (caseX + (int) (5*scale) + ICON_WIDTH*scale), (int) (yPos  + (int) (4*scale) + ICON_HEIGHT*scale), 0xDD999999, 0xDD666666);
+        }
+
         //ability icon
         guiGraphics.blit(ICONS, caseX + (int) (5*scale), yPos + (int)(4*scale), (int)(ICON_WIDTH*scale), (int)(ICON_HEIGHT*scale), info.posX(), info.posY(), ICON_WIDTH, ICON_HEIGHT, ICONS_WIDTH, ICONS_HEIGHT);
         //name render
@@ -90,14 +99,9 @@ public class AbilitiesHotbarHUD {
 //                15728880, minecraft.font.isBidirectional());
 //        guiGraphics.drawString(minecraft.font, name, offset, yPos + (24*scale), 0, false);
 
-        //enabled gradient
-        if(!ClientAbilitiesData.isEnabled(caret, true)){
-            guiGraphics.fillGradient(caseX + (int) (5*scale), yPos + (int) (4*scale),
-                    (int) (caseX + (int) (5*scale) + ICON_WIDTH*scale), (int) (yPos  + (int) (4*scale) + ICON_HEIGHT*scale), 0xDD999999, 0xDD666666);
-        }
 
-        //cooldown gradient
         float percent = Mth.clamp(1 - ((float) ClientAbilitiesData.getCooldown(caret, true) / ClientAbilitiesData.getMaxCooldown(caret, true)), 0, 1);
+        //cooldown gradient
 
         guiGraphics.fillGradient(caseX + (int) (5*scale), (int) (yPos + (int) (4*scale) + (percent)*ICON_HEIGHT*scale),
                 (int) (caseX + (int) (5*scale) + ICON_WIDTH*scale), (int) (yPos + (int) (4*scale) + ICON_HEIGHT*scale), 0xDD696969, 0xDD424242);

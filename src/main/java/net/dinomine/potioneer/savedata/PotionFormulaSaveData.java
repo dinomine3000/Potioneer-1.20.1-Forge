@@ -2,6 +2,7 @@ package net.dinomine.potioneer.savedata;
 
 import net.dinomine.potioneer.config.PotioneerCommonConfig;
 import net.dinomine.potioneer.recipe.PotionCauldronRecipe;
+import net.minecraft.commands.arguments.item.ItemParser;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
@@ -39,6 +40,8 @@ public class PotionFormulaSaveData extends SavedData {
             ArrayList<ItemStack> possibleIngredients = new ArrayList<>(
                     PotioneerCommonConfig.INGREDIENTS.get()
                     .stream().map(string -> {
+
+                        //ItemStack stack = ItemParser.parseForItem(this.items, pReader);
                         CompoundTag temp = new CompoundTag();
                         temp.putString("id", string);
                         temp.putInt("Count", 1);

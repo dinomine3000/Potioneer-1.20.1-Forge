@@ -55,6 +55,11 @@ public abstract class BeyonderEffect {
         this.maxLife = ticks;
     }
 
+    private void endEffectWhenPossible(){
+        maxLife = 1;
+        lifetime = 2;
+    }
+
 
     /**
      * used for replacement purposes. will return true if this theyre the same effect but the argument is of a higher sequence

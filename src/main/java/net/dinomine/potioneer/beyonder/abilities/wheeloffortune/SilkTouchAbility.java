@@ -9,7 +9,7 @@ import net.minecraft.world.entity.LivingEntity;
 public class SilkTouchAbility extends Ability {
 
     public SilkTouchAbility(int sequence){
-        this.info = new AbilityInfo(5, 32, "Silk Touch Break", sequence, 0, getCooldown());
+        this.info = new AbilityInfo(5, 152, "Silk Touch Break", sequence, 0, getCooldown());
     }
 
     @Override

@@ -4,9 +4,11 @@ import net.dinomine.potioneer.beyonder.abilities.Ability;
 import net.dinomine.potioneer.beyonder.abilities.AbilityInfo;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
 import net.dinomine.potioneer.beyonder.player.EntityBeyonderManager;
+import net.dinomine.potioneer.menus.CrafterMenu;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundContainerSetSlotPacket;
+import net.minecraft.server.commands.GiveCommand;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
 import net.minecraft.world.MenuProvider;
@@ -41,12 +43,14 @@ public class CraftingGuiAbility extends Ability {
     @Override
     public boolean active(EntityBeyonderManager cap, LivingEntity target) {
         if(target.level().isClientSide()) return true;
-        if(cap.getSpirituality() > info.cost()){
-            NetworkHooks.openScreen((ServerPlayer) target,
-                    new SimpleMenuProvider(
-                            (i, inventory, player) ->
-                                    new CustomWorkbench(i, inventory, ContainerLevelAccess.create(player.level(), player.getOnPos()), getSequence()),
-                            Component.literal("craft men")));
+        if(cap.getSpirituality() > info.cost() && target instanceof ServerPlayer player){
+            NetworkHooks.openScreen(
+                    player,
+                    new SimpleMenuProvider((i, inventory, player1) ->
+                            new CrafterMenu(i, inventory, ContainerLevelAccess.create(player1.level(), player1.getOnPos()), getSequence()),
+                            Component.literal("craft men")),
+                    buff -> buff.writeInt(getSequence()));
+
             cap.requestActiveSpiritualityCost(info.cost());
             return true;
         }

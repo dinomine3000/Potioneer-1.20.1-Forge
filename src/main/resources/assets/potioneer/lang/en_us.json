@@ -26,6 +26,7 @@
   "item.potioneer.vial.cactus_sap": "Wandering Cactus Sap Vial",
   "item.potioneer.flask.cactus_sap": "Wandering Cactus Sap Flask",
 
+  "item.potioneer.golden_drop": "Golden Drop",
 
   "key.potioneer.beyonder_menu_key": "Beyonder Menu",
   "key.categories.potioneer": "Potioneer",
@@ -63,4 +64,5 @@
   "creativetab.potioneer_ingredients_tab": "Ingredients",
   "potioneer.gui.main_ingredients": "Main Ingredients:",
   "potioneer.gui.supplementary_ingredients": "Supplementary Ingredients:"
+
 }

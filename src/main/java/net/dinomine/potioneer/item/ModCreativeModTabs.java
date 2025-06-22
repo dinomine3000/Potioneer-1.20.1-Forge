@@ -38,6 +38,7 @@ public class ModCreativeModTabs {
                         output.accept(ModItems.VIAL.get());
                         output.accept(ModItems.FLASK.get());
                         output.accept(ModItems.FORMULA.get());
+                        output.accept(ModItems.GOLDEN_ROP.get());
                     })
                     .build());
 

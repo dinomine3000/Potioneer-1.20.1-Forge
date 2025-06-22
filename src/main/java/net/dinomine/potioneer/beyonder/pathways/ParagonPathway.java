@@ -6,6 +6,7 @@ import net.dinomine.potioneer.beyonder.abilities.mystery.*;
 import net.dinomine.potioneer.beyonder.abilities.paragon.CraftingBonusAbility;
 import net.dinomine.potioneer.beyonder.abilities.paragon.CraftingGuiAbility;
 import net.dinomine.potioneer.beyonder.abilities.paragon.DurabilityRegenAbility;
+import net.dinomine.potioneer.beyonder.abilities.paragon.FuelAbility;
 import net.dinomine.potioneer.beyonder.player.PlayerAbilitiesManager;
 import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.inventory.CraftingMenu;
@@ -14,10 +15,12 @@ import java.util.ArrayList;
 
 public class ParagonPathway extends Beyonder {
 
+    public static int[] paragonSpirituality = new int[]{0, 0, 0, 0, 1000, 1000, 1000, 1000, 500, 100};
+
     public ParagonPathway(int sequence){
         super(sequence, "Paragon");
         this.color = 0x908020;
-        this.maxSpirituality = new int[]{0, 0, 0, 0, 1000, 1000, 1000, 1000, 500, 100};
+        this.maxSpirituality = paragonSpirituality;
     }
 
     public static float[] getStatsFor(int sequence){
@@ -45,6 +48,7 @@ public class ParagonPathway extends Beyonder {
             case 8:
             case 9:
                 activeAbilities.add(new CraftingGuiAbility(sequence));
+                activeAbilities.add(new FuelAbility(sequence));
                 activeAbilities.add(new DurabilityRegenAbility(sequence));
         }
 //        CraftingBonusAbility abl = new CraftingBonusAbility(sequence);
