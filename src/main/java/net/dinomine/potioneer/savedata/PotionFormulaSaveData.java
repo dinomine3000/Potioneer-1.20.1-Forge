@@ -6,11 +6,15 @@ import net.minecraft.commands.arguments.item.ItemParser;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.saveddata.SavedData;
+import org.checkerframework.checker.units.qual.A;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Random;
 
 public class PotionFormulaSaveData extends SavedData {
     private ArrayList<PotionRecipeData> formulas = new ArrayList<>();
@@ -18,9 +22,12 @@ public class PotionFormulaSaveData extends SavedData {
     public ArrayList<PotionRecipeData> getFormulas() {
         return formulas;
     }
+    private ArrayList<ItemStack> totalIngredients = new ArrayList<>();
+
     public void setFormulas(ArrayList<PotionRecipeData> formulas) {
         this.formulas = formulas;
     }
+
 
     public void requestRefresh(boolean refresh) {
         this.refresh = refresh;
@@ -37,7 +44,7 @@ public class PotionFormulaSaveData extends SavedData {
         boolean generateRandom = PotioneerCommonConfig.RANDOM_FORMULAS.get();
 
         if(generateRandom){
-            ArrayList<ItemStack> possibleIngredients = new ArrayList<>(
+            totalIngredients = new ArrayList<>(
                     PotioneerCommonConfig.INGREDIENTS.get()
                     .stream().map(string -> {
 
@@ -82,31 +89,31 @@ public class PotionFormulaSaveData extends SavedData {
                     }
 
                     for(int idx = 0; idx < mainIngredientsNumber; idx++){
-                        int ingId = level.random.nextInt(possibleIngredients.size());
-                        if(contains(newMain, possibleIngredients.get(ingId))){
+                        int ingId = level.random.nextInt(totalIngredients.size());
+                        if(contains(newMain, totalIngredients.get(ingId))){
 //                            System.out.println("generated the same ingredient. adding on to self main.");
-                            int copyIndex = indexOf(newMain, possibleIngredients.get(ingId));
+                            int copyIndex = indexOf(newMain, totalIngredients.get(ingId));
                             newMain.set(copyIndex,
                                     newMain.get(copyIndex).copyWithCount(newMain.get(copyIndex).getCount() + 1));
                         } else {
-                            newMain.add(possibleIngredients.get(ingId).copy());
+                            newMain.add(totalIngredients.get(ingId).copy());
                         }
                     }
 
                     for(int idx = 0; idx < suppIngredientsNumber; idx++){
-                        int ingId = level.random.nextInt(possibleIngredients.size());
-                        if(contains(newSupp, possibleIngredients.get(ingId))){
+                        int ingId = level.random.nextInt(totalIngredients.size());
+                        if(contains(newSupp, totalIngredients.get(ingId))){
 //                            System.out.println("generated the same ingredient. adding on to self supp.");
-                            int copyIndex = indexOf(newSupp, possibleIngredients.get(ingId));
+                            int copyIndex = indexOf(newSupp, totalIngredients.get(ingId));
                             newSupp.set(copyIndex,
                                     newSupp.get(copyIndex).copyWithCount(newSupp.get(copyIndex).getCount() + 1));
-                        } else if(contains(newMain, possibleIngredients.get(ingId))){
+                        } else if(contains(newMain, totalIngredients.get(ingId))){
 //                            System.out.println("generated the same ingredient. adding on to main.");
-                            int copyIndex = indexOf(newMain, possibleIngredients.get(ingId));
+                            int copyIndex = indexOf(newMain, totalIngredients.get(ingId));
                             newMain.set(copyIndex,
                                     newMain.get(copyIndex).copyWithCount(newMain.get(copyIndex).getCount() + 1));
                         } else {
-                            newSupp.add(possibleIngredients.get(ingId).copy());
+                            newSupp.add(totalIngredients.get(ingId).copy());
                         }
                     }
 
@@ -163,6 +170,51 @@ public class PotionFormulaSaveData extends SavedData {
 //        }
     }
 
+    public ItemStack getRandomItemFromFormulaFor(int targetSequence){
+        for (PotionRecipeData formula : formulas) {
+            if (formula.id() == targetSequence) {
+                ArrayList<ItemStack> ingredients = new ArrayList<>(formula.supplementary());
+                ingredients.addAll(new ArrayList<>(formula.main()));
+                return ingredients.get((new Random()).nextInt(ingredients.size()));
+            }
+        }
+        return ItemStack.EMPTY;
+    }
+
+    public boolean isIngredientForSequence(ItemStack item, int sequenceId){
+        for(PotionRecipeData formula: formulas){
+            if(formula.id() == sequenceId
+                    && (contains(formula.main(), item) || contains(formula.supplementary(), item))){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public int getHighestSequenceForItem(ItemStack item){
+        boolean flag = false;
+        int bestSequence = 9;
+        for(PotionRecipeData formula: formulas){
+            if(contains(formula.main(), item) && formula.id()%10 <= bestSequence%10){
+                flag = true;
+                bestSequence = formula.id();
+            }
+        }
+        return !flag ? -1 : bestSequence;
+    }
+
+    public boolean isFormulaCorrect(PotionRecipeData data){
+        for(PotionRecipeData formula: formulas){
+            if(formula.equals(data)) return true;
+        }
+        return false;
+    }
+
+    public String getClueForIngredient(ItemStack item){
+        if(!contains(totalIngredients, item)) return "";
+        return "Insert Ingredient Clue Logic Here";
+    }
+
     private int indexOf(ArrayList<ItemStack> list, ItemStack item){
         for (int i = 0; i < list.size(); i++) {
             if(list.get(i).is(item.getItem())) return i;
@@ -170,14 +222,20 @@ public class PotionFormulaSaveData extends SavedData {
         return -1;
     }
 
-    private boolean contains(ArrayList<ItemStack> list, ItemStack item){
+    public static boolean contains(ArrayList<ItemStack> list, ItemStack item){
         for (ItemStack stack : list){
             if(stack.is(item.getItem())) return true;
         }
         return false;
     }
 
-    private boolean isContainedIn(ArrayList<ItemStack> main, ArrayList<ItemStack> list){
+    /**
+     * returns true if list contains the elements of main, each with at least that very count (per item)
+     * @param main
+     * @param list
+     * @return
+     */
+    public static boolean isContainedIn(ArrayList<ItemStack> main, ArrayList<ItemStack> list){
         for(ItemStack stack : main){
             int match = 0;
             for(ItemStack ing : list){

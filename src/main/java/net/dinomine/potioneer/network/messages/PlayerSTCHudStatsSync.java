@@ -11,6 +11,8 @@ import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.network.NetworkEvent;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.function.Supplier;
 
 //called frequently to update the client stats for the hud display
@@ -19,9 +21,9 @@ public class PlayerSTCHudStatsSync {
     public int maxSpirituality;
     public int sanity;
     public int pathwayId;
-    public ArrayList<Boolean> enabledList;
+    public Map<String, Boolean> enabledList;
 
-    public PlayerSTCHudStatsSync(float spirituality, int maxSpirituality, int sanity, int pathwayId, ArrayList<Boolean> enabled) {
+    public PlayerSTCHudStatsSync(float spirituality, int maxSpirituality, int sanity, int pathwayId, Map<String, Boolean> enabled) {
         this.spirituality = spirituality;
         this.maxSpirituality = maxSpirituality;
         this.sanity = sanity;
@@ -35,8 +37,13 @@ public class PlayerSTCHudStatsSync {
         buffer.writeInt(msg.sanity);
         buffer.writeInt(msg.pathwayId);
         buffer.writeInt(msg.enabledList.size());
-        for(boolean i : msg.enabledList){
-            buffer.writeBoolean(i);
+        for(Map.Entry<String, Boolean> entry : msg.enabledList.entrySet()){
+            String id = entry.getKey();
+            buffer.writeInt(id.length());
+            for(int i = 0; i < id.length(); i++){
+                buffer.writeChar(id.charAt(i));
+            }
+            buffer.writeBoolean(entry.getValue());
         }
     }
 
@@ -45,10 +52,15 @@ public class PlayerSTCHudStatsSync {
         int max = buffer.readInt();
         int san = buffer.readInt();
         int id = buffer.readInt();
-        ArrayList<Boolean> res = new ArrayList<>();
+        HashMap<String, Boolean> res = new HashMap<>();
         int size = buffer.readInt();
         for(int i = 0; i < size; i++){
-            res.add(buffer.readBoolean());
+            int idLen = buffer.readInt();
+            StringBuilder idBuilder = new StringBuilder();
+            for(int j = 0; j < idLen; j++){
+                idBuilder.append(buffer.readChar());
+            }
+            res.put(idBuilder.toString(), buffer.readBoolean());
         }
         return new PlayerSTCHudStatsSync(spir, max, san, id, res);
     }
@@ -87,8 +99,9 @@ class ClientHudStatsSyncMessage
 
         ClientAbilitiesData.setEnabledList(msg.enabledList);
         contextSupplier.get().getSender().getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
-            cap.getAbilitiesManager().setEnabledList(msg.enabledList);
+            cap.getAbilitiesManager().setMap(cap.getAbilitiesManager().enabledDisabled, msg.enabledList);
             cap.setSpirituality(msg.spirituality);
+            cap.setMaxSpirituality(msg.maxSpirituality);
             cap.setSanity(msg.sanity);
         });
     }

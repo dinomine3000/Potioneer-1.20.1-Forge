@@ -9,7 +9,7 @@ import net.minecraft.world.entity.LivingEntity;
 public class DummyAbility extends Ability{
 
     public DummyAbility(int sequence){
-        this.info = new AbilityInfo(48, 0, "dummy", sequence, 10, 7*20);
+        this.info = new AbilityInfo(48, 0, "dummy", sequence, 10, 7*20, "");
     }
 
     @Override

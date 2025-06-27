@@ -22,7 +22,7 @@ import java.util.function.Predicate;
 public class LeapAbility extends Ability {
 
     public LeapAbility(int sequence){
-        this.info = new AbilityInfo(57, 200, "Leap", 20 + sequence, 50, getCooldown());
+        this.info = new AbilityInfo(57, 200, "Leap", 20 + sequence, 50, getCooldown(), "leap");
         this.isActive = true;
     }
 

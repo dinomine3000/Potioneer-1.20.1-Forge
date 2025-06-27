@@ -23,13 +23,12 @@ import java.util.jar.Attributes;
 
 public class BeyonderWaterAffinityEffect extends BeyonderEffect {
 
+    public BeyonderWaterAffinityEffect(){
+        this(0, 0f, 0, false, BeyonderEffects.EFFECT.TYRANT_WATER_AFFINITY);
+    }
+
     public BeyonderWaterAffinityEffect(int level, float cost, int time, boolean active, BeyonderEffects.EFFECT id){
-        this.sequenceLevel = level;
-        this.cost = cost;
-        this.maxLife = time;
-        this.ID = id;
-        this.lifetime = 0;
-        this.active = active;
+        super(level, cost, time, active, id);
         this.name = "Tyrant Affinity";
     }
 

@@ -4,8 +4,8 @@ import net.dinomine.potioneer.Potioneer;
 import net.dinomine.potioneer.entities.ModEntities;
 import net.dinomine.potioneer.item.custom.*;
 import net.dinomine.potioneer.item.custom.BeyonderPotion.BeyonderPotionItem;
+import net.dinomine.potioneer.item.custom.coin.CoinItem;
 import net.minecraft.world.item.*;
-import net.minecraft.world.level.block.MushroomBlock;
 import net.minecraftforge.common.ForgeSpawnEggItem;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.registries.DeferredRegister;
@@ -54,7 +54,10 @@ public class ModItems {
     public static final RegistryObject<Item> BEYONDER_POTION = ITEMS.register("beyonder_potion",
             () -> new BeyonderPotionItem(new Item.Properties().stacksTo(1).fireResistant().rarity(Rarity.UNCOMMON)));
 
-    public static final RegistryObject<Item> GOLDEN_ROP = ITEMS.register("golden_drop",
+    public static final RegistryObject<Item> COIN_ITEM = ITEMS.register("coin",
+            () -> new CoinItem(new Item.Properties().stacksTo(1)));
+
+    public static final RegistryObject<Item> GOLDEN_DROP = ITEMS.register("golden_drop",
             () -> new Item(new Item.Properties().rarity(Rarity.RARE).stacksTo(16).fireResistant()));
 
     /*ublic static final RegistryObject<Item> METAL_ROD = ITEMS.register("metal_detector",

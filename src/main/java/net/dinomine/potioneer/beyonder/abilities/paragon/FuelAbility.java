@@ -2,29 +2,17 @@ package net.dinomine.potioneer.beyonder.abilities.paragon;
 
 import net.dinomine.potioneer.beyonder.abilities.Ability;
 import net.dinomine.potioneer.beyonder.abilities.AbilityInfo;
+import net.dinomine.potioneer.beyonder.misc.MysticismHelper;
 import net.dinomine.potioneer.beyonder.player.EntityBeyonderManager;
 import net.dinomine.potioneer.item.ModItems;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.protocol.game.ClientboundContainerSetSlotPacket;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.Container;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.SimpleMenuProvider;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.*;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.crafting.CraftingRecipe;
-import net.minecraft.world.item.crafting.RecipeType;
-import net.minecraft.world.level.Level;
-import net.minecraftforge.network.NetworkHooks;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.Optional;
 
 public class FuelAbility extends Ability {
     private static final Item sourceItem = Items.CAKE;
@@ -33,7 +21,8 @@ public class FuelAbility extends Ability {
     private static final Logger log = LoggerFactory.getLogger(FuelAbility.class);
 
     public FuelAbility(int sequence){
-        this.info = new AbilityInfo(109, 32, "Create Golden Drop", 40 + sequence, 0, this.getCooldown());
+        this.info = new AbilityInfo(109, 80, "Create Golden Drop", 40 + sequence, 0, this.getCooldown(), "fuel");
+        this.isActive = true;
     }
 
     @Override
@@ -43,15 +32,21 @@ public class FuelAbility extends Ability {
 
     @Override
     public boolean active(EntityBeyonderManager cap, LivingEntity target) {
+        enable(cap, target);
         float adjustedPercent = percentCost - ((float) (9 - getSequence()) / 9 * percentDelta);
-        if(target.level().isClientSide() && cap.getSpirituality() > cap.getMaxSpirituality()*adjustedPercent) return true;
+        if(target.level().isClientSide()) {
+            return cap.getSpirituality() > cap.getMaxSpirituality() * adjustedPercent;
+        }
         if(cap.getSpirituality() > cap.getMaxSpirituality()*adjustedPercent){
             if(target instanceof Player player && target.getMainHandItem().is(sourceItem)){
-                player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(ModItems.GOLDEN_ROP.get()));
+                ItemStack result = new ItemStack(ModItems.GOLDEN_DROP.get());
+                MysticismHelper.updateOrApplyMysticismTag(result, adjustedPercent * cap.getMaxSpirituality(), player);
+                player.setItemInHand(InteractionHand.MAIN_HAND, result);
                 cap.requestActiveSpiritualityCost(cap.getMaxSpirituality()*adjustedPercent);
                 return true;
             }
         }
+
         return false;
     }
 

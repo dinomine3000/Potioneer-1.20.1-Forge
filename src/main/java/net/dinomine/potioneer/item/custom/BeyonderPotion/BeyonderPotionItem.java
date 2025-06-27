@@ -126,5 +126,21 @@ public class BeyonderPotionItem extends PotionItem implements GeoItem {
 
         });
     }
-
+//
+//    @Override
+//    public InteractionResult useOn(UseOnContext pContext) {
+//        ItemStack pStack = pContext.getItemInHand();
+//        if(!pStack.hasTag()){
+//            CompoundTag tag = new CompoundTag();
+//            tag.putInt("level", 0);
+//            pStack.setTag(tag);
+//        } else {
+//            System.out.println(pStack.getTag());
+//            CompoundTag result = pStack.getTag();
+//            int level = result.getInt("level");
+//            result.putInt("level", (level+1)%(maxLevel+1));
+//            pStack.setTag(result);
+//        }
+//        return InteractionResult.SUCCESS;
+//    }
 }

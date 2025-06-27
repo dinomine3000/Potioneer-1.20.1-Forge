@@ -1,5 +1,6 @@
 package net.dinomine.potioneer.beyonder.client.HUD;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.dinomine.potioneer.Potioneer;
 import net.dinomine.potioneer.beyonder.abilities.AbilityInfo;
 import net.dinomine.potioneer.beyonder.client.ClientAbilitiesData;
@@ -25,13 +26,13 @@ public class AbilitiesHotbarHUD {
         return ClientAbilitiesData.showHotbar && ClientStatsData.getPathwayId() > -1 && !ClientAbilitiesData.getHotbar().isEmpty();
     }
 
-
     public static final IGuiOverlay ABILITY_HOTBAR = ((forgeGui, guiGraphics, partialTick, width, height) -> {
         if(minecraft.isPaused()){
             ClientAbilitiesData.showHotbar = false;
             return;
         }
-        ClientAbilitiesData.animationTick(partialTick);
+
+        ClientAbilitiesData.animationTick(4*minecraft.getDeltaFrameTime());
         if(!shouldDisplayBar()) return;
 
 
@@ -66,23 +67,21 @@ public class AbilitiesHotbarHUD {
 
     });
 
-    private static void drawAbility(GuiGraphics guiGraphics, AbilityInfo info, int caret, int xPos, int yPos, float scale){
+    public static void drawAbility(GuiGraphics guiGraphics, AbilityInfo info, int caret, int xPos, int yPos, float scale){
 
         //48 x 60 - case
         int pathway = Math.floorDiv(info.id(), 10);
         int caseX = xPos - (int) (CASE_HEIGHT * scale / 2);
         guiGraphics.blit(ICONS, caseX, yPos, (int) (CASE_WIDTH*scale), (int) (CASE_HEIGHT*scale), 26*pathway, 0, CASE_WIDTH, CASE_HEIGHT, ICONS_WIDTH, ICONS_HEIGHT);
 
-        //enabled gradient
-        if(!ClientAbilitiesData.isEnabled(caret, true)){
-//            guiGraphics.blit(ICONS, caseX + (int) (5*scale), yPos + (int)(4*scale), (int)(ICON_WIDTH*scale), (int)(ICON_HEIGHT*scale), 130, 32, ICON_WIDTH, ICON_HEIGHT, ICONS_WIDTH, ICONS_HEIGHT);
-
-            guiGraphics.fillGradient(caseX + (int) (5*scale), yPos + (int) (4*scale),
-                    (int) (caseX + (int) (5*scale) + ICON_WIDTH*scale), (int) (yPos  + (int) (4*scale) + ICON_HEIGHT*scale), 0xDD999999, 0xDD666666);
-        }
-
         //ability icon
+        if(!ClientAbilitiesData.isEnabled(caret, true)){
+            RenderSystem.setShaderColor(0.6F, 0.6F, 0.6F, 1.0F); // Greyscale tint
+        }
         guiGraphics.blit(ICONS, caseX + (int) (5*scale), yPos + (int)(4*scale), (int)(ICON_WIDTH*scale), (int)(ICON_HEIGHT*scale), info.posX(), info.posY(), ICON_WIDTH, ICON_HEIGHT, ICONS_WIDTH, ICONS_HEIGHT);
+
+        RenderSystem.setShaderColor(1F, 1F, 1F, 1F); // Reset color
+
         //name render
 //        String name = info.name();
 //        float size = 0.6f*scale;
@@ -98,6 +97,14 @@ public class AbilitiesHotbarHUD {
 //                mat, guiGraphics.bufferSource(), Font.DisplayMode.NORMAL, 0,
 //                15728880, minecraft.font.isBidirectional());
 //        guiGraphics.drawString(minecraft.font, name, offset, yPos + (24*scale), 0, false);
+
+        //disabled gradient
+        if(!ClientAbilitiesData.isEnabled(caret, true)){
+//            guiGraphics.blit(ICONS, caseX + (int) (5*scale), yPos + (int)(4*scale), (int)(ICON_WIDTH*scale), (int)(ICON_HEIGHT*scale), 130, 32, ICON_WIDTH, ICON_HEIGHT, ICONS_WIDTH, ICONS_HEIGHT);
+
+            guiGraphics.fillGradient(caseX + (int) (5*scale), yPos + (int) (4*scale),
+                    (int) (caseX + (int) (5*scale) + ICON_WIDTH*scale), (int) (yPos  + (int) (4*scale) + ICON_HEIGHT*scale), 0x99707070, 0x99404040);
+        }
 
 
         float percent = Mth.clamp(1 - ((float) ClientAbilitiesData.getCooldown(caret, true) / ClientAbilitiesData.getMaxCooldown(caret, true)), 0, 1);

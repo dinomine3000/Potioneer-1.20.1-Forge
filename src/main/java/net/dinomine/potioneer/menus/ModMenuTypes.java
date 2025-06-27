@@ -13,5 +13,7 @@ public class ModMenuTypes {
 
     public static final RegistryObject<MenuType<CrafterMenu>> CRAFTER_MENU = MENU_TYPES.register("crafter_menu",
             () -> IForgeMenuType.create(CrafterMenu::new));
+    public static final RegistryObject<MenuType<CrafterAnvilMenu>> CRAFTER_ANVIL_MENU = MENU_TYPES.register("crafter_anvil_menu",
+            () -> IForgeMenuType.create(CrafterAnvilMenu::new));
 
 }

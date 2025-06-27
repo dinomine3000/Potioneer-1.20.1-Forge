@@ -50,7 +50,7 @@ public class ModBlocks {
 
     public static final RegistryObject<Block> MINER_LIGHT = registerBlock("miner_light",
             () -> new MinerLightSourceBlock(
-                    BlockBehaviour.Properties.copy(Blocks.ACACIA_FENCE).instabreak().noCollission()
+                    BlockBehaviour.Properties.of().instabreak().noCollission()
                             .lightLevel((p_50755_) -> 14).sound(SoundType.STONE).pushReaction(PushReaction.DESTROY)));
 
     public static final RegistryObject<Block> MUTATED_MUSHROOM = registerBlock("wheat_mushroom",

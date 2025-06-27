@@ -64,7 +64,7 @@ public class FormulaItem extends Item {
         return super.useOn(pContext);
     }
 
-    public PotionRecipeData applyOrReadFormulaNbt(ItemStack stack, Level pLevel, int id, EntityBeyonderManager cap){
+    public static PotionRecipeData applyOrReadFormulaNbt(ItemStack stack, Level pLevel, int id, EntityBeyonderManager cap){
         PotionRecipeData result;
         if(stack.hasTag() && stack.getTag().get("recipe_data") != null){
             result = PotionRecipeData.load(stack.getTag().getCompound("recipe_data"));
@@ -103,13 +103,13 @@ public class FormulaItem extends Item {
         return result;
     }
 
-    private int getRandomId(Level pLevel){
+    private static int getRandomId(Level pLevel){
         int id = pLevel.random.nextInt(5)*10 + getRandomSequenceLevel(9, pLevel.random.nextDouble());
         System.out.println(id);
         return id;
     }
 
-    private double sequenceLevelFunction(int sequenceLevel){
+    private static double sequenceLevelFunction(int sequenceLevel){
         return 0.0023225*Math.pow(sequenceLevel, 2.2) + 0.003;
     }
 
@@ -119,7 +119,7 @@ public class FormulaItem extends Item {
      * @param rndNumber - random number from 0 to 1
      * @return
      */
-    private int getRandomSequenceLevel(int sequenceLevel, double rndNumber){
+    private static int getRandomSequenceLevel(int sequenceLevel, double rndNumber){
         if(sequenceLevel == 1) return 1;
         double chance = sequenceLevelFunction(sequenceLevel);
         if(rndNumber < chance) {
@@ -137,7 +137,7 @@ public class FormulaItem extends Item {
         formulaItem.setTag(finaltag);
     }
 
-    public void writeToNbt(ItemStack formulaItem, PotionRecipeData data, boolean error){
+    public static void writeToNbt(ItemStack formulaItem, PotionRecipeData data, boolean error){
         CompoundTag tag = new CompoundTag();
         data.save(tag);
         CompoundTag finaltag = new CompoundTag();

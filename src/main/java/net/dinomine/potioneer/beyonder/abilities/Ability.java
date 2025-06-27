@@ -10,7 +10,7 @@ public abstract class Ability {
     public boolean isPassive;
 //    public boolean enabled = true;
 //    protected int sequence;
-    protected AbilityInfo info = new AbilityInfo(0, 0, "default", 9, 0, 20);
+    protected AbilityInfo info = new AbilityInfo(0, 0, "default", 9, 0, 20, "");
 
     public AbilityInfo getInfo(){
         return info;

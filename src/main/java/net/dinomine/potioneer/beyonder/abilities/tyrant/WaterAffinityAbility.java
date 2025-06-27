@@ -19,7 +19,7 @@ import java.util.function.Supplier;
 public class WaterAffinityAbility extends Ability {
 
     public WaterAffinityAbility(int sequence){
-        this.info = new AbilityInfo(31, 32, "Water Affinity", 10 + sequence, 12, this.getCooldown());
+        this.info = new AbilityInfo(31, 32, "Water Affinity", 10 + sequence, 12, this.getCooldown(), "water_affinity");
     }
 
     @Override

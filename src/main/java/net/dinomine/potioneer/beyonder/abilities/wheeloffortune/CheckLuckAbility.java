@@ -11,7 +11,7 @@ import net.minecraft.world.entity.LivingEntity;
 public class CheckLuckAbility extends Ability {
 
     public CheckLuckAbility(int sequence){
-        this.info = new AbilityInfo(5, 104, "Luck Check", sequence, 0, getCooldown());
+        this.info = new AbilityInfo(5, 104, "Luck Check", sequence, 0, getCooldown(), "luck_check");
     }
 
     @Override

@@ -3,6 +3,7 @@ package net.dinomine.potioneer.beyonder.pathways;
 import net.dinomine.potioneer.beyonder.abilities.Ability;
 import net.dinomine.potioneer.beyonder.abilities.Beyonder;
 import net.dinomine.potioneer.beyonder.abilities.DummyAbility;
+import net.dinomine.potioneer.beyonder.abilities.paragon.AnvilGuiAbility;
 import net.dinomine.potioneer.beyonder.abilities.tyrant.WaterAffinityAbility;
 import net.dinomine.potioneer.beyonder.abilities.wheeloffortune.*;
 import net.dinomine.potioneer.beyonder.player.EntityBeyonderManager;
@@ -19,6 +20,14 @@ public class WheelOfFortunePathway extends Beyonder {
         super(sequence, "Wheel_of_Fortune");
         this.color = 0x808080;
         this.maxSpirituality = new int[]{0, 0, 0, 0, 0, 0, 0, 1000, 500, 100};
+    }
+
+    public static int getX(){
+        return 0;
+    }
+
+    public static int getY(){
+        return 0;
     }
 
     public static float[] getStatsFor(int sequence){
@@ -43,6 +52,7 @@ public class WheelOfFortunePathway extends Beyonder {
             case 5:
             case 6:
             case 7:
+                activeAbilities.add(new WheelBoneMealAbility(sequence));
             case 8:
                 FortuneAbility fortune = new FortuneAbility(sequence);
                 SilkTouchAbility silk = new SilkTouchAbility(sequence);

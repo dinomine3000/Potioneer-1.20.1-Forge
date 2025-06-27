@@ -128,6 +128,18 @@ public record PotionRecipeData(ArrayList<ItemStack> main, ArrayList<ItemStack> s
     }
 
     @Override
+    public boolean equals(Object obj) {
+        if(!(obj instanceof PotionRecipeData otherData)) return false;
+
+        return PotionFormulaSaveData.isContainedIn(this.main, otherData.main)
+                && PotionFormulaSaveData.isContainedIn(this.supplementary, otherData.supplementary)
+                && this.fire == otherData.fire
+                && this.waterLevel == otherData.waterLevel
+                && this.id == otherData.id;
+
+    }
+
+    @Override
     public String toString() {
         return "PotionRecipeData{" +
                 "main=" + main +

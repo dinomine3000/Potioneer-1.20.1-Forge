@@ -12,6 +12,14 @@ public class Beyonder {
         this(sequence, "Beyonderless");
     }
 
+    public static int getX(){
+        return 64;
+    }
+
+    public static int getY(){
+        return 64;
+    }
+
     public Beyonder(int sequence, String path){
         this.sequence = sequence;
         this.name = path;

@@ -100,6 +100,10 @@ public class EntityBeyonderManager {
         setSpirituality(Mth.clamp(getSpirituality()+val, 0, maxSpirituality));
     }
 
+    public void setMaxSpirituality(int maxSpirituality){
+        this.maxSpirituality = maxSpirituality;
+    }
+
     public void setSpirituality(float spirituality){
         if(spirituality < 0){
             this.spirituality = this.maxSpirituality;
@@ -269,13 +273,13 @@ public class EntityBeyonderManager {
         this.spirituality = nbt.getFloat("spirituality");
 //        System.out.println("Loading pathway id: " + nbt.getInt("pathwayId"));
         setPathway(nbt.getInt("pathwayId"), false);
+        this.luckManager.loadNBTData(nbt);
+        this.effectsManager.loadNBTData(nbt);
         this.abilitiesManager.loadNBTData(nbt, entity);
         this.abilitiesManager.onAcquireAbilities(this, entity);
         this.abilitiesManager.loadEnabledListFromTag(nbt, this, entity);
         //TODO make abilities manager actually save and load item abilities.
         //this.abilitiesManager.loadNBTData(nbt);
-        this.effectsManager.loadNBTData(nbt);
-        this.luckManager.loadNBTData(nbt);
     }
 
     public void syncSequenceData(Player player, boolean advancing){

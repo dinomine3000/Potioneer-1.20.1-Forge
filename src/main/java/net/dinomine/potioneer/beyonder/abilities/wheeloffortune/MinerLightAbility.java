@@ -13,16 +13,20 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.FenceBlock;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.ForgeMod;
 
+import static net.dinomine.potioneer.block.custom.MinerLightSourceBlock.WATERLOGGED;
+
 public class MinerLightAbility extends Ability {
 
     public MinerLightAbility(int sequence){
-        this.info = new AbilityInfo(5, 56, "Miner Light", sequence, 0, this.getCooldown());
+        this.info = new AbilityInfo(5, 56, "Miner Light", sequence, 0, this.getCooldown(), "light");
     }
 
     @Override
@@ -36,8 +40,10 @@ public class MinerLightAbility extends Ability {
                 if(!level.getBlockState(rayTrace.getBlockPos()).is(Blocks.AIR)
                     && level.getBlockState(targetPos).canBeReplaced()){
 
+                    boolean water = level.getFluidState(targetPos).getType() == Fluids.WATER;
+
                     level.setBlockAndUpdate(targetPos,
-                            ModBlocks.MINER_LIGHT.get().defaultBlockState());
+                            ModBlocks.MINER_LIGHT.get().defaultBlockState().setValue(WATERLOGGED, water));
                     cap.requestActiveSpiritualityCost(2);
                     return true;
                 }

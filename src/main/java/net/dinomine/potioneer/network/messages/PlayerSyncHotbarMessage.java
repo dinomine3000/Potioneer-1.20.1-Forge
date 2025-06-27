@@ -16,9 +16,11 @@ import java.util.function.Supplier;
 //message sent between server and client to keep the ability hotbar info between world loads
 public class PlayerSyncHotbarMessage {
     public ArrayList<Integer> hotbar;
+    public int quick;
 
-    public PlayerSyncHotbarMessage(ArrayList<Integer> hotbar){
+    public PlayerSyncHotbarMessage(ArrayList<Integer> hotbar, int quickAbility){
         this.hotbar = new ArrayList<>(hotbar);
+        this.quick = quickAbility;
     }
 
     public static void encode(PlayerSyncHotbarMessage msg, FriendlyByteBuf buffer){
@@ -26,6 +28,7 @@ public class PlayerSyncHotbarMessage {
         for(int i = 0; i < msg.hotbar.size(); i++){
             buffer.writeInt(msg.hotbar.get(i));
         }
+        buffer.writeInt(msg.quick);
     }
 
     public static PlayerSyncHotbarMessage decode(FriendlyByteBuf buffer){
@@ -34,7 +37,8 @@ public class PlayerSyncHotbarMessage {
         for(int i = 0; i < size; i++){
             hotbar.add(buffer.readInt());
         }
-        return new PlayerSyncHotbarMessage(hotbar);
+        int quick = buffer.readInt();
+        return new PlayerSyncHotbarMessage(hotbar, quick);
     }
 
     public static void handle(PlayerSyncHotbarMessage msg, Supplier<NetworkEvent.Context> contextSupplier){
@@ -48,6 +52,7 @@ public class PlayerSyncHotbarMessage {
                 Player player = context.getSender();
                 player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
                     cap.getAbilitiesManager().clientHotbar = msg.hotbar;
+                    cap.getAbilitiesManager().quickAbility = msg.quick;
                 });
             } else {
                 context.enqueueWork(() -> DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> ClientHotbarSyncMessage.handlePacket(msg, contextSupplier)));
@@ -65,5 +70,6 @@ class ClientHotbarSyncMessage
     public static void handlePacket(PlayerSyncHotbarMessage msg, Supplier<NetworkEvent.Context> contextSupplier)
     {
         ClientAbilitiesData.setHotbar(msg.hotbar);
+        ClientAbilitiesData.setQuickAbilityCaret(msg.quick);
     }
 }

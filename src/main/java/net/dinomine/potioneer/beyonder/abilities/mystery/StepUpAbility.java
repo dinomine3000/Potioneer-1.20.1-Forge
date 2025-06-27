@@ -19,7 +19,7 @@ import java.util.function.Supplier;
 public class StepUpAbility extends Ability {
 
     public StepUpAbility(int sequence){
-        this.info = new AbilityInfo(57, 152, "Step Assist", 20 + sequence, 0, this.getCooldown());
+        this.info = new AbilityInfo(57, 152, "Step Assist", 20 + sequence, 0, this.getCooldown(), "step_up");
     }
 
     @Override

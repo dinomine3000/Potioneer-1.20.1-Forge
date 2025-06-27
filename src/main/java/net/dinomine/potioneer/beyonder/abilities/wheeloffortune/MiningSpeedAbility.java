@@ -9,7 +9,7 @@ import net.minecraft.world.entity.LivingEntity;
 public class MiningSpeedAbility extends Ability {
 
     public MiningSpeedAbility(int sequence){
-        this.info = new AbilityInfo(5, 32, "Mining Speed", sequence, 0, this.getCooldown());
+        this.info = new AbilityInfo(5, 32, "Mining Speed", sequence, 0, this.getCooldown(), "mining");
     }
 
     @Override

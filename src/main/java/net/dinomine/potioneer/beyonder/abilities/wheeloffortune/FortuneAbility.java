@@ -11,7 +11,7 @@ import net.minecraft.world.entity.LivingEntity;
 public class FortuneAbility extends Ability {
 
     public FortuneAbility(int sequence){
-        this.info = new AbilityInfo(5, 176, "Fortune Break", sequence, 0, getCooldown());
+        this.info = new AbilityInfo(5, 176, "Fortune Break", sequence, 0, getCooldown(), "fortune");
     }
 
     @Override

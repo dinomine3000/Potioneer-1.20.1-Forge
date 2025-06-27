@@ -12,13 +12,12 @@ import net.minecraft.world.entity.player.Player;
 public class BeyonderInvisibilityEffect extends BeyonderEffect {
     public int combo = 0;
 
+    public BeyonderInvisibilityEffect(){
+        this(0, 0f, 0, false, BeyonderEffects.EFFECT.MYSTERY_INVIS);
+    }
+
     public BeyonderInvisibilityEffect(int level, float cost, int time, boolean active, BeyonderEffects.EFFECT id){
-        this.sequenceLevel = level;
-        this.cost = cost;
-        this.maxLife = time;
-        this.ID = id;
-        this.lifetime = 0;
-        this.active = active;
+        super(level, cost, time, active, id);
         this.name = "Mystery Invis";
     }
 

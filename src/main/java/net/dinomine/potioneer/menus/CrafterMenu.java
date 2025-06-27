@@ -1,19 +1,14 @@
 package net.dinomine.potioneer.menus;
 
 import net.dinomine.potioneer.item.ModItems;
-import net.minecraft.client.gui.screens.inventory.CraftingScreen;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.game.ClientboundContainerSetSlotPacket;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
-import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.player.StackedContents;
 import net.minecraft.world.inventory.*;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.item.crafting.CustomRecipe;
 import net.minecraft.world.item.crafting.Recipe;
@@ -23,7 +18,7 @@ import net.minecraft.world.level.Level;
 import java.util.Optional;
 
 public class CrafterMenu extends CraftingMenu {
-    private final TransientCraftingContainer fuelContainer;
+    private final ParagonFuelSlotContainer fuelContainer;
     private final int sequence;
     public boolean consumeFuel = false;
 
@@ -40,7 +35,7 @@ public class CrafterMenu extends CraftingMenu {
         super(pContainerId, pPlayerInventory, pLevelAccess);
         this.menuType = ModMenuTypes.CRAFTER_MENU.get();
 
-        fuelContainer = new TransientCraftingContainer(this, 1, 1);
+        fuelContainer = new ParagonFuelSlotContainer(this, 1, 1);
         this.addSlot(new Slot(fuelContainer, 0, 124, 60));
         this.sequence = sequence;
     }
@@ -71,7 +66,7 @@ public class CrafterMenu extends CraftingMenu {
     @Override
     public ItemStack quickMoveStack(Player pPlayer, int pIndex) {
         Slot slot = this.slots.get(pIndex);
-        if(pIndex != 46 && slot.hasItem() && slot.getItem().is(Items.CHARCOAL) && fuelContainer.canPlaceItem(0, slot.getItem())){
+        if(pIndex != 46 && slot.hasItem() && slot.getItem().is(ModItems.GOLDEN_DROP.get()) && fuelContainer.canPlaceItem(0, slot.getItem())){
             ItemStack item = slot.getItem();
             if(this.moveItemStackTo(item, 46, 47, true)){
                 return ItemStack.EMPTY;
@@ -79,49 +74,7 @@ public class CrafterMenu extends CraftingMenu {
         }
 
 
-        ItemStack $$2 = ItemStack.EMPTY;
-        Slot $$3 = (Slot)this.slots.get(pIndex);
-        if ($$3 != null && $$3.hasItem()) {
-            ItemStack $$4 = $$3.getItem();
-            $$2 = $$4.copy();
-            if (pIndex == 0) {
-                this.access.execute((p_39378_, p_39379_) -> $$4.getItem().onCraftedBy($$4, p_39378_, pPlayer));
-                if (!this.moveItemStackTo($$4, 10, 46, true)) {
-                    return ItemStack.EMPTY;
-                }
-
-                $$3.onQuickCraft($$4, $$2);
-            } else if (pIndex >= 10 && pIndex < 46) {
-                if (!this.moveItemStackTo($$4, 1, 10, false)) {
-                    if (pIndex < 37) {
-                        if (!this.moveItemStackTo($$4, 37, 46, false)) {
-                            return ItemStack.EMPTY;
-                        }
-                    } else if (!this.moveItemStackTo($$4, 10, 37, false)) {
-                        return ItemStack.EMPTY;
-                    }
-                }
-            } else if (!this.moveItemStackTo($$4, 10, 46, false)) {
-                return ItemStack.EMPTY;
-            }
-
-            if ($$4.isEmpty()) {
-                $$3.setByPlayer(ItemStack.EMPTY);
-            } else {
-                $$3.setChanged();
-            }
-
-            if ($$4.getCount() == $$2.getCount()) {
-                return ItemStack.EMPTY;
-            }
-
-            $$3.onTake(pPlayer, $$4);
-            if (pIndex == 0) {
-                pPlayer.drop($$4, false);
-            }
-        }
-
-        return $$2;
+        return super.quickMoveStack(pPlayer, pIndex);
 
     }
 
@@ -144,7 +97,7 @@ public class CrafterMenu extends CraftingMenu {
                     if (assembledItem.isItemEnabled(pLevel.enabledFeatures())) {
                         result = assembledItem;
 
-                        if(fuelContainer.getItem(0).is(ModItems.GOLDEN_ROP.get()) && !(recipe.get() instanceof CustomRecipe)){
+                        if(fuelContainer.getItem(0).is(ModItems.GOLDEN_DROP.get()) && !(recipe.get() instanceof CustomRecipe)){
                             int count = (int)Math.round(result.getCount()*(1+(10-pMenu.sequence)*0.4)-0.5f);
                             pMenu.consumeFuel = count != result.getCount();
                             result.setCount(count);

@@ -3,6 +3,7 @@ package net.dinomine.potioneer.beyonder.pathways;
 import net.dinomine.potioneer.beyonder.abilities.Ability;
 import net.dinomine.potioneer.beyonder.abilities.Beyonder;
 import net.dinomine.potioneer.beyonder.abilities.redpriest.WeaponProficiencyAbility;
+import net.dinomine.potioneer.beyonder.abilities.tyrant.DivinationAbility;
 import net.dinomine.potioneer.beyonder.abilities.tyrant.WaterAffinityAbility;
 import net.dinomine.potioneer.beyonder.player.EntityBeyonderManager;
 import net.dinomine.potioneer.beyonder.player.PlayerAbilitiesManager;
@@ -17,6 +18,14 @@ public class TyrantPathway extends Beyonder {
         this.color = 0x404080;
         this.maxSpirituality = new int[]{0, 0, 0, 0, 0, 0, 0, 750, 250, 100};
 
+    }
+
+    public static int getX(){
+        return 64;
+    }
+
+    public static int getY(){
+        return 0;
     }
 
     public static float[] getStatsFor(int sequence){
@@ -45,6 +54,8 @@ public class TyrantPathway extends Beyonder {
             case 9:
                 WaterAffinityAbility water = new WaterAffinityAbility(sequence);
                 activeAbilities.add(water);
+                activeAbilities.add(new DivinationAbility(sequence));
+
                 passiveAbilities.add(water);
         }
 

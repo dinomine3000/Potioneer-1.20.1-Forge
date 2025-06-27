@@ -1,7 +1,6 @@
 package net.dinomine.potioneer.datagen;
 
 import net.dinomine.potioneer.Potioneer;
-import net.dinomine.potioneer.block.ModBlocks;
 import net.dinomine.potioneer.item.ModItems;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceKey;
@@ -46,7 +45,7 @@ public class ModItemModelProvider extends ItemModelProvider {
         simpleItem(ModItems.PECAN_SHELL);
         simpleItem(ModItems.PECAN_LEAF);
         simpleItem(ModItems.SOLSEER);
-        simpleItem(ModItems.GOLDEN_ROP);
+        simpleItem(ModItems.GOLDEN_DROP);
         simpleItem(ModItems.WANDERING_CACTUS_PRICK);
         simpleItem(ModItems.FORMULA);
         handheldItem(ModItems.MINER_PICKAXE);

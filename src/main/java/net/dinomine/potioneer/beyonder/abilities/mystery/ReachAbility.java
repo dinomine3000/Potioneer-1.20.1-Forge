@@ -26,7 +26,7 @@ import java.util.function.Supplier;
 public class ReachAbility extends Ability {
 
     public ReachAbility(int sequence){
-        this.info = new AbilityInfo(57, 104, "Extended reach", 20 + sequence, 0, getCooldown());
+        this.info = new AbilityInfo(57, 104, "Extended reach", 20 + sequence, 0, getCooldown(), "reach");
     }
 
     @Override

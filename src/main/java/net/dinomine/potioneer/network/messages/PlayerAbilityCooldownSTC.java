@@ -14,27 +14,34 @@ import java.util.function.Supplier;
 
 //used to sync ability cooldowns from server to client
 public class PlayerAbilityCooldownSTC {
-    public int caret;
+    public String descId;
     public int cd;
     public int maxCd;
 
-    public PlayerAbilityCooldownSTC(int caret, int cd, int maxCd){
+    public PlayerAbilityCooldownSTC(String descId, int cd, int maxCd){
         this.cd = cd;
-        this.caret = caret;
+        this.descId = descId;
         this.maxCd = maxCd;
     }
 
     public static void encode(PlayerAbilityCooldownSTC msg, FriendlyByteBuf buffer){
-        buffer.writeInt(msg.caret);
         buffer.writeInt(msg.cd);
         buffer.writeInt(msg.maxCd);
+        buffer.writeInt(msg.descId.length());
+        for (int i = 0; i < msg.descId.length(); i++) {
+            buffer.writeChar(msg.descId.charAt(i));
+        }
     }
 
     public static PlayerAbilityCooldownSTC decode(FriendlyByteBuf buffer){
-        int caret = buffer.readInt();
         int cd = buffer.readInt();
         int maxCd = buffer.readInt();
-        return new PlayerAbilityCooldownSTC(caret, cd, maxCd);
+        int idSize = buffer.readInt();
+        StringBuilder idBuilder = new StringBuilder();
+        for (int i = 0; i < idSize; i++) {
+            idBuilder.append(buffer.readChar());
+        }
+        return new PlayerAbilityCooldownSTC(idBuilder.toString(), cd, maxCd);
     }
 
     public static void handle(PlayerAbilityCooldownSTC msg, Supplier<NetworkEvent.Context> contextSupplier){
@@ -60,7 +67,7 @@ class ClientAbilityCooldownSTC
     public static void handlePacket(PlayerAbilityCooldownSTC msg, Supplier<NetworkEvent.Context> contextSupplier)
     {
 //                ClientAbilitiesData.setAbilities(msg.list.stream().map(Ability::getInfo).toList());
-        ClientAbilitiesData.setCooldown(msg.caret, msg.cd, msg.maxCd);
+        ClientAbilitiesData.setCooldown(msg.descId, msg.cd, msg.maxCd);
     }
 
 }

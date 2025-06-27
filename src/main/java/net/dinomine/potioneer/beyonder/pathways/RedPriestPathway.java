@@ -22,6 +22,14 @@ public class RedPriestPathway extends Beyonder {
         this.maxSpirituality = new int[]{0, 0, 0, 0, 1000, 1000, 1000, 1000, 500, 100};
     }
 
+    public static int getX(){
+        return 192;
+    }
+
+    public static int getY(){
+        return 0;
+    }
+
     public static float[] getStatsFor(int sequence){
         return switch (sequence){
             case 9 -> new float[]{5, 1, 0, 0, 1};

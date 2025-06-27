@@ -14,6 +14,23 @@ public abstract class BeyonderEffect {
 
     protected boolean active;
 
+    public BeyonderEffect(int sequence, float cost, int time, boolean active, BeyonderEffects.EFFECT id) {
+        this.lifetime = 0;
+        this.sequenceLevel = sequence;
+        this.cost = cost;
+        this.maxLife = time;
+        this.active = active;
+        this.ID = id;
+    }
+
+    public BeyonderEffect withParams(int sequence, float cost, int time, boolean active) {
+        this.sequenceLevel = sequence;
+        this.cost = cost;
+        this.maxLife = time;
+        this.active = active;
+        return this;
+    }
+
     public int getSequenceLevel() {
         return sequenceLevel;
     }
@@ -98,6 +115,11 @@ public abstract class BeyonderEffect {
     }
 
 
+    /**
+     * called anytime the effect is added to a player (including when he loads into the world)
+     * @param cap
+     * @param target
+     */
     public abstract void onAcquire(EntityBeyonderManager cap, LivingEntity target);
     protected abstract void doTick(EntityBeyonderManager cap, LivingEntity target);
     public abstract void stopEffects(EntityBeyonderManager cap, LivingEntity target);

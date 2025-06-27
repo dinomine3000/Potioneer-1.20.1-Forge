@@ -6,10 +6,10 @@ import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
 import net.dinomine.potioneer.beyonder.player.EntityBeyonderManager;
 import net.minecraft.world.entity.LivingEntity;
 
-public class CraftingBonusAbility extends Ability {
+public class CraftingSpiritualityAbility extends Ability {
 
-    public CraftingBonusAbility(int sequence){
-        this.info = new AbilityInfo(109, 56, "Crafting Bonus", 40 + sequence, 0, this.getCooldown());
+    public CraftingSpiritualityAbility(int sequence){
+        this.info = new AbilityInfo(109, 32, "Crafting Spirituality", 40 + sequence, 0, this.getCooldown(), "craft");
     }
 
     @Override
@@ -26,8 +26,8 @@ public class CraftingBonusAbility extends Ability {
 
     @Override
     public void passive(EntityBeyonderManager cap, LivingEntity target) {
-        if(isEnabled(cap.getAbilitiesManager()) && !cap.getEffectsManager().hasEffect(BeyonderEffects.EFFECT.PARAGON_CRAFTING_BONUS, getSequence())){
-            cap.getEffectsManager().addEffect(BeyonderEffects.byId(BeyonderEffects.EFFECT.PARAGON_CRAFTING_BONUS,
+        if(!cap.getEffectsManager().hasEffect(BeyonderEffects.EFFECT.PARAGON_CRAFTING_SPIRITUALITY, getSequence())){
+            cap.getEffectsManager().addEffect(BeyonderEffects.byId(BeyonderEffects.EFFECT.PARAGON_CRAFTING_SPIRITUALITY,
                     getSequence(), 0, -1, true), cap, target);
         }
 
@@ -40,8 +40,9 @@ public class CraftingBonusAbility extends Ability {
 
     @Override
     public void deactivate(EntityBeyonderManager cap, LivingEntity target) {
-        if(cap.getEffectsManager().hasEffect(BeyonderEffects.EFFECT.PARAGON_CRAFTING_BONUS, getSequence())){
-            cap.getEffectsManager().removeEffect(BeyonderEffects.EFFECT.PARAGON_CRAFTING_BONUS, getSequence(), cap, target);
+        if(cap.getEffectsManager().hasEffect(BeyonderEffects.EFFECT.PARAGON_CRAFTING_SPIRITUALITY, getSequence())){
+//            System.out.println("taketh away");
+            cap.getEffectsManager().removeEffect(BeyonderEffects.EFFECT.PARAGON_CRAFTING_SPIRITUALITY, getSequence(), cap, target);
         }
     }
 }

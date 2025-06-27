@@ -12,6 +12,7 @@ import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.LoomScreen;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.FormattedText;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
@@ -24,12 +25,27 @@ import static net.dinomine.potioneer.beyonder.client.HUD.AbilitiesHotbarHUD.*;
 
 public class BeyonderAbilitiesScreen extends Screen {
     private static final Component TITLE = Component.translatable("gui." + Potioneer.MOD_ID + ".beyonder_menu");
-    private static final ResourceLocation TEXTURE = new ResourceLocation(Potioneer.MOD_ID, "textures/gui/ability_gui_dino.png");
+    private static final ResourceLocation TEXTURE = new ResourceLocation(Potioneer.MOD_ID, "textures/gui/ability_gui.png");
     private static final ResourceLocation ABILITY_ICONS = new ResourceLocation(Potioneer.MOD_ID, "textures/gui/ability_icon_atlas.png");
 
     private final int imageWidth, imageHeight;
     private final int TEXTURE_WIDTH, TEXTURE_HEIGHT;
     private int leftPos, topPos;
+
+    private final int abilityDescLength = 100;
+    private int abilityDescLeft;
+    private int abilityDescTop;
+
+    private int abilityListTop;
+    private int abilityListLeft;
+    private int abilityEntryHeight = 14;
+
+    private int scrollLeft;
+    private int scrollTop;
+
+    private int hotbarButtonSide = 9;
+    private int hotbarButtonRight;
+    private int hotbarButtonBottom;
 
     private boolean beyonder;
     private int selectedCaret;
@@ -41,6 +57,9 @@ public class BeyonderAbilitiesScreen extends Screen {
 
     private Button addToHotbarButton;
     private Button removeFromHotbarButton;
+    private Button addToQuickSelectButton;
+    private Button removeFromQuickSelectButton;
+    private Button goToMainMenuButton;
 
     public BeyonderAbilitiesScreen() {
         super(TITLE);
@@ -68,6 +87,15 @@ public class BeyonderAbilitiesScreen extends Screen {
 
         this.leftPos = (this.width - this.imageWidth) / 2;
         this.topPos = (this.height- this.imageHeight) / 2;
+        this.abilityDescLeft = leftPos + 61;
+        this.abilityDescTop = topPos + 20;
+        this.abilityListTop = topPos + 74;
+        this.abilityListLeft = leftPos + 6;
+        this.scrollLeft = this.leftPos + 158;
+        this.scrollTop = this.topPos + 74;
+        this.hotbarButtonBottom = this.topPos + 69;
+        this.hotbarButtonRight = this.leftPos + 163;
+
         abilities = new ArrayList<>(ClientAbilitiesData.getAbilities());
         beyonder = !abilities.isEmpty();
         Collections.reverse(abilities);
@@ -82,16 +110,34 @@ public class BeyonderAbilitiesScreen extends Screen {
             });
             addRenderableWidget(castAbilityButton);
 
-            addToHotbarButton = new ImageButton(leftPos + 145, topPos + 50, 18, 18,
-                    176, 105, 18, TEXTURE, TEXTURE_WIDTH, TEXTURE_HEIGHT, btn -> {addAbilityToHotbar();});
+            addToHotbarButton = new ImageButton(hotbarButtonRight - hotbarButtonSide, hotbarButtonBottom - hotbarButtonSide, hotbarButtonSide, hotbarButtonSide,
+                    176, 105, hotbarButtonSide, TEXTURE, TEXTURE_WIDTH, TEXTURE_HEIGHT, btn -> {addAbilityToHotbar();});
             addToHotbarButton.setTooltip(Tooltip.create(Component.literal("Add to hotbar")));
-            removeFromHotbarButton = new ImageButton(leftPos + 145, topPos + 50, 18, 18,
-                    194, 105, 18, TEXTURE, TEXTURE_WIDTH, TEXTURE_HEIGHT, btn -> {addAbilityToHotbar();});
+            removeFromHotbarButton = new ImageButton(hotbarButtonRight - hotbarButtonSide, hotbarButtonBottom - hotbarButtonSide, hotbarButtonSide, hotbarButtonSide,
+                    176 + hotbarButtonSide, 105, hotbarButtonSide, TEXTURE, TEXTURE_WIDTH, TEXTURE_HEIGHT, btn -> {addAbilityToHotbar();});
             removeFromHotbarButton.setTooltip(Tooltip.create(Component.literal("Remove from hotbar")));
+
+            addToQuickSelectButton = new ImageButton(leftPos + 176, topPos + 26, 11, 13,
+                    176, 123, 13, TEXTURE, TEXTURE_WIDTH, TEXTURE_HEIGHT, btn -> {addAbilityToQuickSelect();});
+            addToQuickSelectButton.setTooltip(Tooltip.create(Component.literal("Set ability as quick select")));
+            removeFromQuickSelectButton = new ImageButton(leftPos + 176, topPos + 26, 11, 13,
+                    187, 123, 13, TEXTURE, TEXTURE_WIDTH, TEXTURE_HEIGHT, btn -> {addAbilityToQuickSelect();});
+            removeFromQuickSelectButton.setTooltip(Tooltip.create(Component.literal("Remove ability from quick select")));
+
+            goToMainMenuButton = new ImageButton(leftPos + 4, topPos + 165, 43, 18,
+                    163, 208, 0, TEXTURE, TEXTURE_WIDTH, TEXTURE_HEIGHT, btn -> {goToMainMenu();});
+
             addRenderableWidget(addToHotbarButton);
             addRenderableWidget(removeFromHotbarButton);
+            addRenderableWidget(addToQuickSelectButton);
+            addRenderableWidget(removeFromQuickSelectButton);
+            addRenderableWidget(goToMainMenuButton);
             updateHotbarButton();
         }
+    }
+
+    private void goToMainMenu(){
+        Minecraft.getInstance().setScreen(new BeyonderScreen());
     }
 
     @Override
@@ -105,19 +151,31 @@ public class BeyonderAbilitiesScreen extends Screen {
         super.render(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
 
         if(beyonder){
-            drawAbilityIcon(pGuiGraphics, leftPos + 19, topPos + 18, 1.5f, selectedCaret, true);
+            drawAbilityIcon(pGuiGraphics, leftPos + 19, topPos + 18, 1.5f, selectedCaret, true, pMouseX, pMouseY);
             renderExtraButtonItems(pGuiGraphics);
         }
-        drawScroll(pGuiGraphics, leftPos + 158, topPos + 73);
+        drawScroll(pGuiGraphics, scrollLeft, scrollTop);
     }
 
     private void createButtons(int i){
-        ImageButton btn = new ImageButton(leftPos + 6, topPos + 74 + i*14, 151, 14, 14, 183,
-                14, TEXTURE, TEXTURE_WIDTH, TEXTURE_HEIGHT, hbut -> {
+        ImageButton btn = new ImageButton(abilityListLeft, abilityListTop + i*abilityEntryHeight, 151, abilityEntryHeight, 14, 183,
+                abilityEntryHeight, TEXTURE, TEXTURE_WIDTH, TEXTURE_HEIGHT, hbut -> {
             changeCaret(i);
         });
         addRenderableWidget(btn);
         buttons.add(btn);
+    }
+
+    private void addAbilityToQuickSelect(){
+        int caretToAdd = abilities.size() - 1 - selectedCaret;
+        if(ClientAbilitiesData.getQuickAbilityCaret() == caretToAdd){
+            ClientAbilitiesData.setQuickAbilityCaret(-1);
+        } else {
+            ClientAbilitiesData.setQuickAbilityCaret(caretToAdd);
+        }
+        updateHotbarButton();
+        ClientAbilitiesData.setHotbarChanged();
+
     }
 
     private void addAbilityToHotbar(){
@@ -145,6 +203,18 @@ public class BeyonderAbilitiesScreen extends Screen {
             removeFromHotbarButton.active = true;
             removeFromHotbarButton.visible = true;
         }
+
+        if(ClientAbilitiesData.getQuickAbilityCaret() == abilityCaret){
+            addToQuickSelectButton.active = false;
+            addToQuickSelectButton.visible = false;
+            removeFromQuickSelectButton.active = true;
+            removeFromQuickSelectButton.visible = true;
+        } else {
+            addToQuickSelectButton.active = true;
+            addToQuickSelectButton.visible = true;
+            removeFromQuickSelectButton.active = false;
+            removeFromQuickSelectButton.visible = false;
+        }
     }
 
     private void castAbilityAt(){
@@ -163,17 +233,20 @@ public class BeyonderAbilitiesScreen extends Screen {
     }
 
     private void drawAbilityIcon(GuiGraphics pGuiGraphics, int posX, int posY, float scale, int abilityIndex, boolean main){
+        drawAbilityIcon(pGuiGraphics, posX, posY, scale, abilityIndex, main, 0, 0);
+    }
+    private void drawAbilityIcon(GuiGraphics pGuiGraphics, int posX, int posY, float scale, int abilityIndex, boolean main, int mouseX, int mouseY){
         AbilityInfo data = abilities.get(abilityIndex);
+        int caret = abilities.size() - 1 - abilityIndex;
 
         //name title
         if(main){
             Component name = Component.literal(data.name());
-            pGuiGraphics.drawString(this.font, name, leftPos + 20 + imageWidth/2 - this.font.width(name)/2, topPos + 5, 0, false);
+            pGuiGraphics.drawString(this.font, name, leftPos + 24 + imageWidth/2 - this.font.width(name)/2, topPos + 9, 0, false);
         }
 
         //cooldown gradient
         if(main){
-            int caret = abilities.size() - 1 - abilityIndex;
             float percent = Mth.clamp(1 - ((float) ClientAbilitiesData.getCooldown(caret, false) / ClientAbilitiesData.getMaxCooldown(caret, false)),
                     0, 1);
 
@@ -185,10 +258,14 @@ public class BeyonderAbilitiesScreen extends Screen {
         pGuiGraphics.blit(ABILITY_ICONS, posX, posY, (int) (scale * ICON_WIDTH), (int)(scale * ICON_HEIGHT),
                 data.posX(), data.posY(), ICON_WIDTH, ICON_HEIGHT, ICONS_WIDTH, ICONS_HEIGHT);
 
+        if(!main && ClientAbilitiesData.getQuickAbilityCaret() == caret){
+            pGuiGraphics.blit(TEXTURE, posX + 130, posY, 12, 12,
+                    176, 149, 16, 16, TEXTURE_WIDTH, TEXTURE_HEIGHT);
+        }
+
         //enabled gradient
         if(main){
             //enabled gradient
-            int caret = abilities.size() - 1 - abilityIndex;
             if(!ClientAbilitiesData.isEnabled(caret, false)){
                 pGuiGraphics.fillGradient(posX - 7, posY -5,
                         (int) (posX + 7 + scale*ICON_WIDTH), (int) (posY + 5 + ICON_HEIGHT*scale), 0xDD999999, 0xDD666666);
@@ -199,7 +276,23 @@ public class BeyonderAbilitiesScreen extends Screen {
                 pGuiGraphics.blit(ABILITY_ICONS, posX, posY,
                         (int)(ICON_WIDTH*scale), (int)(ICON_HEIGHT*scale), 130, 4, ICON_WIDTH, ICON_HEIGHT, ICONS_WIDTH, ICONS_HEIGHT);
             }
+
+            //description text
+            Component short_description = Component.translatable("potioneer.short_desc." + data.descId());
+            pGuiGraphics.drawWordWrap(this.font, FormattedText.of(short_description.getString()), abilityDescLeft, abilityDescTop, abilityDescLength, 0);
+
+            //tooltip with longer text
+            if(     //If mouse within big square
+                    (mouseX > leftPos + 59 && mouseX < leftPos + 163
+                    && mouseY > topPos + 16 && mouseY < topPos + 68)
+            &&      //if mouse NOT hovering over button
+                    !(mouseX >= hotbarButtonRight - hotbarButtonSide && mouseX < hotbarButtonRight
+                    && mouseY >= hotbarButtonBottom - hotbarButtonSide && mouseY < hotbarButtonBottom)
+            ){
+                pGuiGraphics.renderTooltip(this.font, Component.translatable("potioneer.long_desc." + data.descId()), mouseX, mouseY);
+            }
         }
+
     }
 
     private void renderExtraButtonItems(GuiGraphics pGuiGraphics){
@@ -216,7 +309,7 @@ public class BeyonderAbilitiesScreen extends Screen {
     private void drawScroll(GuiGraphics pGuiGraphics, int posX, int posY){
         int size = abilities.size();
         float percent = size > 6 ? (float) buttonOffset / (size - 6) : 0;
-        pGuiGraphics.blit(TEXTURE, posX, (int)(posY + percent*71), 12, 15,
+        pGuiGraphics.blit(TEXTURE, posX, (int)(posY + percent*69), 12, 15,
                 size > 6 ? 0 : 12, 211, 12, 15, TEXTURE_WIDTH, TEXTURE_HEIGHT);
     }
 

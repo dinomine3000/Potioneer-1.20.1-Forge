@@ -39,7 +39,8 @@ public class SequenceSTCSyncRequest {
                     PacketHandler.INSTANCE.send(PacketDistributor.PLAYER.with(() -> player),
                             new PlayerAbilityInfoSyncSTC(cap.getAbilitiesManager().getPathwayActives().stream().map(Ability::getInfo).toList(), false));
                     PacketHandler.INSTANCE.send(PacketDistributor.PLAYER.with(() -> player),
-                            new PlayerSyncHotbarMessage(cap.getAbilitiesManager().clientHotbar));
+                            new PlayerSyncHotbarMessage(cap.getAbilitiesManager().clientHotbar, cap.getAbilitiesManager().quickAbility));
+                    cap.getAbilitiesManager().updateClientCooldownInfo(player);
                 }
             });
         });

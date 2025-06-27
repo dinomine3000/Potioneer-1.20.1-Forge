@@ -10,7 +10,7 @@ import net.minecraft.world.phys.Vec3;
 public class SpiritualityRegenAbility extends Ability {
 
     public SpiritualityRegenAbility(int sequence){
-        this.info = new AbilityInfo(57, 32, "Regen on Damage", 20 + sequence, 0, this.getCooldown());
+        this.info = new AbilityInfo(57, 32, "Regen on Damage", 20 + sequence, 0, this.getCooldown(), "spirituality_regen");
     }
 
     @Override

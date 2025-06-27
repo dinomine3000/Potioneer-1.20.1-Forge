@@ -4,8 +4,31 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.Arrays;
+import java.util.List;
 
 public class PotioneerMathHelper {
+
+    public static class ProbabilityHelper{
+        public static float bayes(float likelihood, float prior, float evidence){
+            return likelihood * prior / evidence;
+        }
+
+        public static int pickRandom(List<Float> probabilities, float chance) {
+            double cumulative = 0.0;
+
+            for (int i = 0; i < probabilities.size(); i++) {
+                cumulative += probabilities.get(i);
+                if (chance < cumulative) {
+                    return i;
+                }
+            }
+
+            System.out.println("Warning: Provided probabilities do not add up to 1. returning the last probability");
+            // Fallback (shouldn't happen if probs sum to 1.0)
+            return probabilities.size() - 1;
+        }
+
+    }
 
     public static class MatrixHelper{
         public static final float[][] transformMatrix90 = new float[][]{

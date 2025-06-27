@@ -15,7 +15,9 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @OnlyIn(Dist.CLIENT)
 public class ClientAbilitiesData {
@@ -45,9 +47,17 @@ public class ClientAbilitiesData {
         caret = Mth.clamp(caret, 0, hotbar.size() - 1);
     }
 
-    public static void setCooldown(int caret, int cd, int maxCd){
-        cooldowns.set(caret, cd);
-        abilities.set(caret, abilities.get(caret).copy(maxCd));
+    public static int getCaretForAbility(String abilityId){
+        for (int i = 0; i < abilities.size(); i++) {
+            if(abilities.get(i).descId().equalsIgnoreCase(abilityId)) return i;
+        }
+        return -1;
+    }
+
+    public static void setCooldown(String abilityId, int cd, int maxCd){
+        cooldowns.put(abilityId, cd);
+        int idx = getCaretForAbility(abilityId);
+        abilities.set(idx, abilities.get(idx).copy(maxCd));
     }
 
     public static void setAbilities(List<AbilityInfo> abilities2, boolean changingPath) {
@@ -58,9 +68,10 @@ public class ClientAbilitiesData {
         if(!abilities.isEmpty()) diff = abilities2.size() - abilities.size();
         abilities = new ArrayList<>(abilities2);
         if(changingPath) hotbar = new ArrayList<>();
-        cooldowns = new ArrayList<>();
-        for(int i = 0; i < abilities.size(); i++){
-            cooldowns.add(0);
+        if(changingPath) quickSelect = -1;
+        cooldowns = new HashMap<>();
+        for (AbilityInfo ability : abilities) {
+            cooldowns.put(ability.descId(), 0);
         }
         if(!hotbar.isEmpty()){
             for(int i = hotbar.size() - 1; i > -1; i--){
@@ -74,8 +85,16 @@ public class ClientAbilitiesData {
         setHotbarChanged();
     }
 
-    public static void setEnabledList(ArrayList<Boolean> list){
-        enabledList = list;
+    public static void setEnabledList(Map<String, Boolean> map){
+        enabledList = map;
+    }
+
+    public static int getQuickAbilityCaret(){
+        return quickSelect;
+    }
+
+    public static void setQuickAbilityCaret(int caret){
+        quickSelect = caret;
     }
 
     public static ArrayList<Integer> getHotbar() {
@@ -90,16 +109,18 @@ public class ClientAbilitiesData {
     }
 
     public static void tick(float dt){
-        time += dt;
-        if(time > 1){
-            for(int i = 0; i < cooldowns.size(); i++){
-                if(cooldowns.get(i) > 0) cooldowns.set(i, cooldowns.get(i)-1);
-            }
-            time = 0;
-        }
         scaleAnimationTime += dt;
         if(scaleAnimationTime > 5){
             scaleAnimationTime = -5;
+        }
+        if(Minecraft.getInstance().isSingleplayer() && Minecraft.getInstance().isPaused()) return;
+
+        time += dt;
+        if(time > 1){
+            for(AbilityInfo ability: abilities){
+                if(cooldowns.get(ability.descId()) > 0) cooldowns.put(ability.descId(), cooldowns.get(ability.descId())-1);
+            }
+            time = 0;
         }
     }
 
@@ -109,9 +130,11 @@ public class ClientAbilitiesData {
 
     public static int getCooldown(int pos, boolean readInHotbar){
         if(readInHotbar){
-            return cooldowns.get(hotbar.get(Math.floorMod(pos, hotbar.size())));
+            int ablIdx = hotbar.get(Math.floorMod(pos, hotbar.size()));
+            return cooldowns.get(abilities.get(ablIdx).descId());
         } else {
-            return cooldowns.get(Math.floorMod(pos, cooldowns.size()));
+            int ablIdx = Math.floorMod(pos, cooldowns.size());
+            return cooldowns.get(abilities.get(ablIdx).descId());
         }
     }
 
@@ -129,7 +152,7 @@ public class ClientAbilitiesData {
         } else {
             caret = 0;
         }
-        PacketHandler.INSTANCE.sendToServer(new PlayerSyncHotbarMessage(getHotbar()));
+        PacketHandler.INSTANCE.sendToServer(new PlayerSyncHotbarMessage(getHotbar(), getQuickAbilityCaret()));
 //        Minecraft.getInstance().player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
 //            cap.getAbilitiesManager().clientHotbar = new ArrayList<>(hotbar);
 //        });
@@ -155,9 +178,10 @@ public class ClientAbilitiesData {
     private static float time = 0;
     public static float scaleAnimationTime = 0;
     private static ArrayList<AbilityInfo> abilities = new ArrayList<>();
-    private static ArrayList<Integer> cooldowns = new ArrayList<>(0);
-    private static ArrayList<Boolean> enabledList = new ArrayList<>(0);
+    private static Map<String, Integer> cooldowns = new HashMap<>(0);
+    private static Map<String, Boolean> enabledList = new HashMap<>(0);
     private static ArrayList<Integer> hotbar;
+    private static int quickSelect = -1;
     private static int caret = 0;
     public static boolean showHotbar = false;
 
@@ -187,15 +211,21 @@ public class ClientAbilitiesData {
             System.out.println("enabled list is empty");
             return false;
         }
+        int ablIdx;
         if(readInHotbar){
-            return enabledList.get(hotbar.get(Math.floorMod(pos, hotbar.size())));
+            ablIdx = hotbar.get(Math.floorMod(pos, hotbar.size()));
         } else {
-            return enabledList.get(Math.floorMod(pos, enabledList.size()));
+            ablIdx = Math.floorMod(pos, enabledList.size());
         }
+        return enabledList.get(abilities.get(ablIdx).descId());
     }
 
     public static boolean hasAbilities(){
         return !abilities.isEmpty();
+    }
+
+    public static boolean useQuickAbility(Player player){
+        return useAbility(player, quickSelect == -1 ? caret : quickSelect, quickSelect == -1);
     }
 
     public static boolean useAbility(Player player){
@@ -208,14 +238,14 @@ public class ClientAbilitiesData {
             if(hotbar.isEmpty()) return false;
             newCaret = hotbar.get(newCaret);
         }
-        if(cooldowns.get(newCaret) == 0){
+        if(cooldowns.get(abilities.get(newCaret).descId()) == 0){
             if(ClientStatsData.getPlayerSpirituality() >= abilities.get(newCaret).cost()){
                 int position = newCaret;
                 player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
 //                    System.out.println(caret);
 //                    ClientStatsData.setSpirituality(ClientStatsData.getPlayerSpirituality() - abilities.get(caret).cost());
                     cap.getAbilitiesManager().useAbility(cap, player, position);
-                    enabledList.set(position, false);
+                    enabledList.put(abilities.get(position).descId(), false);
                 });
             } else {
                 player.sendSystemMessage(Component.literal("Not enough spirituality to cast ability"));

@@ -26,7 +26,7 @@ import java.util.function.Supplier;
 public class AirBulletAbility extends Ability {
 
     public AirBulletAbility(int sequence){
-        this.info = new AbilityInfo(57, 56, "Air Bullet", 20 + sequence, 10*(10-sequence), 5*20);
+        this.info = new AbilityInfo(57, 56, "Air Bullet", 20 + sequence, 10*(10-sequence), 5*20, "air_bullet");
         this.isActive = true;
     }
 

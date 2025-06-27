@@ -15,7 +15,7 @@ import net.minecraft.world.level.Level;
 public class DoorOpeningAbility extends Ability {
 
     public DoorOpeningAbility(int sequence){
-        this.info = new AbilityInfo(57, 80, "Door Opening", 20+sequence, 5, 20);
+        this.info = new AbilityInfo(57, 80, "Door Opening", 20+sequence, 5, 20, "door_opening");
         this.isActive = true;
     }
 

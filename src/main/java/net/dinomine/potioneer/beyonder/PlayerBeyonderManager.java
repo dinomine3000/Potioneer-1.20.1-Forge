@@ -1,8 +1,8 @@
 package net.dinomine.potioneer.beyonder;
 
 import net.dinomine.potioneer.Potioneer;
-import net.dinomine.potioneer.beyonder.abilities.Beyonder;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
+import net.dinomine.potioneer.beyonder.misc.MysticismHelper;
 import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
 import net.dinomine.potioneer.beyonder.player.EntityBeyonderManager;
 import net.dinomine.potioneer.item.ModItems;
@@ -10,44 +10,16 @@ import net.dinomine.potioneer.network.PacketHandler;
 import net.dinomine.potioneer.network.messages.PlayerAdvanceMessage;
 import net.dinomine.potioneer.network.messages.PlayerSyncHotbarMessage;
 import net.dinomine.potioneer.network.messages.SequenceSTCSyncRequest;
-import net.minecraft.client.gui.screens.inventory.LoomScreen;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.damagesource.DamageSources;
-import net.minecraft.world.damagesource.DamageType;
-import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.TamableAnimal;
-import net.minecraft.world.entity.ai.control.MoveControl;
-import net.minecraft.world.entity.ai.navigation.WaterBoundPathNavigation;
-import net.minecraft.world.entity.animal.Animal;
-import net.minecraft.world.entity.animal.Cat;
-import net.minecraft.world.entity.animal.frog.Frog;
-import net.minecraft.world.entity.animal.frog.FrogAi;
-import net.minecraft.world.entity.boss.enderdragon.EndCrystal;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.LoomMenu;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
-import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.GameRules;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.ConduitBlock;
-import net.minecraft.world.level.block.FrogspawnBlock;
-import net.minecraft.world.level.block.entity.BannerBlockEntity;
-import net.minecraft.world.level.block.entity.ConduitBlockEntity;
-import net.minecraft.world.level.pathfinder.WalkNodeEvaluator;
-import net.minecraft.world.level.storage.loot.LootParams;
-import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
-import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.Tags;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.TickEvent;
@@ -58,7 +30,6 @@ import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerWakeUpEvent;
 import net.minecraftforge.event.entity.player.PlayerXpEvent;
 import net.minecraftforge.event.level.BlockEvent;
-import net.minecraftforge.event.level.LevelEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.fml.common.Mod;
@@ -88,6 +59,8 @@ public class PlayerBeyonderManager {
             for (int i = 0; i < size; i++) {
                 if(inv.getItem(i).is(ModItems.MINER_PICKAXE.get())){
                     inv.getItem(i).setCount(0);
+                } else {
+                    MysticismHelper.updateOrApplyMysticismTag(inv.getItem(i), 10, player);
                 }
             }
         }
@@ -112,7 +85,7 @@ public class PlayerBeyonderManager {
             });
             event.getOriginal().invalidateCaps();
             PacketHandler.INSTANCE.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) event.getEntity()),
-                    new PlayerSyncHotbarMessage(newStore.getAbilitiesManager().clientHotbar));
+                    new PlayerSyncHotbarMessage(newStore.getAbilitiesManager().clientHotbar, newStore.getAbilitiesManager().quickAbility));
         });
     }
 
@@ -168,7 +141,7 @@ public class PlayerBeyonderManager {
     public static void onCraft(PlayerEvent.ItemCraftedEvent event){
         if(event.getEntity().level().isClientSide()) return;
         event.getEntity().getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
-            cap.getEffectsManager().onCraft(event);
+            cap.getEffectsManager().onCraft(event, cap);
         });
     }
 
@@ -182,6 +155,8 @@ public class PlayerBeyonderManager {
             });
         }
     }
+
+
 
 //    @SubscribeEvent
 //    public static void onEntityHurt(LivingHurtEvent event) {
@@ -206,7 +181,7 @@ public class PlayerBeyonderManager {
     public static void onExperienceChange(PlayerXpEvent.LevelChange event){
         System.out.println(event.getEntity());
         System.out.println(event.getLevels());
-        event.setLevels(event.getLevels() / 3);
+        //event.setLevels(event.getLevels() / 3);
     }
 
 
@@ -240,7 +215,7 @@ public class PlayerBeyonderManager {
             boolean silk = cap.getEffectsManager().hasEffect(BeyonderEffects.EFFECT.WHEEL_SILK_TOUCH);
 
             if(fortune && event.getState().is(Tags.Blocks.ORES)){
-                int lvl = (9 - cap.getEffectsManager().getEffect(BeyonderEffects.EFFECT.WHEEL_FORTUNE).getSequenceLevel())/2;
+                int lvl = (10 - cap.getEffectsManager().getEffect(BeyonderEffects.EFFECT.WHEEL_FORTUNE).getSequenceLevel())/2;
                 while(lvl > 1){
                     lvl--;
                     i++;
@@ -285,4 +260,5 @@ public class PlayerBeyonderManager {
             stats.getBeyonderStats().getMiningSpeed(breakSpeed);
         });
     }
+
 }

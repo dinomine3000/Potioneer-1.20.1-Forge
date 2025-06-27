@@ -32,7 +32,7 @@ import java.util.Optional;
 public class CraftingGuiAbility extends Ability {
 
     public CraftingGuiAbility(int sequence){
-        this.info = new AbilityInfo(109, 32, "Crafting Gui", 40 + sequence, 10, this.getCooldown());
+        this.info = new AbilityInfo(109, 32, "Crafting Gui", 40 + sequence, 10, this.getCooldown(), "crafting_gui");
     }
 
     @Override

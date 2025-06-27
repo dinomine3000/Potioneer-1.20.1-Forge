@@ -22,7 +22,7 @@ import java.util.function.Supplier;
 public class StatBonusAbility extends Ability {
 
     public StatBonusAbility(int sequence){
-        this.info = new AbilityInfo(83, 32, "Stat Bonus", 30 + sequence, 0, this.getCooldown());
+        this.info = new AbilityInfo(83, 32, "Stat Bonus", 30 + sequence, 0, this.getCooldown(), "");
     }
 
     @Override

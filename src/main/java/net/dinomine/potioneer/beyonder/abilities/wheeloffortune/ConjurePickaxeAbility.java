@@ -2,25 +2,18 @@ package net.dinomine.potioneer.beyonder.abilities.wheeloffortune;
 
 import net.dinomine.potioneer.beyonder.abilities.Ability;
 import net.dinomine.potioneer.beyonder.abilities.AbilityInfo;
+import net.dinomine.potioneer.beyonder.misc.MysticismHelper;
 import net.dinomine.potioneer.beyonder.player.EntityBeyonderManager;
-import net.dinomine.potioneer.block.ModBlocks;
 import net.dinomine.potioneer.item.ModItems;
-import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.phys.BlockHitResult;
-import net.minecraft.world.phys.HitResult;
-import net.minecraftforge.common.ForgeMod;
 
 public class ConjurePickaxeAbility extends Ability {
 
     public ConjurePickaxeAbility(int sequence){
-        this.info = new AbilityInfo(5, 80, "Conjure Pickaxe", sequence, 10, 20*5);
+        this.info = new AbilityInfo(5, 80, "Conjure Pickaxe", sequence, 10, 20*5, "pick");
     }
 
     @Override
@@ -29,7 +22,9 @@ public class ConjurePickaxeAbility extends Ability {
         if(cap.getSpirituality() >= info.cost()){
             if(target instanceof Player player){
                 if(!replacePickIfPresent(player)){
-                    if(!player.addItem(new ItemStack(ModItems.MINER_PICKAXE.get()))){
+                    ItemStack newPick = new ItemStack(ModItems.MINER_PICKAXE.get());
+                    MysticismHelper.updateOrApplyMysticismTag(newPick, info.cost(), player);
+                    if(!player.addItem(newPick)){
                         player.sendSystemMessage(Component.literal("Could not conjure pickaxe: Not enough space"));
                         return false;
                     }

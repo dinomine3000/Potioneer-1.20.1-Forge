@@ -33,7 +33,7 @@ public class MagicOrbOverlay {
         RenderSystem.setShaderTexture(0, ORB);*/
 
 
-        tick = (tick + partialTick) % (62*slowdown);
+        tick = (tick + minecraft.getDeltaFrameTime()*4) % (62*slowdown);
         int frame = ((int) (tick / slowdown)) % 31;
 
         float mana_percent = Mth.clamp(Math.round(100f*ClientStatsData.getPlayerSpirituality() / ClientStatsData.getPlayerMaxSpirituality())/100f, 0, 1);

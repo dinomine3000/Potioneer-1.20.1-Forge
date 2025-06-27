@@ -3,10 +3,7 @@ package net.dinomine.potioneer.beyonder.pathways;
 import net.dinomine.potioneer.beyonder.abilities.Ability;
 import net.dinomine.potioneer.beyonder.abilities.Beyonder;
 import net.dinomine.potioneer.beyonder.abilities.mystery.*;
-import net.dinomine.potioneer.beyonder.abilities.paragon.CraftingBonusAbility;
-import net.dinomine.potioneer.beyonder.abilities.paragon.CraftingGuiAbility;
-import net.dinomine.potioneer.beyonder.abilities.paragon.DurabilityRegenAbility;
-import net.dinomine.potioneer.beyonder.abilities.paragon.FuelAbility;
+import net.dinomine.potioneer.beyonder.abilities.paragon.*;
 import net.dinomine.potioneer.beyonder.player.PlayerAbilitiesManager;
 import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.inventory.CraftingMenu;
@@ -21,6 +18,14 @@ public class ParagonPathway extends Beyonder {
         super(sequence, "Paragon");
         this.color = 0x908020;
         this.maxSpirituality = paragonSpirituality;
+    }
+
+    public static int getX(){
+        return 0;
+    }
+
+    public static int getY(){
+        return 64;
     }
 
     public static float[] getStatsFor(int sequence){
@@ -46,7 +51,12 @@ public class ParagonPathway extends Beyonder {
             case 6:
             case 7:
             case 8:
+                activeAbilities.add(new ParagonBoneMealAbility(sequence));
+                activeAbilities.add(new AnvilGuiAbility(sequence));
             case 9:
+                CraftingSpiritualityAbility craftingSpiritualityAbility = new CraftingSpiritualityAbility(sequence);
+                activeAbilities.add(craftingSpiritualityAbility);
+                passiveAbilities.add(craftingSpiritualityAbility);
                 activeAbilities.add(new CraftingGuiAbility(sequence));
                 activeAbilities.add(new FuelAbility(sequence));
                 activeAbilities.add(new DurabilityRegenAbility(sequence));

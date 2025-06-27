@@ -15,7 +15,7 @@ import net.minecraft.world.phys.Vec3;
 public class RandomTeleportAbility extends Ability {
 
     public RandomTeleportAbility(int sequence){
-        this.info = new AbilityInfo(57, 56, "Random Teleport", 20 + sequence, 75, getCooldown());
+        this.info = new AbilityInfo(57, 56, "Random Teleport", 20 + sequence, 75, getCooldown(), "random_teleport");
         this.isActive = true;
     }
 

@@ -11,7 +11,7 @@ import net.minecraft.world.entity.player.Player;
 public class DurabilityRegenAbility extends Ability {
 
     public DurabilityRegenAbility(int sequence){
-        this.info = new AbilityInfo(109, 56, "Durability Regen", 40 + sequence, 30*(10-sequence), 20*5);
+        this.info = new AbilityInfo(109, 56, "Durability Regen", 40 + sequence, 30*(10-sequence), 20*5, "durability_regen");
     }
 
     @Override

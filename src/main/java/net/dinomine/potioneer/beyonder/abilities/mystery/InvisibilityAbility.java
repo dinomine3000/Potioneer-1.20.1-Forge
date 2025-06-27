@@ -18,7 +18,7 @@ import java.util.function.Predicate;
 public class InvisibilityAbility extends Ability {
 
     public InvisibilityAbility(int sequence){
-        this.info = new AbilityInfo(57, 128, "Invisibility", 20 + sequence, 20, 5*10 + 2*40*((9-sequence)*10 + 5));
+        this.info = new AbilityInfo(57, 128, "Invisibility", 20 + sequence, 20, 5*10 + 2*40*((9-sequence)*10 + 5), "invisibility");
         this.isActive = true;
     }
 
@@ -55,5 +55,8 @@ public class InvisibilityAbility extends Ability {
 
     @Override
     public void deactivate(EntityBeyonderManager cap, LivingEntity target) {
+        if(cap.getEffectsManager().hasEffect(BeyonderEffects.EFFECT.MYSTERY_INVIS, getSequence())){
+            cap.getEffectsManager().removeEffect(BeyonderEffects.EFFECT.MYSTERY_INVIS, getSequence(), cap, target);
+        }
     }
 }

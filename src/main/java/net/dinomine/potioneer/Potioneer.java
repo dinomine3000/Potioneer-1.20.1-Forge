@@ -1,8 +1,10 @@
 package net.dinomine.potioneer;
 
 import com.mojang.logging.LogUtils;
+import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
 import net.dinomine.potioneer.block.ModBlocks;
 import net.dinomine.potioneer.block.entity.ModBlockEntities;
+import net.dinomine.potioneer.block.entity.renderer.MinerBlockRenderer;
 import net.dinomine.potioneer.config.PotioneerCommonConfig;
 import net.dinomine.potioneer.entities.ModEntities;
 import net.dinomine.potioneer.entities.client.ChryonRenderer;
@@ -11,6 +13,7 @@ import net.dinomine.potioneer.entities.custom.ChryonEntity;
 import net.dinomine.potioneer.item.ModCreativeModTabs;
 import net.dinomine.potioneer.item.ModItems;
 import net.dinomine.potioneer.loot.ModLootModifiers;
+import net.dinomine.potioneer.menus.CrafterAnvilScreen;
 import net.dinomine.potioneer.menus.CraftingScreen;
 import net.dinomine.potioneer.menus.ModMenuTypes;
 import net.dinomine.potioneer.network.PacketHandler;
@@ -19,6 +22,8 @@ import net.dinomine.potioneer.recipe.ModRecipes;
 import net.dinomine.potioneer.sound.ModSounds;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.MenuScreens;
+import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
+import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
 import net.minecraft.client.renderer.entity.EntityRenderers;
 import net.minecraft.client.renderer.item.ItemProperties;
 import net.minecraft.resources.ResourceLocation;
@@ -51,6 +56,8 @@ public class Potioneer
     public Potioneer()
     {
         IEventBus eventBus = FMLJavaModLoadingContext.get().getModEventBus();
+
+        //BeyonderEffects.init(eventBus);
 
         ModCreativeModTabs.register(eventBus);
 
@@ -109,8 +116,12 @@ public class Potioneer
         @SubscribeEvent
         public static void onClientSetup(FMLClientSetupEvent event)
         {
+            //Geckolib registers
             EntityRenderers.register(ModEntities.CHRYON.get(), ChryonRenderer::new);
             EntityRenderers.register(ModEntities.PECAN.get(), PecanRenderer::new);
+
+            BlockEntityRenderers.register(ModBlockEntities.MINER_LIGHT_BLOCK_ENTITY.get(), MinerBlockRenderer::new);
+
             // Some client setup code
             ItemProperties.register(ModItems.VIAL.get(),
                     new ResourceLocation(Potioneer.MOD_ID, "level"),
@@ -122,8 +133,14 @@ public class Potioneer
                     ((itemStack, clientLevel, livingEntity, i) ->
                             itemStack.getTag() != null ? itemStack.getTag().getCompound("potion_info").getInt("amount") : 0));
 
+            ItemProperties.register(ModItems.COIN_ITEM.get(),
+                    new ResourceLocation(Potioneer.MOD_ID, "yesno"),
+                    ((itemStack, clientLevel, livingEntity, i) ->
+                            itemStack.getTag() != null && itemStack.getTag().getBoolean("potioneer_yesno") ?  1f : 0f));
+
             event.enqueueWork(() -> {
                 MenuScreens.register(ModMenuTypes.CRAFTER_MENU.get(), CraftingScreen::new);
+                MenuScreens.register(ModMenuTypes.CRAFTER_ANVIL_MENU.get(), CrafterAnvilScreen::new);
             });
 
 
