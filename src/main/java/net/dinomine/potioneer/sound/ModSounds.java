@@ -14,6 +14,7 @@ public class ModSounds {
             DeferredRegister.create(ForgeRegistries.SOUND_EVENTS, Potioneer.MOD_ID);
 
     public static final RegistryObject<SoundEvent> ADVANCEMENT_CLICK = registerSoundEvents("click");
+    public static final RegistryObject<SoundEvent> COIN = registerSoundEvents("coin");
 
 
 

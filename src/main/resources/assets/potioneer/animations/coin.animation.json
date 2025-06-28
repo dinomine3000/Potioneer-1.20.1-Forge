@@ -2,20 +2,15 @@
 	"format_version": "1.8.0",
 	"animations": {
 		"animation.coin.hTt": {
-			"loop": "hold_on_last_frame",
 			"animation_length": 0.8333,
 			"bones": {
 				"bone5": {
 					"rotation": {
 						"0.0": {
-							"vector": [0, 0, -180]
-						},
-						"0.7917": {
-							"vector": [1539, 0, -180]
+							"vector": [360, 0, -180]
 						},
 						"0.8333": {
-							"pre": [1620, 180, -180],
-							"post": [1620, 180, -180]
+							"vector": [-1440, 0, -360]
 						}
 					},
 					"position": {
@@ -35,7 +30,6 @@
 			}
 		},
 		"animation.coin.hTh": {
-			"loop": "hold_on_last_frame",
 			"animation_length": 0.8333,
 			"bones": {
 				"bone5": {
@@ -64,7 +58,6 @@
 			}
 		},
 		"animation.coin.tTh": {
-			"loop": "hold_on_last_frame",
 			"animation_length": 0.8333,
 			"bones": {
 				"bone5": {
@@ -92,8 +85,7 @@
 				}
 			}
 		},
-		"animation.model.tTt": {
-			"loop": "hold_on_last_frame",
+		"animation.coin.tTt": {
 			"animation_length": 0.8333,
 			"bones": {
 				"bone5": {
@@ -124,6 +116,29 @@
 					}
 				}
 			}
+		},
+		"animation.coin.loopHead": {
+			"loop": true,
+			"bones": {
+				"bone5": {
+					"rotation": {
+						"vector": [0, 0, -180]
+					}
+				}
+			}
+		},
+		"animation.coin.loopTails": {
+			"loop": true,
+			"bones": {
+				"bone5": {
+					"rotation": {
+						"vector": [0, 0, 0]
+					}
+				}
+			}
+		},
+		"animation.coin.refresh": {
+			"loop": true
 		}
 	},
 	"geckolib_format_version": 2

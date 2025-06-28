@@ -9,6 +9,7 @@ import net.dinomine.potioneer.config.PotioneerCommonConfig;
 import net.dinomine.potioneer.entities.ModEntities;
 import net.dinomine.potioneer.entities.client.ChryonRenderer;
 import net.dinomine.potioneer.entities.client.PecanRenderer;
+import net.dinomine.potioneer.entities.client.RodRenderer;
 import net.dinomine.potioneer.entities.custom.ChryonEntity;
 import net.dinomine.potioneer.item.ModCreativeModTabs;
 import net.dinomine.potioneer.item.ModItems;
@@ -119,6 +120,7 @@ public class Potioneer
             //Geckolib registers
             EntityRenderers.register(ModEntities.CHRYON.get(), ChryonRenderer::new);
             EntityRenderers.register(ModEntities.PECAN.get(), PecanRenderer::new);
+            EntityRenderers.register(ModEntities.DIVINATION_ROD.get(), RodRenderer::new);
 
             BlockEntityRenderers.register(ModBlockEntities.MINER_LIGHT_BLOCK_ENTITY.get(), MinerBlockRenderer::new);
 
@@ -133,10 +135,10 @@ public class Potioneer
                     ((itemStack, clientLevel, livingEntity, i) ->
                             itemStack.getTag() != null ? itemStack.getTag().getCompound("potion_info").getInt("amount") : 0));
 
-            ItemProperties.register(ModItems.COIN_ITEM.get(),
-                    new ResourceLocation(Potioneer.MOD_ID, "yesno"),
-                    ((itemStack, clientLevel, livingEntity, i) ->
-                            itemStack.getTag() != null && itemStack.getTag().getBoolean("potioneer_yesno") ?  1f : 0f));
+//            ItemProperties.register(ModItems.COIN_ITEM.get(),
+//                    new ResourceLocation(Potioneer.MOD_ID, "yesno"),
+//                    ((itemStack, clientLevel, livingEntity, i) ->
+//                            itemStack.getTag() != null && itemStack.getTag().getBoolean("potioneer_yesno") ?  1f : 0f));
 
             event.enqueueWork(() -> {
                 MenuScreens.register(ModMenuTypes.CRAFTER_MENU.get(), CraftingScreen::new);

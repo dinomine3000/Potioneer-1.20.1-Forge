@@ -177,6 +177,8 @@ public class PlayerAbilitiesManager {
 
     public void onAcquireAbilities(EntityBeyonderManager cap, LivingEntity target){
         //TODO: only going through actives. if you want for passives, youll need to add it
+        // Check if its enabled for when the player loads into the world -> dont activate extended reach if the ability was previously disabled
+        //its loading the enabledDisabled list before calling this onAcquire function when loading data
         for (Ability ability : pathwayActives) {
             if (enabledDisabled.get(ability.getInfo().descId())) ability.onAcquire(cap, target);
         }
@@ -270,7 +272,7 @@ public class PlayerAbilitiesManager {
                 clientHotbar.add(hot.getInt(String.valueOf(i)));
             }
         }
-        quickAbility = nbt.getInt("quick");
+        quickAbility = hot.getInt("quick");
     }
 
 }

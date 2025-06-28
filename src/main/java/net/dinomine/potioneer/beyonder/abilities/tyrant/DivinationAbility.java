@@ -7,8 +7,14 @@ import net.dinomine.potioneer.beyonder.misc.DivinationResult;
 import net.dinomine.potioneer.beyonder.misc.MysticismHelper;
 import net.dinomine.potioneer.beyonder.player.EntityBeyonderManager;
 import net.dinomine.potioneer.beyonder.player.PlayerLuckManager;
+import net.dinomine.potioneer.beyonder.screen.DivinationScreen;
+import net.dinomine.potioneer.network.PacketHandler;
+import net.dinomine.potioneer.network.messages.PlayerAdvanceMessage;
+import net.dinomine.potioneer.network.messages.abilityRelevant.OpenDivinationScreenSTC;
 import net.dinomine.potioneer.util.PotioneerMathHelper;
+import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -19,6 +25,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.saveddata.maps.MapBanner;
 import net.minecraft.world.level.saveddata.maps.MapItemSavedData;
+import net.minecraftforge.network.PacketDistributor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,12 +61,11 @@ public class DivinationAbility extends Ability {
     }
 
     public boolean active(EntityBeyonderManager cap, LivingEntity target) {
-        if(target.level().isClientSide()) return true;
+        if(!target.level().isClientSide()) return true;
 
-        System.out.println("Entered Divination Ability on server side");
-        DivinationResult result = MysticismHelper.doDivination(target.getMainHandItem(), (Player) target, getSequence() + 10);
-        System.out.println(result);
 
+        PacketHandler.INSTANCE.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) target),
+                new OpenDivinationScreenSTC());
         return true;
     }
 

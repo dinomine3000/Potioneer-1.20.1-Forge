@@ -41,7 +41,7 @@ public class PlayerAdvanceMessage {
             if(context.getDirection().getReceptionSide().isClient()){
                 context.enqueueWork(() -> DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> ClientSyncMessage.handlePacket(msg, contextSupplier)));
             } else {
-                System.out.println("Receiving on server side");
+                System.out.println("Receiving on server side. Id = " + msg.id);
                 Player player = context.getSender();
                 player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
                     cap.advance(msg.id, player, true, msg.advancing);

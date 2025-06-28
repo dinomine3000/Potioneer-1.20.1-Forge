@@ -60,10 +60,12 @@ public class EntityBeyonderManager {
         return beyonderStats;
     }
 
+    //returns only the sequence level
     public int getSequenceLevel(){
         return pathway.getSequence();
     }
 
+    //returns full ID, from 0 to 49 (or -1 if not a beyonder)
     public int getPathwayId(){
         return pathway.getId();
     }
@@ -275,9 +277,10 @@ public class EntityBeyonderManager {
         setPathway(nbt.getInt("pathwayId"), false);
         this.luckManager.loadNBTData(nbt);
         this.effectsManager.loadNBTData(nbt);
+        //enabledDisabled BEFORE onAcquire bc of reach ability
         this.abilitiesManager.loadNBTData(nbt, entity);
-        this.abilitiesManager.onAcquireAbilities(this, entity);
         this.abilitiesManager.loadEnabledListFromTag(nbt, this, entity);
+        this.abilitiesManager.onAcquireAbilities(this, entity);
         //TODO make abilities manager actually save and load item abilities.
         //this.abilitiesManager.loadNBTData(nbt);
     }

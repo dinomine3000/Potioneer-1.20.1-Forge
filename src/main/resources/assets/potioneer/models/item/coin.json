@@ -14,13 +14,13 @@
       ],
       "translation": [
         0,
-        0.5,
+        0.25,
         0
       ],
       "scale": [
-        0.05,
-        0.05,
-        0.05
+        0.07,
+        0.07,
+        0.07
       ]
     },
     "thirdperson_lefthand": {
@@ -31,13 +31,13 @@
       ],
       "translation": [
         0,
-        0.5,
+        0.25,
         0
       ],
       "scale": [
-        0.05,
-        0.05,
-        0.05
+        0.07,
+        0.07,
+        0.07
       ]
     },
     "firstperson_righthand": {
@@ -49,7 +49,7 @@
       "translation": [
         0,
         0,
-        -1
+        -2.25
       ],
       "scale": [
         0.25,
@@ -66,7 +66,7 @@
       "translation": [
         0,
         0,
-        -1
+        -2.25
       ],
       "scale": [
         0.25,
@@ -106,7 +106,7 @@
     "head": {
       "translation": [
         0,
-        7.5,
+        6.25,
         0
       ]
     },
@@ -125,8 +125,5 @@
   },
   "textures": {
     "particle": "potioneer:item/coin"
-  },
-  "overrides": [
-    { "predicate": { "potioneer:yesno": 1 }, "model": "potioneer:item/coin_heads" }
-  ]
+  }
 }

@@ -2,6 +2,7 @@ package net.dinomine.potioneer.network;
 
 import net.dinomine.potioneer.Potioneer;
 import net.dinomine.potioneer.network.messages.*;
+import net.dinomine.potioneer.network.messages.abilityRelevant.OpenDivinationScreenSTC;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.network.NetworkRegistry;
 import net.minecraftforge.network.simple.SimpleChannel;
@@ -28,5 +29,6 @@ public class PacketHandler {
         INSTANCE.registerMessage(6, PlayerAbilityCooldownSTC.class, PlayerAbilityCooldownSTC::encode, PlayerAbilityCooldownSTC::decode, PlayerAbilityCooldownSTC::handle);
         INSTANCE.registerMessage(7, PlayerFormulaScreenSTCMessage.class, PlayerFormulaScreenSTCMessage::encode, PlayerFormulaScreenSTCMessage::decode, PlayerFormulaScreenSTCMessage::handle);
         INSTANCE.registerMessage(8, PlayerSyncHotbarMessage.class, PlayerSyncHotbarMessage::encode, PlayerSyncHotbarMessage::decode, PlayerSyncHotbarMessage::handle);
+        INSTANCE.registerMessage(9, OpenDivinationScreenSTC.class, OpenDivinationScreenSTC::encode, OpenDivinationScreenSTC::decode, OpenDivinationScreenSTC::handle);
     }
 }

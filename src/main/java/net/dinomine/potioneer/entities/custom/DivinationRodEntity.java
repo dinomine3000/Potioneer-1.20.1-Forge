@@ -1,0 +1,229 @@
+package net.dinomine.potioneer.entities.custom;
+
+import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
+import net.dinomine.potioneer.beyonder.misc.DivinationResult;
+import net.dinomine.potioneer.beyonder.misc.MysticismHelper;
+import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
+import net.dinomine.potioneer.item.ModItems;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.network.syncher.EntityDataSerializers;
+import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.AABB;
+import org.jetbrains.annotations.Nullable;
+import software.bernie.geckolib.animatable.GeoEntity;
+import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
+import software.bernie.geckolib.core.animation.AnimatableManager;
+import software.bernie.geckolib.core.animation.AnimationController;
+import software.bernie.geckolib.core.animation.AnimationState;
+import software.bernie.geckolib.core.animation.RawAnimation;
+import software.bernie.geckolib.core.object.PlayState;
+import software.bernie.geckolib.util.GeckoLibUtil;
+
+import java.util.ArrayList;
+
+
+public class DivinationRodEntity extends Entity implements GeoEntity {
+    private AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
+    public static final EntityDataAccessor<Boolean> DIVINING = SynchedEntityData.defineId(DivinationRodEntity.class, EntityDataSerializers.BOOLEAN);
+    public static final EntityDataAccessor<Float> INTENDED_YAW = SynchedEntityData.defineId(DivinationRodEntity.class, EntityDataSerializers.FLOAT);
+
+    public DivinationRodEntity(EntityType<DivinationRodEntity> pEntityType, Level pLevel) {
+        super(pEntityType, pLevel);
+        this.horizontalCollision = true;
+        this.setInvulnerable(true);
+        this.noPhysics = true;
+    }
+
+    @Override
+    public void moveTo(double pX, double pY, double pZ, float pYRot, float pXRot) {
+        super.moveTo(pX, pY, pZ, pYRot, pXRot);
+        setRotation(pYRot);
+    }
+
+    public void setRotation(float yaw){
+        setYRot(yaw);
+        this.entityData.set(INTENDED_YAW, yaw);
+    }
+
+    @Override
+    public boolean isPickable() {
+        return true;
+    }
+
+    @Override
+    public @Nullable ItemStack getPickResult() {
+        return new ItemStack(ModItems.DIVINATION_ROD.get());
+    }
+
+    @Override
+    public void registerControllers(AnimatableManager.ControllerRegistrar controllerRegistrar) {
+        controllerRegistrar.add(new AnimationController<>(this, "controller", 0, this::predicate)
+                .triggerableAnim("divine", RawAnimation.begin().thenPlayAndHold("animation.model.fall")));
+    }
+
+    private PlayState predicate(AnimationState<DivinationRodEntity> divinationRodEntityAnimationState) {
+        return PlayState.CONTINUE;
+    }
+
+    @Override
+    public AnimatableInstanceCache getAnimatableInstanceCache() {
+        return cache;
+    }
+
+    @Override
+    public InteractionResult interact(Player pPlayer, InteractionHand pHand) {
+        if(pPlayer.isCrouching()){
+            pPlayer.addItem(new ItemStack(ModItems.DIVINATION_ROD.get()));
+            this.kill();
+            pPlayer.level().playSound(pPlayer, this.getOnPos(), SoundEvents.ITEM_PICKUP, SoundSource.PLAYERS);
+            return InteractionResult.SUCCESS;
+        }
+
+        if(pPlayer.level().isClientSide()){
+            triggerAnimation();
+            return InteractionResult.SUCCESS;
+        }
+
+        if(this.entityData.get(DIVINING)){
+            flipDivination();
+            triggerAnimation();
+            return InteractionResult.SUCCESS;
+        }
+
+        ItemStack target = pPlayer.getMainHandItem();
+//        System.out.println("Divining item: " + target);
+        int sequenceId = -1;
+        boolean seer = false;
+        if(pPlayer.getCapability(BeyonderStatsProvider.BEYONDER_STATS).isPresent()){
+            sequenceId = pPlayer.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve().get().getPathwayId();
+            seer = pPlayer.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve().get().getEffectsManager().hasEffect(BeyonderEffects.EFFECT.MISC_MYST);
+        }
+
+        DivinationResult result = MysticismHelper.doDivination(target, pPlayer, 32, this.getOnPos(), sequenceId);
+        if(result.positions().isEmpty()){
+            if(!seer){
+                this.entityData.set(INTENDED_YAW, pPlayer.getRandom().nextFloat()*360);
+//                System.out.println("Nothing found. Randomizing...");
+                flipDivination();
+                triggerAnimation();
+            }
+        } else {
+            ArrayList<BlockPos> positions = new ArrayList<>(result.positions());
+            positions.sort((a, b) -> this.getOnPos().distManhattan(a) - this.getOnPos().distManhattan(b));
+            positions = new ArrayList<>(positions.stream().filter(pos -> pPlayer.getOnPos().distManhattan(pos) > 1).toList());
+            if(positions.isEmpty()) positions = new ArrayList<>(result.positions());
+//            System.out.println("Found positions: " + positions);
+            if(seer){
+                this.entityData.set(INTENDED_YAW, getYawFromPosToPos(this.getOnPos(), positions.get(0)));
+//                System.out.println("Telling you the way");
+            } else {
+                this.entityData.set(INTENDED_YAW, pPlayer.getRandom().nextFloat()*360);
+//                System.out.println("Not a seer, i dont car");
+            }
+            flipDivination();
+            triggerAnimation();
+        }
+
+        if(seer){
+            pPlayer.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
+                cap.requestActiveSpiritualityCost(MysticismHelper.divinationCost);
+            });
+        }
+
+        return InteractionResult.SUCCESS;
+    }
+
+    @Override
+    public void tick() {
+        super.tick();
+
+        this.yRotO = this.getYRot();
+
+        float currentYaw = this.getYRot();
+        float targetYaw = this.getEntityData().get(INTENDED_YAW);
+
+        float newYaw = lerpRotation(currentYaw, targetYaw, 1 / 8f);
+        this.setYRot(newYaw);
+        this.setRot(newYaw, this.getXRot());
+    }
+
+    public static float lerpRotation(float currentYaw, float targetYaw, float delta) {
+        float deltaYaw = wrapDegrees(targetYaw - currentYaw);
+        return currentYaw + deltaYaw * delta;
+    }
+
+    public static float wrapDegrees(float degrees) {
+        degrees = degrees % 360.0F;
+        if (degrees >= 180.0F) {
+            degrees -= 360.0F;
+        }
+        if (degrees < -180.0F) {
+            degrees += 360.0F;
+        }
+        return degrees;
+    }
+
+    public static float getYawFromPosToPos(BlockPos from, BlockPos to) {
+        double dx = to.getX() + 0.5 - (from.getX() + 0.5);
+        double dz = to.getZ() + 0.5 - (from.getZ() + 0.5);
+
+        double angleRad = Math.atan2(-dx, dz);
+        return (float) Math.toDegrees(angleRad);
+    }
+
+
+    //called AFTER flipDivination
+    public void triggerAnimation(){
+        if(!this.entityData.get(DIVINING)){
+            stopTriggeredAnimation("controller", "divine");
+        } else {
+            triggerAnim("controller", "divine");
+        }
+    }
+
+    public void flipDivination(){
+        if(this.entityData.get(DIVINING)){
+            this.entityData.set(DIVINING, false);
+        } else {
+            this.entityData.set(DIVINING, true);
+        }
+    }
+
+
+    @Override
+    protected void defineSynchedData() {
+        this.entityData.define(DIVINING, false);
+        this.entityData.define(INTENDED_YAW, 0f);
+    }
+
+    @Override
+    protected void readAdditionalSaveData(CompoundTag compoundTag) {
+
+    }
+
+    @Override
+    protected void addAdditionalSaveData(CompoundTag compoundTag) {
+
+    }
+
+    public AABB getBoundingBoxForCulling() {
+        AABB aabb = this.getBoundingBox();
+        return aabb;
+    }
+
+    @Override
+    public boolean mayInteract(Level pLevel, BlockPos pPos) {
+        return true;
+    }
+}

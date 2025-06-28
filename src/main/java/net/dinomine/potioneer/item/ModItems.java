@@ -4,6 +4,7 @@ import net.dinomine.potioneer.Potioneer;
 import net.dinomine.potioneer.entities.ModEntities;
 import net.dinomine.potioneer.item.custom.*;
 import net.dinomine.potioneer.item.custom.BeyonderPotion.BeyonderPotionItem;
+import net.dinomine.potioneer.item.custom.cane.CaneItem;
 import net.dinomine.potioneer.item.custom.coin.CoinItem;
 import net.minecraft.world.item.*;
 import net.minecraftforge.common.ForgeSpawnEggItem;
@@ -59,6 +60,10 @@ public class ModItems {
 
     public static final RegistryObject<Item> GOLDEN_DROP = ITEMS.register("golden_drop",
             () -> new Item(new Item.Properties().rarity(Rarity.RARE).stacksTo(16).fireResistant()));
+
+    public static final RegistryObject<Item> DIVINATION_ROD = ITEMS.register("cane",
+            () -> new CaneItem(new Item.Properties().stacksTo(1).fireResistant().defaultDurability(256)));
+
 
     /*ublic static final RegistryObject<Item> METAL_ROD = ITEMS.register("metal_detector",
             () -> new MetalDetectorItem(new Item.Properties().stacksTo(1).durability(20)));*/

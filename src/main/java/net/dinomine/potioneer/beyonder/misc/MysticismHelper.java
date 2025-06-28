@@ -30,6 +30,8 @@ public class MysticismHelper {
     public static final String totalSpiritualityId = "total_spirituality";
     public static final String playerNameTagId = "players";
 
+    public static final float divinationCost = 20f;
+
 
     /**
      * divination on item or potion or formula
@@ -64,7 +66,7 @@ public class MysticismHelper {
                 boolean yesNo = false;
                 ItemStack itemStack = savedData.getRandomItemFromFormulaFor(sequenceId - 1);
                 String clue = savedData.getClueForIngredient(itemStack);
-                List<BlockPos> positions = findItemInArea(itemStack, position, radius, level);
+                List<BlockPos> positions = findItemInArea(seer, itemStack, position, radius, level);
                 int resSequence = sequenceId - 1;
                 return new DivinationResult(yesNo, positions, resSequence, 0f, clue, itemStack);
             }
@@ -126,10 +128,25 @@ public class MysticismHelper {
                 if(yesNo){
                     status = data.id() == sequenceId - 1 ? 1f : 0.7f;
                 }
-                ItemStack randomItem = data.main().get(new Random().nextInt(data.main().size()));
-                ArrayList<BlockPos> positions = new ArrayList<>(findItemInArea(randomItem, position, radius, level));
+                ArrayList<BlockPos> positions = new ArrayList<>();
+                int i = 0;
+                for(i = 0; i < data.main().size(); i++){
+                    ItemStack stack = data.main().get(i);
+                    List<BlockPos> matches = findItemInArea(seer, stack, position, radius, level);
+                    if(!matches.isEmpty()) {
+                        positions = new ArrayList<>(matches);
+                        break;
+                    }
+                }
 
-                return new DivinationResult(yesNo, positions, data.id(), status, Beyonder.getSequenceNameFromId(data.id(), false), randomItem);
+                ItemStack stack;
+                if(i == data.main().size()){
+                    stack = data.main().get(seer.getRandom().nextInt(data.main().size()));
+                } else {
+                    stack = data.main().get(i);
+                }
+
+                return new DivinationResult(yesNo, positions, data.id(), status, Beyonder.getSequenceNameFromId(data.id(), false), stack);
             }
         }
 
@@ -151,7 +168,7 @@ public class MysticismHelper {
             }
         }
 
-        List<BlockPos> positions = findItemInArea(item, position, radius, level);
+        List<BlockPos> positions = findItemInArea(seer, item, position, radius, level);
 
         //if its not an edible item, the yesno value is whether or not it was found in the specified area.
         //and superimposing that is whether or not the item is used for your next potion. even if its edible,
@@ -233,11 +250,11 @@ public class MysticismHelper {
         return doDivination(item, seer, radius, pos, sequenceId);
     }
 
-    private static List<BlockPos> findItemInArea(ItemStack item, BlockPos center, int radius, Level level){
+    private static List<BlockPos> findItemInArea(Player player, ItemStack item, BlockPos center, int radius, Level level){
         AABB box = AABB.ofSize(center.getCenter(), radius, radius, radius);
         List<Entity> entities = level.getEntities(new ItemEntity(level, 0, 0, 0, item), box);
         List<BlockPos> itemEntitiesFound = entities.stream().filter(entity -> (entity instanceof ItemEntity itemEntity) && itemEntity.getItem().is(item.getItem())).map(Entity::getOnPos).toList();
-        List<? extends Player> players = level.players().stream().filter(player -> player.getInventory().contains(item)).toList();
+        List<? extends Player> players = level.players().stream().filter(testPlayer -> testPlayer.getInventory().contains(item) && !testPlayer.is(player)).toList();
 
         ArrayList<BlockPos> result = new ArrayList<>(itemEntitiesFound);
         result.addAll(players.stream().map(Entity::getOnPos).toList());

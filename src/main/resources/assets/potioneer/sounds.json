@@ -3,5 +3,11 @@
     "sounds": [
       "potioneer:click"
     ]
+  },
+  "coin": {
+    "sounds": [
+      "potioneer:coin_toss1",
+      "potioneer:coin_toss2"
+    ]
   }
 }
