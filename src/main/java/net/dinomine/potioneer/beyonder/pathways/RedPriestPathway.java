@@ -19,7 +19,7 @@ public class RedPriestPathway extends Beyonder {
     public RedPriestPathway(int sequence){
         super(sequence, "Red_Priest");
         this.color = 0x804040;
-        this.maxSpirituality = new int[]{0, 0, 0, 0, 1000, 1000, 1000, 1000, 500, 100};
+        this.maxSpirituality = new int[]{0, 0, 0, 0, 1000, 500, 250, 200, 100, 50};
     }
 
     public static int getX(){
@@ -32,9 +32,11 @@ public class RedPriestPathway extends Beyonder {
 
     public static float[] getStatsFor(int sequence){
         return switch (sequence){
-            case 9 -> new float[]{5, 1, 0, 0, 1};
-            case 8 -> new float[]{8, 2, 0, 0, 2};
-            case 7 -> new float[]{12, 3, 5, 0, 4};
+            case 9 -> new float[]{5, 1, 2, 0, 1};
+            case 8 -> new float[]{8, 2, 2, 0, 2};
+            case 7 -> new float[]{10, 3, 3, 0, 4};
+            case 6 -> new float[]{10, 3, 3, 1, 5};
+            case 5 -> new float[]{15, 5, 4, 2, 5};
             default -> new float[]{0, 0, 0, 0, 0};
         };
     }

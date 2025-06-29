@@ -12,6 +12,7 @@ public class ClientStatsData {
     private static int sanity = 100;
     private static int pathwayId;
     public static boolean keyPressed = false;
+    private static int[] beyonderStats = new int[]{0, 0, 0, 0, 0};
 
     public static void attemptAdvancement(int newSeq){
         //difference between the new sequence and current sequence
@@ -59,4 +60,11 @@ public class ClientStatsData {
         return pathwayId;
     }
 
+    public static int getStat(int idx){
+        return beyonderStats[idx];
+    }
+
+    public static void setStats(int[] stats) {
+        beyonderStats = stats;
+    }
 }

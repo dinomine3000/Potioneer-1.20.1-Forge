@@ -102,7 +102,6 @@ public class CoinItem extends Item implements GeoItem {
             long id = GeoItem.getOrAssignId(mainHandItem, (ServerLevel) level);
             level.playSound(null, player.getOnPos(), ModSounds.COIN.get(), SoundSource.PLAYERS, 1f, 0.95f + player.getRandom().nextFloat()/10f);
 
-
             ItemStack pStack = mainHandItem;
 
             boolean newState = getDivinationResult(player, player.getOffhandItem());

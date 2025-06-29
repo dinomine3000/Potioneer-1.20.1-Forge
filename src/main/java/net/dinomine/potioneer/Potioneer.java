@@ -5,6 +5,7 @@ import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
 import net.dinomine.potioneer.block.ModBlocks;
 import net.dinomine.potioneer.block.entity.ModBlockEntities;
 import net.dinomine.potioneer.block.entity.renderer.MinerBlockRenderer;
+import net.dinomine.potioneer.block.entity.renderer.WaterTrapBlockRenderer;
 import net.dinomine.potioneer.config.PotioneerCommonConfig;
 import net.dinomine.potioneer.entities.ModEntities;
 import net.dinomine.potioneer.entities.client.ChryonRenderer;
@@ -17,6 +18,7 @@ import net.dinomine.potioneer.loot.ModLootModifiers;
 import net.dinomine.potioneer.menus.CrafterAnvilScreen;
 import net.dinomine.potioneer.menus.CraftingScreen;
 import net.dinomine.potioneer.menus.ModMenuTypes;
+import net.dinomine.potioneer.mob_effects.ModEffects;
 import net.dinomine.potioneer.network.PacketHandler;
 import net.dinomine.potioneer.particle.ModParticles;
 import net.dinomine.potioneer.recipe.ModRecipes;
@@ -78,6 +80,8 @@ public class Potioneer
 
         ModLootModifiers.register(eventBus);
 
+        ModEffects.register(eventBus);
+
         ModMenuTypes.MENU_TYPES.register(eventBus);
 
 
@@ -123,6 +127,7 @@ public class Potioneer
             EntityRenderers.register(ModEntities.DIVINATION_ROD.get(), RodRenderer::new);
 
             BlockEntityRenderers.register(ModBlockEntities.MINER_LIGHT_BLOCK_ENTITY.get(), MinerBlockRenderer::new);
+            BlockEntityRenderers.register(ModBlockEntities.WATER_TRAP_BLOCK_ENTITY.get(), WaterTrapBlockRenderer::new);
 
             // Some client setup code
             ItemProperties.register(ModItems.VIAL.get(),

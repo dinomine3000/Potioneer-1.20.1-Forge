@@ -44,9 +44,9 @@ public class PlayerEffectsManager {
                 if(event.getSource().getDirectEntity() != null){
                     arrow = event.getSource().getDirectEntity().getType().is(EntityType.ARROW.getTags().toList().get(0));
                 }
-                if(player.getItemInHand(hand).is(Tags.Items.TOOLS) || arrow){
+                if(player.getItemInHand(hand).is(Tags.Items.TOOLS) || arrow || player.getItemInHand(hand).is(Tags.Items.TOOLS_TRIDENTS)){
                     System.out.println(event.getAmount());
-                    dmg *= ((10-eff.getSequenceLevel()) * 0.4f + 1f);
+                    dmg *= ((10-eff.getSequenceLevel()) * 0.3f + 1f);
                     System.out.println(dmg);
                 }
             }
@@ -58,7 +58,7 @@ public class PlayerEffectsManager {
                     eff.combo = 0;
                 }
                 int max = cap.getMaxSpirituality();
-                cap.requestActiveSpiritualityCost(-1 * (0.007f*max*(eff.combo+1)));
+                cap.requestActiveSpiritualityCost(-1 * (0.0125f*max*(eff.combo+1)));
                 player.addEffect(new MobEffectInstance(MobEffects.REGENERATION, 20, (1+eff.combo), true, true, true));
                 player.getFoodData().eat(1, 0);
             }

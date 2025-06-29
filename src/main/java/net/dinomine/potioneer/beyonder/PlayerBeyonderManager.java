@@ -171,16 +171,16 @@ public class PlayerBeyonderManager {
 
     @SubscribeEvent
     public static void onExperienceChange(PlayerXpEvent.XpChange event){
-        System.out.println(event.getAmount());
-        System.out.println(event.getAmount()/2);
-        System.out.println(event.getEntity());
+//        System.out.println(event.getAmount());
+//        System.out.println(event.getAmount()/2);
+//        System.out.println(event.getEntity());
         event.setAmount(event.getAmount()/2);
     }
 
     @SubscribeEvent
     public static void onExperienceChange(PlayerXpEvent.LevelChange event){
-        System.out.println(event.getEntity());
-        System.out.println(event.getLevels());
+//        System.out.println(event.getEntity());
+//        System.out.println(event.getLevels());
         //event.setLevels(event.getLevels() / 3);
     }
 
@@ -195,11 +195,12 @@ public class PlayerBeyonderManager {
                         cap, event.getEntity());
             }
             else if(event.getDistance() > 5 && cap.getEffectsManager().hasEffect(BeyonderEffects.EFFECT.MYSTERY_FALL)){
-                if(cap.getSpirituality() > 50){
+                float cost = cap.getEffectsManager().getEffect(BeyonderEffects.EFFECT.MYSTERY_FALL).getCost();
+                if(cap.getSpirituality() > cost){
                     event.setDamageMultiplier(
                             (cap.getEffectsManager().getEffect(BeyonderEffects.EFFECT.MYSTERY_FALL).getSequenceLevel())/16f
                     );
-                    cap.requestActiveSpiritualityCost(50);
+                    cap.requestActiveSpiritualityCost(cost);
                 }
             }
         });

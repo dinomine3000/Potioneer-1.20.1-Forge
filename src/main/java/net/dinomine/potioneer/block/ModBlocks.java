@@ -1,11 +1,8 @@
 package net.dinomine.potioneer.block;
 
 import net.dinomine.potioneer.Potioneer;
-import net.dinomine.potioneer.block.custom.MinerLightSourceBlock;
-import net.dinomine.potioneer.block.custom.MutatedMushroom;
+import net.dinomine.potioneer.block.custom.*;
 import net.dinomine.potioneer.item.ModItems;
-import net.dinomine.potioneer.block.custom.PotionCauldronBlock;
-import net.dinomine.potioneer.block.custom.SoundBlock;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.util.valueproviders.UniformInt;
 import net.minecraft.world.item.BlockItem;
@@ -52,6 +49,11 @@ public class ModBlocks {
             () -> new MinerLightSourceBlock(
                     BlockBehaviour.Properties.of().instabreak().noCollission()
                             .lightLevel((p_50755_) -> 14).sound(SoundType.STONE).pushReaction(PushReaction.DESTROY)));
+
+    public static final RegistryObject<Block> WATER_TRAP_BLOCK = registerBlock("water_trap",
+            () -> new WaterTrapBlock(
+                    BlockBehaviour.Properties.of().noCollission().friction(-1).destroyTime(5)
+                            .sound(SoundType.LILY_PAD).pushReaction(PushReaction.DESTROY)));
 
     public static final RegistryObject<Block> MUTATED_MUSHROOM = registerBlock("wheat_mushroom",
             () -> new MutatedMushroom(BlockBehaviour.Properties.copy(Blocks.BROWN_MUSHROOM)));

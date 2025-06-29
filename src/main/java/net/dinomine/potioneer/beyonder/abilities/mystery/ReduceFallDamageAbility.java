@@ -9,7 +9,7 @@ import net.minecraft.world.entity.LivingEntity;
 public class ReduceFallDamageAbility extends Ability {
 
     public ReduceFallDamageAbility(int sequence){
-        this.info = new AbilityInfo(57, 32, "Reduce Fall Damage", 20 + sequence, 0, this.getCooldown(), "fall_damage");
+        this.info = new AbilityInfo(57, 32, "Reduce Fall Damage", 20 + sequence, 60, this.getCooldown(), "fall_damage");
     }
 
     @Override
@@ -26,11 +26,11 @@ public class ReduceFallDamageAbility extends Ability {
 
     @Override
     public void passive(EntityBeyonderManager cap, LivingEntity target) {
-        if(cap.getSpirituality() < 50) disable(cap, target);
+        if(cap.getSpirituality() < info.cost()) disable(cap, target);
         if(isEnabled(cap.getAbilitiesManager()) && !cap.getEffectsManager().hasEffect(BeyonderEffects.EFFECT.MYSTERY_FALL, getSequence())){
 //            System.out.println("given regen effect");
             cap.getEffectsManager().addEffect(BeyonderEffects.byId(BeyonderEffects.EFFECT.MYSTERY_FALL,
-                    getSequence(), 0, -1, true), cap, target);
+                    getSequence(), info.cost(), -1, true), cap, target);
         }
 
     }

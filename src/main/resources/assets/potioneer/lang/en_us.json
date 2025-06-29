@@ -41,8 +41,8 @@
 
   "potioneer.beyonder.pathway.tyrant": "Tyrant Pathway",
   "potioneer.beyonder.sequence.swimmer": "Sequence 9 Swimmer",
-  "potioneer.beyonder.sequence.water-blessed": "Sequence 8 Water-Blessed",
-  "potioneer.beyonder.sequence.hydro_shaman": "Sequence 7 Hydro Shaman",
+  "potioneer.beyonder.sequence.hydro_shaman": "Sequence 8 Hydro Shaman",
+  "potioneer.beyonder.sequence.waterborn": "Sequence 7 Waterborn",
 
   "potioneer.beyonder.pathway.wheel_of_fortune": "Wheel of Fortune Pathway",
   "potioneer.beyonder.sequence.miner": "Sequence 9 Miner",
@@ -51,8 +51,8 @@
 
   "potioneer.beyonder.pathway.mystery": "Mystery Pathway",
   "potioneer.beyonder.sequence.trickmaster": "Sequence 9 Trickmaster",
-  "potioneer.beyonder.sequence.voodoo_assassin": "Sequence 8 Voodoo Assassin",
-  "potioneer.beyonder.sequence.plague_doctor": "Sequence 7 Plague Doctor",
+  "potioneer.beyonder.sequence.acrobat": "Sequence 8 Acrobat",
+  "potioneer.beyonder.sequence.voodoo_assassin": "Sequence 7 Voodoo Assassin",
 
   "potioneer.beyonder.pathway.red_priest": "Red Priest Pathway",
   "potioneer.beyonder.sequence.warrior": "Sequence 9 Warrior",
@@ -71,6 +71,18 @@
   "creativetab.potioneer_ingredients_tab": "Ingredients",
   "potioneer.gui.main_ingredients": "Main Ingredients:",
   "potioneer.gui.supplementary_ingredients": "Supplementary Ingredients:",
+
+  "effect.potioneer.water_prison": "Water Prison",
+  "potioneer.pathway.trap_effect_0": "Trap effect set to Slowness",
+  "potioneer.pathway.trap_effect_1": "Trap effect set to Water Prison",
+  "potioneer.pathway.trap_effect_2": "Trap effect set to Teleport Beneath",
+  "potioneer.pathway.trap_effect_3": "Trap effect set to Damage",
+
+  "potioneer.beyonder.stat_hp": "Health:",
+  "potioneer.beyonder.stat_dmg": "Damage:",
+  "potioneer.beyonder.stat_armor": "Armor:",
+  "potioneer.beyonder.stat_tough": "Toughness:",
+  "potioneer.beyonder.stat_knock": "Knockback Resistance:",
 
   "potioneer.short_desc.": "Undefined",
   "potioneer.long_desc.": "Undefined2",
@@ -114,6 +126,14 @@
   "potioneer.long_desc.water_affinity": "You become swift as the water around you. Also recuperates you.",
   "potioneer.short_desc.divination": "High society requires decent preparation",
   "potioneer.long_desc.divination": "Your divination capabilities are greatly enhanced",
+  "potioneer.short_desc.water_create": "The goal of all life is to create",
+  "potioneer.long_desc.water_create": "You can create water anywhere you want.",
+  "potioneer.short_desc.water_sponge": "Virtuous Rulers take into consideration even those of lower standing",
+  "potioneer.long_desc.water_sponge": "You can mimic the effects of a sponge anywhere.",
+  "potioneer.short_desc.water_trap": "One's own domain is the place they guard the most",
+  "potioneer.long_desc.water_trap": "You can create invisible water traps on the ground. R-Click to flip effects.",
+  "potioneer.short_desc.water_prison": "Laws are the weapons of the king. This shall be your first.",
+  "potioneer.long_desc.water_prison": "You can cast the",
 
   "potioneer.short_desc.xray": "With the right attitude, shortcuts can be a path to success.",
   "potioneer.long_desc.xray": "You can determine the location of ores you hold in your hand.",

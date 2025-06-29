@@ -23,6 +23,11 @@ public class ModBlockEntities {
                     () -> BlockEntityType.Builder.of(MinerLightBlockEntity::new, ModBlocks.MINER_LIGHT.get())
                             .build(null));
 
+    public static RegistryObject<BlockEntityType<WaterTrapBlockEntity>> WATER_TRAP_BLOCK_ENTITY =
+            BLOCK_ENTITIES.register("water_trap_block_entity",
+                    () -> BlockEntityType.Builder.of(WaterTrapBlockEntity::new, ModBlocks.WATER_TRAP_BLOCK.get())
+                            .build(null));
+
     public static void register(IEventBus eventBus){
         BLOCK_ENTITIES.register(eventBus);
     }

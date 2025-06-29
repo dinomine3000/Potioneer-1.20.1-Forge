@@ -13,7 +13,7 @@ public class MysteryPathway extends Beyonder {
     public MysteryPathway(int sequence){
         super(sequence, "Mystery");
         this.color = 0x408040;
-        this.maxSpirituality = new int[]{0, 0, 0, 0, 1000, 1000, 1000, 1000, 500, 100};
+        this.maxSpirituality = new int[]{2500, 2500, 1700, 1600, 1600, 1500, 700, 600, 500, 100};
     }
 
     public static int getX(){
@@ -28,8 +28,9 @@ public class MysteryPathway extends Beyonder {
         return switch (sequence){
             case 9 -> new float[]{0, 0, 0, 0, 0};
             case 8 -> new float[]{0, 0, 0, 0, 1};
-            case 7 -> new float[]{0, 1, 0, 0, 1};
-            default -> new float[]{0, 0, 0, 0, 0};
+            case 7 -> new float[]{0, 1, 0, 0, 2};
+            case 6, 5 -> new float[]{0, 2, 0, 0, 3};
+            default -> new float[]{0, 3, 0, 0, 4};
         };
     }
 

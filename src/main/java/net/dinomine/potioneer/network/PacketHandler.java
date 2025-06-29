@@ -3,6 +3,7 @@ package net.dinomine.potioneer.network;
 import net.dinomine.potioneer.Potioneer;
 import net.dinomine.potioneer.network.messages.*;
 import net.dinomine.potioneer.network.messages.abilityRelevant.OpenDivinationScreenSTC;
+import net.dinomine.potioneer.network.messages.abilityRelevant.WaterPrisonEffectSTC;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.network.NetworkRegistry;
 import net.minecraftforge.network.simple.SimpleChannel;
@@ -20,15 +21,18 @@ public class PacketHandler {
     //the beyonder capability on client is mostly redundant, all calculations are performed on server and the needed
     //info is then synched to client-side classes for player use
     public static void init() {
-        INSTANCE.registerMessage(0, PlayerAdvanceMessage.class, PlayerAdvanceMessage::encode, PlayerAdvanceMessage::decode, PlayerAdvanceMessage::handle);
-        INSTANCE.registerMessage(1, SequenceSTCSyncRequest.class, SequenceSTCSyncRequest::encode, SequenceSTCSyncRequest::decode, SequenceSTCSyncRequest::handle);
-        INSTANCE.registerMessage(2, PlayerSTCHudStatsSync.class, PlayerSTCHudStatsSync::encode, PlayerSTCHudStatsSync::decode, PlayerSTCHudStatsSync::handle);
-        INSTANCE.registerMessage(3, PlayerStatsSyncMessage.class, PlayerStatsSyncMessage::encode, PlayerStatsSyncMessage::decode, PlayerStatsSyncMessage::handle);
-        INSTANCE.registerMessage(4, PlayerCastAbilityMessageCTS.class, PlayerCastAbilityMessageCTS::encode, PlayerCastAbilityMessageCTS::decode, PlayerCastAbilityMessageCTS::handle);
-        INSTANCE.registerMessage(5, PlayerAbilityInfoSyncSTC.class, PlayerAbilityInfoSyncSTC::encode, PlayerAbilityInfoSyncSTC::decode, PlayerAbilityInfoSyncSTC::handle);
-        INSTANCE.registerMessage(6, PlayerAbilityCooldownSTC.class, PlayerAbilityCooldownSTC::encode, PlayerAbilityCooldownSTC::decode, PlayerAbilityCooldownSTC::handle);
-        INSTANCE.registerMessage(7, PlayerFormulaScreenSTCMessage.class, PlayerFormulaScreenSTCMessage::encode, PlayerFormulaScreenSTCMessage::decode, PlayerFormulaScreenSTCMessage::handle);
-        INSTANCE.registerMessage(8, PlayerSyncHotbarMessage.class, PlayerSyncHotbarMessage::encode, PlayerSyncHotbarMessage::decode, PlayerSyncHotbarMessage::handle);
-        INSTANCE.registerMessage(9, OpenDivinationScreenSTC.class, OpenDivinationScreenSTC::encode, OpenDivinationScreenSTC::decode, OpenDivinationScreenSTC::handle);
+        int i = 0;
+        INSTANCE.registerMessage(i++, PlayerAdvanceMessage.class, PlayerAdvanceMessage::encode, PlayerAdvanceMessage::decode, PlayerAdvanceMessage::handle);
+        INSTANCE.registerMessage(i++, SequenceSTCSyncRequest.class, SequenceSTCSyncRequest::encode, SequenceSTCSyncRequest::decode, SequenceSTCSyncRequest::handle);
+        INSTANCE.registerMessage(i++, PlayerSTCHudStatsSync.class, PlayerSTCHudStatsSync::encode, PlayerSTCHudStatsSync::decode, PlayerSTCHudStatsSync::handle);
+        INSTANCE.registerMessage(i++, PlayerStatsSyncMessage.class, PlayerStatsSyncMessage::encode, PlayerStatsSyncMessage::decode, PlayerStatsSyncMessage::handle);
+        INSTANCE.registerMessage(i++, PlayerCastAbilityMessageCTS.class, PlayerCastAbilityMessageCTS::encode, PlayerCastAbilityMessageCTS::decode, PlayerCastAbilityMessageCTS::handle);
+        INSTANCE.registerMessage(i++, PlayerAbilityInfoSyncSTC.class, PlayerAbilityInfoSyncSTC::encode, PlayerAbilityInfoSyncSTC::decode, PlayerAbilityInfoSyncSTC::handle);
+        INSTANCE.registerMessage(i++, PlayerAbilityCooldownSTC.class, PlayerAbilityCooldownSTC::encode, PlayerAbilityCooldownSTC::decode, PlayerAbilityCooldownSTC::handle);
+        INSTANCE.registerMessage(i++, PlayerFormulaScreenSTCMessage.class, PlayerFormulaScreenSTCMessage::encode, PlayerFormulaScreenSTCMessage::decode, PlayerFormulaScreenSTCMessage::handle);
+        INSTANCE.registerMessage(i++, PlayerSyncHotbarMessage.class, PlayerSyncHotbarMessage::encode, PlayerSyncHotbarMessage::decode, PlayerSyncHotbarMessage::handle);
+        INSTANCE.registerMessage(i++, OpenDivinationScreenSTC.class, OpenDivinationScreenSTC::encode, OpenDivinationScreenSTC::decode, OpenDivinationScreenSTC::handle);
+        INSTANCE.registerMessage(i++, WaterPrisonEffectSTC.class, WaterPrisonEffectSTC::encode, WaterPrisonEffectSTC::decode, WaterPrisonEffectSTC::handle);
+        INSTANCE.registerMessage(i++, PlayerStatsMessageSTC.class, PlayerStatsMessageSTC::encode, PlayerStatsMessageSTC::decode, PlayerStatsMessageSTC::handle);
     }
 }

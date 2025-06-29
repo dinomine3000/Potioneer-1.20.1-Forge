@@ -3,8 +3,7 @@ package net.dinomine.potioneer.beyonder.pathways;
 import net.dinomine.potioneer.beyonder.abilities.Ability;
 import net.dinomine.potioneer.beyonder.abilities.Beyonder;
 import net.dinomine.potioneer.beyonder.abilities.redpriest.WeaponProficiencyAbility;
-import net.dinomine.potioneer.beyonder.abilities.tyrant.DivinationAbility;
-import net.dinomine.potioneer.beyonder.abilities.tyrant.WaterAffinityAbility;
+import net.dinomine.potioneer.beyonder.abilities.tyrant.*;
 import net.dinomine.potioneer.beyonder.player.EntityBeyonderManager;
 import net.dinomine.potioneer.beyonder.player.PlayerAbilitiesManager;
 import net.minecraft.world.entity.player.Player;
@@ -16,7 +15,7 @@ public class TyrantPathway extends Beyonder {
     public TyrantPathway(int sequence){
         super(sequence, "Tyrant");
         this.color = 0x404080;
-        this.maxSpirituality = new int[]{0, 0, 0, 0, 0, 0, 0, 750, 250, 100};
+        this.maxSpirituality = new int[]{0, 0, 0, 0, 0, 1200, 800, 750, 250, 100};
 
     }
 
@@ -30,9 +29,11 @@ public class TyrantPathway extends Beyonder {
 
     public static float[] getStatsFor(int sequence){
         return switch (sequence){
-            case 9 -> new float[]{6, 1, 0, 0, 4};
+            case 9 -> new float[]{8, 1, 0, 0, 4};
             case 8 -> new float[]{10, 1, 0, 0, 4};
-            case 7 -> new float[]{16, 1, 0, 0, 4};
+            case 7 -> new float[]{12, 2, 0, 0, 5};
+            case 6 -> new float[]{15, 2, 0, 0, 5};
+            case 5 -> new float[]{20, 3, 0, 0, 10};
             default -> new float[]{0, 0, 0, 0, 0};
         };
     }
@@ -40,7 +41,6 @@ public class TyrantPathway extends Beyonder {
     public static void getAbilities(int sequence, PlayerAbilitiesManager mng){
         ArrayList<Ability> passiveAbilities = new ArrayList<>();
         ArrayList<Ability> activeAbilities = new ArrayList<>();
-
         switch(sequence){
             case 0:
             case 1:
@@ -51,10 +51,14 @@ public class TyrantPathway extends Beyonder {
             case 6:
             case 7:
             case 8:
+                activeAbilities.add(new WaterPrisonAbility(sequence));
+                activeAbilities.add(new WaterCreateAbility(sequence));
+                activeAbilities.add(new WaterRemoveAbility(sequence));
+                activeAbilities.add(new WaterTrapAbility(sequence));
+                activeAbilities.add(new DivinationAbility(sequence));
             case 9:
                 WaterAffinityAbility water = new WaterAffinityAbility(sequence);
                 activeAbilities.add(water);
-                activeAbilities.add(new DivinationAbility(sequence));
 
                 passiveAbilities.add(water);
         }
@@ -89,7 +93,7 @@ public class TyrantPathway extends Beyonder {
         return switch (seq) {
             case 9 -> "Swimmer";
             case 8 -> "Hydro_Shaman";
-            case 7 -> "Water-Born";
+            case 7 -> "Waterborn";
             case 6 -> "Tempest";
             case 5 -> "Punisher";
             default -> "";

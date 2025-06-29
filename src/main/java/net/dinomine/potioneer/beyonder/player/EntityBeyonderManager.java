@@ -4,10 +4,7 @@ import net.dinomine.potioneer.beyonder.abilities.Ability;
 import net.dinomine.potioneer.beyonder.pathways.*;
 import net.dinomine.potioneer.beyonder.abilities.Beyonder;
 import net.dinomine.potioneer.network.PacketHandler;
-import net.dinomine.potioneer.network.messages.PlayerAbilityInfoSyncSTC;
-import net.dinomine.potioneer.network.messages.PlayerAdvanceMessage;
-import net.dinomine.potioneer.network.messages.PlayerSTCHudStatsSync;
-import net.dinomine.potioneer.network.messages.PlayerStatsSyncMessage;
+import net.dinomine.potioneer.network.messages.*;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
@@ -121,7 +118,7 @@ public class EntityBeyonderManager {
     }
 
     private void applyCost(){
-        setSpirituality(Mth.clamp(Math.round((1000*(getSpirituality() - spiritualityCost/20f + maxSpirituality/1200f))) / 1000f,
+        setSpirituality(Mth.clamp(Math.round((1000*(getSpirituality() - spiritualityCost/20f + maxSpirituality/2400f))) / 1000f,
                 0f, this.maxSpirituality));
         this.spiritualityCost = 0;
     }
@@ -291,6 +288,8 @@ public class EntityBeyonderManager {
             //server side to client. messages are sent when client joins world and when he advanced by means controlled by the server
             PacketHandler.INSTANCE.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) player),
                     new PlayerAdvanceMessage(this.pathway.getId(), advancing));
+            PacketHandler.INSTANCE.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) player),
+                    new PlayerStatsMessageSTC(getBeyonderStats().getIntStats()));
         } else {
             //client side to server. messages are sent when client advances after succeeding in the minigame
             PacketHandler.INSTANCE.sendToServer(new PlayerAdvanceMessage(this.pathway.getId(), advancing));

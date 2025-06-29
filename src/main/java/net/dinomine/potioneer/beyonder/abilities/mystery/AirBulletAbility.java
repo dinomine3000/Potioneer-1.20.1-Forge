@@ -12,6 +12,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
@@ -26,7 +27,7 @@ import java.util.function.Supplier;
 public class AirBulletAbility extends Ability {
 
     public AirBulletAbility(int sequence){
-        this.info = new AbilityInfo(57, 56, "Air Bullet", 20 + sequence, 10*(10-sequence), 5*20, "air_bullet");
+        this.info = new AbilityInfo(57, 56, "Air Bullet", 20 + sequence, 100*(8-sequence), 5*20, "air_bullet");
         this.isActive = true;
     }
 
@@ -74,11 +75,11 @@ public class AirBulletAbility extends Ability {
                 }
             }));
             hits.forEach(ent -> {
-                int pow = (10-info.id()%10);
-                ent.hurt(level.damageSources().indirectMagic(target, target), (float) (0.384f*Math.pow(pow, 2) + 2.461f*pow + 3.938f));
+                int pow = (9-getSequence());
+                ent.hurt(level.damageSources().indirectMagic(target, null),
+                        (float) (0.384f*Math.pow(target.getAttribute(Attributes.ATTACK_DAMAGE).getBaseValue()*pow, 2) + 2.461f*pow + 3.938f));
             });
             level.playSound(null, target.getOnPos().above(), SoundEvents.GENERIC_EXTINGUISH_FIRE, SoundSource.PLAYERS, 1, 1);
-
         }
         return true;
     }

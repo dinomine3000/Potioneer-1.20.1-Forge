@@ -31,6 +31,10 @@ public abstract class BeyonderEffect {
         return this;
     }
 
+    public float getCost(){
+        return this.cost;
+    }
+
     public int getSequenceLevel() {
         return sequenceLevel;
     }

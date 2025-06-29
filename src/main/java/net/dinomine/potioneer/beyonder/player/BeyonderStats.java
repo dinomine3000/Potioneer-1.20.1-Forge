@@ -55,6 +55,15 @@ public class BeyonderStats {
         this.playerAttributes = oldStore.playerAttributes;
     }
 
+    public int[] getIntStats(){
+        int hp = (int) playerAttributes[0];
+        int dmg = (int) playerAttributes[1];
+        int arm = (int) playerAttributes[2];
+        int tou = (int) playerAttributes[3];
+        int kno = (int) playerAttributes[4];
+        return new int[]{hp, dmg, arm, tou, kno};
+    }
+
     public void setAttributes(float[] atts){
         this.playerAttributes = atts;
     }

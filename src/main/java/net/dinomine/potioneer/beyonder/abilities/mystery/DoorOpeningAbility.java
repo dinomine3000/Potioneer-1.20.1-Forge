@@ -23,7 +23,7 @@ import static net.minecraft.world.level.block.DoorBlock.OPEN;
 public class DoorOpeningAbility extends Ability {
 
     public DoorOpeningAbility(int sequence){
-        this.info = new AbilityInfo(57, 80, "Door Opening", 20+sequence, 5, 20, "door_opening");
+        this.info = new AbilityInfo(57, 80, "Door Opening", 20+sequence, 40 + 10*(9-sequence), 20, "door_opening");
         this.isActive = true;
     }
 
@@ -44,7 +44,7 @@ public class DoorOpeningAbility extends Ability {
             BlockState blockTar = level.getBlockState(rayTrace.getBlockPos());
             if(blockTar.is(BlockTags.DOORS)){
                 ((DoorBlock) blockTar.getBlock()).setOpen(null, level, blockTar, rayTrace.getBlockPos(), !blockTar.getValue(OPEN));
-                cap.requestActiveSpiritualityCost(info.cost()*(4));
+                cap.requestActiveSpiritualityCost(info.cost());
                 return true;
             }
         }

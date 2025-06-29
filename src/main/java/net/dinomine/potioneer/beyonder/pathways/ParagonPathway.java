@@ -31,9 +31,9 @@ public class ParagonPathway extends Beyonder {
     public static float[] getStatsFor(int sequence){
         return switch (sequence){
             case 9 -> new float[]{0, 0, 0, 0, 2};
-            case 8 -> new float[]{0, 0, 0, 0, 3};
-            case 7 -> new float[]{0, 0, 0, 0, 4};
-            default -> new float[]{0, 0, 0, 0, 0};
+            case 8 -> new float[]{1, 0, 0, 0, 3};
+            case 7 -> new float[]{1, 0, 0, 0, 4};
+            default -> new float[]{2, 0, 0, 0, 5};
         };
     }
 
