@@ -37,6 +37,7 @@ public class ModCreativeModTabs {
                         //output.accept(ModItems.GOLDEN_DROP.get());
                         output.accept(ModItems.COIN_ITEM.get());
                         output.accept(ModItems.DIVINATION_ROD.get());
+                        output.accept(ModItems.FIRE_SWORD.get());
                     })
                     .build());
 

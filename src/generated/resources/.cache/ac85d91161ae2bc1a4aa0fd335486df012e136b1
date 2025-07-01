@@ -1,5 +1,9 @@
-// 1.20.1	2025-01-29T10:20:57.4057568	Global Loot Modifiers : potioneer
-7bed89b01bc4a4d106569095e0e0707246104941 data/forge/loot_modifiers/global_loot_modifiers.json
+// 1.20.1	2025-07-01T15:38:34.2297649	Global Loot Modifiers : potioneer
+6f6966acf9893f8cf2acd640944a03384d98b3cd data/forge/loot_modifiers/global_loot_modifiers.json
+55eb0f9483dd3dc23da5b3662caf2e5550f48ec9 data/potioneer/loot_modifiers/coin_from_archeology_cold.json
+953c96a6da61be105de8cc87e18e747195770e21 data/potioneer/loot_modifiers/coin_from_archeology_pyramid.json
+4b268cce5cfb1af07614a8f501631c254fe84b62 data/potioneer/loot_modifiers/coin_from_archeology_warm.json
+28755faf2ad5fa45ee4a477f68196ebfcb22b865 data/potioneer/loot_modifiers/coin_from_archeology_well.json
 f139b0707aa290e05b16126d41425b72e7b9ef73 data/potioneer/loot_modifiers/formula_from_ancient_city.json
 57275f8604326be07688b2a7546c4137c861a1c6 data/potioneer/loot_modifiers/formula_from_archeology_cold.json
 2bed4da03f4716bd2d12fc22e14096c6c8de7388 data/potioneer/loot_modifiers/formula_from_archeology_pyramid.json

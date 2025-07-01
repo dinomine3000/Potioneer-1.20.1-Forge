@@ -3,20 +3,14 @@ package net.dinomine.potioneer.beyonder.abilities.tyrant;
 import net.dinomine.potioneer.beyonder.abilities.Ability;
 import net.dinomine.potioneer.beyonder.abilities.AbilityInfo;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
-import net.dinomine.potioneer.beyonder.misc.DivinationResult;
-import net.dinomine.potioneer.beyonder.misc.MysticismHelper;
 import net.dinomine.potioneer.beyonder.player.EntityBeyonderManager;
 import net.dinomine.potioneer.beyonder.player.PlayerLuckManager;
-import net.dinomine.potioneer.beyonder.screen.DivinationScreen;
 import net.dinomine.potioneer.network.PacketHandler;
-import net.dinomine.potioneer.network.messages.PlayerAdvanceMessage;
 import net.dinomine.potioneer.network.messages.abilityRelevant.OpenDivinationScreenSTC;
 import net.dinomine.potioneer.util.PotioneerMathHelper;
-import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.MapItem;
 import net.minecraft.world.level.Level;
@@ -26,8 +20,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.saveddata.maps.MapBanner;
 import net.minecraft.world.level.saveddata.maps.MapItemSavedData;
 import net.minecraftforge.network.PacketDistributor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
@@ -57,11 +49,11 @@ public class DivinationAbility extends Ability {
 
     @Override
     public void onAcquire(EntityBeyonderManager cap, LivingEntity target) {
-        cap.getEffectsManager().addEffect(BeyonderEffects.byId(BeyonderEffects.EFFECT.MISC_MYST, getSequence(), 0, -1, true));
+        cap.getEffectsManager().addEffectNoNotify(BeyonderEffects.byId(BeyonderEffects.EFFECT.MISC_MYST, getSequence(), 0, -1, true));
     }
 
     public boolean active(EntityBeyonderManager cap, LivingEntity target) {
-        if(!target.level().isClientSide()) return true;
+        if(target.level().isClientSide()) return true;
 
 
         PacketHandler.INSTANCE.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) target),
@@ -140,7 +132,7 @@ public class DivinationAbility extends Ability {
     public void passive(EntityBeyonderManager cap, LivingEntity target) {
         // THIS IS NOT RUNNING because this isnt a passive ability.
         if(cap.getEffectsManager().hasEffect(BeyonderEffects.EFFECT.MISC_MYST)) return;
-        cap.getEffectsManager().addEffect(BeyonderEffects.byId(BeyonderEffects.EFFECT.MISC_MYST, getSequence(), 0, -1, true));
+        cap.getEffectsManager().addEffectNoNotify(BeyonderEffects.byId(BeyonderEffects.EFFECT.MISC_MYST, getSequence(), 0, -1, true));
     }
 
     @Override

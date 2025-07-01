@@ -14,6 +14,10 @@ public class ClientStatsData {
     public static boolean keyPressed = false;
     private static int[] beyonderStats = new int[]{0, 0, 0, 0, 0};
 
+    private static int luck = 0;
+    private static int minLuck = 0;
+    private static int maxLuck = 0;
+
     public static void attemptAdvancement(int newSeq){
         //difference between the new sequence and current sequence
         //plus one more difficulty for every 25% sanity lost
@@ -66,5 +70,23 @@ public class ClientStatsData {
 
     public static void setStats(int[] stats) {
         beyonderStats = stats;
+    }
+
+    public static void setLuck(int newLuck, int newMinLuck, int newMaxLuck) {
+        luck = newLuck;
+        minLuck = newMinLuck;
+        maxLuck = newMaxLuck;
+    }
+
+    public static int getLuck(){
+        return luck;
+    }
+
+    public static int getMinLuck(){
+        return minLuck;
+    }
+
+    public static int getMaxLuck(){
+        return maxLuck;
     }
 }

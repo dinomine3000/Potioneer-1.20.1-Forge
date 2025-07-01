@@ -1,8 +1,10 @@
 package net.dinomine.potioneer.beyonder.player;
 
+import net.dinomine.potioneer.beyonder.player.luck.LuckRange;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
@@ -10,21 +12,25 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 
+import java.util.Random;
+
 public class PlayerLuckManager {
     //corresponds to 20 minutes irl (ticks once every 10 seconds -> 1200 seconds = 20 mins)
-    private static final int PITY_EVENT_THRESHOLD = 120;
     private static final int FORTUNATE_EVENT_THRESHOLD = 100;
     private static final int UNFORTUNATE_EVENT_THRESHOLD = -100;
+    public static final int MAXIMUM_LUCK = 1000;
+    public static final int MINIMUM_LUCK = -1000;
 
     private boolean eventGoingOn = false;
     private int luckEventCountdown;
     private int luck;
     private int tick = 0;
-    private int luckLimit = 50;
-    private int baseEventPity = 0;
+    private LuckRange range;
 
     public PlayerLuckManager(){
         this.luck = 0;
+        Random random = new Random();
+        this.range = new LuckRange(random.nextInt(20, 50), random.nextInt(20, 50));
         luckEventCountdown = 1;
     }
 
@@ -46,25 +52,29 @@ public class PlayerLuckManager {
                     target.sendSystemMessage(Component.literal("The gears of fate turn to you"));
                 }
             }
-            if(luck < luckLimit){
-                baseEventPity = 0;
-                grantLuck(1);
-            } else if(!eventGoingOn){
-                if(baseEventPity++ > PITY_EVENT_THRESHOLD){
-                    castEvent(target);
-                    target.sendSystemMessage(Component.literal("Fate pities you..."));
-                }
-            }
+            //random walk
+            luck = range.changeLuck(luck, target.getRandom().nextBoolean() ? 1 : -1);
+            range.tenSecondTick();
+
         }
+    }
+
+    public LuckRange getRange(){
+        return range;
+    }
+
+    public void changeLuckTemporary(int minDelta, int maxDelta, int posDelta){
+        range.changeDecayRange(minDelta, maxDelta, posDelta);
+    }
+
+    public void changeLuckRange(int minDelta, int maxDelta, int posDelta){
+        range.changeRange(minDelta, maxDelta, posDelta);
     }
 
     private void castEvent(LivingEntity target){
         eventGoingOn = true;
 //      luckEventCountdown = target.getRandom().nextInt(10*6);
         luckEventCountdown = target.getRandom().nextInt(1);
-        if(luck > FORTUNATE_EVENT_THRESHOLD){
-            baseEventPity = 0;
-        }
     }
 
     public void instantlyCastEvent(LivingEntity target){
@@ -73,7 +83,11 @@ public class PlayerLuckManager {
     }
 
     public int getMaxPassiveLuck(){
-        return luckLimit;
+        return range.getMaxLuck();
+    }
+
+    public int getMinPassiveLuck(){
+        return range.getMinLuck();
     }
 
     public int getLuck(){
@@ -133,23 +147,32 @@ public class PlayerLuckManager {
             float a = b * (float) Math.pow(10, luck/100f - 1);
             newChance = (float) (Math.log(a*chance + 1) / Math.log(a + 1));
         } else {
-            float c = chance / (d - chance);
-            newChance = (float) (Math.log(c*chance) / Math.log(c+1));
+            float c = luck / (d - luck);
+            newChance = (float) (Math.log(c*chance + 1) / Math.log(c+1));
         }
         return newChance;
     }
 
-    public void consumeLuck(int consume){
-        luck -= consume;
+    public boolean passesLuckCheck(float chance, int luckCostIfSuccess, int luckGainIfFailure, RandomSource random){
+        float newChance = checkLuck(chance);
+        if(random.nextFloat() < newChance){
+            consumeLuck(luckCostIfSuccess);
+            return true;
+        }
+        grantLuck(luckGainIfFailure);
+        return false;
     }
-    public void grantLuck(int amm){ luck = Mth.clamp(luck + amm, -1000, 1000);}
+
+    public void consumeLuck(int consume){
+        luck = Mth.clamp(luck - consume, MINIMUM_LUCK, MAXIMUM_LUCK);
+    }
+    public void grantLuck(int amm){ luck = Mth.clamp(luck + amm, MINIMUM_LUCK, MAXIMUM_LUCK);}
 
     public void saveNBTData(CompoundTag nbt){
         CompoundTag luck = new CompoundTag();
         luck.putInt("luck", this.luck);
-        luck.putInt("luck_limit", this.luckLimit);
         luck.putInt("luck_countdown", this.luckEventCountdown);
-        luck.putInt("pity_countdown", this.baseEventPity);
+        luck.put("range_data", range.saveNBTData(new CompoundTag()));
         luck.putBoolean("event_on", this.eventGoingOn);
         nbt.put("luck_status", luck);
     }
@@ -157,12 +180,14 @@ public class PlayerLuckManager {
     public void loadNBTData(CompoundTag nbt){
         CompoundTag tag = nbt.getCompound("luck_status");
         this.luck = tag.getInt("luck");
-        this.luckLimit = tag.getInt("luck_limit");
-        if(this.luckLimit == 0){
-            luckLimit = 50;
-        }
-        this.baseEventPity = tag.getInt("pity_countdown");
+        if(tag.contains("range_data"))
+            this.range.loadNBTData(tag.getCompound("range_data"));
         this.luckEventCountdown = tag.getInt("luck_countdown");
         this.eventGoingOn = tag.getBoolean("event_on");
+    }
+
+    public void copyFrom(PlayerLuckManager luckManager) {
+        this.range = luckManager.range;
+        this.luck = luckManager.luck;
     }
 }

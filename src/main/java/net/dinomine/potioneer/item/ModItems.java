@@ -64,6 +64,12 @@ public class ModItems {
     public static final RegistryObject<Item> DIVINATION_ROD = ITEMS.register("cane",
             () -> new CaneItem(new Item.Properties().stacksTo(1).fireResistant().defaultDurability(256)));
 
+    public static final RegistryObject<Item> FIRE_SWORD = ITEMS.register("fire_sword",
+            () -> new FireSword(new Item.Properties().stacksTo(1).fireResistant().rarity(Rarity.UNCOMMON)));
+
+    public static final RegistryObject<Item> VOODOO_DOLL = ITEMS.register("voodoo_doll",
+            () -> new VoodooDollItem(new Item.Properties().stacksTo(1).rarity(Rarity.COMMON)));
+
 
     /*ublic static final RegistryObject<Item> METAL_ROD = ITEMS.register("metal_detector",
             () -> new MetalDetectorItem(new Item.Properties().stacksTo(1).durability(20)));*/

@@ -51,17 +51,22 @@ public class MysteryPathway extends Beyonder {
             case 8:
 //                activeAbilities.add(new RandomTeleportAbility(sequence));
                 ReduceFallDamageAbility fall = new ReduceFallDamageAbility(sequence);
+                StepUpAbility step = new StepUpAbility(sequence);
+
                 activeAbilities.add(fall);
                 passiveAbilities.add(fall);
-                activeAbilities.add(new StepUpAbility(sequence));
+                activeAbilities.add(step);
+                passiveAbilities.add(step);
                 activeAbilities.add(new LeapAbility(sequence));
             case 9:
                 SpiritualityRegenAbility regen = new SpiritualityRegenAbility(sequence);
-                activeAbilities.add(new ReachAbility(sequence));
+                ReachAbility reach = new ReachAbility(sequence);
+                activeAbilities.add(reach);
                 activeAbilities.add(new DoorOpeningAbility(sequence));
                 activeAbilities.add(regen);
                 activeAbilities.add(new InvisibilityAbility(sequence));
                 passiveAbilities.add(regen);
+                passiveAbilities.add(reach);
         }
         mng.setPathwayActives(activeAbilities);
         mng.setPathwayPassives(passiveAbilities);

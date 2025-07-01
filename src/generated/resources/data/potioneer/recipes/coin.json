@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "I": {
+      "item": "minecraft:iron_nugget"
+    },
+    "N": {
+      "item": "minecraft:gold_nugget"
+    }
+  },
+  "pattern": [
+    " I ",
+    "INI",
+    " I "
+  ],
+  "result": {
+    "item": "potioneer:coin"
+  },
+  "show_notification": true
+}

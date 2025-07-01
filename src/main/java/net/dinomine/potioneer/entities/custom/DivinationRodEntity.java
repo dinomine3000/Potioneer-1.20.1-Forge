@@ -33,16 +33,17 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 import java.util.ArrayList;
 
 
-public class DivinationRodEntity extends Entity implements GeoEntity {
+public class DivinationRodEntity extends PlaceableItemEntity implements GeoEntity {
     private AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
     public static final EntityDataAccessor<Boolean> DIVINING = SynchedEntityData.defineId(DivinationRodEntity.class, EntityDataSerializers.BOOLEAN);
     public static final EntityDataAccessor<Float> INTENDED_YAW = SynchedEntityData.defineId(DivinationRodEntity.class, EntityDataSerializers.FLOAT);
 
-    public DivinationRodEntity(EntityType<DivinationRodEntity> pEntityType, Level pLevel) {
-        super(pEntityType, pLevel);
-        this.horizontalCollision = true;
-        this.setInvulnerable(true);
-        this.noPhysics = true;
+    public DivinationRodEntity(EntityType<DivinationRodEntity> pEntityType, Level pLevel, ItemStack stack) {
+        super(pEntityType, pLevel, true, true, true, stack);
+    }
+
+    public DivinationRodEntity(EntityType<DivinationRodEntity> pEntityType, Level pLevel){
+        this(pEntityType, pLevel, ItemStack.EMPTY);
     }
 
     @Override
@@ -54,16 +55,6 @@ public class DivinationRodEntity extends Entity implements GeoEntity {
     public void setRotation(float yaw){
         setYRot(yaw);
         this.entityData.set(INTENDED_YAW, yaw);
-    }
-
-    @Override
-    public boolean isPickable() {
-        return true;
-    }
-
-    @Override
-    public @Nullable ItemStack getPickResult() {
-        return new ItemStack(ModItems.DIVINATION_ROD.get());
     }
 
     @Override
@@ -82,20 +73,17 @@ public class DivinationRodEntity extends Entity implements GeoEntity {
     }
 
     @Override
-    public InteractionResult interact(Player pPlayer, InteractionHand pHand) {
-        if(pPlayer.isCrouching()){
-            pPlayer.addItem(new ItemStack(ModItems.DIVINATION_ROD.get()));
-            this.kill();
-            pPlayer.level().playSound(pPlayer, this.getOnPos(), SoundEvents.ITEM_PICKUP, SoundSource.PLAYERS);
-            return InteractionResult.SUCCESS;
-        }
-
+    protected InteractionResult onPlayerRClick(Player pPlayer, InteractionHand pHand) {
         if(pPlayer.level().isClientSide()){
+            //on client side, you always update its animation to match its synched data
+            //this works bc the client side is called after the server runs
+            //so server interact() runs, it sets DIVING to the proper value, and then the client plays the corresponding animation
             triggerAnimation();
             return InteractionResult.SUCCESS;
         }
 
         if(this.entityData.get(DIVINING)){
+            //if, on RClick, the rods status is DIVINING, reset it back to not-diving status
             flipDivination();
             triggerAnimation();
             return InteractionResult.SUCCESS;
@@ -110,7 +98,7 @@ public class DivinationRodEntity extends Entity implements GeoEntity {
             seer = pPlayer.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve().get().getEffectsManager().hasEffect(BeyonderEffects.EFFECT.MISC_MYST);
         }
 
-        DivinationResult result = MysticismHelper.doDivination(target, pPlayer, 32, this.getOnPos(), sequenceId);
+        DivinationResult result = MysticismHelper.doDivination(target, pPlayer, 128, this.getOnPos(), sequenceId);
         if(result.positions().isEmpty()){
             if(!seer){
                 this.entityData.set(INTENDED_YAW, pPlayer.getRandom().nextFloat()*360);
@@ -203,27 +191,27 @@ public class DivinationRodEntity extends Entity implements GeoEntity {
 
     @Override
     protected void defineSynchedData() {
+        super.defineSynchedData();
         this.entityData.define(DIVINING, false);
         this.entityData.define(INTENDED_YAW, 0f);
     }
 
     @Override
     protected void readAdditionalSaveData(CompoundTag compoundTag) {
-
+        super.readAdditionalSaveData(compoundTag);
+        this.entityData.set(DIVINING, compoundTag.getBoolean("divining"));
+        this.entityData.set(INTENDED_YAW, compoundTag.getFloat("yaw"));
     }
 
     @Override
     protected void addAdditionalSaveData(CompoundTag compoundTag) {
-
+        super.addAdditionalSaveData(compoundTag);
+        compoundTag.putBoolean("divining", this.entityData.get(DIVINING));
+        compoundTag.putFloat("yaw", this.entityData.get(INTENDED_YAW));
     }
 
     public AABB getBoundingBoxForCulling() {
         AABB aabb = this.getBoundingBox();
         return aabb;
-    }
-
-    @Override
-    public boolean mayInteract(Level pLevel, BlockPos pPos) {
-        return true;
     }
 }

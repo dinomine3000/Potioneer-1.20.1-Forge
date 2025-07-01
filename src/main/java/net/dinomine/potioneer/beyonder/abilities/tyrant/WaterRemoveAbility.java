@@ -33,7 +33,7 @@ public class WaterRemoveAbility extends Ability {
     private static final Direction[] ALL_DIRECTIONS = Direction.values();
 
     public WaterRemoveAbility(int sequence){
-        this.info = new AbilityInfo(31, 128, "Remove Water", sequence, 10, 20*2, "water_sponge");
+        this.info = new AbilityInfo(31, 128, "Remove Water", 10 + sequence, 10, 20*2, "water_sponge");
     }
 
     @Override
@@ -41,7 +41,7 @@ public class WaterRemoveAbility extends Ability {
         if(target.level().isClientSide()) return true;
         if(cap.getSpirituality() > info.cost()){
             ServerLevel level = (ServerLevel) target.level();
-            HitResult block = target.pick(target.getAttributeBaseValue(ForgeMod.BLOCK_REACH.get()) + 0.5, 0f, false);
+            HitResult block = target.pick(target.getAttributeBaseValue(ForgeMod.BLOCK_REACH.get()) + 0.5f, 0f, false);
             if(block instanceof BlockHitResult rayTrace){
                 BlockPos targetPos = rayTrace.getBlockPos().relative(rayTrace.getDirection());
                 double radius = target.getAttributeBaseValue(ForgeMod.ENTITY_REACH.get()) + (10 - getSequence());
@@ -57,35 +57,31 @@ public class WaterRemoveAbility extends Ability {
 
     //copied from SpongeBlock class
     private boolean removeWaterBreadthFirstSearch(Level pLevel, BlockPos pPos, int radius) {
-        BlockState spongeState = pLevel.getBlockState(pPos);
         return BlockPos.breadthFirstTraversal(pPos, radius, 65, (position, consumer) -> {
             for(Direction direction : ALL_DIRECTIONS) {
                 consumer.accept(position.relative(direction));
             }
 
         }, (positionToEmpty) -> {
-            if (!positionToEmpty.equals(pPos)) {
-                BlockState blockstate = pLevel.getBlockState(positionToEmpty);
+            BlockState blockstate = pLevel.getBlockState(positionToEmpty);
 
-                Block block = blockstate.getBlock();
-                if (block instanceof BucketPickup bucketpickup) {
-                    if (!bucketpickup.pickupBlock(pLevel, positionToEmpty, blockstate).isEmpty()) {
-                        return true;
-                    }
+            Block block = blockstate.getBlock();
+            if (block instanceof BucketPickup bucketpickup) {
+                if (!bucketpickup.pickupBlock(pLevel, positionToEmpty, blockstate).isEmpty()) {
+                    return true;
+                }
+            }
+
+            if (blockstate.getBlock() instanceof LiquidBlock) {
+                pLevel.setBlock(positionToEmpty, Blocks.AIR.defaultBlockState(), 3);
+            } else {
+                if (!blockstate.is(Blocks.KELP) && !blockstate.is(Blocks.KELP_PLANT) && !blockstate.is(Blocks.SEAGRASS) && !blockstate.is(Blocks.TALL_SEAGRASS)) {
+                    return false;
                 }
 
-                if (blockstate.getBlock() instanceof LiquidBlock) {
-                    pLevel.setBlock(positionToEmpty, Blocks.AIR.defaultBlockState(), 3);
-                } else {
-                    if (!blockstate.is(Blocks.KELP) && !blockstate.is(Blocks.KELP_PLANT) && !blockstate.is(Blocks.SEAGRASS) && !blockstate.is(Blocks.TALL_SEAGRASS)) {
-                        return false;
-                    }
-
-                    BlockEntity blockentity = blockstate.hasBlockEntity() ? pLevel.getBlockEntity(positionToEmpty) : null;
-                    dropResources(blockstate, pLevel, positionToEmpty, blockentity);
-                    pLevel.setBlock(positionToEmpty, Blocks.AIR.defaultBlockState(), 3);
-                }
-
+                BlockEntity blockentity = blockstate.hasBlockEntity() ? pLevel.getBlockEntity(positionToEmpty) : null;
+                dropResources(blockstate, pLevel, positionToEmpty, blockentity);
+                pLevel.setBlock(positionToEmpty, Blocks.AIR.defaultBlockState(), 3);
             }
             return true;
         }) > 1;

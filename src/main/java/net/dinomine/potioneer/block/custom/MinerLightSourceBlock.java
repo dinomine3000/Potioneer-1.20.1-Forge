@@ -50,11 +50,6 @@ public class MinerLightSourceBlock extends BaseEntityBlock implements SimpleWate
         return true;
     }
 
-    @Override
-    public boolean canBeReplaced(BlockState pState, Fluid pFluid) {
-        return super.canBeReplaced(pState, pFluid);
-    }
-
     public BlockState updateShape(BlockState pState, Direction pFacing, BlockState pFacingState, LevelAccessor pLevel, BlockPos pCurrentPos, BlockPos pFacingPos) {
         if (pState.getValue(WATERLOGGED)) {
             pLevel.scheduleTick(pCurrentPos, Fluids.WATER, Fluids.WATER.getTickDelay(pLevel));

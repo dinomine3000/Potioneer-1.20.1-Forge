@@ -55,8 +55,8 @@ public class WaterTrapBlockEntity extends BlockEntity implements GeoBlockEntity 
         }
     }
 
-    public UUID getOwnerUUID(){
-        return id;
+    public boolean isOwner(UUID uId, int sequenceId){
+        return(Math.floorDiv(sequenceId, 10) == 1 && Math.floorMod(sequenceId, 10) <= 8 && uId.compareTo(id) == 0);
     }
 
     @Override
@@ -119,8 +119,8 @@ public class WaterTrapBlockEntity extends BlockEntity implements GeoBlockEntity 
         }
     }
 
-    public void incrementIndex(Player player){
-        if(player.getUUID().compareTo(id) != 0) return;
+    public void incrementIndex(Player player, int sequenceId){
+        if(isOwner(player.getUUID(), sequenceId)) return;
         setChanged();
         effectIndex = Math.floorMod((effectIndex + (player.isCrouching() ? -1 : 1)), 4);
         player.sendSystemMessage(Component.translatable("potioneer.pathway.trap_effect_" + effectIndex));

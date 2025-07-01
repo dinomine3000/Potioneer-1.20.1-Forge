@@ -26,7 +26,7 @@ import java.util.function.Predicate;
 public class WaterPrisonAbility extends Ability {
 
     public WaterPrisonAbility(int sequence){
-        this.info = new AbilityInfo(31, 152, "Cast Water Prison", sequence, 40, 20*10, "water_prison");
+        this.info = new AbilityInfo(31, 152, "Cast Water Prison", 10 + sequence, 20 + 20*(9 - sequence), 20*20, "water_prison");
     }
 
     @Override

@@ -5,7 +5,6 @@ import net.dinomine.potioneer.beyonder.abilities.Beyonder;
 import net.dinomine.potioneer.beyonder.abilities.mystery.*;
 import net.dinomine.potioneer.beyonder.abilities.paragon.CraftingGuiAbility;
 import net.dinomine.potioneer.beyonder.abilities.paragon.DurabilityRegenAbility;
-import net.dinomine.potioneer.beyonder.abilities.redpriest.StatBonusAbility;
 import net.dinomine.potioneer.beyonder.abilities.redpriest.WeaponProficiencyAbility;
 import net.dinomine.potioneer.beyonder.abilities.tyrant.WaterAffinityAbility;
 import net.dinomine.potioneer.beyonder.abilities.wheeloffortune.ConjurePickaxeAbility;

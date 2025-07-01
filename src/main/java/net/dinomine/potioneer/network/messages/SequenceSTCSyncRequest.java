@@ -11,6 +11,7 @@ import net.minecraftforge.network.NetworkEvent;
 import net.minecraftforge.network.PacketDistributor;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.function.Supplier;
 
 //sent from client to server on world join to request a STC sync
@@ -40,6 +41,8 @@ public class SequenceSTCSyncRequest {
                             new PlayerAbilityInfoSyncSTC(cap.getAbilitiesManager().getPathwayActives().stream().map(Ability::getInfo).toList(), false));
                     PacketHandler.INSTANCE.send(PacketDistributor.PLAYER.with(() -> player),
                             new PlayerSyncHotbarMessage(cap.getAbilitiesManager().clientHotbar, cap.getAbilitiesManager().quickAbility));
+                    PacketHandler.INSTANCE.send(PacketDistributor.PLAYER.with(() -> player),
+                            new PlayerStatsMessageSTC(cap.getBeyonderStats().getIntStats()));
                     cap.getAbilitiesManager().updateClientCooldownInfo(player);
                 }
             });

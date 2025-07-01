@@ -4,20 +4,9 @@ import net.dinomine.potioneer.beyonder.abilities.Ability;
 import net.dinomine.potioneer.beyonder.abilities.AbilityInfo;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
 import net.dinomine.potioneer.beyonder.player.EntityBeyonderManager;
-import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ChorusFruitItem;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.SlimeBlock;
-import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-
-import java.util.ArrayList;
-import java.util.function.Predicate;
 
 public class LeapAbility extends Ability {
 
@@ -38,7 +27,7 @@ public class LeapAbility extends Ability {
         double mult = 1 + 1.2*(9-getSequence());
         target.addDeltaMovement(look.multiply(mult, mult/2, mult));
         if(target instanceof Player player && !(player.isCreative() || player.isSpectator())) {
-            cap.getEffectsManager().addEffect(BeyonderEffects.byId(BeyonderEffects.EFFECT.MYSTERY_FALL_NEGATE, getSequence(), 0, -1, true));
+            cap.getEffectsManager().addEffectNoNotify(BeyonderEffects.byId(BeyonderEffects.EFFECT.MYSTERY_FALL_NEGATE, getSequence(), 0, -1, true));
         }
         if(!target.level().isClientSide()){
             cap.requestActiveSpiritualityCost(info.cost());

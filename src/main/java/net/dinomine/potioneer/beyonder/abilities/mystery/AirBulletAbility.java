@@ -41,7 +41,7 @@ public class AirBulletAbility extends Ability {
         if(cap.getSpirituality() < getInfo().cost()) return false;
         Level level = target.level();
         if(level.isClientSide()){
-            double dist = (9 - info.id()%10)*8 + 5;
+            double dist = (9 - getSequence())*8 + 5;
             float temp = 0.7f;
             Vec3 lookAngle = target.getLookAngle();
             while(temp < dist){
@@ -54,7 +54,7 @@ public class AirBulletAbility extends Ability {
             cap.requestActiveSpiritualityCost(info.cost());
             Vec3 lookAngle = target.getLookAngle();
             Vec3 pos = target.position();
-            int radius = (9 - info.id()%10)*8 + 5;
+            int radius = (9 - getSequence())*8 + 5;
             AABB box = new AABB(
                     pos.x-radius, pos.y-radius, pos.z-radius,
                     pos.x+radius, pos.y+radius, pos.z+radius

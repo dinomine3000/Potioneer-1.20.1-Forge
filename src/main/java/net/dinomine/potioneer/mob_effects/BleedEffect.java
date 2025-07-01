@@ -11,5 +11,4 @@ public class BleedEffect extends MobEffect {
     protected BleedEffect(MobEffectCategory pCategory, int pColor) {
         super(pCategory, pColor);
     }
-
 }

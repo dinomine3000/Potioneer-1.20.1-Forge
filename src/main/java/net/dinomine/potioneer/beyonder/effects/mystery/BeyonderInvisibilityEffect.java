@@ -10,8 +10,6 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 
 public class BeyonderInvisibilityEffect extends BeyonderEffect {
-    public int combo = 0;
-
     public BeyonderInvisibilityEffect(){
         this(0, 0f, 0, false, BeyonderEffects.EFFECT.MYSTERY_INVIS);
     }
@@ -24,8 +22,10 @@ public class BeyonderInvisibilityEffect extends BeyonderEffect {
 
     @Override
     public void onAcquire(EntityBeyonderManager cap, LivingEntity target) {
-        target.addEffect(new MobEffectInstance(MobEffects.INVISIBILITY, this.maxLife/2, 1, false, false));
-        target.sendSystemMessage(Component.literal(String.valueOf(this.maxLife)));
+        if(!target.hasEffect(MobEffects.INVISIBILITY)){
+            target.addEffect(new MobEffectInstance(MobEffects.INVISIBILITY, (this.maxLife)/2, 1, false, false));
+            target.sendSystemMessage(Component.literal(String.valueOf(this.maxLife)));
+        }
     }
 
     @Override

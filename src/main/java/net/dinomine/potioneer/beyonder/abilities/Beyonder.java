@@ -6,7 +6,7 @@ public class Beyonder {
     protected int sequence;
     protected String name;
     protected int color;
-    public int[] maxSpirituality = new int[]{0, 0, 0, 0, 0, 0, 0, 0, 500, 100};
+    public int[] maxSpirituality = new int[]{100, 100, 100, 100, 100, 100, 100, 100, 100, 100};
 
     public Beyonder(int sequence){
         this(sequence, "Beyonderless");

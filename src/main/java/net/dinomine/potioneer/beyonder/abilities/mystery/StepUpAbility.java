@@ -36,36 +36,22 @@ public class StepUpAbility extends Ability {
 
     @Override
     public void passive(EntityBeyonderManager cap, LivingEntity target) {
-
+        if(target.level().isClientSide() || !isEnabled(cap.getAbilitiesManager())) return;
+        if(!cap.getEffectsManager().hasEffect(BeyonderEffects.EFFECT.MYSTERY_STEP, getSequence()))
+            cap.getEffectsManager().addEffect(BeyonderEffects.byId(BeyonderEffects.EFFECT.MYSTERY_STEP, getSequence(), info.cost(), -1, true),
+                    cap, target);
     }
 
     @Override
     public void activate(EntityBeyonderManager cap, LivingEntity target) {
-        if(target instanceof Player player){
-            player.getAttributes()
-                    .addTransientAttributeModifiers(getStepModifier(getSequence()));
-        }
 
     }
 
     @Override
     public void deactivate(EntityBeyonderManager cap, LivingEntity target) {
-        if(target instanceof Player player){
-            player.getAttributes()
-                    .removeAttributeModifiers(getStepModifier(getSequence()));
+        if(cap.getEffectsManager().hasEffect(BeyonderEffects.EFFECT.MYSTERY_STEP, getSequence())){
+            cap.getEffectsManager().removeEffect(BeyonderEffects.EFFECT.MYSTERY_STEP, getSequence(), cap, target);
         }
     }
 
-    //Credit to the create mod
-    private static Multimap<Attribute, AttributeModifier> getStepModifier(int sequence){
-        AttributeModifier singleRangeAttributeModifier =
-                new AttributeModifier(UUID.fromString("d42bbdf2-0d0d-458a-dddd-ac7633691f66"),
-                        "Beyonder step modifier", 0.5f,
-
-                        AttributeModifier.Operation.ADDITION);
-        Supplier<Multimap<Attribute, AttributeModifier>> rangeModifier = Suppliers.memoize(() ->
-                // Holding an ExtendoGrip
-                ImmutableMultimap.of(ForgeMod.STEP_HEIGHT_ADDITION.get(), singleRangeAttributeModifier));
-        return rangeModifier.get();
-    }
 }

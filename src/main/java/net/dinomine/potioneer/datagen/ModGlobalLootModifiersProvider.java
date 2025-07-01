@@ -15,12 +15,29 @@ import net.minecraftforge.common.loot.LootTableIdCondition;
 public class ModGlobalLootModifiersProvider extends GlobalLootModifierProvider {
 
     private static final float formulaChance = 0.6f;
+    private static final float coinChance = 0.2f;
     public ModGlobalLootModifiersProvider(PackOutput output) {
         super(output, Potioneer.MOD_ID);
     }
 
     @Override
     protected void start() {
+
+        add("coin_from_archeology_pyramid", new AddItemModifier(new LootItemCondition[] {
+                new LootTableIdCondition.Builder(new ResourceLocation("archaeology/desert_pyramid")).build(),
+                LootItemRandomChanceCondition.randomChance(coinChance).build()}, ModItems.COIN_ITEM.get()));
+
+        add("coin_from_archeology_well", new AddItemModifier(new LootItemCondition[] {
+                new LootTableIdCondition.Builder(new ResourceLocation("archaeology/desert_well")).build(),
+                LootItemRandomChanceCondition.randomChance(coinChance).build()}, ModItems.COIN_ITEM.get()));
+
+        add("coin_from_archeology_cold", new AddItemModifier(new LootItemCondition[] {
+                new LootTableIdCondition.Builder(new ResourceLocation("archaeology/ocean_ruin_cold")).build(),
+                LootItemRandomChanceCondition.randomChance(coinChance).build()}, ModItems.COIN_ITEM.get()));
+
+        add("coin_from_archeology_warm", new AddItemModifier(new LootItemCondition[] {
+                new LootTableIdCondition.Builder(new ResourceLocation("archaeology/ocean_ruin_warm")).build(),
+                LootItemRandomChanceCondition.randomChance(coinChance).build()}, ModItems.COIN_ITEM.get()));
 
         add("formula_from_archeology_pyramid", new AddItemModifier(new LootItemCondition[] {
                 new LootTableIdCondition.Builder(new ResourceLocation("archaeology/desert_pyramid")).build(),

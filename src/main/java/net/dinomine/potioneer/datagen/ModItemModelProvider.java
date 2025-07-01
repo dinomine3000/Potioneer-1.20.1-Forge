@@ -49,6 +49,7 @@ public class ModItemModelProvider extends ItemModelProvider {
         simpleItem(ModItems.WANDERING_CACTUS_PRICK);
         simpleItem(ModItems.FORMULA);
         handheldItem(ModItems.MINER_PICKAXE);
+        handheldItem(ModItems.FIRE_SWORD);
 
 
         /*simpleItem(ModItems.METAL_DETECTOR);

@@ -52,7 +52,18 @@ public class WheelOfFortunePathway extends Beyonder {
             case 5:
             case 6:
             case 7:
+                GamblingAbility gambl = new GamblingAbility(sequence);
+                LuckDamageReductionAbility luckDmgRed = new LuckDamageReductionAbility(sequence);
+                CalamityIncreaseAbility calamity = new CalamityIncreaseAbility(sequence);
+
                 activeAbilities.add(new WheelBoneMealAbility(sequence));
+                activeAbilities.add(gambl);
+                activeAbilities.add(luckDmgRed);
+                activeAbilities.add(calamity);
+
+                passiveAbilities.add(gambl);
+                passiveAbilities.add(luckDmgRed);
+                //passiveAbilities.add(calamity);
             case 8:
                 FortuneAbility fortune = new FortuneAbility(sequence);
                 SilkTouchAbility silk = new SilkTouchAbility(sequence);

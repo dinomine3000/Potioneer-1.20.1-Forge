@@ -21,7 +21,7 @@ public abstract class DivinationRodItem extends SwordItem {
     public InteractionResult useOn(UseOnContext pContext) {
         pContext.getLevel().playSound(pContext.getPlayer(), pContext.getClickedPos(), SoundEvents.METAL_PLACE, SoundSource.PLAYERS);
         if(pContext.getLevel().isClientSide()) return InteractionResult.SUCCESS;
-        DivinationRodEntity entity = new DivinationRodEntity(ModEntities.DIVINATION_ROD.get(), pContext.getLevel());
+        DivinationRodEntity entity = new DivinationRodEntity(ModEntities.DIVINATION_ROD.get(), pContext.getLevel(), pContext.getItemInHand().copy());
         Vec3 pos = pContext.getClickedPos().relative(pContext.getClickedFace()).getCenter().add(0, -0.5f, 0);
 
         entity.moveTo(pos.x, pos.y, pos.z, pContext.getRotation(), 0);

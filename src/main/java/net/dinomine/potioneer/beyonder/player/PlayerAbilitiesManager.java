@@ -27,6 +27,7 @@ public class PlayerAbilitiesManager {
     public void copyFrom(PlayerAbilitiesManager mng){
         this.enabledDisabled = new HashMap<>(mng.enabledDisabled);
         this.clientHotbar = mng.clientHotbar;
+        this.quickAbility = mng.quickAbility;
     }
 
     public void onTick(EntityBeyonderManager cap, LivingEntity target){
@@ -54,7 +55,12 @@ public class PlayerAbilitiesManager {
 
     public void clear(boolean pathway, EntityBeyonderManager cap, LivingEntity target){
         if(pathway) {
-            pathwayPassives.forEach(ability -> ability.deactivate(cap, target));
+            //condition on the passives list since its generally smaller than actives list
+            //this way it only calls the deactivate once
+            //as of right now, every passive ability is in actives, so you could ditch this first forEach
+            //however, if in the future an ability is added that is completely passive, this will be necessary
+            //TODO: remove this forEach when mod is complete if possible
+            pathwayPassives.forEach(ability -> {if(!pathwayActives.contains(ability)) ability.deactivate(cap, target);});
             pathwayPassives = new ArrayList<>();
             pathwayActives.forEach(ability -> ability.deactivate(cap, target));
             pathwayActives = new ArrayList<>();

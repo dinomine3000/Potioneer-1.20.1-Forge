@@ -5,13 +5,16 @@ import net.dinomine.potioneer.block.ModBlocks;
 import net.dinomine.potioneer.item.ModItems;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.recipes.*;
+import net.minecraft.tags.ItemTags;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.AbstractCookingRecipe;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.ShapelessRecipe;
 import net.minecraft.world.level.ItemLike;
+import net.minecraftforge.common.Tags;
 import net.minecraftforge.common.crafting.conditions.IConditionBuilder;
+import net.minecraftforge.common.data.ForgeItemTagsProvider;
 
 import java.util.List;
 import java.util.function.Consumer;
@@ -60,6 +63,37 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                 .define('S', ModItems.SAPPHIRE.get())
                 .define('#', Items.GLASS)
                 .unlockedBy(getHasName(ModItems.SAPPHIRE.get()), has(ModItems.SAPPHIRE.get()))
+                .save(consumer);
+
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.DIVINATION_ROD.get())
+                .pattern("ICI")
+                .pattern("IW ")
+                .pattern(" W ")
+                .define('I', Items.IRON_INGOT)
+                .define('W', ItemTags.PLANKS)
+                .define('C', Items.CHARCOAL)
+                .unlockedBy(getHasName(Items.IRON_INGOT), has(Items.IRON_INGOT))
+                .save(consumer);
+
+        //straw man / voodoo doll
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.DIVINATION_ROD.get())
+                .pattern("CHC")
+                .pattern("RSR")
+                .pattern("RCR")
+                .define('C', Items.COAL)
+                .define('R', Items.BLAZE_ROD)
+                .define('S', Items.SOUL_TORCH)
+                .define('H', Tags.Items.HEADS)
+                .unlockedBy(getHasName(Items.SOUL_TORCH), has(Items.SOUL_TORCH))
+                .save(consumer);
+
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.COIN_ITEM.get())
+                .pattern(" I ")
+                .pattern("INI")
+                .pattern(" I ")
+                .define('N', Items.GOLD_NUGGET)
+                .define('I', Items.IRON_NUGGET)
+                .unlockedBy(getHasName(Items.GOLD_NUGGET), has(Items.GOLD_NUGGET))
                 .save(consumer);
 
         ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, ModItems.SAPPHIRE.get(), 9)

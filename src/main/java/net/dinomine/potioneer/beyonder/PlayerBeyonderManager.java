@@ -8,12 +8,12 @@ import net.dinomine.potioneer.beyonder.player.EntityBeyonderManager;
 import net.dinomine.potioneer.item.ModItems;
 import net.dinomine.potioneer.network.PacketHandler;
 import net.dinomine.potioneer.network.messages.PlayerAdvanceMessage;
-import net.dinomine.potioneer.network.messages.PlayerSyncHotbarMessage;
 import net.dinomine.potioneer.network.messages.SequenceSTCSyncRequest;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.Difficulty;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Inventory;
@@ -53,17 +53,17 @@ public class PlayerBeyonderManager {
 
     @SubscribeEvent
     public static void onPlayerDie(LivingDeathEvent event){
-        if(event.getEntity() instanceof Player player && !player.level().getGameRules().getBoolean(GameRules.RULE_KEEPINVENTORY)){
-            Inventory inv = player.getInventory();
-            int size = inv.getContainerSize();
-            for (int i = 0; i < size; i++) {
-                if(inv.getItem(i).is(ModItems.MINER_PICKAXE.get())){
-                    inv.getItem(i).setCount(0);
-                } else {
-                    MysticismHelper.updateOrApplyMysticismTag(inv.getItem(i), 10, player);
-                }
-            }
-        }
+//        if(event.getEntity() instanceof Player player){
+//            Inventory inv = player.getInventory();
+//            int size = inv.getContainerSize();
+//            for (int i = 0; i < size; i++) {
+//                if(inv.getItem(i).is(ModItems.MINER_PICKAXE.get())){
+//                    inv.getItem(i).setCount(0);
+//                } else {
+//                    MysticismHelper.updateOrApplyMysticismTag(inv.getItem(i), 10, player);
+//                }
+//            }
+//        }
     }
 
     @SubscribeEvent
@@ -84,8 +84,8 @@ public class PlayerBeyonderManager {
                 newStore.copyFrom(oldStore, event.getEntity());
             });
             event.getOriginal().invalidateCaps();
-            PacketHandler.INSTANCE.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) event.getEntity()),
-                    new PlayerSyncHotbarMessage(newStore.getAbilitiesManager().clientHotbar, newStore.getAbilitiesManager().quickAbility));
+//            PacketHandler.INSTANCE.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) event.getEntity()),
+//                    new PlayerSyncHotbarMessage(newStore.getAbilitiesManager().clientHotbar, newStore.getAbilitiesManager().quickAbility));
         });
     }
 
@@ -111,7 +111,6 @@ public class PlayerBeyonderManager {
             });
         }
     }
-
 
     @SubscribeEvent
     public static void onWorldLoad(EntityJoinLevelEvent event){
@@ -146,28 +145,31 @@ public class PlayerBeyonderManager {
     }
 
     //this one still plays the hurt animation even if you cancel the event = takes place when an entity truly is receiving damage
+    //deals with the true damage that is applied
     @SubscribeEvent
-    public static void onAttack(LivingDamageEvent event){
-        if(event.getSource().getEntity() != null){
-            if(event.getSource().getEntity().level().isClientSide()) return;
-            event.getSource().getEntity().getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
-                cap.getEffectsManager().onAttack(event, cap);
+    public static void onEntityTakeDamage(LivingDamageEvent event){
+        if(event.getEntity() != null && event.getEntity() instanceof Player player){
+            if(player.level().isClientSide()) return;
+            player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
+                cap.getEffectsManager().onTakeDamage(event, cap);
             });
         }
     }
 
 
 
-//    @SubscribeEvent
-//    public static void onEntityHurt(LivingHurtEvent event) {
-//        if (event.getSource().is(DamageTypes.FALL)) {
-//            event.getEntity().getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
-//                if (cap.getEffectsManager().hasEffect(BeyonderEffects.EFFECT.MYSTERY_FALL)) {
-//                    event.setCanceled(true);
-//                }
-//            });
-//        }
-//    }
+    //called before damage is calculated -> deals with raw damage before reduction
+    @SubscribeEvent
+    public static void onEntityHurt(LivingHurtEvent event) {
+        if(event.getSource().getEntity() != null){
+            //FOR THE ATTACKER
+            //runs this code in the context of an entity attacking another
+            if(event.getSource().getEntity().level().isClientSide()) return;
+            event.getSource().getEntity().getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
+                cap.getEffectsManager().onAttackDamageCalculation(event, cap);
+            });
+        }
+    }
 
     @SubscribeEvent
     public static void onExperienceChange(PlayerXpEvent.XpChange event){

@@ -17,18 +17,26 @@ import java.util.function.Supplier;
 //syncs data that needs to be referenced from both a client and server perspective, ie. mining speed
 public class PlayerStatsSyncMessage {
     public float miningSpeed;
+    public int luck;
+    public int maxLuck;
+    public int minLuck;
 
-    public PlayerStatsSyncMessage(float miningSpeed) {
+    public PlayerStatsSyncMessage(float miningSpeed, int luck, int minLuck, int maxLuck) {
         this.miningSpeed = miningSpeed;
+        this.luck = luck;
+        this.minLuck = minLuck;
+        this.maxLuck = maxLuck;
     }
 
     public static void encode(PlayerStatsSyncMessage msg, FriendlyByteBuf buffer){
         buffer.writeFloat(msg.miningSpeed);
+        buffer.writeInt(msg.luck);
+        buffer.writeInt(msg.minLuck);
+        buffer.writeInt(msg.maxLuck);
     }
 
     public static PlayerStatsSyncMessage decode(FriendlyByteBuf buffer){
-        float miningSpeed = buffer.readFloat();
-        return new PlayerStatsSyncMessage(miningSpeed);
+        return new PlayerStatsSyncMessage(buffer.readFloat(), buffer.readInt(), buffer.readInt(), buffer.readInt());
     }
 
     public static void handle(PlayerStatsSyncMessage msg, Supplier<NetworkEvent.Context> contextSupplier){
@@ -63,6 +71,7 @@ class ClientStatsSyncMessage
             player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
                 cap.getBeyonderStats().setMiningSpeed(msg.miningSpeed);
             });
+            ClientStatsData.setLuck(msg.luck, msg.minLuck, msg.maxLuck);
         }
     }
 }

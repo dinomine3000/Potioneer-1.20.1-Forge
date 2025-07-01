@@ -10,19 +10,16 @@ import net.dinomine.potioneer.beyonder.player.EntityBeyonderManager;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
-import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.AnvilMenu;
-import net.minecraft.world.item.crafting.RecipeManager;
-import net.minecraft.world.item.crafting.RepairItemRecipe;
+import net.minecraftforge.common.ForgeMod;
 
 import java.util.UUID;
 import java.util.function.Supplier;
 
-public class StatBonusAbility extends Ability {
+public class FireBuffAbility extends Ability {
 
-    public StatBonusAbility(int sequence){
-        this.info = new AbilityInfo(83, 32, "Stat Bonus", 30 + sequence, 0, this.getCooldown(), "");
+    public FireBuffAbility(int sequence){
+        this.info = new AbilityInfo(83, 80, "Fire Dance", 30 + sequence, 5, this.getCooldown(), "fire_buff");
     }
 
     @Override
@@ -30,7 +27,6 @@ public class StatBonusAbility extends Ability {
         activate(cap, target);
     }
 
-    @Override
     public boolean active(EntityBeyonderManager cap, LivingEntity target) {
         if(target.level().isClientSide()) return false;
         flipEnable(cap, target);
@@ -39,32 +35,23 @@ public class StatBonusAbility extends Ability {
 
     @Override
     public void passive(EntityBeyonderManager cap, LivingEntity target) {
-
+        if(isEnabled(cap.getAbilitiesManager())){
+            if(!cap.getEffectsManager().hasEffect(BeyonderEffects.EFFECT.RED_FIRE_BUFF, getSequence())){
+                cap.getEffectsManager().addEffect(BeyonderEffects.byId(BeyonderEffects.EFFECT.RED_FIRE_BUFF,
+                        getSequence(), info.cost(), -1, true), cap, target);
+            }
+            if(cap.getSpirituality() < info.cost()) flipEnable(cap, target);
+        }
     }
 
     @Override
     public void activate(EntityBeyonderManager cap, LivingEntity target) {
-        if(target instanceof Player player){
-            player.getAttributes().addTransientAttributeModifiers(getModifier(getSequence()));
-        }
     }
 
     @Override
     public void deactivate(EntityBeyonderManager cap, LivingEntity target) {
-        if(target instanceof Player player){
-            player.getAttributes().removeAttributeModifiers(getModifier(getSequence()));
+        if(cap.getEffectsManager().hasEffect(BeyonderEffects.EFFECT.RED_FIRE_BUFF, getSequence())){
+            cap.getEffectsManager().removeEffect(BeyonderEffects.EFFECT.RED_FIRE_BUFF, getSequence(), cap, target);
         }
-    }
-
-    private static Multimap<Attribute, AttributeModifier> getModifier(int sequence){
-
-        AttributeModifier healthMod =
-                new AttributeModifier(UUID.fromString("c42bbdf2-9d9d-458a-adaf-ac2633691f66"),
-                        "Beyonder range modifier", 5*(10-sequence),
-                        AttributeModifier.Operation.ADDITION);
-        Supplier<Multimap<Attribute, AttributeModifier>> hpMod = Suppliers.memoize(() ->
-                // Holding an ExtendoGrip
-                ImmutableMultimap.of(Attributes.MAX_HEALTH, healthMod));
-        return hpMod.get();
     }
 }

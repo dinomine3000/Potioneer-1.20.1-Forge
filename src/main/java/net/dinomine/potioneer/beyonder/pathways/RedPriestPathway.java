@@ -4,8 +4,7 @@ import net.dinomine.potioneer.beyonder.abilities.Ability;
 import net.dinomine.potioneer.beyonder.abilities.Beyonder;
 import net.dinomine.potioneer.beyonder.abilities.paragon.CraftingGuiAbility;
 import net.dinomine.potioneer.beyonder.abilities.paragon.DurabilityRegenAbility;
-import net.dinomine.potioneer.beyonder.abilities.redpriest.StatBonusAbility;
-import net.dinomine.potioneer.beyonder.abilities.redpriest.WeaponProficiencyAbility;
+import net.dinomine.potioneer.beyonder.abilities.redpriest.*;
 import net.dinomine.potioneer.beyonder.effects.redpriest.BeyonderWeaponProficiencyEffect;
 import net.dinomine.potioneer.beyonder.player.PlayerAbilitiesManager;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -19,7 +18,7 @@ public class RedPriestPathway extends Beyonder {
     public RedPriestPathway(int sequence){
         super(sequence, "Red_Priest");
         this.color = 0x804040;
-        this.maxSpirituality = new int[]{0, 0, 0, 0, 1000, 500, 250, 200, 100, 50};
+        this.maxSpirituality = new int[]{0, 0, 0, 0, 800, 400, 200, 150, 100, 50};
     }
 
     public static int getX(){
@@ -55,6 +54,15 @@ public class RedPriestPathway extends Beyonder {
             case 6:
             case 7:
             case 8:
+                FireAuraAbility aura = new FireAuraAbility(sequence);
+                FireBuffAbility buff1 = new FireBuffAbility(sequence);
+                activeAbilities.add(aura);
+                activeAbilities.add(buff1);
+                passiveAbilities.add(aura);
+                passiveAbilities.add(buff1);
+
+                activeAbilities.add(new FireBallAbility(sequence));
+                activeAbilities.add(new ConjureFireSwordAbility(sequence));
             case 9:
                 WeaponProficiencyAbility weapon = new WeaponProficiencyAbility(sequence);
                 activeAbilities.add(weapon);

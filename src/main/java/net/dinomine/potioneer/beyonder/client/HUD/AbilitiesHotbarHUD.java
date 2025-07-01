@@ -14,7 +14,7 @@ import net.minecraftforge.client.gui.overlay.IGuiOverlay;
 public class AbilitiesHotbarHUD {
     private static final ResourceLocation ICONS = new ResourceLocation(Potioneer.MOD_ID, "textures/gui/ability_icon_atlas.png");
     public static int ICONS_WIDTH = 146;
-    public static int ICONS_HEIGHT = 256;
+    public static int ICONS_HEIGHT = 512;
     public static int ICON_WIDTH = 16;
     public static int ICON_HEIGHT = 24;
     private static int CASE_WIDTH = 26;

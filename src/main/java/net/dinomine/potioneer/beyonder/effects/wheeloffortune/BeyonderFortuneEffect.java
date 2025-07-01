@@ -7,10 +7,6 @@ import net.minecraft.world.entity.LivingEntity;
 
 public class BeyonderFortuneEffect extends BeyonderEffect {
 
-    public BeyonderFortuneEffect(){
-        this(0, 0f, 0, false, BeyonderEffects.EFFECT.WHEEL_FORTUNE);
-    }
-
     public BeyonderFortuneEffect(int level, float cost, int time, boolean active, BeyonderEffects.EFFECT id){
         super(level, cost, time, active, id);
         this.name = "Wheel of Fortune Fortune";

@@ -9,10 +9,6 @@ import net.minecraft.world.inventory.AnvilMenu;
 public class BeyonderFallDmgCancelEffect extends BeyonderEffect {
     public boolean flag = false;
 
-    public BeyonderFallDmgCancelEffect(){
-        this(0, 0f, 0, false, BeyonderEffects.EFFECT.MYSTERY_FALL_NEGATE);
-    }
-
     public BeyonderFallDmgCancelEffect(int level, float cost, int time, boolean active, BeyonderEffects.EFFECT id){
         super(level, cost, time, active, id);
         this.name = "Fall Damage Cancel";

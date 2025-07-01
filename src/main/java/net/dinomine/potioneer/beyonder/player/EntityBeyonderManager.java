@@ -9,6 +9,8 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.common.capabilities.AutoRegisterCapability;
@@ -28,6 +30,7 @@ public class EntityBeyonderManager {
     private Beyonder pathway = new Beyonder(10);
     private final LivingEntity entity;
     private int syncCD = 20;
+    private int effectCd = 40;
 
     public EntityBeyonderManager(LivingEntity entity){
         beyonderStats = new BeyonderStats();
@@ -130,12 +133,30 @@ public class EntityBeyonderManager {
             luckManager.onTick(this, entity);
             if(entity instanceof Player player){
                 PacketHandler.INSTANCE.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) player),
-                        new PlayerStatsSyncMessage(getBeyonderStats().getMiningSpeed()));
+                        new PlayerStatsSyncMessage(getBeyonderStats().getMiningSpeed(),
+                                luckManager.getLuck(),
+                                luckManager.getMinPassiveLuck(),
+                                luckManager.getMaxPassiveLuck()));
                 if(syncCD-- < 0){
                     applyCost();
                     syncCD = 20;
                     PacketHandler.INSTANCE.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) player),
                             new PlayerSTCHudStatsSync(this.spirituality, this.maxSpirituality, this.sanity, this.getPathwayId(), getAbilitiesManager().enabledDisabled));
+                }
+            }
+            if(effectCd++ > 100){
+                effectCd = 0;
+                if (spirituality < maxSpirituality*0.15f){
+                    entity.addEffect(new MobEffectInstance(MobEffects.DIG_SLOWDOWN, 100, 1, true, true));
+                    entity.addEffect(new MobEffectInstance(MobEffects.HUNGER, 100, 1, true, true));
+                    entity.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 100, 1, true, true));
+                    if (sanity < 40){
+                        entity.addEffect(new MobEffectInstance(MobEffects.DARKNESS, 100, 0, true, true));
+                    }
+                    if(spirituality < maxSpirituality*0.05f && entity.getHealth() > 3){
+                        changeSanity(-2);
+                        entity.hurt(entity.damageSources().generic(), entity.getMaxHealth()*0.1f);
+                    }
                 }
             }
         }
@@ -249,16 +270,19 @@ public class EntityBeyonderManager {
     public void copyFrom(EntityBeyonderManager source, Player player){
         //TODO have this account for everything
         this.spirituality = source.getSpirituality();
-        advance(source.getPathwayId(), player, true, false);
+        //advance(source.getPathwayId(), player, true, false);
+        setPathway(source.getPathwayId(), false);
         player.setHealth(player.getMaxHealth());
+        this.luckManager.copyFrom(source.luckManager);
         this.abilitiesManager.copyFrom(source.getAbilitiesManager());
-        this.abilitiesManager.onAcquireAbilities(this, player);
+        //this.abilitiesManager.onAcquireAbilities(this, player);
     }
 
     public void saveNBTData(CompoundTag nbt){
 //        System.out.println("saving nbt data for beyonder capability...");
         nbt.putFloat("spirituality", spirituality);
         nbt.putInt("pathwayId", pathway.getId());
+        nbt.putInt("sanity", sanity);
 //        System.out.println("Saving pathway id: " + pathway.getId());
         //this.abilitiesManager.saveNBTData(nbt);
         this.effectsManager.saveNBTData(nbt);
@@ -271,13 +295,14 @@ public class EntityBeyonderManager {
 //        System.out.println("loading nbt data for beyonder capability...");
         this.spirituality = nbt.getFloat("spirituality");
 //        System.out.println("Loading pathway id: " + nbt.getInt("pathwayId"));
+        this.sanity = nbt.getInt("sanity");
         setPathway(nbt.getInt("pathwayId"), false);
         this.luckManager.loadNBTData(nbt);
-        this.effectsManager.loadNBTData(nbt);
+        this.effectsManager.loadNBTData(nbt, this, entity);
         //enabledDisabled BEFORE onAcquire bc of reach ability
         this.abilitiesManager.loadNBTData(nbt, entity);
         this.abilitiesManager.loadEnabledListFromTag(nbt, this, entity);
-        this.abilitiesManager.onAcquireAbilities(this, entity);
+        //this.abilitiesManager.onAcquireAbilities(this, entity);
         //TODO make abilities manager actually save and load item abilities.
         //this.abilitiesManager.loadNBTData(nbt);
     }

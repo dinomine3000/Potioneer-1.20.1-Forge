@@ -2,6 +2,7 @@ package net.dinomine.potioneer.block.entity.renderer;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import net.dinomine.potioneer.beyonder.client.ClientStatsData;
 import net.dinomine.potioneer.block.entity.MinerLightBlockEntity;
 import net.dinomine.potioneer.block.entity.WaterTrapBlockEntity;
 import net.minecraft.client.Minecraft;
@@ -26,9 +27,7 @@ public class WaterTrapBlockRenderer extends GeoBlockRenderer<WaterTrapBlockEntit
         Minecraft mc = Minecraft.getInstance();
         if (mc.player != null) {
             UUID playerUUID = mc.player.getUUID();
-            UUID ownerUUID = animatable.getOwnerUUID(); // your custom method
-
-            if (ownerUUID != null && ownerUUID.compareTo(playerUUID) != 0) {
+            if (!animatable.isOwner(playerUUID, ClientStatsData.getPathwayId())) {
                 // Do not render for non-owners
                 return;
             }

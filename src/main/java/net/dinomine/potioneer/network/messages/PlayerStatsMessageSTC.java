@@ -10,7 +10,7 @@ import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
-//used to sync ability cooldowns from server to client
+//used to sync beyonder stats on advancement
 public class PlayerStatsMessageSTC {
     public int[] stats;
 

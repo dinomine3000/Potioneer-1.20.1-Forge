@@ -2,9 +2,13 @@
   "entries": [
     "potioneer:formula_from_mineshaft",
     "potioneer:formula_from_pyramid",
+    "potioneer:coin_from_archeology_well",
     "potioneer:formula_from_village_temple",
     "potioneer:formula_from_village_blacksmith",
     "potioneer:formula_from_archeology_cold",
+    "potioneer:coin_from_archeology_pyramid",
+    "potioneer:coin_from_archeology_cold",
+    "potioneer:coin_from_archeology_warm",
     "potioneer:formula_from_archeology_well",
     "potioneer:formula_from_archeology_pyramid",
     "potioneer:formula_from_mansion",

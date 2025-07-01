@@ -138,7 +138,6 @@ public abstract class BeyonderEffect {
     }
 
     public void loadNBTData(CompoundTag nbt){
-        System.out.println(lifetime + " / " + maxLife);
     }
 
 

@@ -52,7 +52,7 @@ public class ModBlocks {
 
     public static final RegistryObject<Block> WATER_TRAP_BLOCK = registerBlock("water_trap",
             () -> new WaterTrapBlock(
-                    BlockBehaviour.Properties.of().noCollission().friction(-1).destroyTime(5)
+                    BlockBehaviour.Properties.of().noCollission().friction(-1).destroyTime(10)
                             .sound(SoundType.LILY_PAD).pushReaction(PushReaction.DESTROY)));
 
     public static final RegistryObject<Block> MUTATED_MUSHROOM = registerBlock("wheat_mushroom",

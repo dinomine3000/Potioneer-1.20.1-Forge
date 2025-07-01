@@ -9,6 +9,7 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 
+import java.util.Arrays;
 import java.util.UUID;
 import java.util.function.Supplier;
 
@@ -16,9 +17,14 @@ public class BeyonderStats {
     private float miningSpeedMult = 1;
     private boolean mayFly = false;
     private float[] playerAttributes;
+    private float[] playerEffectAttributes;
 
     BeyonderStats(){
         resetStats();
+    }
+
+    public void addDamage(float dmg){
+        playerAttributes[1] += dmg;
     }
 
     public void enableFlight(){
@@ -52,7 +58,7 @@ public class BeyonderStats {
     public void setStats(BeyonderStats oldStore){
         this.miningSpeedMult = oldStore.miningSpeedMult;
         this.mayFly = oldStore.mayFly;
-        this.playerAttributes = oldStore.playerAttributes;
+        this.playerEffectAttributes = oldStore.playerAttributes;
     }
 
     public int[] getIntStats(){

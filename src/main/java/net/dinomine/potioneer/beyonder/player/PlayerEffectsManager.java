@@ -3,26 +3,18 @@ package net.dinomine.potioneer.beyonder.player;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffect;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
 import net.dinomine.potioneer.beyonder.effects.mystery.BeyonderRegenEffect;
-import net.dinomine.potioneer.registry.DamageTypesRegistry;
-import net.dinomine.potioneer.sound.ModSounds;
+import net.dinomine.potioneer.beyonder.effects.wheeloffortune.BeyonderLuckReduceDamageEffect;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.tags.TagKey;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.damagesource.DamageSources;
-import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.projectile.Arrow;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.Level;
 import net.minecraftforge.common.Tags;
-import net.minecraftforge.common.data.ForgeItemTagsProvider;
 import net.minecraftforge.event.entity.living.LivingDamageEvent;
-import net.minecraftforge.event.entity.living.LivingEvent;
+import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 
 import java.util.ArrayList;
@@ -31,11 +23,17 @@ public class PlayerEffectsManager {
     private ArrayList<BeyonderEffect> passives = new ArrayList<BeyonderEffect>();
     public BeyonderStats statsHolder;
 
-    public void onAttack(LivingDamageEvent event, EntityBeyonderManager cap){
+    public void onAttackDamageCalculation(LivingHurtEvent event, EntityBeyonderManager cap){
         Entity attacker = event.getSource().getEntity();
         float dmg = event.getAmount();
         //TODO change this to account for multiple instances of similar effects
         if(attacker instanceof Player player){
+            if(hasEffect(BeyonderEffects.EFFECT.RED_FIRE_BUFF)){
+                if(player.isOnFire() && cap.getSpirituality() >= getEffect(BeyonderEffects.EFFECT.RED_FIRE_BUFF).getCost()){
+                    dmg += 2;
+                    cap.requestActiveSpiritualityCost(getEffect(BeyonderEffects.EFFECT.RED_FIRE_BUFF).getCost());
+                }
+            }
             if(hasEffect(BeyonderEffects.EFFECT.RED_WEAPON_PROFICIENCY)){
                 BeyonderEffect eff = getEffect(BeyonderEffects.EFFECT.RED_WEAPON_PROFICIENCY);
                 InteractionHand hand = player.getUsedItemHand();
@@ -64,6 +62,26 @@ public class PlayerEffectsManager {
             }
         }
         event.setAmount(dmg);
+    }
+
+    public void onTakeDamage(LivingDamageEvent event, EntityBeyonderManager cap){
+        if(event.getEntity() instanceof Player player){
+            if(hasEffect(BeyonderEffects.EFFECT.WHEEL_DAMAGE_REDUCE)){
+                BeyonderEffect reductionEffect = getEffect(BeyonderEffects.EFFECT.WHEEL_DAMAGE_REDUCE, cap.getSequenceLevel());
+                if(cap.getLuckManager().passesLuckCheck(
+                        BeyonderLuckReduceDamageEffect.reduceChance,
+                        BeyonderLuckReduceDamageEffect.luckCost,
+                        BeyonderLuckReduceDamageEffect.luckGain,
+                        player.getRandom())){
+                    cap.requestActiveSpiritualityCost(reductionEffect.getCost());
+                    if(reductionEffect.getSequenceLevel() < BeyonderLuckReduceDamageEffect.sequenceForNegation){
+                        event.setAmount(0);
+                    } else {
+                        event.setAmount(event.getAmount()*BeyonderLuckReduceDamageEffect.damageReduction);
+                    }
+                }
+            }
+        }
     }
 
 
@@ -105,7 +123,13 @@ public class PlayerEffectsManager {
         return true;
     }
 
-    public boolean addEffect(BeyonderEffect effect){
+    /**
+     * Add an effect without specifying a capability or target,
+     * Warning: It does NOT trigger the onAcquire() method for the effect. for that, use cap
+     * @param effect
+     * @return
+     */
+    public boolean addEffectNoNotify(BeyonderEffect effect){
         if(hasEffect(effect.getId())){
             getEffect(effect.getId()).refreshTime();
         } else {
@@ -192,7 +216,7 @@ public class PlayerEffectsManager {
         nbt.put("effectData", effectsNbt);
     }
 
-    public void loadNBTData(CompoundTag nbt){
+    public void loadNBTData(CompoundTag nbt, EntityBeyonderManager cap, LivingEntity entity){
         CompoundTag effectsTag = nbt.getCompound("effectData");
         int size = effectsTag.getInt("size");
         for(int i = 0; i < size; i++){
@@ -205,7 +229,7 @@ public class PlayerEffectsManager {
                     iterator.getBoolean("active"));
             effect.setLifetime(iterator.getInt("lifetime"));
             effect.loadNBTData(iterator);
-            addEffect(effect);
+            addEffect(effect, cap, entity);
         }
     }
 }

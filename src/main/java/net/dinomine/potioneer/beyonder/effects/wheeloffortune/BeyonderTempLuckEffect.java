@@ -20,8 +20,6 @@ public class BeyonderTempLuckEffect extends BeyonderEffect {
 
     @Override
     public void onAcquire(EntityBeyonderManager cap, LivingEntity target) {
-        cap.getLuckManager().grantLuck(51);
-        target.sendSystemMessage(Component.literal("The cogs of fate favor you for now..."));
     }
 
     @Override

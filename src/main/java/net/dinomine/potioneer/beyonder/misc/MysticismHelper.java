@@ -12,6 +12,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
@@ -208,6 +209,13 @@ public class MysticismHelper {
     private static List<BlockPos> findEntity(Entity entity, BlockPos center, int radius, ServerLevel level) {
         List<Entity> entities = level.getEntities(entity, AABB.ofSize(center.getCenter(), radius, radius, radius));
         return entities.stream().map(Entity::getOnPos).toList();
+    }
+
+    public static Player getPlayerFromMysticalItem(ItemStack stack, ServerLevel level, int toConsume){
+        if(stack.hasTag() && stack.getTag().contains(mysticismTagId)){
+            return getPlayerFromMysticismTag(stack.getTag().getCompound(mysticismTagId), level, toConsume);
+        }
+        return null;
     }
 
     private static Player getPlayerFromMysticismTag(CompoundTag mysticalTag, ServerLevel level, int toConsume) {

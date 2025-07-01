@@ -241,7 +241,7 @@ public class BeyonderAbilitiesScreen extends Screen {
 
         //name title
         if(main){
-            Component name = Component.literal(data.name());
+            Component name = Component.translatable("potioneer.ability_name." + data.descId());
             pGuiGraphics.drawString(this.font, name, leftPos + 24 + imageWidth/2 - this.font.width(name)/2, topPos + 9, 0, false);
         }
 
@@ -301,7 +301,7 @@ public class BeyonderAbilitiesScreen extends Screen {
                     0x22000000, 0x11000000);
 
             drawAbilityIcon(pGuiGraphics, leftPos + 10, topPos + 75 + i*14, 0.5f, i + buttonOffset, false);
-            pGuiGraphics.drawString(this.font, Component.literal(abilities.get(i + buttonOffset).name()),
+            pGuiGraphics.drawString(this.font, Component.translatable("potioneer.ability_name." + abilities.get(i + buttonOffset).descId()),
                     leftPos + 22, topPos + 77 + i*14, 0, false);
         }
     }

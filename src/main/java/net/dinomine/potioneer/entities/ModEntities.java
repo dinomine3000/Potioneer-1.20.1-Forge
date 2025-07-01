@@ -8,6 +8,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -32,7 +33,12 @@ public class ModEntities {
 
     public static final RegistryObject<EntityType<DivinationRodEntity>> DIVINATION_ROD =
             ENTITY_TYPES.register("divination_rod",
-                    () -> EntityType.Builder.of(DivinationRodEntity::new, MobCategory.MISC)
+                    () -> EntityType.Builder.of(new EntityType.EntityFactory<DivinationRodEntity>() {
+                                @Override
+                                public DivinationRodEntity create(EntityType<DivinationRodEntity> entityType, Level level) {
+                                    return new DivinationRodEntity(entityType, level);
+                                }
+                            }, MobCategory.MISC)
                             .sized(1f, 1f)
                             .build(new ResourceLocation(Potioneer.MOD_ID, "divination_rod").toString()));
 

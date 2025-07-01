@@ -28,7 +28,7 @@ public class ClientAbilitiesData {
     public static void setShowHotbar(boolean val){
         if(!showHotbar && val && !hotbar.isEmpty()){
             assert Minecraft.getInstance().player != null;
-            Minecraft.getInstance().player.displayClientMessage(Component.literal(abilities.get(hotbar.get(caret)).name()), true);
+            Minecraft.getInstance().player.displayClientMessage(Component.translatable("potioneer.ability_name." + abilities.get(hotbar.get(caret)).descId()), true);
             openAnimation = true;
             openingAnimationPercent = 0;
             showHotbar = true;
@@ -190,7 +190,7 @@ public class ClientAbilitiesData {
         caret = Math.floorMod(caret + diff, hotbar.size());
         animationTime = diff < 0 ? -maxAnimationtime : maxAnimationtime;
         if(Minecraft.getInstance().player == null) return;
-        Minecraft.getInstance().player.displayClientMessage(Component.literal(abilities.get(hotbar.get(caret)).name()), true);
+        Minecraft.getInstance().player.displayClientMessage(Component.translatable("potioneer.ability_name." + abilities.get(hotbar.get(caret)).descId()), true);
     }
 
     public static int getCaret(){

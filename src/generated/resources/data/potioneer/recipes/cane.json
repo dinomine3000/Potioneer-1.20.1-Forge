@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "C": {
+      "item": "minecraft:charcoal"
+    },
+    "I": {
+      "item": "minecraft:iron_ingot"
+    },
+    "W": {
+      "tag": "minecraft:planks"
+    }
+  },
+  "pattern": [
+    "ICI",
+    "IW ",
+    " W "
+  ],
+  "result": {
+    "item": "potioneer:cane"
+  },
+  "show_notification": true
+}

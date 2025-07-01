@@ -2,6 +2,7 @@ package net.dinomine.potioneer;
 
 import com.mojang.logging.LogUtils;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
+import net.dinomine.potioneer.beyonder.misc.MysticismHelper;
 import net.dinomine.potioneer.block.ModBlocks;
 import net.dinomine.potioneer.block.entity.ModBlockEntities;
 import net.dinomine.potioneer.block.entity.renderer.MinerBlockRenderer;
@@ -140,10 +141,10 @@ public class Potioneer
                     ((itemStack, clientLevel, livingEntity, i) ->
                             itemStack.getTag() != null ? itemStack.getTag().getCompound("potion_info").getInt("amount") : 0));
 
-//            ItemProperties.register(ModItems.COIN_ITEM.get(),
-//                    new ResourceLocation(Potioneer.MOD_ID, "yesno"),
-//                    ((itemStack, clientLevel, livingEntity, i) ->
-//                            itemStack.getTag() != null && itemStack.getTag().getBoolean("potioneer_yesno") ?  1f : 0f));
+            ItemProperties.register(ModItems.VOODOO_DOLL.get(),
+                    new ResourceLocation(Potioneer.MOD_ID, "bloodied"),
+                    ((itemStack, clientLevel, livingEntity, i) ->
+                            itemStack.getTag() != null && itemStack.getTag().contains(MysticismHelper.mysticismTagId) ?  1f : 0f));
 
             event.enqueueWork(() -> {
                 MenuScreens.register(ModMenuTypes.CRAFTER_MENU.get(), CraftingScreen::new);

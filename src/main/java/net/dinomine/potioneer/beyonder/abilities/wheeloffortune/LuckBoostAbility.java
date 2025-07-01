@@ -22,6 +22,8 @@ public class LuckBoostAbility extends Ability {
             cap.getEffectsManager().addEffect(BeyonderEffects.byId(BeyonderEffects.EFFECT.WHEEL_TEMP_LUCK,
                     getSequence(), 0, 40*60, true), cap, target);
             cap.requestActiveSpiritualityCost(info.cost());
+            cap.getLuckManager().grantLuck(51);
+            target.sendSystemMessage(Component.literal("The cogs of fate favor you for now..."));
             target.playSound(SoundEvents.ENCHANTMENT_TABLE_USE, 1, 1);
         } else {
             target.sendSystemMessage(Component.literal("Could not give effect: one already exists."));
