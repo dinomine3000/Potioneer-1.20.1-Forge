@@ -5,19 +5,14 @@
       "item": "potioneer:sapphire"
     },
     {
-      "item": "potioneer:wandering_cactus_prick"
+      "item": "minecraft:egg",
+      "count": 2
     }
   ],
   "supplementary_ingredients": [
     {
-      "item": "potioneer:vial",
-      "nbt": {
-        "potion_info": {
-          "name": "cactus_sap",
-          "amount": 1,
-          "color": 65280
-        }
-      }
+      "item": "minecraft:glistering_melon_slice",
+      "count": 3
     }
   ],
   "water_level": 3,

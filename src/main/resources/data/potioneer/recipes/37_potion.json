@@ -1,0 +1,30 @@
+{
+  "type": "potioneer:potion_cauldron_brew",
+  "main_ingredients": [
+    {
+      "item": "minecraft:glistering_melon_slice",
+      "count": 3
+    },
+    {
+      "item": "minecraft:torch"
+    }
+  ],
+  "supplementary_ingredients": [
+    {
+      "item": "minecraft:glowstone_dust",
+      "count": 4
+    },
+    {
+      "item": "minecraft:magma_cream"
+    }
+  ],
+  "water_level": 1,
+  "needs_fire": true,
+  "output": {
+    "name": "37",
+    "amount": 2,
+    "bottle": true,
+    "color": 16775936,
+    "can_conflict": true
+  }
+}

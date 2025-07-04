@@ -120,7 +120,7 @@ public class WaterTrapBlockEntity extends BlockEntity implements GeoBlockEntity 
     }
 
     public void incrementIndex(Player player, int sequenceId){
-        if(isOwner(player.getUUID(), sequenceId)) return;
+        if(!isOwner(player.getUUID(), sequenceId)) return;
         setChanged();
         effectIndex = Math.floorMod((effectIndex + (player.isCrouching() ? -1 : 1)), 4);
         player.sendSystemMessage(Component.translatable("potioneer.pathway.trap_effect_" + effectIndex));

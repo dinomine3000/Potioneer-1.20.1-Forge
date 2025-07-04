@@ -1,0 +1,30 @@
+{
+  "type": "potioneer:potion_cauldron_brew",
+  "main_ingredients": [
+    {
+      "item": "minecraft:blaze_rod",
+      "count": 2
+    },
+    {
+      "item": "potioneer:straw_doll"
+    }
+  ],
+  "supplementary_ingredients": [
+    {
+      "item": "minecraft:golden_apple"
+    },
+    {
+      "item": "minecraft:rotten_flesh",
+      "count": 3
+    }
+  ],
+  "water_level": 2,
+  "needs_fire": true,
+  "output": {
+    "name": "27",
+    "amount": 2,
+    "bottle": true,
+    "color": 16121785,
+    "can_conflict": true
+  }
+}

@@ -30,9 +30,9 @@ public class ParagonPathway extends Beyonder {
 
     public static float[] getStatsFor(int sequence){
         return switch (sequence){
-            case 9 -> new float[]{0, 0, 0, 0, 2};
-            case 8 -> new float[]{1, 0, 0, 0, 3};
-            case 7 -> new float[]{1, 0, 0, 0, 4};
+            case 9 -> new float[]{0, 0, 0, 0, 0};
+            case 8 -> new float[]{0, 0, 0, 0, 1};
+            case 7 -> new float[]{2, 0, 0, 0, 5};
             default -> new float[]{2, 0, 0, 0, 5};
         };
     }
@@ -50,9 +50,15 @@ public class ParagonPathway extends Beyonder {
             case 5:
             case 6:
             case 7:
+                XpCostReductionAbility xp = new XpCostReductionAbility(sequence);
+                activeAbilities.add(xp);
+                passiveAbilities.add(xp);
+                activeAbilities.add(new RemoveEnchantmentAbility(sequence));
             case 8:
-                activeAbilities.add(new ParagonBoneMealAbility(sequence));
                 activeAbilities.add(new AnvilGuiAbility(sequence));
+                activeAbilities.add(new ParagonBoneMealAbility(sequence));
+                activeAbilities.add(new ConjurerContainerAbility(sequence));
+                activeAbilities.add(new EnderChestAbility(sequence));
             case 9:
                 CraftingSpiritualityAbility craftingSpiritualityAbility = new CraftingSpiritualityAbility(sequence);
                 activeAbilities.add(craftingSpiritualityAbility);
@@ -78,8 +84,8 @@ public class ParagonPathway extends Beyonder {
     public static String getSequenceName(int seq){
         return switch (seq) {
             case 9 -> "Crafter";
-            case 8 -> "Enchanter";
-            case 7 -> "Conjurer";
+            case 8 -> "Conjurer";
+            case 7 -> "Enchanter";
             case 6 -> "Artisan";
             case 5 -> "Alchemist";
             default -> "";

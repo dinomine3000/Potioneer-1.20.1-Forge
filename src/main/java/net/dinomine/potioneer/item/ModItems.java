@@ -67,7 +67,7 @@ public class ModItems {
     public static final RegistryObject<Item> FIRE_SWORD = ITEMS.register("fire_sword",
             () -> new FireSword(new Item.Properties().stacksTo(1).fireResistant().rarity(Rarity.UNCOMMON)));
 
-    public static final RegistryObject<Item> VOODOO_DOLL = ITEMS.register("voodoo_doll",
+    public static final RegistryObject<Item> VOODOO_DOLL = ITEMS.register("straw_doll",
             () -> new VoodooDollItem(new Item.Properties().stacksTo(1).rarity(Rarity.COMMON)));
 
 

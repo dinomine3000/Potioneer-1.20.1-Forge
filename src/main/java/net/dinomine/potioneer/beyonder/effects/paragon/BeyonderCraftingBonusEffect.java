@@ -7,10 +7,6 @@ import net.minecraft.world.entity.LivingEntity;
 
 public class BeyonderCraftingBonusEffect extends BeyonderEffect {
 
-    public BeyonderCraftingBonusEffect(){
-        this(0, 0f, 0, false, BeyonderEffects.EFFECT.PARAGON_CRAFTING_BONUS);
-    }
-
     public BeyonderCraftingBonusEffect(int level, float cost, int time, boolean active, BeyonderEffects.EFFECT id){
         super(level, cost, time, active, id);
         this.name = "Paragon Crafting";

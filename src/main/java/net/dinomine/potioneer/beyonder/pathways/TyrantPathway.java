@@ -30,7 +30,7 @@ public class TyrantPathway extends Beyonder {
     public static float[] getStatsFor(int sequence){
         return switch (sequence){
             case 9 -> new float[]{8, 1, 0, 0, 4};
-            case 8 -> new float[]{10, 1, 0, 0, 4};
+            case 8 -> new float[]{8, 1, 0, 0, 4};
             case 7 -> new float[]{12, 2, 0, 0, 5};
             case 6 -> new float[]{15, 2, 0, 0, 5};
             case 5 -> new float[]{20, 3, 0, 0, 10};
@@ -50,6 +50,13 @@ public class TyrantPathway extends Beyonder {
             case 5:
             case 6:
             case 7:
+                activeAbilities.add(new ThunderStrikeAbility(sequence));
+                activeAbilities.add(new ThunderCreateAbility(sequence));
+                activeAbilities.add(new RainCreateAbility(sequence));
+                activeAbilities.add(new RainLeapAbility(sequence));
+                ElectrificationAbility elec = new ElectrificationAbility(sequence);
+                activeAbilities.add(elec);
+                passiveAbilities.add(elec);
             case 8:
                 activeAbilities.add(new WaterPrisonAbility(sequence));
                 activeAbilities.add(new WaterCreateAbility(sequence));
@@ -109,20 +116,6 @@ public class TyrantPathway extends Beyonder {
     public static void giveWaterEffects(Player player, EntityBeyonderManager cap){
         //On average, this calls the cost once a second
         float cost = 4f;
-    }
-
-    private static void replenishStatsWhileUnderwater(Player player, EntityBeyonderManager cap){
-        if(isInWater(player)){
-            //cap.requestSpiritualityCost(-4);
-            if(player.getFoodData().needsFood() && Math.random() < 0.02){
-                cap.requestPassiveSpiritualityCost(20);
-                player.getFoodData().eat(1, 0);
-            }
-        }
-    }
-
-    public static boolean isInWater(Player player){
-        return player.isInWater();
     }
 
 }

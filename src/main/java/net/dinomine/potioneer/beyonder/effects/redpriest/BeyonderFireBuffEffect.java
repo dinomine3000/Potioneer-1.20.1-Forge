@@ -25,7 +25,7 @@ public class BeyonderFireBuffEffect extends BeyonderEffect {
     @Override
     protected void doTick(EntityBeyonderManager cap, LivingEntity target) {
         if(!target.hasEffect(MobEffects.FIRE_RESISTANCE))
-            target.addEffect(new MobEffectInstance(MobEffects.FIRE_RESISTANCE, -1, 1));
+            target.addEffect(new MobEffectInstance(MobEffects.FIRE_RESISTANCE, -1, 1, false, false));
     }
 
     @Override

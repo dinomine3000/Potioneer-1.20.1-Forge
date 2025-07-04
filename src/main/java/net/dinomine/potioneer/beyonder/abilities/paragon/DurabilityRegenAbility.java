@@ -9,34 +9,35 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 
 public class DurabilityRegenAbility extends Ability {
-
+    private boolean levelUp;
     public DurabilityRegenAbility(int sequence){
-        this.info = new AbilityInfo(109, 56, "Durability Regen", 40 + sequence, 30*(10-sequence), 20*5, "durability_regen");
+        levelUp = sequence <= 7;
+        this.info = new AbilityInfo(109, 56, "Durability Regen", 40 + sequence, 30*(10-sequence), 20*5, "durability_regen" + (levelUp ? "2" : ""));
     }
 
     @Override
     public void onAcquire(EntityBeyonderManager cap, LivingEntity target) {
-        disable(cap, target);
+        if(!levelUp){
+            disable(cap, target);
+        } else {
+            //by default, every ability starts as Enabled when acquired via advancement.
+            //as such, calling Enable() will not trigger activate, and we need to do it manually here
+            activate(cap, target);
+        }
     }
 
     @Override
     public boolean active(EntityBeyonderManager cap, LivingEntity target) {
         if(target.level().isClientSide() && cap.getSpirituality() > info.cost()) return false;
-        System.out.println("flipping enabledurabvility regen...");
         flipEnable(cap, target);
 
-
-        if(!isEnabled(cap.getAbilitiesManager())){
-            System.out.println("deactivating durabvility regen...");
-            if(cap.getEffectsManager().hasEffect(BeyonderEffects.EFFECT.PARAGON_DURABILITY_REGEN, getSequence())){
-                cap.getEffectsManager().removeEffect(BeyonderEffects.EFFECT.PARAGON_DURABILITY_REGEN, getSequence(), cap, target);
-            }
-            return true;
-        } else if (target instanceof Player player){
+        if (isEnabled(cap.getAbilitiesManager()) && !levelUp && target instanceof Player player){
             int caret = cap.getAbilitiesManager().getCaretForAbility(this);
             if(caret > -1) cap.getAbilitiesManager().putOnCooldown(player, caret, 20, 20);
+            //return false to have custom cooldown
+            return false;
         }
-        return false;
+        return true;
     }
 
     @Override
@@ -46,12 +47,13 @@ public class DurabilityRegenAbility extends Ability {
 
     @Override
     public void activate(EntityBeyonderManager cap, LivingEntity target) {
-        System.out.println("activating durabvility regen...");
         if(!cap.getEffectsManager().hasEffect(BeyonderEffects.EFFECT.PARAGON_DURABILITY_REGEN, getSequence())){
 
+            int duration = levelUp ? -1 : 60*((9-getSequence())*6 + 3);
+            float cost = levelUp ? info.cost() / 2f: info.cost();
             cap.getEffectsManager().addEffect(BeyonderEffects.byId(BeyonderEffects.EFFECT.PARAGON_DURABILITY_REGEN,
-                    getSequence(), info.cost(), 60*((9-getSequence())*6 + 3), true), cap, target);
-            disable(cap, target);
+                    getSequence(), cost, duration, true), cap, target);
+            if(!levelUp) disable(cap, target);
             return;
 //                cap.requestActiveSpiritualityCost(info.cost());
         }
@@ -60,5 +62,8 @@ public class DurabilityRegenAbility extends Ability {
 
     @Override
     public void deactivate(EntityBeyonderManager cap, LivingEntity target) {
+        if(cap.getEffectsManager().hasEffect(BeyonderEffects.EFFECT.PARAGON_DURABILITY_REGEN, getSequence())){
+            cap.getEffectsManager().getEffect(BeyonderEffects.EFFECT.PARAGON_DURABILITY_REGEN, getSequence()).endEffectWhenPossible();
+        }
     }
 }

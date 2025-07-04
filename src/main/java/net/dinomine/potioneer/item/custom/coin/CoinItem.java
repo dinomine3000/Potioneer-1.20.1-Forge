@@ -6,6 +6,7 @@ import net.dinomine.potioneer.beyonder.misc.DivinationResult;
 import net.dinomine.potioneer.beyonder.misc.MysticismHelper;
 import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
 import net.dinomine.potioneer.beyonder.player.EntityBeyonderManager;
+import net.dinomine.potioneer.item.ModItems;
 import net.dinomine.potioneer.sound.ModSounds;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.nbt.CompoundTag;
@@ -142,7 +143,9 @@ public class CoinItem extends Item implements GeoItem {
         if(seer){
             MysticismHelper.updateOrApplyMysticismTag(player.getMainHandItem(), 0.2f, player);
             return result.yesNo();
-        } else {
+        } else if(divinationTarget.is(ModItems.BEYONDER_POTION.get()) && Math.random() < 0.8f){
+          return result.yesNo();
+        } else{
             if(player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).isPresent()){
                 Optional<EntityBeyonderManager> cap = player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve();
                 float luck = cap.get().getLuckManager().checkLuck(0.5f);

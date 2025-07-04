@@ -18,14 +18,15 @@ public class ParagonFuelSlotContainer extends TransientCraftingContainer {
 
     public void consumeFuel(){
         consumeFuel(1);
+        setChanged();
     }
 
     public void consumeFuel(int amount){
-        getItem(0).shrink(amount);
+        if(getItem(0).is(ModItems.GOLDEN_DROP.get())) getItem(0).shrink(amount);
     }
 
     public int getFuelAmount(){
-        return getItem(0).getCount();
+        return getItem(0).is(ModItems.GOLDEN_DROP.get()) ? getItem(0).getCount() : 0;
     }
 
     public boolean hasFuel(){

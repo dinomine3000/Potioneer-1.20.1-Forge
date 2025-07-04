@@ -170,11 +170,6 @@ public class ChryonEntity extends Monster implements GeoEntity {
     protected double getAttackReachSqr(LivingEntity pAttackTarget) {
         return 1.6 * (double)(this.getBbWidth() * 2.0F * this.getBbWidth() * 2.0F + pAttackTarget.getBbWidth());
     }
-    
-    @Override
-    public int getCurrentSwingDuration() {
-        return 60;
-    }
 
     public static AttributeSupplier setAttributes(){
         return Monster.createMonsterAttributes()

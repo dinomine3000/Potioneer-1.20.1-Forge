@@ -1,0 +1,30 @@
+{
+  "type": "potioneer:potion_cauldron_brew",
+  "main_ingredients": [
+    {
+      "item": "minecraft:chest"
+    },
+    {
+      "item": "minecraft:ender_pearl"
+    }
+  ],
+  "supplementary_ingredients": [
+    {
+      "item": "minecraft:bone_meal",
+      "count": 4
+    },
+    {
+      "item": "minecraft:copper_ingot",
+      "count": 2
+    }
+  ],
+  "water_level": 3,
+  "needs_fire": true,
+  "output": {
+    "name": "48",
+    "amount": 2,
+    "bottle": true,
+    "color": 28791,
+    "can_conflict": true
+  }
+}

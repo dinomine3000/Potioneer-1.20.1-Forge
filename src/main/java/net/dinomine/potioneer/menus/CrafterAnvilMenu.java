@@ -31,7 +31,6 @@ public class CrafterAnvilMenu extends AnvilMenu {
     private final ParagonFuelSlotContainer fuelContainer;
     private final int sequence;
     private final DataSlot enchantmentSeed;
-    public boolean consumeFuel = false;
     private final RandomSource random;
 
     //client constructor
@@ -107,16 +106,32 @@ public class CrafterAnvilMenu extends AnvilMenu {
         super.createResult();
         this.player.getAbilities().instabuild = oldBuild;
 
+        System.out.println("Create result");
         if(fuelContainer.hasFuel()){
             this.cost.set(0);
         }
         if(this.inputSlots.getItem(0).is(Items.BOOK) && this.inputSlots.getItem(1).isEmpty()){
             enchantBook(fuelContainer.getFuelAmount()*2);
+            System.out.println("Enchanting item");
         } else {
             if (fuelContainer.hasFuel() && this.inputSlots.getItem(0).is(Items.BOOK) && this.inputSlots.getItem(1).is(Items.ENCHANTED_BOOK)){
                 this.resultSlots.setItem(0, this.inputSlots.getItem(1).copy());
+                System.out.println("copying book");
             }
         }
+        //sendAllDataToRemote();
+        this.broadcastChanges();
+    }
+
+    @Override
+    public int getCost() {
+        return this.cost.get();
+    }
+
+    @Override
+    public void setMaximumCost(int value) {
+        System.out.println("Setting maximum cost");
+        super.setMaximumCost(value);
     }
 
     @Override
@@ -148,23 +163,25 @@ public class CrafterAnvilMenu extends AnvilMenu {
         this.inputSlots.setItem(0, originalBooks);
         this.inputSlots.setItem(1, book);
 
+        this.broadcastChanges();
         pPlayer.getAbilities().instabuild = oldBuild;
     }
 
 
 
     private void enchantBook(int bookshelfLevel){
+        ItemStack fds = new ItemStack(Items.BOOK);
+        int pId = enchantment_id;
+        this.random.setSeed(this.enchantmentSeed.get());
+        int prop = EnchantmentHelper.getEnchantmentCost(this.random, pId, bookshelfLevel, fds);
+        if (prop < pId + 1) {
+            this.cost.set(1);
+        } else {
+            this.cost.set(prop);
+        }
         this.access.execute((pLevel, pPos) -> {
-            System.out.println("Enchanting a book");
-
             ItemStack book = new ItemStack(Items.BOOK);
-            this.random.setSeed(this.enchantmentSeed.get());
-            int pId = enchantment_id;
 
-            this.cost.set(EnchantmentHelper.getEnchantmentCost(this.random, pId, bookshelfLevel, book));
-            if (this.cost.get() < pId + 1) {
-                this.cost.set(0);
-            }
             int enchantmentLevel = ForgeEventFactory.onEnchantmentLevelSet(pLevel, pPos, pId, (int)bookshelfLevel, book, this.cost.get());
 
 
@@ -191,8 +208,6 @@ public class CrafterAnvilMenu extends AnvilMenu {
                 //this.slotsChanged(this.enchantSlots);
             }
             this.resultSlots.setItem(0, book);
-
-            this.broadcastChanges();
         });
     }
 
@@ -221,6 +236,13 @@ public class CrafterAnvilMenu extends AnvilMenu {
     public void removed(Player pPlayer) {
         super.removed(pPlayer);
         this.access.execute((p_39796_, p_39797_) -> this.clearContainer(pPlayer, this.fuelContainer));
+    }
+
+    @Override
+    public void setItem(int pSlotId, int pStateId, ItemStack pStack) {
+        System.out.println("Set Item " + pStack);
+        System.out.println(this.cost.get());
+        super.setItem(pSlotId, pStateId, pStack);
     }
 
     public boolean hasFuel(){

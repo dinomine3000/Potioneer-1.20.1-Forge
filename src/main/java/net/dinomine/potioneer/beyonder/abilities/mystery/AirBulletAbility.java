@@ -3,6 +3,7 @@ package net.dinomine.potioneer.beyonder.abilities.mystery;
 import com.google.common.base.Suppliers;
 import com.google.common.collect.ImmutableMultimap;
 import net.dinomine.potioneer.beyonder.abilities.Ability;
+import net.dinomine.potioneer.beyonder.abilities.AbilityFunctionHelper;
 import net.dinomine.potioneer.beyonder.abilities.AbilityInfo;
 import net.dinomine.potioneer.beyonder.player.EntityBeyonderManager;
 import net.minecraft.core.particles.ParticleTypes;
@@ -52,28 +53,8 @@ public class AirBulletAbility extends Ability {
         }
         else {
             cap.requestActiveSpiritualityCost(info.cost());
-            Vec3 lookAngle = target.getLookAngle();
-            Vec3 pos = target.position();
             int radius = (9 - getSequence())*8 + 5;
-            AABB box = new AABB(
-                    pos.x-radius, pos.y-radius, pos.z-radius,
-                    pos.x+radius, pos.y+radius, pos.z+radius
-            );
-            ArrayList<Entity> hits = new ArrayList<>(level.getEntities(target, box, new Predicate<Entity>() {
-                @Override
-                public boolean test(Entity entity) {
-                    if(entity instanceof LivingEntity living){
-                        double dist = living.position().subtract(target.position()).length();
-//                        System.out.println(dist);
-//                        System.out.println(height);
-                        boolean hit = living.getBoundingBoxForCulling().intersects(target.getEyePosition(),
-                                target.getEyePosition().add(lookAngle.scale(dist+1)));
-//                        System.out.println(hit);
-                        return hit;
-                    }
-                    return false;
-                }
-            }));
+            ArrayList<Entity> hits = AbilityFunctionHelper.getLivingEntitiesLooking(target, radius);
             hits.forEach(ent -> {
                 int pow = (9-getSequence());
                 ent.hurt(level.damageSources().indirectMagic(target, null),

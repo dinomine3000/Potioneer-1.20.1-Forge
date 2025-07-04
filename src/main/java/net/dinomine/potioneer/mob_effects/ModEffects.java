@@ -3,6 +3,7 @@ package net.dinomine.potioneer.mob_effects;
 import net.dinomine.potioneer.Potioneer;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
+import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -17,7 +18,13 @@ public class ModEffects {
             () -> new WaterPrisonEffect(MobEffectCategory.HARMFUL, 0x000dbc));
 
     public static final RegistryObject<MobEffect> BLEED_EFFECT = MOB_EFFECTS.register("bleed_effect",
-            () -> new BleedEffect(MobEffectCategory.HARMFUL, 0x9e2121));
+            () -> new ModMobEffect(MobEffectCategory.NEUTRAL, 0x9e2121));
+
+    public static final RegistryObject<MobEffect> PLAGUE_EFFECT = MOB_EFFECTS.register("plague_effect",
+            () -> new ModMobEffect(MobEffectCategory.HARMFUL, 0x03a00c));
+
+    public static final RegistryObject<MobEffect> LIGHT_BUFF = MOB_EFFECTS.register("light_buff",
+            () -> new ModMobEffect(MobEffectCategory.BENEFICIAL, 0xff6524));
 
     public static void register(IEventBus eventBus){
         MOB_EFFECTS.register(eventBus);

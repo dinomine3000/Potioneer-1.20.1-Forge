@@ -1,0 +1,31 @@
+{
+  "type": "potioneer:potion_cauldron_brew",
+  "main_ingredients": [
+    {
+      "item": "potioneer:coin",
+      "count": 1
+    },
+    {
+      "item": "minecraft:obsidian",
+      "count": 3
+    }
+  ],
+  "supplementary_ingredients": [
+    {
+      "item": "minecraft:rabbit_foot",
+      "count": 2
+    },
+    {
+      "item": "minecraft:golden_carrot"
+    }
+  ],
+  "water_level": 2,
+  "needs_fire": false,
+  "output": {
+    "name": "7",
+    "amount": 2,
+    "bottle": true,
+    "color": 14989311,
+    "can_conflict": true
+  }
+}

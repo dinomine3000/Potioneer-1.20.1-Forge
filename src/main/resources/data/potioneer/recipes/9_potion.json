@@ -5,19 +5,16 @@
       "item": "potioneer:sapphire"
     },
     {
-      "item": "minecraft:diamond"
+      "item": "minecraft:raw_iron",
+      "count": 3
     }
   ],
   "supplementary_ingredients": [
     {
-      "item": "potioneer:vial",
-      "nbt": {
-        "potion_info": {
-          "name": "cactus_sap",
-          "amount": 1,
-          "color": 65280
-        }
-      }
+      "item": "minecraft:torch"
+    },
+    {
+      "item": "minecraft:iron_pickaxe"
     }
   ],
   "water_level": 3,

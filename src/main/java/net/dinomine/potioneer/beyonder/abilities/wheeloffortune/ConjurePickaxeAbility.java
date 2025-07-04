@@ -13,7 +13,7 @@ import net.minecraft.world.item.ItemStack;
 public class ConjurePickaxeAbility extends Ability {
 
     public ConjurePickaxeAbility(int sequence){
-        this.info = new AbilityInfo(5, 80, "Conjure Pickaxe", sequence, 10, 20*5, "pick");
+        this.info = new AbilityInfo(5, 80, "Conjure Pickaxe", sequence, 10 + 10*(9-sequence), 20*5, "pick");
     }
 
     @Override

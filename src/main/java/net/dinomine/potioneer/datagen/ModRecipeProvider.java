@@ -76,7 +76,7 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                 .save(consumer);
 
         //straw man / voodoo doll
-        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.DIVINATION_ROD.get())
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.VOODOO_DOLL.get())
                 .pattern("CHC")
                 .pattern("RSR")
                 .pattern("RCR")

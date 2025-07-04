@@ -1,0 +1,33 @@
+{
+  "type": "potioneer:potion_cauldron_brew",
+  "main_ingredients": [
+    {
+      "item": "minecraft:blaze_powder"
+    },
+    {
+      "item": "minecraft:fire_charge"
+    }
+  ],
+  "supplementary_ingredients": [
+    {
+      "item": "minecraft:ghast_tear"
+    },
+    {
+      "item": "minecraft:coal",
+      "count": 2
+    },
+    {
+      "item": "minecraft:charcoal",
+      "count": 2
+    }
+  ],
+  "water_level": 2,
+  "needs_fire": true,
+  "output": {
+    "name": "38",
+    "amount": 2,
+    "bottle": true,
+    "color": 16749056,
+    "can_conflict": true
+  }
+}

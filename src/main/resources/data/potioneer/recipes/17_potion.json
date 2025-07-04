@@ -1,0 +1,30 @@
+{
+  "type": "potioneer:potion_cauldron_brew",
+  "main_ingredients": [
+    {
+      "item": "minecraft:heart_of_the_sea",
+      "count": 2
+    },
+    {
+      "item": "minecraft:trident"
+    }
+  ],
+  "supplementary_ingredients": [
+    {
+      "item": "potioneer:sapphire",
+      "count": 2
+    },
+    {
+      "item": "minecraft:turtle_egg"
+    }
+  ],
+  "water_level": 3,
+  "needs_fire": true,
+  "output": {
+    "name": "17",
+    "amount": 2,
+    "bottle": true,
+    "color": 8167853,
+    "can_conflict": true
+  }
+}

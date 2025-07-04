@@ -1,6 +1,7 @@
 package net.dinomine.potioneer.menus;
 
 import net.dinomine.potioneer.Potioneer;
+import net.minecraft.world.inventory.ChestMenu;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraftforge.common.extensions.IForgeMenuType;
 import net.minecraftforge.registries.DeferredRegister;

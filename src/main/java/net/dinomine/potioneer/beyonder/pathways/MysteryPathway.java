@@ -48,6 +48,12 @@ public class MysteryPathway extends Beyonder {
             case 6:
             case 7:
                 activeAbilities.add(new AirBulletAbility(sequence));
+                FigurineSubstituteAbility figure = new FigurineSubstituteAbility(sequence);
+                activeAbilities.add(figure);
+                passiveAbilities.add(figure);
+                activeAbilities.add(new PlagueAbility(sequence));
+                activeAbilities.add(new PanaceaAbility(sequence));
+                activeAbilities.add(new PushAbility(sequence));
             case 8:
 //                activeAbilities.add(new RandomTeleportAbility(sequence));
                 ReduceFallDamageAbility fall = new ReduceFallDamageAbility(sequence);

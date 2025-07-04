@@ -52,7 +52,7 @@ public class ClientForgeHandler {
 
         if(!KeyBindings.INSTANCE.quickAbilityKey.isDown()) ClientStatsData.keyPressed = false;
 
-        if(KeyBindings.INSTANCE.beyonderMenuKey.consumeClick() && minecraft.player != null && ClientStatsData.getPathwayId() > -1){
+        if(ClientStatsData.getPathwayId() > -1 && KeyBindings.INSTANCE.beyonderMenuKey.consumeClick() && minecraft.player != null ){
             Minecraft.getInstance().setScreen(new BeyonderScreen());
             //DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> Minecraft.getInstance().setScreen(new BeyonderScreen()));
         } else if(ClientStatsData.getPathwayId() > -1 && KeyBindings.INSTANCE.quickAbilityKey.consumeClick() && minecraft.player != null){

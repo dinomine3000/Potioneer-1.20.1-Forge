@@ -2,15 +2,23 @@
   "type": "potioneer:potion_cauldron_brew",
   "main_ingredients": [
     {
-      "item": "potioneer:sapphire"
+      "item": "minecraft:tropical_fish"
     },
     {
-      "item": "potioneer:pecan_leaf"
+      "item": "minecraft:kelp",
+      "count": 3
     }
   ],
-  "supplementary_ingredients": [],
+  "supplementary_ingredients": [
+    {
+      "item": "minecraft:beetroot"
+    },
+    {
+      "item": "minecraft:spider_eye"
+    }
+  ],
   "water_level": 3,
-  "needs_fire": true,
+  "needs_fire": false,
   "output": {
     "name": "19",
     "amount": 2,

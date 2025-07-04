@@ -22,10 +22,6 @@ public class BeyonderInvisibilityEffect extends BeyonderEffect {
 
     @Override
     public void onAcquire(EntityBeyonderManager cap, LivingEntity target) {
-        if(!target.hasEffect(MobEffects.INVISIBILITY)){
-            target.addEffect(new MobEffectInstance(MobEffects.INVISIBILITY, (this.maxLife)/2, 1, false, false));
-            target.sendSystemMessage(Component.literal(String.valueOf(this.maxLife)));
-        }
     }
 
     @Override

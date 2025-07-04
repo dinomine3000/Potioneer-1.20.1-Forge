@@ -15,6 +15,7 @@ public class ModSounds {
 
     public static final RegistryObject<SoundEvent> ADVANCEMENT_CLICK = registerSoundEvents("click");
     public static final RegistryObject<SoundEvent> COIN = registerSoundEvents("coin");
+    public static final RegistryObject<SoundEvent> WATER_PRISON = registerSoundEvents("water_prison");
 
 
 

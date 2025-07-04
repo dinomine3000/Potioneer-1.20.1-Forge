@@ -27,6 +27,10 @@ public class BeyonderStats {
         playerAttributes[1] += dmg;
     }
 
+    public void addHealth(int i) {
+        playerAttributes[0] += i;
+    }
+
     public void enableFlight(){
         mayFly = true;
     }
@@ -58,7 +62,7 @@ public class BeyonderStats {
     public void setStats(BeyonderStats oldStore){
         this.miningSpeedMult = oldStore.miningSpeedMult;
         this.mayFly = oldStore.mayFly;
-        this.playerEffectAttributes = oldStore.playerAttributes;
+        //this.playerEffectAttributes = oldStore.playerAttributes;
     }
 
     public int[] getIntStats(){
@@ -74,7 +78,11 @@ public class BeyonderStats {
         this.playerAttributes = atts;
     }
 
-    public void applyStats(Player player){
+    public void applyEffects(Player player, BeyonderStats statsHolder) {
+        player.getAbilities().mayfly = statsHolder.mayFly;
+    }
+
+    public void applyStats(Player player, boolean heal){
         player.getAttributes().removeAttributeModifiers(getHealthModifier(1));
         player.getAttributes().removeAttributeModifiers(getAttackModifier(2));
         player.getAttributes().removeAttributeModifiers(getArmorModifier(2));
@@ -101,7 +109,7 @@ public class BeyonderStats {
 //            System.out.println("Added knockback res.");
             player.getAttributes().addTransientAttributeModifiers(getKnockbackModifier(playerAttributes[4]));
         }
-        if(player.getHealth() > player.getMaxHealth()){
+        if(heal && player.getHealth() > player.getMaxHealth()){
             player.setHealth(player.getMaxHealth());
         }
     }
@@ -161,5 +169,4 @@ public class BeyonderStats {
                 ImmutableMultimap.of(Attributes.KNOCKBACK_RESISTANCE, singleRangeAttributeModifier));
         return knockbackMod.get();
     }
-
 }

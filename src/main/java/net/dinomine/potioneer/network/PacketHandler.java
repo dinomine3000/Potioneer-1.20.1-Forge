@@ -2,6 +2,7 @@ package net.dinomine.potioneer.network;
 
 import net.dinomine.potioneer.Potioneer;
 import net.dinomine.potioneer.network.messages.*;
+import net.dinomine.potioneer.network.messages.abilityRelevant.EvaporateEffect;
 import net.dinomine.potioneer.network.messages.abilityRelevant.OpenDivinationScreenSTC;
 import net.dinomine.potioneer.network.messages.abilityRelevant.WaterPrisonEffectSTC;
 import net.minecraft.resources.ResourceLocation;
@@ -34,5 +35,6 @@ public class PacketHandler {
         INSTANCE.registerMessage(i++, OpenDivinationScreenSTC.class, OpenDivinationScreenSTC::encode, OpenDivinationScreenSTC::decode, OpenDivinationScreenSTC::handle);
         INSTANCE.registerMessage(i++, WaterPrisonEffectSTC.class, WaterPrisonEffectSTC::encode, WaterPrisonEffectSTC::decode, WaterPrisonEffectSTC::handle);
         INSTANCE.registerMessage(i++, PlayerStatsMessageSTC.class, PlayerStatsMessageSTC::encode, PlayerStatsMessageSTC::decode, PlayerStatsMessageSTC::handle);
+        INSTANCE.registerMessage(i++, EvaporateEffect.class, EvaporateEffect::encode, EvaporateEffect::decode, EvaporateEffect::handle);
     }
 }

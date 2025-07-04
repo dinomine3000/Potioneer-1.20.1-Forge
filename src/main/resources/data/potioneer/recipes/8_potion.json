@@ -1,0 +1,30 @@
+{
+  "type": "potioneer:potion_cauldron_brew",
+  "main_ingredients": [
+    {
+      "item": "minecraft:diamond",
+      "count": 3
+    },
+    {
+      "item": "minecraft:rabbit_foot",
+      "count": 2
+    }
+  ],
+  "supplementary_ingredients": [
+    {
+      "item": "minecraft:redstone"
+    },
+    {
+      "item": "minecraft:string"
+    }
+  ],
+  "water_level": 2,
+  "needs_fire": false,
+  "output": {
+    "name": "8",
+    "amount": 2,
+    "bottle": true,
+    "color": 16383885,
+    "can_conflict": true
+  }
+}

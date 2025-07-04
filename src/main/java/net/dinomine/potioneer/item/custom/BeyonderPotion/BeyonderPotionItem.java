@@ -2,6 +2,7 @@ package net.dinomine.potioneer.item.custom.BeyonderPotion;
 
 import net.dinomine.potioneer.beyonder.client.ClientStatsData;
 import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
+import net.dinomine.potioneer.beyonder.player.EntityBeyonderManager;
 import net.dinomine.potioneer.item.ModItems;
 import net.minecraft.client.color.item.ItemColor;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
@@ -23,6 +24,7 @@ import software.bernie.geckolib.util.RenderUtils;
 
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Consumer;
 
 public class BeyonderPotionItem extends PotionItem implements GeoItem {
@@ -70,35 +72,37 @@ public class BeyonderPotionItem extends PotionItem implements GeoItem {
         if(pStack.hasTag()){
             CompoundTag info = pStack.getTag().getCompound("potion_info");
             String name = info.getString("name");
-            if(pEntityLiving instanceof Player player && !pLevel.isClientSide()){
-                if(name.equals("conflict")){
-                    if(!player.isCreative()){
-                        player.kill();
-                        //reduce sequence
-                    }
-                    player.sendSystemMessage(Component.literal("Lost control on the spot. oh well."));
-                }
-            }
-            if(pEntityLiving instanceof Player player && pLevel.isClientSide()){
+            if(pEntityLiving instanceof Player player){
                 boolean beyonder = true;
                 try {
                     Integer.parseInt(name);
                 } catch (Exception e){
                     beyonder = false;
                 }
-                if(beyonder){
-                    player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
-                        if(Math.floorDiv(Integer.parseInt(name), 10) != Math.floorDiv(cap.getPathwayId(), 10) && cap.isBeyonder()){
+                Optional<EntityBeyonderManager> capOp = player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve();
+                if(capOp.isPresent()){
+                    EntityBeyonderManager cap = capOp.get();
+                    if(!pLevel.isClientSide()){
+                        if(name.equals("conflict")){
                             if(!player.isCreative()){
                                 player.kill();
+                                cap.advance((cap.getPathwayId() % 10 != 9) ? cap.getPathwayId() + 1 : -1, player, true, true);
+                            }
+                            player.sendSystemMessage(Component.literal("Lost control on the spot. oh well."));
+                        } else if(beyonder && Math.floorDiv(Integer.parseInt(name), 10) != Math.floorDiv(cap.getPathwayId(), 10) && cap.isBeyonder()){
+                            if(!player.isCreative()){
+                                player.kill();
+                                cap.advance((cap.getPathwayId() % 10 != 9) ? cap.getPathwayId() + 1 : -1, player, true, true);
                                 //reduce sequence
                             }
                             System.out.println("Pathway mismatch: " + name + " for pathway " + Math.floorDiv(cap.getPathwayId(), 10));
                             player.sendSystemMessage(Component.literal("Lost control on the spot. oh well."));
-                        } else {
+                        }
+                    } else {
+                        if(beyonder && (Math.floorDiv(Integer.parseInt(name), 10) == Math.floorDiv(cap.getPathwayId(), 10) || !cap.isBeyonder())){
                             ClientStatsData.attemptAdvancement(Integer.parseInt(name));
                         }
-                    });
+                    }
                 }
             }
         }

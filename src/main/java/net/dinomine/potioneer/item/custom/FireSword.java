@@ -8,6 +8,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.*;
 import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 
@@ -27,7 +28,7 @@ public class FireSword extends SwordItem {
     @Override
     public InteractionResult useOn(UseOnContext pContext) {
         HitResult hitResult = pContext.getPlayer().pick(5.0D, 0.0F, false);
-        if (hitResult.getType() == HitResult.Type.BLOCK){
+        if (hitResult instanceof BlockHitResult blockHitResult && !pContext.getLevel().getBlockState(blockHitResult.getBlockPos()).is(Blocks.FIRE)){
             Player player = pContext.getPlayer();
             ItemStack item = pContext.getItemInHand();
             BlockHitResult blockHit = (BlockHitResult) hitResult;

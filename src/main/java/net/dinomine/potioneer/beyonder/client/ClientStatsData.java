@@ -25,7 +25,8 @@ public class ClientStatsData {
         //plus 1 or 2 for undigested potions
         ClientAdvancementManager.setDifficulty((Math.max(pathwayId%10 - newSeq%10, 1) //adds the difference in levels. from 1 to 10
                 + Math.round(4f-sanity/25f) //from 0 to 4 more points
-                + 3-Math.floorDiv(newSeq%10, 3))); //adds from 0 to 3 points of difficulty
+                + 3-Math.floorDiv(newSeq%10, 3))
+                + Math.max(newSeq%10 - pathwayId%10, 0)); //adds from 0 to 3 points of difficulty
 //        ClientAdvancementManager.difficulty = 10;     //Debug
         ClientAdvancementManager.targetSequence = Math.min(newSeq, pathwayId);
         if(pathwayId == -1) ClientAdvancementManager.targetSequence = newSeq;

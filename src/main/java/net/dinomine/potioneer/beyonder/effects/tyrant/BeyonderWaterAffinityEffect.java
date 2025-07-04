@@ -23,12 +23,10 @@ import java.util.jar.Attributes;
 
 public class BeyonderWaterAffinityEffect extends BeyonderEffect {
 
-    public BeyonderWaterAffinityEffect(){
-        this(0, 0f, 0, false, BeyonderEffects.EFFECT.TYRANT_WATER_AFFINITY);
-    }
-
+    private boolean levelUp;
     public BeyonderWaterAffinityEffect(int level, float cost, int time, boolean active, BeyonderEffects.EFFECT id){
         super(level, cost, time, active, id);
+        levelUp = sequenceLevel < 8;
         this.name = "Tyrant Affinity";
     }
 
@@ -39,9 +37,9 @@ public class BeyonderWaterAffinityEffect extends BeyonderEffect {
     @Override
     protected void doTick(EntityBeyonderManager cap, LivingEntity target) {
         if(target instanceof Player player){
-            if(TyrantPathway.isInWater(player)){
-                float f = 1f;
-                if(!player.hasEffect(MobEffects.WATER_BREATHING)){
+            float f = 1f;
+            if(player.isInWater() || (levelUp && target.level().isRaining())){
+                if(player.isInWater() && !player.hasEffect(MobEffects.WATER_BREATHING)){
                     player.addEffect(new MobEffectInstance(MobEffects.WATER_BREATHING, -1, 0, false, false));
                 }
                 if(!player.hasEffect(MobEffects.NIGHT_VISION)){
@@ -55,13 +53,18 @@ public class BeyonderWaterAffinityEffect extends BeyonderEffect {
                     cap.requestActiveSpiritualityCost(this.cost/3);
                     player.getFoodData().eat(1, 1);
                 }
-                if (!target.onGround()) {
+                if (target.isInWater() && !target.onGround()) {
                     f *= 5.0F;
                 }
                 if (player.isUnderWater() && !EnchantmentHelper.hasAquaAffinity(player)) {
                     f *= 5.0F;
                 }
                 cap.getEffectsManager().statsHolder.multMiningSpeed(f);
+                if(levelUp){
+                    if(player.isInWater()){
+                        cap.getEffectsManager().statsHolder.enableFlight();
+                    }
+                }
             } else {
                 stopEffects(cap, target);
             }

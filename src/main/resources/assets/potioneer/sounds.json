@@ -9,5 +9,10 @@
       "potioneer:coin_toss1",
       "potioneer:coin_toss2"
     ]
+  },
+  "water_prison": {
+    "sounds": [
+      "potioneer:water_prison_sound"
+    ]
   }
 }

@@ -6,6 +6,7 @@ import net.dinomine.potioneer.beyonder.abilities.Beyonder;
 import net.dinomine.potioneer.network.PacketHandler;
 import net.dinomine.potioneer.network.messages.*;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.TagType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
@@ -15,6 +16,8 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.common.capabilities.AutoRegisterCapability;
 import net.minecraftforge.network.PacketDistributor;
+
+import java.util.ArrayList;
 
 @AutoRegisterCapability
 public class EntityBeyonderManager {
@@ -27,17 +30,25 @@ public class EntityBeyonderManager {
     private final PlayerAbilitiesManager abilitiesManager;
     private final PlayerEffectsManager effectsManager;
     private final PlayerLuckManager luckManager;
+    private ArrayList<ConjurerContainer> conjurerContainers = new ArrayList<>();
+
     private Beyonder pathway = new Beyonder(10);
     private final LivingEntity entity;
     private int syncCD = 20;
     private int effectCd = 40;
+
 
     public EntityBeyonderManager(LivingEntity entity){
         beyonderStats = new BeyonderStats();
         abilitiesManager = new PlayerAbilitiesManager();
         effectsManager = new PlayerEffectsManager();
         luckManager = new PlayerLuckManager();
+        if(entity instanceof Player player) conjurerContainers.add(new ConjurerContainer(player, 9));
         this.entity = entity;
+    }
+
+    public ConjurerContainer getConjurerContainer(int idx){
+        return conjurerContainers.isEmpty() ? null : conjurerContainers.get(idx);
     }
 
     public PlayerEffectsManager getEffectsManager(){
@@ -137,12 +148,13 @@ public class EntityBeyonderManager {
                                 luckManager.getLuck(),
                                 luckManager.getMinPassiveLuck(),
                                 luckManager.getMaxPassiveLuck()));
-                if(syncCD-- < 0){
-                    applyCost();
-                    syncCD = 20;
+            }
+            if(syncCD-- < 0){
+                applyCost();
+                syncCD = 20;
+                if(entity instanceof Player player)
                     PacketHandler.INSTANCE.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) player),
-                            new PlayerSTCHudStatsSync(this.spirituality, this.maxSpirituality, this.sanity, this.getPathwayId(), getAbilitiesManager().enabledDisabled));
-                }
+                        new PlayerSTCHudStatsSync(this.spirituality, this.maxSpirituality, this.sanity, this.getPathwayId(), getAbilitiesManager().enabledDisabled));
             }
             if(effectCd++ > 100){
                 effectCd = 0;
@@ -251,7 +263,7 @@ public class EntityBeyonderManager {
             if(advancing) this.abilitiesManager.onAcquireAbilities(this, entity);
             if(advancing) setSpirituality(this.maxSpirituality);
         }
-        if(entity instanceof Player player) getBeyonderStats().applyStats(player);
+        if(entity instanceof Player player) getBeyonderStats().applyStats(player, true);
         //if hp changes, add a heal to the player here IF ADVANCING!!
     }
 
@@ -283,6 +295,11 @@ public class EntityBeyonderManager {
         nbt.putFloat("spirituality", spirituality);
         nbt.putInt("pathwayId", pathway.getId());
         nbt.putInt("sanity", sanity);
+        nbt.putInt("containers_amount", conjurerContainers.size());
+        for (int i = 0; i < conjurerContainers.size(); i++) {
+            nbt.putInt("container_size_" + i, conjurerContainers.get(i).getContainerSize());
+            nbt.put("container_" + i, conjurerContainers.get(i).createTag());
+        }
 //        System.out.println("Saving pathway id: " + pathway.getId());
         //this.abilitiesManager.saveNBTData(nbt);
         this.effectsManager.saveNBTData(nbt);
@@ -297,6 +314,18 @@ public class EntityBeyonderManager {
 //        System.out.println("Loading pathway id: " + nbt.getInt("pathwayId"));
         this.sanity = nbt.getInt("sanity");
         setPathway(nbt.getInt("pathwayId"), false);
+
+        if(entity instanceof Player player && nbt.contains("containers_amount")){
+            int containersAmount = nbt.getInt("containers_amount");
+            conjurerContainers = new ArrayList<>();
+            for (int i = 0; i < containersAmount; i++) {
+                int size = nbt.getInt("container_size_" + i);
+                ConjurerContainer iterator = new ConjurerContainer(player, size);
+                iterator.fromTag(nbt.getList("container_" + i, CompoundTag.TAG_COMPOUND));
+                conjurerContainers.add(iterator);
+            }
+        }
+
         this.luckManager.loadNBTData(nbt);
         this.effectsManager.loadNBTData(nbt, this, entity);
         //enabledDisabled BEFORE onAcquire bc of reach ability

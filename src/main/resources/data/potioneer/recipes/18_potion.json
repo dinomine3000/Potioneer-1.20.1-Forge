@@ -1,0 +1,30 @@
+{
+  "type": "potioneer:potion_cauldron_brew",
+  "main_ingredients": [
+    {
+      "item": "minecraft:suspicious_stew"
+    },
+    {
+      "item": "minecraft:poisonous_potato",
+      "count": 2
+    }
+  ],
+  "supplementary_ingredients": [
+    {
+      "item": "minecraft:ink_sac",
+      "count": 3
+    },
+    {
+      "item": "minecraft:scute"
+    }
+  ],
+  "water_level": 3,
+  "needs_fire": false,
+  "output": {
+    "name": "18",
+    "amount": 2,
+    "bottle": true,
+    "color": 8023295,
+    "can_conflict": true
+  }
+}

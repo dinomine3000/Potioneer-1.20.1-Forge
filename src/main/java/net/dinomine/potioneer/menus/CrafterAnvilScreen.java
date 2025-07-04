@@ -15,6 +15,7 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.AnvilMenu;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 
 public class CrafterAnvilScreen extends ItemCombinerScreen<CrafterAnvilMenu> {
     private static final ResourceLocation TEXTURE = new ResourceLocation(Potioneer.MOD_ID, "textures/gui/paragon_anvil_menu.png");
@@ -85,6 +86,7 @@ public class CrafterAnvilScreen extends ItemCombinerScreen<CrafterAnvilMenu> {
             int $$4 = 8453920;
             Component labelComponent;
             if (!this.menu.getSlot(2).hasItem()) {
+                System.out.println("No result");
                 labelComponent = null;
             } else {
                 labelComponent = Component.translatable("container.repair.cost", cost);
@@ -121,7 +123,7 @@ public class CrafterAnvilScreen extends ItemCombinerScreen<CrafterAnvilMenu> {
     }
 
     public void slotChanged(AbstractContainerMenu pContainerToSend, int pSlotInd, ItemStack pStack) {
-        if (pSlotInd == 0) {
+        if (pSlotInd == 0 && !pStack.is(Items.BOOK)) {
             this.name.setValue(pStack.isEmpty() ? "" : pStack.getHoverName().getString());
             this.name.setEditable(!pStack.isEmpty());
             this.setFocused(this.name);

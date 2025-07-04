@@ -1,6 +1,7 @@
 package net.dinomine.potioneer.beyonder;
 
 import net.dinomine.potioneer.Potioneer;
+import net.dinomine.potioneer.beyonder.effects.BeyonderEffect;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
 import net.dinomine.potioneer.beyonder.misc.MysticismHelper;
 import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
@@ -13,6 +14,8 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -53,6 +56,9 @@ public class PlayerBeyonderManager {
 
     @SubscribeEvent
     public static void onPlayerDie(LivingDeathEvent event){
+        event.getEntity().getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
+            cap.getEffectsManager().onPlayerDie(event, cap);
+        });
 //        if(event.getEntity() instanceof Player player){
 //            Inventory inv = player.getInventory();
 //            int size = inv.getContainerSize();
@@ -149,7 +155,8 @@ public class PlayerBeyonderManager {
     @SubscribeEvent
     public static void onEntityTakeDamage(LivingDamageEvent event){
         if(event.getEntity() != null && event.getEntity() instanceof Player player){
-            if(player.level().isClientSide()) return;
+            //if(player.level().isClientSide()) return;
+            LivingEntity entity = event.getEntity();
             player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
                 cap.getEffectsManager().onTakeDamage(event, cap);
             });
@@ -174,16 +181,34 @@ public class PlayerBeyonderManager {
     @SubscribeEvent
     public static void onExperienceChange(PlayerXpEvent.XpChange event){
 //        System.out.println(event.getAmount());
-//        System.out.println(event.getAmount()/2);
+//        System.out.println(Math.max(event.getAmount(), event.getAmount()/2));
 //        System.out.println(event.getEntity());
-        event.setAmount(event.getAmount()/2);
+//        event.setAmount(Math.max(event.getAmount(), event.getAmount()/2));
+    }
+
+    @SubscribeEvent
+    public static void onEntityStruckByLightning(EntityStruckByLightningEvent event){
+        if(event.getEntity() instanceof LivingEntity livingEntity){
+            livingEntity.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
+                if(cap.getEffectsManager().hasEffect(BeyonderEffects.EFFECT.TYRANT_ELECTRIFICATION)){
+                    livingEntity.extinguishFire();
+                }
+            });
+        }
     }
 
     @SubscribeEvent
     public static void onExperienceChange(PlayerXpEvent.LevelChange event){
-//        System.out.println(event.getEntity());
-//        System.out.println(event.getLevels());
-        //event.setLevels(event.getLevels() / 3);
+        //event.setLevels(Math.max(event.getLevels(), (int) Math.floor(event.getLevels() / 2f)));
+        event.getEntity().getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent( cap -> {
+           if(cap.getEffectsManager().hasEffect(BeyonderEffects.EFFECT.PARAGON_XP_REDUCE)){
+               BeyonderEffect eff = cap.getEffectsManager().getEffect(BeyonderEffects.EFFECT.PARAGON_XP_REDUCE);
+               event.setLevels(Math.max(event.getLevels(),
+                       (int) Math.floor((2 * event.getLevels()) /(float)(10 - eff.getSequenceLevel()))
+                       ));
+               cap.requestActiveSpiritualityCost(eff.getCost());
+           }
+        });
     }
 
 

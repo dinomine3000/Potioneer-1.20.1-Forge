@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "C": {
+      "item": "minecraft:coal"
+    },
+    "H": {
+      "tag": "forge:heads"
+    },
+    "R": {
+      "item": "minecraft:blaze_rod"
+    },
+    "S": {
+      "item": "minecraft:soul_torch"
+    }
+  },
+  "pattern": [
+    "CHC",
+    "RSR",
+    "RCR"
+  ],
+  "result": {
+    "item": "potioneer:straw_doll"
+  },
+  "show_notification": true
+}

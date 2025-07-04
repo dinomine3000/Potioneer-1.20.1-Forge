@@ -19,6 +19,7 @@ public abstract class BeyonderEffect {
         this.sequenceLevel = sequence;
         this.cost = cost;
         this.maxLife = time;
+        this.lifetime = time == -1 ? -2 : 0;
         this.active = active;
         this.ID = id;
     }
@@ -54,6 +55,9 @@ public abstract class BeyonderEffect {
         return is(id) && this.sequenceLevel == seq;
     }
 
+    public boolean isOrBetter(BeyonderEffects.EFFECT id, int seq){
+        return is(id) && this.sequenceLevel <= seq;
+    }
     @Override
     public boolean equals(Object obj) {
         return obj instanceof BeyonderEffect effect && effect.is(this) && this.sequenceLevel == effect.sequenceLevel;
@@ -76,7 +80,7 @@ public abstract class BeyonderEffect {
         this.maxLife = ticks;
     }
 
-    private void endEffectWhenPossible(){
+    public void endEffectWhenPossible(){
         maxLife = 1;
         lifetime = 2;
     }
@@ -121,6 +125,8 @@ public abstract class BeyonderEffect {
 
     /**
      * called anytime the effect is added to a player (including when he loads into the world)
+     * as such, be wary of doing things that require a connection (like adding an effect or sending system messages)
+     * mob effects should be added on the doTick function, not on the onAcquire
      * @param cap
      * @param target
      */

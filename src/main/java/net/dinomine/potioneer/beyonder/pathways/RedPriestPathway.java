@@ -32,10 +32,10 @@ public class RedPriestPathway extends Beyonder {
     public static float[] getStatsFor(int sequence){
         return switch (sequence){
             case 9 -> new float[]{5, 1, 2, 0, 1};
-            case 8 -> new float[]{8, 2, 2, 0, 2};
-            case 7 -> new float[]{10, 3, 3, 0, 4};
-            case 6 -> new float[]{10, 3, 3, 1, 5};
-            case 5 -> new float[]{15, 5, 4, 2, 5};
+            case 8 -> new float[]{5, 2, 2, 0, 2};
+            case 7 -> new float[]{8, 3, 3, 0, 4};
+            case 6 -> new float[]{8, 3, 3, 1, 5};
+            case 5 -> new float[]{12, 5, 4, 2, 5};
             default -> new float[]{0, 0, 0, 0, 0};
         };
     }
@@ -53,6 +53,13 @@ public class RedPriestPathway extends Beyonder {
             case 5:
             case 6:
             case 7:
+                activeAbilities.add(new PriestLightAbility(sequence));
+                activeAbilities.add(new LightBuffAbility(sequence));
+                activeAbilities.add(new HealAbility(sequence));
+                activeAbilities.add(new MeltAbility(sequence));
+                PurificationAbility purify = new PurificationAbility(sequence);
+                activeAbilities.add(purify);
+                passiveAbilities.add(purify);
             case 8:
                 FireAuraAbility aura = new FireAuraAbility(sequence);
                 FireBuffAbility buff1 = new FireBuffAbility(sequence);

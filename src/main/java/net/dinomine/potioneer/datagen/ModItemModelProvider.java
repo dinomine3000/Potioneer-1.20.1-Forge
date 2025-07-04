@@ -48,6 +48,7 @@ public class ModItemModelProvider extends ItemModelProvider {
         simpleItem(ModItems.GOLDEN_DROP);
         simpleItem(ModItems.WANDERING_CACTUS_PRICK);
         simpleItem(ModItems.FORMULA);
+        simpleItem(ModItems.VOODOO_DOLL);
         handheldItem(ModItems.MINER_PICKAXE);
         handheldItem(ModItems.FIRE_SWORD);
 

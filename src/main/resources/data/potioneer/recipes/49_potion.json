@@ -10,10 +10,11 @@
   ],
   "supplementary_ingredients": [
     {
-      "item": "minecraft:redstone"
+      "item": "minecraft:crafting_table"
     },
     {
-      "item": "minecraft:iron_ingot"
+      "item": "minecraft:iron_nugget",
+      "count": 2
     }
   ],
   "water_level": 3,
