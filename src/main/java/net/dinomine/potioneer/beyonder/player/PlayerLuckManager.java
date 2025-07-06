@@ -23,6 +23,7 @@ public class PlayerLuckManager {
 
     private boolean eventGoingOn = false;
     private int luckEventCountdown;
+    private int luckEventCd;
     private int luck;
     private int tick = 0;
     private LuckRange range;
@@ -35,8 +36,8 @@ public class PlayerLuckManager {
     }
 
     public void onTick(EntityBeyonderManager cap, LivingEntity target){
-        //ticks once every 10 seconds
-        if(tick++ > 400){
+        //ticks once every 5 seconds
+        if(tick++ > 200){
             tick = 0;
             if(eventGoingOn){
                 luckEventCountdown--;
@@ -47,7 +48,7 @@ public class PlayerLuckManager {
                 }
 
             } else {
-                if(luck > FORTUNATE_EVENT_THRESHOLD || luck < UNFORTUNATE_EVENT_THRESHOLD){
+                if(luckEventCd-- < 0 && (luck > FORTUNATE_EVENT_THRESHOLD || luck < UNFORTUNATE_EVENT_THRESHOLD)){
                     castEvent(target);
                     target.sendSystemMessage(Component.literal("The gears of fate turn to you"));
                 }
@@ -73,8 +74,8 @@ public class PlayerLuckManager {
 
     private void castEvent(LivingEntity target){
         eventGoingOn = true;
-//      luckEventCountdown = target.getRandom().nextInt(10*6);
-        luckEventCountdown = target.getRandom().nextInt(1);
+        luckEventCountdown = target.getRandom().nextInt(6);
+        //luckEventCountdown = target.getRandom().nextInt(1);
     }
 
     public void instantlyCastEvent(LivingEntity target){
@@ -96,6 +97,7 @@ public class PlayerLuckManager {
 
     private void triggerEvent(EntityBeyonderManager cap, LivingEntity target){
         int event = target.getRandom().nextInt(3);
+        luckEventCd = target.getRandom().nextInt(24);
         if(luck > 0){
             target.sendSystemMessage(Component.literal("Fate bestows a blessing upon thee."));
             consumeLuck(40);

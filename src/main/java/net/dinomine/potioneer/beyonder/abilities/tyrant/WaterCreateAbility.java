@@ -29,6 +29,7 @@ public class WaterCreateAbility extends Ability {
         if(cap.getSpirituality() > info.cost() && target instanceof Player player){
             ItemStack waterStack = new ItemStack(Items.WATER_BUCKET);
             waterStack.use(target.level(), player, InteractionHand.MAIN_HAND);
+            return true;
 //            HitResult block = target.pick(target.getAttributeBaseValue(ForgeMod.BLOCK_REACH.get()) + 0.5, 0f, false);
 //            if(block instanceof BlockHitResult rayTrace){
 //                Level level = target.level();

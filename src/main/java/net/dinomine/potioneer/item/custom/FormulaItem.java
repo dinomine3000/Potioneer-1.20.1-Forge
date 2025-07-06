@@ -79,12 +79,11 @@ public class FormulaItem extends Item {
                 double chanceOfNextFormula = sequenceLevelFunction(sequenceLevel) + 0.05;
                 double chanceOfSamePathwayFormula = 0.3;
                 if(sequenceLevel > 0 && pLevel.random.nextFloat() < cap.getLuckManager().checkLuck((float)chanceOfNextFormula)){
-                    cap.getLuckManager().consumeLuck(20);
+                    cap.getLuckManager().consumeLuck(10);
                     System.out.println("Generating next formula...");
                     result = data.getDataFromId(id-1);
                 } else {
                     if(pLevel.random.nextFloat() < cap.getLuckManager().checkLuck((float)chanceOfSamePathwayFormula)){
-                        cap.getLuckManager().consumeLuck(10);
                         System.out.println("Generating pathway formula...");
                         result = data.getDataFromId(10*pathwayId + getRandomSequenceLevel(9, pLevel.random.nextDouble()));
                     } else {
@@ -105,7 +104,7 @@ public class FormulaItem extends Item {
 
     private static int getRandomId(Level pLevel){
         int id = pLevel.random.nextInt(5)*10 + getRandomSequenceLevel(9, pLevel.random.nextDouble());
-        System.out.println(id);
+        //System.out.println(id);
         return id;
     }
 

@@ -28,6 +28,11 @@ public class ModBlockEntities {
                     () -> BlockEntityType.Builder.of(WaterTrapBlockEntity::new, ModBlocks.WATER_TRAP_BLOCK.get())
                             .build(null));
 
+    public static RegistryObject<BlockEntityType<PriestLightBlockEntity>> PRIEST_LIGHT_BLOCK_ENTITY =
+            BLOCK_ENTITIES.register("priest_light_block_entity",
+                    () -> BlockEntityType.Builder.of(PriestLightBlockEntity::new, ModBlocks.PRIEST_LIGHT.get())
+                            .build(null));
+
     public static void register(IEventBus eventBus){
         BLOCK_ENTITIES.register(eventBus);
     }

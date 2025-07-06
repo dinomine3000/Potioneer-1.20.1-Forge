@@ -12,7 +12,7 @@ import net.minecraft.world.level.Level;
 
 public class ConjuredPickaxeItem extends PickaxeItem {
     public ConjuredPickaxeItem(Properties pProperties) {
-        super(Tiers.DIAMOND, 1, -2.8f, pProperties);
+        super(Tiers.DIAMOND, -2, -2.8f, pProperties);
     }
 
     @Override

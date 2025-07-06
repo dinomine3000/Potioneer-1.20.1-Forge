@@ -14,8 +14,8 @@ import net.minecraftforge.common.loot.LootTableIdCondition;
 
 public class ModGlobalLootModifiersProvider extends GlobalLootModifierProvider {
 
-    private static final float formulaChance = 0.6f;
-    private static final float coinChance = 0.2f;
+    private static final float formulaChance = 0.8f;
+    private static final float coinChance = 0.4f;
     public ModGlobalLootModifiersProvider(PackOutput output) {
         super(output, Potioneer.MOD_ID);
     }
@@ -95,6 +95,18 @@ public class ModGlobalLootModifiersProvider extends GlobalLootModifierProvider {
 
         add("formula_from_village_toolsmith", new AddItemModifier(new LootItemCondition[] {
                 new LootTableIdCondition.Builder(new ResourceLocation("chests/village/village_toolsmith")).build(),
+                LootItemRandomChanceCondition.randomChance(formulaChance).build() }, ModItems.FORMULA.get()));
+
+        add("formula_from_pillager", new AddItemModifier(new LootItemCondition[] {
+                new LootTableIdCondition.Builder(new ResourceLocation("chests/pillager_outpost")).build(),
+                LootItemRandomChanceCondition.randomChance(formulaChance).build() }, ModItems.FORMULA.get()));
+
+        add("formula_from_portal", new AddItemModifier(new LootItemCondition[] {
+                new LootTableIdCondition.Builder(new ResourceLocation("chests/ruined_portal")).build(),
+                LootItemRandomChanceCondition.randomChance(formulaChance).build() }, ModItems.FORMULA.get()));
+
+        add("formula_from_buried", new AddItemModifier(new LootItemCondition[] {
+                new LootTableIdCondition.Builder(new ResourceLocation("chests/buried_treasure")).build(),
                 LootItemRandomChanceCondition.randomChance(formulaChance).build() }, ModItems.FORMULA.get()));
 
 //        add("pine_cone_from_grass", new AddItemModifier(new LootItemCondition[] {

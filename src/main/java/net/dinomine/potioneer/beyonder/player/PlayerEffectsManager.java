@@ -152,8 +152,7 @@ public class PlayerEffectsManager {
     public void onCraft(PlayerEvent.ItemCraftedEvent event, EntityBeyonderManager cap){
         //TODO change this to account for multiple instances of similar effects
         if(hasEffect(BeyonderEffects.EFFECT.PARAGON_CRAFTING_SPIRITUALITY)){
-            System.out.println("Added spirituality: " + cap.getMaxSpirituality() * 0.05f);
-            cap.changeSpirituality(cap.getMaxSpirituality() * 0.05f);
+            cap.changeSpirituality(cap.getMaxSpirituality() * 0.01f);
         }
     }
 

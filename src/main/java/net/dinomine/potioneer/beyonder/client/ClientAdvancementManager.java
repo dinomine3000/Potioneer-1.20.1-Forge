@@ -2,6 +2,9 @@ package net.dinomine.potioneer.beyonder.client;
 
 import com.eliotlash.mclib.math.functions.limit.Min;
 import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
+import net.dinomine.potioneer.network.PacketHandler;
+import net.dinomine.potioneer.network.messages.AdvancementFailMessageCTS;
+import net.dinomine.potioneer.network.messages.PlayerAdvanceMessage;
 import net.dinomine.potioneer.sound.ModSounds;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
@@ -72,7 +75,10 @@ public class ClientAdvancementManager {
         } else {
             Player player = Minecraft.getInstance().player;
             if(!player.isCreative()){
-                player.kill();
+                Minecraft.getInstance().player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
+                    cap.advance(targetSequence%10 == 9 ? -1 : ClientStatsData.getPathwayId() + 1, Minecraft.getInstance().player, true, true);
+                });
+                PacketHandler.INSTANCE.sendToServer(new AdvancementFailMessageCTS());
                 //reduce sequence
             }
             player.sendSystemMessage(Component.literal("Lost control on the spot. oh well."));

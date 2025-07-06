@@ -55,6 +55,11 @@ public class ModBlocks {
                     BlockBehaviour.Properties.of().noCollission().friction(-1).destroyTime(10)
                             .sound(SoundType.LILY_PAD).pushReaction(PushReaction.DESTROY)));
 
+    public static final RegistryObject<Block> PRIEST_LIGHT = registerBlock("priest_light",
+            () -> new PriestLightSourceBlock(
+                    BlockBehaviour.Properties.of().instabreak().noCollission()
+                            .lightLevel((p_50755_) -> 14).sound(SoundType.GLASS).pushReaction(PushReaction.DESTROY)));
+
     public static final RegistryObject<Block> MUTATED_MUSHROOM = registerBlock("wheat_mushroom",
             () -> new MutatedMushroom(BlockBehaviour.Properties.copy(Blocks.BROWN_MUSHROOM)));
 

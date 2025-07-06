@@ -100,8 +100,8 @@ public class TyrantPathway extends Beyonder {
         return switch (seq) {
             case 9 -> "Swimmer";
             case 8 -> "Hydro_Shaman";
-            case 7 -> "Waterborn";
-            case 6 -> "Tempest";
+            case 7 -> "Tempest";
+            case 6 -> "Waterborn";
             case 5 -> "Punisher";
             default -> "";
         };

@@ -5,21 +5,21 @@
       "item": "minecraft:anvil"
     },
     {
-      "item": "minecraft:scute",
+      "item": "minecraft:fermented_spider_eye",
       "count": 3
     }
   ],
   "supplementary_ingredients": [
     {
-      "item": "minecraft:obsidian",
-      "count": 2
+      "item": "minecraft:obsidian"
     },
     {
       "item": "minecraft:book",
       "count": 2
     },
     {
-      "item": "minecraft:lapis_lazuli"
+      "item": "minecraft:lapis_lazuli",
+      "count": 2
     }
   ],
   "water_level": 2,

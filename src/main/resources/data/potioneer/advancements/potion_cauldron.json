@@ -1,0 +1,33 @@
+{
+  "parent": "potioneer:sapphire",
+  "display": {
+    "icon": {
+      "item": "potioneer:potion_cauldron"
+    },
+    "title": {
+      "translate": "advancements.potioneer.potion_cauldron.title"
+    },
+    "description": {
+      "translate": "advancements.potioneer.potion_cauldron.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "get_cauldron": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "potioneer:potion_cauldron"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [["get_cauldron"]]
+}

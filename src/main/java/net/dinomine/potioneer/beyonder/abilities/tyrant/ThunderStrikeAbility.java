@@ -20,7 +20,7 @@ import java.util.ArrayList;
 public class ThunderStrikeAbility extends Ability {
 
     public ThunderStrikeAbility(int sequence){
-        this.info = new AbilityInfo(31, 248, "Thunder Strike", 10 + sequence, 100, this.getCooldown(), "thunder_strike");
+        this.info = new AbilityInfo(31, 248, "Thunder Strike", 10 + sequence, 70, this.getCooldown(), "thunder_strike");
         this.isActive = true;
     }
 

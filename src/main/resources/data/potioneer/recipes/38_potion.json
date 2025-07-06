@@ -2,15 +2,17 @@
   "type": "potioneer:potion_cauldron_brew",
   "main_ingredients": [
     {
-      "item": "minecraft:blaze_powder"
+      "item": "minecraft:fire_charge",
+      "count": 2
     },
     {
-      "item": "minecraft:fire_charge"
+      "item": "minecraft:torch",
+      "count": 2
     }
   ],
   "supplementary_ingredients": [
     {
-      "item": "minecraft:ghast_tear"
+      "item": "minecraft:glistering_melon_slice"
     },
     {
       "item": "minecraft:coal",

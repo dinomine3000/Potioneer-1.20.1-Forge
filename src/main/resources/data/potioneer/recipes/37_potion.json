@@ -2,11 +2,10 @@
   "type": "potioneer:potion_cauldron_brew",
   "main_ingredients": [
     {
-      "item": "minecraft:glistering_melon_slice",
-      "count": 3
+      "item": "minecraft:blaze_powder"
     },
     {
-      "item": "minecraft:torch"
+      "item": "minecraft:ghast_tear"
     }
   ],
   "supplementary_ingredients": [

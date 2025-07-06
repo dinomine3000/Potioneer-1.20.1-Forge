@@ -95,7 +95,7 @@ public class WheelOfFortunePathway extends Beyonder {
         return switch (seq) {
             case 9 -> "Miner";
             case 8 -> "Appraiser";
-            case 7 -> "Gambling_Man";
+            case 7 -> "Gambler";
             case 6 -> "Lucky_One";
             case 5 -> "Source_of_Misfortune";
             default -> "";

@@ -13,6 +13,7 @@ import java.util.List;
 public class ConjurerContainer extends SimpleContainer {
     public Player player;
     private int publicSize;
+    private int debt = 0;
 
     public ConjurerContainer(ConjurerContainer other, int size){
         this(other.player, size);
@@ -26,6 +27,18 @@ public class ConjurerContainer extends SimpleContainer {
         super(54);
         this.publicSize = publicSize;
         this.player = player;
+    }
+
+    public void setDebt(int debt){
+        this.debt = debt;
+    }
+
+    public void changeDebt(int inc){
+        debt += inc;
+    }
+
+    public int getDebt(){
+        return debt;
     }
 
     public void allowSize(int size){

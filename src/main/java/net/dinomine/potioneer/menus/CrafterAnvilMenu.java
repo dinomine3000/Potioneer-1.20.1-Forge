@@ -145,7 +145,7 @@ public class CrafterAnvilMenu extends AnvilMenu {
 
         pPlayer.getAbilities().instabuild = fuelContainer.hasFuel();
 
-        if(itemL.getItem().isEnchantable(itemL) && itemR.is(Items.ENCHANTED_BOOK)){
+        if(itemR.is(Items.ENCHANTED_BOOK)){
             book = itemR.copy();
         } else if (itemL.is(Items.BOOK) && itemR.isEmpty()){
             originalBooks = itemL.copyWithCount(itemL.getCount() - 1);

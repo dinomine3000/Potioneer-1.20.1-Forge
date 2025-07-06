@@ -25,59 +25,14 @@ import software.bernie.geckolib.animatable.GeoBlockEntity;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.core.animation.AnimatableManager;
 
-public class MinerLightSourceBlock extends BaseEntityBlock implements SimpleWaterloggedBlock, EntityBlock {
-
-    public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
-
-    @Override
-    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> pBuilder) {
-        super.createBlockStateDefinition(pBuilder);
-        pBuilder.add(new Property[]{WATERLOGGED});
-    }
-
-    @Override
-    public boolean shouldDisplayFluidOverlay(BlockState state, BlockAndTintGetter level, BlockPos pos, FluidState fluidState) {
-        return true;
-    }
-
-    @Override
-    public FluidState getFluidState(BlockState pState) {
-        return pState.getValue(WATERLOGGED) ? Fluids.WATER.getSource().defaultFluidState() : super.getFluidState(pState);
-    }
-
-    @Override
-    public boolean canBeReplaced(BlockState pState, BlockPlaceContext pUseContext){
-        return true;
-    }
-
-    public BlockState updateShape(BlockState pState, Direction pFacing, BlockState pFacingState, LevelAccessor pLevel, BlockPos pCurrentPos, BlockPos pFacingPos) {
-        if (pState.getValue(WATERLOGGED)) {
-            pLevel.scheduleTick(pCurrentPos, Fluids.WATER, Fluids.WATER.getTickDelay(pLevel));
-        }
-
-        return super.updateShape(pState, pFacing, pFacingState, pLevel, pCurrentPos, pFacingPos);
-    }
-
-    @Override
-    public @Nullable BlockState getStateForPlacement(BlockPlaceContext pContext) {
-        FluidState fluidState = pContext.getLevel().getFluidState(pContext.getClickedPos());
-        return this.defaultBlockState().setValue(WATERLOGGED, fluidState.getType() == Fluids.WATER);
-
-    }
+public class MinerLightSourceBlock extends BaseLightSourceBlock {
 
     public MinerLightSourceBlock(Properties pProperties) {
         super(pProperties);
-        this.registerDefaultState(this.stateDefinition.any().setValue(WATERLOGGED, false));
-    }
-
-    @Override
-    public RenderShape getRenderShape(BlockState pState) {
-        return RenderShape.ENTITYBLOCK_ANIMATED;
     }
 
     @Override
     public @Nullable BlockEntity newBlockEntity(BlockPos blockPos, BlockState blockState) {
         return new MinerLightBlockEntity(blockPos, blockState);
     }
-
 }

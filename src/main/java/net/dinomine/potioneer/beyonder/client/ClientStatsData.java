@@ -21,12 +21,24 @@ public class ClientStatsData {
     public static void attemptAdvancement(int newSeq){
         //difference between the new sequence and current sequence
         //plus one more difficulty for every 25% sanity lost
-        //plus 1 for each group of 9-7, 6-4 and 3-1 sequence levels
-        //plus 1 or 2 for undigested potions
-        ClientAdvancementManager.setDifficulty((Math.max(pathwayId%10 - newSeq%10, 1) //adds the difference in levels. from 1 to 10
-                + Math.round(4f-sanity/25f) //from 0 to 4 more points
-                + 3-Math.floorDiv(newSeq%10, 3))
-                + Math.max(newSeq%10 - pathwayId%10, 0)); //adds from 0 to 3 points of difficulty
+        //plus 1 for each group of 8-6, 5-3 and 2-1 sequence levels
+        //plus 1 or 2 for undigested potions (TODO)
+        int diff = (Math.max(pathwayId%10 - newSeq%10, 1) //adds the difference in levels. from 1 to 10
+                + Math.round(8f-sanity/12.5f) //from 0 to 8 more points depending on your sanity
+                + 3-Math.floorDiv(newSeq%10, 3)
+                + (newSeq%10 == 0 ? 2 : 0)); //plus 1 for each group
+        if(pathwayId != -1){
+            int level = newSeq%10;
+            //if the target sequence is located between your current sequence and sequence 9,
+            //aka, a previous sequence to your current one
+            //add 2 points of difficulty
+            //this is to prevent ppl from drinking previous potions without consequence
+            if(level >= pathwayId%10) diff += 2;
+        }
+        // more points for demigod levels
+        if(newSeq%10 < 5) diff += (int) Math.max((6 - newSeq%10)/1.5f, 0);
+
+        ClientAdvancementManager.setDifficulty(diff); //adds from 0 to 3 points of difficulty
 //        ClientAdvancementManager.difficulty = 10;     //Debug
         ClientAdvancementManager.targetSequence = Math.min(newSeq, pathwayId);
         if(pathwayId == -1) ClientAdvancementManager.targetSequence = newSeq;

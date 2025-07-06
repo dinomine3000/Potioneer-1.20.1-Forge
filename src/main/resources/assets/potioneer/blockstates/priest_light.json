@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "potioneer:block/priest_light"
+    }
+  }
+}

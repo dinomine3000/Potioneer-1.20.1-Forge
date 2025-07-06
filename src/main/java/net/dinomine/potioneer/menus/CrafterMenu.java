@@ -1,6 +1,7 @@
 package net.dinomine.potioneer.menus;
 
 import net.dinomine.potioneer.item.ModItems;
+import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.game.ClientboundContainerSetSlotPacket;
 import net.minecraft.server.level.ServerPlayer;
@@ -8,6 +9,7 @@ import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.*;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.item.crafting.CustomRecipe;
@@ -20,6 +22,7 @@ import java.util.Optional;
 public class CrafterMenu extends CraftingMenu {
     private final ParagonFuelSlotContainer fuelContainer;
     private final int sequence;
+    private boolean quickCrafted = false;
     public boolean consumeFuel = false;
 
     //client constructor
@@ -43,18 +46,27 @@ public class CrafterMenu extends CraftingMenu {
     public void consumeFuelIfAvailable(Player player, ItemStack crafting){
         if(consumeFuel){
             fuelContainer.removeItem(0, 1);
-            ItemStack base = crafting.copy();
-            while(base.getCount() > base.getMaxStackSize()){
-                crafting.setCount(crafting.getMaxStackSize());
+            unstackOverstackedStack(player, crafting);
+        }
+    }
 
-                ItemStack extra = base.copy();
-                extra.setCount(base.getCount() - base.getMaxStackSize());
+    private void unstackOverstackedStack(Player player, ItemStack crafting){
+        ItemStack base = crafting.copy();
+        while(base.getCount() > base.getMaxStackSize()){
+            crafting.setCount(crafting.getMaxStackSize());
 
-                base.setCount(base.getMaxStackSize());
-                player.addItem(base);
+            ItemStack extra = base.copy();
+            extra.setCount(base.getCount() - base.getMaxStackSize());
 
-                base = extra;
+            base.setCount(base.getMaxStackSize());
+            int test = player.getInventory().getSlotWithRemainingSpace(base);
+            int test2 = test == -1 ? player.getInventory().getFreeSlot() : test;
+            if(test2 == -1){
+                player.drop(base, false, false);
+            } else {
+                player.getInventory().add(test2, base);
             }
+            base = extra;
         }
     }
 
@@ -73,9 +85,16 @@ public class CrafterMenu extends CraftingMenu {
             }
         }
 
-
-        return super.quickMoveStack(pPlayer, pIndex);
-
+        ItemStack overStackCopy = ItemStack.EMPTY;
+        boolean quickMoveFlag = pIndex == 0 && slot.hasItem() && slot.getItem().getCount() > slot.getItem().getMaxStackSize();
+        if(quickMoveFlag){
+            overStackCopy = slot.getItem().copy();
+            slot.getItem().setCount(slot.getItem().getMaxStackSize());
+        }
+        ItemStack res = super.quickMoveStack(pPlayer, pIndex);
+        if(quickMoveFlag && !res.isEmpty()) unstackOverstackedStack(pPlayer, overStackCopy);
+        slotsChanged(fuelContainer);
+        return res;
     }
 
     @Override

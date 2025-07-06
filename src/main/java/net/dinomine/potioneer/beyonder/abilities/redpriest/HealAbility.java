@@ -47,7 +47,7 @@ public class HealAbility extends Ability {
             }
             else if(ent instanceof LivingEntity livingEntity){
                 flag = true;
-                livingEntity.addEffect(new MobEffectInstance(MobEffects.REGENERATION, 2*20, 2, true, true));
+                livingEntity.addEffect(new MobEffectInstance(MobEffects.REGENERATION, 5*20, 2, true, true));
 
                 for(int i = 0; i < 5; i++){
                     target.level().addParticle(ParticleTypes.HEART,

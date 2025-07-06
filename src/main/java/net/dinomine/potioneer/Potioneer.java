@@ -6,6 +6,7 @@ import net.dinomine.potioneer.beyonder.misc.MysticismHelper;
 import net.dinomine.potioneer.block.ModBlocks;
 import net.dinomine.potioneer.block.entity.ModBlockEntities;
 import net.dinomine.potioneer.block.entity.renderer.MinerBlockRenderer;
+import net.dinomine.potioneer.block.entity.renderer.PriestBlockRenderer;
 import net.dinomine.potioneer.block.entity.renderer.WaterTrapBlockRenderer;
 import net.dinomine.potioneer.config.PotioneerCommonConfig;
 import net.dinomine.potioneer.entities.ModEntities;
@@ -128,6 +129,7 @@ public class Potioneer
             EntityRenderers.register(ModEntities.DIVINATION_ROD.get(), RodRenderer::new);
 
             BlockEntityRenderers.register(ModBlockEntities.MINER_LIGHT_BLOCK_ENTITY.get(), MinerBlockRenderer::new);
+            BlockEntityRenderers.register(ModBlockEntities.PRIEST_LIGHT_BLOCK_ENTITY.get(), PriestBlockRenderer::new);
             BlockEntityRenderers.register(ModBlockEntities.WATER_TRAP_BLOCK_ENTITY.get(), WaterTrapBlockRenderer::new);
 
             // Some client setup code

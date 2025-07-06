@@ -1,0 +1,32 @@
+{
+  "display": {
+    "icon": {
+      "item": "potioneer:formula"
+    },
+    "title": {
+      "translate": "advancements.potioneer.formula.title"
+    },
+    "description": {
+      "translate": "advancements.potioneer.formula.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false,
+    "background": "potioneer:textures/block/sapphire_block.png"
+  },
+  "criteria": {
+    "get_formula": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "potioneer:formula"
+            ]
+          }
+        ]
+      }
+    }
+  }
+}

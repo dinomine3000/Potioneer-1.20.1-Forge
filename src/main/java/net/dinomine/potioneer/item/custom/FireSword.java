@@ -3,6 +3,7 @@ package net.dinomine.potioneer.item.custom;
 import net.dinomine.potioneer.beyonder.misc.MysticismHelper;
 import net.dinomine.potioneer.beyonder.player.BeyonderStats;
 import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
+import net.dinomine.potioneer.beyonder.player.EntityBeyonderManager;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -11,6 +12,8 @@ import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
+
+import java.util.Optional;
 
 public class FireSword extends SwordItem {
     public FireSword(Properties pProperties) {
@@ -28,19 +31,25 @@ public class FireSword extends SwordItem {
     @Override
     public InteractionResult useOn(UseOnContext pContext) {
         HitResult hitResult = pContext.getPlayer().pick(5.0D, 0.0F, false);
-        if (hitResult instanceof BlockHitResult blockHitResult && !pContext.getLevel().getBlockState(blockHitResult.getBlockPos()).is(Blocks.FIRE)){
+        Optional<EntityBeyonderManager> cap = pContext.getPlayer().getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve();
+        if (hitResult instanceof BlockHitResult blockHitResult
+                && !pContext.getLevel().getBlockState(blockHitResult.getBlockPos()).is(Blocks.FIRE)
+                && cap.get().getSpirituality() > 5){
             Player player = pContext.getPlayer();
             ItemStack item = pContext.getItemInHand();
             BlockHitResult blockHit = (BlockHitResult) hitResult;
             UseOnContext newContext = new UseOnContext(pContext.getLevel(), player, pContext.getHand(), ItemStack.EMPTY, blockHit);
-            Items.FLINT_AND_STEEL.useOn(newContext);
-            pContext.getItemInHand().setDamageValue(item.getDamageValue() + 5);
+            InteractionResult res = Items.FLINT_AND_STEEL.useOn(newContext);
+            if(res != InteractionResult.FAIL){
 
-            player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
-                cap.requestActiveSpiritualityCost(5f);
-            });
-            MysticismHelper.updateOrApplyMysticismTag(item, 5f, player);
-            return InteractionResult.SUCCESS;
+                pContext.getItemInHand().hurtAndBreak(5, player, (p_41300_) -> {
+                    p_41300_.broadcastBreakEvent(pContext.getHand());
+                });
+
+                cap.get().requestActiveSpiritualityCost(5f);
+                MysticismHelper.updateOrApplyMysticismTag(item, 5f, player);
+            }
+            return res;
         }
         return super.useOn(pContext);
     }

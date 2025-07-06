@@ -29,7 +29,7 @@ public class LightBuffAbility extends Ability {
         ArrayList<Entity> hits = AbilityFunctionHelper.getLivingEntitiesLooking(target, target.getAttributeValue(ForgeMod.ENTITY_REACH.get()) + 0.5f);
         hits.sort((a, b) -> (int) (a.position().distanceTo(target.position()) - b.position().distanceTo(target.position())));
         for(Entity ent: hits){
-            if(ent instanceof LivingEntity livingEntity){
+            if(ent instanceof LivingEntity livingEntity && livingEntity != target){
                 Optional<EntityBeyonderManager> otherCap = livingEntity.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve();
                 if(otherCap.isPresent()){
                     otherCap.get().getEffectsManager().addEffect(BeyonderEffects.byId(BeyonderEffects.EFFECT.RED_LIGHT_BUFF, getSequence(), 0, 2*20*60*5, true)

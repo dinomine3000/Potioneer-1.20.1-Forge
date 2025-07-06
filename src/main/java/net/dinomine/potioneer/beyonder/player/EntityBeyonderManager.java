@@ -14,6 +14,7 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.common.capabilities.AutoRegisterCapability;
 import net.minecraftforge.network.PacketDistributor;
 
@@ -100,8 +101,13 @@ public class EntityBeyonderManager {
     }
 
     public void onPlayerSleep(){
-        changeSpirituality(this.maxSpirituality/3f);
+        changeSpirituality(this.maxSpirituality/5f);
         if(sanity > 25) changeSanity(30);
+    }
+
+    public void onFoodEat(ItemStack item, LivingEntity target) {
+        if(item.getFoodProperties(target) == null) return;
+        changeSpirituality(item.getFoodProperties(target).getNutrition() * getMaxSpirituality()/120f);
     }
 
     public float getSpirituality(){
@@ -166,7 +172,7 @@ public class EntityBeyonderManager {
                         entity.addEffect(new MobEffectInstance(MobEffects.DARKNESS, 100, 0, true, true));
                     }
                     if(spirituality < maxSpirituality*0.05f && entity.getHealth() > 3){
-                        changeSanity(-2);
+                        changeSanity(-1);
                         entity.hurt(entity.damageSources().generic(), entity.getMaxHealth()*0.1f);
                     }
                 }
@@ -287,6 +293,7 @@ public class EntityBeyonderManager {
         player.setHealth(player.getMaxHealth());
         this.luckManager.copyFrom(source.luckManager);
         this.abilitiesManager.copyFrom(source.getAbilitiesManager());
+        this.conjurerContainers = new ArrayList<>(source.conjurerContainers);
         //this.abilitiesManager.onAcquireAbilities(this, player);
     }
 
@@ -299,6 +306,7 @@ public class EntityBeyonderManager {
         for (int i = 0; i < conjurerContainers.size(); i++) {
             nbt.putInt("container_size_" + i, conjurerContainers.get(i).getContainerSize());
             nbt.put("container_" + i, conjurerContainers.get(i).createTag());
+            nbt.putInt("container_debt_" + i, conjurerContainers.get(i).getDebt());
         }
 //        System.out.println("Saving pathway id: " + pathway.getId());
         //this.abilitiesManager.saveNBTData(nbt);
@@ -322,6 +330,7 @@ public class EntityBeyonderManager {
                 int size = nbt.getInt("container_size_" + i);
                 ConjurerContainer iterator = new ConjurerContainer(player, size);
                 iterator.fromTag(nbt.getList("container_" + i, CompoundTag.TAG_COMPOUND));
+                iterator.setDebt(nbt.getInt("container_debt_" + i));
                 conjurerContainers.add(iterator);
             }
         }

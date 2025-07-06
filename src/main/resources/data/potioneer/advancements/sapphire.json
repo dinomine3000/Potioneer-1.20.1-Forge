@@ -1,0 +1,33 @@
+{
+  "parent": "potioneer:formula",
+  "display": {
+    "icon": {
+      "item": "potioneer:sapphire"
+    },
+    "title": {
+      "translate": "advancements.potioneer.sapphire.title"
+    },
+    "description": {
+      "translate": "advancements.potioneer.sapphire.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "get_sapphire": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "potioneer:sapphire"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [["get_sapphire"]]
+}

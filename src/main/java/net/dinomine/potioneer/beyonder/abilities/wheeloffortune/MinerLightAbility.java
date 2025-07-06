@@ -3,6 +3,7 @@ package net.dinomine.potioneer.beyonder.abilities.wheeloffortune;
 import com.eliotlash.mclib.utils.MathHelper;
 import net.dinomine.potioneer.beyonder.abilities.Ability;
 import net.dinomine.potioneer.beyonder.abilities.AbilityInfo;
+import net.dinomine.potioneer.beyonder.abilities.misc.LightAbility;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
 import net.dinomine.potioneer.beyonder.player.EntityBeyonderManager;
 import net.dinomine.potioneer.block.ModBlocks;
@@ -23,48 +24,9 @@ import net.minecraftforge.common.ForgeMod;
 
 import static net.dinomine.potioneer.block.custom.MinerLightSourceBlock.WATERLOGGED;
 
-public class MinerLightAbility extends Ability {
-
+public class MinerLightAbility extends LightAbility {
     public MinerLightAbility(int sequence){
-        this.info = new AbilityInfo(5, 56, "Miner Light", sequence, 0, this.getCooldown(), "light");
-    }
-
-    @Override
-    public boolean active(EntityBeyonderManager cap, LivingEntity target) {
-        if(target.level().isClientSide()) return true;
-        if(cap.getSpirituality() > 2){
-            HitResult block = target.pick(target.getAttributeBaseValue(ForgeMod.BLOCK_REACH.get()) + 0.5, 0f, false);
-            if(block instanceof BlockHitResult rayTrace){
-                Level level = target.level();
-                BlockPos targetPos = rayTrace.getBlockPos().relative(rayTrace.getDirection());
-                if(!level.getBlockState(rayTrace.getBlockPos()).is(Blocks.AIR)
-                    && level.getBlockState(targetPos).canBeReplaced()){
-
-                    boolean water = level.getFluidState(targetPos).getType() == Fluids.WATER;
-
-                    level.setBlockAndUpdate(targetPos,
-                            ModBlocks.MINER_LIGHT.get().defaultBlockState().setValue(WATERLOGGED, water));
-                    cap.requestActiveSpiritualityCost(2);
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
-    @Override
-    public void onAcquire(EntityBeyonderManager cap, LivingEntity target) {
-    }
-
-    @Override
-    public void passive(EntityBeyonderManager cap, LivingEntity target) {
-    }
-
-    @Override
-    public void activate(EntityBeyonderManager cap, LivingEntity target) {
-    }
-
-    @Override
-    public void deactivate(EntityBeyonderManager cap, LivingEntity target) {
+        super(sequence, ModBlocks.MINER_LIGHT.get().defaultBlockState());
+        this.info = new AbilityInfo(5, 56, "Miner Light", sequence, 4, this.getCooldown(), "miner_light");
     }
 }
