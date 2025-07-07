@@ -79,7 +79,7 @@ public class BeyonderStats {
     }
 
     public void applyEffects(Player player, BeyonderStats statsHolder) {
-        player.getAbilities().mayfly = statsHolder.mayFly;
+        player.getAbilities().mayfly = player.isCreative() || player.isSpectator() || statsHolder.mayFly;
     }
 
     public void applyStats(Player player, boolean heal){

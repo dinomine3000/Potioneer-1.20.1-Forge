@@ -43,7 +43,7 @@ public class CaneItem extends DivinationRodItem implements GeoItem {
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
     public CaneItem(Properties pProperties) {
-        super(pProperties, 8, -3.1f, Tiers.IRON);
+        super(pProperties, 5, -3.1f, Tiers.IRON);
     }
 
     @Override

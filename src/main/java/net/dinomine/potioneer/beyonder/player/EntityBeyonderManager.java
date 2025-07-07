@@ -1,8 +1,12 @@
 package net.dinomine.potioneer.beyonder.player;
 
 import net.dinomine.potioneer.beyonder.abilities.Ability;
+import net.dinomine.potioneer.beyonder.misc.MysticismHelper;
 import net.dinomine.potioneer.beyonder.pathways.*;
 import net.dinomine.potioneer.beyonder.abilities.Beyonder;
+import net.dinomine.potioneer.entities.ModEntities;
+import net.dinomine.potioneer.entities.custom.CharacteristicEntity;
+import net.dinomine.potioneer.item.ModItems;
 import net.dinomine.potioneer.network.PacketHandler;
 import net.dinomine.potioneer.network.messages.*;
 import net.minecraft.nbt.CompoundTag;
@@ -16,6 +20,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.common.capabilities.AutoRegisterCapability;
+import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.network.PacketDistributor;
 
 import java.util.ArrayList;
@@ -102,7 +107,7 @@ public class EntityBeyonderManager {
 
     public void onPlayerSleep(){
         changeSpirituality(this.maxSpirituality/5f);
-        if(sanity > 25) changeSanity(30);
+        if(sanity >= 25) changeSanity(30);
     }
 
     public void onFoodEat(ItemStack item, LivingEntity target) {
@@ -172,7 +177,7 @@ public class EntityBeyonderManager {
                         entity.addEffect(new MobEffectInstance(MobEffects.DARKNESS, 100, 0, true, true));
                     }
                     if(spirituality < maxSpirituality*0.05f && entity.getHealth() > 3){
-                        changeSanity(-1);
+                        if(sanity > 25) changeSanity(-1);
                         entity.hurt(entity.damageSources().generic(), entity.getMaxHealth()*0.1f);
                     }
                 }
@@ -294,6 +299,7 @@ public class EntityBeyonderManager {
         this.luckManager.copyFrom(source.luckManager);
         this.abilitiesManager.copyFrom(source.getAbilitiesManager());
         this.conjurerContainers = new ArrayList<>(source.conjurerContainers);
+        this.sanity = Math.max(source.sanity, 40);
         //this.abilitiesManager.onAcquireAbilities(this, player);
     }
 
@@ -347,7 +353,7 @@ public class EntityBeyonderManager {
 
     public void syncSequenceData(Player player, boolean advancing){
         if(!player.level().isClientSide()){
-            System.out.println("syncing from server side");
+            //System.out.println("syncing from server side");
             //server side to client. messages are sent when client joins world and when he advanced by means controlled by the server
             PacketHandler.INSTANCE.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) player),
                     new PlayerAdvanceMessage(this.pathway.getId(), advancing));
@@ -356,6 +362,28 @@ public class EntityBeyonderManager {
         } else {
             //client side to server. messages are sent when client advances after succeeding in the minigame
             PacketHandler.INSTANCE.sendToServer(new PlayerAdvanceMessage(this.pathway.getId(), advancing));
+        }
+    }
+
+    public void onPlayerDie(LivingDeathEvent event) {
+        if(sanity < 30 && event.getEntity() instanceof Player player && isBeyonder()){
+            ItemStack characteristic = new ItemStack(ModItems.CHARACTERISTIC.get());
+            CompoundTag root = new CompoundTag();
+
+            CompoundTag charInfo = new CompoundTag();
+            charInfo.putInt("id", getPathwayId());
+            root.put("beyonder_info", charInfo);
+            characteristic.setTag(root);
+
+            MysticismHelper.updateOrApplyMysticismTag(characteristic, 20, player);
+
+
+            CharacteristicEntity entity = new CharacteristicEntity(ModEntities.CHARACTERISTIC.get(), event.getEntity().level(), characteristic.copy(), getPathwayId());
+            entity.setSequenceId(getPathwayId());
+            entity.moveTo(event.getEntity().position().offsetRandom(player.getRandom(), 0.5f));
+            event.getEntity().level().addFreshEntity(entity);
+
+            advance((getPathwayId() % 10 != 9) ? getPathwayId() + 1 : -1, player, true, true);
         }
     }
 }

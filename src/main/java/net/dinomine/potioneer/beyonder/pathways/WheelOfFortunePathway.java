@@ -102,6 +102,15 @@ public class WheelOfFortunePathway extends Beyonder {
         };
     }
 
+    public static int getSequenceColor(int seq){
+        return switch (seq) {
+            case 9 -> 10724259;
+            case 8 -> 16383885;
+            case 7 -> 14989311;
+            default -> 0;
+        };
+    }
+
     @Override
     public int getId() {
         return sequence;

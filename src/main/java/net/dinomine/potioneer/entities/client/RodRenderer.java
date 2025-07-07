@@ -39,10 +39,4 @@ public class RodRenderer extends GeoEntityRenderer<DivinationRodEntity> {
         float smoothYaw = lerpRotation(animatable.yRotO, animatable.getYRot(), partialTick);
         poseStack.mulPose(Axis.YP.rotationDegrees(-smoothYaw));
     }
-
-    @Override
-    public void render(DivinationRodEntity entity, float entityYaw, float partialTick, PoseStack poseStack,
-                       MultiBufferSource bufferSource, int packedLight) {
-        super.render(entity, entityYaw, partialTick, poseStack, bufferSource, packedLight);
-    }
 }

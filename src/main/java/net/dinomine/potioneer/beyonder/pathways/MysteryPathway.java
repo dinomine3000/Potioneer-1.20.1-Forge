@@ -99,4 +99,13 @@ public class MysteryPathway extends Beyonder {
         };
     }
 
+    public static int getSequenceColor(int seq){
+        return switch (seq) {
+            case 9 -> 12117700;
+            case 8 -> 65294;
+            case 7 -> 16121785;
+            default -> 0;
+        };
+    }
+
 }

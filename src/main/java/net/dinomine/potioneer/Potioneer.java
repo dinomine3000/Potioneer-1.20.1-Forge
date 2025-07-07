@@ -10,9 +10,7 @@ import net.dinomine.potioneer.block.entity.renderer.PriestBlockRenderer;
 import net.dinomine.potioneer.block.entity.renderer.WaterTrapBlockRenderer;
 import net.dinomine.potioneer.config.PotioneerCommonConfig;
 import net.dinomine.potioneer.entities.ModEntities;
-import net.dinomine.potioneer.entities.client.ChryonRenderer;
-import net.dinomine.potioneer.entities.client.PecanRenderer;
-import net.dinomine.potioneer.entities.client.RodRenderer;
+import net.dinomine.potioneer.entities.client.*;
 import net.dinomine.potioneer.entities.custom.ChryonEntity;
 import net.dinomine.potioneer.item.ModCreativeModTabs;
 import net.dinomine.potioneer.item.ModItems;
@@ -126,13 +124,16 @@ public class Potioneer
             //Geckolib registers
             EntityRenderers.register(ModEntities.CHRYON.get(), ChryonRenderer::new);
             EntityRenderers.register(ModEntities.PECAN.get(), PecanRenderer::new);
+            EntityRenderers.register(ModEntities.WANDERING_CACTUS.get(), WanderingCactusRenderer::new);
             EntityRenderers.register(ModEntities.DIVINATION_ROD.get(), RodRenderer::new);
+            EntityRenderers.register(ModEntities.CHARACTERISTIC.get(), CharRenderer::new);
 
             BlockEntityRenderers.register(ModBlockEntities.MINER_LIGHT_BLOCK_ENTITY.get(), MinerBlockRenderer::new);
             BlockEntityRenderers.register(ModBlockEntities.PRIEST_LIGHT_BLOCK_ENTITY.get(), PriestBlockRenderer::new);
             BlockEntityRenderers.register(ModBlockEntities.WATER_TRAP_BLOCK_ENTITY.get(), WaterTrapBlockRenderer::new);
 
             // Some client setup code
+            //give different item models for these items depending on their tags
             ItemProperties.register(ModItems.VIAL.get(),
                     new ResourceLocation(Potioneer.MOD_ID, "level"),
                     ((itemStack, clientLevel, livingEntity, i) ->

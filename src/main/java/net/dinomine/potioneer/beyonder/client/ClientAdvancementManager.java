@@ -75,10 +75,10 @@ public class ClientAdvancementManager {
         } else {
             Player player = Minecraft.getInstance().player;
             if(!player.isCreative()){
-                Minecraft.getInstance().player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
-                    cap.advance(targetSequence%10 == 9 ? -1 : ClientStatsData.getPathwayId() + 1, Minecraft.getInstance().player, true, true);
-                });
-                PacketHandler.INSTANCE.sendToServer(new AdvancementFailMessageCTS());
+//                Minecraft.getInstance().player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
+//                    cap.advance(targetSequence%10 == 9 ? -1 : ClientStatsData.getPathwayId() + 1, Minecraft.getInstance().player, true, true);
+//                });
+                PacketHandler.INSTANCE.sendToServer(new AdvancementFailMessageCTS(targetSequence));
                 //reduce sequence
             }
             player.sendSystemMessage(Component.literal("Lost control on the spot. oh well."));

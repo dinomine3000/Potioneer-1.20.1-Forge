@@ -13,7 +13,7 @@ import net.minecraft.world.phys.Vec3;
 public class RainLeapAbility extends Ability {
 
     public RainLeapAbility(int sequence){
-        this.info = new AbilityInfo(31, 176, "Rain Leap", 10 + sequence, 75, 20*5, "rain_leap");
+        this.info = new AbilityInfo(31, 176, "Rain Leap", 10 + sequence, 25, 20*5, "rain_leap");
         this.isActive = true;
     }
 

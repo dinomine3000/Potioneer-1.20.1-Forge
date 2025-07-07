@@ -11,6 +11,7 @@ import net.dinomine.potioneer.savedata.PotionRecipeData;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffectCategory;
@@ -95,6 +96,38 @@ public class MysticismHelper {
                 }
             }
         }
+
+        if(item.hasTag() && item.is(ModItems.CHARACTERISTIC.get()) && item.getTag().contains("beyonder_info")){
+            //if the item is mystical...
+            CompoundTag mysticalTag = item.getTag().getCompound(mysticismTagId);
+            CompoundTag beyonderTag = item.getTag().getCompound("beyonder_info");
+            int charSequence = beyonderTag.getInt("id");
+            boolean yesNo = charSequence == sequenceId - 1;
+            float status = yesNo ? 1f : 0f;
+            String clue = Component.translatable("potioneer.beyonder.sequence." + Beyonder.getSequenceNameFromId(charSequence, false)).toString();
+            ItemStack stack = savedData.getRandomItemFromFormulaFor(charSequence);
+            List<BlockPos> positions = findItemInArea(seer, savedData.getRandomItemFromFormulaFor(charSequence), position, 64, level);
+
+            Player target = getPlayerFromMysticismTag(mysticalTag, level, 0);
+            if(target != null) {
+                Optional<EntityBeyonderManager> cap = target.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve();
+                if(cap.isPresent()){
+                    int targetSequence = cap.get().getPathwayId();
+                    float hp = target.getHealth() / target.getMaxHealth();
+                    float spiritualityPercent = cap.get().getSpirituality() / cap.get().getMaxSpirituality();
+                    float sanityPercent = cap.get().getSanity() / 100f;
+                    float hunger = target.getFoodData().getFoodLevel() / 20f;
+                    status = 0.3f*hp + 0.4f*spiritualityPercent + 0.2f*sanityPercent + 0.1f*hunger;
+                    yesNo = targetSequence % 10 < sequenceId % 10 || status > 0.5;
+                    positions.add(target.getOnPos());
+                    clue = target.getName().getString();
+                    stack = target.getMainHandItem();
+
+                }
+            }
+            return new DivinationResult(yesNo, positions, charSequence, status, clue, stack);
+        }
+
         if(item.is(ModItems.BEYONDER_POTION.get())){
             if(item.hasTag() && item.getTag().contains("potion_info")){
                 CompoundTag potionTag = item.getTag().getCompound("potion_info");

@@ -41,6 +41,9 @@ public class ModItems {
     public static final RegistryObject<Item> CHRYON_SPAWN_EGG = ITEMS.register("chryon_spawn_egg",
             () -> new ForgeSpawnEggItem(ModEntities.CHRYON, 0xA5f8ff, 0x66AFD4, new Item.Properties()));
 
+    public static final RegistryObject<Item> WANDERING_CACTUS_SPAWN_EGG = ITEMS.register("wandering_cactus_spawn_egg",
+            () -> new ForgeSpawnEggItem(ModEntities.WANDERING_CACTUS, 0x43ff77 , 0xe7ffcb , new Item.Properties()));
+
     public static final RegistryObject<Item> MINER_PICKAXE = ITEMS.register("conjured_pickaxe",
             () -> new ConjuredPickaxeItem(new Item.Properties().setNoRepair().durability(10)));
 
@@ -69,6 +72,9 @@ public class ModItems {
 
     public static final RegistryObject<Item> VOODOO_DOLL = ITEMS.register("straw_doll",
             () -> new VoodooDollItem(new Item.Properties().stacksTo(1).rarity(Rarity.COMMON)));
+
+    public static final RegistryObject<Item> CHARACTERISTIC = ITEMS.register("beyonder_characteristic",
+            () -> new CharacteristicItem(new Item.Properties().stacksTo(1).rarity(Rarity.EPIC)));
 
 
     /*ublic static final RegistryObject<Item> METAL_ROD = ITEMS.register("metal_detector",

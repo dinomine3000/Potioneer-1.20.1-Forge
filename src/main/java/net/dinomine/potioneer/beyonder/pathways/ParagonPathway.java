@@ -92,4 +92,13 @@ public class ParagonPathway extends Beyonder {
         };
     }
 
+    public static int getSequenceColor(int seq){
+        return switch (seq) {
+            case 9 -> 16770989;
+            case 8 -> 28791;
+            case 7 -> 10107903;
+            default -> 0;
+        };
+    }
+
 }

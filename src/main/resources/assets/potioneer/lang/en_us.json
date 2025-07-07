@@ -12,6 +12,7 @@
   "item.potioneer.formula": "Potion Formula",
   "item.potioneer.conjured_pickaxe": "Conjured Pickaxe",
   "item.potioneer.fire_sword": "Fire Sword",
+  "item.potioneer.beyonder_characteristic": "Beyonder Characteristic",
   "block.potioneer.potion_cauldron": "Potion Cauldron",
 
   "item.potioneer.coin": "Coin",
@@ -19,8 +20,12 @@
 
   "item.potioneer.chryon_spawn_egg": "Chryon Spawn Egg",
   "item.potioneer.pecan_spawn_egg": "Pecan Spawn Egg",
+  "item.potioneer.wandering_cactus_spawn_egg": "Wandering Cactus Spawn Egg",
   "entity.potioneer.pecan": "Pecan",
   "entity.potioneer.chryon": "Chryon",
+  "entity.potioneer.wandering_cactus": "Wandering Cactus",
+  "entity.potioneer.beyonder_characteristic": "Beyonder Characteristic",
+  "entity.potioneer.divination_rod": "Divination Rod",
 
   "item.potioneer.beyonder_potion": "Mystery Potion",
   "item.potioneer.pecan_leaf": "Pecan Leaf",
@@ -45,7 +50,7 @@
   "advancements.potioneer.sapphire.description": "Obtain your first piece of sapphire, the cornerstone of beyonders",
   "advancements.potioneer.potion_cauldron.title": "The proper procedures",
   "advancements.potioneer.potion_cauldron.description": "Obtain the potion cauldron for concocting potions",
-  "advancements.potioneer.beyonder_potion.title": "A giant leap of faith",
+  "advancements.potioneer.beyonder_potion.title": "A choice you'll regret",
   "advancements.potioneer.beyonder_potion.description": "I'm going to have to hold your hand when I say - you may die here.",
 
   "key.categories.potioneer": "Potioneer",
@@ -221,7 +226,7 @@
   "potioneer.long_desc.water_affinity_1": "You become swift as the water around you. Also recuperates you.",
   "potioneer.ability_name.water_affinity_1": "Underwater Adaptation",
   "potioneer.short_desc.water_affinity_2": "Do not restrain yourself during times of conquest",
-  "potioneer.long_desc.water_affinity_2": "Your water affinity is now forever active, enhanced during rain.",
+  "potioneer.long_desc.water_affinity_2": "Your water affinity is now also active during rain.",
   "potioneer.ability_name.water_affinity_2": "Water Adaptation 2",
   "potioneer.short_desc.divination": "High society requires decent preparation",
   "potioneer.long_desc.divination": "Your divination capabilities are greatly enhanced",

@@ -42,6 +42,9 @@ public class ClientForgeHandler {
         if (level != null && ClientStatsData.getPathwayId() > -1) {
             int spirituality = (int) MysticismHelper.getSpiritualityOfItem(stack);
             if (spirituality > 0) tooltip.add(Component.literal("Spirituality: " + spirituality).withStyle(ChatFormatting.GRAY));
+            if(stack.hasTag() && stack.getTag().contains("beyonder_info")){
+                tooltip.add(Component.literal("Sequence Level " + stack.getTag().getCompound("beyonder_info").getInt("id")%10));
+            }
                 //tooltip.add(Component.literal("★ Special Item!").withStyle(ChatFormatting.GOLD, ChatFormatting.BOLD));
         }
     }

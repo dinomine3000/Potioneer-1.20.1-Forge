@@ -21,7 +21,7 @@ import org.jetbrains.annotations.Nullable;
 public abstract class PlaceableItemEntity extends Entity {
     public static final EntityDataAccessor<ItemStack> ITEM = SynchedEntityData.defineId(PlaceableItemEntity.class, EntityDataSerializers.ITEM_STACK);
 
-    public PlaceableItemEntity(EntityType<DivinationRodEntity> pEntityType, Level pLevel, boolean physics, boolean invulnerable, boolean horizontalCollision, ItemStack item) {
+    public PlaceableItemEntity(EntityType<? extends Entity> pEntityType, Level pLevel, boolean physics, boolean invulnerable, boolean horizontalCollision, ItemStack item) {
         super(pEntityType, pLevel);
         this.horizontalCollision = horizontalCollision;
         this.setInvulnerable(invulnerable);
@@ -42,6 +42,7 @@ public abstract class PlaceableItemEntity extends Entity {
     @Override
     public InteractionResult interact(Player pPlayer, InteractionHand pHand) {
         if(pPlayer.isCrouching()){
+            System.out.println("Interacting with placeable entity " + pPlayer.level().isClientSide());
             pPlayer.addItem(entityData.get(ITEM));
             this.kill();
             pPlayer.level().playSound(pPlayer, this.getOnPos(), SoundEvents.ITEM_PICKUP, SoundSource.PLAYERS);

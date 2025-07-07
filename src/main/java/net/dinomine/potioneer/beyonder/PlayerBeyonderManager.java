@@ -59,7 +59,7 @@ public class PlayerBeyonderManager {
     @SubscribeEvent
     public static void onPlayerDie(LivingDeathEvent event){
         event.getEntity().getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
-            cap.getEffectsManager().onPlayerDie(event, cap);
+            cap.onPlayerDie(event);
         });
 //        if(event.getEntity() instanceof Player player){
 //            Inventory inv = player.getInventory();

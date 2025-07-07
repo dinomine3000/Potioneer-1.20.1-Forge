@@ -4,6 +4,7 @@ import net.dinomine.potioneer.Potioneer;
 import net.dinomine.potioneer.entities.ModEntities;
 import net.dinomine.potioneer.entities.custom.ChryonEntity;
 import net.dinomine.potioneer.entities.custom.PecanEntity;
+import net.dinomine.potioneer.entities.custom.WanderingCactusEntity;
 import net.minecraft.client.renderer.entity.SpiderRenderer;
 import net.minecraft.client.telemetry.events.WorldLoadEvent;
 import net.minecraft.network.chat.Component;
@@ -31,12 +32,14 @@ public class ModEventBus {
         event.enqueueWork(() -> {
             SpawnPlacements.register(ModEntities.CHRYON.get(), SpawnPlacements.Type.ON_GROUND, Heightmap.Types.WORLD_SURFACE, ChryonEntity::canSpawn);
             SpawnPlacements.register(ModEntities.PECAN.get(), SpawnPlacements.Type.ON_GROUND, Heightmap.Types.WORLD_SURFACE, PecanEntity::canSpawn);
+            SpawnPlacements.register(ModEntities.WANDERING_CACTUS.get(), SpawnPlacements.Type.ON_GROUND, Heightmap.Types.WORLD_SURFACE, WanderingCactusEntity::canSpawn);
         });
     }
 
     @SubscribeEvent
     public static void entityAttributeEvent(EntityAttributeCreationEvent event){
         event.put(ModEntities.CHRYON.get(), ChryonEntity.setAttributes());
+        event.put(ModEntities.WANDERING_CACTUS.get(), WanderingCactusEntity.setAttributes());
         event.put(ModEntities.PECAN.get(), PecanEntity.setAttributes());
     }
 }

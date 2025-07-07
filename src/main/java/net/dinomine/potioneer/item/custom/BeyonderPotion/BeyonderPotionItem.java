@@ -4,6 +4,8 @@ import net.dinomine.potioneer.beyonder.client.ClientStatsData;
 import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
 import net.dinomine.potioneer.beyonder.player.EntityBeyonderManager;
 import net.dinomine.potioneer.item.ModItems;
+import net.dinomine.potioneer.util.GeoTintable;
+import net.dinomine.potioneer.util.TintableGlowingGeoLayer;
 import net.minecraft.client.color.item.ItemColor;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.nbt.CompoundTag;
@@ -27,8 +29,22 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 
-public class BeyonderPotionItem extends PotionItem implements GeoItem {
+public class BeyonderPotionItem extends PotionItem implements GeoItem, GeoTintable {
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
+    private static final ThreadLocal<ItemStack> cachedStack = new ThreadLocal<>();
+
+    public static void capture(ItemStack stack) {
+        cachedStack.set(stack);
+    }
+
+    public static void clear() {
+        cachedStack.remove();
+    }
+
+    @Override
+    public AnimatableInstanceCache getAnimatableInstanceCache() {
+        return cache;
+    }
 
     public BeyonderPotionItem(Properties pProperties) {
         super(pProperties);
@@ -85,14 +101,14 @@ public class BeyonderPotionItem extends PotionItem implements GeoItem {
                     if(!pLevel.isClientSide()){
                         if(name.equals("conflict")){
                             if(!player.isCreative()){
+                                cap.setSanity(0);
                                 player.kill();
-                                cap.advance((cap.getPathwayId() % 10 != 9) ? cap.getPathwayId() + 1 : -1, player, true, true);
                             }
                             player.sendSystemMessage(Component.literal("Lost control on the spot. oh well."));
                         } else if(beyonder && Math.floorDiv(Integer.parseInt(name), 10) != Math.floorDiv(cap.getPathwayId(), 10) && cap.isBeyonder()){
                             if(!player.isCreative()){
+                                cap.setSanity(0);
                                 player.kill();
-                                cap.advance((cap.getPathwayId() % 10 != 9) ? cap.getPathwayId() + 1 : -1, player, true, true);
                                 //reduce sequence
                             }
                             System.out.println("Pathway mismatch: " + name + " for pathway " + Math.floorDiv(cap.getPathwayId(), 10));
@@ -109,10 +125,6 @@ public class BeyonderPotionItem extends PotionItem implements GeoItem {
         return super.finishUsingItem(pStack, pLevel, pEntityLiving);
     }
 
-    @Override
-    public AnimatableInstanceCache getAnimatableInstanceCache() {
-        return cache;
-    }
 
     @Override
     public void initializeClient(Consumer<IClientItemExtensions> consumer) {
@@ -129,6 +141,16 @@ public class BeyonderPotionItem extends PotionItem implements GeoItem {
             }
 
         });
+    }
+
+    @Override
+    public int getHexColor() {
+        ItemStack stack = cachedStack.get();
+        if(stack != null && stack.is(this) && stack.hasTag() && stack.getTag().contains("potion_info")){
+            return stack.getTag().getCompound("potion_info").getInt("color");
+        }
+
+        return 16742143;
     }
 //
 //    @Override

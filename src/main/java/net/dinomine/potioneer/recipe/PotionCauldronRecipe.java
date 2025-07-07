@@ -55,6 +55,15 @@ public class PotionCauldronRecipe implements Recipe<PotionCauldronContainer> {
         if(this.alternateRecipeData.fire() && !simpleContainer.isOnFire()) return false;
         if(this.alternateRecipeData.waterLevel() != simpleContainer.getWaterLevel()) return false;
 
+        //will return true if it finds a valid characteristic-like item
+        for(int i = 0; i < simpleContainer.getContainerSize(); i++){
+            if(simpleContainer.getItem(i).hasTag()
+                    && simpleContainer.getItem(i).getTag().contains("beyonder_info")){
+                CompoundTag beyonderTag = simpleContainer.getItem(i).getTag().getCompound("beyonder_info");
+                if(beyonderTag.getInt("id") == this.alternateRecipeData.id()) return true;
+            }
+        }
+
         //will return true if every item in the recipe is contained in the container
         for(ItemStack recipeItem: alternateRecipeData.main()){
             if(!contains(simpleContainer, recipeItem)) {
@@ -68,7 +77,17 @@ public class PotionCauldronRecipe implements Recipe<PotionCauldronContainer> {
         if(this.alternateRecipeData.fire() && !container.isOnFire()) return false;
         if(this.alternateRecipeData.waterLevel() != container.getWaterLevel()) return false;
 
+        boolean charFlag = false;
+        for(int i = 0; i < container.getContainerSize(); i++){
+            if(container.getItem(i).hasTag()
+                    && container.getItem(i).getTag().contains("beyonder_info")){
+                CompoundTag beyonderTag = container.getItem(i).getTag().getCompound("beyonder_info");
+                if(beyonderTag.getInt("id") == this.alternateRecipeData.id()) charFlag = true;
+            }
+        }
+
         for(ItemStack recipeItem: alternateRecipeData.main()){
+            if(charFlag) break;
             if(!contains(container, recipeItem)) return false;
         }
 

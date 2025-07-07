@@ -101,4 +101,13 @@ public class RedPriestPathway extends Beyonder {
         };
     }
 
+    public static int getSequenceColor(int seq){
+        return switch (seq) {
+            case 9 -> 10251629;
+            case 8 -> 16749056;
+            case 7 -> 16775936;
+            default -> 0;
+        };
+    }
+
 }

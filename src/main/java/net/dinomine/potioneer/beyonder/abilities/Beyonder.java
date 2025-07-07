@@ -72,6 +72,22 @@ public class Beyonder {
         }
     }
 
+    public static int getSequenceColorFromId(int id){
+        int seq = id%10;
+        int color;
+        int pathway = id == -1 ? -1 : (Math.floorDiv(id, 10));
+        color = switch (pathway) {
+            case 0 -> WheelOfFortunePathway.getSequenceColor(seq);
+            case 1 -> TyrantPathway.getSequenceColor(seq);
+            case 2 -> MysteryPathway.getSequenceColor(seq);
+            case 3 -> RedPriestPathway.getSequenceColor(seq);
+            case 4 -> ParagonPathway.getSequenceColor(seq);
+            default -> 0;
+        };
+        if(color == 0) color = 16742143;
+        return color;
+    }
+
     public static String getSequenceNameFromId(int id, boolean show){
         int seq = id % 10;
         return switch(Math.floorDiv(id, 10)){

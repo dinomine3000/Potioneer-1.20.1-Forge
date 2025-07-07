@@ -20,7 +20,7 @@ import net.minecraftforge.common.ForgeMod;
 public class WaterCreateAbility extends Ability {
 
     public WaterCreateAbility(int sequence){
-        this.info = new AbilityInfo(31, 104, "Conjure Water", 10 + sequence, 10, this.getCooldown(), "water_create");
+        this.info = new AbilityInfo(31, 104, "Conjure Water", 10 + sequence, 2, 0, "water_create");
     }
 
     @Override

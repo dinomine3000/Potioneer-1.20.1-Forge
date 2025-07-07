@@ -91,7 +91,6 @@ public class TyrantPathway extends Beyonder {
         return 10 + this.sequence;
     }
 
-
     public static String getSequenceName(int seq, boolean show){
         return show ? getSequenceName(seq).replace("_", " ") : getSequenceName(seq).toLowerCase();
     }
@@ -107,15 +106,12 @@ public class TyrantPathway extends Beyonder {
         };
     }
 
-    public static void miningSpeedIncrease(Player player, EntityBeyonderManager cap) {
-        float f = 1;
-        //doesnt cost spirituality
+    public static int getSequenceColor(int seq){
+        return switch (seq) {
+            case 9 -> 2146549;
+            case 8 -> 8023295;
+            case 7 -> 8167853;
+            default -> 0;
+        };
     }
-
-
-    public static void giveWaterEffects(Player player, EntityBeyonderManager cap){
-        //On average, this calls the cost once a second
-        float cost = 4f;
-    }
-
 }
