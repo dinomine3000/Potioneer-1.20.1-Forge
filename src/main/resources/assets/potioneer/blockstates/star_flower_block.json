@@ -1,0 +1,6 @@
+{
+  "variants": {
+    "potioneer_open=true": {"model": "potioneer:block/star_flower_block_open"},
+    "potioneer_open=false":  {"model": "potioneer:block/star_flower_block_closed"}
+  }
+}

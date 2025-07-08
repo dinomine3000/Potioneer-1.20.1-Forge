@@ -1,18 +1,14 @@
 package net.dinomine.potioneer.item.custom;
 
 import net.dinomine.potioneer.beyonder.abilities.Beyonder;
-import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
 import net.dinomine.potioneer.entities.ModEntities;
 import net.dinomine.potioneer.entities.custom.CharacteristicEntity;
-import net.dinomine.potioneer.entities.custom.DivinationRodEntity;
 import net.minecraft.client.color.item.ItemColor;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.SwordItem;
-import net.minecraft.world.item.Tier;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;

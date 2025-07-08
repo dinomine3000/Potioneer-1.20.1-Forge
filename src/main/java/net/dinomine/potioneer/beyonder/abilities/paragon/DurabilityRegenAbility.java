@@ -50,7 +50,7 @@ public class DurabilityRegenAbility extends Ability {
         if(!cap.getEffectsManager().hasEffect(BeyonderEffects.EFFECT.PARAGON_DURABILITY_REGEN, getSequence())){
 
             int duration = levelUp ? -1 : 60*((9-getSequence())*6 + 3);
-            float cost = levelUp ? info.cost() / 2f: info.cost();
+            float cost = levelUp ? info.cost() / 10f: info.cost()/5f;
             cap.getEffectsManager().addEffect(BeyonderEffects.byId(BeyonderEffects.EFFECT.PARAGON_DURABILITY_REGEN,
                     getSequence(), cost, duration, true), cap, target);
             if(!levelUp) disable(cap, target);

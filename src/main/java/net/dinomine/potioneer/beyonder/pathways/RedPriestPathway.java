@@ -2,14 +2,8 @@ package net.dinomine.potioneer.beyonder.pathways;
 
 import net.dinomine.potioneer.beyonder.abilities.Ability;
 import net.dinomine.potioneer.beyonder.abilities.Beyonder;
-import net.dinomine.potioneer.beyonder.abilities.paragon.CraftingGuiAbility;
-import net.dinomine.potioneer.beyonder.abilities.paragon.DurabilityRegenAbility;
 import net.dinomine.potioneer.beyonder.abilities.redpriest.*;
-import net.dinomine.potioneer.beyonder.effects.redpriest.BeyonderWeaponProficiencyEffect;
 import net.dinomine.potioneer.beyonder.player.PlayerAbilitiesManager;
-import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.entity.player.Player;
-import net.minecraftforge.common.ForgeMod;
 
 import java.util.ArrayList;
 

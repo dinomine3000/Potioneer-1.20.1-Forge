@@ -1,15 +1,9 @@
 package net.dinomine.potioneer.entities.client;
 
 import net.dinomine.potioneer.Potioneer;
-import net.dinomine.potioneer.entities.custom.ChryonEntity;
 import net.dinomine.potioneer.entities.custom.WanderingCactusEntity;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.Mth;
-import software.bernie.geckolib.constant.DataTickets;
-import software.bernie.geckolib.core.animatable.model.CoreGeoBone;
-import software.bernie.geckolib.core.animation.AnimationState;
 import software.bernie.geckolib.model.GeoModel;
-import software.bernie.geckolib.model.data.EntityModelData;
 
 public class WanderingCactusModel extends GeoModel<WanderingCactusEntity> {
     private final ResourceLocation model = new ResourceLocation(Potioneer.MOD_ID, "geo/wandering_cactus.geo.json");

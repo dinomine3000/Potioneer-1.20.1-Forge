@@ -3,7 +3,6 @@ package net.dinomine.potioneer.util;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
 
-import java.util.Arrays;
 import java.util.List;
 
 public class PotioneerMathHelper {

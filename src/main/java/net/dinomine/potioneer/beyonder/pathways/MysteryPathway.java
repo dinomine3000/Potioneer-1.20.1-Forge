@@ -3,7 +3,6 @@ package net.dinomine.potioneer.beyonder.pathways;
 import net.dinomine.potioneer.beyonder.abilities.Ability;
 import net.dinomine.potioneer.beyonder.abilities.Beyonder;
 import net.dinomine.potioneer.beyonder.abilities.mystery.*;
-import net.dinomine.potioneer.beyonder.abilities.redpriest.WeaponProficiencyAbility;
 import net.dinomine.potioneer.beyonder.player.PlayerAbilitiesManager;
 
 import java.util.ArrayList;

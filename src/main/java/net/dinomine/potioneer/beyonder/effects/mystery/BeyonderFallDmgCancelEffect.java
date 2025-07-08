@@ -4,7 +4,6 @@ import net.dinomine.potioneer.beyonder.effects.BeyonderEffect;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
 import net.dinomine.potioneer.beyonder.player.EntityBeyonderManager;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.inventory.AnvilMenu;
 
 public class BeyonderFallDmgCancelEffect extends BeyonderEffect {
     public boolean flag = false;

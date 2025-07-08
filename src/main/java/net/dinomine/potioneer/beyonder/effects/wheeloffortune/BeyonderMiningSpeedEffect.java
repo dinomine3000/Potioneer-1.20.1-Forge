@@ -3,7 +3,6 @@ package net.dinomine.potioneer.beyonder.effects.wheeloffortune;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffect;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
 import net.dinomine.potioneer.beyonder.player.EntityBeyonderManager;
-import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
 
 public class BeyonderMiningSpeedEffect extends BeyonderEffect {

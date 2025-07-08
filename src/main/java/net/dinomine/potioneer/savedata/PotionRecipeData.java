@@ -1,24 +1,14 @@
 package net.dinomine.potioneer.savedata;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import net.dinomine.potioneer.Potioneer;
-import net.minecraft.client.Minecraft;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.ShapedRecipe;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 
 public record PotionRecipeData(ArrayList<ItemStack> main, ArrayList<ItemStack> supplementary, int waterLevel, boolean fire, int id) {

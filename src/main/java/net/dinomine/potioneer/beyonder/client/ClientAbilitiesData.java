@@ -1,11 +1,8 @@
 package net.dinomine.potioneer.beyonder.client;
 
-import com.eliotlash.mclib.math.functions.limit.Min;
-import net.dinomine.potioneer.beyonder.abilities.Ability;
 import net.dinomine.potioneer.beyonder.abilities.AbilityInfo;
 import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
 import net.dinomine.potioneer.network.PacketHandler;
-import net.dinomine.potioneer.network.messages.PlayerAdvanceMessage;
 import net.dinomine.potioneer.network.messages.PlayerSyncHotbarMessage;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;

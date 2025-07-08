@@ -1,7 +1,5 @@
 package net.dinomine.potioneer.beyonder.effects;
 
-import net.minecraft.resources.ResourceLocation;
-
 import java.util.function.Supplier;
 
 public class BeyonderEffectType {

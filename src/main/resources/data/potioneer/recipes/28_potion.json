@@ -2,7 +2,7 @@
   "type": "potioneer:potion_cauldron_brew",
   "main_ingredients": [
     {
-      "item": "minecraft:phantom_membrane",
+      "item": "minecraft:honeycomb",
       "count": 3
     },
     {
@@ -12,7 +12,7 @@
   ],
   "supplementary_ingredients": [
     {
-      "item": "minecraft:glow_berries"
+      "item": "minecraft:spider_eye"
     },
     {
       "item": "minecraft:glow_ink_sac",

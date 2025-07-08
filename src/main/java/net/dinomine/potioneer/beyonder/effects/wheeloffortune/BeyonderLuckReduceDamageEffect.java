@@ -3,7 +3,6 @@ package net.dinomine.potioneer.beyonder.effects.wheeloffortune;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffect;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
 import net.dinomine.potioneer.beyonder.player.EntityBeyonderManager;
-import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.LivingEntity;
 
 public class BeyonderLuckReduceDamageEffect extends BeyonderEffect {

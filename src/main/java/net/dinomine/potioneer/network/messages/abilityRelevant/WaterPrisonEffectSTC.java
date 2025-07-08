@@ -1,11 +1,8 @@
 package net.dinomine.potioneer.network.messages.abilityRelevant;
 
-import net.dinomine.potioneer.beyonder.screen.DivinationScreen;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleOptions;
-import net.minecraft.core.particles.ParticleType;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.util.RandomSource;
@@ -15,7 +12,6 @@ import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
-import java.util.logging.Level;
 
 import static net.dinomine.potioneer.beyonder.misc.MysticismHelper.radius;
 

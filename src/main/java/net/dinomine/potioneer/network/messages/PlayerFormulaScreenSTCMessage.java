@@ -1,10 +1,5 @@
 package net.dinomine.potioneer.network.messages;
 
-import net.dinomine.potioneer.beyonder.client.ClientAbilitiesData;
-import net.dinomine.potioneer.beyonder.client.ClientStatsData;
-import net.dinomine.potioneer.beyonder.client.KeyBindings;
-import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
-import net.dinomine.potioneer.beyonder.screen.BeyonderScreen;
 import net.dinomine.potioneer.beyonder.screen.FormulaScreen;
 import net.dinomine.potioneer.savedata.PotionRecipeData;
 import net.minecraft.client.Minecraft;
@@ -14,7 +9,6 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.network.NetworkEvent;
 
-import java.util.ArrayList;
 import java.util.function.Supplier;
 
 //called frequently to update the client stats for the hud display

@@ -5,21 +5,17 @@
       "item": "minecraft:anvil"
     },
     {
-      "item": "minecraft:fermented_spider_eye",
-      "count": 3
+      "item": "potioneer:pecan_shell",
+      "count": 5
     }
   ],
   "supplementary_ingredients": [
-    {
-      "item": "minecraft:obsidian"
-    },
     {
       "item": "minecraft:book",
       "count": 2
     },
     {
-      "item": "minecraft:lapis_lazuli",
-      "count": 2
+      "item": "minecraft:lapis_lazuli"
     }
   ],
   "water_level": 2,

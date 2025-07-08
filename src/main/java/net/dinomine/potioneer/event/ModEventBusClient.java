@@ -2,15 +2,14 @@ package net.dinomine.potioneer.event;
 
 import net.dinomine.potioneer.Potioneer;
 import net.dinomine.potioneer.beyonder.client.HUD.AbilitiesHotbarHUD;
-import net.dinomine.potioneer.beyonder.client.KeyBindings;
 import net.dinomine.potioneer.beyonder.client.HUD.MagicOrbOverlay;
+import net.dinomine.potioneer.beyonder.client.KeyBindings;
 import net.dinomine.potioneer.block.ModBlocks;
 import net.dinomine.potioneer.block.custom.PotionCauldronBlock;
 import net.dinomine.potioneer.block.entity.ModBlockEntities;
 import net.dinomine.potioneer.block.entity.renderer.PotionCauldronBlockEntityRenderer;
 import net.dinomine.potioneer.item.ModItems;
 import net.dinomine.potioneer.item.custom.AbstractLiquidContainer;
-import net.dinomine.potioneer.item.custom.BeyonderPotion.BeyonderPotionItem;
 import net.dinomine.potioneer.item.custom.CharacteristicItem;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -20,11 +19,11 @@ import net.minecraftforge.client.event.RegisterGuiOverlaysEvent;
 import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 
 @OnlyIn(Dist.CLIENT)
 @Mod.EventBusSubscriber(modid = Potioneer.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
 public class ModEventBusClient {
-
 
     @SubscribeEvent
     public static void registerBER(EntityRenderersEvent.RegisterRenderers event){

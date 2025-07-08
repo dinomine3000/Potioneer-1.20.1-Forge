@@ -4,7 +4,6 @@ import net.dinomine.potioneer.beyonder.abilities.paragon.DurabilityRegenAbility;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffect;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
 import net.dinomine.potioneer.beyonder.player.EntityBeyonderManager;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Inventory;
@@ -25,7 +24,7 @@ public class BeyonderDurabilityEffect extends BeyonderEffect {
 
     @Override
     protected void doTick(EntityBeyonderManager cap, LivingEntity target) {
-        if(tick++ > 100){
+        if(tick++ > 58){
             tick = 0;
             if(sequenceLevel <= 7){
                 if(target instanceof Player player){
@@ -34,14 +33,14 @@ public class BeyonderDurabilityEffect extends BeyonderEffect {
                     for (int i = 0; i < size; i++) {
                         if(inv.getItem(i).isDamageableItem()){
                             ItemStack item = inv.getItem(i);
-                            if(item.getDamageValue() > 0 && cap.getSpirituality() > cost/10f) cap.requestActiveSpiritualityCost(cost/4f);
+                            if(item.getDamageValue() > 0 && cap.getSpirituality() > cost) cap.requestActiveSpiritualityCost(cost);
                             item.setDamageValue(Math.max(item.getDamageValue() - 10*(10-sequenceLevel), 0));
                         }
                     }
                 }
             }
             ItemStack mainItem = target.getMainHandItem();
-            if(mainItem.getDamageValue() > 0 && cap.getSpirituality() > cost/4f) cap.requestActiveSpiritualityCost(cost/4f);
+            if(mainItem.getDamageValue() > 0 && cap.getSpirituality() > cost) cap.requestActiveSpiritualityCost(cost);
             mainItem.setDamageValue(Math.max(mainItem.getDamageValue() - 5*(int)Math.pow(10-sequenceLevel, 2) - 15, 0));
 
             ItemStack offhandItem = target.getOffhandItem();

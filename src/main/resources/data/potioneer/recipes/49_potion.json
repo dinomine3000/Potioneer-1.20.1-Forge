@@ -5,7 +5,8 @@
       "item": "potioneer:sapphire"
     },
     {
-      "item": "potioneer:pecan_shell"
+      "item": "potioneer:pecan_leaf",
+      "count": 2
     }
   ],
   "supplementary_ingredients": [
@@ -14,7 +15,7 @@
     },
     {
       "item": "minecraft:iron_nugget",
-      "count": 2
+      "count": 4
     }
   ],
   "water_level": 3,

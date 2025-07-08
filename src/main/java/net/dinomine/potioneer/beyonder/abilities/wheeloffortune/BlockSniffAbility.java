@@ -5,26 +5,15 @@ import net.dinomine.potioneer.beyonder.abilities.AbilityInfo;
 import net.dinomine.potioneer.beyonder.player.EntityBeyonderManager;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.network.chat.Component;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BlockItem;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.Tags;
 
-import java.util.ArrayList;
 import java.util.Optional;
-import java.util.function.Predicate;
 
 public class BlockSniffAbility extends Ability {
 
@@ -49,14 +38,9 @@ public class BlockSniffAbility extends Ability {
 //                System.out.println("Found an ore on hand");
                 BlockPos pos = BlockPos.containing(player.getX(), player.getY(), player.getZ());
                 int radius = (9 - info.id()%10)*3 + 7;
-                AABB box = new AABB(
-                        pos.getX()-radius, pos.getY()-radius, pos.getZ()-radius,
-                        pos.getX()+radius, pos.getY()+radius, pos.getZ()+radius
-                );
 
-                Optional<BlockPos> blocks = BlockPos.findClosestMatch(pos, radius, radius, testPos -> {
-                    return level.getBlockState(testPos).is(blockItem.getBlock());
-                });
+                Optional<BlockPos> blocks = BlockPos.findClosestMatch(pos, radius, radius,
+                        testPos -> level.getBlockState(testPos).is(blockItem.getBlock()));
 
 //                System.out.println(blocks);
 

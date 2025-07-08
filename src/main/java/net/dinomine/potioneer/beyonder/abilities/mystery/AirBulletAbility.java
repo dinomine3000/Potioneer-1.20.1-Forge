@@ -57,7 +57,7 @@ public class AirBulletAbility extends Ability {
             ArrayList<Entity> hits = AbilityFunctionHelper.getLivingEntitiesLooking(target, radius);
             hits.forEach(ent -> {
                 int pow = (9-getSequence());
-                ent.hurt(level.damageSources().indirectMagic(target, null),
+                if(ent != target) ent.hurt(level.damageSources().indirectMagic(target, null),
                         (float) (0.384f*Math.pow(target.getAttribute(Attributes.ATTACK_DAMAGE).getBaseValue()*pow, 2) + 2.461f*pow + 3.938f));
             });
             level.playSound(null, target.getOnPos().above(), SoundEvents.GENERIC_EXTINGUISH_FIRE, SoundSource.PLAYERS, 1, 1);

@@ -1,13 +1,10 @@
 package net.dinomine.potioneer.menus;
 
-import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
-import net.minecraft.core.NonNullList;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.*;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.inventory.ChestMenu;
+import net.minecraft.world.inventory.MenuType;
 
 public class ConjurerContainerMenu extends ChestMenu {
 

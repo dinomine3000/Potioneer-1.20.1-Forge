@@ -1,7 +1,6 @@
 package net.dinomine.potioneer.beyonder.effects;
 
 
-import net.dinomine.potioneer.Potioneer;
 import net.dinomine.potioneer.beyonder.effects.misc.BeyonderMysticismEffect;
 import net.dinomine.potioneer.beyonder.effects.misc.BeyonderPlagueEffect;
 import net.dinomine.potioneer.beyonder.effects.mystery.*;
@@ -12,15 +11,6 @@ import net.dinomine.potioneer.beyonder.effects.redpriest.*;
 import net.dinomine.potioneer.beyonder.effects.tyrant.BeyonderElectrificationEffect;
 import net.dinomine.potioneer.beyonder.effects.tyrant.BeyonderWaterAffinityEffect;
 import net.dinomine.potioneer.beyonder.effects.wheeloffortune.*;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.IForgeRegistry;
-import net.minecraftforge.registries.RegistryBuilder;
-import net.minecraftforge.registries.RegistryObject;
-
-import java.util.HashMap;
-import java.util.Map;
 
 public class BeyonderEffects {
     /*public static final DeferredRegister<BeyonderEffectType> REGISTRY =

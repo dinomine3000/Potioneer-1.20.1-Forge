@@ -1,7 +1,6 @@
 package net.dinomine.potioneer.beyonder.player.luck;
 
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.util.Mth;
 
 import static net.dinomine.potioneer.beyonder.player.PlayerLuckManager.MAXIMUM_LUCK;

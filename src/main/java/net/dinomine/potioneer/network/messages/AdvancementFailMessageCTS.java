@@ -1,18 +1,15 @@
 package net.dinomine.potioneer.network.messages;
 
-import net.dinomine.potioneer.beyonder.abilities.Ability;
 import net.dinomine.potioneer.beyonder.misc.MysticismHelper;
 import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
 import net.dinomine.potioneer.entities.ModEntities;
 import net.dinomine.potioneer.entities.custom.CharacteristicEntity;
 import net.dinomine.potioneer.item.ModItems;
-import net.dinomine.potioneer.network.PacketHandler;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.network.NetworkEvent;
-import net.minecraftforge.network.PacketDistributor;
 
 import java.util.function.Supplier;
 
@@ -56,9 +53,8 @@ public class AdvancementFailMessageCTS {
 
             CharacteristicEntity entity = new CharacteristicEntity(ModEntities.CHARACTERISTIC.get(), player.level(), characteristic.copy(), sequence);
             entity.setSequenceId(sequence);
-            entity.moveTo(player.position().offsetRandom(player.getRandom(), 0.5f));
+            entity.moveTo(player.position().offsetRandom(player.getRandom(), 1f).add(0, 1, 0));
             player.level().addFreshEntity(entity);
-            System.out.println("Added potion characteristic on server side");
         });
 
         context.setPacketHandled(true);

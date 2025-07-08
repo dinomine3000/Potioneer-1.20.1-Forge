@@ -3,14 +3,11 @@ package net.dinomine.potioneer.block.entity.renderer;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.dinomine.potioneer.beyonder.client.ClientStatsData;
-import net.dinomine.potioneer.block.entity.MinerLightBlockEntity;
 import net.dinomine.potioneer.block.entity.WaterTrapBlockEntity;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib.renderer.GeoBlockRenderer;
 

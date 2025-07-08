@@ -23,7 +23,6 @@ public class ModCreativeModTabs {
 
                         output.accept(ModBlocks.SAPPHIRE_BLOCK.get());
                         output.accept(ModBlocks.RAW_SAPPHIRE_BLOCK.get());
-
                         output.accept(ModBlocks.SAPPHIRE_ORE.get());
                         output.accept(ModBlocks.DEEPSLATE_SAPPHIRE_ORE.get());
                         output.accept(ModBlocks.POTION_CAULDRON.get());
@@ -31,6 +30,7 @@ public class ModCreativeModTabs {
                         output.accept(ModItems.PECAN_SPAWN_EGG.get());
                         output.accept(ModItems.CHRYON_SPAWN_EGG.get());
                         output.accept(ModItems.WANDERING_CACTUS_SPAWN_EGG.get());
+                        output.accept(ModItems.DEMONIC_WOLF_SPAWN_EGG.get());
                         output.accept(ModItems.BEYONDER_POTION.get());
                         output.accept(ModItems.VIAL.get());
                         output.accept(ModItems.FLASK.get());
@@ -63,6 +63,17 @@ public class ModCreativeModTabs {
                         tag.put("potion_info", potionInfo);
                         vial.setTag(tag);
                         output.accept(vial);
+
+                        output.accept(ModItems.FROZEN_SWORD.get());
+                        output.accept(ModItems.CHRYON_CORE.get());
+                        output.accept(ModItems.CHRYON_SNOW.get());
+                        //output.accept(ModItems.STAR_FLOWER.get());
+                        output.accept(ModBlocks.STAR_FLOWER_BLOCK.get());
+                        output.accept(ModItems.POLISHED_DIAMOND.get());
+                        output.accept(ModItems.ROOTS.get());
+                        output.accept(ModItems.VOODOO_DOLL.get());
+                        output.accept(ModItems.DEVILS_TAIL.get());
+                        output.accept(ModItems.DEMONIC_FANG.get());
 
                     }).build());
 

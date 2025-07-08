@@ -2,11 +2,8 @@ package net.dinomine.potioneer.beyonder.pathways;
 
 import net.dinomine.potioneer.beyonder.abilities.Ability;
 import net.dinomine.potioneer.beyonder.abilities.Beyonder;
-import net.dinomine.potioneer.beyonder.abilities.mystery.*;
 import net.dinomine.potioneer.beyonder.abilities.paragon.*;
 import net.dinomine.potioneer.beyonder.player.PlayerAbilitiesManager;
-import net.minecraft.world.inventory.CraftingContainer;
-import net.minecraft.world.inventory.CraftingMenu;
 
 import java.util.ArrayList;
 

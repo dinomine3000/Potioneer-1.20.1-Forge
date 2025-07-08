@@ -2,8 +2,6 @@ package net.dinomine.potioneer.menus;
 
 import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
 import net.dinomine.potioneer.beyonder.player.ConjurerContainer;
-import net.minecraft.util.Mth;
-import net.minecraft.world.Container;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 

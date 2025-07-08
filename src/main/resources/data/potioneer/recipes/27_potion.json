@@ -6,8 +6,16 @@
       "count": 2
     },
     {
-      "item": "potioneer:straw_doll"
+      "item": "potioneer:vial",
+      "nbt": {
+        "potion_info": {
+          "name": "cactus_sap",
+          "amount": 1,
+          "color": 65280
+        }
+      }
     }
+
   ],
   "supplementary_ingredients": [
     {
@@ -16,6 +24,9 @@
     {
       "item": "minecraft:rotten_flesh",
       "count": 3
+    },
+    {
+      "item": "potioneer:straw_doll"
     }
   ],
   "water_level": 2,

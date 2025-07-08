@@ -2,11 +2,9 @@ package net.dinomine.potioneer.block.entity.renderer;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
-import net.dinomine.potioneer.block.ModBlocks;
 import net.dinomine.potioneer.block.entity.PotionCauldronBlockEntity;
 import net.dinomine.potioneer.util.PotioneerMathHelper;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.particle.EnchantmentTableParticle;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
@@ -17,21 +15,12 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
 import net.minecraft.util.Mth;
-import net.minecraft.util.RandomSource;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LightLayer;
-import net.minecraft.world.level.block.EnchantmentTableBlock;
-import net.minecraft.world.level.block.entity.EnchantmentTableBlockEntity;
-import net.minecraft.world.phys.Vec3;
-import org.lwjgl.system.MathUtil;
-
-import java.util.function.Supplier;
 
 import static net.dinomine.potioneer.block.custom.PotionCauldronBlock.DIRECTION;
-import static net.dinomine.potioneer.block.custom.PotionCauldronBlock.WATER_LEVEL;
 
 public class PotionCauldronBlockEntityRenderer implements BlockEntityRenderer<PotionCauldronBlockEntity> {
 

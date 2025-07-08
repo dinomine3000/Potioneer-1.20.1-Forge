@@ -2,11 +2,14 @@ package net.dinomine.potioneer.item;
 
 import net.dinomine.potioneer.Potioneer;
 import net.dinomine.potioneer.entities.ModEntities;
-import net.dinomine.potioneer.item.custom.*;
 import net.dinomine.potioneer.item.custom.BeyonderPotion.BeyonderPotionItem;
+import net.dinomine.potioneer.item.custom.*;
 import net.dinomine.potioneer.item.custom.cane.CaneItem;
 import net.dinomine.potioneer.item.custom.coin.CoinItem;
-import net.minecraft.world.item.*;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.Rarity;
+import net.minecraft.world.item.SwordItem;
+import net.minecraft.world.item.Tiers;
 import net.minecraftforge.common.ForgeSpawnEggItem;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.registries.DeferredRegister;
@@ -44,6 +47,9 @@ public class ModItems {
     public static final RegistryObject<Item> WANDERING_CACTUS_SPAWN_EGG = ITEMS.register("wandering_cactus_spawn_egg",
             () -> new ForgeSpawnEggItem(ModEntities.WANDERING_CACTUS, 0x43ff77 , 0xe7ffcb , new Item.Properties()));
 
+    public static final RegistryObject<Item> DEMONIC_WOLF_SPAWN_EGG = ITEMS.register("demonic_wolf_spawn_egg",
+            () -> new ForgeSpawnEggItem(ModEntities.DEMONIC_WOLF, 0x4a0015  , 0xff0047  , new Item.Properties()));
+
     public static final RegistryObject<Item> MINER_PICKAXE = ITEMS.register("conjured_pickaxe",
             () -> new ConjuredPickaxeItem(new Item.Properties().setNoRepair().durability(10)));
 
@@ -75,6 +81,30 @@ public class ModItems {
 
     public static final RegistryObject<Item> CHARACTERISTIC = ITEMS.register("beyonder_characteristic",
             () -> new CharacteristicItem(new Item.Properties().stacksTo(1).rarity(Rarity.EPIC)));
+
+    public static final RegistryObject<Item> CHRYON_SNOW = ITEMS.register("chryon_flake",
+            () -> new Item(new Item.Properties()));
+
+    public static final RegistryObject<Item> FROZEN_SWORD = ITEMS.register("frozen_sword",
+            () -> new SwordItem(Tiers.DIAMOND, 1, -2.4F, new Item.Properties()));
+
+    public static final RegistryObject<Item> CHRYON_CORE = ITEMS.register("chryon_core",
+            () -> new Item(new Item.Properties().stacksTo(1).craftRemainder(CHRYON_SNOW.get())));
+
+    public static final RegistryObject<Item> DEVILS_TAIL = ITEMS.register("devils_tail",
+            () -> new Item(new Item.Properties()));
+
+    public static final RegistryObject<Item> DEMONIC_FANG = ITEMS.register("demonic_fang",
+            () -> new Item(new Item.Properties()));
+
+//    public static final RegistryObject<Item> STAR_FLOWER = ITEMS.register("star_flower",
+//            () -> new Item(new Item.Properties()));
+
+    public static final RegistryObject<Item> POLISHED_DIAMOND = ITEMS.register("polished_diamond",
+            () -> new Item(new Item.Properties()));
+
+    public static final RegistryObject<Item> ROOTS = ITEMS.register("roots",
+            () -> new Item(new Item.Properties()));
 
 
     /*ublic static final RegistryObject<Item> METAL_ROD = ITEMS.register("metal_detector",

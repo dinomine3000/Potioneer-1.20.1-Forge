@@ -1,7 +1,6 @@
 package net.dinomine.potioneer.item.custom.BeyonderPotion;
 
 import net.dinomine.potioneer.Potioneer;
-import net.minecraft.client.renderer.entity.SpiderRenderer;
 import net.minecraft.resources.ResourceLocation;
 import software.bernie.geckolib.core.animatable.GeoAnimatable;
 import software.bernie.geckolib.model.GeoModel;

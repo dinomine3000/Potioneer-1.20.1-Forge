@@ -5,11 +5,7 @@ import net.dinomine.potioneer.util.TintableGlowingGeoLayer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
-import software.bernie.example.client.renderer.entity.CoolKidRenderer;
-import software.bernie.geckolib.core.object.Color;
-import software.bernie.geckolib.model.GeoModel;
 import software.bernie.geckolib.renderer.GeoItemRenderer;
-import software.bernie.geckolib.renderer.layer.AutoGlowingGeoLayer;
 
 public class BeyonderPotionItemRenderer extends GeoItemRenderer<BeyonderPotionItem> {
     public BeyonderPotionItemRenderer() {

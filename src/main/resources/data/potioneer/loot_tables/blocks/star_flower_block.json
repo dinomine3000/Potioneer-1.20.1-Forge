@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "potioneer:star_flower_block",
+          "weight": 1,
+          "quality": 1,
+          "conditions": [
+            {
+              "condition": "minecraft:block_state_property",
+              "block": "potioneer:star_flower_block",
+              "properties": {
+                "potioneer_open": "true"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "functions": []
+}

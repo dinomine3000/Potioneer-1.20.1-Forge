@@ -11,7 +11,10 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.entity.*;
+import net.minecraft.world.entity.AgeableMob;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.MobSpawnType;
+import net.minecraft.world.entity.MoverType;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.FloatGoal;
@@ -25,7 +28,6 @@ import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.core.animation.*;
-import software.bernie.geckolib.core.animation.AnimationState;
 import software.bernie.geckolib.core.object.PlayState;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
@@ -127,7 +129,7 @@ public class WanderingCactusEntity extends Animal implements GeoEntity {
 
     @Override
     public boolean hurt(DamageSource pSource, float pAmount) {
-        if(isHiding() && pSource.getEntity() != null ) pSource.getEntity().level().playSound(null, getOnPos(), SoundEvents.AXE_SCRAPE, SoundSource.HOSTILE);
+        if(isHiding() && pSource.getEntity() != null ) pSource.getEntity().level().playSound(null, getOnPos(), SoundEvents.METAL_HIT, SoundSource.HOSTILE);
         justHit = (pSource.getEntity() instanceof Player player && player.isCreative()) ? 0 : 20*5;
         if(pSource.getEntity() != null) pSource.getEntity().hurt(damageSources().mobAttack(this), pAmount/3f);
         if(isHiding()) pAmount /= 3f;

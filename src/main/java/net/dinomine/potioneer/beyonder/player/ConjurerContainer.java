@@ -1,14 +1,8 @@
 package net.dinomine.potioneer.beyonder.player;
 
-import net.minecraft.nbt.ListTag;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-
-import java.awt.*;
-import java.util.Iterator;
-import java.util.List;
 
 public class ConjurerContainer extends SimpleContainer {
     public Player player;

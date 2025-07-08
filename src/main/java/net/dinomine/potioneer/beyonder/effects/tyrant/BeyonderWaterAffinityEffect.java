@@ -1,25 +1,13 @@
 package net.dinomine.potioneer.beyonder.effects.tyrant;
 
-import com.google.common.base.Suppliers;
-import com.google.common.collect.ImmutableMultimap;
-import com.google.common.collect.Multimap;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffect;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
-import net.dinomine.potioneer.beyonder.pathways.TyrantPathway;
 import net.dinomine.potioneer.beyonder.player.EntityBeyonderManager;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.ai.attributes.Attribute;
-import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
-import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.common.ForgeMod;
-
-import java.util.UUID;
-import java.util.function.Supplier;
-import java.util.jar.Attributes;
 
 public class BeyonderWaterAffinityEffect extends BeyonderEffect {
 

@@ -1,7 +1,6 @@
 package net.dinomine.potioneer.entities.goals;
 
 import net.dinomine.potioneer.entities.custom.WanderingCactusEntity;
-import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.ai.goal.WaterAvoidingRandomStrollGoal;
 import net.minecraft.world.entity.ai.util.DefaultRandomPos;
 import net.minecraft.world.phys.Vec3;

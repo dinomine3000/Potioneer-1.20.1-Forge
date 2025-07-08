@@ -5,7 +5,6 @@ import net.dinomine.potioneer.beyonder.abilities.AbilityInfo;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
 import net.dinomine.potioneer.beyonder.player.EntityBeyonderManager;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.monster.Blaze;
 
 public class FireAuraAbility extends Ability {
 

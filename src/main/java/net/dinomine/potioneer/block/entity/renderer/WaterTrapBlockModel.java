@@ -1,7 +1,6 @@
 package net.dinomine.potioneer.block.entity.renderer;
 
 import net.dinomine.potioneer.Potioneer;
-import net.dinomine.potioneer.block.entity.MinerLightBlockEntity;
 import net.dinomine.potioneer.block.entity.WaterTrapBlockEntity;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;

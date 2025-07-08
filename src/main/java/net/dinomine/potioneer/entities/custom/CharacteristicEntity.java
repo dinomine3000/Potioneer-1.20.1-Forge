@@ -8,14 +8,12 @@ import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MoverType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.network.PlayMessages;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.core.animation.AnimatableManager;
@@ -33,6 +31,10 @@ public class CharacteristicEntity extends PlaceableItemEntity implements GeoEnti
 
     public CharacteristicEntity(EntityType<CharacteristicEntity> pEntityType, Level pLevel){
         this(pEntityType, pLevel, ItemStack.EMPTY, -1);
+    }
+
+    public int getSequenceId(){
+        return entityData.get(BEYONDER_ID);
     }
 
     public void setSequenceId(int sequenceId){

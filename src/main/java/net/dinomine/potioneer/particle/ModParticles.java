@@ -2,7 +2,6 @@ package net.dinomine.potioneer.particle;
 
 import net.dinomine.potioneer.Potioneer;
 import net.dinomine.potioneer.particle.custom.PotionCauldronParticles;
-import net.minecraft.client.Minecraft;
 import net.minecraft.core.particles.ParticleType;
 import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraftforge.api.distmarker.Dist;

@@ -3,11 +3,15 @@ package net.dinomine.potioneer.block;
 import net.dinomine.potioneer.Potioneer;
 import net.dinomine.potioneer.block.custom.*;
 import net.dinomine.potioneer.item.ModItems;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.util.valueproviders.UniformInt;
+import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.level.block.*;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.DropExperienceBlock;
+import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.material.PushReaction;
@@ -62,6 +66,11 @@ public class ModBlocks {
 
     public static final RegistryObject<Block> MUTATED_MUSHROOM = registerBlock("wheat_mushroom",
             () -> new MutatedMushroom(BlockBehaviour.Properties.copy(Blocks.BROWN_MUSHROOM)));
+
+    public static final RegistryObject<Block> STAR_FLOWER_BLOCK = registerBlock("star_flower_block",
+            () -> new StarFlowerBlock(() -> MobEffects.NIGHT_VISION, 5, BlockBehaviour.Properties.copy(Blocks.BROWN_MUSHROOM)));
+
+
 
     private static <T extends Block> RegistryObject<T> registerBlock(String name, Supplier<T> block){
         RegistryObject<T> toReturn = BLOCKS.register(name, block);

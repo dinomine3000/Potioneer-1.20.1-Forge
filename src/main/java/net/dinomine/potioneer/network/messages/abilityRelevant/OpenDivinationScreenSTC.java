@@ -1,6 +1,5 @@
 package net.dinomine.potioneer.network.messages.abilityRelevant;
 
-import net.dinomine.potioneer.beyonder.client.ClientAbilitiesData;
 import net.dinomine.potioneer.beyonder.screen.DivinationScreen;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;

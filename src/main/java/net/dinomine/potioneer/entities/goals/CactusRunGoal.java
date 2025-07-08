@@ -2,9 +2,7 @@ package net.dinomine.potioneer.entities.goals;
 
 import net.dinomine.potioneer.entities.custom.WanderingCactusEntity;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.goal.AvoidEntityGoal;
-import net.minecraft.world.entity.ai.goal.Goal;
 
 public class CactusRunGoal<T extends LivingEntity> extends AvoidEntityGoal<T> {
 

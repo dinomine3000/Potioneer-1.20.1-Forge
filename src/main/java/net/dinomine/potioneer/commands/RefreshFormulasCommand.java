@@ -3,7 +3,6 @@ package net.dinomine.potioneer.commands;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.context.CommandContext;
-import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
 import net.dinomine.potioneer.item.ModItems;
 import net.dinomine.potioneer.item.custom.FormulaItem;
 import net.dinomine.potioneer.savedata.PotionFormulaSaveData;
@@ -11,8 +10,6 @@ import net.dinomine.potioneer.savedata.PotionRecipeData;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 
 public class RefreshFormulasCommand {

@@ -5,11 +5,9 @@ import net.dinomine.potioneer.block.ModBlocks;
 import net.dinomine.potioneer.block.custom.PotionCauldronBlock;
 import net.dinomine.potioneer.item.ModItems;
 import net.dinomine.potioneer.particle.ModParticles;
-import net.dinomine.potioneer.recipe.ModRecipes;
 import net.dinomine.potioneer.recipe.PotionCauldronContainer;
 import net.dinomine.potioneer.recipe.PotionCauldronRecipe;
 import net.dinomine.potioneer.recipe.PotionContentData;
-import net.dinomine.potioneer.savedata.PotionFormulaSaveData;
 import net.dinomine.potioneer.util.ModTags;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -45,8 +43,6 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-
-import java.util.ArrayList;
 import java.util.List;
 
 import static net.dinomine.potioneer.block.custom.PotionCauldronBlock.RESULT;

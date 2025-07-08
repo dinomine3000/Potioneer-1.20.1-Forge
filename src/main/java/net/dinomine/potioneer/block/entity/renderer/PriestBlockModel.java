@@ -1,7 +1,6 @@
 package net.dinomine.potioneer.block.entity.renderer;
 
 import net.dinomine.potioneer.Potioneer;
-import net.dinomine.potioneer.block.entity.MinerLightBlockEntity;
 import net.dinomine.potioneer.block.entity.PriestLightBlockEntity;
 import net.minecraft.resources.ResourceLocation;
 import software.bernie.geckolib.model.GeoModel;

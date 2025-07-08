@@ -1,6 +1,5 @@
 package net.dinomine.potioneer.block.custom;
 
-import net.dinomine.potioneer.block.entity.MinerLightBlockEntity;
 import net.dinomine.potioneer.block.entity.PriestLightBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.block.entity.BlockEntity;

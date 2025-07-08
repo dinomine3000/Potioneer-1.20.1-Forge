@@ -1,6 +1,5 @@
 package net.dinomine.potioneer.util;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.resources.ResourceLocation;
 

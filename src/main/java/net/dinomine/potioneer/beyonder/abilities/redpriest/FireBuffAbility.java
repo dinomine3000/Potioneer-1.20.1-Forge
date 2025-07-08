@@ -1,20 +1,10 @@
 package net.dinomine.potioneer.beyonder.abilities.redpriest;
 
-import com.google.common.base.Suppliers;
-import com.google.common.collect.ImmutableMultimap;
-import com.google.common.collect.Multimap;
 import net.dinomine.potioneer.beyonder.abilities.Ability;
 import net.dinomine.potioneer.beyonder.abilities.AbilityInfo;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
 import net.dinomine.potioneer.beyonder.player.EntityBeyonderManager;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.ai.attributes.Attribute;
-import net.minecraft.world.entity.ai.attributes.AttributeModifier;
-import net.minecraft.world.entity.player.Player;
-import net.minecraftforge.common.ForgeMod;
-
-import java.util.UUID;
-import java.util.function.Supplier;
 
 public class FireBuffAbility extends Ability {
 

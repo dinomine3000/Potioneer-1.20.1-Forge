@@ -1,14 +1,10 @@
 package net.dinomine.potioneer.config;
 
 import net.dinomine.potioneer.item.ModItems;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraftforge.common.ForgeConfigSpec;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class PotioneerCommonConfig {

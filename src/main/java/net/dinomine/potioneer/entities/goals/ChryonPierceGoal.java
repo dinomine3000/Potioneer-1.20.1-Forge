@@ -1,10 +1,6 @@
 package net.dinomine.potioneer.entities.goals;
 
 import net.dinomine.potioneer.entities.custom.ChryonEntity;
-import net.dinomine.potioneer.registry.DamageTypesRegistry;
-import net.minecraft.core.RegistryAccess;
-import net.minecraft.core.registries.Registries;
-import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.goal.MeleeAttackGoal;
 

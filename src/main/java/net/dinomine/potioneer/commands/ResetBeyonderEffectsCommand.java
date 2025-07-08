@@ -1,7 +1,6 @@
 package net.dinomine.potioneer.commands;
 
 import com.mojang.brigadier.CommandDispatcher;
-import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
 import net.minecraft.commands.CommandSourceStack;

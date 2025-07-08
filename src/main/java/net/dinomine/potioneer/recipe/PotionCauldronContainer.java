@@ -1,12 +1,7 @@
 package net.dinomine.potioneer.recipe;
 
-import net.minecraft.core.NonNullList;
-import net.minecraft.world.Container;
 import net.minecraft.world.SimpleContainer;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-
-import java.awt.*;
 
 public class PotionCauldronContainer extends SimpleContainer {
     public boolean isOnFire() {

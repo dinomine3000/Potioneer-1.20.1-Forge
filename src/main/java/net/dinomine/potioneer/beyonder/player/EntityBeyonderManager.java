@@ -1,24 +1,29 @@
 package net.dinomine.potioneer.beyonder.player;
 
 import net.dinomine.potioneer.beyonder.abilities.Ability;
+import net.dinomine.potioneer.beyonder.abilities.AbilityFunctionHelper;
+import net.dinomine.potioneer.beyonder.abilities.Beyonder;
 import net.dinomine.potioneer.beyonder.misc.MysticismHelper;
 import net.dinomine.potioneer.beyonder.pathways.*;
-import net.dinomine.potioneer.beyonder.abilities.Beyonder;
 import net.dinomine.potioneer.entities.ModEntities;
 import net.dinomine.potioneer.entities.custom.CharacteristicEntity;
 import net.dinomine.potioneer.item.ModItems;
 import net.dinomine.potioneer.network.PacketHandler;
 import net.dinomine.potioneer.network.messages.*;
+import net.minecraft.client.particle.ParticleRenderType;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.TagType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.capabilities.AutoRegisterCapability;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.network.PacketDistributor;
@@ -27,6 +32,11 @@ import java.util.ArrayList;
 
 @AutoRegisterCapability
 public class EntityBeyonderManager {
+    public static final int SANITY_FOR_RECHARGE = 25;
+    public static final int SANITY_FOR_DROP = 30;
+    public static final int SANITY_WARNING_THRESHOLD = 40;
+    public static final int SANITY_MIN_RESPAW = SANITY_WARNING_THRESHOLD;
+
     private float spirituality = 100;
     private float spiritualityCost = 0;
     private int maxSpirituality = 100;
@@ -42,6 +52,7 @@ public class EntityBeyonderManager {
     private final LivingEntity entity;
     private int syncCD = 20;
     private int effectCd = 40;
+    private int characteristicXrayCd = 0;
 
 
     public EntityBeyonderManager(LivingEntity entity){
@@ -107,12 +118,13 @@ public class EntityBeyonderManager {
 
     public void onPlayerSleep(){
         changeSpirituality(this.maxSpirituality/5f);
-        if(sanity >= 25) changeSanity(30);
+        if(sanity >= SANITY_FOR_RECHARGE) changeSanity(30);
     }
 
     public void onFoodEat(ItemStack item, LivingEntity target) {
         if(item.getFoodProperties(target) == null) return;
         changeSpirituality(item.getFoodProperties(target).getNutrition() * getMaxSpirituality()/120f);
+        changeSanity(item.getFoodProperties(target).getNutrition()/2);
     }
 
     public float getSpirituality(){
@@ -173,13 +185,33 @@ public class EntityBeyonderManager {
                     entity.addEffect(new MobEffectInstance(MobEffects.DIG_SLOWDOWN, 100, 1, true, true));
                     entity.addEffect(new MobEffectInstance(MobEffects.HUNGER, 100, 1, true, true));
                     entity.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 100, 1, true, true));
-                    if (sanity < 40){
+                    if (sanity < SANITY_WARNING_THRESHOLD){
                         entity.addEffect(new MobEffectInstance(MobEffects.DARKNESS, 100, 0, true, true));
                     }
                     if(spirituality < maxSpirituality*0.05f && entity.getHealth() > 3){
-                        if(sanity > 25) changeSanity(-1);
+                        if(sanity > SANITY_FOR_RECHARGE) changeSanity(-1);
                         entity.hurt(entity.damageSources().generic(), entity.getMaxHealth()*0.1f);
                     }
+                }
+            }
+        } else if (entity instanceof Player player && characteristicXrayCd-- < 0){
+            characteristicXrayCd = 120;
+            ArrayList<Entity> characteristics = AbilityFunctionHelper.getEntitiesAroundPredicate(player, 16, ent -> ent instanceof CharacteristicEntity);
+            for(Entity ent: characteristics){
+                if(ent instanceof CharacteristicEntity charact
+                        && Math.floorDiv(charact.getSequenceId(), 10) == Math.floorDiv(getPathwayId(), 10)){
+                    Vec3 position = charact.position();
+
+                    Vec3 pointing = position.subtract(player.getEyePosition()).normalize();
+                    float i = 0.2f;
+                    while(i < 1){
+                        Vec3 iterator = player.getEyePosition().add(pointing.scale(i));
+                        float speedScale = 0.2f;
+                        player.level().addAlwaysVisibleParticle(ParticleTypes.END_ROD, false,
+                                iterator.x, iterator.y, iterator.z, speedScale*pointing.x, speedScale*pointing.y, speedScale*pointing.z);
+                        i += 0.2;
+                    }
+                    player.level().addAlwaysVisibleParticle(ParticleTypes.END_ROD, true, position.x, position.y, position.z, 0, 0.1, 0);
                 }
             }
         }
@@ -299,7 +331,7 @@ public class EntityBeyonderManager {
         this.luckManager.copyFrom(source.luckManager);
         this.abilitiesManager.copyFrom(source.getAbilitiesManager());
         this.conjurerContainers = new ArrayList<>(source.conjurerContainers);
-        this.sanity = Math.max(source.sanity, 40);
+        this.sanity = Math.max(source.sanity, SANITY_MIN_RESPAW);
         //this.abilitiesManager.onAcquireAbilities(this, player);
     }
 
@@ -366,7 +398,7 @@ public class EntityBeyonderManager {
     }
 
     public void onPlayerDie(LivingDeathEvent event) {
-        if(sanity < 30 && event.getEntity() instanceof Player player && isBeyonder()){
+        if(sanity < SANITY_FOR_DROP && event.getEntity() instanceof Player player && isBeyonder()){
             ItemStack characteristic = new ItemStack(ModItems.CHARACTERISTIC.get());
             CompoundTag root = new CompoundTag();
 
@@ -380,7 +412,7 @@ public class EntityBeyonderManager {
 
             CharacteristicEntity entity = new CharacteristicEntity(ModEntities.CHARACTERISTIC.get(), event.getEntity().level(), characteristic.copy(), getPathwayId());
             entity.setSequenceId(getPathwayId());
-            entity.moveTo(event.getEntity().position().offsetRandom(player.getRandom(), 0.5f));
+            entity.moveTo(event.getEntity().position().offsetRandom(player.getRandom(), 1f).add(0, 1, 0));
             event.getEntity().level().addFreshEntity(entity);
 
             advance((getPathwayId() % 10 != 9) ? getPathwayId() + 1 : -1, player, true, true);

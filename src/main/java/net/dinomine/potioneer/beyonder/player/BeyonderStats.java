@@ -9,7 +9,6 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 
-import java.util.Arrays;
 import java.util.UUID;
 import java.util.function.Supplier;
 

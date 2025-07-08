@@ -2,11 +2,8 @@ package net.dinomine.potioneer.beyonder.pathways;
 
 import net.dinomine.potioneer.beyonder.abilities.Ability;
 import net.dinomine.potioneer.beyonder.abilities.Beyonder;
-import net.dinomine.potioneer.beyonder.abilities.redpriest.WeaponProficiencyAbility;
 import net.dinomine.potioneer.beyonder.abilities.tyrant.*;
-import net.dinomine.potioneer.beyonder.player.EntityBeyonderManager;
 import net.dinomine.potioneer.beyonder.player.PlayerAbilitiesManager;
-import net.minecraft.world.entity.player.Player;
 
 import java.util.ArrayList;
 

@@ -13,8 +13,6 @@ import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
-import static net.dinomine.potioneer.beyonder.misc.MysticismHelper.radius;
-
 //used to sync ability cooldowns from server to client
 public class EvaporateEffect {
     public double x;

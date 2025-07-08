@@ -1,24 +1,12 @@
 package net.dinomine.potioneer.beyonder.screen;
 
 import net.dinomine.potioneer.Potioneer;
-import net.dinomine.potioneer.beyonder.abilities.AbilityInfo;
-import net.dinomine.potioneer.beyonder.client.ClientAbilitiesData;
-import net.dinomine.potioneer.beyonder.client.ClientStatsData;
 import net.dinomine.potioneer.beyonder.client.KeyBindings;
-import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.Mth;
-import net.minecraft.world.entity.player.Player;
-
-import static net.dinomine.potioneer.beyonder.client.HUD.AbilitiesHotbarHUD.*;
 
 public class DivinationScreen extends Screen {
     private static final Component TITLE = Component.translatable("gui." + Potioneer.MOD_ID + ".beyonder_menu");

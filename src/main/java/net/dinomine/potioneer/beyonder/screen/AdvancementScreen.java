@@ -1,22 +1,14 @@
 package net.dinomine.potioneer.beyonder.screen;
 
-import com.eliotlash.mclib.math.functions.limit.Min;
 import net.dinomine.potioneer.Potioneer;
 import net.dinomine.potioneer.beyonder.client.ClientAdvancementManager;
-import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
-import net.dinomine.potioneer.sound.ModSounds;
 import net.dinomine.potioneer.util.AdvancementButton;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.MouseHandler;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.sounds.SoundEvent;
-import net.minecraft.sounds.SoundEvents;
-import java.awt.event.MouseMotionAdapter;
 
 public class AdvancementScreen extends Screen {
     private static final Component TITLE = Component.translatable("gui." + Potioneer.MOD_ID + ".beyonder_menu");

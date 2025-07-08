@@ -50,8 +50,16 @@ public class ModItemModelProvider extends ItemModelProvider {
         simpleItem(ModItems.FORMULA);
         simpleItem(ModItems.VOODOO_DOLL);
         simpleItem(ModItems.CHARACTERISTIC);
+        simpleItem(ModItems.CHRYON_SNOW);
+        simpleItem(ModItems.CHRYON_CORE);
+        simpleItem(ModItems.DEMONIC_FANG);
+        simpleItem(ModItems.DEVILS_TAIL);
+        //simpleItem(ModItems.STAR_FLOWER);
+        simpleItem(ModItems.POLISHED_DIAMOND);
+        simpleItem(ModItems.ROOTS);
         handheldItem(ModItems.MINER_PICKAXE);
         handheldItem(ModItems.FIRE_SWORD);
+        handheldItem(ModItems.FROZEN_SWORD);
 
 
         /*simpleItem(ModItems.METAL_DETECTOR);
@@ -93,6 +101,7 @@ public class ModItemModelProvider extends ItemModelProvider {
         withExistingParent(ModItems.CHRYON_SPAWN_EGG.getId().getPath(), mcLoc("item/template_spawn_egg"));
         withExistingParent(ModItems.PECAN_SPAWN_EGG.getId().getPath(), mcLoc("item/template_spawn_egg"));
         withExistingParent(ModItems.WANDERING_CACTUS_SPAWN_EGG.getId().getPath(), mcLoc("item/template_spawn_egg"));
+        withExistingParent(ModItems.DEMONIC_WOLF_SPAWN_EGG.getId().getPath(), mcLoc("item/template_spawn_egg"));
     }
 
     // Shoutout to El_Redstoniano for making this
