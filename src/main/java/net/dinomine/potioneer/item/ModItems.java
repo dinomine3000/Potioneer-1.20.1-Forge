@@ -6,6 +6,7 @@ import net.dinomine.potioneer.item.custom.BeyonderPotion.BeyonderPotionItem;
 import net.dinomine.potioneer.item.custom.*;
 import net.dinomine.potioneer.item.custom.cane.CaneItem;
 import net.dinomine.potioneer.item.custom.coin.CoinItem;
+import net.dinomine.potioneer.item.custom.leymanosTravels.LeymanosTravels;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.SwordItem;
@@ -80,7 +81,7 @@ public class ModItems {
             () -> new VoodooDollItem(new Item.Properties().stacksTo(1).rarity(Rarity.COMMON)));
 
     public static final RegistryObject<Item> CHARACTERISTIC = ITEMS.register("beyonder_characteristic",
-            () -> new CharacteristicItem(new Item.Properties().stacksTo(1).rarity(Rarity.EPIC)));
+            () -> new CharacteristicItem(new Item.Properties().stacksTo(1).rarity(Rarity.EPIC).fireResistant()));
 
     public static final RegistryObject<Item> CHRYON_SNOW = ITEMS.register("chryon_flake",
             () -> new Item(new Item.Properties()));
@@ -105,6 +106,27 @@ public class ModItems {
 
     public static final RegistryObject<Item> ROOTS = ITEMS.register("roots",
             () -> new Item(new Item.Properties()));
+
+    public static final RegistryObject<Item> RING = ITEMS.register("ring",
+            () -> new Item(new Item.Properties().stacksTo(1)));
+
+    public static final RegistryObject<Item> ASTEROID_DEBUG = ITEMS.register("asteroid_debug",
+            () -> new AsteroidDebugItem(new Item.Properties().stacksTo(1)));
+
+    public static final RegistryObject<Item> PROBABILITY_DICE = ITEMS.register("probability_dice",
+            () -> new Item(new Item.Properties().stacksTo(1).fireResistant().rarity(Rarity.EPIC)));
+
+    public static final RegistryObject<Item> KALVETUA_SCEPTER = ITEMS.register("sea_god_scepter",
+            () -> new Item(new Item.Properties().stacksTo(1).fireResistant().rarity(Rarity.EPIC)));
+
+    public static final RegistryObject<Item> DEATH_KNELL = ITEMS.register("death_knell",
+            () -> new Item(new Item.Properties().stacksTo(1).fireResistant().rarity(Rarity.EPIC)));
+
+    public static final RegistryObject<Item> UNSHADOWED_CRUCIFIX = ITEMS.register("unshadowed_crucifix",
+            () -> new Item(new Item.Properties().stacksTo(1).fireResistant().rarity(Rarity.EPIC)));
+
+    public static final RegistryObject<Item> LEYMANOS_TRAVELS = ITEMS.register("leymanos_travels",
+            () -> new LeymanosTravels(new Item.Properties().stacksTo(1).fireResistant().rarity(Rarity.EPIC)));
 
 
     /*ublic static final RegistryObject<Item> METAL_ROD = ITEMS.register("metal_detector",

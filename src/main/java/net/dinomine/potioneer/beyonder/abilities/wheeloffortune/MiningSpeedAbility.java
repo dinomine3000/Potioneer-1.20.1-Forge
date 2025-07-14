@@ -26,9 +26,8 @@ public class MiningSpeedAbility extends Ability {
 
     @Override
     public void passive(EntityBeyonderManager cap, LivingEntity target) {
-        if(cap.getAbilitiesManager().isEnabled(this)
-                && !cap.getEffectsManager().hasEffect(BeyonderEffects.EFFECT.WHEEL_MINING, getSequence())){
-            cap.getEffectsManager().addEffect(BeyonderEffects.byId(BeyonderEffects.EFFECT.WHEEL_MINING,
+        if(cap.getAbilitiesManager().isEnabled(this)){
+            cap.getEffectsManager().addOrReplaceEffect(BeyonderEffects.byId(BeyonderEffects.EFFECT.WHEEL_MINING,
                     getSequence(), 0, -1, true), cap, target);
         }
     }

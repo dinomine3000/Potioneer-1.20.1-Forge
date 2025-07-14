@@ -1,6 +1,5 @@
 package net.dinomine.potioneer.network.messages;
 
-import net.dinomine.potioneer.beyonder.abilities.Ability;
 import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
 import net.dinomine.potioneer.network.PacketHandler;
 import net.minecraft.network.FriendlyByteBuf;
@@ -34,7 +33,7 @@ public class SequenceSTCSyncRequest {
                     PacketHandler.INSTANCE.send(PacketDistributor.PLAYER.with(() -> player),
                             new PlayerAdvanceMessage(cap.getPathwayId(), false));
                     PacketHandler.INSTANCE.send(PacketDistributor.PLAYER.with(() -> player),
-                            new PlayerAbilityInfoSyncSTC(cap.getAbilitiesManager().getPathwayActives().stream().map(Ability::getInfo).toList(), false));
+                            new PlayerAbilityInfoSyncSTC(cap.getAbilitiesManager().getActivesIds(), false));
                     PacketHandler.INSTANCE.send(PacketDistributor.PLAYER.with(() -> player),
                             new PlayerSyncHotbarMessage(cap.getAbilitiesManager().clientHotbar, cap.getAbilitiesManager().quickAbility));
                     PacketHandler.INSTANCE.send(PacketDistributor.PLAYER.with(() -> player),

@@ -1,16 +1,9 @@
 package net.dinomine.potioneer.beyonder.pathways;
 
 import net.dinomine.potioneer.beyonder.abilities.Ability;
-import net.dinomine.potioneer.beyonder.abilities.Beyonder;
-import net.dinomine.potioneer.beyonder.abilities.DummyAbility;
-import net.dinomine.potioneer.beyonder.abilities.paragon.AnvilGuiAbility;
-import net.dinomine.potioneer.beyonder.abilities.tyrant.WaterAffinityAbility;
+import net.dinomine.potioneer.beyonder.abilities.misc.CogitationAbility;
 import net.dinomine.potioneer.beyonder.abilities.wheeloffortune.*;
-import net.dinomine.potioneer.beyonder.player.EntityBeyonderManager;
 import net.dinomine.potioneer.beyonder.player.PlayerAbilitiesManager;
-import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.entity.player.Player;
 
 import java.util.ArrayList;
 
@@ -66,25 +59,22 @@ public class WheelOfFortunePathway extends Beyonder {
                 //passiveAbilities.add(calamity);
             case 8:
                 FortuneAbility fortune = new FortuneAbility(sequence);
-                SilkTouchAbility silk = new SilkTouchAbility(sequence);
                 activeAbilities.add(new BlockSniffAbility(sequence));
                 activeAbilities.add(new LuckBoostAbility(sequence));
                 activeAbilities.add(new CheckLuckAbility(sequence));
                 activeAbilities.add(fortune);
-                activeAbilities.add(silk);
+                activeAbilities.add(new SilkTouchAbility(sequence));
 
                 passiveAbilities.add(fortune);
-                passiveAbilities.add(silk);
             case 9:
-                MiningSpeedAbility mining = new MiningSpeedAbility(sequence);
                 activeAbilities.add(new MinerLightAbility(sequence));
                 activeAbilities.add(new ConjurePickaxeAbility(sequence));
-                activeAbilities.add(mining);
-                passiveAbilities.add(mining);
+                activeAbilities.add(new MiningSpeedAbility(sequence));
+                activeAbilities.add(new CogitationAbility(sequence));
         }
 
         mng.setPathwayActives(activeAbilities);
-        mng.setPathwayPassives(passiveAbilities);
+        //mng.setPathwayPassives(passiveAbilities);
     }
 
     public static String getSequenceName(int seq, boolean show){

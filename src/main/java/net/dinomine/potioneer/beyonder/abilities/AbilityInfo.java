@@ -41,6 +41,11 @@ public record AbilityInfo(int posX, int posY, String name, int id, int cost, int
         return new AbilityInfo(x, y, name, id, cost, maxCd, desc);
     }
 
+    public String normalizedId(){
+        return descId().replaceAll("_\\d+$", "");
+        //return descId();
+    }
+
     public AbilityInfo copy(int maxCd){
         return new AbilityInfo(posX(), posY(), name(), id(), cost(), maxCd, descId);
     }

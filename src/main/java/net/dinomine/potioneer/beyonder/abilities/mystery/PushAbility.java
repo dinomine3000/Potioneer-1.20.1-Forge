@@ -10,6 +10,7 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
@@ -50,7 +51,10 @@ public class PushAbility extends Ability {
             ArrayList<Entity> hits = AbilityFunctionHelper.getLivingEntitiesLooking(target, radius);
             float mult = 3;
             hits.forEach(ent -> {
-                ent.addDeltaMovement(lookAngle.multiply(mult, -1 - mult/2, mult));
+                if(ent instanceof Player player){
+                    player.push(lookAngle.x * mult, (-1 - mult / 2), lookAngle.z * mult);
+                    player.hurtMarked = true;
+                } else ent.addDeltaMovement(lookAngle.multiply(mult, -1 - mult/2, mult));
             });
             level.playSound(null, target.getOnPos().above(), SoundEvents.GENERIC_EXTINGUISH_FIRE, SoundSource.PLAYERS, 1, 1);
         }

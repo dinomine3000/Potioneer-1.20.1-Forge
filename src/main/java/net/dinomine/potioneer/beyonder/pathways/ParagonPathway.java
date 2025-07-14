@@ -1,7 +1,7 @@
 package net.dinomine.potioneer.beyonder.pathways;
 
 import net.dinomine.potioneer.beyonder.abilities.Ability;
-import net.dinomine.potioneer.beyonder.abilities.Beyonder;
+import net.dinomine.potioneer.beyonder.abilities.misc.CogitationAbility;
 import net.dinomine.potioneer.beyonder.abilities.paragon.*;
 import net.dinomine.potioneer.beyonder.player.PlayerAbilitiesManager;
 
@@ -63,10 +63,11 @@ public class ParagonPathway extends Beyonder {
                 activeAbilities.add(new CraftingGuiAbility(sequence));
                 activeAbilities.add(new FuelAbility(sequence));
                 activeAbilities.add(new DurabilityRegenAbility(sequence));
+                activeAbilities.add(new CogitationAbility(40 + sequence));
         }
 //        CraftingBonusAbility abl = new CraftingBonusAbility(sequence);
         mng.setPathwayActives(activeAbilities);
-        mng.setPathwayPassives(passiveAbilities);
+        //mng.setPathwayPassives(passiveAbilities);
     }
 
     @Override

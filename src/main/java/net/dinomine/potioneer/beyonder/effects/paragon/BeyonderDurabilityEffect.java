@@ -53,8 +53,7 @@ public class BeyonderDurabilityEffect extends BeyonderEffect {
 
             if (target instanceof Player player){
                 DurabilityRegenAbility abl = new DurabilityRegenAbility(sequenceLevel);
-                int caret = cap.getAbilitiesManager().getCaretForAbility(abl);
-                if(caret > -1) cap.getAbilitiesManager().putOnCooldown(player, caret, abl.getInfo().maxCooldown(), abl.getInfo().maxCooldown());
+                cap.getAbilitiesManager().putOnCooldown(player, abl.getInfo().descId(), abl.getInfo().maxCooldown(), abl.getInfo().maxCooldown());
             }
         }
 

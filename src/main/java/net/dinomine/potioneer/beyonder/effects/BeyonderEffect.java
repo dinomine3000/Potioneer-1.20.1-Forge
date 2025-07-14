@@ -87,7 +87,7 @@ public abstract class BeyonderEffect {
 
 
     /**
-     * used for replacement purposes. will return true if this theyre the same effect but the argument is of a higher sequence
+     * used for replacement purposes. will return true if theyre the same effect but the argument is of a higher sequence
      * aka, will return true if the argument should replace this
      * @param effect
      * @return
@@ -147,4 +147,7 @@ public abstract class BeyonderEffect {
     }
 
 
+    public boolean shouldPersistInDeath() {
+        return false;
+    }
 }

@@ -25,10 +25,13 @@ public class LeapAbility extends Ability {
         if(cap.getSpirituality() < getInfo().cost()) return false;
         Vec3 look = target.getLookAngle();
         double mult = 1 + 1.2*(9-getSequence());
-        target.addDeltaMovement(look.multiply(mult, mult/2, mult));
-        if(target instanceof Player player && !(player.isCreative() || player.isSpectator())) {
-            cap.getEffectsManager().addEffectNoNotify(BeyonderEffects.byId(BeyonderEffects.EFFECT.MYSTERY_FALL_NEGATE, getSequence(), 0, -1, true));
-        }
+        if(target instanceof Player player){
+            player.push(look.x*mult, look.y*mult/2f, look.z*mult);
+            player.hurtMarked = true;
+        } else target.addDeltaMovement(look.multiply(mult, mult/2, mult));
+//        if(target instanceof Player player && !(player.isCreative() || player.isSpectator())) {
+//            cap.getEffectsManager().addEffectNoNotify(BeyonderEffects.byId(BeyonderEffects.EFFECT.MYSTERY_FALL_NEGATE, getSequence(), 0, -1, true));
+//        }
         if(!target.level().isClientSide()){
             cap.requestActiveSpiritualityCost(info.cost());
         }

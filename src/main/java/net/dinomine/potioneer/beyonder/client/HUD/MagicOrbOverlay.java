@@ -2,6 +2,7 @@ package net.dinomine.potioneer.beyonder.client.HUD;
 
 import net.dinomine.potioneer.Potioneer;
 import net.dinomine.potioneer.beyonder.client.ClientStatsData;
+import net.dinomine.potioneer.config.PotioneerClientConfig;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
@@ -16,17 +17,13 @@ public class MagicOrbOverlay {
 
     private static final Minecraft minecraft = Minecraft.getInstance();
 
-    public static boolean shouldDisplayBar() {
-        return true;
-    }
-
     public static final IGuiOverlay HUD_MAGIC = ((forgeGui, guiGraphics, partialTick, width, height) -> {
         int id = ClientStatsData.getPathwayId();
         if(id < 0) return;
 
 
         int yOffset = minecraft.getWindow().getGuiScaledHeight() - 62;
-        int offsetLeft = minecraft.getWindow().getGuiScaledWidth()/2 + 100;
+        int offsetLeft = PotioneerClientConfig.ORB_ON_RIGHT.get() ? minecraft.getWindow().getGuiScaledWidth()/2 + 100 : 10;
 
         /*RenderSystem.setShader(GameRenderer::getPositionColorTexShader);
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);

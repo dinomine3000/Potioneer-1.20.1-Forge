@@ -6,11 +6,11 @@ import net.dinomine.potioneer.beyonder.player.EntityBeyonderManager;
 import net.minecraft.world.entity.LivingEntity;
 
 public class BeyonderLuckReduceDamageEffect extends BeyonderEffect {
-    public static float reduceChance = 0.1f;
+    public static float reduceChance = 0.2f;
     public static int luckCost = 10;
     public static int luckGain = 0;
     public static int sequenceForNegation = 5;
-    public static float damageReduction = 0.5f;
+    public static float damageReduction = 0.3f;
 
     public BeyonderLuckReduceDamageEffect(){
         this(0, 0f, 0, false, BeyonderEffects.EFFECT.WHEEL_TEMP_LUCK);

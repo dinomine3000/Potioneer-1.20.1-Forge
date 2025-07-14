@@ -1,0 +1,7 @@
+{
+  "parent": "item/generated",
+  "textures": {
+    "layer0": "potioneer:item/cursed_ring",
+    "layer1": "potioneer:item/cursed_ring_runes"
+  }
+}

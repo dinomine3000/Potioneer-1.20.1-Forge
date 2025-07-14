@@ -100,34 +100,27 @@ public class CoinItem extends Item implements GeoItem {
         if(!player.getMainHandItem().is(this)) return InteractionResult.PASS;
         if(level.isClientSide()){
             return InteractionResult.CONSUME_PARTIAL;
-        } else {
-            long id = GeoItem.getOrAssignId(mainHandItem, (ServerLevel) level);
-            level.playSound(null, player.getOnPos(), ModSounds.COIN.get(), SoundSource.PLAYERS, 1f, 0.95f + player.getRandom().nextFloat()/10f);
-
-            ItemStack pStack = mainHandItem;
-
-            boolean newState = getDivinationResult(player, player.getOffhandItem());
-
-            if(!pStack.hasTag() || !pStack.getTag().contains("potioneer_yesno")){
-                CompoundTag tag = pStack.getTag();
-                if (tag == null) tag = new CompoundTag();
-                tag.putBoolean("potioneer_yesno", newState);
-                pStack.setTag(tag);
-            } else {
-                CompoundTag result = pStack.getTag();
-                result.putBoolean("potioneer_yesno", newState);
-                pStack.setTag(result);
-            }
-            triggerAnim(player, id, "toss_controller", "coin_toss_" + (newState ? "heads" : "tails"));
-            player.getCooldowns().addCooldown(this, 20);
         }
+        long id = GeoItem.getOrAssignId(mainHandItem, (ServerLevel) level);
+        level.playSound(null, player.getOnPos(), ModSounds.COIN.get(), SoundSource.PLAYERS, 1f, 0.95f + player.getRandom().nextFloat()/10f);
+
+        ItemStack pStack = mainHandItem;
+
+        boolean newState = getDivinationResult(player, player.getOffhandItem());
+
+        if(!pStack.hasTag() || !pStack.getTag().contains("potioneer_yesno")){
+            CompoundTag tag = pStack.getTag();
+            if (tag == null) tag = new CompoundTag();
+            tag.putBoolean("potioneer_yesno", newState);
+            pStack.setTag(tag);
+        } else {
+            CompoundTag result = pStack.getTag();
+            result.putBoolean("potioneer_yesno", newState);
+            pStack.setTag(result);
+        }
+        triggerAnim(player, id, "toss_controller", "coin_toss_" + (newState ? "heads" : "tails"));
+        player.getCooldowns().addCooldown(this, 20);
         return InteractionResult.CONSUME_PARTIAL;
-    }
-
-
-    @Override
-    public void onInventoryTick(ItemStack stack, Level level, Player player, int slotIndex, int selectedIndex) {
-        super.onInventoryTick(stack, level, player, slotIndex, selectedIndex);
     }
 
     private boolean getDivinationResult(Player player, ItemStack divinationTarget){

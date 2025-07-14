@@ -18,6 +18,8 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 
+import java.util.Objects;
+
 import static net.dinomine.potioneer.beyonder.client.HUD.AbilitiesHotbarHUD.*;
 
 public class BeyonderScreen extends Screen {
@@ -41,6 +43,7 @@ public class BeyonderScreen extends Screen {
     private int leftPos, topPos;
 
     private Button goToAbilitiesMenu;
+    private Button goToOptionsMenu;
 
     public BeyonderScreen() {
         super(TITLE);
@@ -88,10 +91,21 @@ public class BeyonderScreen extends Screen {
         goToAbilitiesMenu = new ImageButton(leftPos + 47, topPos + 165, 42, 18,
                 234, 219, 0, TEXTURE, TEXTURE_WIDTH, TEXTURE_HEIGHT, btn -> {goToAbilities();});
         addRenderableWidget(goToAbilitiesMenu);
+        goToOptionsMenu = new ImageButton(leftPos + 89, topPos + 165, 42, 18,
+                234, 219, 0, TEXTURE, TEXTURE_WIDTH, TEXTURE_HEIGHT, btn -> {goToOptionsMenu();});
+        addRenderableWidget(goToOptionsMenu);
     }
 
-    private void goToAbilities(){
+    public static void goToAbilities(){
         Minecraft.getInstance().setScreen(new BeyonderAbilitiesScreen());
+    }
+
+    public static void goToMainMenu(){
+        Minecraft.getInstance().setScreen(new BeyonderScreen());
+    }
+
+    public static void goToOptionsMenu(){
+        Minecraft.getInstance().setScreen(new BeyonderSettingsScreen());
     }
 
     @Override
@@ -120,6 +134,20 @@ public class BeyonderScreen extends Screen {
                 43, (int)(43*mana_percent),
                 256, 1984);
 
+        //blit acting progress
+        float acting = ClientStatsData.getActing() > 0.95f ? 1f: ClientStatsData.getActing();
+        pGuiGraphics.blit(TEXTURE, leftPos + 12, topPos + 151,
+                (int) (152*acting), 10,
+                234, 183,
+                (int) (152*acting), 10,
+                TEXTURE_WIDTH, TEXTURE_HEIGHT);
+        pGuiGraphics.fillGradient(leftPos + 12, topPos + 152,
+                leftPos + 12 + (int)(152*acting), topPos + 160,
+                this.color + 0x99000000, this.color + 0x99000000);
+        if(pMouseX > leftPos + 12 && pMouseY < leftPos + 164
+                && pMouseY > topPos + 152 && pMouseY < topPos + 160){
+            pGuiGraphics.renderTooltip(this.font, Component.translatable("potioneer.tooltip.acting_bar" + (acting > 0.95f ? "_done" : "")), pMouseX, pMouseY);
+        }
 
         //blit default overlay
         pGuiGraphics.blit(TEXTURE, leftPos, topPos, imageWidth, imageHeight, 0,
@@ -148,7 +176,7 @@ public class BeyonderScreen extends Screen {
 
         if(!ClientAbilitiesData.getHotbar().isEmpty()){
             for(int i = 0; i < Math.min(3, ClientAbilitiesData.getHotbar().size()); i++){
-                drawAbilityIcon(pGuiGraphics, leftPos + 8 + 15*i, topPos + 130, 0.65f, ClientAbilitiesData.getAbilityAt(i));
+                drawAbilityIcon(pGuiGraphics, leftPos + 8 + 15*i, topPos + 130, 0.65f, Objects.requireNonNull(ClientAbilitiesData.getAbilityAt(i)));
             }
         }
 

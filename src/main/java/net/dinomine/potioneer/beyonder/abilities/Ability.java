@@ -46,7 +46,7 @@ public abstract class Ability {
         boolean en = cap.getAbilitiesManager().isEnabled(this);
         if (en) disable(cap, target);
         else enable(cap, target);
-        target.sendSystemMessage(Component.literal("Ability " + info.name() + " was turned " + (!en ? "on" : "off") + "."));
+        if(!target.level().isClientSide()) target.sendSystemMessage(Component.translatable("potioneer.ability." + (en ? "disabled" : "enabled"), Component.translatable("potioneer.ability_name." + info.descId())));
     }
 
     @Override

@@ -21,11 +21,21 @@
   "item.potioneer.roots": "Roots",
   "item.potioneer.polished_diamond": "Polished Diamond",
   "item.potioneer.beyonder_characteristic": "Beyonder Characteristic",
+  "item.potioneer.ring": "Ring",
   "block.potioneer.potion_cauldron": "Potion Cauldron",
   "block.potioneer.star_flower_block": "Star Flower",
 
   "item.potioneer.coin": "Coin",
   "item.potioneer.cane": "Walking Cane",
+
+  "potioneer.luck.trigger_3": "Fate judges your entire existence",
+  "potioneer.luck.trigger_2": "Fate thinks twice about you",
+  "potioneer.luck.trigger_1": "Fate notices your actions",
+  "potioneer.luck.event_cast_0": "The wheels of fate turn to you.",
+  "potioneer.luck.event_cast_1": "Churning away, they decide your fate.",
+  "potioneer.luck.event_cast_2": "A calling is heard from the blue.",
+  "potioneer.luck.event_cast_3": "A cacophony of something terrible, or something great",
+  "potioneer.luck.fortune_event": "You feel much more efficient at mining ores",
 
   "item.potioneer.chryon_spawn_egg": "Chryon Spawn Egg",
   "item.potioneer.pecan_spawn_egg": "Pecan Spawn Egg",
@@ -37,6 +47,7 @@
   "entity.potioneer.demonic_wolf_spawn_egg": "Demonic Wolf",
   "entity.potioneer.beyonder_characteristic": "Beyonder Characteristic",
   "entity.potioneer.divination_rod": "Divination Rod",
+  "entity.potioneer.asteroid": "Meteor",
 
   "item.potioneer.beyonder_potion": "Mystery Potion",
   "item.potioneer.pecan_leaf": "Pecan Leaf",
@@ -47,6 +58,8 @@
   "item.potioneer.cactus_sap": "Wandering Cactus Sap",
   "item.potioneer.flask.cactus_sap": "Wandering Cactus Sap Flask",
   "item.potioneer.straw_doll": "Straw Doll",
+
+  "item.potioneer.leymanos_travels": "Leymano's Travels",
 
   "item.potioneer.golden_drop": "Golden Drop",
 
@@ -70,6 +83,7 @@
   "key.potioneer.show_hotbar_key": "Show Hotbar",
   "gui.potioneer.beyonder_menu": "Beyonder",
   "gui.potioneer.ability_menu": "Ability Menu",
+  "gui.potioneer.options_menu": "Options Menu",
   "gui.potioneer.add_to_quick": "Add ability to Quick Select",
   "gui.potioneer.remove_from_quick": "Remove ability from quick select",
 
@@ -78,30 +92,43 @@
   "potioneer.menu.enchanter_menu": "Enchanter",
   "potioneer.menu.anvil_menu": "Enhanced Anvil",
 
-  "potioneer.beyonder.pathway.tyrant": "Tyrant Pathway",
-  "potioneer.beyonder.sequence.swimmer": "Sequence 9 Swimmer",
-  "potioneer.beyonder.sequence.hydro_shaman": "Sequence 8 Hydro Shaman",
-  "potioneer.beyonder.sequence.tempest": "Sequence 7 Tempest",
+  "potioneer.tooltip.acting_bar": "Potion Digestion Progress",
+  "potioneer.tooltip.acting_bar_done": "Potion Digestion Complete",
 
   "potioneer.beyonder.pathway.wheel_of_fortune": "Wheel of Fortune Pathway",
   "potioneer.beyonder.sequence.miner": "Sequence 9 Miner",
   "potioneer.beyonder.sequence.appraiser": "Sequence 8 Appraiser",
   "potioneer.beyonder.sequence.gambler": "Sequence 7 Gambler",
+  "potioneer.beyonder.sequence.lucky_one": "Sequence 6 Lucky One",
+  "potioneer.beyonder.sequence.source_of_misfortune": "Sequence 5 Source of Misfortune",
+
+  "potioneer.beyonder.pathway.tyrant": "Tyrant Pathway",
+  "potioneer.beyonder.sequence.swimmer": "Sequence 9 Swimmer",
+  "potioneer.beyonder.sequence.hydro_shaman": "Sequence 8 Hydro Shaman",
+  "potioneer.beyonder.sequence.tempest": "Sequence 7 Tempest",
+  "potioneer.beyonder.sequence.waterborn": "Sequence 6 Waterborn",
+  "potioneer.beyonder.sequence.punisher": "Sequence 5 Punisher",
 
   "potioneer.beyonder.pathway.mystery": "Mystery Pathway",
-  "potioneer.beyonder.sequence.trickmaster": "Sequence 9 Trickmaster",
+  "potioneer.beyonder.sequence.trickster": "Sequence 9 Trickster",
   "potioneer.beyonder.sequence.acrobat": "Sequence 8 Acrobat",
   "potioneer.beyonder.sequence.voodoo_assassin": "Sequence 7 Voodoo Assassin",
+  "potioneer.beyonder.sequence.parasite": "Sequence 6 Parasite",
+  "potioneer.beyonder.sequence.traveler": "Sequence 5 Traveler",
 
   "potioneer.beyonder.pathway.red_priest": "Red Priest Pathway",
   "potioneer.beyonder.sequence.warrior": "Sequence 9 Warrior",
   "potioneer.beyonder.sequence.pyromaniac": "Sequence 8 Pyromaniac",
   "potioneer.beyonder.sequence.priest_of_light": "Sequence 7 Priest of Light",
+  "potioneer.beyonder.sequence.sun-blessed": "Sequence 6 Sun-Blessed",
+  "potioneer.beyonder.sequence.hunter": "Sequence 5 Hunter",
 
   "potioneer.beyonder.pathway.paragon": "Paragon Pathway",
   "potioneer.beyonder.sequence.crafter": "Sequence 9 Crafter",
   "potioneer.beyonder.sequence.conjurer": "Sequence 8 Conjurer",
   "potioneer.beyonder.sequence.enchanter": "Sequence 7 Enchanter",
+  "potioneer.beyonder.sequence.artisan": "Sequence 6 Artisan",
+  "potioneer.beyonder.sequence.alchemist": "Sequence 5 Alchemist",
 
   "potioneer.beyonder.pathway.beyonderless": "Not a beyonder",
   "potioneer.beyonder.sequence.none": "",
@@ -124,6 +151,16 @@
 
   "potioneer.short_desc.": "Undefined",
   "potioneer.long_desc.": "Undefined2",
+
+  "potioneer.message.ability_cooldown": "Ability still on cooldown...",
+  "potioneer.message.ability_disabled": "Ability is disabled",
+  "potioneer.message.water_trap_activated": "One of your water traps was triggered.",
+
+  "potioneer.short_desc.cogitation": "Your essence... your being... this is what makes you",
+  "potioneer.long_desc.cogitation": "Concentrate your spirituality and recuperate in a safe place.",
+  "potioneer.ability_name.cogitation": "Cogitation",
+  "potioneer.ability.enabled": "Ability %s was turned on.",
+  "potioneer.ability.disabled": "Ability %s was turned off.",
 
   "potioneer.short_desc.air_bullet": "Surprise your enemies with a well timed gun shot",
   "potioneer.long_desc.air_bullet": "Shoot an air bullet from your mouth. It pierces targets. Damage scales with sequence.",

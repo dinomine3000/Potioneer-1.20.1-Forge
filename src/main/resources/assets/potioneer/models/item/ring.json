@@ -1,0 +1,9 @@
+{
+  "parent": "item/generated",
+  "textures": {
+    "layer0": "potioneer:item/ring"
+  },
+  "overrides": [
+    { "predicate": { "potioneer:artifact": 1 }, "model": "potioneer:item/cursed_ring" }
+  ]
+}

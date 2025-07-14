@@ -18,6 +18,7 @@ import net.minecraft.world.phys.Vec3;
 import java.util.ArrayList;
 
 public class ThunderStrikeAbility extends Ability {
+    private static final float actingProgress = 0.001f;
 
     public ThunderStrikeAbility(int sequence){
         this.info = new AbilityInfo(31, 248, "Thunder Strike", 10 + sequence, 70, this.getCooldown(), "thunder_strike");
@@ -52,6 +53,7 @@ public class ThunderStrikeAbility extends Ability {
     }
 
     private void summonLightning(EntityBeyonderManager cap, Vec3 position, ServerLevel level, boolean thundering){
+        cap.getActingManager().progressActing(actingProgress, 17);
         LightningBolt lightning = new LightningBolt(EntityType.LIGHTNING_BOLT, level);
         lightning.setPos(position);
         lightning.setDamage(thundering ? -6 + 5*(10-getSequence()) : 1 + 2*(10-getSequence()));

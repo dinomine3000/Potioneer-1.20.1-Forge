@@ -36,10 +36,8 @@ public class ElectrificationAbility extends Ability {
     @Override
     public void passive(EntityBeyonderManager cap, LivingEntity target) {
         if(isEnabled(cap.getAbilitiesManager())){
-            if(!cap.getEffectsManager().hasEffect(BeyonderEffects.EFFECT.TYRANT_ELECTRIFICATION, getSequence())){
-                cap.getEffectsManager().addEffect(BeyonderEffects.byId(BeyonderEffects.EFFECT.TYRANT_ELECTRIFICATION,
-                        getSequence(), info.cost(), -1, true), cap, target);
-            }
+            cap.getEffectsManager().addOrReplaceEffect(BeyonderEffects.byId(BeyonderEffects.EFFECT.TYRANT_ELECTRIFICATION,
+                    getSequence(), info.cost(), -1, true), cap, target);
             if(cap.getSpirituality() < 1) flipEnable(cap, target);
         }
     }

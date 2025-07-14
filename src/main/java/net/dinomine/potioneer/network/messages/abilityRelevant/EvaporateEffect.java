@@ -64,7 +64,7 @@ class EvaporateEffectSTCClientHandler
 
         ParticleOptions particle = ParticleTypes.POOF;
         for(int i = 0; i < particles; i++){
-            level.addParticle(particle, msg.x - 0.5 + random.nextFloat(), msg.y + 1, msg.z - 0.5 + random.nextFloat(),
+            level.addParticle(particle, msg.x + random.nextFloat(), msg.y + 1, msg.z + random.nextFloat(),
                     0, scalar, 0);
         }
     }

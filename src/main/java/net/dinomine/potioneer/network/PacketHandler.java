@@ -37,5 +37,6 @@ public class PacketHandler {
         INSTANCE.registerMessage(i++, PlayerStatsMessageSTC.class, PlayerStatsMessageSTC::encode, PlayerStatsMessageSTC::decode, PlayerStatsMessageSTC::handle);
         INSTANCE.registerMessage(i++, EvaporateEffect.class, EvaporateEffect::encode, EvaporateEffect::decode, EvaporateEffect::handle);
         INSTANCE.registerMessage(i++, AdvancementFailMessageCTS.class, AdvancementFailMessageCTS::encode, AdvancementFailMessageCTS::decode, AdvancementFailMessageCTS::handle);
+        INSTANCE.registerMessage(i++, PlayerArtifactSyncSTC.class, PlayerArtifactSyncSTC::encode, PlayerArtifactSyncSTC::decode, PlayerArtifactSyncSTC::handle);
     }
 }

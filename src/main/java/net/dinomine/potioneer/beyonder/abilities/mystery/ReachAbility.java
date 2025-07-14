@@ -27,9 +27,8 @@ public class ReachAbility extends Ability {
     @Override
     public void passive(EntityBeyonderManager cap, LivingEntity target) {
         if(target.level().isClientSide() || !isEnabled(cap.getAbilitiesManager())) return;
-        if(!cap.getEffectsManager().hasEffect(BeyonderEffects.EFFECT.MYSTERY_REACH, getSequence()))
-            cap.getEffectsManager().addEffect(BeyonderEffects.byId(BeyonderEffects.EFFECT.MYSTERY_REACH, getSequence(), info.cost(), -1, true),
-            cap, target);
+        cap.getEffectsManager().addOrReplaceEffect(BeyonderEffects.byId(BeyonderEffects.EFFECT.MYSTERY_REACH, getSequence(), info.cost(), -1, true),
+                cap, target);
     }
 
     @Override

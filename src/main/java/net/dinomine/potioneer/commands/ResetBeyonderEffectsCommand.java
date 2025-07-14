@@ -11,9 +11,7 @@ import net.minecraft.server.level.ServerPlayer;
 public class ResetBeyonderEffectsCommand {
 
     public ResetBeyonderEffectsCommand(CommandDispatcher<CommandSourceStack> dispatcher){
-        dispatcher.register(Commands.literal("beyondereffects").requires(stack -> {
-                            return stack.getPlayer().hasPermissions(2);
-                        })
+        dispatcher.register(Commands.literal("beyondereffects").requires(stack -> stack.hasPermission(2))
                 .then(Commands.literal("clear")
                         .executes(this::cleareffects))
                 .then(Commands.literal("print")

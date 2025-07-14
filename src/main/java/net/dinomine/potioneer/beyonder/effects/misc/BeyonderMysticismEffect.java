@@ -6,12 +6,6 @@ import net.dinomine.potioneer.beyonder.player.EntityBeyonderManager;
 import net.minecraft.world.entity.LivingEntity;
 
 public class BeyonderMysticismEffect extends BeyonderEffect {
-    public boolean flag = false;
-
-    public BeyonderMysticismEffect(){
-        this(0, 0f, 0, false, BeyonderEffects.EFFECT.MISC_MYST);
-    }
-
     public BeyonderMysticismEffect(int level, float cost, int time, boolean active, BeyonderEffects.EFFECT id){
         super(level, cost, time, active, id);
         this.name = "Mysticism Effect";

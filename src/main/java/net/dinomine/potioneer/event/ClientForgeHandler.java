@@ -5,6 +5,7 @@ import net.dinomine.potioneer.beyonder.client.ClientAbilitiesData;
 import net.dinomine.potioneer.beyonder.client.ClientStatsData;
 import net.dinomine.potioneer.beyonder.client.KeyBindings;
 import net.dinomine.potioneer.beyonder.misc.MysticismHelper;
+import net.dinomine.potioneer.beyonder.pathways.Beyonder;
 import net.dinomine.potioneer.beyonder.screen.BeyonderScreen;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
@@ -22,6 +23,7 @@ import java.util.List;
 
 @Mod.EventBusSubscriber(modid = Potioneer.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
 public class ClientForgeHandler {
+    private static boolean leftClickFlag = false;
 
 
     @SubscribeEvent
@@ -30,11 +32,17 @@ public class ClientForgeHandler {
         List<Component> tooltip = event.getToolTip();
         Level level = event.getEntity() != null ? event.getEntity().level() : null;
         // Only run client-side
-        if (level != null && ClientStatsData.getPathwayId() > -1) {
-            int spirituality = (int) MysticismHelper.getSpiritualityOfItem(stack);
-            if (spirituality > 0) tooltip.add(Component.literal("Spirituality: " + spirituality).withStyle(ChatFormatting.GRAY));
+        if (level != null) {
+            if(ClientStatsData.getPathwayId() > -1){
+                int spirituality = (int) MysticismHelper.getSpiritualityOfItem(stack);
+                if (spirituality > 0) tooltip.add(Component.literal("Spirituality: " + spirituality).withStyle(ChatFormatting.GRAY));
+            }
             if(stack.hasTag() && stack.getTag().contains("beyonder_info")){
                 tooltip.add(Component.literal("Sequence Level " + stack.getTag().getCompound("beyonder_info").getInt("id")%10));
+            }
+            if(stack.hasTag() && stack.getTag().contains("recipe_data")){
+                tooltip.add(Component.translatable("potioneer.beyonder.sequence." +
+                        Beyonder.getSequenceNameFromId(stack.getTag().getCompound("recipe_data").getInt("id"), false)));
             }
                 //tooltip.add(Component.literal("★ Special Item!").withStyle(ChatFormatting.GOLD, ChatFormatting.BOLD));
         }
@@ -74,6 +82,7 @@ public class ClientForgeHandler {
         Minecraft minecraft = Minecraft.getInstance();
         boolean success = false;
         if(minecraft.player != null && event.getButton() == 0 && event.getAction() == 1){
+            System.out.println("Left Click event");
             success = ClientAbilitiesData.useAbility(minecraft.player);
         }
         if(success){

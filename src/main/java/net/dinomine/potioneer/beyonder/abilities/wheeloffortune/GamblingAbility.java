@@ -30,11 +30,11 @@ public class GamblingAbility extends Ability {
     public void passive(EntityBeyonderManager cap, LivingEntity target) {
         if(cap.getSpirituality() < info.cost()) disable(cap, target);
         if(cap.getAbilitiesManager().isEnabled(this)
-                && !cap.getEffectsManager().hasEffect(BeyonderEffects.EFFECT.WHEEL_GAMBLING, getSequence())){
+                && !cap.getEffectsManager().hasEffectOrBetter(BeyonderEffects.EFFECT.WHEEL_GAMBLING, getSequence())){
             BeyonderGamblingEffect effect = (BeyonderGamblingEffect) BeyonderEffects.byId(BeyonderEffects.EFFECT.WHEEL_GAMBLING,
                     getSequence(), info.cost(), -1, true);
             effect.setLuckQuantity(cap.getLuckManager().getLuck());
-            cap.getEffectsManager().addEffect(effect, cap, target);
+            cap.getEffectsManager().addOrReplaceEffect(effect, cap, target);
         }
     }
 

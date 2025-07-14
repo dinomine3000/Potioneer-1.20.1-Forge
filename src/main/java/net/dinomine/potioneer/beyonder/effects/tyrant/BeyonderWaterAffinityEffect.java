@@ -37,8 +37,8 @@ public class BeyonderWaterAffinityEffect extends BeyonderEffect {
                     player.addEffect(new MobEffectInstance(MobEffects.REGENERATION, 80, 0, false, false));
                     cap.requestActiveSpiritualityCost(this.cost/2f);
                 }
-                if(player.getFoodData().needsFood() && Math.random() < 0.01){
-                    cap.requestActiveSpiritualityCost(this.cost/3f);
+                if(player.getFoodData().needsFood() && target.getRandom().nextFloat() <= 0.01){
+                    cap.requestActiveSpiritualityCost(this.cost/4f);
                     player.getFoodData().eat(1, 1);
                 }
                 if (target.isInWater() && !target.onGround()) {

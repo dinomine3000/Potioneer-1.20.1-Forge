@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.function.Predicate;
 
 public class WaterPrisonAbility extends Ability {
+    private static final float actingProgress = 0.01f;
 
     public WaterPrisonAbility(int sequence){
         this.info = new AbilityInfo(31, 152, "Cast Water Prison", 10 + sequence, 20 + 20*(9 - sequence), 20*20, "water_prison");
@@ -51,6 +52,7 @@ public class WaterPrisonAbility extends Ability {
             }
             target.level().playSound(null, target.getOnPos(), ModSounds.WATER_PRISON.get(), SoundSource.PLAYERS, 1, 1);
             cap.requestActiveSpiritualityCost(info.cost());
+            cap.getActingManager().progressActing(actingProgress, 18);
             return true;
         }
         return false;

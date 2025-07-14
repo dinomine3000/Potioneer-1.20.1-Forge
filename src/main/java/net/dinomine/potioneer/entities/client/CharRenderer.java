@@ -10,10 +10,4 @@ public class CharRenderer extends GeoEntityRenderer<CharacteristicEntity> {
         super(renderManager, new CharModel());
         this.addRenderLayer(new TintableGlowingGeoLayer<>(this));
     }
-
-    //TODO: maybe make it use different textures or models depending on the pathway
-
-//    public ResourceLocation getTextureLocation(CharacteristicEntity animatable){
-//        return new ResourceLocation(Potioneer.MOD_ID, "textures/entity/beyonder_characteristic.png");
-//    }
 }

@@ -19,6 +19,7 @@ public class BeyonderSilkTouchEffect extends BeyonderEffect {
 
     @Override
     public void onAcquire(EntityBeyonderManager cap, LivingEntity target) {
+        System.out.println("Acquired Silk Touch Effect - " + target + " - " + target.level().isClientSide());
     }
 
     @Override
@@ -31,5 +32,6 @@ public class BeyonderSilkTouchEffect extends BeyonderEffect {
 
     @Override
     public void stopEffects(EntityBeyonderManager cap, LivingEntity target) {
+        System.out.println("Stopping Silk Touch Effect - " + target + " - " + target.level().isClientSide());
     }
 }

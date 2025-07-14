@@ -56,7 +56,9 @@ public class BeyonderAbilitiesScreen extends Screen {
     private Button removeFromHotbarButton;
     private Button addToQuickSelectButton;
     private Button removeFromQuickSelectButton;
+
     private Button goToMainMenuButton;
+    private Button goToOptionsMenu;
 
     public BeyonderAbilitiesScreen() {
         super(TITLE);
@@ -122,19 +124,18 @@ public class BeyonderAbilitiesScreen extends Screen {
             removeFromQuickSelectButton.setTooltip(Tooltip.create(Component.literal("Remove ability from quick select")));
 
             goToMainMenuButton = new ImageButton(leftPos + 4, topPos + 165, 43, 18,
-                    163, 208, 0, TEXTURE, TEXTURE_WIDTH, TEXTURE_HEIGHT, btn -> {goToMainMenu();});
+                    163, 208, 0, TEXTURE, TEXTURE_WIDTH, TEXTURE_HEIGHT, btn -> {BeyonderScreen.goToMainMenu();});
+            addRenderableWidget(goToMainMenuButton);
+            goToOptionsMenu = new ImageButton(leftPos + 89, topPos + 165, 43, 18,
+                    163, 208, 0, TEXTURE, TEXTURE_WIDTH, TEXTURE_HEIGHT, btn -> {BeyonderScreen.goToOptionsMenu();});
+            addRenderableWidget(goToOptionsMenu);
 
             addRenderableWidget(addToHotbarButton);
             addRenderableWidget(removeFromHotbarButton);
             addRenderableWidget(addToQuickSelectButton);
             addRenderableWidget(removeFromQuickSelectButton);
-            addRenderableWidget(goToMainMenuButton);
             updateHotbarButton();
         }
-    }
-
-    private void goToMainMenu(){
-        Minecraft.getInstance().setScreen(new BeyonderScreen());
     }
 
     @Override
@@ -164,23 +165,24 @@ public class BeyonderAbilitiesScreen extends Screen {
     }
 
     private void addAbilityToQuickSelect(){
-        int caretToAdd = abilities.size() - 1 - selectedCaret;
-        if(ClientAbilitiesData.getQuickAbilityCaret() == caretToAdd){
-            ClientAbilitiesData.setQuickAbilityCaret(-1);
+        int caretToAdd = selectedCaret;
+        String ablId = abilities.get(caretToAdd).normalizedId();
+        if(ClientAbilitiesData.getQuickAbilityCaret().equals(ablId)){
+            ClientAbilitiesData.setQuickAbilityCaret("");
         } else {
-            ClientAbilitiesData.setQuickAbilityCaret(caretToAdd);
+            ClientAbilitiesData.setQuickAbilityCaret(ablId);
         }
         updateHotbarButton();
         ClientAbilitiesData.setHotbarChanged();
-
     }
 
     private void addAbilityToHotbar(){
-        int caretToAdd = abilities.size() - 1 - selectedCaret;
-        if(!ClientAbilitiesData.getHotbar().contains(caretToAdd)){
-            ClientAbilitiesData.getHotbar().add(caretToAdd);
+        int caretToAdd = selectedCaret;
+        String ablId = abilities.get(caretToAdd).normalizedId();
+        if(!ClientAbilitiesData.getHotbar().contains(ablId)){
+            ClientAbilitiesData.getHotbar().add(ablId);
         } else {
-            ClientAbilitiesData.getHotbar().remove((Object) caretToAdd);
+            ClientAbilitiesData.getHotbar().remove(ablId);
         }
         ClientAbilitiesData.updateCaret();
         updateHotbarButton();
@@ -188,8 +190,9 @@ public class BeyonderAbilitiesScreen extends Screen {
     }
 
     private void updateHotbarButton(){
-        int abilityCaret = abilities.size() - 1 - selectedCaret;
-        if(!ClientAbilitiesData.getHotbar().contains(abilityCaret)){
+        int abilityCaret = selectedCaret;
+        String ablId = abilities.get(abilityCaret).normalizedId();
+        if(!ClientAbilitiesData.getHotbar().contains(ablId)){
             addToHotbarButton.active = true;
             addToHotbarButton.visible = true;
             removeFromHotbarButton.active = false;
@@ -201,7 +204,7 @@ public class BeyonderAbilitiesScreen extends Screen {
             removeFromHotbarButton.visible = true;
         }
 
-        if(ClientAbilitiesData.getQuickAbilityCaret() == abilityCaret){
+        if(ClientAbilitiesData.getQuickAbilityCaret().equals(ablId)){
             addToQuickSelectButton.active = false;
             addToQuickSelectButton.visible = false;
             removeFromQuickSelectButton.active = true;
@@ -215,7 +218,7 @@ public class BeyonderAbilitiesScreen extends Screen {
     }
 
     private void castAbilityAt(){
-        ClientAbilitiesData.useAbility(Minecraft.getInstance().player, abilities.size() - 1 - selectedCaret, false);
+        ClientAbilitiesData.useAbility(Minecraft.getInstance().player, abilities.get(selectedCaret).normalizedId());
     }
 
     private void changeCaret(int buttonIdx){
@@ -234,7 +237,7 @@ public class BeyonderAbilitiesScreen extends Screen {
     }
     private void drawAbilityIcon(GuiGraphics pGuiGraphics, int posX, int posY, float scale, int abilityIndex, boolean main, int mouseX, int mouseY){
         AbilityInfo data = abilities.get(abilityIndex);
-        int caret = abilities.size() - 1 - abilityIndex;
+        //int caret = abilities.size() - 1 - abilityIndex;
 
         //name title
         if(main){
@@ -244,7 +247,7 @@ public class BeyonderAbilitiesScreen extends Screen {
 
         //cooldown gradient
         if(main){
-            float percent = Mth.clamp(1 - ((float) ClientAbilitiesData.getCooldown(caret, false) / ClientAbilitiesData.getMaxCooldown(caret, false)),
+            float percent = Mth.clamp(1 - ((float) ClientAbilitiesData.getCooldown(data.normalizedId()) / ClientAbilitiesData.getMaxCooldown(data.normalizedId())),
                     0, 1);
 
             pGuiGraphics.fillGradient(posX - 7, (int) (posY - 5 + percent*46),
@@ -255,7 +258,7 @@ public class BeyonderAbilitiesScreen extends Screen {
         pGuiGraphics.blit(ABILITY_ICONS, posX, posY, (int) (scale * ICON_WIDTH), (int)(scale * ICON_HEIGHT),
                 data.posX(), data.posY(), ICON_WIDTH, ICON_HEIGHT, ICONS_WIDTH, ICONS_HEIGHT);
 
-        if(!main && ClientAbilitiesData.getQuickAbilityCaret() == caret){
+        if(!main && ClientAbilitiesData.getQuickAbilityCaret().equals(data.normalizedId())){
             pGuiGraphics.blit(TEXTURE, posX + 130, posY, 12, 12,
                     176, 149, 16, 16, TEXTURE_WIDTH, TEXTURE_HEIGHT);
         }
@@ -263,12 +266,12 @@ public class BeyonderAbilitiesScreen extends Screen {
         //enabled gradient
         if(main){
             //enabled gradient
-            if(!ClientAbilitiesData.isEnabled(caret, false)){
+            if(!ClientAbilitiesData.isEnabled(data.normalizedId())){
                 pGuiGraphics.fillGradient(posX - 7, posY -5,
                         (int) (posX + 7 + scale*ICON_WIDTH), (int) (posY + 5 + ICON_HEIGHT*scale), 0xDD999999, 0xDD666666);
             }
             //barrier symbol if ability is disabled
-            if(ClientAbilitiesData.getCooldown(caret, false) < 0){
+            if(ClientAbilitiesData.getCooldown(data.normalizedId()) < 0){
                 //Copied from the icons part
                 pGuiGraphics.blit(ABILITY_ICONS, posX, posY,
                         (int)(ICON_WIDTH*scale), (int)(ICON_HEIGHT*scale), 130, 4, ICON_WIDTH, ICON_HEIGHT, ICONS_WIDTH, ICONS_HEIGHT);

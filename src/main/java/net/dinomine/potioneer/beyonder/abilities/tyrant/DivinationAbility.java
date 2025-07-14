@@ -49,7 +49,7 @@ public class DivinationAbility extends Ability {
 
     @Override
     public void onAcquire(EntityBeyonderManager cap, LivingEntity target) {
-        cap.getEffectsManager().addEffectNoNotify(BeyonderEffects.byId(BeyonderEffects.EFFECT.MISC_MYST, getSequence(), 0, -1, true));
+        cap.getEffectsManager().addOrReplaceEffect(BeyonderEffects.byId(BeyonderEffects.EFFECT.MISC_MYST, getSequence(), 0, -1, true), cap, target);
     }
 
     public boolean active(EntityBeyonderManager cap, LivingEntity target) {
@@ -131,8 +131,8 @@ public class DivinationAbility extends Ability {
     @Override
     public void passive(EntityBeyonderManager cap, LivingEntity target) {
         // THIS IS NOT RUNNING because this isnt a passive ability.
-        if(cap.getEffectsManager().hasEffect(BeyonderEffects.EFFECT.MISC_MYST)) return;
-        cap.getEffectsManager().addEffectNoNotify(BeyonderEffects.byId(BeyonderEffects.EFFECT.MISC_MYST, getSequence(), 0, -1, true));
+//        if(cap.getEffectsManager().hasEffect(BeyonderEffects.EFFECT.MISC_MYST)) return;
+//        cap.getEffectsManager().addEffectNoNotify(BeyonderEffects.byId(BeyonderEffects.EFFECT.MISC_MYST, getSequence(), 0, -1, true));
     }
 
     @Override

@@ -1,7 +1,7 @@
 package net.dinomine.potioneer.beyonder.pathways;
 
 import net.dinomine.potioneer.beyonder.abilities.Ability;
-import net.dinomine.potioneer.beyonder.abilities.Beyonder;
+import net.dinomine.potioneer.beyonder.abilities.misc.CogitationAbility;
 import net.dinomine.potioneer.beyonder.abilities.redpriest.*;
 import net.dinomine.potioneer.beyonder.player.PlayerAbilitiesManager;
 
@@ -35,7 +35,7 @@ public class RedPriestPathway extends Beyonder {
     }
 
     public static void getAbilities(int sequence, PlayerAbilitiesManager mng){
-        ArrayList<Ability> passiveAbilities = new ArrayList<>();
+        //ArrayList<Ability> passiveAbilities = new ArrayList<>();
         ArrayList<Ability> activeAbilities = new ArrayList<>();
 
         switch(sequence){
@@ -47,31 +47,23 @@ public class RedPriestPathway extends Beyonder {
             case 5:
             case 6:
             case 7:
+                activeAbilities.add(new FireAuraAbility(sequence));
+                activeAbilities.add(new FireBuffAbility(sequence));
+                activeAbilities.add(new FireBallAbility(sequence));
+                activeAbilities.add(new ConjureFireSwordAbility(sequence));
+            case 8:
                 activeAbilities.add(new PriestLightAbility(sequence));
                 activeAbilities.add(new LightBuffAbility(sequence));
                 activeAbilities.add(new HealAbility(sequence));
                 activeAbilities.add(new MeltAbility(sequence));
-                PurificationAbility purify = new PurificationAbility(sequence);
-                activeAbilities.add(purify);
-                passiveAbilities.add(purify);
-            case 8:
-                FireAuraAbility aura = new FireAuraAbility(sequence);
-                FireBuffAbility buff1 = new FireBuffAbility(sequence);
-                activeAbilities.add(aura);
-                activeAbilities.add(buff1);
-                passiveAbilities.add(aura);
-                passiveAbilities.add(buff1);
-
-                activeAbilities.add(new FireBallAbility(sequence));
-                activeAbilities.add(new ConjureFireSwordAbility(sequence));
+                activeAbilities.add(new PurificationAbility(sequence));
             case 9:
-                WeaponProficiencyAbility weapon = new WeaponProficiencyAbility(sequence);
-                activeAbilities.add(weapon);
-                passiveAbilities.add(weapon);
+                activeAbilities.add(new WeaponProficiencyAbility(sequence));
+                if(sequence < 8) activeAbilities.add(new CogitationAbility(30 + sequence));
         }
 
         mng.setPathwayActives(activeAbilities);
-        mng.setPathwayPassives(passiveAbilities);
+        //mng.setPathwayPassives(passiveAbilities);
     }
 
     @Override

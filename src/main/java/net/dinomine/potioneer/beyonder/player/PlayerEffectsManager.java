@@ -180,7 +180,41 @@ public class PlayerEffectsManager {
         return passives.stream().anyMatch(effect::isBetter);
     }
 
-    public boolean addEffect(BeyonderEffect effect, EntityBeyonderManager cap, LivingEntity target){
+    /**
+     * this method will make sure that the effect you add is added as a single effect,
+     * that is, it wont do anything if there already something like it or better,
+     * and if it does add it it will make sure the previous effect, if it existed, is replaced
+     * @param effect
+     * @param cap
+     * @param target
+     * @return
+     */
+    public boolean addOrReplaceEffect(BeyonderEffect effect, EntityBeyonderManager cap, LivingEntity target){
+        if(!hasEffectOrBetter(effect)){
+            removeEffect(effect.getId(), cap, target);
+            addEffect(effect, cap, target);
+            return true;
+        } else if(hasEffect(effect.getId(), effect.getSequenceLevel())){
+            getEffect(effect.getId(), effect.getSequenceLevel()).refreshTime();
+            return true;
+        }
+        return false;
+    }
+
+    public boolean addEffectNoRefresh(BeyonderEffect effect, EntityBeyonderManager cap, LivingEntity target){
+        if(!hasEffectOrBetter(effect)){
+            removeEffect(effect.getId(), cap, target);
+            addEffect(effect, cap, target);
+            return true;
+        }
+        return false;
+    }
+
+    public boolean addEffectNoCheck(BeyonderEffect effect, EntityBeyonderManager cap, LivingEntity target){
+        return addEffect(effect, cap, target);
+    }
+
+    private boolean addEffect(BeyonderEffect effect, EntityBeyonderManager cap, LivingEntity target){
         passives.add(effect);
         effect.onAcquire(cap, target);
         return true;
@@ -192,14 +226,17 @@ public class PlayerEffectsManager {
      * @param effect
      * @return
      */
-    public boolean addEffectNoNotify(BeyonderEffect effect){
-        if(hasEffect(effect.getId())){
-            getEffect(effect.getId()).refreshTime();
-        } else {
-            passives.add(effect);
-        }
-        return true;
-    }
+//    public boolean addEffectNoNotify(BeyonderEffect effect){
+//        if(hasEffect(effect.getId(), effect.getSequenceLevel())){
+//            getEffect(effect.getId()).refreshTime();
+//            return true;
+//        } else if (!hasEffectOrBetter(effect)){
+//            //doesnt deactivate previous effect bc a capability or entity were not given, so it cant call the method
+//            passives.add(effect);
+//            return true;
+//        }
+//        return false;
+//    }
 
     public int indexOf(BeyonderEffects.EFFECT effect){
         for(int i = 0; i < passives.size(); i++){
@@ -239,6 +276,17 @@ public class PlayerEffectsManager {
 
     public BeyonderEffect getEffect(BeyonderEffects.EFFECT effect, int seq){
         return passives.get(indexOf(effect, seq));
+    }
+
+    public boolean removeEffect(BeyonderEffects.EFFECT effect, EntityBeyonderManager cap, LivingEntity target){
+        for(int i = 0; i < passives.size(); i++){
+            if(passives.get(i).is(effect)) {
+                passives.get(i).stopEffects(cap, target);
+                passives.remove(i);
+                return true;
+            };
+        }
+        return false;
     }
 
     public boolean removeEffect(BeyonderEffects.EFFECT effect, int seq, EntityBeyonderManager cap, LivingEntity target){
@@ -298,6 +346,20 @@ public class PlayerEffectsManager {
             effect.setLifetime(iterator.getInt("lifetime"));
             effect.loadNBTData(iterator);
             addEffect(effect, cap, entity);
+        }
+    }
+
+    /**
+     * TODO: make passives that actually want to persist in death, like shepherd graze
+     * @param otherEffects
+     * @param cap
+     * @param player
+     */
+    public void copyFrom(PlayerEffectsManager otherEffects, EntityBeyonderManager cap, Player player) {
+        for (BeyonderEffect passive : otherEffects.passives) {
+            if(passive.shouldPersistInDeath()){
+                addOrReplaceEffect(passive, cap, player);
+            }
         }
     }
 }

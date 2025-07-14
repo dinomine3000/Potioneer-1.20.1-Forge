@@ -17,6 +17,7 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.ForgeMod;
 import com.google.common.collect.Multimap;
@@ -28,7 +29,7 @@ import java.util.function.Supplier;
 public class AirBulletAbility extends Ability {
 
     public AirBulletAbility(int sequence){
-        this.info = new AbilityInfo(57, 56, "Air Bullet", 20 + sequence, 100*(8-sequence), 5*20, "air_bullet");
+        this.info = new AbilityInfo(57, 56, "Air Bullet", 20 + sequence, Math.max(100, 50*(10-sequence)), 5*20, "air_bullet");
         this.isActive = true;
     }
 
@@ -39,13 +40,17 @@ public class AirBulletAbility extends Ability {
 
     @Override
     public boolean active(EntityBeyonderManager cap, LivingEntity target) {
-        if(cap.getSpirituality() < getInfo().cost()) return false;
+        if(cap.getSpirituality() < getInfo().cost()){
+            System.out.println("Not enough spirituality to cast air bullet on client side: " + target.level().isClientSide());
+            return false;
+        }
         Level level = target.level();
+        double dist = Math.max((10 - getSequence())*8 - 8, 21);
         if(level.isClientSide()){
-            double dist = (9 - getSequence())*8 + 5;
+            HitResult hit = target.pick(dist, 0, false);
             float temp = 0.7f;
             Vec3 lookAngle = target.getLookAngle();
-            while(temp < dist){
+            while(temp < Math.min(dist, hit.distanceTo(target))){
                 Vec3 itVector = target.getEyePosition().add(lookAngle.scale(temp));
                 level.addParticle(ParticleTypes.POOF, itVector.x, itVector.y, itVector.z,0, -0.02f, 0);
                 temp += 0.4f;
@@ -53,8 +58,10 @@ public class AirBulletAbility extends Ability {
         }
         else {
             cap.requestActiveSpiritualityCost(info.cost());
-            int radius = (9 - getSequence())*8 + 5;
-            ArrayList<Entity> hits = AbilityFunctionHelper.getLivingEntitiesLooking(target, radius);
+            HitResult hit = target.pick(dist, 0, false);
+            ArrayList<Entity> hits = AbilityFunctionHelper.getLivingEntitiesLooking(target,
+                    Math.min(dist, hit.distanceTo(target))
+            );
             hits.forEach(ent -> {
                 int pow = (9-getSequence());
                 if(ent != target) ent.hurt(level.damageSources().indirectMagic(target, null),

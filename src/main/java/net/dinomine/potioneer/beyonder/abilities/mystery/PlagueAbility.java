@@ -34,6 +34,7 @@ import java.util.ArrayList;
 import static net.dinomine.potioneer.block.custom.MinerLightSourceBlock.WATERLOGGED;
 
 public class PlagueAbility extends Ability {
+    public static final int PLAGUE_RANGE = 2;
 
     public PlagueAbility(int sequence){
         this.info = new AbilityInfo(57, 248, "Cast Plague", 20 + sequence, 60*(9-sequence), 20*10, "cast_plague");
@@ -45,7 +46,7 @@ public class PlagueAbility extends Ability {
         if(cap.getSpirituality() > info.cost()){
             ServerLevel level = (ServerLevel) target.level();
             Vec3 pos = target.position();
-            double radius = 13 - getSequence();
+            double radius = PLAGUE_RANGE;
             AABB box = new AABB(
                     pos.x-radius, pos.y-radius, pos.z-radius,
                     pos.x+radius, pos.y+radius, pos.z+radius
@@ -60,7 +61,7 @@ public class PlagueAbility extends Ability {
                     if(target instanceof Player player) eff.setCasterId(player.getUUID());
                     entity.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(entCap -> {
                         if(!entCap.getEffectsManager().hasEffect(BeyonderEffects.EFFECT.MISC_PLAGUE)){
-                            entCap.getEffectsManager().addEffect(eff, entCap, entity);
+                            entCap.getEffectsManager().addOrReplaceEffect(eff, entCap, entity);
                         }
                     });
                 }

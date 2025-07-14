@@ -31,6 +31,8 @@ public class ModEvents {
         new ChangeSanityCommand(event.getDispatcher());
         new ResetBeyonderEffectsCommand(event.getDispatcher());
         new RefreshFormulasCommand(event.getDispatcher());
+        new GiveCharacteristicCommand(event.getDispatcher());
+        new ChangeActingCommand(event.getDispatcher());
 
         ConfigCommand.register(event.getDispatcher());
     }
@@ -42,11 +44,6 @@ public class ModEvents {
             EquipmentSlot slot = LivingEntity.getEquipmentSlotForItem(stack);
             chryon.setItemSlot(slot, stack.copy());
         }
-    }
-
-    @SubscribeEvent
-    public static void onLootTableLoad(LootTableLoadEvent event){
-        System.out.println("Loot table loaded " + event.getName());
     }
 
     @SubscribeEvent

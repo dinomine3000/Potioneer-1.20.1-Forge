@@ -1,12 +1,14 @@
 package net.dinomine.potioneer;
 
 import com.mojang.logging.LogUtils;
+import net.dinomine.potioneer.beyonder.misc.ArtifactHelper;
 import net.dinomine.potioneer.beyonder.misc.MysticismHelper;
 import net.dinomine.potioneer.block.ModBlocks;
 import net.dinomine.potioneer.block.entity.ModBlockEntities;
 import net.dinomine.potioneer.block.entity.renderer.MinerBlockRenderer;
 import net.dinomine.potioneer.block.entity.renderer.PriestBlockRenderer;
 import net.dinomine.potioneer.block.entity.renderer.WaterTrapBlockRenderer;
+import net.dinomine.potioneer.config.PotioneerClientConfig;
 import net.dinomine.potioneer.config.PotioneerCommonConfig;
 import net.dinomine.potioneer.entities.ModEntities;
 import net.dinomine.potioneer.entities.client.*;
@@ -90,6 +92,7 @@ public class Potioneer
         GeckoLib.initialize();
 
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, PotioneerCommonConfig.SPEC, "potioneer-common.toml");
+        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, PotioneerClientConfig.SPEC, "potioneer-client.toml");
 
         // Register ourselves for server and other game events we are interested in
         MinecraftForge.EVENT_BUS.register(this);
@@ -127,6 +130,7 @@ public class Potioneer
             EntityRenderers.register(ModEntities.DEMONIC_WOLF.get(), DemonicWolfRenderer::new);
             EntityRenderers.register(ModEntities.DIVINATION_ROD.get(), RodRenderer::new);
             EntityRenderers.register(ModEntities.CHARACTERISTIC.get(), CharRenderer::new);
+            EntityRenderers.register(ModEntities.ASTEROID.get(), AsteroidRenderer::new);
 
 
 
@@ -145,10 +149,10 @@ public class Potioneer
                     ((itemStack, clientLevel, livingEntity, i) ->
                             itemStack.getTag() != null ? itemStack.getTag().getCompound("potion_info").getInt("amount") : 0));
 
-            ItemProperties.register(ModItems.VOODOO_DOLL.get(),
-                    new ResourceLocation(Potioneer.MOD_ID, "bloodied"),
+            ItemProperties.register(ModItems.RING.get(),
+                    new ResourceLocation(Potioneer.MOD_ID, "artifact"),
                     ((itemStack, clientLevel, livingEntity, i) ->
-                            itemStack.getTag() != null && itemStack.getTag().contains(MysticismHelper.mysticismTagId) ?  1f : 0f));
+                            itemStack.getTag() != null && itemStack.getTag().contains(ArtifactHelper.ARTIFACT_TAG_ID) ?  1f : 0f));
 
             event.enqueueWork(() -> {
                 MenuScreens.register(ModMenuTypes.CRAFTER_MENU.get(), CraftingScreen::new);

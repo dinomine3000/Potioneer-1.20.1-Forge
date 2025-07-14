@@ -47,10 +47,9 @@ public class PlayerAbilityCooldownSTC {
 
         //potion advancement
         context.enqueueWork(() -> {
-            if(context.getDirection().getReceptionSide().isClient()){
-                System.out.println("Receiving ability cooldown info on client side");
-                context.enqueueWork(() -> DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> ClientAbilityCooldownSTC.handlePacket(msg, contextSupplier)));
-            }
+            System.out.println("Receiving ability cooldown info on client side");
+            System.out.println(msg.cd);
+            DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> ClientAbilityCooldownSTC.handlePacket(msg, contextSupplier));
         });
 
         context.setPacketHandled(true);

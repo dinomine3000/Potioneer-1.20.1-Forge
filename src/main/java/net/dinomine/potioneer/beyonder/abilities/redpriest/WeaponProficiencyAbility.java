@@ -27,7 +27,7 @@ public class WeaponProficiencyAbility extends Ability {
     @Override
     public void passive(EntityBeyonderManager cap, LivingEntity target) {
         if(isEnabled(cap.getAbilitiesManager()) && !cap.getEffectsManager().hasEffect(BeyonderEffects.EFFECT.RED_WEAPON_PROFICIENCY, getSequence())){
-            cap.getEffectsManager().addEffect(BeyonderEffects.byId(BeyonderEffects.EFFECT.RED_WEAPON_PROFICIENCY,
+            cap.getEffectsManager().addOrReplaceEffect(BeyonderEffects.byId(BeyonderEffects.EFFECT.RED_WEAPON_PROFICIENCY,
                     getSequence(), 0, -1, true), cap, target);
         }
 

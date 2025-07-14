@@ -15,6 +15,8 @@ import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 
+import static net.dinomine.potioneer.beyonder.abilities.mystery.PlagueAbility.PLAGUE_RANGE;
+
 public class BeyonderPlagueEffect extends BeyonderEffect {
     private int lives = 1;
     private int spreadCd;
@@ -55,7 +57,7 @@ public class BeyonderPlagueEffect extends BeyonderEffect {
                             casterCap.requestActiveSpiritualityCost(-cost);
                     });
             }
-            List<Entity> spreadTargets = target.level().getEntities(target, target.getBoundingBox().inflate(5));
+            List<Entity> spreadTargets = target.level().getEntities(target, target.getBoundingBox().inflate(PLAGUE_RANGE));
             for(Entity ent: spreadTargets){
                 if(ent instanceof LivingEntity entity){
                     if(casterId != null && ent instanceof Player testPlayer && testPlayer.getUUID().compareTo(casterId) == 0) continue;
@@ -63,7 +65,7 @@ public class BeyonderPlagueEffect extends BeyonderEffect {
                         if(!newCap.getEffectsManager().hasEffect(BeyonderEffects.EFFECT.MISC_PLAGUE)){
                             BeyonderPlagueEffect eff = new BeyonderPlagueEffect(sequenceLevel, cost, -1, true, BeyonderEffects.EFFECT.MISC_PLAGUE);
                             eff.setCasterId(casterId);
-                            newCap.getEffectsManager().addEffect(eff, newCap, entity);
+                            newCap.getEffectsManager().addOrReplaceEffect(eff, newCap, entity);
                         }
                     });
                 }

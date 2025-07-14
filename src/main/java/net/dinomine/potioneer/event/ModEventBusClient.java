@@ -10,6 +10,7 @@ import net.dinomine.potioneer.block.entity.ModBlockEntities;
 import net.dinomine.potioneer.block.entity.renderer.PotionCauldronBlockEntityRenderer;
 import net.dinomine.potioneer.item.ModItems;
 import net.dinomine.potioneer.item.custom.AbstractLiquidContainer;
+import net.dinomine.potioneer.item.custom.ArtifactTint;
 import net.dinomine.potioneer.item.custom.CharacteristicItem;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -41,6 +42,7 @@ public class ModEventBusClient {
     public static void registerItemColors(RegisterColorHandlersEvent.Item event){
         event.register(new AbstractLiquidContainer.LiquidContainerTint(), ModItems.VIAL.get(), ModItems.FLASK.get());
         event.register(new CharacteristicItem.CharacteristicTint(), ModItems.CHARACTERISTIC.get());
+        event.register(new ArtifactTint(), ModItems.RING.get());
 
     }
 

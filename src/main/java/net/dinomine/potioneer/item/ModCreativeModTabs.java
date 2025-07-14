@@ -39,6 +39,8 @@ public class ModCreativeModTabs {
                         output.accept(ModItems.COIN_ITEM.get());
                         output.accept(ModItems.DIVINATION_ROD.get());
                         output.accept(ModItems.VOODOO_DOLL.get());
+                        output.accept(ModItems.RING.get());
+                        output.accept(ModItems.LEYMANOS_TRAVELS.get());
                     })
                     .build());
 

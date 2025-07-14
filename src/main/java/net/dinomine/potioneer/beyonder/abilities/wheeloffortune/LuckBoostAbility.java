@@ -18,13 +18,14 @@ public class LuckBoostAbility extends Ability {
     public boolean active(EntityBeyonderManager cap, LivingEntity target) {
         if(target.level().isClientSide() && cap.getSpirituality() >= info.cost()) return true;
 
-        if(cap.getSpirituality() >= info.cost() && !cap.getEffectsManager().hasEffect(BeyonderEffects.EFFECT.WHEEL_TEMP_LUCK)){
-            cap.getEffectsManager().addEffect(BeyonderEffects.byId(BeyonderEffects.EFFECT.WHEEL_TEMP_LUCK,
-                    getSequence(), 0, 40*60, true), cap, target);
-            cap.requestActiveSpiritualityCost(info.cost());
-            cap.getLuckManager().grantLuck(51);
-            target.sendSystemMessage(Component.literal("The cogs of fate favor you for now..."));
-            target.playSound(SoundEvents.ENCHANTMENT_TABLE_USE, 1, 1);
+        if(cap.getSpirituality() >= info.cost()){
+            if(cap.getEffectsManager().addEffectNoRefresh(BeyonderEffects.byId(BeyonderEffects.EFFECT.WHEEL_TEMP_LUCK,
+                    getSequence(), 0, 40*60, true), cap, target)){
+                cap.requestActiveSpiritualityCost(info.cost());
+                cap.getLuckManager().grantLuck(51);
+                target.sendSystemMessage(Component.literal("The cogs of fate favor you for now..."));
+                target.playSound(SoundEvents.ENCHANTMENT_TABLE_USE, 1, 1);
+            }
         } else {
             target.sendSystemMessage(Component.literal("Could not give effect: one already exists."));
         }

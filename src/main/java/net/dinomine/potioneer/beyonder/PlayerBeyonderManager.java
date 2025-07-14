@@ -3,8 +3,10 @@ package net.dinomine.potioneer.beyonder;
 import net.dinomine.potioneer.Potioneer;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffect;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
+import net.dinomine.potioneer.beyonder.misc.ArtifactHelper;
 import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
 import net.dinomine.potioneer.beyonder.player.EntityBeyonderManager;
+import net.dinomine.potioneer.item.ModItems;
 import net.dinomine.potioneer.network.PacketHandler;
 import net.dinomine.potioneer.network.messages.PlayerAdvanceMessage;
 import net.dinomine.potioneer.network.messages.SequenceSTCSyncRequest;
@@ -16,13 +18,17 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraftforge.common.Tags;
+import net.minecraftforge.event.AnvilUpdateEvent;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.event.entity.EntityStruckByLightningEvent;
 import net.minecraftforge.event.entity.living.*;
 import net.minecraftforge.event.entity.player.PlayerEvent;
+import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.entity.player.PlayerWakeUpEvent;
 import net.minecraftforge.event.entity.player.PlayerXpEvent;
 import net.minecraftforge.event.level.BlockEvent;
@@ -43,6 +49,18 @@ public class PlayerBeyonderManager {
         if(event.getObject() instanceof LivingEntity){
             if(!event.getObject().getCapability(BeyonderStatsProvider.BEYONDER_STATS).isPresent()){
                 event.addCapability(new ResourceLocation(Potioneer.MOD_ID, "properties"), new BeyonderStatsProvider((LivingEntity) event.getObject()));
+            }
+        }
+    }
+
+    @SubscribeEvent
+    public static void onRightClickItem(PlayerInteractEvent.RightClickItem event){
+        if(!event.getEntity().level().isClientSide()){
+            if(ArtifactHelper.isValidArtifact(event.getItemStack())){
+                event.getEntity().getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
+                    //System.out.println(event.getItemStack().getTag());
+                    cap.getAbilitiesManager().useArtifactAbililty(cap, event.getEntity(), ArtifactHelper.getArtifactIdsFromItem(event.getItemStack()));
+                });
             }
         }
     }
@@ -91,7 +109,7 @@ public class PlayerBeyonderManager {
 
     @SubscribeEvent
     public static void onPlayerSleep(PlayerWakeUpEvent event){
-        event.getEntity().getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(EntityBeyonderManager::onPlayerSleep);
+        if(!event.updateLevel() && !event.getEntity().level().isClientSide()) event.getEntity().getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(EntityBeyonderManager::onPlayerSleep);
     }
 
     @SubscribeEvent
@@ -137,7 +155,7 @@ public class PlayerBeyonderManager {
         if(event.getNewTarget() instanceof Player player){
             player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
                 if(cap.getEffectsManager().hasEffect(BeyonderEffects.EFFECT.MYSTERY_INVIS)){
-                    event.setNewTarget(null);
+                    event.setCanceled(true);
                 }
             });
         }
@@ -237,15 +255,17 @@ public class PlayerBeyonderManager {
     @SubscribeEvent
     public static void onBlockBroken(BlockEvent.BreakEvent event){
         if(event.getPlayer().isCreative() || event.getPlayer().isSpectator()) return;
+        if(event.getPlayer().level().isClientSide()) return;
         event.getPlayer().getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
             int i = 1;
             ItemStack pick = event.getPlayer().getMainHandItem().copy();
+            if(pick.isEmpty()) pick = new ItemStack(Items.COMPASS);
             boolean fortune = cap.getEffectsManager().hasEffect(BeyonderEffects.EFFECT.WHEEL_FORTUNE);
             boolean silk = cap.getEffectsManager().hasEffect(BeyonderEffects.EFFECT.WHEEL_SILK_TOUCH);
 
             if(fortune && event.getState().is(Tags.Blocks.ORES)){
                 int lvl = (10 - cap.getEffectsManager().getEffect(BeyonderEffects.EFFECT.WHEEL_FORTUNE).getSequenceLevel())/2;
-                while(lvl > 1){
+                while(lvl >= 1){
                     lvl--;
                     i++;
                 }
@@ -254,18 +274,12 @@ public class PlayerBeyonderManager {
                 }
             }
             if (silk) {
-                CompoundTag enchTag = new CompoundTag();
-                ListTag list = new ListTag();
-                CompoundTag silkTouch = new CompoundTag();
-                silkTouch.putString("id", "minecraft:silk_touch");
-                silkTouch.putShort("lvl", (short) 1);
-                list.add(silkTouch);
-                enchTag.put("Enchantments", list);
-                pick.setTag(enchTag);
+                pick.enchant(Enchantments.SILK_TOUCH, 1);
             }
 
             if (fortune || silk) {
-                System.out.println("Applied at least one of the effects");
+//                System.out.println("Applied at least one of the effects");
+                event.setCanceled(true);
                 event.getLevel().removeBlock(event.getPos(), false);
 //                event.getLevel().destroyBlock(event.getPos(), false, event.getPlayer());
                 while (i-- > 0) {

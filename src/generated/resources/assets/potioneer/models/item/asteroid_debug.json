@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:item/generated",
   "textures": {
-    "layer0": "potioneer:item/star_flower"
+    "layer0": "potioneer:item/asteroid_debug"
   }
 }

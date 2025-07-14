@@ -23,7 +23,7 @@ import static net.minecraft.world.level.block.DoorBlock.OPEN;
 public class DoorOpeningAbility extends Ability {
 
     public DoorOpeningAbility(int sequence){
-        this.info = new AbilityInfo(57, 80, "Door Opening", 20+sequence, 20 + 7*(9-sequence), 20, "door_opening");
+        this.info = new AbilityInfo(57, 80, "Door Opening", 20+sequence, 20 + 4*(9-sequence), 20, "door_opening");
         this.isActive = true;
     }
 
@@ -50,10 +50,10 @@ public class DoorOpeningAbility extends Ability {
         }
         int newZ = dir.getNormal().getZ();
         int newX = dir.getNormal().getX();
-        int iterations = (9-getSequence())*2 + 1;
+        int range = (9-getSequence())*4 + 2;
         int i = 0;
 
-        while(i <= iterations){
+        while(i <= range){
             if(level.getBlockState(pos.offset(newX*i, 0, newZ*i)).isCollisionShapeFullBlock(level, pos)
                     || level.getBlockState(pos.offset(newX*i, 1, newZ*i)).isCollisionShapeFullBlock(level, pos)){
 //                System.out.println("wall check");
@@ -61,8 +61,8 @@ public class DoorOpeningAbility extends Ability {
                         && !level.getBlockState(pos.offset(newX*(i+1), 1, newZ*(i+1))).isCollisionShapeFullBlock(level, pos)){
 //                    System.out.println("teleporting");
                     //target.teleportRelative(newX*(i+1), 0, newZ*(i+1));
-                    BlockPos endPos = new BlockPos((int) target.getX() + newX*(i+1), (int) target.getY(), (int) target.getZ() + newZ*(i+1));
-                    target.teleportTo(endPos.getX() + 0.5f, endPos.getY(), endPos.getZ() + 0.5f);
+                    BlockPos endPos = new BlockPos(pos.getX() + newX*(i+1), pos.getY(), pos.getZ() + newZ*(i+1));
+                    target.teleportTo(endPos.getX() + 0.5, endPos.getY(), endPos.getZ() + 0.5);
                     cap.requestActiveSpiritualityCost(info.cost()*(1+i));
                     level.playSound(null,
                             pos.offset(newX*(i+1), 0, newZ*(i+1)), SoundEvents.ENDERMAN_TELEPORT,

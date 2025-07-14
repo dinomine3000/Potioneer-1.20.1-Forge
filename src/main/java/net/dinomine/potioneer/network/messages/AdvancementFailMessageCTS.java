@@ -1,5 +1,6 @@
 package net.dinomine.potioneer.network.messages;
 
+import net.dinomine.potioneer.beyonder.misc.CharacteristicHelper;
 import net.dinomine.potioneer.beyonder.misc.MysticismHelper;
 import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
 import net.dinomine.potioneer.entities.ModEntities;
@@ -40,21 +41,7 @@ public class AdvancementFailMessageCTS {
                 player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> cap.setSanity(0));
                 player.kill();
             }
-            ItemStack characteristic = new ItemStack(ModItems.CHARACTERISTIC.get());
-            CompoundTag root = new CompoundTag();
-
-            CompoundTag charInfo = new CompoundTag();
-            charInfo.putInt("id", sequence);
-            root.put("beyonder_info", charInfo);
-            characteristic.setTag(root);
-
-            MysticismHelper.updateOrApplyMysticismTag(characteristic, 20, player);
-
-
-            CharacteristicEntity entity = new CharacteristicEntity(ModEntities.CHARACTERISTIC.get(), player.level(), characteristic.copy(), sequence);
-            entity.setSequenceId(sequence);
-            entity.moveTo(player.position().offsetRandom(player.getRandom(), 1f).add(0, 1, 0));
-            player.level().addFreshEntity(entity);
+            CharacteristicHelper.addCharacteristicToLevel(sequence, player.level(), player, player.position(), player.getRandom());
         });
 
         context.setPacketHandled(true);

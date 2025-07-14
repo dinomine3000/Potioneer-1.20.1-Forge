@@ -18,7 +18,7 @@ import java.util.function.Predicate;
 public class InvisibilityAbility extends Ability {
 
     public InvisibilityAbility(int sequence){
-        this.info = new AbilityInfo(57, 128, "Invisibility", 20 + sequence, 60 + 150*(9-sequence), 5*10 + 2*40*((9-sequence)*10 + 5), "invisibility");
+        this.info = new AbilityInfo(57, 128, "Invisibility", 20 + sequence, 40 + 150*(9-sequence), 5*10 + 2*40*((9-sequence)*10 + 5), "invisibility");
         this.isActive = true;
     }
 
@@ -31,11 +31,8 @@ public class InvisibilityAbility extends Ability {
         if(target.level().isClientSide() && cap.getSpirituality() >= info.cost()) return true;
 
         if(cap.getSpirituality() >= info.cost()){
-            if(!cap.getEffectsManager().hasEffect(BeyonderEffects.EFFECT.MYSTERY_INVIS, getSequence())){
-
-                cap.getEffectsManager().addEffect(BeyonderEffects.byId(BeyonderEffects.EFFECT.MYSTERY_INVIS,
-                        getSequence(), 0, 2*40*((9-getSequence())*10 + 5), true), cap, target);
-
+            if(cap.getEffectsManager().addOrReplaceEffect(BeyonderEffects.byId(BeyonderEffects.EFFECT.MYSTERY_INVIS,
+                    getSequence(), 0, 2*40*((9-getSequence())*10 + 5), true), cap, target)){
                 cap.requestActiveSpiritualityCost(info.cost());
                 return true;
             }

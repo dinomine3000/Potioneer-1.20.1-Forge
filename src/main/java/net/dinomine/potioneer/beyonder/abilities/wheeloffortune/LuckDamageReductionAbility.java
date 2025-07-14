@@ -26,9 +26,8 @@ public class LuckDamageReductionAbility extends Ability {
     @Override
     public void passive(EntityBeyonderManager cap, LivingEntity target) {
         if(cap.getSpirituality() < info.cost()) disable(cap, target);
-        if(cap.getAbilitiesManager().isEnabled(this)
-                && !cap.getEffectsManager().hasEffect(BeyonderEffects.EFFECT.WHEEL_DAMAGE_REDUCE, getSequence())){
-            cap.getEffectsManager().addEffect(BeyonderEffects.byId(BeyonderEffects.EFFECT.WHEEL_DAMAGE_REDUCE,
+        if(cap.getAbilitiesManager().isEnabled(this)){
+            cap.getEffectsManager().addOrReplaceEffect(BeyonderEffects.byId(BeyonderEffects.EFFECT.WHEEL_DAMAGE_REDUCE,
                     getSequence(), info.cost(), -1, true), cap, target);
         }
     }

@@ -38,10 +38,12 @@ public class FuelAbility extends Ability {
             return cap.getSpirituality() > cap.getMaxSpirituality() * adjustedPercent;
         }
         if(cap.getSpirituality() > cap.getMaxSpirituality()*adjustedPercent){
-            if(target instanceof Player player && target.getMainHandItem().is(sourceItem)){
+            if(target instanceof Player player){
                 ItemStack result = new ItemStack(ModItems.GOLDEN_DROP.get());
                 MysticismHelper.updateOrApplyMysticismTag(result, adjustedPercent * cap.getMaxSpirituality(), player);
-                player.setItemInHand(InteractionHand.MAIN_HAND, result);
+                if(!player.addItem(result)){
+                    player.drop(result, false, true);
+                }
                 cap.requestActiveSpiritualityCost(cap.getMaxSpirituality()*adjustedPercent);
                 return true;
             }

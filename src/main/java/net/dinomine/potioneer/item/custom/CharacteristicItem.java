@@ -1,15 +1,23 @@
 package net.dinomine.potioneer.item.custom;
 
-import net.dinomine.potioneer.beyonder.abilities.Beyonder;
+import net.dinomine.potioneer.beyonder.misc.ArtifactHelper;
+import net.dinomine.potioneer.beyonder.pathways.Beyonder;
 import net.dinomine.potioneer.entities.ModEntities;
 import net.dinomine.potioneer.entities.custom.CharacteristicEntity;
+import net.dinomine.potioneer.item.ModItems;
 import net.minecraft.client.color.item.ItemColor;
+import net.minecraft.core.NonNullList;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -17,6 +25,16 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 public class CharacteristicItem extends Item {
     public CharacteristicItem(Properties pProperties) {
         super(pProperties);
+    }
+
+    public static ItemStack createCharacteristic(int sequenceId){
+        ItemStack res = new ItemStack(ModItems.CHARACTERISTIC.get());
+        CompoundTag tag = new CompoundTag();
+        CompoundTag beyonderInfo = new CompoundTag();
+        beyonderInfo.putInt("id", sequenceId);
+        tag.put("beyonder_info", beyonderInfo);
+        res.setTag(tag);
+        return res;
     }
 
     @Override
@@ -39,6 +57,28 @@ public class CharacteristicItem extends Item {
             pContext.getPlayer().setItemInHand(pContext.getHand(), ItemStack.EMPTY);
         }
         return InteractionResult.SUCCESS;
+    }
+
+    @Override
+    public void inventoryTick(ItemStack pStack, Level pLevel, Entity pEntity, int pSlotId, boolean pIsSelected) {
+        super.inventoryTick(pStack, pLevel, pEntity, pSlotId, pIsSelected);
+        if(pLevel.isClientSide()) return;
+        if(pStack.hasTag() && pStack.getTag().contains("beyonder_info") && pLevel.random.nextInt(200) == 1){
+            if(pEntity instanceof Player player){
+                NonNullList<ItemStack> items = player.getInventory().items;
+                for(ItemStack stack: items){
+                    if(ArtifactHelper.isValidItemForArtifact(stack)){
+                        //TODO: CHANGE THIS ASAP so it returns when it finds a match, instead of converting every possible item into an artifact
+                        pLevel.playSound(null, pEntity.getOnPos(), SoundEvents.ENCHANTMENT_TABLE_USE, SoundSource.PLAYERS, 1, 1);
+                        int sequenceId = pStack.getTag().getCompound("beyonder_info").getInt("id");
+                        ArtifactHelper.makeSealedArtifact(stack, sequenceId, pLevel.random);
+                        pEntity.sendSystemMessage(Component.literal("Your " + stack.getDisplayName().getString() + " has been corrupted by a characteristic"));
+                        pStack.setCount(0);
+                        break;
+                    }
+                }
+            }
+        }
     }
 
     @OnlyIn(Dist.CLIENT)

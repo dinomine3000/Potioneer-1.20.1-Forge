@@ -3,6 +3,7 @@ package net.dinomine.potioneer.network.messages;
 import net.dinomine.potioneer.beyonder.client.ClientAbilitiesData;
 import net.dinomine.potioneer.beyonder.client.ClientStatsData;
 import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
+import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -20,13 +21,15 @@ public class PlayerSTCHudStatsSync {
     public int sanity;
     public int pathwayId;
     public Map<String, Boolean> enabledList;
+    public float actingProgress;
 
-    public PlayerSTCHudStatsSync(float spirituality, int maxSpirituality, int sanity, int pathwayId, Map<String, Boolean> enabled) {
+    public PlayerSTCHudStatsSync(float spirituality, int maxSpirituality, int sanity, int pathwayId, Map<String, Boolean> enabled, float actingProgress) {
         this.spirituality = spirituality;
         this.maxSpirituality = maxSpirituality;
         this.sanity = sanity;
         this.pathwayId = pathwayId;
         this.enabledList = enabled;
+        this.actingProgress = actingProgress;
     }
 
     public static void encode(PlayerSTCHudStatsSync msg, FriendlyByteBuf buffer){
@@ -43,6 +46,7 @@ public class PlayerSTCHudStatsSync {
             }
             buffer.writeBoolean(entry.getValue());
         }
+        buffer.writeFloat(msg.actingProgress);
     }
 
     public static PlayerSTCHudStatsSync decode(FriendlyByteBuf buffer){
@@ -60,7 +64,8 @@ public class PlayerSTCHudStatsSync {
             }
             res.put(idBuilder.toString(), buffer.readBoolean());
         }
-        return new PlayerSTCHudStatsSync(spir, max, san, id, res);
+        float acting = buffer.readFloat();
+        return new PlayerSTCHudStatsSync(spir, max, san, id, res, acting);
     }
 
     public static void handle(PlayerSTCHudStatsSync msg, Supplier<NetworkEvent.Context> contextSupplier){
@@ -94,9 +99,10 @@ class ClientHudStatsSyncMessage
         ClientStatsData.setMaxSpirituality(msg.maxSpirituality);
         ClientStatsData.setSanity(msg.sanity);
         ClientStatsData.setPathwayId(msg.pathwayId);
+        ClientStatsData.setActing(msg.actingProgress);
 
         ClientAbilitiesData.setEnabledList(msg.enabledList);
-        contextSupplier.get().getSender().getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
+        Minecraft.getInstance().player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
             cap.getAbilitiesManager().setMap(cap.getAbilitiesManager().enabledDisabled, msg.enabledList);
             cap.setSpirituality(msg.spirituality);
             cap.setMaxSpirituality(msg.maxSpirituality);

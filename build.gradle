@@ -143,6 +143,12 @@ repositories {
     maven {
         url = "https://maven.firstdarkdev.xyz/snapshots"
     }
+
+    // curios compat
+    maven {
+        name = "Illusive Soulworks maven"
+        url = "https://maven.theillusivec4.top/"
+    }
     // If you have mod jar dependencies in ./libs, you can declare them as a repository like so.
     // See https://docs.gradle.org/current/userguide/declaring_repositories.html#sub:flat_dir_resolver
     // flatDir {
@@ -169,6 +175,10 @@ dependencies {
     //photon
     implementation fg.deobf("com.lowdragmc.photon:photon-forge-1.20.1:1.1.9") { transitive = false }
     implementation fg.deobf("com.lowdragmc.ldlib:ldlib-forge-1.20.1:1.0.40") { transitive = false }
+
+    //curios
+    compileOnly(fg.deobf("top.theillusivec4.curios:curios-forge:${curios_version}+1.20.1:api"))
+    runtimeOnly(fg.deobf("top.theillusivec4.curios:curios-forge:${curios_version}+1.20.1"))
 
     // Example mod dependency with JEI - using fg.deobf() ensures the dependency is remapped to your development mappings
     // The JEI API is declared for compile time use, while the full JEI artifact is used at runtime

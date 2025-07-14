@@ -36,9 +36,8 @@ public class FigurineSubstituteAbility extends Ability {
 
     @Override
     public void passive(EntityBeyonderManager cap, LivingEntity target) {
-        if(!cap.getEffectsManager().hasEffect(BeyonderEffects.EFFECT.MYSTERY_FIGURINE))
-            cap.getEffectsManager().addEffect(new BeyonderFigurineEffect(getSequence(), info.cost(), -1, true, BeyonderEffects.EFFECT.MYSTERY_FIGURINE),
-                    cap, target);
+        cap.getEffectsManager().addOrReplaceEffect(new BeyonderFigurineEffect(getSequence(), info.cost(), -1, true, BeyonderEffects.EFFECT.MYSTERY_FIGURINE),
+                cap, target);
     }
 
     @Override

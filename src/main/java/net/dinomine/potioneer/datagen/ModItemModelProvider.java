@@ -57,6 +57,7 @@ public class ModItemModelProvider extends ItemModelProvider {
         //simpleItem(ModItems.STAR_FLOWER);
         simpleItem(ModItems.POLISHED_DIAMOND);
         simpleItem(ModItems.ROOTS);
+        simpleItem(ModItems.ASTEROID_DEBUG);
         handheldItem(ModItems.MINER_PICKAXE);
         handheldItem(ModItems.FIRE_SWORD);
         handheldItem(ModItems.FROZEN_SWORD);

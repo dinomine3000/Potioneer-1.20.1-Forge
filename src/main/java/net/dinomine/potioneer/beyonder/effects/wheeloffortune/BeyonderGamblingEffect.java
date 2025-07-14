@@ -10,7 +10,7 @@ import net.minecraft.world.entity.LivingEntity;
 public class BeyonderGamblingEffect extends BeyonderEffect {
     private int quantity = 0;
     private int tick = 0;
-    private int limit;
+    private int luck_limit;
     private static final float a = 2;
     private int time;
 
@@ -19,7 +19,7 @@ public class BeyonderGamblingEffect extends BeyonderEffect {
 
         //limit for the maximum luck you can get to by using the effect. changes with sequence
         //This is calculated such that it reaches this maximum after, at most, 20 minutes
-        this.limit = 250;
+        this.luck_limit = 250;
         //change this with sequence too
         this.time = 1200;
         this.name = "Wheel of Fortune Gambling";
@@ -54,11 +54,11 @@ public class BeyonderGamblingEffect extends BeyonderEffect {
 
     //These functions can be visualized at https://www.desmos.com/calculator/3uoitj78qi
     private int luckToQuantity(int luck){
-        return (int) ((time/a)*(Math.pow(10, Math.log10(a+1)*luck/limit) - 1));
+        return (int) ((time/a)*(Math.pow(10, Math.log10(a+1)*luck/ luck_limit) - 1));
     }
 
     private int quantityToLuck(float quantity){
-        return (int)(limit * Math.log10(a*quantity/time + 1) / Math.log10(a+1));
+        return (int)(luck_limit * Math.log10(a*quantity/time + 1) / Math.log10(a+1));
     }
 
     @Override

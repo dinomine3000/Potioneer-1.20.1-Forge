@@ -19,7 +19,7 @@ import java.util.function.Supplier;
 public class WaterAffinityAbility extends Ability {
 
     public WaterAffinityAbility(int sequence){
-        this.info = new AbilityInfo(31, 32, "Water Affinity", 10 + sequence, sequence < 8 ? 30 : 20, this.getCooldown(), "water_affinity_" + (sequence < 8 ? "2" : "1"));
+        this.info = new AbilityInfo(31, 32, "Water Affinity", 10 + sequence, sequence < 8 ? 30 : 5, this.getCooldown(), "water_affinity_" + (sequence < 8 ? "2" : "1"));
     }
 
     @Override
@@ -41,11 +41,11 @@ public class WaterAffinityAbility extends Ability {
     @Override
     public void passive(EntityBeyonderManager cap, LivingEntity target) {
         if(isEnabled(cap.getAbilitiesManager())){
-            if(!cap.getEffectsManager().hasEffect(BeyonderEffects.EFFECT.TYRANT_WATER_AFFINITY, getSequence())){
-                cap.getEffectsManager().addEffect(BeyonderEffects.byId(BeyonderEffects.EFFECT.TYRANT_WATER_AFFINITY,
-                        getSequence(), info.cost(), -1, true), cap, target);
-            }
-            if(cap.getSpirituality() < 1) flipEnable(cap, target);
+            cap.getEffectsManager().addOrReplaceEffect(BeyonderEffects.byId(BeyonderEffects.EFFECT.TYRANT_WATER_AFFINITY,
+                    getSequence(), info.cost(), -1, true), cap, target);
+            if(cap.getSpirituality() <= cap.getMaxSpirituality()*0.15f) flipEnable(cap, target);
+        } else {
+            deactivate(cap, target);
         }
     }
 
@@ -71,7 +71,7 @@ public class WaterAffinityAbility extends Ability {
     //Credit to the create mod
     private static Multimap<Attribute, AttributeModifier> getEntitySwimSpeedModifier(int sequence){
         AttributeModifier singleRangeAttributeModifier =
-                new AttributeModifier(UUID.fromString("d42aaaa2-0d0d-458a-aaaa-ac7633691f66"),
+                new AttributeModifier(UUID.fromString("d42aaaa2-0d0d-aaaa-aaaa-ac7633691f66"),
                         "Beyonder swim speed modifier", (sequence-8.7-8.5)*(sequence-3.6-8.5)*0.08,
 
                         AttributeModifier.Operation.MULTIPLY_BASE);

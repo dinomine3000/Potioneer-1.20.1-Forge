@@ -26,8 +26,8 @@ public class XpCostReductionAbility extends Ability {
 
     @Override
     public void passive(EntityBeyonderManager cap, LivingEntity target) {
-        if(isEnabled(cap.getAbilitiesManager()) && !cap.getEffectsManager().hasEffect(BeyonderEffects.EFFECT.PARAGON_XP_REDUCE, getSequence())){
-            cap.getEffectsManager().addEffect(BeyonderEffects.byId(BeyonderEffects.EFFECT.PARAGON_XP_REDUCE,
+        if(isEnabled(cap.getAbilitiesManager())){
+            cap.getEffectsManager().addOrReplaceEffect(BeyonderEffects.byId(BeyonderEffects.EFFECT.PARAGON_XP_REDUCE,
                     getSequence(), info.cost(), -1, true), cap, target);
         }
 

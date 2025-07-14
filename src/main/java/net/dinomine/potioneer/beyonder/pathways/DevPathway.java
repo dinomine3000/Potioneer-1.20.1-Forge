@@ -1,7 +1,6 @@
 package net.dinomine.potioneer.beyonder.pathways;
 
 import net.dinomine.potioneer.beyonder.abilities.Ability;
-import net.dinomine.potioneer.beyonder.abilities.Beyonder;
 import net.dinomine.potioneer.beyonder.abilities.mystery.*;
 import net.dinomine.potioneer.beyonder.abilities.paragon.CraftingGuiAbility;
 import net.dinomine.potioneer.beyonder.abilities.paragon.DurabilityRegenAbility;
@@ -62,7 +61,7 @@ public class DevPathway extends Beyonder {
         }
 
         mng.setPathwayActives(activeAbilities);
-        mng.setPathwayPassives(passiveAbilities);
+        //mng.setPathwayPassives(passiveAbilities);
     }
 
 

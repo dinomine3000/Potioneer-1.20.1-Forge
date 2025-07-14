@@ -11,9 +11,7 @@ import net.minecraft.server.level.ServerPlayer;
 public class ChangeSpiritualityCommand {
 
     public ChangeSpiritualityCommand(CommandDispatcher<CommandSourceStack> dispatcher){
-        dispatcher.register(Commands.literal("spirituality").requires(stack -> {
-                            return stack.getPlayer().hasPermissions(2);
-                        })
+        dispatcher.register(Commands.literal("spirituality").requires(stack -> stack.hasPermission(2))
                 .then(Commands.literal("set")
                         .then(Commands.argument("value", IntegerArgumentType.integer())
                         .executes(this::setValue)))

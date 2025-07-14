@@ -26,10 +26,8 @@ public class CraftingSpiritualityAbility extends Ability {
 
     @Override
     public void passive(EntityBeyonderManager cap, LivingEntity target) {
-        if(!cap.getEffectsManager().hasEffect(BeyonderEffects.EFFECT.PARAGON_CRAFTING_SPIRITUALITY, getSequence())){
-            cap.getEffectsManager().addEffect(BeyonderEffects.byId(BeyonderEffects.EFFECT.PARAGON_CRAFTING_SPIRITUALITY,
-                    getSequence(), 0, -1, true), cap, target);
-        }
+        cap.getEffectsManager().addOrReplaceEffect(BeyonderEffects.byId(BeyonderEffects.EFFECT.PARAGON_CRAFTING_SPIRITUALITY,
+                getSequence(), 0, -1, true), cap, target);
 
     }
 

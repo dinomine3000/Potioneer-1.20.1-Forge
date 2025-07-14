@@ -1,7 +1,7 @@
 package net.dinomine.potioneer.beyonder.misc;
 
 import com.mojang.datafixers.util.Pair;
-import net.dinomine.potioneer.beyonder.abilities.Beyonder;
+import net.dinomine.potioneer.beyonder.pathways.Beyonder;
 import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
 import net.dinomine.potioneer.beyonder.player.EntityBeyonderManager;
 import net.dinomine.potioneer.item.ModItems;
@@ -52,6 +52,11 @@ public class MysticismHelper {
         if(seer.level().isClientSide()) return new DivinationResult(false, new ArrayList<>(), -1, 0f, "", ItemStack.EMPTY);
         ServerLevel level = (ServerLevel) seer.level();
         PotionFormulaSaveData savedData = PotionFormulaSaveData.from(level);
+        Optional<EntityBeyonderManager> capability = seer.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve();
+        if(capability.isPresent()){
+            //progress acting for hydro shaman by 0.25% per divination
+            capability.get().getActingManager().progressActing(1/400f, 18);
+        }
         if(item.isEmpty()){
             //dream divination / miscelaneous divination
             //return something to do with the next step the player should take to advance

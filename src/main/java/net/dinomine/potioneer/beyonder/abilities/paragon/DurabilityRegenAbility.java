@@ -32,8 +32,8 @@ public class DurabilityRegenAbility extends Ability {
         flipEnable(cap, target);
 
         if (isEnabled(cap.getAbilitiesManager()) && !levelUp && target instanceof Player player){
-            int caret = cap.getAbilitiesManager().getCaretForAbility(this);
-            if(caret > -1) cap.getAbilitiesManager().putOnCooldown(player, caret, 20, 20);
+            String id = getInfo().descId();
+            cap.getAbilitiesManager().putOnCooldown(player, id, 20, 20);
             //return false to have custom cooldown
             return false;
         }
@@ -47,15 +47,12 @@ public class DurabilityRegenAbility extends Ability {
 
     @Override
     public void activate(EntityBeyonderManager cap, LivingEntity target) {
-        if(!cap.getEffectsManager().hasEffect(BeyonderEffects.EFFECT.PARAGON_DURABILITY_REGEN, getSequence())){
-
-            int duration = levelUp ? -1 : 60*((9-getSequence())*6 + 3);
-            float cost = levelUp ? info.cost() / 10f: info.cost()/5f;
-            cap.getEffectsManager().addEffect(BeyonderEffects.byId(BeyonderEffects.EFFECT.PARAGON_DURABILITY_REGEN,
-                    getSequence(), cost, duration, true), cap, target);
+        int duration = levelUp ? -1 : 60*((9-getSequence())*6 + 3);
+        float cost = levelUp ? info.cost() / 10f: info.cost()/5f;
+        if(cap.getEffectsManager().addOrReplaceEffect(BeyonderEffects.byId(BeyonderEffects.EFFECT.PARAGON_DURABILITY_REGEN,
+                getSequence(), cost, duration, true), cap, target)){
             if(!levelUp) disable(cap, target);
             return;
-//                cap.requestActiveSpiritualityCost(info.cost());
         }
         target.sendSystemMessage(Component.literal("Could not give effect: one already exists"));
     }

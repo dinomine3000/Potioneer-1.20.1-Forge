@@ -26,10 +26,8 @@ public class PurificationAbility extends Ability {
     @Override
     public void passive(EntityBeyonderManager cap, LivingEntity target) {
         if(isEnabled(cap.getAbilitiesManager())){
-            if(!cap.getEffectsManager().hasEffect(BeyonderEffects.EFFECT.RED_PURIFICATION, getSequence())){
-                cap.getEffectsManager().addEffect(BeyonderEffects.byId(BeyonderEffects.EFFECT.RED_PURIFICATION,
-                        getSequence(), info.cost(), -1, true), cap, target);
-            }
+            cap.getEffectsManager().addOrReplaceEffect(BeyonderEffects.byId(BeyonderEffects.EFFECT.RED_PURIFICATION,
+                    getSequence(), info.cost(), -1, true), cap, target);
         }
     }
 

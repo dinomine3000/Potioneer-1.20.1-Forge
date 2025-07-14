@@ -1,17 +1,13 @@
 package net.dinomine.potioneer.beyonder.player;
 
-import net.dinomine.potioneer.beyonder.abilities.Ability;
 import net.dinomine.potioneer.beyonder.abilities.AbilityFunctionHelper;
-import net.dinomine.potioneer.beyonder.abilities.Beyonder;
-import net.dinomine.potioneer.beyonder.misc.MysticismHelper;
+import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
+import net.dinomine.potioneer.beyonder.pathways.Beyonder;
+import net.dinomine.potioneer.beyonder.misc.CharacteristicHelper;
 import net.dinomine.potioneer.beyonder.pathways.*;
-import net.dinomine.potioneer.entities.ModEntities;
 import net.dinomine.potioneer.entities.custom.CharacteristicEntity;
-import net.dinomine.potioneer.item.ModItems;
 import net.dinomine.potioneer.network.PacketHandler;
 import net.dinomine.potioneer.network.messages.*;
-import net.minecraft.client.particle.ParticleRenderType;
-import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -29,28 +25,31 @@ import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.network.PacketDistributor;
 
 import java.util.ArrayList;
+import java.util.function.Supplier;
 
 @AutoRegisterCapability
 public class EntityBeyonderManager {
     public static final int SANITY_FOR_RECHARGE = 25;
     public static final int SANITY_FOR_DROP = 30;
     public static final int SANITY_WARNING_THRESHOLD = 40;
-    public static final int SANITY_MIN_RESPAW = SANITY_WARNING_THRESHOLD;
+    public static final int SANITY_MIN_RESPAWN = SANITY_WARNING_THRESHOLD;
 
     private float spirituality = 100;
     private float spiritualityCost = 0;
     private int maxSpirituality = 100;
     private int sanity = 100;
+    private Supplier<Integer> maxSanity;
 
     private final BeyonderStats beyonderStats;
     private final PlayerAbilitiesManager abilitiesManager;
     private final PlayerEffectsManager effectsManager;
     private final PlayerLuckManager luckManager;
+    private final PlayerActingManager actingManager;
     private ArrayList<ConjurerContainer> conjurerContainers = new ArrayList<>();
 
     private Beyonder pathway = new Beyonder(10);
     private final LivingEntity entity;
-    private int syncCD = 20;
+    private int syncCD = 40;
     private int effectCd = 40;
     private int characteristicXrayCd = 0;
 
@@ -60,6 +59,8 @@ public class EntityBeyonderManager {
         abilitiesManager = new PlayerAbilitiesManager();
         effectsManager = new PlayerEffectsManager();
         luckManager = new PlayerLuckManager();
+        actingManager = new PlayerActingManager();
+        maxSanity = () -> Math.max((int) (actingManager.getAggregatedActingProgress(getPathwayId())*100), 50);
         if(entity instanceof Player player) conjurerContainers.add(new ConjurerContainer(player, 9));
         this.entity = entity;
     }
@@ -67,6 +68,8 @@ public class EntityBeyonderManager {
     public ConjurerContainer getConjurerContainer(int idx){
         return conjurerContainers.isEmpty() ? null : conjurerContainers.get(idx);
     }
+
+    public PlayerActingManager getActingManager(){return actingManager;}
 
     public PlayerEffectsManager getEffectsManager(){
         return effectsManager;
@@ -104,12 +107,12 @@ public class EntityBeyonderManager {
 
     public void setSanity(int san){
         if(san < 0){
-            this.sanity = 100;
+            this.sanity = maxSanity.get();
         } else this.sanity = san;
     }
 
     public void changeSanity(int val){
-        setSanity(Mth.clamp(getSanity() + val, 0, 100));
+        setSanity(Mth.clamp(getSanity() + val, 0, maxSanity.get()));
     }
 
     public int getSanity(){
@@ -117,6 +120,7 @@ public class EntityBeyonderManager {
     }
 
     public void onPlayerSleep(){
+        System.out.println("Player sleep triggered");
         changeSpirituality(this.maxSpirituality/5f);
         if(sanity >= SANITY_FOR_RECHARGE) changeSanity(30);
     }
@@ -147,7 +151,7 @@ public class EntityBeyonderManager {
     }
 
     public void requestActiveSpiritualityCost(float cost){
-        this.spiritualityCost += 20*cost;
+        this.spiritualityCost += 40*cost;
     }
 
     public void requestPassiveSpiritualityCost(float cost){
@@ -155,7 +159,7 @@ public class EntityBeyonderManager {
     }
 
     private void applyCost(){
-        setSpirituality(Mth.clamp(Math.round((1000*(getSpirituality() - spiritualityCost/20f + maxSpirituality/2400f))) / 1000f,
+        setSpirituality(Mth.clamp(Math.round((1000*(getSpirituality() - spiritualityCost/40f + maxSpirituality/900f))) / 1000f,
                 0f, this.maxSpirituality));
         this.spiritualityCost = 0;
     }
@@ -165,25 +169,33 @@ public class EntityBeyonderManager {
             abilitiesManager.onTick(this, entity);
             effectsManager.onTick(this, entity);
             luckManager.onTick(this, entity);
+            actingManager.tick();
             if(entity instanceof Player player){
+                if(syncCD-- == player.getId()%40){
+                    if(effectsManager.hasEffect(BeyonderEffects.EFFECT.MISC_COGITATION)){
+                        requestActiveSpiritualityCost(-(maxSpirituality/120f));
+                        changeSanity(1);
+                    }
+                    applyCost();
+                    syncCD += 39;
+                    abilitiesManager.updateArtifacts(this, player);
+                    PacketHandler.INSTANCE.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) player),
+                            new PlayerSTCHudStatsSync(this.spirituality, this.maxSpirituality, this.sanity, this.getPathwayId(), getAbilitiesManager().enabledDisabled, (float) actingManager.getAggregatedActingProgress(getPathwayId())));
+                }
                 PacketHandler.INSTANCE.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) player),
                         new PlayerStatsSyncMessage(getBeyonderStats().getMiningSpeed(),
                                 luckManager.getLuck(),
                                 luckManager.getMinPassiveLuck(),
                                 luckManager.getMaxPassiveLuck()));
-            }
-            if(syncCD-- < 0){
+            } else if(syncCD-- == entity.getId()%40){
                 applyCost();
-                syncCD = 20;
-                if(entity instanceof Player player)
-                    PacketHandler.INSTANCE.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) player),
-                        new PlayerSTCHudStatsSync(this.spirituality, this.maxSpirituality, this.sanity, this.getPathwayId(), getAbilitiesManager().enabledDisabled));
+                syncCD += 39;
             }
             if(effectCd++ > 100){
                 effectCd = 0;
                 if (spirituality < maxSpirituality*0.15f){
                     entity.addEffect(new MobEffectInstance(MobEffects.DIG_SLOWDOWN, 100, 1, true, true));
-                    entity.addEffect(new MobEffectInstance(MobEffects.HUNGER, 100, 1, true, true));
+                    entity.addEffect(new MobEffectInstance(MobEffects.HUNGER, 200, 1, true, true));
                     entity.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 100, 1, true, true));
                     if (sanity < SANITY_WARNING_THRESHOLD){
                         entity.addEffect(new MobEffectInstance(MobEffects.DARKNESS, 100, 0, true, true));
@@ -192,6 +204,8 @@ public class EntityBeyonderManager {
                         if(sanity > SANITY_FOR_RECHARGE) changeSanity(-1);
                         entity.hurt(entity.damageSources().generic(), entity.getMaxHealth()*0.1f);
                     }
+                } else {
+                    if(sanity >= SANITY_FOR_RECHARGE) changeSanity(1);
                 }
             }
         } else if (entity instanceof Player player && characteristicXrayCd-- < 0){
@@ -223,14 +237,7 @@ public class EntityBeyonderManager {
 //        System.out.println(getEffectsManager());
         boolean changingPathway = Math.floorDiv(getPathwayId(), 10) != Math.floorDiv(id, 10);
         this.abilitiesManager.clear(true, this, player);
-//        if(id < 0){
-//            //setDefaultStats(player);
-//            //getEffectsManager().clearEffects(this, player);
-//            //getAbilitiesManager().clear(true, this, player);
-//            this.pathway = new Beyonder(10);
-//            if(sync) syncSequenceData(player, advancing);
-//            return true;
-//        }
+        if(advancing) actingManager.resetPassiveActing(luckManager, player.getRandom());
         int seq = id%10;
 
 
@@ -239,7 +246,7 @@ public class EntityBeyonderManager {
         setPathway(id, advancing);
         if(!player.level().isClientSide()){
             PacketHandler.INSTANCE.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) player),
-                    new PlayerAbilityInfoSyncSTC(getAbilitiesManager().getPathwayActives().stream().map(Ability::getInfo).toList(), changingPathway));
+                    new PlayerAbilityInfoSyncSTC(getAbilitiesManager().getActivesIds(), changingPathway));
         }
 
 
@@ -329,9 +336,11 @@ public class EntityBeyonderManager {
         setPathway(source.getPathwayId(), false);
         player.setHealth(player.getMaxHealth());
         this.luckManager.copyFrom(source.luckManager);
+        this.effectsManager.copyFrom(source.effectsManager, this, player);
         this.abilitiesManager.copyFrom(source.getAbilitiesManager());
         this.conjurerContainers = new ArrayList<>(source.conjurerContainers);
-        this.sanity = Math.max(source.sanity, SANITY_MIN_RESPAW);
+        this.sanity = Math.max(source.sanity, SANITY_MIN_RESPAWN);
+        this.actingManager.copyFrom(source.actingManager);
         //this.abilitiesManager.onAcquireAbilities(this, player);
     }
 
@@ -351,6 +360,7 @@ public class EntityBeyonderManager {
         this.effectsManager.saveNBTData(nbt);
         this.abilitiesManager.saveNBTData(nbt);
         this.luckManager.saveNBTData(nbt);
+        this.actingManager.saveNBTData(nbt);
     }
 
     public void loadNBTData(CompoundTag nbt){
@@ -376,8 +386,8 @@ public class EntityBeyonderManager {
         this.luckManager.loadNBTData(nbt);
         this.effectsManager.loadNBTData(nbt, this, entity);
         //enabledDisabled BEFORE onAcquire bc of reach ability
-        this.abilitiesManager.loadNBTData(nbt, entity);
-        this.abilitiesManager.loadEnabledListFromTag(nbt, this, entity);
+        this.abilitiesManager.loadNBTData(nbt);
+        this.actingManager.loadNBTData(nbt);
         //this.abilitiesManager.onAcquireAbilities(this, entity);
         //TODO make abilities manager actually save and load item abilities.
         //this.abilitiesManager.loadNBTData(nbt);
@@ -399,22 +409,7 @@ public class EntityBeyonderManager {
 
     public void onPlayerDie(LivingDeathEvent event) {
         if(sanity < SANITY_FOR_DROP && event.getEntity() instanceof Player player && isBeyonder()){
-            ItemStack characteristic = new ItemStack(ModItems.CHARACTERISTIC.get());
-            CompoundTag root = new CompoundTag();
-
-            CompoundTag charInfo = new CompoundTag();
-            charInfo.putInt("id", getPathwayId());
-            root.put("beyonder_info", charInfo);
-            characteristic.setTag(root);
-
-            MysticismHelper.updateOrApplyMysticismTag(characteristic, 20, player);
-
-
-            CharacteristicEntity entity = new CharacteristicEntity(ModEntities.CHARACTERISTIC.get(), event.getEntity().level(), characteristic.copy(), getPathwayId());
-            entity.setSequenceId(getPathwayId());
-            entity.moveTo(event.getEntity().position().offsetRandom(player.getRandom(), 1f).add(0, 1, 0));
-            event.getEntity().level().addFreshEntity(entity);
-
+            CharacteristicHelper.addCharacteristicToLevel(getPathwayId(), player.level(), player, player.position(), player.getRandom());
             advance((getPathwayId() % 10 != 9) ? getPathwayId() + 1 : -1, player, true, true);
         }
     }

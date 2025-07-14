@@ -1,6 +1,6 @@
 package net.dinomine.potioneer.entities.custom;
 
-import net.dinomine.potioneer.beyonder.abilities.Beyonder;
+import net.dinomine.potioneer.beyonder.pathways.Beyonder;
 import net.dinomine.potioneer.util.GeoTintable;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;

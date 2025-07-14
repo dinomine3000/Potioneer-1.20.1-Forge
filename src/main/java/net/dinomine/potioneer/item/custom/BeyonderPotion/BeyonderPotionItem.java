@@ -1,6 +1,7 @@
 package net.dinomine.potioneer.item.custom.BeyonderPotion;
 
 import net.dinomine.potioneer.beyonder.client.ClientStatsData;
+import net.dinomine.potioneer.beyonder.misc.CharacteristicHelper;
 import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
 import net.dinomine.potioneer.beyonder.player.EntityBeyonderManager;
 import net.dinomine.potioneer.util.GeoTintable;
@@ -109,7 +110,7 @@ public class BeyonderPotionItem extends PotionItem implements GeoItem, GeoTintab
                             if(!player.isCreative()){
                                 cap.setSanity(0);
                                 player.kill();
-                                //reduce sequence
+                                CharacteristicHelper.addCharacteristicToLevel(Integer.parseInt(name), pLevel, null, player.position(), player.getRandom());
                             }
                             System.out.println("Pathway mismatch: " + name + " for pathway " + Math.floorDiv(cap.getPathwayId(), 10));
                             player.sendSystemMessage(Component.literal("Lost control on the spot. oh well."));

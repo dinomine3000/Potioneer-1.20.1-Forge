@@ -27,9 +27,8 @@ public class FortuneAbility extends Ability {
     @Override
     public void passive(EntityBeyonderManager cap, LivingEntity target) {
         if(cap.getSpirituality() < 3*(10-getSequence())) disable(cap, target);
-        if(cap.getAbilitiesManager().isEnabled(this)
-                && !cap.getEffectsManager().hasEffect(BeyonderEffects.EFFECT.WHEEL_FORTUNE, getSequence())){
-            cap.getEffectsManager().addEffect(BeyonderEffects.byId(BeyonderEffects.EFFECT.WHEEL_FORTUNE,
+        if(cap.getAbilitiesManager().isEnabled(this)){
+            cap.getEffectsManager().addOrReplaceEffect(BeyonderEffects.byId(BeyonderEffects.EFFECT.WHEEL_FORTUNE,
                     getSequence(), 3*(10-getSequence()), -1, true), cap, target);
         }
     }

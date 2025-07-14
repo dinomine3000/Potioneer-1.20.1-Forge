@@ -1,7 +1,7 @@
 package net.dinomine.potioneer.beyonder.pathways;
 
 import net.dinomine.potioneer.beyonder.abilities.Ability;
-import net.dinomine.potioneer.beyonder.abilities.Beyonder;
+import net.dinomine.potioneer.beyonder.abilities.misc.CogitationAbility;
 import net.dinomine.potioneer.beyonder.abilities.mystery.*;
 import net.dinomine.potioneer.beyonder.player.PlayerAbilitiesManager;
 
@@ -34,7 +34,6 @@ public class MysteryPathway extends Beyonder {
     }
 
     public static void getAbilities(int sequence, PlayerAbilitiesManager mng){
-        ArrayList<Ability> passiveAbilities = new ArrayList<>();
         ArrayList<Ability> activeAbilities = new ArrayList<>();
 
         switch(sequence){
@@ -47,34 +46,23 @@ public class MysteryPathway extends Beyonder {
             case 6:
             case 7:
                 activeAbilities.add(new AirBulletAbility(sequence));
-                FigurineSubstituteAbility figure = new FigurineSubstituteAbility(sequence);
-                activeAbilities.add(figure);
-                passiveAbilities.add(figure);
+                activeAbilities.add(new FigurineSubstituteAbility(sequence));
                 activeAbilities.add(new PlagueAbility(sequence));
                 activeAbilities.add(new PanaceaAbility(sequence));
                 activeAbilities.add(new PushAbility(sequence));
             case 8:
-//                activeAbilities.add(new RandomTeleportAbility(sequence));
-                ReduceFallDamageAbility fall = new ReduceFallDamageAbility(sequence);
-                StepUpAbility step = new StepUpAbility(sequence);
-
-                activeAbilities.add(fall);
-                passiveAbilities.add(fall);
-                activeAbilities.add(step);
-                passiveAbilities.add(step);
+                activeAbilities.add(new ReduceFallDamageAbility(sequence));
+                activeAbilities.add(new StepUpAbility(sequence));
                 activeAbilities.add(new LeapAbility(sequence));
             case 9:
-                SpiritualityRegenAbility regen = new SpiritualityRegenAbility(sequence);
-                ReachAbility reach = new ReachAbility(sequence);
-                activeAbilities.add(reach);
+                activeAbilities.add(new ReachAbility(sequence));
                 activeAbilities.add(new DoorOpeningAbility(sequence));
-                activeAbilities.add(regen);
+                activeAbilities.add(new SpiritualityRegenAbility(sequence));
                 activeAbilities.add(new InvisibilityAbility(sequence));
-                passiveAbilities.add(regen);
-                passiveAbilities.add(reach);
+                activeAbilities.add(new CogitationAbility(20 + sequence));
         }
         mng.setPathwayActives(activeAbilities);
-        mng.setPathwayPassives(passiveAbilities);
+        //mng.setPathwayPassives(passiveAbilities);
     }
 
 
@@ -89,7 +77,7 @@ public class MysteryPathway extends Beyonder {
 
     public static String getSequenceName(int seq){
         return switch (seq) {
-            case 9 -> "Trickmaster";
+            case 9 -> "Trickster";
             case 8 -> "Acrobat";
             case 7 -> "Voodoo_Assassin";
             case 6 -> "Parasite";

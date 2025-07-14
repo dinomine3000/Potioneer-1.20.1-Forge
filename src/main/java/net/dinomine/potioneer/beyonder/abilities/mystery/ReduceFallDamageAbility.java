@@ -27,12 +27,10 @@ public class ReduceFallDamageAbility extends Ability {
     @Override
     public void passive(EntityBeyonderManager cap, LivingEntity target) {
         if(cap.getSpirituality() < info.cost()) disable(cap, target);
-        if(isEnabled(cap.getAbilitiesManager()) && !cap.getEffectsManager().hasEffect(BeyonderEffects.EFFECT.MYSTERY_FALL, getSequence())){
-//            System.out.println("given regen effect");
-            cap.getEffectsManager().addEffect(BeyonderEffects.byId(BeyonderEffects.EFFECT.MYSTERY_FALL,
+        if(isEnabled(cap.getAbilitiesManager())){
+            cap.getEffectsManager().addOrReplaceEffect(BeyonderEffects.byId(BeyonderEffects.EFFECT.MYSTERY_FALL,
                     getSequence(), info.cost(), -1, true), cap, target);
         }
-
     }
 
     @Override

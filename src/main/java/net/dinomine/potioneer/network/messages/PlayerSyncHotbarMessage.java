@@ -14,10 +14,10 @@ import java.util.function.Supplier;
 
 //message sent between server and client to keep the ability hotbar info between world loads
 public class PlayerSyncHotbarMessage {
-    public ArrayList<Integer> hotbar;
-    public int quick;
+    public ArrayList<String> hotbar;
+    public String quick;
 
-    public PlayerSyncHotbarMessage(ArrayList<Integer> hotbar, int quickAbility){
+    public PlayerSyncHotbarMessage(ArrayList<String> hotbar, String quickAbility){
         this.hotbar = new ArrayList<>(hotbar);
         this.quick = quickAbility;
     }
@@ -25,19 +25,36 @@ public class PlayerSyncHotbarMessage {
     public static void encode(PlayerSyncHotbarMessage msg, FriendlyByteBuf buffer){
         buffer.writeInt(msg.hotbar.size());
         for(int i = 0; i < msg.hotbar.size(); i++){
-            buffer.writeInt(msg.hotbar.get(i));
+            String id = msg.hotbar.get(i);
+            buffer.writeInt(id.length());
+            for(int j = 0; j < id.length(); j++){
+                buffer.writeChar(id.charAt(j));
+            }
         }
-        buffer.writeInt(msg.quick);
+        buffer.writeInt(msg.quick.length());
+        for(int i = 0; i < msg.quick.length(); i++){
+            buffer.writeChar(msg.quick.charAt(i));
+        }
     }
 
     public static PlayerSyncHotbarMessage decode(FriendlyByteBuf buffer){
         int size = buffer.readInt();
-        ArrayList<Integer> hotbar = new ArrayList<>();
+        ArrayList<String> hotbar = new ArrayList<>();
+        StringBuilder builder;
         for(int i = 0; i < size; i++){
-            hotbar.add(buffer.readInt());
+            builder = new StringBuilder();
+            int iterations = buffer.readInt();
+            for(int j = 0; j < iterations; j++){
+                builder.append(buffer.readChar());
+            }
+            hotbar.add(builder.toString());
         }
-        int quick = buffer.readInt();
-        return new PlayerSyncHotbarMessage(hotbar, quick);
+        int quickSize = buffer.readInt();
+        builder = new StringBuilder();
+        for(int i = 0; i < quickSize; i++){
+            builder.append(buffer.readChar());
+        }
+        return new PlayerSyncHotbarMessage(hotbar, builder.toString());
     }
 
     public static void handle(PlayerSyncHotbarMessage msg, Supplier<NetworkEvent.Context> contextSupplier){

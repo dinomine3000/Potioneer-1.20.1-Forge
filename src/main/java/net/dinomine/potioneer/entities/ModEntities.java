@@ -63,6 +63,13 @@ public class ModEntities {
                             .sized(0.2f, 1f)
                             .build(new ResourceLocation(Potioneer.MOD_ID, "divination_rod").toString()));
 
+    public static final RegistryObject<EntityType<AsteroidEntity>> ASTEROID =
+            ENTITY_TYPES.register("asteroid",
+                    () -> EntityType.Builder.of((EntityType.EntityFactory<AsteroidEntity>) (entityType, level) ->
+                                    new AsteroidEntity(entityType, level), MobCategory.MISC)
+                            .sized(1f, 1f)
+                            .build(new ResourceLocation(Potioneer.MOD_ID, "asteroid").toString()));
+
     public static void register(IEventBus eventBus){
         ENTITY_TYPES.register(eventBus);
     }

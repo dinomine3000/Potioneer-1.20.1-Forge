@@ -1,6 +1,7 @@
 package net.dinomine.potioneer.block.entity;
 
 import net.dinomine.potioneer.Potioneer;
+import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
 import net.dinomine.potioneer.mob_effects.ModEffects;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -49,7 +50,9 @@ public class WaterTrapBlockEntity extends BlockEntity implements GeoBlockEntity 
     }
 
     public boolean isOwner(UUID uId, int sequenceId){
-        return(Math.floorDiv(sequenceId, 10) == 1 && Math.floorMod(sequenceId, 10) <= 8 && uId.compareTo(id) == 0);
+        //return(Math.floorDiv(sequenceId, 10) == 1 && Math.floorMod(sequenceId, 10) <= 8 && uId.compareTo(id) == 0);
+        //changed to account for using artifacts -> the owner does not have to be of the pathway
+        return uId.compareTo(id) == 0;
     }
 
     @Override
@@ -73,12 +76,23 @@ public class WaterTrapBlockEntity extends BlockEntity implements GeoBlockEntity 
         ArrayList<Entity> entities = new ArrayList<>(pLevel.getEntities((Entity)null, box, entity -> entity instanceof LivingEntity));
 
         if(!entities.isEmpty()) {
+            assert level != null;
+            Player caster = level.getPlayerByUUID(id);
             for(Entity ent: entities){
                 if(ent instanceof Player playerTrigger && playerTrigger.getUUID().compareTo(id) == 0) return;
                 setChanged();
-                pLevel.destroyBlock(pPos, false);
+                if(caster != null){
+                    caster.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
+                        cap.getActingManager().progressActing(1f, 18);
+                    });
+                }
                 applyEffectsToEntity(pLevel, pPos, (LivingEntity) ent);
             }
+            if(caster != null){
+                caster.sendSystemMessage(Component.translatable("potioneer.message.water_trap_activated"));
+            }
+
+            pLevel.destroyBlock(pPos, false);
         }
     }
 
