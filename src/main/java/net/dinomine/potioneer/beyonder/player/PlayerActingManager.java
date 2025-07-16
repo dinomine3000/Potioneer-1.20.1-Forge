@@ -1,5 +1,6 @@
 package net.dinomine.potioneer.beyonder.player;
 
+import net.dinomine.potioneer.config.PotioneerCommonConfig;
 import net.minecraft.nbt.*;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
@@ -14,10 +15,13 @@ public class PlayerActingManager {
     private double[] warriorProgress;
     private double[] crafterProgress;
 
-    private double passivActingLimit;
+    private double passiveActingLimit;
     private double passiveActing = 0f;
     private double intrinsicActingMultiplier;
-    private static final Supplier<Double> randomLimit = () -> Math.random()/5d;
+    private static final Supplier<Double> randomLimit = () -> {
+        double min = PotioneerCommonConfig.MINIMUM_PASSIVE_ACTING_LIMIT.get();
+        return min + Math.random() * (PotioneerCommonConfig.MAXIMUM_PASSIVE_ACTING_LIMIT.get() - min);
+    };
 
     public PlayerActingManager(){
         minerProgress = new double[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
@@ -25,12 +29,12 @@ public class PlayerActingManager {
         tricksterProgress = new double[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
         warriorProgress = new double[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
         crafterProgress = new double[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-        passivActingLimit = randomLimit.get();
-        intrinsicActingMultiplier = 1 + Math.random()/3d;
+        passiveActingLimit = randomLimit.get();
+        intrinsicActingMultiplier = PotioneerCommonConfig.DO_INTRINSIC_ACTING_MULTIPLIERS.get() ? Math.random()*PotioneerCommonConfig.MAXIMUM_INTRINSIC_ACTING_MULTIPLIER.get(): 1;
     }
 
     public void tick(){
-        passiveActing = Mth.clamp(passiveActing + 0.00001333d, 0f, passivActingLimit);
+        passiveActing = Mth.clamp(passiveActing + 0.00001333d, 0f, passiveActingLimit);
     }
 
     private double[] getActingList(int pathwayId){
@@ -48,7 +52,7 @@ public class PlayerActingManager {
     public void progressActing(double amount, int pathwayId){
         double[] list = getActingList(pathwayId);
         if(list == null) return;
-        list[pathwayId%10] = Mth.clamp(list[pathwayId%10]  + amount*intrinsicActingMultiplier, 0, 1);
+        list[pathwayId%10] = Mth.clamp(list[pathwayId%10]  + amount*intrinsicActingMultiplier * PotioneerCommonConfig.UNIVERSAL_ACTING_MULTIPLIER.get(), 0, 1);
     }
 
     public double getAggregatedActingProgress(int pathwayId){
@@ -64,8 +68,8 @@ public class PlayerActingManager {
     }
 
     public void resetPassiveActing(PlayerLuckManager luckMng, RandomSource random){
-        passivActingLimit = randomLimit.get();
-        if(luckMng.passesLuckCheck(0.3f, 40, 0, random)) passivActingLimit +=0.15f;
+        passiveActingLimit = randomLimit.get();
+        if(luckMng.passesLuckCheck(0.3f, 40, 0, random)) passiveActingLimit +=0.15f;
         passiveActing = 0;
     }
 
@@ -76,13 +80,13 @@ public class PlayerActingManager {
     }
 
     public Component getDescComponent(int pathwayId){
-        return Component.literal("Acting at: " + getAggregatedActingProgress(pathwayId) + "\nPassive limit: " + passivActingLimit + "\nIntrinsic Multiplier" + intrinsicActingMultiplier);
+        return Component.literal("Acting at: " + getAggregatedActingProgress(pathwayId) + "\nPassive limit: " + passiveActingLimit + "\nIntrinsic Multiplier" + intrinsicActingMultiplier);
     }
 
     public void saveNBTData(CompoundTag tag){
         CompoundTag acting = new CompoundTag();
         acting.putDouble("passiveActing", passiveActing);
-        acting.putDouble("passiveActingLimit", passivActingLimit);
+        acting.putDouble("passiveActingLimit", passiveActingLimit);
         acting.putDouble("multiplier", intrinsicActingMultiplier);
 
         acting.put("minerProgress", toListTag(minerProgress));
@@ -105,7 +109,7 @@ public class PlayerActingManager {
         if(!tag.contains("acting")) return;
         CompoundTag acting = tag.getCompound("acting");
         passiveActing = acting.getDouble("passiveActing");
-        passivActingLimit = acting.getDouble("passiveActingLimit");
+        passiveActingLimit = acting.getDouble("passiveActingLimit");
         intrinsicActingMultiplier = acting.getDouble("multiplier");
 
         minerProgress = fromListTag(acting.getList("minerProgress", Tag.TAG_DOUBLE));
@@ -130,7 +134,7 @@ public class PlayerActingManager {
         warriorProgress = actingManager.warriorProgress;
         crafterProgress = actingManager.crafterProgress;
         passiveActing = actingManager.passiveActing;
-        passivActingLimit = actingManager.passivActingLimit;
+        passiveActingLimit = actingManager.passiveActingLimit;
         intrinsicActingMultiplier = actingManager.intrinsicActingMultiplier;
     }
 }

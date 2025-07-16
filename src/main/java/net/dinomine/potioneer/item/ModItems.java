@@ -4,9 +4,11 @@ import net.dinomine.potioneer.Potioneer;
 import net.dinomine.potioneer.entities.ModEntities;
 import net.dinomine.potioneer.item.custom.BeyonderPotion.BeyonderPotionItem;
 import net.dinomine.potioneer.item.custom.*;
+import net.dinomine.potioneer.item.custom.DeathKnell.DeathKnellItem;
 import net.dinomine.potioneer.item.custom.cane.CaneItem;
 import net.dinomine.potioneer.item.custom.coin.CoinItem;
 import net.dinomine.potioneer.item.custom.leymanosTravels.LeymanosTravels;
+import net.dinomine.potioneer.item.custom.scepter.cane.ScepterItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.SwordItem;
@@ -72,7 +74,7 @@ public class ModItems {
             () -> new Item(new Item.Properties().rarity(Rarity.RARE).stacksTo(16).fireResistant()));
 
     public static final RegistryObject<Item> DIVINATION_ROD = ITEMS.register("cane",
-            () -> new CaneItem(new Item.Properties().stacksTo(1).fireResistant().defaultDurability(256)));
+            () -> new CaneItem(new Item.Properties().stacksTo(1).defaultDurability(256)));
 
     public static final RegistryObject<Item> FIRE_SWORD = ITEMS.register("fire_sword",
             () -> new FireSword(new Item.Properties().stacksTo(1).fireResistant().rarity(Rarity.UNCOMMON)));
@@ -117,13 +119,13 @@ public class ModItems {
             () -> new Item(new Item.Properties().stacksTo(1).fireResistant().rarity(Rarity.EPIC)));
 
     public static final RegistryObject<Item> KALVETUA_SCEPTER = ITEMS.register("sea_god_scepter",
-            () -> new Item(new Item.Properties().stacksTo(1).fireResistant().rarity(Rarity.EPIC)));
+            () -> new ScepterItem(new Item.Properties().stacksTo(1).fireResistant().rarity(Rarity.EPIC).defaultDurability(512)));
 
     public static final RegistryObject<Item> DEATH_KNELL = ITEMS.register("death_knell",
-            () -> new Item(new Item.Properties().stacksTo(1).fireResistant().rarity(Rarity.EPIC)));
+            () -> new DeathKnellItem(new Item.Properties().stacksTo(1).fireResistant().rarity(Rarity.EPIC)));
 
     public static final RegistryObject<Item> UNSHADOWED_CRUCIFIX = ITEMS.register("unshadowed_crucifix",
-            () -> new Item(new Item.Properties().stacksTo(1).fireResistant().rarity(Rarity.EPIC)));
+            () -> new UnshadowedCrucifixItem(new Item.Properties().stacksTo(1).fireResistant().rarity(Rarity.EPIC)));
 
     public static final RegistryObject<Item> LEYMANOS_TRAVELS = ITEMS.register("leymanos_travels",
             () -> new LeymanosTravels(new Item.Properties().stacksTo(1).fireResistant().rarity(Rarity.EPIC)));

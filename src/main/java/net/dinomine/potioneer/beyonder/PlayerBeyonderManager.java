@@ -7,12 +7,15 @@ import net.dinomine.potioneer.beyonder.misc.ArtifactHelper;
 import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
 import net.dinomine.potioneer.beyonder.player.EntityBeyonderManager;
 import net.dinomine.potioneer.item.ModItems;
+import net.dinomine.potioneer.item.custom.DeathKnell.DeathKnellItem;
 import net.dinomine.potioneer.network.PacketHandler;
 import net.dinomine.potioneer.network.messages.PlayerAdvanceMessage;
 import net.dinomine.potioneer.network.messages.SequenceSTCSyncRequest;
+import net.minecraft.client.renderer.item.ItemProperties;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -38,6 +41,7 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.network.PacketDistributor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import software.bernie.geckolib.animatable.GeoItem;
 
 @Mod.EventBusSubscriber
 public class PlayerBeyonderManager {
@@ -264,12 +268,12 @@ public class PlayerBeyonderManager {
             boolean silk = cap.getEffectsManager().hasEffect(BeyonderEffects.EFFECT.WHEEL_SILK_TOUCH);
 
             if(fortune && event.getState().is(Tags.Blocks.ORES)){
-                int lvl = (10 - cap.getEffectsManager().getEffect(BeyonderEffects.EFFECT.WHEEL_FORTUNE).getSequenceLevel())/2;
+                float lvl = 1 + (10 - cap.getEffectsManager().getEffect(BeyonderEffects.EFFECT.WHEEL_FORTUNE).getSequenceLevel())/2f;
                 while(lvl >= 1){
                     lvl--;
                     i++;
                 }
-                if(lvl < event.getLevel().getRandom().nextFloat()){
+                if(event.getLevel().getRandom().nextFloat() < lvl){
                     i++;
                 }
             }
@@ -278,6 +282,7 @@ public class PlayerBeyonderManager {
             }
 
             if (fortune || silk) {
+                cap.getActingManager().progressActing(1/280d, 8);
 //                System.out.println("Applied at least one of the effects");
                 event.setCanceled(true);
                 event.getLevel().removeBlock(event.getPos(), false);

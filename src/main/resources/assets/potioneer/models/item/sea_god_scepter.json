@@ -1,0 +1,87 @@
+{
+  "credit": "Made with Blockbench",
+  "parent": "builtin/entity",
+  "texture_size": [
+    32,
+    32
+  ],
+  "display": {
+    "thirdperson_righthand": {
+      "translation": [
+        0,
+        -11.75,
+        1.75
+      ]
+    },
+    "thirdperson_lefthand": {
+      "rotation": [
+        0.5,
+        0,
+        0
+      ],
+      "translation": [
+        0,
+        -11.75,
+        1.75
+      ]
+    },
+    "firstperson_righthand": {
+      "rotation": [
+        -14.25,
+        0,
+        0
+      ],
+      "translation": [
+        0,
+        -9.5,
+        3.25
+      ]
+    },
+    "firstperson_lefthand": {
+      "rotation": [
+        -14.25,
+        0,
+        0
+      ],
+      "translation": [
+        0,
+        -9.5,
+        3.25
+      ]
+    },
+    "gui": {
+      "rotation": [
+        -90,
+        45,
+        90
+      ],
+      "translation": [
+        7.25,
+        -7.25,
+        0
+      ]
+    },
+    "head": {
+      "translation": [
+        0,
+        5.75,
+        0
+      ]
+    },
+    "fixed": {
+      "rotation": [
+        0,
+        -90,
+        0
+      ],
+      "translation": [
+        -0.5,
+        -8.75,
+        -0.5
+      ]
+    }
+  },
+  "textures": {
+    "particle": "potioneer:item/texture"
+  }
+}

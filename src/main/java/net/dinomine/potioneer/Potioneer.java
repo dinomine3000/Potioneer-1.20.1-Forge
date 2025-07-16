@@ -2,7 +2,6 @@ package net.dinomine.potioneer;
 
 import com.mojang.logging.LogUtils;
 import net.dinomine.potioneer.beyonder.misc.ArtifactHelper;
-import net.dinomine.potioneer.beyonder.misc.MysticismHelper;
 import net.dinomine.potioneer.block.ModBlocks;
 import net.dinomine.potioneer.block.entity.ModBlockEntities;
 import net.dinomine.potioneer.block.entity.renderer.MinerBlockRenderer;
@@ -14,6 +13,7 @@ import net.dinomine.potioneer.entities.ModEntities;
 import net.dinomine.potioneer.entities.client.*;
 import net.dinomine.potioneer.item.ModCreativeModTabs;
 import net.dinomine.potioneer.item.ModItems;
+import net.dinomine.potioneer.item.custom.UnshadowedCrucifixItem;
 import net.dinomine.potioneer.loot.ModLootModifiers;
 import net.dinomine.potioneer.menus.CrafterAnvilScreen;
 import net.dinomine.potioneer.menus.CraftingScreen;
@@ -30,6 +30,7 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
 import net.minecraft.client.renderer.entity.EntityRenderers;
 import net.minecraft.client.renderer.item.ItemProperties;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraftforge.api.distmarker.Dist;
@@ -44,8 +45,13 @@ import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.fml.loading.FMLPaths;
 import org.slf4j.Logger;
 import software.bernie.geckolib.GeckoLib;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 // The value here should match an entry in the META-INF/mods.toml file
 @Mod(Potioneer.MOD_ID)
@@ -123,12 +129,14 @@ public class Potioneer
         @SubscribeEvent
         public static void onClientSetup(FMLClientSetupEvent event)
         {
+
             //Geckolib registers
             EntityRenderers.register(ModEntities.CHRYON.get(), ChryonRenderer::new);
             EntityRenderers.register(ModEntities.PECAN.get(), PecanRenderer::new);
             EntityRenderers.register(ModEntities.WANDERING_CACTUS.get(), WanderingCactusRenderer::new);
             EntityRenderers.register(ModEntities.DEMONIC_WOLF.get(), DemonicWolfRenderer::new);
             EntityRenderers.register(ModEntities.DIVINATION_ROD.get(), RodRenderer::new);
+            EntityRenderers.register(ModEntities.SEA_GOD_SCEPTER.get(), SeaGodRenderer::new);
             EntityRenderers.register(ModEntities.CHARACTERISTIC.get(), CharRenderer::new);
             EntityRenderers.register(ModEntities.ASTEROID.get(), AsteroidRenderer::new);
 
@@ -153,6 +161,14 @@ public class Potioneer
                     new ResourceLocation(Potioneer.MOD_ID, "artifact"),
                     ((itemStack, clientLevel, livingEntity, i) ->
                             itemStack.getTag() != null && itemStack.getTag().contains(ArtifactHelper.ARTIFACT_TAG_ID) ?  1f : 0f));
+
+            ItemProperties.register(ModItems.UNSHADOWED_CRUCIFIX.get(),
+                    new ResourceLocation(Potioneer.MOD_ID, "crucifix_state"),
+                    ((itemStack, clientLevel, livingEntity, i) -> {
+                        if(!itemStack.hasTag() || !itemStack.getTag().contains(UnshadowedCrucifixItem.CRUCIFIX_TAG_ID)) return 2;
+                        CompoundTag tag = itemStack.getOrCreateTag().getCompound(UnshadowedCrucifixItem.CRUCIFIX_TAG_ID);
+                        return tag.getInt("state");
+                    }));
 
             event.enqueueWork(() -> {
                 MenuScreens.register(ModMenuTypes.CRAFTER_MENU.get(), CraftingScreen::new);

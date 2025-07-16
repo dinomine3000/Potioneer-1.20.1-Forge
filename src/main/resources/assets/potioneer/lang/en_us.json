@@ -48,6 +48,7 @@
   "entity.potioneer.beyonder_characteristic": "Beyonder Characteristic",
   "entity.potioneer.divination_rod": "Divination Rod",
   "entity.potioneer.asteroid": "Meteor",
+  "entity.potioneer.sea_god_scepter": "Sea God Scepter",
 
   "item.potioneer.beyonder_potion": "Mystery Potion",
   "item.potioneer.pecan_leaf": "Pecan Leaf",
@@ -60,6 +61,9 @@
   "item.potioneer.straw_doll": "Straw Doll",
 
   "item.potioneer.leymanos_travels": "Leymano's Travels",
+  "item.potioneer.unshadowed_crucifix": "Unshadowed Crucifix",
+  "item.potioneer.sea_god_scepter": "Sea God Scepter",
+  "item.potioneer.death_knell": "Death Knell",
 
   "item.potioneer.golden_drop": "Golden Drop",
 
@@ -86,6 +90,12 @@
   "gui.potioneer.options_menu": "Options Menu",
   "gui.potioneer.add_to_quick": "Add ability to Quick Select",
   "gui.potioneer.remove_from_quick": "Remove ability from quick select",
+
+  "gui.potioneer.options_save_button": "Save options to file",
+  "gui.potioneer.options_slider_title": "Relative Orb Offset",
+  "gui.potioneer.options_orb": "Orb Position and Scale",
+  "gui.potioneer.options_hotbar": "Hotbar Position",
+  "gui.potioneer.options_hotbar_slider": "Hotbar Scale",
 
   "potioneer.menu.conjurer_menu": "Conjurer",
   "potioneer.menu.crafter_menu": "Crafter",

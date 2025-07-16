@@ -14,5 +14,20 @@
     "sounds": [
       "potioneer:water_prison_sound"
     ]
+  },
+  "gun_shoot": {
+    "sounds": [
+      "potioneer:gun_shoot"
+    ]
+  },
+  "gun_reload": {
+    "sounds": [
+      "potioneer:gun_reload"
+    ]
+  },
+  "gun_cloth": {
+    "sounds": [
+      "potioneer:gun_cloth"
+    ]
   }
 }

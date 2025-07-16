@@ -55,7 +55,9 @@ public class LeymanosTravels extends Item implements GeoItem {
         ItemDisplayContext obj = (ItemDisplayContext) animationState.getData(DataTickets.ITEM_RENDER_PERSPECTIVE);
 
         if(obj != ItemDisplayContext.FIRST_PERSON_LEFT_HAND &&
-                obj != ItemDisplayContext.FIRST_PERSON_RIGHT_HAND){
+                obj != ItemDisplayContext.FIRST_PERSON_RIGHT_HAND&&
+                obj != ItemDisplayContext.THIRD_PERSON_LEFT_HAND&&
+                obj != ItemDisplayContext.THIRD_PERSON_RIGHT_HAND){
             controller.setAnimation(CLOSED);
             controller.forceAnimationReset();
             return PlayState.STOP;
@@ -85,7 +87,7 @@ public class LeymanosTravels extends Item implements GeoItem {
     public InteractionResultHolder<ItemStack> use(Level pLevel, Player pPlayer, InteractionHand pUsedHand) {
         useBook(pLevel, pPlayer.getItemInHand(pUsedHand), pPlayer);
 
-        return InteractionResultHolder.fail(pPlayer.getItemInHand(pUsedHand));
+        return InteractionResultHolder.pass(pPlayer.getItemInHand(pUsedHand));
     }
 
 //    @Override

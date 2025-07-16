@@ -41,6 +41,9 @@ public class ModCreativeModTabs {
                         output.accept(ModItems.VOODOO_DOLL.get());
                         output.accept(ModItems.RING.get());
                         output.accept(ModItems.LEYMANOS_TRAVELS.get());
+                        output.accept(ModItems.UNSHADOWED_CRUCIFIX.get());
+                        output.accept(ModItems.KALVETUA_SCEPTER.get());
+                        output.accept(ModItems.DEATH_KNELL.get());
                     })
                     .build());
 

@@ -54,12 +54,8 @@ public class ModEntities {
 
     public static final RegistryObject<EntityType<DivinationRodEntity>> DIVINATION_ROD =
             ENTITY_TYPES.register("divination_rod",
-                    () -> EntityType.Builder.of(new EntityType.EntityFactory<DivinationRodEntity>() {
-                                @Override
-                                public DivinationRodEntity create(EntityType<DivinationRodEntity> entityType, Level level) {
-                                    return new DivinationRodEntity(entityType, level);
-                                }
-                            }, MobCategory.MISC)
+                    () -> EntityType.Builder.of((EntityType.EntityFactory<DivinationRodEntity>)
+                                    (entityType, level) -> new DivinationRodEntity(entityType, level), MobCategory.MISC)
                             .sized(0.2f, 1f)
                             .build(new ResourceLocation(Potioneer.MOD_ID, "divination_rod").toString()));
 
@@ -69,6 +65,17 @@ public class ModEntities {
                                     new AsteroidEntity(entityType, level), MobCategory.MISC)
                             .sized(1f, 1f)
                             .build(new ResourceLocation(Potioneer.MOD_ID, "asteroid").toString()));
+
+    public static final RegistryObject<EntityType<SeaGodScepterEntity>> SEA_GOD_SCEPTER =
+            ENTITY_TYPES.register("sea_god_scepter",
+                    () -> EntityType.Builder.of(new EntityType.EntityFactory<SeaGodScepterEntity>() {
+                                @Override
+                                public SeaGodScepterEntity create(EntityType<SeaGodScepterEntity> entityType, Level level) {
+                                    return new SeaGodScepterEntity(entityType, level);
+                                }
+                            }, MobCategory.MISC)
+                            .sized(0.2f, 1f)
+                            .build(new ResourceLocation(Potioneer.MOD_ID, "sea_god_scepter").toString()));
 
     public static void register(IEventBus eventBus){
         ENTITY_TYPES.register(eventBus);

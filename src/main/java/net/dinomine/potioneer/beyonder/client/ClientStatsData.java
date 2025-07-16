@@ -1,7 +1,9 @@
 package net.dinomine.potioneer.beyonder.client;
 
+import com.eliotlash.mclib.math.functions.limit.Min;
 import net.dinomine.potioneer.beyonder.screen.AdvancementScreen;
 import net.minecraft.client.Minecraft;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -113,6 +115,15 @@ public class ClientStatsData {
     }
 
     public static void setActing(float acting) {
+        if(actingProgress < 0.25 && acting >= 0.25){
+            Minecraft.getInstance().player.playSound(SoundEvents.EXPERIENCE_ORB_PICKUP, 1, 1);
+        }
+        if(actingProgress < 0.5 && acting >= 0.5){
+            Minecraft.getInstance().player.playSound(SoundEvents.EXPERIENCE_ORB_PICKUP, 1, 1);
+        }
+        if(actingProgress < 0.75 && acting >= 0.75){
+            Minecraft.getInstance().player.playSound(SoundEvents.EXPERIENCE_ORB_PICKUP, 1, 1);
+        }
         actingProgress = acting;
     }
 

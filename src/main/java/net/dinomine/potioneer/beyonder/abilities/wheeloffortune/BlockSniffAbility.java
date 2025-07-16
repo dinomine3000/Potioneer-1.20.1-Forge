@@ -34,18 +34,15 @@ public class BlockSniffAbility extends Ability {
 
         if(player.getMainHandItem().getItem() instanceof BlockItem blockItem
                 && blockItem.getBlock().defaultBlockState().is(Tags.Blocks.ORES)){
+
+            BlockPos pos = BlockPos.containing(player.getX(), player.getY(), player.getZ());
+            int radius = (9 - info.id()%10)*3 + 7;
+            Optional<BlockPos> blocks = BlockPos.findClosestMatch(pos, radius, radius,
+                    testPos -> level.getBlockState(testPos).is(blockItem.getBlock()));
+
+            if(!blocks.isPresent()) return false;
             if(level.isClientSide()){
-//                System.out.println("Found an ore on hand");
-                BlockPos pos = BlockPos.containing(player.getX(), player.getY(), player.getZ());
-                int radius = (9 - info.id()%10)*3 + 7;
-
-                Optional<BlockPos> blocks = BlockPos.findClosestMatch(pos, radius, radius,
-                        testPos -> level.getBlockState(testPos).is(blockItem.getBlock()));
-
-//                System.out.println(blocks);
-
                 blocks.ifPresent(match -> {
-//                    System.out.println(match);
                     Vec3 pointing = match.getCenter().subtract(player.getEyePosition()).normalize();
                     float i = 0.4f;
                     while(i < 1){
@@ -56,60 +53,12 @@ public class BlockSniffAbility extends Ability {
                         i += 0.2;
                     }
                 });
-//                System.out.println("Blocks: " + blocks);
-//                ArrayList<BlockPos> matches = new ArrayList<>(blocks.stream().filter(block ->
-//                {
-//                    return level.getBlockState(block).is(blockItem.getBlock());
-//                }).toList());
-//                System.out.println("Matches: " + matches);
-//
-//                if(matches.isEmpty()){
-//                    player.sendSystemMessage(Component.literal("Could not find any desired ores"));
-//                } else {
-//                    matches.sort((a, b) -> {
-//                        return (int)(pos.distToCenterSqr(a.getX(), a.getY(), a.getZ())
-//                                - pos.distToCenterSqr(b.getX(), b.getY(), b.getZ()));
-//                    });
-//                    BlockPos resPos = matches.get(0);
-//                }
-//                double dist = (9 - info.id()%10)*8 + 5;
-//                float temp = 0.7f;
-//                Vec3 lookAngle = target.getLookAngle();
-//                while(temp < dist){
-//                    Vec3 itVector = target.getEyePosition().add(lookAngle.scale(temp));
-//                    level.addParticle(ParticleTypes.POOF, itVector.x, itVector.y, itVector.z,0, -0.02f, 0);
-//                    temp += 0.4f;
-//                }
             } else {
+                cap.getActingManager().progressActing(1/128d, 8);
                 cap.requestActiveSpiritualityCost(info.cost());
-//                Vec3 lookAngle = target.getLookAngle();
-//                Vec3 pos = target.position();
-//                int radius = (9 - info.id()%10)*8 + 5;
-//                AABB box = new AABB(
-//                        pos.x-radius, pos.y-radius, pos.z-radius,
-//                        pos.x+radius, pos.y+radius, pos.z+radius
-//                );
-//                ArrayList<Entity> hits = new ArrayList<>(level.getEntities(target, box, new Predicate<Entity>() {
-//                    @Override
-//                    public boolean test(Entity entity) {
-//                        if(entity instanceof LivingEntity living){
-//                            double dist = living.position().subtract(target.position()).length();
-//                        System.out.println(dist);
-//                        System.out.println(height);
-//                            boolean hit = living.getBoundingBoxForCulling().intersects(target.getEyePosition(),
-//                                    target.getEyePosition().add(lookAngle.scale(dist+1)));
-//                        System.out.println(hit);
-//                            return hit;
-//                        }
-//                        return false;
-//                    }
-//                }));
-//                hits.forEach(ent -> {
-//                    int pow = (10-info.id()%10);
-//                    ent.hurt(level.damageSources().indirectMagic(target, target), (float) (0.384f*Math.pow(pow, 2) + 2.461f*pow + 3.938f));
-//                });
-//                level.playSound(null, target.getOnPos().above(), SoundEvents.GENERIC_EXTINGUISH_FIRE, SoundSource.PLAYERS, 1, 1);
             }
+            //the early return above guarantees that the ability only returns true if it found anything.
+            return true;
         }
         return false;
     }

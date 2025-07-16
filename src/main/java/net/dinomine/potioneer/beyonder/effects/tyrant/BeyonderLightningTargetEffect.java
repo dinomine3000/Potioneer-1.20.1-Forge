@@ -20,9 +20,9 @@ public class BeyonderLightningTargetEffect extends BeyonderEffect {
 
     @Override
     protected void doTick(EntityBeyonderManager cap, LivingEntity target) {
-        if(cap.getLuckManager().passesLuckCheck(0.1f, 5, 0, target.getRandom())){
+        if(!cap.getLuckManager().passesLuckCheck(0.98f, 0, 0, target.getRandom())){
             LightningBolt lightning = new LightningBolt(EntityType.LIGHTNING_BOLT, target.level());
-            lightning.setDamage(5);
+            lightning.setDamage(Math.max((10-sequenceLevel)*5 - 20, 5));
             lightning.setPos(target.getOnPos().offset(target.getRandom().nextInt(3), 0, target.getRandom().nextInt(3)).getCenter());
             target.level().addFreshEntity(lightning);
         }

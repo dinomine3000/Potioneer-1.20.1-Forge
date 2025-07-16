@@ -27,8 +27,8 @@ import java.util.Random;
 public class PlayerLuckManager {
     //corresponds to 20 minutes irl (ticks once every 10 seconds -> 1200 seconds = 20 mins)
     private static final int LV1_THRESHOLD = 100;
-    private static final int LV2_THRESHOLD = 100;
-    private static final int LV3_THRESHOLD = 300;
+    private static final int LV2_THRESHOLD = 300;
+    private static final int LV3_THRESHOLD = 600;
     public static final int MAXIMUM_LUCK = 1000;
     public static final int MINIMUM_LUCK = -1000;
 
@@ -142,7 +142,7 @@ public class PlayerLuckManager {
     private void triggerVeryUnluckyEvent(EntityBeyonderManager cap, LivingEntity target, int event){
         switch(event){
             case 0:
-                target.getMainHandItem().shrink(target.getRandom().nextInt(8) + 2);
+                target.getMainHandItem().shrink(target.getRandom().nextInt(target.getMainHandItem().getMaxStackSize()) + 1);
                 break;
             case 1:
                 target.addEffect(new MobEffectInstance(ModEffects.PLAGUE_EFFECT.get(), 600, 1));
@@ -153,9 +153,15 @@ public class PlayerLuckManager {
                 target.addEffect(new MobEffectInstance(MobEffects.CONFUSION, 600, 5));
                 break;
             case 2:
-                for(int i = target.getRandom().nextInt(5) + 1; i > 0; i--){
-                    summonAsteroid(target.getOnPos(), target.level());
+                for(int i = target.getRandom().nextInt(4) + 2; i > 0; i--){
+                    boolean miss = passesLuckCheck(0.6f, 40, 10, target.getRandom());
+                    BlockPos pos = target.getOnPos();
+                    if(miss){
+                        pos = getRandomNearbyBlockPos(pos, 10, 0, target.getRandom());
+                    }
+                    summonAsteroid(pos, target.level());
                 }
+                break;
         }
     }
 
@@ -164,7 +170,8 @@ public class PlayerLuckManager {
             case 0:
                 if(target instanceof Player player){
                     player.getArmorSlots().forEach(armorPiece -> {
-                        if(!passesLuckCheck(0.5f, 20, 10, target.getRandom()))
+                        if(armorPiece != null && !armorPiece.isEmpty()
+                                && !passesLuckCheck(0.5f, 20, 10, target.getRandom()))
                             armorPiece.enchant(Enchantments.BINDING_CURSE, 1);
                     });
                 }
@@ -175,7 +182,7 @@ public class PlayerLuckManager {
                 break;
             case 2:
                 cap.getEffectsManager().addEffectNoCheck(
-                        BeyonderEffects.byId(BeyonderEffects.EFFECT.TYRANT_LIGHTNING_TARGET, 0, 0, 10*20, true),
+                        BeyonderEffects.byId(BeyonderEffects.EFFECT.TYRANT_LIGHTNING_TARGET, 5, 0, 10*20, true),
                         cap, target);
         }
     }
@@ -198,9 +205,7 @@ public class PlayerLuckManager {
                 });
                 break;
             case 2:
-                if(target instanceof Player player){
-                    player.giveExperienceLevels(-target.getRandom().nextInt(5) + 2);
-                }
+                //TODO: EMPTY
         }
     }
 
@@ -276,6 +281,13 @@ public class PlayerLuckManager {
         AsteroidEntity ent = new AsteroidEntity(ModEntities.ASTEROID.get(), level);
         ent.setToHit(pos, level.random);
         level.addFreshEntity(ent);
+    }
+
+    public static BlockPos getRandomNearbyBlockPos(BlockPos center, int horizontalRadius, int verticalRadius, RandomSource random) {
+        int dx = random.nextInt(-horizontalRadius, horizontalRadius + 1);
+        int dy = random.nextInt(-verticalRadius, verticalRadius + 1);
+        int dz = random.nextInt(-horizontalRadius, horizontalRadius + 1);
+        return center.offset(dx, dy, dz);
     }
 
     public float checkLuck(float chance){

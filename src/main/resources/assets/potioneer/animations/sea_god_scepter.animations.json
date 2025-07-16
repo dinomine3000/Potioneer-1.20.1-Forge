@@ -1,0 +1,53 @@
+{
+	"format_version": "1.8.0",
+	"animations": {
+		"animation.model.fall": {
+			"animation_length": 0.6667,
+			"bones": {
+				"bone": {
+					"rotation": {
+						"0.0": {
+							"vector": [0, 0, 0]
+						},
+						"0.25": {
+							"vector": [84.5, 0, 0],
+							"easing": "easeInQuad"
+						},
+						"0.3333": {
+							"vector": [92.5, 0, 0],
+							"easing": "easeOutQuad"
+						},
+						"0.4583": {
+							"vector": [80, 0, 0],
+							"easing": "easeInQuad"
+						},
+						"0.5417": {
+							"vector": [85, 0, 0]
+						}
+					},
+					"position": {
+						"0.1667": {
+							"vector": [0, 0, 0]
+						},
+						"0.25": {
+							"vector": [0, 2.5, 0],
+							"easing": "easeInQuad"
+						},
+						"0.3333": {
+							"vector": [0, 4.5, -0.5],
+							"easing": "easeOutQuad"
+						},
+						"0.4583": {
+							"vector": [0, 1.75, 0],
+							"easing": "easeInQuad"
+						},
+						"0.5417": {
+							"vector": [0, 2.25, 0]
+						}
+					}
+				}
+			}
+		}
+	},
+	"geckolib_format_version": 2
+}

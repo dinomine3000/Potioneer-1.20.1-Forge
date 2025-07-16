@@ -1,8 +1,8 @@
 package net.dinomine.potioneer.beyonder.client.HUD;
 
 import net.dinomine.potioneer.Potioneer;
+import net.dinomine.potioneer.beyonder.client.ClientConfigData;
 import net.dinomine.potioneer.beyonder.client.ClientStatsData;
-import net.dinomine.potioneer.config.PotioneerClientConfig;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
@@ -20,10 +20,14 @@ public class MagicOrbOverlay {
     public static final IGuiOverlay HUD_MAGIC = ((forgeGui, guiGraphics, partialTick, width, height) -> {
         int id = ClientStatsData.getPathwayId();
         if(id < 0) return;
+        ClientConfigData.updateData();
 
-
-        int yOffset = minecraft.getWindow().getGuiScaledHeight() - 62;
-        int offsetLeft = PotioneerClientConfig.ORB_ON_RIGHT.get() ? minecraft.getWindow().getGuiScaledWidth()/2 + 100 : 10;
+        int multiplier = ClientConfigData.getCurrentOrbScale();
+        int orbSide = Mth.floor(43 * multiplier);
+        int bgSide = Math.round(orbSide*64/43f);
+        int configOffset = (int) (ClientConfigData.getCurrentOffset()*(minecraft.getWindow().getGuiScaledWidth()/2f - orbSide));
+        int yOffset = (int) (minecraft.getWindow().getGuiScaledHeight() - 64*multiplier);
+        int offsetLeft = ClientConfigData.isOrbOnRight() ? minecraft.getWindow().getGuiScaledWidth()/2 + configOffset : configOffset;
 
         /*RenderSystem.setShader(GameRenderer::getPositionColorTexShader);
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
@@ -42,14 +46,32 @@ public class MagicOrbOverlay {
             default -> 0;
         };
 
-        guiGraphics.blit(ORB, offsetLeft, yOffset, ((id/10) %4)*64, id > 40 ? 64:0, 64, 64,256, 128);
+        guiGraphics.blit(ORB, offsetLeft, yOffset,
+                bgSide, bgSide,
+                ((id/10) %4)*64, id > 40 ? 64:0,
+                64, 64,
+                256, 128);
 
-        guiGraphics.blit(MANA, offsetLeft+10, yOffset + 10 + (int)(43-mana_percent*43),
-                10 + sanity_percent*64, 10 + frame*64 + (int)((1-mana_percent)*43),
-                43, 43 - (int)(43-43*mana_percent),
+//        guiGraphics.blit(MANA, offsetLeft+10, yOffset + 10 + (int)(43-mana_percent*43),
+//                10 + sanity_percent*64, 10 + frame*64 + (int)((1-mana_percent)*43),
+//                43, 43 - (int)(43-43*mana_percent),
+//                256, 1984);
+        int UVHeightToBlit = (int)(mana_percent * 43);
+        int heightToBlit = (int)(multiplier*UVHeightToBlit);
+        int blitManaOffset = Mth.floor(10*orbSide/43f);
+//        int blitManaOffset = 20;
+        guiGraphics.blit(MANA,
+                offsetLeft+blitManaOffset, yOffset + blitManaOffset + orbSide - heightToBlit,
+                orbSide, heightToBlit,
+                10 + sanity_percent*64, 10 + frame*64 + 43 - UVHeightToBlit,
+                43, UVHeightToBlit,
                 256, 1984);
 
-        guiGraphics.blit(ORB_OVERLAY, offsetLeft, yOffset, ((id/10) %4)*64, id > 40 ? 64:0, 64, 64,256, 128);
+        guiGraphics.blit(ORB_OVERLAY, offsetLeft, yOffset,
+                bgSide, bgSide,
+                ((id/10) %4)*64, id > 40 ? 64:0,
+                64, 64,
+                256, 128);
 
     });
 }

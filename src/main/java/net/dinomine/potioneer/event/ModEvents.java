@@ -23,7 +23,6 @@ import net.minecraftforge.server.command.ConfigCommand;
 @Mod.EventBusSubscriber(modid = Potioneer.MOD_ID)
 public class ModEvents {
 
-
     @SubscribeEvent
     public static void commandsRegister(RegisterCommandsEvent event){
         new ResetBeyonderCommand(event.getDispatcher());

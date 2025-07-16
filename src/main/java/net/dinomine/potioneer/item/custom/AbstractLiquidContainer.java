@@ -45,10 +45,6 @@ public abstract class AbstractLiquidContainer extends Item {
         return super.getName(pStack);
     }
 
-    public static void registerColor(RegisterColorHandlersEvent.Item event){
-
-    }
-
     @OnlyIn(Dist.CLIENT)
     public static class LiquidContainerTint implements ItemColor {
 

@@ -29,6 +29,7 @@ public class BeyonderGamblingEffect extends BeyonderEffect {
     @Override
     public void onAcquire(EntityBeyonderManager cap, LivingEntity target) {
         cap.getLuckManager().getRange().setSuppress(true);
+        cap.getLuckManager().luckEventChance += 1;
     }
 
     @Override
@@ -45,6 +46,8 @@ public class BeyonderGamblingEffect extends BeyonderEffect {
         int currentLuck = cap.getLuckManager().getLuck();
         int amm = Math.max(quantityToLuck(quantity), currentLuck) - currentLuck;
         cap.getLuckManager().grantLuck(amm);
+        cap.getActingManager().progressActing(0.2f*Math.pow(amm/(float)luck_limit, 2.6f), 7);
+        cap.getLuckManager().luckEventChance = Math.max(cap.getLuckManager().luckEventChance - 1, 1);
         target.sendSystemMessage(Component.literal("You have been granted " + amm + " luck"));
     }
 

@@ -36,7 +36,6 @@ public class PotionCauldronRecipe implements Recipe<PotionCauldronContainer> {
     public PotionCauldronRecipe(PotionContentData output, ResourceLocation id,
                                 PotionRecipeData recData) {
         this(output, id, recData, recData.copy());
-        System.out.println("Read json...");
     }
 
     public PotionCauldronRecipe(PotionContentData output, ResourceLocation id,
@@ -45,7 +44,6 @@ public class PotionCauldronRecipe implements Recipe<PotionCauldronContainer> {
         this.id = id;
         this.recipeData = recData;
         this.alternateRecipeData = alt;
-        System.out.println("Created a recipe instance...");
     }
 
     @Override

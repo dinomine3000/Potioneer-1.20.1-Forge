@@ -5,13 +5,17 @@ import net.dinomine.potioneer.Potioneer;
 import net.dinomine.potioneer.beyonder.abilities.Ability;
 import net.dinomine.potioneer.beyonder.abilities.AbilityInfo;
 import net.dinomine.potioneer.beyonder.client.ClientAbilitiesData;
+import net.dinomine.potioneer.beyonder.client.ClientConfigData;
 import net.dinomine.potioneer.beyonder.client.ClientStatsData;
+import net.dinomine.potioneer.beyonder.screen.BeyonderSettingsScreen;
 import net.dinomine.potioneer.config.PotioneerClientConfig;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraftforge.client.gui.overlay.IGuiOverlay;
+
+import static net.dinomine.potioneer.beyonder.client.ClientAbilitiesData.showHotbarOnConfigScreen;
 
 public class AbilitiesHotbarHUD {
     private static final ResourceLocation ICONS = new ResourceLocation(Potioneer.MOD_ID, "textures/gui/ability_icon_atlas.png");
@@ -25,7 +29,7 @@ public class AbilitiesHotbarHUD {
     private static final Minecraft minecraft = Minecraft.getInstance();
 
     public static boolean shouldDisplayBar() {
-        return ClientAbilitiesData.showHotbar && ClientStatsData.getPathwayId() > -1 && !ClientAbilitiesData.getHotbar().isEmpty();
+        return (ClientAbilitiesData.showHotbar || minecraft.screen instanceof BeyonderSettingsScreen) && ClientStatsData.getPathwayId() > -1 && !ClientAbilitiesData.getHotbar().isEmpty();
     }
 
     public static final IGuiOverlay ABILITY_HOTBAR = ((forgeGui, guiGraphics, partialTick, width, height) -> {
@@ -37,115 +41,125 @@ public class AbilitiesHotbarHUD {
         ClientAbilitiesData.animationTick(4*minecraft.getDeltaFrameTime());
         if(!shouldDisplayBar()) return;
 
-
         // 0 -> animation done, stuff should be in its position
         // 1 -> animation just started, caret moved up, stuff should be offset to be to the right of their spot
         // -1 -> animation just started, caret moved down, stuff should be offset to be to the left of their spot
         float animPercent = ClientAbilitiesData.animationTime / ClientAbilitiesData.maxAnimationtime;
-
         int caret = ClientAbilitiesData.getCaret();
         AbilityInfo infoL = ClientAbilitiesData.getAbilityAt(caret - 1);
         AbilityInfo infoC = ClientAbilitiesData.getAbilityAt(caret);
         AbilityInfo infoR = ClientAbilitiesData.getAbilityAt(caret + 1);
 
-        int yOffset = (int) (-65 + (90*ClientAbilitiesData.openingAnimationPercent));
+        float scale = (float)ClientConfigData.getCurrentHotbarScale();
+        PotioneerClientConfig.HOTBAR_POS hotbarPos = ClientConfigData.getHotbarPosition();
+
+        int yOffset = (int) ((-70*scale + scale*(90*ClientAbilitiesData.openingAnimationPercent)));
         int xOffset = minecraft.getWindow().getGuiScaledWidth()/2;
-        String hotbarPos = PotioneerClientConfig.HOTBAR_POSITION.get();
-        if(hotbarPos.equalsIgnoreCase("left")){
-            xOffset = (int) (CASE_WIDTH/2 -65 + (90*ClientAbilitiesData.openingAnimationPercent));
-            yOffset = minecraft.getWindow().getGuiScaledHeight()/2 - CASE_HEIGHT/2 - 20;
-        } else if(hotbarPos.equalsIgnoreCase("right")){
-            xOffset = (int) (minecraft.getWindow().getGuiScaledWidth() + 65 - CASE_WIDTH/2 - (90*ClientAbilitiesData.openingAnimationPercent));
-            yOffset = minecraft.getWindow().getGuiScaledHeight()/2 - CASE_HEIGHT/2 - 20;
+
+        if(hotbarPos == PotioneerClientConfig.HOTBAR_POS.LEFT){
+            xOffset = (int) (scale*(CASE_WIDTH/2 -70 + (90*ClientAbilitiesData.openingAnimationPercent)));
+            yOffset = minecraft.getWindow().getGuiScaledHeight()/2 + (int)(10*scale*(CASE_HEIGHT/2 - 20));
+        } else if(hotbarPos == PotioneerClientConfig.HOTBAR_POS.RIGHT){
+            xOffset = (int) ((minecraft.getWindow().getGuiScaledWidth() + scale*70 - CASE_WIDTH/2 - (scale*90*ClientAbilitiesData.openingAnimationPercent)));
+            yOffset = minecraft.getWindow().getGuiScaledHeight()/2 + (int)(10*scale*(CASE_HEIGHT/2 - 20));
         }
 
-        drawCases(guiGraphics, hotbarPos, animPercent, caret, xOffset, yOffset, infoL, infoC, infoR);
+        drawCases(guiGraphics, hotbarPos, animPercent, caret, xOffset, yOffset, infoL, infoC, infoR, scale);
 
 
     });
 
-    private static void drawCases(GuiGraphics guiGraphics, String hotbarPos, float animPercent, int caret, int xOffset, int yOffset, AbilityInfo infoL, AbilityInfo infoC, AbilityInfo infoR){
-        if(hotbarPos.equalsIgnoreCase("left")){
-            int debugOffset = 10;
+    private static void drawCases(GuiGraphics guiGraphics, PotioneerClientConfig.HOTBAR_POS hotbarPos, float animPercent, int caret, int xOffset, int yOffset, AbilityInfo infoL, AbilityInfo infoC, AbilityInfo infoR, float scale){
+        if(hotbarPos == PotioneerClientConfig.HOTBAR_POS.LEFT){
+            xOffset += (int) (10*scale);
             if(animPercent < 0){
                 drawAbility(guiGraphics, ClientAbilitiesData.getAbilityAt(caret + 2), caret + 2,
-                        xOffset + debugOffset,
-                        yOffset + 120 + (int)(48*animPercent),
-                        -animPercent);
+                        xOffset,
+                        (int) (yOffset + 120*scale + (int)(48*scale*animPercent)),
+                        -animPercent*scale);
             }
             if(animPercent > 0){
                 drawAbility(guiGraphics, ClientAbilitiesData.getAbilityAt(caret - 2), caret - 2,
-                        xOffset + debugOffset,
-                        yOffset -80 + (int)(40*animPercent),
+                        xOffset,
+                        (int) (yOffset -80*scale + (int)(40*scale*animPercent)),
+                        animPercent*scale);
+            }
+            //yOffset + 10 - (int)(10*animPercent)
+            //(xOffset - 60) + (int)(animPercent*60)
+            int diff1 = (int)(scale * 40);
+            int diff2 = (int)(scale * 72);
+            drawAbility(guiGraphics, infoL, caret - 1,
+                    xOffset,
+                    (yOffset - diff1) + (int)(animPercent*diff1),
+                    scale*(1f + animPercent));
+            drawAbility(guiGraphics, infoC, caret,
+                    xOffset,
+                    yOffset + (int)(animPercent < 0 ? animPercent*diff1 : animPercent*diff2),
+                    scale*(2 - Math.abs(animPercent)));
+            drawAbility(guiGraphics, infoR, caret + 1,
+                    xOffset,
+                    yOffset + diff2 + (int)(animPercent*diff2),
+                    scale*(1f - animPercent));
+        }
+        else if(hotbarPos == PotioneerClientConfig.HOTBAR_POS.RIGHT){
+            xOffset -= (int) (10*scale);
+            if(animPercent < 0){
+                drawAbility(guiGraphics, ClientAbilitiesData.getAbilityAt(caret + 2), caret + 2,
+                        xOffset,
+                        (int) (yOffset + 120*scale + (int)(40*scale*animPercent)),
+                        -animPercent*scale);
+            }
+            if(animPercent > 0){
+                drawAbility(guiGraphics, ClientAbilitiesData.getAbilityAt(caret - 2), caret - 2,
+                        xOffset,
+                        (int) (yOffset -80*scale + (int)(40*scale*animPercent)),
                         animPercent);
             }
             //yOffset + 10 - (int)(10*animPercent)
             //(xOffset - 60) + (int)(animPercent*60)
+            int diff = (int)(scale*40);
             drawAbility(guiGraphics, infoL, caret - 1,
-                    xOffset + debugOffset,
-                    (yOffset - 40) + (int)(animPercent*40),
-                    1f + animPercent);
+                    xOffset,
+                    (yOffset - diff) + (int)(animPercent*diff),
+                    scale*(1f + animPercent));
+            int diff2 = (int)(scale*72);
             drawAbility(guiGraphics, infoC, caret,
-                    xOffset + debugOffset,
-                    yOffset + (int)(animPercent < 0 ? animPercent*40 : animPercent*72),
-                    2 - Math.abs(animPercent));
+                    xOffset,
+                    yOffset + (int)(animPercent < 0 ? animPercent*diff : animPercent*diff2),
+                    scale*(2 - Math.abs(animPercent)));
             drawAbility(guiGraphics, infoR, caret + 1,
-                    xOffset + debugOffset,
-                    yOffset + 72 + (int)(animPercent*72),
-                    1f - animPercent);
-        } else if(hotbarPos.equalsIgnoreCase("right")){
-            int debugOffset = -10;
+                    xOffset,
+                    yOffset + diff2 + (int)(animPercent*diff2),
+                    scale*(1f - animPercent));
+
+        }
+        else {
+            int diff = (int) (60*scale);
+
             if(animPercent < 0){
                 drawAbility(guiGraphics, ClientAbilitiesData.getAbilityAt(caret + 2), caret + 2,
-                        xOffset + debugOffset,
-                        yOffset + 120 + (int)(48*animPercent),
-                        -animPercent);
+                        xOffset + (int)(diff*1.5f) + (int)(diff*animPercent/2f),
+                        yOffset + (int)(20*scale) + (int)(animPercent*10*scale), -animPercent*scale);
             }
             if(animPercent > 0){
                 drawAbility(guiGraphics, ClientAbilitiesData.getAbilityAt(caret - 2), caret - 2,
-                        xOffset + debugOffset,
-                        yOffset -80 + (int)(40*animPercent),
-                        animPercent);
-            }
-            //yOffset + 10 - (int)(10*animPercent)
-            //(xOffset - 60) + (int)(animPercent*60)
-            drawAbility(guiGraphics, infoL, caret - 1,
-                    xOffset + debugOffset,
-                    (yOffset - 40) + (int)(animPercent*40),
-                    1f + animPercent);
-            drawAbility(guiGraphics, infoC, caret,
-                    xOffset + debugOffset,
-                    yOffset + (int)(animPercent < 0 ? animPercent*40 : animPercent*72),
-                    2 - Math.abs(animPercent));
-            drawAbility(guiGraphics, infoR, caret + 1,
-                    xOffset + debugOffset,
-                    yOffset + 72 + (int)(animPercent*72),
-                    1f - animPercent);
-
-        } else {
-            if(animPercent < 0){
-                drawAbility(guiGraphics, ClientAbilitiesData.getAbilityAt(caret + 2), caret + 2,
-                        xOffset + 90 + (int)(30*animPercent), yOffset + 20 + (int)(animPercent*10), -animPercent);
-            }
-            if(animPercent > 0){
-                drawAbility(guiGraphics, ClientAbilitiesData.getAbilityAt(caret - 2), caret - 2,
-                        xOffset - 90 + (int)(30*animPercent),
-                        yOffset + 20 - (int)(animPercent*10),
-                        animPercent);
+                        xOffset - (int)(diff*1.5f) + (int)(diff*animPercent/2f),
+                        yOffset + (int)(20*scale) - (int)(animPercent*10*scale),
+                        animPercent*scale);
             }
 
             drawAbility(guiGraphics, infoL, caret - 1,
-                    (xOffset - 60) + (int)(animPercent*60),
-                    yOffset + 10 - (int)(10*animPercent),
-                    1f + animPercent);
+                    (xOffset - diff) + (int)(animPercent*diff),
+                    yOffset + (int)(10*scale) - (int)(10*animPercent*scale),
+                    (1f + animPercent)*scale);
             drawAbility(guiGraphics, infoC, caret,
-                    xOffset + (int)(animPercent*60),
-                    yOffset + (int)(10*(Math.abs(animPercent))),
-                    2 - Math.abs(animPercent));
+                    xOffset + (int)(animPercent*diff),
+                    yOffset + (int)(10*scale*(Math.abs(animPercent))),
+                    (2 - Math.abs(animPercent))*scale);
             drawAbility(guiGraphics, infoR, caret + 1,
-                    xOffset + 60 + (int)(animPercent*60),
-                    yOffset + 10 + (int)(10*animPercent),
-                    1f - animPercent);
+                    xOffset + diff + (int)(animPercent*diff),
+                    yOffset + (int)(10*scale) + (int)(10*animPercent*scale),
+                    (1f - animPercent)*scale);
 
         }
 
@@ -155,7 +169,7 @@ public class AbilitiesHotbarHUD {
 
         //48 x 60 - case
         int pathway = Math.floorDiv(info.id(), 10);
-        int caseX = xPos - (int) (CASE_HEIGHT * scale / 2);
+        int caseX = xPos - (int) (CASE_WIDTH * scale / 2);
         guiGraphics.blit(ICONS, caseX, yPos, (int) (CASE_WIDTH*scale), (int) (CASE_HEIGHT*scale), 26*pathway, 0, CASE_WIDTH, CASE_HEIGHT, ICONS_WIDTH, ICONS_HEIGHT);
 
         //ability icon

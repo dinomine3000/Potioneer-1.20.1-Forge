@@ -33,6 +33,10 @@ public class DivinationRodEntity extends PlaceableItemEntity implements GeoEntit
     public static final EntityDataAccessor<Boolean> DIVINING = SynchedEntityData.defineId(DivinationRodEntity.class, EntityDataSerializers.BOOLEAN);
     public static final EntityDataAccessor<Float> INTENDED_YAW = SynchedEntityData.defineId(DivinationRodEntity.class, EntityDataSerializers.FLOAT);
 
+    protected DivinationRodEntity(EntityType<SeaGodScepterEntity> pEntityType, Level pLevel, ItemStack stack, boolean test){
+        super(pEntityType, pLevel, true, true, true, stack);
+    }
+
     public DivinationRodEntity(EntityType<DivinationRodEntity> pEntityType, Level pLevel, ItemStack stack) {
         super(pEntityType, pLevel, true, true, true, stack);
     }
@@ -58,7 +62,7 @@ public class DivinationRodEntity extends PlaceableItemEntity implements GeoEntit
                 .triggerableAnim("divine", RawAnimation.begin().thenPlayAndHold("animation.model.fall")));
     }
 
-    private PlayState predicate(AnimationState<DivinationRodEntity> divinationRodEntityAnimationState) {
+    protected PlayState predicate(AnimationState<DivinationRodEntity> divinationRodEntityAnimationState) {
         return PlayState.CONTINUE;
     }
 

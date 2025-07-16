@@ -2,11 +2,15 @@ package net.dinomine.potioneer.beyonder;
 
 import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
 import net.dinomine.potioneer.beyonder.player.PlayerActingManager;
+import net.minecraft.tags.BlockTags;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
+import net.minecraftforge.common.Tags;
+import net.minecraftforge.common.data.ForgeBlockTagsProvider;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.EntityStruckByLightningEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
+import net.minecraftforge.event.level.BlockEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
@@ -47,6 +51,19 @@ public class PlayerActingEvents {
         player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
             PlayerActingManager acting = cap.getActingManager();
             acting.progressActing(0.001d, 49);
+        });
+    }
+
+    @SubscribeEvent
+    public static void onPlayerBreakBlockEvent(BlockEvent.BreakEvent event){
+        if(event.getPlayer().level().isClientSide()) return;
+        Player player = event.getPlayer();
+        player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
+            PlayerActingManager acting = cap.getActingManager();
+            //needs to mine stone or ores, at y < 60, 320 times
+            if(player.getBlockY() < 40
+                    && (event.getState().is(Tags.Blocks.STONE) || event.getState().is(Tags.Blocks.ORES)))
+                acting.progressActing(1/320d, 9);
         });
     }
 }
