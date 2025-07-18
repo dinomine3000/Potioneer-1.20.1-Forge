@@ -8,6 +8,9 @@ import net.dinomine.potioneer.particle.ModParticles;
 import net.dinomine.potioneer.recipe.PotionCauldronContainer;
 import net.dinomine.potioneer.recipe.PotionCauldronRecipe;
 import net.dinomine.potioneer.recipe.PotionContentData;
+import net.dinomine.potioneer.savedata.PotionFormulaSaveData;
+import net.dinomine.potioneer.savedata.PotionRecipe;
+import net.dinomine.potioneer.savedata.PotionRecipeData;
 import net.dinomine.potioneer.util.ModTags;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -43,6 +46,7 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.ArrayList;
 import java.util.List;
 
 import static net.dinomine.potioneer.block.custom.PotionCauldronBlock.RESULT;
@@ -249,7 +253,7 @@ public class PotionCauldronBlockEntity extends BlockEntity {
     }
 
     public void craft(){
-        List<PotionCauldronRecipe> recipe = getCurrentRecipe();
+        List<PotionRecipe> recipe = getCurrentRecipe();
         if(recipe.isEmpty()){
             return;
         }
@@ -257,30 +261,30 @@ public class PotionCauldronBlockEntity extends BlockEntity {
         if(state == State.STANDBY) {
             System.out.println("Attempting craft...");
             //list of all recipes that can conflict
-            List<PotionCauldronRecipe> possibleConflicts = recipe.stream().filter(rec -> rec.getOutput().canConflict).toList();
+            List<PotionRecipe> possibleConflicts = recipe.stream().filter(rec -> rec.output().canConflict).toList();
             if(possibleConflicts.size() > 1) {
                 System.out.println("Found a conflict");
-                tempResult = PotionContentData.getConflictingResult(possibleConflicts.get(0).getOutput().bottle);
+                tempResult = PotionContentData.getConflictingResult(possibleConflicts.get(0).output().bottle);
             }
                 //no conflicts found so itll save the result
             else {
                 //prioritizes the recipes that can conflict, so every other recipe is ignored
                 System.out.println("attempting to craft conflicts...");
                 if(!possibleConflicts.isEmpty()
-                    && possibleConflicts.get(0).canCraft(getContainer(), level)){
+                    && possibleConflicts.get(0).canCraft(getContainer())){
                     //checks if it can craft the recipe
                     System.out.println("conflict crafted");
-                    tempResult = possibleConflicts.get(0).getOutput();
+                    tempResult = possibleConflicts.get(0).output().copy();
                 } else {
                     System.out.println("no conflicts works. checking standard matches...");
-                    List<PotionCauldronRecipe> matches = recipe.stream().filter(pRec -> pRec.canCraft(getContainer(), level)).toList();
+                    List<PotionRecipe> matches = recipe.stream().filter(pRec -> pRec.canCraft(getContainer())).toList();
                     if(matches.isEmpty()) {
                         System.out.println("no matches found, exiting");
                         return;
                     }
                     else {
                         System.out.println("match crafted");
-                        tempResult = matches.get(0).getOutput();
+                        tempResult = matches.get(0).output().copy();
                     }
                 }
 
@@ -305,8 +309,15 @@ public class PotionCauldronBlockEntity extends BlockEntity {
         return items;
     }
 
-    private List<PotionCauldronRecipe> getCurrentRecipe() {
-        return level.getRecipeManager().getRecipesFor(PotionCauldronRecipe.Type.INSTANCE, getContainer(), level);
+    private List<PotionRecipe> getCurrentRecipe() {
+        if(level.isClientSide()){
+            return new ArrayList<>();
+        }
+        else{
+            PotionFormulaSaveData data = PotionFormulaSaveData.from(((ServerLevel) level));
+            List<PotionRecipe> matchingRecipes = data.getRecipesFor(getContainer());
+            return matchingRecipes;
+        }
     }
 
     public boolean blockBelowIsHot(){
@@ -431,6 +442,7 @@ public class PotionCauldronBlockEntity extends BlockEntity {
         //this.result = conflict ? PotionUtils.setPotion(new ItemStack(Items.POTION), Potions.POISON) : tempResult;
         this.result = tempResult.copy();
         pLevel.playSound(null, pPos, SoundEvents.ZOMBIE_VILLAGER_CURE, SoundSource.BLOCKS, 1f, 1f);
+        //TODO change this so it works more intuitively
         pLevel.setBlockAndUpdate(pPos, pState.setValue(RESULT, true).setValue(WATER_LEVEL, Mth.clamp(pState.getValue(WATER_LEVEL), 2, 3)));
         tempResult = PotionContentData.EMPTY.copy();
         clearContent();

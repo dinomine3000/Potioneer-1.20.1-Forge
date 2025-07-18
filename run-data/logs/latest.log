@@ -1,45 +1,45 @@
-[12Jul2025 15:23:17.715] [main/INFO] [cpw.mods.modlauncher.Launcher/MODLAUNCHER]: ModLauncher running: args [--launchTarget, forgedatauserdev, --assetIndex, 5, --assetsDir, C:\Users\Rafael\.gradle\caches\forge_gradle\assets, --gameDir, ., --fml.forgeVersion, 47.3.0, --fml.mcVersion, 1.20.1, --fml.forgeGroup, net.minecraftforge, --fml.mcpVersion, 20230612.114412, --mod, potioneer, --all, --output, C:\Users\Rafael\Documents\GitHub\Potioneer-1.20.1-Forge\src\generated\resources, --existing, C:\Users\Rafael\Documents\GitHub\Potioneer-1.20.1-Forge\src\main\resources]
-[12Jul2025 15:23:17.722] [main/INFO] [cpw.mods.modlauncher.Launcher/MODLAUNCHER]: ModLauncher 10.0.9+10.0.9+main.dcd20f30 starting: java version 17.0.9 by Oracle Corporation; OS Windows 11 arch amd64 version 10.0
-[12Jul2025 15:23:17.853] [main/INFO] [net.minecraftforge.fml.loading.ImmediateWindowHandler/]: ImmediateWindowProvider not loading because launch target is forgedatauserdev
-[12Jul2025 15:23:17.922] [main/INFO] [mixin/]: SpongePowered MIXIN Subsystem Version=0.8.5 Source=union:/C:/Users/Rafael/.gradle/caches/modules-2/files-2.1/org.spongepowered/mixin/0.8.5/9d1c0c3a304ae6697ecd477218fa61b850bf57fc/mixin-0.8.5.jar%23128!/ Service=ModLauncher Env=CLIENT
-[12Jul2025 15:23:18.373] [main/WARN] [net.minecraftforge.fml.loading.moddiscovery.ModFileParser/LOADING]: Mod file C:\Users\Rafael\.gradle\caches\modules-2\files-2.1\net.minecraftforge\javafmllanguage\1.20.1-47.3.0\d7ebc62120f202109e300e084ca1a31a7b946a62\javafmllanguage-1.20.1-47.3.0.jar is missing mods.toml file
-[12Jul2025 15:23:18.376] [main/WARN] [net.minecraftforge.fml.loading.moddiscovery.ModFileParser/LOADING]: Mod file C:\Users\Rafael\.gradle\caches\modules-2\files-2.1\net.minecraftforge\lowcodelanguage\1.20.1-47.3.0\1bf3e845ea0ce750096da8c71c8364b188ab74d4\lowcodelanguage-1.20.1-47.3.0.jar is missing mods.toml file
-[12Jul2025 15:23:18.379] [main/WARN] [net.minecraftforge.fml.loading.moddiscovery.ModFileParser/LOADING]: Mod file C:\Users\Rafael\.gradle\caches\modules-2\files-2.1\net.minecraftforge\mclanguage\1.20.1-47.3.0\6093682e943ddccbabf70539319d7f2fe64db2e7\mclanguage-1.20.1-47.3.0.jar is missing mods.toml file
-[12Jul2025 15:23:18.383] [main/WARN] [net.minecraftforge.fml.loading.moddiscovery.ModFileParser/LOADING]: Mod file C:\Users\Rafael\.gradle\caches\modules-2\files-2.1\net.minecraftforge\fmlcore\1.20.1-47.3.0\3b6be96aba3e323f3c918e8ef6a96312d82d76ad\fmlcore-1.20.1-47.3.0.jar is missing mods.toml file
-[12Jul2025 15:23:18.819] [main/WARN] [net.minecraftforge.jarjar.selection.JarSelector/]: Attempted to select a dependency jar for JarJar which was passed in as source: ldlib. Using Mod File: C:\Users\Rafael\.gradle\caches\forge_gradle\deobf_dependencies\com\lowdragmc\ldlib\ldlib-forge-1.20.1\1.0.40_mapped_parchment_2023.06.26-1.20.1\ldlib-forge-1.20.1-1.0.40_mapped_parchment_2023.06.26-1.20.1.jar
-[12Jul2025 15:23:18.819] [main/INFO] [net.minecraftforge.fml.loading.moddiscovery.JarInJarDependencyLocator/]: Found 3 dependencies adding them to mods collection
-[12Jul2025 15:23:20.719] [main/INFO] [mixin/]: Compatibility level set to JAVA_17
-[12Jul2025 15:23:20.740] [main/INFO] [cpw.mods.modlauncher.LaunchServiceHandler/MODLAUNCHER]: Launching target 'forgedatauserdev' with arguments [--gameDir, ., --assetsDir, C:\Users\Rafael\.gradle\caches\forge_gradle\assets, --assetIndex, 5, --mod, potioneer, --all, --output, C:\Users\Rafael\Documents\GitHub\Potioneer-1.20.1-Forge\src\generated\resources, --existing, C:\Users\Rafael\Documents\GitHub\Potioneer-1.20.1-Forge\src\main\resources]
-[12Jul2025 15:23:21.123] [main/INFO] [mixin/]: Remapping refMap photon-common-1.20.1-photon-common-refmap.json using C:\Users\Rafael\Documents\GitHub\Potioneer-1.20.1-Forge\build\createSrgToMcp\output.srg
-[12Jul2025 15:23:21.159] [main/INFO] [mixin/]: Remapping refMap photon-forge-1.20.1-photon-forge-refmap.json using C:\Users\Rafael\Documents\GitHub\Potioneer-1.20.1-Forge\build\createSrgToMcp\output.srg
-[12Jul2025 15:23:21.320] [main/INFO] [mixin/]: Remapping refMap curios.refmap.json using C:\Users\Rafael\Documents\GitHub\Potioneer-1.20.1-Forge\build\createSrgToMcp\output.srg
-[12Jul2025 15:23:21.321] [main/INFO] [mixin/]: Remapping refMap geckolib.refmap.json using C:\Users\Rafael\Documents\GitHub\Potioneer-1.20.1-Forge\build\createSrgToMcp\output.srg
-[12Jul2025 15:23:21.325] [main/INFO] [mixin/]: Remapping refMap ldlib-common-1.20.1-ldlib-common-refmap.json using C:\Users\Rafael\Documents\GitHub\Potioneer-1.20.1-Forge\build\createSrgToMcp\output.srg
-[12Jul2025 15:23:21.328] [main/INFO] [mixin/]: Remapping refMap ldlib-forge-1.20.1-ldlib-forge-refmap.json using C:\Users\Rafael\Documents\GitHub\Potioneer-1.20.1-Forge\build\createSrgToMcp\output.srg
-[12Jul2025 15:23:22.082] [main/INFO] [net.minecraftforge.data.loading.DatagenModLoader/]: Initializing Data Gatherer for mods [potioneer]
-[12Jul2025 15:23:22.339] [main/INFO] [MixinExtras|Service/]: Initializing MixinExtras via com.llamalad7.mixinextras.service.MixinExtrasServiceImpl(version=0.3.5).
-[12Jul2025 15:23:27.901] [modloading-worker-0/INFO] [LowDragLib/]: LowDragLib is initializing on platform: Forge
-[12Jul2025 15:23:27.901] [modloading-worker-0/INFO] [Photon/]: Photon is initializing on platform: Forge
-[12Jul2025 15:23:27.942] [modloading-worker-0/INFO] [net.minecraftforge.common.ForgeMod/FORGEMOD]: Forge mod loading, version 47.3.0, for MC 1.20.1 with MCP 20230612.114412
-[12Jul2025 15:23:27.944] [modloading-worker-0/INFO] [net.minecraftforge.common.MinecraftForge/FORGE]: MinecraftForge v47.3.0 Initialized
-[12Jul2025 15:23:28.129] [modloading-worker-0/WARN] [software.bernie.geckolib.GeckoLib/]: Minecraft.getInstance() was null, could not register reload listeners
-[12Jul2025 15:23:28.552] [modloading-worker-0/INFO] [mezz.jei.library.load.PluginCaller/]: Sending ConfigManager...
-[12Jul2025 15:23:28.563] [modloading-worker-0/INFO] [mezz.jei.library.load.PluginCaller/]: Sending ConfigManager took 5.894 ms
-[12Jul2025 15:23:29.190] [main/WARN] [net.minecraft.server.packs.VanillaPackResourcesBuilder/]: Assets URL 'union:/C:/Users/Rafael/Documents/GitHub/Potioneer-1.20.1-Forge/build/fg_cache/net/minecraftforge/forge/1.20.1-47.3.0_mapped_parchment_2023.06.26-1.20.1/forge-1.20.1-47.3.0_mapped_parchment_2023.06.26-1.20.1.jar%23191!/assets/.mcassetsroot' uses unexpected schema
-[12Jul2025 15:23:29.191] [main/WARN] [net.minecraft.server.packs.VanillaPackResourcesBuilder/]: Assets URL 'union:/C:/Users/Rafael/Documents/GitHub/Potioneer-1.20.1-Forge/build/fg_cache/net/minecraftforge/forge/1.20.1-47.3.0_mapped_parchment_2023.06.26-1.20.1/forge-1.20.1-47.3.0_mapped_parchment_2023.06.26-1.20.1.jar%23191!/data/.mcassetsroot' uses unexpected schema
-[12Jul2025 15:23:29.434] [main/INFO] [net.minecraft.data.DataGenerator/]: Starting provider: Recipes
-[12Jul2025 15:23:29.503] [main/INFO] [net.minecraft.data.DataGenerator/]: Recipes finished after 69 ms
-[12Jul2025 15:23:29.503] [main/INFO] [net.minecraft.data.DataGenerator/]: Starting provider: Block States: potioneer
-[12Jul2025 15:23:29.632] [main/INFO] [net.minecraft.data.DataGenerator/]: Block States: potioneer finished after 128 ms
-[12Jul2025 15:23:29.633] [main/INFO] [net.minecraft.data.DataGenerator/]: Starting provider: Item Models: potioneer
-[12Jul2025 15:23:29.641] [main/INFO] [net.minecraft.data.DataGenerator/]: Item Models: potioneer finished after 7 ms
-[12Jul2025 15:23:29.641] [main/INFO] [net.minecraft.data.DataGenerator/]: Starting provider: Tags for minecraft:block mod id potioneer
-[12Jul2025 15:23:29.656] [main/INFO] [net.minecraft.data.DataGenerator/]: Tags for minecraft:block mod id potioneer finished after 14 ms
-[12Jul2025 15:23:29.656] [main/INFO] [net.minecraft.data.DataGenerator/]: Starting provider: Tags for minecraft:item mod id potioneer
-[12Jul2025 15:23:29.658] [main/INFO] [net.minecraft.data.DataGenerator/]: Tags for minecraft:item mod id potioneer finished after 1 ms
-[12Jul2025 15:23:29.658] [main/INFO] [net.minecraft.data.DataGenerator/]: Starting provider: Registries
-[12Jul2025 15:23:29.669] [main/INFO] [net.minecraft.data.DataGenerator/]: Registries finished after 10 ms
-[12Jul2025 15:23:29.669] [main/INFO] [net.minecraft.data.DataGenerator/]: Starting provider: Global Loot Modifiers : potioneer
-[12Jul2025 15:23:29.679] [main/INFO] [net.minecraft.data.DataGenerator/]: Global Loot Modifiers : potioneer finished after 9 ms
-[12Jul2025 15:23:29.679] [main/INFO] [net.minecraft.data.DataGenerator/]: All providers took: 245 ms
-[12Jul2025 15:23:29.693] [main/INFO] [net.minecraft.data.HashCache/]: Caching: total files: 81, old count: 81, new count: 82, removed stale: 0, written: 1
+[18Jul2025 11:50:26.721] [main/INFO] [cpw.mods.modlauncher.Launcher/MODLAUNCHER]: ModLauncher running: args [--launchTarget, forgedatauserdev, --assetIndex, 5, --assetsDir, C:\Users\Rafael\.gradle\caches\forge_gradle\assets, --gameDir, ., --fml.forgeVersion, 47.3.0, --fml.mcVersion, 1.20.1, --fml.forgeGroup, net.minecraftforge, --fml.mcpVersion, 20230612.114412, --mod, potioneer, --all, --output, C:\Users\Rafael\Documents\GitHub\Potioneer-1.20.1-Forge\src\generated\resources, --existing, C:\Users\Rafael\Documents\GitHub\Potioneer-1.20.1-Forge\src\main\resources]
+[18Jul2025 11:50:26.737] [main/INFO] [cpw.mods.modlauncher.Launcher/MODLAUNCHER]: ModLauncher 10.0.9+10.0.9+main.dcd20f30 starting: java version 17.0.9 by Oracle Corporation; OS Windows 11 arch amd64 version 10.0
+[18Jul2025 11:50:26.896] [main/INFO] [net.minecraftforge.fml.loading.ImmediateWindowHandler/]: ImmediateWindowProvider not loading because launch target is forgedatauserdev
+[18Jul2025 11:50:26.957] [main/INFO] [mixin/]: SpongePowered MIXIN Subsystem Version=0.8.5 Source=union:/C:/Users/Rafael/.gradle/caches/modules-2/files-2.1/org.spongepowered/mixin/0.8.5/9d1c0c3a304ae6697ecd477218fa61b850bf57fc/mixin-0.8.5.jar%23128!/ Service=ModLauncher Env=CLIENT
+[18Jul2025 11:50:27.600] [main/WARN] [net.minecraftforge.fml.loading.moddiscovery.ModFileParser/LOADING]: Mod file C:\Users\Rafael\.gradle\caches\modules-2\files-2.1\net.minecraftforge\javafmllanguage\1.20.1-47.3.0\d7ebc62120f202109e300e084ca1a31a7b946a62\javafmllanguage-1.20.1-47.3.0.jar is missing mods.toml file
+[18Jul2025 11:50:27.600] [main/WARN] [net.minecraftforge.fml.loading.moddiscovery.ModFileParser/LOADING]: Mod file C:\Users\Rafael\.gradle\caches\modules-2\files-2.1\net.minecraftforge\lowcodelanguage\1.20.1-47.3.0\1bf3e845ea0ce750096da8c71c8364b188ab74d4\lowcodelanguage-1.20.1-47.3.0.jar is missing mods.toml file
+[18Jul2025 11:50:27.616] [main/WARN] [net.minecraftforge.fml.loading.moddiscovery.ModFileParser/LOADING]: Mod file C:\Users\Rafael\.gradle\caches\modules-2\files-2.1\net.minecraftforge\mclanguage\1.20.1-47.3.0\6093682e943ddccbabf70539319d7f2fe64db2e7\mclanguage-1.20.1-47.3.0.jar is missing mods.toml file
+[18Jul2025 11:50:27.616] [main/WARN] [net.minecraftforge.fml.loading.moddiscovery.ModFileParser/LOADING]: Mod file C:\Users\Rafael\.gradle\caches\modules-2\files-2.1\net.minecraftforge\fmlcore\1.20.1-47.3.0\3b6be96aba3e323f3c918e8ef6a96312d82d76ad\fmlcore-1.20.1-47.3.0.jar is missing mods.toml file
+[18Jul2025 11:50:27.900] [main/WARN] [net.minecraftforge.jarjar.selection.JarSelector/]: Attempted to select a dependency jar for JarJar which was passed in as source: ldlib. Using Mod File: C:\Users\Rafael\.gradle\caches\forge_gradle\deobf_dependencies\com\lowdragmc\ldlib\ldlib-forge-1.20.1\1.0.40_mapped_parchment_2023.06.26-1.20.1\ldlib-forge-1.20.1-1.0.40_mapped_parchment_2023.06.26-1.20.1.jar
+[18Jul2025 11:50:27.900] [main/INFO] [net.minecraftforge.fml.loading.moddiscovery.JarInJarDependencyLocator/]: Found 3 dependencies adding them to mods collection
+[18Jul2025 11:50:29.907] [main/INFO] [mixin/]: Compatibility level set to JAVA_17
+[18Jul2025 11:50:29.926] [main/INFO] [cpw.mods.modlauncher.LaunchServiceHandler/MODLAUNCHER]: Launching target 'forgedatauserdev' with arguments [--gameDir, ., --assetsDir, C:\Users\Rafael\.gradle\caches\forge_gradle\assets, --assetIndex, 5, --mod, potioneer, --all, --output, C:\Users\Rafael\Documents\GitHub\Potioneer-1.20.1-Forge\src\generated\resources, --existing, C:\Users\Rafael\Documents\GitHub\Potioneer-1.20.1-Forge\src\main\resources]
+[18Jul2025 11:50:30.350] [main/INFO] [mixin/]: Remapping refMap photon-common-1.20.1-photon-common-refmap.json using C:\Users\Rafael\Documents\GitHub\Potioneer-1.20.1-Forge\build\createSrgToMcp\output.srg
+[18Jul2025 11:50:30.382] [main/INFO] [mixin/]: Remapping refMap photon-forge-1.20.1-photon-forge-refmap.json using C:\Users\Rafael\Documents\GitHub\Potioneer-1.20.1-Forge\build\createSrgToMcp\output.srg
+[18Jul2025 11:50:30.529] [main/INFO] [mixin/]: Remapping refMap curios.refmap.json using C:\Users\Rafael\Documents\GitHub\Potioneer-1.20.1-Forge\build\createSrgToMcp\output.srg
+[18Jul2025 11:50:30.531] [main/INFO] [mixin/]: Remapping refMap geckolib.refmap.json using C:\Users\Rafael\Documents\GitHub\Potioneer-1.20.1-Forge\build\createSrgToMcp\output.srg
+[18Jul2025 11:50:30.534] [main/INFO] [mixin/]: Remapping refMap ldlib-common-1.20.1-ldlib-common-refmap.json using C:\Users\Rafael\Documents\GitHub\Potioneer-1.20.1-Forge\build\createSrgToMcp\output.srg
+[18Jul2025 11:50:30.538] [main/INFO] [mixin/]: Remapping refMap ldlib-forge-1.20.1-ldlib-forge-refmap.json using C:\Users\Rafael\Documents\GitHub\Potioneer-1.20.1-Forge\build\createSrgToMcp\output.srg
+[18Jul2025 11:50:31.317] [main/INFO] [net.minecraftforge.data.loading.DatagenModLoader/]: Initializing Data Gatherer for mods [potioneer]
+[18Jul2025 11:50:31.544] [main/INFO] [MixinExtras|Service/]: Initializing MixinExtras via com.llamalad7.mixinextras.service.MixinExtrasServiceImpl(version=0.3.5).
+[18Jul2025 11:50:36.496] [modloading-worker-0/INFO] [Photon/]: Photon is initializing on platform: Forge
+[18Jul2025 11:50:36.496] [modloading-worker-0/INFO] [LowDragLib/]: LowDragLib is initializing on platform: Forge
+[18Jul2025 11:50:36.527] [modloading-worker-0/INFO] [net.minecraftforge.common.ForgeMod/FORGEMOD]: Forge mod loading, version 47.3.0, for MC 1.20.1 with MCP 20230612.114412
+[18Jul2025 11:50:36.531] [modloading-worker-0/INFO] [net.minecraftforge.common.MinecraftForge/FORGE]: MinecraftForge v47.3.0 Initialized
+[18Jul2025 11:50:36.735] [modloading-worker-0/WARN] [software.bernie.geckolib.GeckoLib/]: Minecraft.getInstance() was null, could not register reload listeners
+[18Jul2025 11:50:37.057] [modloading-worker-0/INFO] [mezz.jei.library.load.PluginCaller/]: Sending ConfigManager...
+[18Jul2025 11:50:37.071] [modloading-worker-0/INFO] [mezz.jei.library.load.PluginCaller/]: Sending ConfigManager took 8.874 ms
+[18Jul2025 11:50:37.825] [main/WARN] [net.minecraft.server.packs.VanillaPackResourcesBuilder/]: Assets URL 'union:/C:/Users/Rafael/Documents/GitHub/Potioneer-1.20.1-Forge/build/fg_cache/net/minecraftforge/forge/1.20.1-47.3.0_mapped_parchment_2023.06.26-1.20.1/forge-1.20.1-47.3.0_mapped_parchment_2023.06.26-1.20.1.jar%23191!/assets/.mcassetsroot' uses unexpected schema
+[18Jul2025 11:50:37.826] [main/WARN] [net.minecraft.server.packs.VanillaPackResourcesBuilder/]: Assets URL 'union:/C:/Users/Rafael/Documents/GitHub/Potioneer-1.20.1-Forge/build/fg_cache/net/minecraftforge/forge/1.20.1-47.3.0_mapped_parchment_2023.06.26-1.20.1/forge-1.20.1-47.3.0_mapped_parchment_2023.06.26-1.20.1.jar%23191!/data/.mcassetsroot' uses unexpected schema
+[18Jul2025 11:50:38.169] [main/INFO] [net.minecraft.data.DataGenerator/]: Starting provider: Recipes
+[18Jul2025 11:50:38.228] [main/INFO] [net.minecraft.data.DataGenerator/]: Recipes finished after 58 ms
+[18Jul2025 11:50:38.228] [main/INFO] [net.minecraft.data.DataGenerator/]: Starting provider: Block States: potioneer
+[18Jul2025 11:50:38.324] [main/INFO] [net.minecraft.data.DataGenerator/]: Block States: potioneer finished after 97 ms
+[18Jul2025 11:50:38.324] [main/INFO] [net.minecraft.data.DataGenerator/]: Starting provider: Item Models: potioneer
+[18Jul2025 11:50:38.334] [main/INFO] [net.minecraft.data.DataGenerator/]: Item Models: potioneer finished after 8 ms
+[18Jul2025 11:50:38.334] [main/INFO] [net.minecraft.data.DataGenerator/]: Starting provider: Tags for minecraft:block mod id potioneer
+[18Jul2025 11:50:38.354] [main/INFO] [net.minecraft.data.DataGenerator/]: Tags for minecraft:block mod id potioneer finished after 18 ms
+[18Jul2025 11:50:38.354] [main/INFO] [net.minecraft.data.DataGenerator/]: Starting provider: Tags for minecraft:item mod id potioneer
+[18Jul2025 11:50:38.354] [main/INFO] [net.minecraft.data.DataGenerator/]: Tags for minecraft:item mod id potioneer finished after 2 ms
+[18Jul2025 11:50:38.354] [main/INFO] [net.minecraft.data.DataGenerator/]: Starting provider: Registries
+[18Jul2025 11:50:38.354] [main/INFO] [net.minecraft.data.DataGenerator/]: Registries finished after 10 ms
+[18Jul2025 11:50:38.369] [main/INFO] [net.minecraft.data.DataGenerator/]: Starting provider: Global Loot Modifiers : potioneer
+[18Jul2025 11:50:38.369] [main/INFO] [net.minecraft.data.DataGenerator/]: Global Loot Modifiers : potioneer finished after 7 ms
+[18Jul2025 11:50:38.369] [main/INFO] [net.minecraft.data.DataGenerator/]: All providers took: 206 ms
+[18Jul2025 11:50:38.385] [main/INFO] [net.minecraft.data.HashCache/]: Caching: total files: 83, old count: 81, new count: 83, removed stale: 1, written: 2

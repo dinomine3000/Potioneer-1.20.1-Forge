@@ -19,12 +19,13 @@ public class PotionContentData {
         this.canConflict = canConflict;
     }
 
-    public void save(CompoundTag tag){
+    public CompoundTag save(CompoundTag tag){
         tag.putString("name", name);
         tag.putInt("amount", amount);
         tag.putBoolean("bottle", bottle);
         tag.putInt("color", color);
         tag.putBoolean("canConflict", canConflict);
+        return tag;
     }
 
     public static PotionContentData load(CompoundTag tag){

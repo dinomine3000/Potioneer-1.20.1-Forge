@@ -9,6 +9,7 @@ import net.dinomine.potioneer.block.entity.renderer.PriestBlockRenderer;
 import net.dinomine.potioneer.block.entity.renderer.WaterTrapBlockRenderer;
 import net.dinomine.potioneer.config.PotioneerClientConfig;
 import net.dinomine.potioneer.config.PotioneerCommonConfig;
+import net.dinomine.potioneer.config.PotioneerFormulaConfig;
 import net.dinomine.potioneer.entities.ModEntities;
 import net.dinomine.potioneer.entities.client.*;
 import net.dinomine.potioneer.item.ModCreativeModTabs;
@@ -23,6 +24,7 @@ import net.dinomine.potioneer.network.PacketHandler;
 import net.dinomine.potioneer.particle.ModParticles;
 import net.dinomine.potioneer.recipe.ModRecipes;
 import net.dinomine.potioneer.sound.ModSounds;
+import net.dinomine.potioneer.util.JSONParserHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
@@ -52,6 +54,7 @@ import software.bernie.geckolib.GeckoLib;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 
 // The value here should match an entry in the META-INF/mods.toml file
 @Mod(Potioneer.MOD_ID)
@@ -91,6 +94,9 @@ public class Potioneer
 
         ModMenuTypes.MENU_TYPES.register(eventBus);
 
+        JSONParserHelper.loadChangedFormulas();
+        JSONParserHelper.loadNewFormulas();
+
 
         // Register the commonSetup method for modloading
         eventBus.addListener(this::commonSetup);
@@ -98,7 +104,8 @@ public class Potioneer
         GeckoLib.initialize();
 
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, PotioneerCommonConfig.SPEC, "potioneer-common.toml");
-        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, PotioneerClientConfig.SPEC, "potioneer-client.toml");
+        ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, PotioneerClientConfig.SPEC, "potioneer-client.toml");
+        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, PotioneerFormulaConfig.SPEC, "potioneer-formula.toml");
 
         // Register ourselves for server and other game events we are interested in
         MinecraftForge.EVENT_BUS.register(this);

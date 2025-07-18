@@ -13,7 +13,7 @@ import java.util.ArrayList;
 
 public record PotionRecipeData(ArrayList<ItemStack> main, ArrayList<ItemStack> supplementary, int waterLevel, boolean fire, int id) {
 
-    public void save(CompoundTag nbt){
+    public CompoundTag save(CompoundTag nbt){
         nbt.putInt("id", id);
         nbt.putInt("water", waterLevel());
         nbt.putBoolean("fire", fire());
@@ -30,6 +30,7 @@ public record PotionRecipeData(ArrayList<ItemStack> main, ArrayList<ItemStack> s
             supplementary.get(i).save(temp);
             nbt.put("supp_" + i, temp);
         }
+        return nbt;
     }
 
     public static PotionRecipeData load(CompoundTag nbt){

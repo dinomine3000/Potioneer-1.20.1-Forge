@@ -32,7 +32,7 @@ public class CharacteristicItem extends Item {
         CompoundTag tag = new CompoundTag();
         CompoundTag beyonderInfo = new CompoundTag();
         beyonderInfo.putInt("id", sequenceId);
-        tag.put("beyonder_info", beyonderInfo);
+        tag.put(ArtifactHelper.BEYONDER_TAG_ID, beyonderInfo);
         res.setTag(tag);
         return res;
     }
@@ -45,8 +45,8 @@ public class CharacteristicItem extends Item {
         CharacteristicEntity entity = new CharacteristicEntity(ModEntities.CHARACTERISTIC.get(), pContext.getLevel(), pContext.getItemInHand().copy(), -1);
         Vec3 pos = pContext.getClickedPos().relative(pContext.getClickedFace()).getCenter().add(0, -0.5f, 0);
 
-        if(pContext.getItemInHand().hasTag() && pContext.getItemInHand().getTag().contains("beyonder_info")){
-            entity.setSequenceId(pContext.getItemInHand().getTag().getCompound("beyonder_info").getInt("id"));
+        if(pContext.getItemInHand().hasTag() && pContext.getItemInHand().getTag().contains(ArtifactHelper.BEYONDER_TAG_ID)){
+            entity.setSequenceId(pContext.getItemInHand().getTag().getCompound(ArtifactHelper.BEYONDER_TAG_ID).getInt("id"));
         } else {
             entity.setSequenceId(-1);
         }
@@ -63,16 +63,15 @@ public class CharacteristicItem extends Item {
     public void inventoryTick(ItemStack pStack, Level pLevel, Entity pEntity, int pSlotId, boolean pIsSelected) {
         super.inventoryTick(pStack, pLevel, pEntity, pSlotId, pIsSelected);
         if(pLevel.isClientSide()) return;
-        if(pStack.hasTag() && pStack.getTag().contains("beyonder_info") && pLevel.random.nextInt(200) == 1){
+        if(pStack.hasTag() && pStack.getTag().contains(ArtifactHelper.BEYONDER_TAG_ID) && pLevel.random.nextInt(200) == 1){
             if(pEntity instanceof Player player){
                 NonNullList<ItemStack> items = player.getInventory().items;
                 for(ItemStack stack: items){
                     if(ArtifactHelper.isValidItemForArtifact(stack)){
-                        //TODO: CHANGE THIS ASAP so it returns when it finds a match, instead of converting every possible item into an artifact
                         pLevel.playSound(null, pEntity.getOnPos(), SoundEvents.ENCHANTMENT_TABLE_USE, SoundSource.PLAYERS, 1, 1);
-                        int sequenceId = pStack.getTag().getCompound("beyonder_info").getInt("id");
+                        int sequenceId = pStack.getTag().getCompound(ArtifactHelper.BEYONDER_TAG_ID).getInt("id");
                         ArtifactHelper.makeSealedArtifact(stack, sequenceId, pLevel.random);
-                        pEntity.sendSystemMessage(Component.literal("Your " + stack.getDisplayName().getString() + " has been corrupted by a characteristic"));
+                        pEntity.sendSystemMessage(Component.translatable("potioneer.characteristic.corrupt", stack.getDisplayName().getString()));
                         pStack.setCount(0);
                         break;
                     }
@@ -89,8 +88,8 @@ public class CharacteristicItem extends Item {
             int seq = -1;
             if(i != 1) seq = -1;
             if(itemStack.hasTag()){
-                if(!itemStack.getTag().getCompound("beyonder_info").isEmpty()){
-                    seq = itemStack.getTag().getCompound("beyonder_info").getInt("id");
+                if(!itemStack.getTag().getCompound(ArtifactHelper.BEYONDER_TAG_ID).isEmpty()){
+                    seq = itemStack.getTag().getCompound(ArtifactHelper.BEYONDER_TAG_ID).getInt("id");
                 }
             }
             return Beyonder.getSequenceColorFromId(seq);

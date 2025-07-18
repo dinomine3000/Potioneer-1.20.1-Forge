@@ -71,7 +71,7 @@ public class FormulaItem extends Item {
         } else {
             PotionFormulaSaveData data = PotionFormulaSaveData.from((ServerLevel) pLevel);
             if(id < 0){
-                result = data.getDataFromId(getRandomId(pLevel));
+                result = data.getFormulaDataFromId(getRandomId(pLevel));
             } else {
                 int sequenceLevel = id % 10;
                 int pathwayId = Math.floorDiv(id, 10);
@@ -81,20 +81,20 @@ public class FormulaItem extends Item {
                 if(sequenceLevel > 0 && pLevel.random.nextFloat() < cap.getLuckManager().checkLuck((float)chanceOfNextFormula)){
                     cap.getLuckManager().consumeLuck(10);
                     System.out.println("Generating next formula...");
-                    result = data.getDataFromId(id-1);
+                    result = data.getFormulaDataFromId(id-1);
                 } else {
                     if(pLevel.random.nextFloat() < cap.getLuckManager().checkLuck((float)chanceOfSamePathwayFormula)){
                         System.out.println("Generating pathway formula...");
-                        result = data.getDataFromId(10*pathwayId + getRandomSequenceLevel(9, pLevel.random.nextDouble()));
+                        result = data.getFormulaDataFromId(10*pathwayId + getRandomSequenceLevel(9, pLevel.random.nextDouble()));
                     } else {
-                        result = data.getDataFromId(getRandomId(pLevel));
+                        result = data.getFormulaDataFromId(getRandomId(pLevel));
                     }
                 }
             }
 
             while(result == null){
                 System.out.println("Random generated id is invalid. creating a new one...");
-                result = data.getDataFromId(getRandomId(pLevel));
+                result = data.getFormulaDataFromId(getRandomId(pLevel));
             }
             writeToNbt(stack, result, false);
         }

@@ -7,6 +7,7 @@ import net.dinomine.potioneer.beyonder.effects.mystery.BeyonderInvisibilityEffec
 import net.dinomine.potioneer.beyonder.effects.mystery.BeyonderRegenEffect;
 import net.dinomine.potioneer.beyonder.effects.wheeloffortune.BeyonderLuckReduceDamageEffect;
 import net.dinomine.potioneer.item.ModItems;
+import net.dinomine.potioneer.util.ModTags;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.sounds.SoundEvents;
@@ -42,11 +43,9 @@ public class PlayerEffectsManager {
         //TODO change this to account for multiple instances of similar effects
         if(attacker instanceof Player player){
             //additions
-            if(hasEffect(BeyonderEffects.EFFECT.TYRANT_ELECTRIFICATION) && player.getMainHandItem().getItem() instanceof TieredItem tieredItem){
-                if(tieredItem.getTier().equals(Tiers.GOLD)){
-                    player.level().playSound(null, player, SoundEvents.LIGHTNING_BOLT_IMPACT, SoundSource.PLAYERS, 1, 0.5f);
-                    dmg += 3;
-                }
+            if(hasEffect(BeyonderEffects.EFFECT.TYRANT_ELECTRIFICATION) && player.getMainHandItem().is(ModTags.Items.ELECTRIFICATION_WEAPONS)){
+                player.level().playSound(null, player, SoundEvents.LIGHTNING_BOLT_IMPACT, SoundSource.PLAYERS, 1, 0.5f);
+                dmg += 3;
             }
             if(hasEffect(BeyonderEffects.EFFECT.RED_LIGHT_BUFF)){
                 dmg += 3;
@@ -65,10 +64,8 @@ public class PlayerEffectsManager {
                 if(event.getSource().getDirectEntity() != null){
                     arrow = event.getSource().getDirectEntity().getType().is(EntityType.ARROW.getTags().toList().get(0));
                 }
-                if(player.getItemInHand(hand).is(Tags.Items.TOOLS) || arrow || player.getItemInHand(hand).is(Tags.Items.TOOLS_TRIDENTS)){
-                    System.out.println(event.getAmount());
+                if(player.getItemInHand(hand).is(ModTags.Items.WEAPON_PROFICIENCY) || arrow){
                     dmg *= ((10-eff.getSequenceLevel()) * 0.3f + 1f);
-                    System.out.println(dmg);
                 }
             }
             if(hasEffect(BeyonderEffects.EFFECT.MYSTERY_REGEN)){

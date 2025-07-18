@@ -6,8 +6,11 @@ import net.dinomine.potioneer.util.ModTags;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.tags.ItemTagsProvider;
+import net.minecraft.nbt.Tag;
+import net.minecraft.tags.ItemTags;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Block;
+import net.minecraftforge.common.Tags;
 import net.minecraftforge.common.data.ExistingFileHelper;
 import org.jetbrains.annotations.Nullable;
 
@@ -22,18 +25,11 @@ public class ModItemTagGenerator extends ItemTagsProvider {
 
     @Override
     protected void addTags(HolderLookup.Provider provider) {
-        this.tag(ModTags.Items.POTION_INGREDIENTS).add(ModItems.SAPPHIRE.get())
-                .add(Items.DIAMOND)
-                .add(Items.COAL)
-                .add(Items.REDSTONE)
-                .add(Items.GLOWSTONE_DUST)
-                .add(Items.IRON_INGOT)
-                .add(Items.GOLD_INGOT)
-                .add(Items.COPPER_INGOT)
-                .add(ModItems.PECAN_LEAF.get())
-                .add(ModItems.PECAN_SHELL.get())
-                .add(ModItems.SOLSEER.get())
-                .add(ModItems.WANDERING_CACTUS_PRICK.get())
-                .add(ModItems.VIAL.get());
+        this.tag(ModTags.Items.ELECTRIFICATION_WEAPONS).add(Items.GOLDEN_SHOVEL)
+                .add(Items.GOLDEN_SWORD)
+                .add(Items.GOLDEN_PICKAXE)
+                .add(Items.GOLDEN_AXE)
+                .add(Items.GOLDEN_HOE);
+        this.tag(ModTags.Items.WEAPON_PROFICIENCY).addTags(Tags.Items.TOOLS, Tags.Items.TOOLS_TRIDENTS);
     }
 }

@@ -1,44 +1,66 @@
 package net.dinomine.potioneer.savedata;
 
-import net.dinomine.potioneer.config.PotioneerCommonConfig;
+import net.dinomine.potioneer.item.custom.CharacteristicItem;
+import net.dinomine.potioneer.recipe.PotionCauldronContainer;
 import net.dinomine.potioneer.recipe.PotionCauldronRecipe;
+import net.dinomine.potioneer.util.JSONParserHelper;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.saveddata.SavedData;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 public class PotionFormulaSaveData extends SavedData {
-    private ArrayList<PotionRecipeData> formulas = new ArrayList<>();
-    public boolean refresh;
-    public ArrayList<PotionRecipeData> getFormulas() {
-        return formulas;
-    }
+    private ArrayList<PotionRecipe> recipes = new ArrayList<>();
     private ArrayList<ItemStack> totalIngredients = new ArrayList<>();
 
-    public void setFormulas(ArrayList<PotionRecipeData> formulas) {
-        this.formulas = formulas;
+    public List<PotionRecipeData> getFormulas(){
+        return recipes.stream().map(PotionRecipe::input).toList();
+    }
+
+    public void setRecipes(ArrayList<PotionRecipe> recipes) {
+        this.recipes = recipes;
     }
 
 
-    public void requestRefresh(boolean refresh) {
-        this.refresh = refresh;
+    public void refreshFormulas(ServerLevel level) {
+        //gets default recipes
+        this.recipes = new ArrayList<>();
+        ArrayList<PotionCauldronRecipe> recipes = new ArrayList<>(level.getRecipeManager().getAllRecipesFor(PotionCauldronRecipe.Type.INSTANCE));
+        recipes.forEach(rec -> {
+            if(rec.getDefaultRecipeData().id() > -1){
+                this.recipes.add(new PotionRecipe(rec));
+            }
+        });
+
+        //add new recipes in json
+        //TODO
+        this.recipes.addAll(JSONParserHelper.loadNewFormulas());
+
+        //modify existing recipes based on json
+        //TODO
+        for (PotionRecipeData changedData : JSONParserHelper.loadChangedFormulas()) {
+            int id = changedData.id();
+            if(id < 0) continue;
+            for (int i = 0; i < this.recipes.size(); i++) {
+                PotionRecipe recipe = this.recipes.get(i);
+                if (recipe.input().id() == id) {
+                    this.recipes.set(i, new PotionRecipe(changedData, recipe.output()));
+                    break; // Assuming IDs are unique, break to avoid unnecessary checks
+                }
+            }
+        }
         setDirty();
     }
 
     public PotionFormulaSaveData(ServerLevel level){
         //this is the standard initialization of the formulas, aka, just reads the json files for the recipes
 //        System.out.println("reading jsons");
-        refresh = false;
-
-        ArrayList<PotionCauldronRecipe> recipes = new ArrayList<>(level.getRecipeManager().getAllRecipesFor(PotionCauldronRecipe.Type.INSTANCE));
-
 //        boolean generateRandom = PotioneerCommonConfig.RANDOM_FORMULAS.get();
-        boolean generateRandom = false;
 //        if(generateRandom){
 //            totalIngredients = new ArrayList<>(
 //                    PotioneerCommonConfig.INGREDIENTS.get()
@@ -134,20 +156,8 @@ public class PotionFormulaSaveData extends SavedData {
 //            }
 //
 //        }
-        if(!generateRandom) {
 
-
-            recipes.forEach(rec -> {
-                if(rec.recipeData.id() > -1){
-                    formulas.add(rec.recipeData.copy());
-                }
-            });
-
-        }
-
-
-        updateEveryRecipe(this, level);
-        setDirty();
+        refreshFormulas(level);
 //        ResourceLocation minerP = new ResourceLocation(Potioneer.MOD_ID, "9_potion.json");
 //        ResourceLocation swimP = new ResourceLocation(Potioneer.MOD_ID, "19_potion.json");
 //        ResourceLocation trickP = new ResourceLocation(Potioneer.MOD_ID, "29_potion.json");
@@ -168,7 +178,7 @@ public class PotionFormulaSaveData extends SavedData {
     }
 
     public ItemStack getRandomItemFromFormulaFor(int targetSequence){
-        for (PotionRecipeData formula : formulas) {
+        for (PotionRecipeData formula : getFormulas()) {
             if (formula.id() == targetSequence) {
                 ArrayList<ItemStack> ingredients = new ArrayList<>(formula.supplementary());
                 ingredients.addAll(new ArrayList<>(formula.main()));
@@ -179,7 +189,7 @@ public class PotionFormulaSaveData extends SavedData {
     }
 
     public boolean isIngredientForSequence(ItemStack item, int sequenceId){
-        for(PotionRecipeData formula: formulas){
+        for(PotionRecipeData formula: getFormulas()){
             if(formula.id() == sequenceId
                     && (contains(formula.main(), item) || contains(formula.supplementary(), item))){
                 return true;
@@ -191,7 +201,7 @@ public class PotionFormulaSaveData extends SavedData {
     public int getHighestSequenceForItem(ItemStack item){
         boolean flag = false;
         int bestSequence = 9;
-        for(PotionRecipeData formula: formulas){
+        for(PotionRecipeData formula: getFormulas()){
             if(contains(formula.main(), item) && formula.id()%10 <= bestSequence%10){
                 flag = true;
                 bestSequence = formula.id();
@@ -201,7 +211,7 @@ public class PotionFormulaSaveData extends SavedData {
     }
 
     public boolean isFormulaCorrect(PotionRecipeData data){
-        for(PotionRecipeData formula: formulas){
+        for(PotionRecipeData formula: getFormulas()){
             if(formula.equals(data)) return true;
         }
         return false;
@@ -212,12 +222,12 @@ public class PotionFormulaSaveData extends SavedData {
         return "Insert Ingredient Clue Logic Here";
     }
 
-    private int indexOf(ArrayList<ItemStack> list, ItemStack item){
-        for (int i = 0; i < list.size(); i++) {
-            if(list.get(i).is(item.getItem())) return i;
-        }
-        return -1;
-    }
+//    private int indexOf(ArrayList<ItemStack> list, ItemStack item){
+//        for (int i = 0; i < list.size(); i++) {
+//            if(list.get(i).is(item.getItem())) return i;
+//        }
+//        return -1;
+//    }
 
     public static boolean contains(ArrayList<ItemStack> list, ItemStack item){
         for (ItemStack stack : list){
@@ -244,7 +254,6 @@ public class PotionFormulaSaveData extends SavedData {
     }
 
     public PotionFormulaSaveData(Boolean readFiles){
-        refresh = false;
     }
 //
 //    private static JsonObject readJsonObject(ResourceLocation path) throws IOException {
@@ -261,12 +270,10 @@ public class PotionFormulaSaveData extends SavedData {
     @Override
     public CompoundTag save(CompoundTag compoundTag) {
 //        System.out.println("saving to nbt");
-        compoundTag.putBoolean("refresh", refresh);
-
-        compoundTag.putInt("size", formulas.size());
-        for(int i = 0; i < formulas.size(); i++){
+        compoundTag.putInt("size", recipes.size());
+        for(int i = 0; i < recipes.size(); i++){
             CompoundTag temp = new CompoundTag();
-            formulas.get(i).save(temp);
+            recipes.get(i).save(temp);
             compoundTag.put("formula_" + i, temp);
         }
 
@@ -276,16 +283,12 @@ public class PotionFormulaSaveData extends SavedData {
     public static PotionFormulaSaveData load(CompoundTag nbt, Level level){
 //        System.out.println("loading nbt...");
         //refresh variable
-        boolean refresh = nbt.getBoolean("refresh");
-        if(refresh){
-            return null;
-        }
         //formulas data
         int size = nbt.getInt("size");
-        ArrayList<PotionRecipeData> found = new ArrayList<>();
+        ArrayList<PotionRecipe> found = new ArrayList<>();
         if(size != 0){
             for(int i = 0; i < size; i++){
-                found.add(PotionRecipeData.load(nbt.getCompound("formula_" + i)));
+                found.add(PotionRecipe.load(nbt.getCompound("formula_" + i)));
             }
         } else {
 //            System.out.println("initiating WSD with standard values");
@@ -293,40 +296,42 @@ public class PotionFormulaSaveData extends SavedData {
         }
 
         PotionFormulaSaveData res = new PotionFormulaSaveData(false);
-        res.setFormulas(found);
-        res.refresh = false;
-        updateEveryRecipe(res, level);
+        res.setRecipes(found);
+//        updateEveryRecipe(res, level);
         return res;
     }
 
-    private static void updateEveryRecipe(PotionFormulaSaveData data, Level level){
-
-        ArrayList<PotionCauldronRecipe> recipes = new ArrayList<>(level.getRecipeManager().getAllRecipesFor(PotionCauldronRecipe.Type.INSTANCE));
-        recipes.forEach(rec -> {
-            if(rec.recipeData.id() > -1){
-                PotionRecipeData result = data.getDataFromId(rec.recipeData.id());
-                if(result != null){
-                    rec.alternateRecipeData = result.copy();
-                } else {
-                    level.players().forEach(player -> {
-                        player.sendSystemMessage(Component.literal("Recipe wasn't found in old data. Will refresh on next NBT data save"));
-                    });
-                    data.refresh = true;
-                    System.out.println("ERROR: Could not update potion recipe. Recipe was not fData read was null.");
-                }
-            }
-        });
-    }
+//    private static void updateEveryRecipe(PotionFormulaSaveData data, Level level){
+//
+//        ArrayList<PotionCauldronRecipe> recipes = new ArrayList<>(level.getRecipeManager().getAllRecipesFor(PotionCauldronRecipe.Type.INSTANCE));
+//        recipes.forEach(rec -> {
+//            if(rec.getDefaultRecipeData().id() > -1){
+//                PotionRecipeData result = data.getDataFromId(rec.getDefaultRecipeData().id());
+//                if(result != null){
+//                    rec.alternateRecipeData = result.copy();
+//                } else {
+//                    level.players().forEach(player -> {
+//                        player.sendSystemMessage(Component.literal("Recipe wasn't found in old data. Will refresh on next NBT data save"));
+//                    });
+//                    System.out.println("ERROR: Could not update potion recipe. Recipe was not found. Data read was null.");
+//                }
+//            }
+//        });
+//    }
 
     public static PotionFormulaSaveData from(ServerLevel level){
         return level.getServer().overworld().getDataStorage().computeIfAbsent((tag) -> load(tag, level),
                 () -> new PotionFormulaSaveData(level), "potioneer_formulas");
     }
 
-    public PotionRecipeData getDataFromId(int id){
-        for (PotionRecipeData data : formulas){
+    public PotionRecipeData getFormulaDataFromId(int id){
+        for (PotionRecipeData data : getFormulas()){
             if(data.id() == id) return data;
         }
         return null;
+    }
+
+    public List<PotionRecipe> getRecipesFor(PotionCauldronContainer container) {
+        return recipes.stream().filter(recipe -> recipe.matches(container)).toList();
     }
 }

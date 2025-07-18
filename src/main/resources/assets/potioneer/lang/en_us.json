@@ -171,6 +171,7 @@
   "potioneer.ability_name.cogitation": "Cogitation",
   "potioneer.ability.enabled": "Ability %s was turned on.",
   "potioneer.ability.disabled": "Ability %s was turned off.",
+  "potioneer.characteristic.corrupt": "Your %s has been corrupted by a characteristic",
 
   "potioneer.short_desc.air_bullet": "Surprise your enemies with a well timed gun shot",
   "potioneer.long_desc.air_bullet": "Shoot an air bullet from your mouth. It pierces targets. Damage scales with sequence.",

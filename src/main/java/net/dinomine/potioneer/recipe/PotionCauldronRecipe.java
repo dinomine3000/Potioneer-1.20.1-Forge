@@ -25,7 +25,8 @@ import java.util.ArrayList;
 public class PotionCauldronRecipe implements Recipe<PotionCauldronContainer> {
     private final PotionContentData output;
     private final ResourceLocation id;
-    public final PotionRecipeData recipeData;
+    private final PotionRecipeData recipeData;
+    public PotionRecipeData getDefaultRecipeData(){return recipeData;}
     public PotionRecipeData alternateRecipeData;
 
     @Override

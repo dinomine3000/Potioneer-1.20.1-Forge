@@ -26,20 +26,22 @@ public class RefreshFormulasCommand {
 
     private int refresh(CommandContext<CommandSourceStack> cmd){
         System.out.println("attempting refresh...");
+        if(cmd.getSource().getPlayer() != null)
+            cmd.getSource().getPlayer().sendSystemMessage(Component.literal("Refreshing Formulas..."));
         PotionFormulaSaveData data = PotionFormulaSaveData.from(cmd.getSource().getLevel());
-        data.requestRefresh(true);
+        data.refreshFormulas(cmd.getSource().getLevel());
         return 1;
     }
 
     private int create(CommandContext<CommandSourceStack> cmd){
         PotionFormulaSaveData data = PotionFormulaSaveData.from(cmd.getSource().getLevel());
-        PotionRecipeData result = data.getDataFromId(IntegerArgumentType.getInteger(cmd, "id"));
+        PotionRecipeData result = data.getFormulaDataFromId(IntegerArgumentType.getInteger(cmd, "id"));
         if(result == null){
             cmd.getSource().getPlayer().sendSystemMessage(Component.literal("Could not find formula for the specified id"));
         } else {
             FormulaItem formulaItem = (FormulaItem) ModItems.FORMULA.get();
             ItemStack stack = new ItemStack(formulaItem);
-            formulaItem.writeToNbt(stack, result, false);
+            FormulaItem.writeToNbt(stack, result, false);
             cmd.getSource().getPlayer().addItem(stack);
         }
         return 1;
