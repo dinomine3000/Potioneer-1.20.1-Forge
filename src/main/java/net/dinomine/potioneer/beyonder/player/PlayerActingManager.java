@@ -6,6 +6,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 
+import java.util.Arrays;
 import java.util.function.Supplier;
 
 public class PlayerActingManager {
@@ -20,7 +21,10 @@ public class PlayerActingManager {
     private double intrinsicActingMultiplier;
     private static final Supplier<Double> randomLimit = () -> {
         double min = PotioneerCommonConfig.MINIMUM_PASSIVE_ACTING_LIMIT.get();
-        return min + Math.random() * (PotioneerCommonConfig.MAXIMUM_PASSIVE_ACTING_LIMIT.get() - min);
+        double max = PotioneerCommonConfig.MAXIMUM_PASSIVE_ACTING_LIMIT.get();
+        double newMax = Math.max(min, max);
+        double newMin = Math.min(min, max);
+        return newMin + Math.random() * (Math.max(newMax - newMin, 0));
     };
 
     public PlayerActingManager(){
@@ -55,6 +59,17 @@ public class PlayerActingManager {
         list[pathwayId%10] = Mth.clamp(list[pathwayId%10]  + amount*intrinsicActingMultiplier * PotioneerCommonConfig.UNIVERSAL_ACTING_MULTIPLIER.get(), 0, 1);
     }
 
+    public double getActingPercentForSanityCalculation(int pathwayId){
+        if(pathwayId < 0) return 1;
+        double[] list = getActingList(pathwayId);
+        if(list == null || list.length == 0) return 1;
+        //if youre a sequence 9, guarantees a minimum of 60% sanity, with the remaining 40% depending on your acting
+        if(pathwayId%10 == 9) return (0.6 + 0.4*(list[9]));
+        //for sequences 8 and onwards, the percentage depends on the acting for each lower sequence
+        //60% depends on the digestion of previous sequences, 40% on the current one.
+        return getAggregatedActingProgress(pathwayId + 1)*0.6 + 0.4*(list[pathwayId%10]);
+    }
+
     public double getAggregatedActingProgress(int pathwayId){
         double[] list = getActingList(pathwayId);
         if(list == null || list.length == 0) return 1;
@@ -67,7 +82,9 @@ public class PlayerActingManager {
         return res/((10-i));
     }
 
-    public void resetPassiveActing(PlayerLuckManager luckMng, RandomSource random){
+    public void resetPassiveActing(PlayerLuckManager luckMng, RandomSource random, int pathwayId){
+        double[] list = getActingList(pathwayId);
+        if(list != null && list.length > 0) list[pathwayId%10] = Mth.clamp(list[pathwayId%10] + passiveActing, 0, 1);
         passiveActingLimit = randomLimit.get();
         if(luckMng.passesLuckCheck(0.3f, 40, 0, random)) passiveActingLimit +=0.15f;
         passiveActing = 0;
@@ -80,7 +97,13 @@ public class PlayerActingManager {
     }
 
     public Component getDescComponent(int pathwayId){
-        return Component.literal("Acting at: " + getAggregatedActingProgress(pathwayId) + "\nPassive limit: " + passiveActingLimit + "\nIntrinsic Multiplier" + intrinsicActingMultiplier);
+        return Component.literal("Acting at: " + getAggregatedActingProgress(pathwayId) + "\nPassive limit: " + passiveActingLimit + "\nIntrinsic Multiplier" + intrinsicActingMultiplier
+                + "\nMiner pathway: " + Arrays.toString(minerProgress)
+                + "\nSwimmer pathway: " + Arrays.toString(swimmerProgress)
+                + "\nTrickster pathway: " + Arrays.toString(tricksterProgress)
+                + "\nWarrior pathway: " + Arrays.toString(warriorProgress)
+                + "\nCrafter pathway: " + Arrays.toString(crafterProgress)
+        );
     }
 
     public void saveNBTData(CompoundTag tag){

@@ -3,7 +3,7 @@ package net.dinomine.potioneer.beyonder.abilities.paragon;
 import net.dinomine.potioneer.beyonder.abilities.Ability;
 import net.dinomine.potioneer.beyonder.abilities.AbilityInfo;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
-import net.dinomine.potioneer.beyonder.player.EntityBeyonderManager;
+import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -12,11 +12,11 @@ public class DurabilityRegenAbility extends Ability {
     private boolean levelUp;
     public DurabilityRegenAbility(int sequence){
         levelUp = sequence <= 7;
-        this.info = new AbilityInfo(109, 56, "Durability Regen", 40 + sequence, 30*(10-sequence), levelUp ? this.getCooldown() : 20*5, "durability_regen" + (levelUp ? "2" : ""));
+        this.info = new AbilityInfo(109, 56, "Durability Regen", 40 + sequence, 30*(10-sequence), levelUp ? this.getCooldown() : 20*5, "durability_regen_" + (levelUp ? "2" : ""));
     }
 
     @Override
-    public void onAcquire(EntityBeyonderManager cap, LivingEntity target) {
+    public void onAcquire(LivingEntityBeyonderCapability cap, LivingEntity target) {
         if(!levelUp){
             disable(cap, target);
         } else {
@@ -27,7 +27,7 @@ public class DurabilityRegenAbility extends Ability {
     }
 
     @Override
-    public boolean active(EntityBeyonderManager cap, LivingEntity target) {
+    public boolean active(LivingEntityBeyonderCapability cap, LivingEntity target) {
         if(target.level().isClientSide() && cap.getSpirituality() > info.cost()) return false;
         flipEnable(cap, target);
 
@@ -41,12 +41,12 @@ public class DurabilityRegenAbility extends Ability {
     }
 
     @Override
-    public void passive(EntityBeyonderManager cap, LivingEntity target) {
+    public void passive(LivingEntityBeyonderCapability cap, LivingEntity target) {
 
     }
 
     @Override
-    public void activate(EntityBeyonderManager cap, LivingEntity target) {
+    public void activate(LivingEntityBeyonderCapability cap, LivingEntity target) {
         int duration = levelUp ? -1 : 60*((9-getSequence())*6 + 3);
         float cost = levelUp ? info.cost() / 10f: info.cost()/5f;
         if(cap.getEffectsManager().addOrReplaceEffect(BeyonderEffects.byId(BeyonderEffects.EFFECT.PARAGON_DURABILITY_REGEN,
@@ -58,7 +58,7 @@ public class DurabilityRegenAbility extends Ability {
     }
 
     @Override
-    public void deactivate(EntityBeyonderManager cap, LivingEntity target) {
+    public void deactivate(LivingEntityBeyonderCapability cap, LivingEntity target) {
         if(cap.getEffectsManager().hasEffect(BeyonderEffects.EFFECT.PARAGON_DURABILITY_REGEN, getSequence())){
             cap.getEffectsManager().getEffect(BeyonderEffects.EFFECT.PARAGON_DURABILITY_REGEN, getSequence()).endEffectWhenPossible();
         }

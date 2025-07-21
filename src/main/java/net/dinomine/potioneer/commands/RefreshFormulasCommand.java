@@ -6,7 +6,7 @@ import com.mojang.brigadier.context.CommandContext;
 import net.dinomine.potioneer.item.ModItems;
 import net.dinomine.potioneer.item.custom.FormulaItem;
 import net.dinomine.potioneer.savedata.PotionFormulaSaveData;
-import net.dinomine.potioneer.savedata.PotionRecipeData;
+import net.dinomine.potioneer.recipe.PotionRecipeData;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;

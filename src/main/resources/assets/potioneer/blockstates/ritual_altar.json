@@ -1,0 +1,83 @@
+{
+  "variants": {
+    "incense=true,paper=true,ritual_candles=3,facing=north": { "model": "potioneer:block/ritual_altar/ritual_altar_113", "y": 0},
+    "incense=true,paper=true,ritual_candles=3,facing=east":  { "model": "potioneer:block/ritual_altar/ritual_altar_113", "y": 90},
+    "incense=true,paper=true,ritual_candles=3,facing=south": { "model": "potioneer:block/ritual_altar/ritual_altar_113", "y": 180},
+    "incense=true,paper=true,ritual_candles=3,facing=west":  { "model": "potioneer:block/ritual_altar/ritual_altar_113", "y": 270},
+
+    "incense=true,paper=true,ritual_candles=2,facing=north": { "model": "potioneer:block/ritual_altar/ritual_altar_112", "y": 0},
+    "incense=true,paper=true,ritual_candles=2,facing=east":  { "model": "potioneer:block/ritual_altar/ritual_altar_112", "y": 90},
+    "incense=true,paper=true,ritual_candles=2,facing=south": { "model": "potioneer:block/ritual_altar/ritual_altar_112", "y": 180},
+    "incense=true,paper=true,ritual_candles=2,facing=west":  { "model": "potioneer:block/ritual_altar/ritual_altar_112", "y": 270},
+
+    "incense=true,paper=true,ritual_candles=1,facing=north": { "model": "potioneer:block/ritual_altar/ritual_altar_111", "y": 0},
+    "incense=true,paper=true,ritual_candles=1,facing=east":  { "model": "potioneer:block/ritual_altar/ritual_altar_111", "y": 90},
+    "incense=true,paper=true,ritual_candles=1,facing=south": { "model": "potioneer:block/ritual_altar/ritual_altar_111", "y": 180},
+    "incense=true,paper=true,ritual_candles=1,facing=west":  { "model": "potioneer:block/ritual_altar/ritual_altar_111", "y": 270},
+
+    "incense=true,paper=true,ritual_candles=0,facing=north": { "model": "potioneer:block/ritual_altar/ritual_altar_110", "y": 0},
+    "incense=true,paper=true,ritual_candles=0,facing=east":  { "model": "potioneer:block/ritual_altar/ritual_altar_110", "y": 90},
+    "incense=true,paper=true,ritual_candles=0,facing=south": { "model": "potioneer:block/ritual_altar/ritual_altar_110", "y": 180},
+    "incense=true,paper=true,ritual_candles=0,facing=west":  { "model": "potioneer:block/ritual_altar/ritual_altar_110", "y": 270},
+
+    "incense=true,paper=false,ritual_candles=3,facing=north": { "model": "potioneer:block/ritual_altar/ritual_altar_103", "y": 0},
+    "incense=true,paper=false,ritual_candles=3,facing=east":  { "model": "potioneer:block/ritual_altar/ritual_altar_103", "y": 90},
+    "incense=true,paper=false,ritual_candles=3,facing=south": { "model": "potioneer:block/ritual_altar/ritual_altar_103", "y": 180},
+    "incense=true,paper=false,ritual_candles=3,facing=west":  { "model": "potioneer:block/ritual_altar/ritual_altar_103", "y": 270},
+
+    "incense=true,paper=false,ritual_candles=2,facing=north": { "model": "potioneer:block/ritual_altar/ritual_altar_102", "y": 0},
+    "incense=true,paper=false,ritual_candles=2,facing=east":  { "model": "potioneer:block/ritual_altar/ritual_altar_102", "y": 90},
+    "incense=true,paper=false,ritual_candles=2,facing=south": { "model": "potioneer:block/ritual_altar/ritual_altar_102", "y": 180},
+    "incense=true,paper=false,ritual_candles=2,facing=west":  { "model": "potioneer:block/ritual_altar/ritual_altar_102", "y": 270},
+
+    "incense=true,paper=false,ritual_candles=1,facing=north": { "model": "potioneer:block/ritual_altar/ritual_altar_101", "y": 0},
+    "incense=true,paper=false,ritual_candles=1,facing=east":  { "model": "potioneer:block/ritual_altar/ritual_altar_101", "y": 90},
+    "incense=true,paper=false,ritual_candles=1,facing=south": { "model": "potioneer:block/ritual_altar/ritual_altar_101", "y": 180},
+    "incense=true,paper=false,ritual_candles=1,facing=west":  { "model": "potioneer:block/ritual_altar/ritual_altar_101", "y": 270},
+
+    "incense=true,paper=false,ritual_candles=0,facing=north": { "model": "potioneer:block/ritual_altar/ritual_altar_100", "y": 0},
+    "incense=true,paper=false,ritual_candles=0,facing=east":  { "model": "potioneer:block/ritual_altar/ritual_altar_100", "y": 90},
+    "incense=true,paper=false,ritual_candles=0,facing=south": { "model": "potioneer:block/ritual_altar/ritual_altar_100", "y": 180},
+    "incense=true,paper=false,ritual_candles=0,facing=west":  { "model": "potioneer:block/ritual_altar/ritual_altar_100", "y": 270},
+
+    "incense=false,paper=true,ritual_candles=3,facing=north": { "model": "potioneer:block/ritual_altar/ritual_altar_013", "y": 0},
+    "incense=false,paper=true,ritual_candles=3,facing=east":  { "model": "potioneer:block/ritual_altar/ritual_altar_013", "y": 90},
+    "incense=false,paper=true,ritual_candles=3,facing=south": { "model": "potioneer:block/ritual_altar/ritual_altar_013", "y": 180},
+    "incense=false,paper=true,ritual_candles=3,facing=west":  { "model": "potioneer:block/ritual_altar/ritual_altar_013", "y": 270},
+
+    "incense=false,paper=true,ritual_candles=2,facing=north": { "model": "potioneer:block/ritual_altar/ritual_altar_012", "y": 0},
+    "incense=false,paper=true,ritual_candles=2,facing=east":  { "model": "potioneer:block/ritual_altar/ritual_altar_012", "y": 90},
+    "incense=false,paper=true,ritual_candles=2,facing=south": { "model": "potioneer:block/ritual_altar/ritual_altar_012", "y": 180},
+    "incense=false,paper=true,ritual_candles=2,facing=west":  { "model": "potioneer:block/ritual_altar/ritual_altar_012", "y": 270},
+
+    "incense=false,paper=true,ritual_candles=1,facing=north": { "model": "potioneer:block/ritual_altar/ritual_altar_011", "y": 0},
+    "incense=false,paper=true,ritual_candles=1,facing=east":  { "model": "potioneer:block/ritual_altar/ritual_altar_011", "y": 90},
+    "incense=false,paper=true,ritual_candles=1,facing=south": { "model": "potioneer:block/ritual_altar/ritual_altar_011", "y": 180},
+    "incense=false,paper=true,ritual_candles=1,facing=west":  { "model": "potioneer:block/ritual_altar/ritual_altar_011", "y": 270},
+
+    "incense=false,paper=true,ritual_candles=0,facing=north": { "model": "potioneer:block/ritual_altar/ritual_altar_010", "y": 0},
+    "incense=false,paper=true,ritual_candles=0,facing=east":  { "model": "potioneer:block/ritual_altar/ritual_altar_010", "y": 90},
+    "incense=false,paper=true,ritual_candles=0,facing=south": { "model": "potioneer:block/ritual_altar/ritual_altar_010", "y": 180},
+    "incense=false,paper=true,ritual_candles=0,facing=west":  { "model": "potioneer:block/ritual_altar/ritual_altar_010", "y": 270},
+
+    "incense=false,paper=false,ritual_candles=3,facing=north": { "model": "potioneer:block/ritual_altar/ritual_altar_003", "y": 0},
+    "incense=false,paper=false,ritual_candles=3,facing=east":  { "model": "potioneer:block/ritual_altar/ritual_altar_003", "y": 90},
+    "incense=false,paper=false,ritual_candles=3,facing=south": { "model": "potioneer:block/ritual_altar/ritual_altar_003", "y": 180},
+    "incense=false,paper=false,ritual_candles=3,facing=west":  { "model": "potioneer:block/ritual_altar/ritual_altar_003", "y": 270},
+
+    "incense=false,paper=false,ritual_candles=2,facing=north": { "model": "potioneer:block/ritual_altar/ritual_altar_002", "y": 0},
+    "incense=false,paper=false,ritual_candles=2,facing=east":  { "model": "potioneer:block/ritual_altar/ritual_altar_002", "y": 90},
+    "incense=false,paper=false,ritual_candles=2,facing=south": { "model": "potioneer:block/ritual_altar/ritual_altar_002", "y": 180},
+    "incense=false,paper=false,ritual_candles=2,facing=west":  { "model": "potioneer:block/ritual_altar/ritual_altar_002", "y": 270},
+
+    "incense=false,paper=false,ritual_candles=1,facing=north": { "model": "potioneer:block/ritual_altar/ritual_altar_001", "y": 0},
+    "incense=false,paper=false,ritual_candles=1,facing=east":  { "model": "potioneer:block/ritual_altar/ritual_altar_001", "y": 90},
+    "incense=false,paper=false,ritual_candles=1,facing=south": { "model": "potioneer:block/ritual_altar/ritual_altar_001", "y": 180},
+    "incense=false,paper=false,ritual_candles=1,facing=west":  { "model": "potioneer:block/ritual_altar/ritual_altar_001", "y": 270},
+
+    "incense=false,paper=false,ritual_candles=0,facing=north": { "model": "potioneer:block/ritual_altar/ritual_altar_000", "y": 0},
+    "incense=false,paper=false,ritual_candles=0,facing=east":  { "model": "potioneer:block/ritual_altar/ritual_altar_000", "y": 90},
+    "incense=false,paper=false,ritual_candles=0,facing=south": { "model": "potioneer:block/ritual_altar/ritual_altar_000", "y": 180},
+    "incense=false,paper=false,ritual_candles=0,facing=west":  { "model": "potioneer:block/ritual_altar/ritual_altar_000", "y": 270}
+  }
+}

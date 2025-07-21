@@ -1,0 +1,21 @@
+[
+  {
+    "needsFire": true,
+    "waterLevel": 3,
+    "mainIngredients": [
+      {
+        "id": "minecraft:blaze_powder",
+        "Count": 1,
+        "nbt": {}
+      }
+    ],
+    "supplementaryIngredients": [],
+    "output": {
+      "name": "fire_boost",
+      "amount": 1,
+      "color": 16729344,
+      "bottle": false,
+      "canConflict": false
+    }
+  }
+]

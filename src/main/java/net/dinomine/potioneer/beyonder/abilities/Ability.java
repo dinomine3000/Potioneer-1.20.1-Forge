@@ -1,6 +1,6 @@
 package net.dinomine.potioneer.beyonder.abilities;
 
-import net.dinomine.potioneer.beyonder.player.EntityBeyonderManager;
+import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
 import net.dinomine.potioneer.beyonder.player.PlayerAbilitiesManager;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.LivingEntity;
@@ -28,21 +28,21 @@ public abstract class Ability {
         return mng.isEnabled(this);
     }
 
-    public void disable(EntityBeyonderManager cap, LivingEntity target){
+    public void disable(LivingEntityBeyonderCapability cap, LivingEntity target){
         PlayerAbilitiesManager mng = cap.getAbilitiesManager();
         if(mng.isEnabled(this)){
             mng.setEnabled(this, false, cap, target);
         }
     }
 
-    public void enable(EntityBeyonderManager cap, LivingEntity target){
+    public void enable(LivingEntityBeyonderCapability cap, LivingEntity target){
         PlayerAbilitiesManager mng = cap.getAbilitiesManager();
         if(!mng.isEnabled(this)){
             mng.setEnabled(this, true, cap, target);
         }
     }
 
-    public void flipEnable(EntityBeyonderManager cap, LivingEntity target){
+    public void flipEnable(LivingEntityBeyonderCapability cap, LivingEntity target){
         boolean en = cap.getAbilitiesManager().isEnabled(this);
         if (en) disable(cap, target);
         else enable(cap, target);
@@ -60,34 +60,34 @@ public abstract class Ability {
      * @param cap
      * @param target
      */
-    public abstract void onAcquire(EntityBeyonderManager cap, LivingEntity target);
+    public abstract void onAcquire(LivingEntityBeyonderCapability cap, LivingEntity target);
 
     /**
      * function that runs whenever the player casts the ability
      * @param cap
      * @param target
      */
-    public abstract boolean active(EntityBeyonderManager cap, LivingEntity target);
+    public abstract boolean active(LivingEntityBeyonderCapability cap, LivingEntity target);
 
     /**
      * function that runs every tick
      * @param cap
      * @param target
      */
-    public abstract void passive(EntityBeyonderManager cap, LivingEntity target);
+    public abstract void passive(LivingEntityBeyonderCapability cap, LivingEntity target);
 
     /**
      * function that implements behaviour for every time the ability is activated (like changing stuff for a setup)
      * @param cap
      * @param target
      */
-    public abstract void activate(EntityBeyonderManager cap, LivingEntity target);
+    public abstract void activate(LivingEntityBeyonderCapability cap, LivingEntity target);
 
     /**
      * function that implements behaviour for every time the ability is deactivated (like removing effects)
      * @param cap
      * @param target
      */
-    public abstract void deactivate(EntityBeyonderManager cap, LivingEntity target);
+    public abstract void deactivate(LivingEntityBeyonderCapability cap, LivingEntity target);
 
 }

@@ -441,6 +441,12 @@
 		},
 		"animation.book.triggerClose": {
 			"animation_length": 0.0417
+		},
+		"animation.book.triggerFlipRight": {
+			"animation_length": 0.0417
+		},
+		"animation.book.triggerFlipLeft": {
+			"animation_length": 0.0417
 		}
 	},
 	"geckolib_format_version": 2

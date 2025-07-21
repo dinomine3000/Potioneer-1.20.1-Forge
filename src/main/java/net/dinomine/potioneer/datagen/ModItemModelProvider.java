@@ -1,6 +1,7 @@
 package net.dinomine.potioneer.datagen;
 
 import net.dinomine.potioneer.Potioneer;
+import net.dinomine.potioneer.block.ModBlocks;
 import net.dinomine.potioneer.item.ModItems;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceKey;
@@ -58,9 +59,11 @@ public class ModItemModelProvider extends ItemModelProvider {
         simpleItem(ModItems.POLISHED_DIAMOND);
         simpleItem(ModItems.ROOTS);
         simpleItem(ModItems.ASTEROID_DEBUG);
+        simpleItem(ModItems.INK_BOTTLE);
         handheldItem(ModItems.MINER_PICKAXE);
         handheldItem(ModItems.FIRE_SWORD);
         handheldItem(ModItems.FROZEN_SWORD);
+        handheldItem(ModItems.RITUAL_DAGGER);
 
 
         /*simpleItem(ModItems.METAL_DETECTOR);

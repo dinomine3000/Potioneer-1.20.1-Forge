@@ -2,8 +2,8 @@ package net.dinomine.potioneer.beyonder.abilities.wheeloffortune;
 
 import net.dinomine.potioneer.beyonder.abilities.Ability;
 import net.dinomine.potioneer.beyonder.abilities.AbilityInfo;
-import net.dinomine.potioneer.beyonder.misc.MysticismHelper;
-import net.dinomine.potioneer.beyonder.player.EntityBeyonderManager;
+import net.dinomine.potioneer.util.misc.MysticismHelper;
+import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
 import net.dinomine.potioneer.item.ModItems;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.LivingEntity;
@@ -17,7 +17,7 @@ public class ConjurePickaxeAbility extends Ability {
     }
 
     @Override
-    public boolean active(EntityBeyonderManager cap, LivingEntity target) {
+    public boolean active(LivingEntityBeyonderCapability cap, LivingEntity target) {
         if(target.level().isClientSide() && cap.getSpirituality() >= info.cost()) return true;
         if(cap.getSpirituality() >= info.cost()){
             if(target instanceof Player player){
@@ -49,18 +49,18 @@ public class ConjurePickaxeAbility extends Ability {
     }
 
     @Override
-    public void onAcquire(EntityBeyonderManager cap, LivingEntity target) {
+    public void onAcquire(LivingEntityBeyonderCapability cap, LivingEntity target) {
     }
 
     @Override
-    public void passive(EntityBeyonderManager cap, LivingEntity target) {
+    public void passive(LivingEntityBeyonderCapability cap, LivingEntity target) {
     }
 
     @Override
-    public void activate(EntityBeyonderManager cap, LivingEntity target) {
+    public void activate(LivingEntityBeyonderCapability cap, LivingEntity target) {
     }
 
     @Override
-    public void deactivate(EntityBeyonderManager cap, LivingEntity target) {
+    public void deactivate(LivingEntityBeyonderCapability cap, LivingEntity target) {
     }
 }

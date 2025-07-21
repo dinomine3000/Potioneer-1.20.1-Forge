@@ -1,15 +1,9 @@
 package net.dinomine.potioneer.network.messages;
 
-import net.dinomine.potioneer.beyonder.misc.CharacteristicHelper;
-import net.dinomine.potioneer.beyonder.misc.MysticismHelper;
+import net.dinomine.potioneer.util.misc.CharacteristicHelper;
 import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
-import net.dinomine.potioneer.entities.ModEntities;
-import net.dinomine.potioneer.entities.custom.CharacteristicEntity;
-import net.dinomine.potioneer.item.ModItems;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
@@ -39,7 +33,6 @@ public class AdvancementFailMessageCTS {
             int sequence = msg.sequence;
             if(!player.isCreative()){
                 player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> cap.setSanity(0));
-                player.kill();
             }
             CharacteristicHelper.addCharacteristicToLevel(sequence, player.level(), player, player.position(), player.getRandom());
         });

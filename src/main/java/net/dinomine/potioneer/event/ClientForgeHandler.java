@@ -4,9 +4,10 @@ import net.dinomine.potioneer.Potioneer;
 import net.dinomine.potioneer.beyonder.client.ClientAbilitiesData;
 import net.dinomine.potioneer.beyonder.client.ClientStatsData;
 import net.dinomine.potioneer.beyonder.client.KeyBindings;
-import net.dinomine.potioneer.beyonder.misc.MysticismHelper;
-import net.dinomine.potioneer.beyonder.pathways.Beyonder;
-import net.dinomine.potioneer.beyonder.screen.BeyonderScreen;
+import net.dinomine.potioneer.util.misc.MysticismHelper;
+import net.dinomine.potioneer.beyonder.pathways.BeyonderPathway;
+import net.dinomine.potioneer.beyonder.client.screen.BeyonderScreen;
+import net.dinomine.potioneer.item.ModItems;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
@@ -42,7 +43,7 @@ public class ClientForgeHandler {
             }
             if(stack.hasTag() && stack.getTag().contains("recipe_data")){
                 tooltip.add(Component.translatable("potioneer.beyonder.sequence." +
-                        Beyonder.getSequenceNameFromId(stack.getTag().getCompound("recipe_data").getInt("id"), false)));
+                        BeyonderPathway.getSequenceNameFromId(stack.getTag().getCompound("recipe_data").getInt("id"), false)));
             }
                 //tooltip.add(Component.literal("★ Special Item!").withStyle(ChatFormatting.GOLD, ChatFormatting.BOLD));
         }
@@ -74,6 +75,15 @@ public class ClientForgeHandler {
         if(!ClientAbilitiesData.showHotbar) return;
         ClientAbilitiesData.changeCaret((int)event.getScrollDelta());
         event.setCanceled(true);
+    }
+
+    @SubscribeEvent
+    public static void onItemLeftClick(InputEvent.MouseButton event){
+        if(Minecraft.getInstance().player != null && Minecraft.getInstance().player.getMainHandItem().is(ModItems.LEYMANOS_TRAVELS.get())){
+            if(event.getButton() == 0 && event.getAction() == 1 && Minecraft.getInstance().screen == null){
+                event.setCanceled(true);
+            }
+        }
     }
 
     @SubscribeEvent

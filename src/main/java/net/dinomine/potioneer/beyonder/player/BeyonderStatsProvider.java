@@ -19,14 +19,14 @@ public class BeyonderStatsProvider implements ICapabilityProvider, INBTSerializa
         this.ent = ent;
     }
 
-    public static Capability<EntityBeyonderManager> BEYONDER_STATS = CapabilityManager.get(new CapabilityToken<>() {});
+    public static Capability<LivingEntityBeyonderCapability> BEYONDER_STATS = CapabilityManager.get(new CapabilityToken<>() {});
 
-    private EntityBeyonderManager beyonderStats = null;
-    private final LazyOptional<EntityBeyonderManager> optional = LazyOptional.of(this::createBeyonderStats);
+    private LivingEntityBeyonderCapability beyonderStats = null;
+    private final LazyOptional<LivingEntityBeyonderCapability> optional = LazyOptional.of(this::createBeyonderStats);
 
-    private EntityBeyonderManager createBeyonderStats() {
+    private LivingEntityBeyonderCapability createBeyonderStats() {
         if(this.beyonderStats == null){
-            this.beyonderStats = new EntityBeyonderManager(ent);
+            this.beyonderStats = new LivingEntityBeyonderCapability(ent);
         }
         return this.beyonderStats;
     }

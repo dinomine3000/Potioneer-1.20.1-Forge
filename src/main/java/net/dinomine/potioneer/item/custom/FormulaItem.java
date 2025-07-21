@@ -6,11 +6,11 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import net.dinomine.potioneer.Potioneer;
 import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
-import net.dinomine.potioneer.beyonder.player.EntityBeyonderManager;
+import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
 import net.dinomine.potioneer.network.PacketHandler;
 import net.dinomine.potioneer.network.messages.PlayerFormulaScreenSTCMessage;
 import net.dinomine.potioneer.savedata.PotionFormulaSaveData;
-import net.dinomine.potioneer.savedata.PotionRecipeData;
+import net.dinomine.potioneer.recipe.PotionRecipeData;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
@@ -64,7 +64,7 @@ public class FormulaItem extends Item {
         return super.useOn(pContext);
     }
 
-    public static PotionRecipeData applyOrReadFormulaNbt(ItemStack stack, Level pLevel, int id, EntityBeyonderManager cap){
+    public static PotionRecipeData applyOrReadFormulaNbt(ItemStack stack, Level pLevel, int id, LivingEntityBeyonderCapability cap){
         PotionRecipeData result;
         if(stack.hasTag() && stack.getTag().get("recipe_data") != null){
             result = PotionRecipeData.load(stack.getTag().getCompound("recipe_data"));
@@ -93,7 +93,7 @@ public class FormulaItem extends Item {
             }
 
             while(result == null){
-                System.out.println("Random generated id is invalid. creating a new one...");
+                System.out.println("Generated id is invalid. creating a new one...");
                 result = data.getFormulaDataFromId(getRandomId(pLevel));
             }
             writeToNbt(stack, result, false);

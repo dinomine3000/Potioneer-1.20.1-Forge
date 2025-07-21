@@ -1,7 +1,7 @@
 package net.dinomine.potioneer.network.messages;
 
-import net.dinomine.potioneer.beyonder.screen.FormulaScreen;
-import net.dinomine.potioneer.savedata.PotionRecipeData;
+import net.dinomine.potioneer.beyonder.client.screen.FormulaScreen;
+import net.dinomine.potioneer.recipe.PotionRecipeData;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.api.distmarker.Dist;

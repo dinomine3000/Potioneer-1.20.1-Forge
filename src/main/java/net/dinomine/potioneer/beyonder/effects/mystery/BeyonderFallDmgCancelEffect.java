@@ -2,7 +2,7 @@ package net.dinomine.potioneer.beyonder.effects.mystery;
 
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffect;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
-import net.dinomine.potioneer.beyonder.player.EntityBeyonderManager;
+import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
 import net.minecraft.world.entity.LivingEntity;
 
 public class BeyonderFallDmgCancelEffect extends BeyonderEffect {
@@ -15,11 +15,11 @@ public class BeyonderFallDmgCancelEffect extends BeyonderEffect {
 
 
     @Override
-    public void onAcquire(EntityBeyonderManager cap, LivingEntity target) {
+    public void onAcquire(LivingEntityBeyonderCapability cap, LivingEntity target) {
     }
 
     @Override
-    protected void doTick(EntityBeyonderManager cap, LivingEntity target) {
+    protected void doTick(LivingEntityBeyonderCapability cap, LivingEntity target) {
         if(!target.onGround() && !flag){
             maxLife = 5;
             lifetime = 0;
@@ -28,7 +28,7 @@ public class BeyonderFallDmgCancelEffect extends BeyonderEffect {
     }
 
     @Override
-    public void stopEffects(EntityBeyonderManager cap, LivingEntity target) {
+    public void stopEffects(LivingEntityBeyonderCapability cap, LivingEntity target) {
     }
 
 }

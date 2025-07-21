@@ -3,7 +3,7 @@ package net.dinomine.potioneer.beyonder.abilities.redpriest;
 import net.dinomine.potioneer.beyonder.abilities.Ability;
 import net.dinomine.potioneer.beyonder.abilities.AbilityFunctionHelper;
 import net.dinomine.potioneer.beyonder.abilities.AbilityInfo;
-import net.dinomine.potioneer.beyonder.player.EntityBeyonderManager;
+import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
 import net.dinomine.potioneer.network.PacketHandler;
 import net.dinomine.potioneer.network.messages.abilityRelevant.EvaporateEffect;
 import net.minecraft.core.BlockPos;
@@ -36,10 +36,10 @@ public class MeltAbility extends Ability {
     }
 
     @Override
-    public void onAcquire(EntityBeyonderManager cap, LivingEntity target) {
+    public void onAcquire(LivingEntityBeyonderCapability cap, LivingEntity target) {
     }
 
-    public boolean active(EntityBeyonderManager cap, LivingEntity target) {
+    public boolean active(LivingEntityBeyonderCapability cap, LivingEntity target) {
         if(target.level().isClientSide() && cap.getSpirituality() >= info.cost()) return true;
         if(cap.getSpirituality() < info.cost()) return false;
         HitResult hit = target.pick(target.getAttributeValue(ForgeMod.BLOCK_REACH.get()) + 0.5f, 0, true);
@@ -115,14 +115,14 @@ public class MeltAbility extends Ability {
     }
 
     @Override
-    public void passive(EntityBeyonderManager cap, LivingEntity target) {
+    public void passive(LivingEntityBeyonderCapability cap, LivingEntity target) {
     }
 
     @Override
-    public void activate(EntityBeyonderManager cap, LivingEntity target) {
+    public void activate(LivingEntityBeyonderCapability cap, LivingEntity target) {
     }
 
     @Override
-    public void deactivate(EntityBeyonderManager cap, LivingEntity target) {
+    public void deactivate(LivingEntityBeyonderCapability cap, LivingEntity target) {
     }
 }

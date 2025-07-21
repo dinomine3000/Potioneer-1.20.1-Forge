@@ -1,0 +1,38 @@
+[
+  {
+    "id": -1,
+    "needsFire": true,
+    "waterLevel": 2,
+    "mainIngredients": [
+      {
+        "id": "potioneer:sapphire",
+        "Count": 1
+      },
+      {
+        "id": "minecraft:crafting_table",
+        "Count": 2
+      }
+    ],
+    "supplementaryIngredients": [
+      {
+        "id": "minecraft:iron_nugget",
+        "Count": 2
+      },
+      {
+        "id": "potioneer:pecan_leaf",
+        "Count": 2
+      },
+      {
+        "id": "potioneer:vial",
+        "Count": 1,
+        "nbt": {
+          "potion_info": {
+            "name": "cactus_sap",
+            "amount": 1,
+            "color": 65280
+          }
+        }
+      }
+    ]
+  }
+]

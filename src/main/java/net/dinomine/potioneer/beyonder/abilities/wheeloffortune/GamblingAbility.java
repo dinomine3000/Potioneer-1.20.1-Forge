@@ -4,7 +4,7 @@ import net.dinomine.potioneer.beyonder.abilities.Ability;
 import net.dinomine.potioneer.beyonder.abilities.AbilityInfo;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
 import net.dinomine.potioneer.beyonder.effects.wheeloffortune.BeyonderGamblingEffect;
-import net.dinomine.potioneer.beyonder.player.EntityBeyonderManager;
+import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
 import net.minecraft.world.entity.LivingEntity;
 
 public class GamblingAbility extends Ability {
@@ -14,20 +14,20 @@ public class GamblingAbility extends Ability {
     }
 
     @Override
-    public boolean active(EntityBeyonderManager cap, LivingEntity target) {
+    public boolean active(LivingEntityBeyonderCapability cap, LivingEntity target) {
         if(target.level().isClientSide()) return false;
         flipEnable(cap, target);
         return true;
     }
 
     @Override
-    public void onAcquire(EntityBeyonderManager cap, LivingEntity target) {
+    public void onAcquire(LivingEntityBeyonderCapability cap, LivingEntity target) {
         System.out.println("Disabling gambling on acquire...");
         disable(cap, target);
     }
 
     @Override
-    public void passive(EntityBeyonderManager cap, LivingEntity target) {
+    public void passive(LivingEntityBeyonderCapability cap, LivingEntity target) {
         if(cap.getSpirituality() < info.cost()) disable(cap, target);
         if(cap.getAbilitiesManager().isEnabled(this)
                 && !cap.getEffectsManager().hasEffectOrBetter(BeyonderEffects.EFFECT.WHEEL_GAMBLING, getSequence())){
@@ -39,11 +39,11 @@ public class GamblingAbility extends Ability {
     }
 
     @Override
-    public void activate(EntityBeyonderManager cap, LivingEntity target) {
+    public void activate(LivingEntityBeyonderCapability cap, LivingEntity target) {
     }
 
     @Override
-    public void deactivate(EntityBeyonderManager cap, LivingEntity target) {
+    public void deactivate(LivingEntityBeyonderCapability cap, LivingEntity target) {
         if(cap.getEffectsManager().hasEffect(BeyonderEffects.EFFECT.WHEEL_GAMBLING, getSequence())){
             cap.getEffectsManager().removeEffect(BeyonderEffects.EFFECT.WHEEL_GAMBLING, getSequence(), cap, target);
         }

@@ -7,7 +7,7 @@ import net.dinomine.potioneer.beyonder.player.PlayerAbilitiesManager;
 
 import java.util.ArrayList;
 
-public class TyrantPathway extends Beyonder {
+public class TyrantPathway extends BeyonderPathway {
 
     public TyrantPathway(int sequence){
         super(sequence, "Tyrant");

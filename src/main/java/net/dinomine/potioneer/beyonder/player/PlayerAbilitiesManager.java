@@ -2,19 +2,17 @@ package net.dinomine.potioneer.beyonder.player;
 
 import net.dinomine.potioneer.beyonder.abilities.Ability;
 import net.dinomine.potioneer.beyonder.abilities.AbilityInfo;
-import net.dinomine.potioneer.beyonder.misc.ArtifactHelper;
+import net.dinomine.potioneer.util.misc.ArtifactHelper;
 import net.dinomine.potioneer.network.PacketHandler;
 import net.dinomine.potioneer.network.messages.PlayerAbilityCooldownSTC;
 import net.dinomine.potioneer.network.messages.PlayerArtifactSyncSTC;
 import net.dinomine.potioneer.network.messages.PlayerCastAbilityMessageCTS;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.common.util.LazyOptional;
+import net.minecraftforge.fml.ModList;
 import net.minecraftforge.network.PacketDistributor;
 import top.theillusivec4.curios.api.CuriosApi;
 import top.theillusivec4.curios.api.type.capability.ICuriosItemHandler;
@@ -37,7 +35,7 @@ public class PlayerAbilitiesManager {
         this.quickAbility = mng.quickAbility;
     }
 
-    public void useArtifactAbililty(EntityBeyonderManager cap, Player player, List<String> artifactIds){
+    public void useArtifactAbililty(LivingEntityBeyonderCapability cap, Player player, List<String> artifactIds){
         if(artifactIds == null || artifactIds.isEmpty()) return;
         for(String artifactId: artifactIds){
             String id = artifactId.substring(3);
@@ -56,7 +54,7 @@ public class PlayerAbilitiesManager {
      * @param ablId
      * @param sequence
      */
-    public void updateAddArtifact(EntityBeyonderManager cap, Player player, String ablId, int sequence, boolean sync){
+    public void updateAddArtifact(LivingEntityBeyonderCapability cap, Player player, String ablId, int sequence, boolean sync){
         Ability abl = ArtifactHelper.getAbilityFromId(ablId, sequence);
         if(abl == null) return;
         if(!artifactActives.containsKey(ablId)){
@@ -76,7 +74,7 @@ public class PlayerAbilitiesManager {
         }
     }
 
-    public void updateRemoveArtifact(EntityBeyonderManager cap, Player player, String ablId, boolean sync){
+    public void updateRemoveArtifact(LivingEntityBeyonderCapability cap, Player player, String ablId, boolean sync){
         if(artifactActives.containsKey(ablId)){
             System.out.println("Removing artifact: " + ablId);
             artifactActives.get(ablId).deactivate(cap, player);
@@ -94,7 +92,7 @@ public class PlayerAbilitiesManager {
      * @param cap
      * @param player
      */
-    public void updateArtifacts(EntityBeyonderManager cap, Player player) {
+    public void updateArtifacts(LivingEntityBeyonderCapability cap, Player player) {
         for (String ablId : new ArrayList<>(activeCooldowns.keySet())) {
             if(activeCooldowns.get(ablId) == 0
                     && !artifactActives.containsKey(ablId)
@@ -137,7 +135,6 @@ public class PlayerAbilitiesManager {
      */
     private Map<String, String> getArtifactsFromInventory(Player player) {
         HashMap<String, String> resMap = new HashMap<>();
-        ICuriosItemHandler curiosInventory = CuriosApi.getCuriosInventory(player).resolve().get();
         player.getInventory().items.forEach(itemStack -> {
             List<String> ablDown = ArtifactHelper.getArtifactIdsFromItem(itemStack);
             for(String artifactId: ablDown){
@@ -146,17 +143,22 @@ public class PlayerAbilitiesManager {
 //            if(itemStack.hasTag()){
 //            }
         });
-        Map<String, ICurioStacksHandler> curios = curiosInventory.getCurios();
-        curios.forEach((identifier, slotInventory) -> {
-            int slots = slotInventory.getSlots();
-            for(int i = 0; i < slots; i++){
-                ItemStack itemStack = slotInventory.getStacks().getStackInSlot(i);
-                List<String> ablDown = ArtifactHelper.getArtifactIdsFromItem(itemStack);
-                for(String artifactId: ablDown){
-                    addAbilityToMap(artifactId, resMap);
-                }
+        if(ModList.get().isLoaded("curios")){
+            if(CuriosApi.getCuriosInventory(player).resolve().isPresent()){
+                ICuriosItemHandler curiosInventory = CuriosApi.getCuriosInventory(player).resolve().get();
+                Map<String, ICurioStacksHandler> curios = curiosInventory.getCurios();
+                curios.forEach((identifier, slotInventory) -> {
+                    int slots = slotInventory.getSlots();
+                    for(int i = 0; i < slots; i++){
+                        ItemStack itemStack = slotInventory.getStacks().getStackInSlot(i);
+                        List<String> ablDown = ArtifactHelper.getArtifactIdsFromItem(itemStack);
+                        for(String artifactId: ablDown){
+                            addAbilityToMap(artifactId, resMap);
+                        }
+                    }
+                });
             }
-        });
+        }
         return resMap;
     }
 
@@ -182,7 +184,7 @@ public class PlayerAbilitiesManager {
         return shouldReplaceInArtifacts && isStrongerThanIntrinsic;
     }
 
-    public void onTick(EntityBeyonderManager cap, LivingEntity target){
+    public void onTick(LivingEntityBeyonderCapability cap, LivingEntity target){
         if(!pathwayActives.isEmpty()){
             pathwayActives.values().forEach(ability -> {
                 ability.passive(cap, target);
@@ -209,7 +211,7 @@ public class PlayerAbilitiesManager {
 //        else otherPassives.add(ability);
 //    }
 
-    public void clear(boolean pathway, EntityBeyonderManager cap, LivingEntity target){
+    public void clear(boolean pathway, LivingEntityBeyonderCapability cap, LivingEntity target){
         if(pathway) {
             //condition on the passives list since its generally smaller than actives list
             //this way it only calls the deactivate once
@@ -224,7 +226,7 @@ public class PlayerAbilitiesManager {
         }
     }
 
-    public void useAbility(EntityBeyonderManager cap, LivingEntity tar, String ablId, boolean sync, boolean artifactFirst){
+    public void useAbility(LivingEntityBeyonderCapability cap, LivingEntity tar, String ablId, boolean sync, boolean artifactFirst){
         if(tar instanceof Player player){
             boolean inArtifactsList = artifactActives.containsKey(ablId);
             boolean inPathwayList = pathwayActives.containsKey(ablId);
@@ -293,7 +295,7 @@ public class PlayerAbilitiesManager {
         }
     }
 
-    public void setEnabled(Ability abl, boolean bol, EntityBeyonderManager cap, LivingEntity target){
+    public void setEnabled(Ability abl, boolean bol, LivingEntityBeyonderCapability cap, LivingEntity target){
         String ablId = abl.getInfo().normalizedId();
         if(enabledDisabled.containsKey(ablId)){
             boolean prevStatus = enabledDisabled.get(ablId);
@@ -371,7 +373,7 @@ public class PlayerAbilitiesManager {
         }
     }
 
-    public void onAcquireAbilities(EntityBeyonderManager cap, LivingEntity target){
+    public void onAcquireAbilities(LivingEntityBeyonderCapability cap, LivingEntity target){
         //TODO: only going through actives. if you want for passives, youll need to add it
         // Check if its enabled for when the player loads into the world -> dont activate extended reach if the ability was previously disabled
         //its loading the enabledDisabled list before calling this onAcquire function when loading data

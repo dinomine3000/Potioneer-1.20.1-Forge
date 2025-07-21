@@ -33,6 +33,11 @@ public class ModBlockEntities {
                     () -> BlockEntityType.Builder.of(PriestLightBlockEntity::new, ModBlocks.PRIEST_LIGHT.get())
                             .build(null));
 
+    public static RegistryObject<BlockEntityType<RitualAltarBlockEntity>> RITUAL_ALTAR_BLOCK_ENTITY =
+            BLOCK_ENTITIES.register("ritual_altar_block_entity",
+                    () -> BlockEntityType.Builder.of(RitualAltarBlockEntity::new , ModBlocks.RITUAL_ALTAR.get())
+                            .build(null));
+
     public static void register(IEventBus eventBus){
         BLOCK_ENTITIES.register(eventBus);
     }

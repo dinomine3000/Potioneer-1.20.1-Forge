@@ -2,7 +2,7 @@ package net.dinomine.potioneer.beyonder.abilities.tyrant;
 
 import net.dinomine.potioneer.beyonder.abilities.Ability;
 import net.dinomine.potioneer.beyonder.abilities.AbilityInfo;
-import net.dinomine.potioneer.beyonder.player.EntityBeyonderManager;
+import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
 import net.dinomine.potioneer.block.ModBlocks;
 import net.dinomine.potioneer.block.entity.WaterTrapBlockEntity;
 import net.minecraft.core.BlockPos;
@@ -25,7 +25,7 @@ public class WaterTrapAbility extends Ability {
     }
 
     @Override
-    public boolean active(EntityBeyonderManager cap, LivingEntity target) {
+    public boolean active(LivingEntityBeyonderCapability cap, LivingEntity target) {
         if(target.level().isClientSide()) return true;
         if(!(target instanceof Player player)) return false;
         HitResult block = player.pick(player.getAttributeBaseValue(ForgeMod.BLOCK_REACH.get()) + 0.5, 0f, false);
@@ -72,18 +72,18 @@ public class WaterTrapAbility extends Ability {
     }
 
     @Override
-    public void onAcquire(EntityBeyonderManager cap, LivingEntity target) {
+    public void onAcquire(LivingEntityBeyonderCapability cap, LivingEntity target) {
     }
 
     @Override
-    public void passive(EntityBeyonderManager cap, LivingEntity target) {
+    public void passive(LivingEntityBeyonderCapability cap, LivingEntity target) {
     }
 
     @Override
-    public void activate(EntityBeyonderManager cap, LivingEntity target) {
+    public void activate(LivingEntityBeyonderCapability cap, LivingEntity target) {
     }
 
     @Override
-    public void deactivate(EntityBeyonderManager cap, LivingEntity target) {
+    public void deactivate(LivingEntityBeyonderCapability cap, LivingEntity target) {
     }
 }

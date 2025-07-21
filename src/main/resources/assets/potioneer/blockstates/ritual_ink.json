@@ -1,0 +1,23 @@
+{
+  "multipart": [
+    {
+      "when": { "north": "true" },
+      "apply": { "model": "potioneer:block/ritual_ink_side", "y": 180 }
+    },
+    {
+      "when": { "east": "true" },
+      "apply": { "model": "potioneer:block/ritual_ink_side", "y": 270 }
+    },
+    {
+      "when": { "south": "true" },
+      "apply": { "model": "potioneer:block/ritual_ink_side", "y": 0 }
+    },
+    {
+      "when": { "west": "true" },
+      "apply": { "model": "potioneer:block/ritual_ink_side", "y": 90 }
+    },
+    {
+      "apply": { "model": "potioneer:block/ritual_ink_dot" }
+    }
+  ]
+}

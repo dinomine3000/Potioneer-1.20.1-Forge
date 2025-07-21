@@ -1,8 +1,8 @@
 package net.dinomine.potioneer.item.custom;
 
-import net.dinomine.potioneer.beyonder.misc.MysticismHelper;
+import net.dinomine.potioneer.util.misc.MysticismHelper;
 import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
-import net.dinomine.potioneer.beyonder.player.EntityBeyonderManager;
+import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -33,7 +33,7 @@ public class FireSword extends SwordItem {
     @Override
     public InteractionResult useOn(UseOnContext pContext) {
         HitResult hitResult = pContext.getPlayer().pick(5.0D, 0.0F, false);
-        Optional<EntityBeyonderManager> cap = pContext.getPlayer().getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve();
+        Optional<LivingEntityBeyonderCapability> cap = pContext.getPlayer().getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve();
         if (hitResult instanceof BlockHitResult blockHitResult
                 && !pContext.getLevel().getBlockState(blockHitResult.getBlockPos()).is(Blocks.FIRE)
                 && cap.get().getSpirituality() > 5){

@@ -1,7 +1,7 @@
 package net.dinomine.potioneer;
 
 import com.mojang.logging.LogUtils;
-import net.dinomine.potioneer.beyonder.misc.ArtifactHelper;
+import net.dinomine.potioneer.util.misc.ArtifactHelper;
 import net.dinomine.potioneer.block.ModBlocks;
 import net.dinomine.potioneer.block.entity.ModBlockEntities;
 import net.dinomine.potioneer.block.entity.renderer.MinerBlockRenderer;
@@ -9,7 +9,6 @@ import net.dinomine.potioneer.block.entity.renderer.PriestBlockRenderer;
 import net.dinomine.potioneer.block.entity.renderer.WaterTrapBlockRenderer;
 import net.dinomine.potioneer.config.PotioneerClientConfig;
 import net.dinomine.potioneer.config.PotioneerCommonConfig;
-import net.dinomine.potioneer.config.PotioneerFormulaConfig;
 import net.dinomine.potioneer.entities.ModEntities;
 import net.dinomine.potioneer.entities.client.*;
 import net.dinomine.potioneer.item.ModCreativeModTabs;
@@ -47,14 +46,8 @@ import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.fml.loading.FMLPaths;
 import org.slf4j.Logger;
 import software.bernie.geckolib.GeckoLib;
-
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.List;
 
 // The value here should match an entry in the META-INF/mods.toml file
 @Mod(Potioneer.MOD_ID)
@@ -105,7 +98,7 @@ public class Potioneer
 
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, PotioneerCommonConfig.SPEC, "potioneer-common.toml");
         ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, PotioneerClientConfig.SPEC, "potioneer-client.toml");
-        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, PotioneerFormulaConfig.SPEC, "potioneer-formula.toml");
+       // ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, PotioneerFormulaConfig.SPEC, "potioneer-formula.toml");
 
         // Register ourselves for server and other game events we are interested in
         MinecraftForge.EVENT_BUS.register(this);
@@ -180,7 +173,10 @@ public class Potioneer
             event.enqueueWork(() -> {
                 MenuScreens.register(ModMenuTypes.CRAFTER_MENU.get(), CraftingScreen::new);
                 MenuScreens.register(ModMenuTypes.CRAFTER_ANVIL_MENU.get(), CrafterAnvilScreen::new);
+
                 ItemBlockRenderTypes.setRenderLayer(ModBlocks.STAR_FLOWER_BLOCK.get(), RenderType.cutout());
+                ItemBlockRenderTypes.setRenderLayer(ModBlocks.RITUAL_ALTAR.get(), RenderType.cutout());
+                ItemBlockRenderTypes.setRenderLayer(ModBlocks.RITUAL_INK.get(), RenderType.cutout());
             });
 
 

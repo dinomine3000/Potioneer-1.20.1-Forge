@@ -70,6 +70,19 @@ public class ModBlocks {
     public static final RegistryObject<Block> STAR_FLOWER_BLOCK = registerBlock("star_flower_block",
             () -> new StarFlowerBlock(() -> MobEffects.NIGHT_VISION, 5, BlockBehaviour.Properties.copy(Blocks.BROWN_MUSHROOM)));
 
+    public static final RegistryObject<Block> RITUAL_ALTAR = registerBlock("ritual_altar",
+            () -> new RitualAltarBlock(BlockBehaviour.Properties.copy(Blocks.OAK_PLANKS)
+                    .mapColor(MapColor.COLOR_RED)
+                    .strength(2.0F).noOcclusion()));
+
+    public static final RegistryObject<Block> RITUAL_INK = registerBlock("ritual_ink",
+            () -> new RitualInk(BlockBehaviour.Properties.copy(Blocks.REDSTONE_WIRE)
+                    .mapColor(MapColor.COLOR_BLACK)
+                    .instabreak().noOcclusion()));
+
+    public static final RegistryObject<Block> RITUAL_PEDESTAL = registerBlock("ritual_pedestal",
+            () -> new RitualPedestal(BlockBehaviour.Properties.copy(Blocks.DIORITE)
+                    .mapColor(MapColor.QUARTZ)));
 
 
     private static <T extends Block> RegistryObject<T> registerBlock(String name, Supplier<T> block){

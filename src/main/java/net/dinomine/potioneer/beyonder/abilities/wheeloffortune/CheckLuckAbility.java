@@ -2,9 +2,9 @@ package net.dinomine.potioneer.beyonder.abilities.wheeloffortune;
 
 import net.dinomine.potioneer.beyonder.abilities.Ability;
 import net.dinomine.potioneer.beyonder.abilities.AbilityInfo;
-import net.dinomine.potioneer.beyonder.misc.MysticismHelper;
+import net.dinomine.potioneer.util.misc.MysticismHelper;
 import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
-import net.dinomine.potioneer.beyonder.player.EntityBeyonderManager;
+import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
 import net.dinomine.potioneer.beyonder.player.PlayerLuckManager;
 import net.dinomine.potioneer.beyonder.player.luck.LuckRange;
 import net.minecraft.network.chat.Component;
@@ -27,7 +27,7 @@ public class CheckLuckAbility extends Ability {
     }
 
     @Override
-    public boolean active(EntityBeyonderManager cap, LivingEntity target) {
+    public boolean active(LivingEntityBeyonderCapability cap, LivingEntity target) {
         if(target.level().isClientSide()) return true;
         PlayerLuckManager luckMng = cap.getLuckManager();
         LuckRange range = luckMng.getRange();
@@ -38,7 +38,7 @@ public class CheckLuckAbility extends Ability {
             ItemStack item = target.getMainHandItem();
             Player itemTarget = MysticismHelper.getPlayerFromMysticalItem(item, (ServerLevel) target.level(), 0);
             if(itemTarget != null){
-                Optional<EntityBeyonderManager> stats = itemTarget.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve();
+                Optional<LivingEntityBeyonderCapability> stats = itemTarget.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve();
                 if(stats.isPresent()) {
                     target.sendSystemMessage(Component.literal(itemTarget.getName() + " luck: "
                             + stats.get().getLuckManager().getLuck()
@@ -74,7 +74,7 @@ public class CheckLuckAbility extends Ability {
             }));
             for(Entity ent: hits){
                 if(ent instanceof LivingEntity entity){
-                    Optional<EntityBeyonderManager> stats = entity.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve();
+                    Optional<LivingEntityBeyonderCapability> stats = entity.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve();
                     if(stats.isPresent()) {
                         target.sendSystemMessage(Component.literal(entity.getName().getString() + " luck: "
                                 + stats.get().getLuckManager().getLuck()
@@ -95,19 +95,19 @@ public class CheckLuckAbility extends Ability {
     }
 
     @Override
-    public void onAcquire(EntityBeyonderManager cap, LivingEntity target) {
+    public void onAcquire(LivingEntityBeyonderCapability cap, LivingEntity target) {
 
     }
 
     @Override
-    public void passive(EntityBeyonderManager cap, LivingEntity target) {
+    public void passive(LivingEntityBeyonderCapability cap, LivingEntity target) {
     }
 
     @Override
-    public void activate(EntityBeyonderManager cap, LivingEntity target) {
+    public void activate(LivingEntityBeyonderCapability cap, LivingEntity target) {
     }
 
     @Override
-    public void deactivate(EntityBeyonderManager cap, LivingEntity target) {
+    public void deactivate(LivingEntityBeyonderCapability cap, LivingEntity target) {
     }
 }

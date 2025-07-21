@@ -11,6 +11,7 @@ import net.minecraft.world.item.crafting.AbstractCookingRecipe;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.ItemLike;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraftforge.common.Tags;
 import net.minecraftforge.common.crafting.conditions.IConditionBuilder;
 
@@ -27,7 +28,7 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
     @Override
     protected void buildRecipes(Consumer<FinishedRecipe> consumer) {
 
-        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModBlocks.SAPPHIRE_BLOCK.get())
+        ShapedRecipeBuilder.shaped(RecipeCategory.BUILDING_BLOCKS, ModBlocks.SAPPHIRE_BLOCK.get())
                 .pattern("SSS")
                 .pattern("SSS")
                 .pattern("SSS")
@@ -63,7 +64,7 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                 .unlockedBy(getHasName(ModItems.SAPPHIRE.get()), has(ModItems.SAPPHIRE.get()))
                 .save(consumer);
 
-        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.DIVINATION_ROD.get())
+        ShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, ModItems.DIVINATION_ROD.get())
                 .pattern("ICI")
                 .pattern("IW ")
                 .pattern(" W ")
@@ -94,9 +95,46 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                 .unlockedBy(getHasName(Items.GOLD_NUGGET), has(Items.GOLD_NUGGET))
                 .save(consumer);
 
+        ShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, ModItems.RITUAL_DAGGER.get())
+                .pattern(" S ")
+                .pattern(" S ")
+                .pattern("TBT")
+                .define('S', ModItems.SAPPHIRE.get())
+                .define('B', Items.BLAZE_ROD)
+                .define('T', Items.STRING)
+                .unlockedBy(getHasName(Items.BLAZE_ROD), has(Items.BLAZE_ROD))
+                .save(consumer);
+
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModBlocks.RITUAL_PEDESTAL.get())
+                .pattern("DPD")
+                .pattern("PSP")
+                .pattern("PSP")
+                .define('S', ModItems.SAPPHIRE.get())
+                .define('P', Blocks.POLISHED_DIORITE)
+                .define('D', Blocks.DIORITE)
+                .unlockedBy(getHasName(Items.DIORITE), has(Items.DIORITE))
+                .save(consumer);
+
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModBlocks.RITUAL_ALTAR.get())
+                .pattern("CSC")
+                .pattern("PPP")
+                .pattern("OOO")
+                .define('S', ModItems.SAPPHIRE.get())
+                .define('C', ItemTags.WOOL_CARPETS)
+                .define('O', Blocks.CRYING_OBSIDIAN)
+                .define('P', ItemTags.PLANKS)
+                .unlockedBy(getHasName(Items.CRYING_OBSIDIAN), has(ItemTags.WOOL))
+                .save(consumer);
+
         ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, ModItems.SAPPHIRE.get(), 9)
                 .requires(ModBlocks.SAPPHIRE_BLOCK.get())
                 .unlockedBy(getHasName(ModBlocks.SAPPHIRE_BLOCK.get()), has(ModBlocks.SAPPHIRE_BLOCK.get()))
+                .save(consumer);
+
+        ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, ModItems.INK_BOTTLE.get())
+                .requires(Items.INK_SAC)
+                .requires(ModItems.SAPPHIRE.get())
+                .unlockedBy(getHasName(Items.INK_SAC), has(Items.INK_SAC))
                 .save(consumer);
     }
 

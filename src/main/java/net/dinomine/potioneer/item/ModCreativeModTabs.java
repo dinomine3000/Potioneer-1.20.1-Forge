@@ -26,6 +26,10 @@ public class ModCreativeModTabs {
                         output.accept(ModBlocks.SAPPHIRE_ORE.get());
                         output.accept(ModBlocks.DEEPSLATE_SAPPHIRE_ORE.get());
                         output.accept(ModBlocks.POTION_CAULDRON.get());
+                        output.accept(ModBlocks.RITUAL_ALTAR.get());
+                        output.accept(ModBlocks.RITUAL_PEDESTAL.get());
+                        output.accept(ModItems.INK_BOTTLE.get());
+                        output.accept(ModItems.RITUAL_DAGGER.get());
                         //output.accept(ModItems.GHOST_FISHING_ROD.get());
                         output.accept(ModItems.PECAN_SPAWN_EGG.get());
                         output.accept(ModItems.CHRYON_SPAWN_EGG.get());

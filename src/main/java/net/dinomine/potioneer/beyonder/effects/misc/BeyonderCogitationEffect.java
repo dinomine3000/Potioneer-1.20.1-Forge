@@ -2,12 +2,11 @@ package net.dinomine.potioneer.beyonder.effects.misc;
 
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffect;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
-import net.dinomine.potioneer.beyonder.player.EntityBeyonderManager;
+import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.Tag;
-import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
@@ -26,14 +25,14 @@ public class BeyonderCogitationEffect extends BeyonderEffect {
 
 
     @Override
-    public void onAcquire(EntityBeyonderManager cap, LivingEntity target) {
+    public void onAcquire(LivingEntityBeyonderCapability cap, LivingEntity target) {
         if(target instanceof Player player && deactivatedAbilities.isEmpty()){
             deactivatedAbilities = cap.getAbilitiesManager().disabledALlAbilities(player, "cogitation");
         }
     }
 
     @Override
-    protected void doTick(EntityBeyonderManager cap, LivingEntity target) {
+    protected void doTick(LivingEntityBeyonderCapability cap, LivingEntity target) {
         if(!target.hasEffect(MobEffects.MOVEMENT_SLOWDOWN))
             target.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, -1, 3, true, true));
 
@@ -48,7 +47,7 @@ public class BeyonderCogitationEffect extends BeyonderEffect {
     }
 
     @Override
-    public void stopEffects(EntityBeyonderManager cap, LivingEntity target) {
+    public void stopEffects(LivingEntityBeyonderCapability cap, LivingEntity target) {
         target.removeEffect(MobEffects.MOVEMENT_SLOWDOWN);
         target.removeEffect(MobEffects.DARKNESS);
         target.removeEffect(MobEffects.WEAKNESS);

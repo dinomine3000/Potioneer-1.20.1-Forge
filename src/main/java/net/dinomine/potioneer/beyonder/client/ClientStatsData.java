@@ -1,11 +1,13 @@
 package net.dinomine.potioneer.beyonder.client;
 
-import com.eliotlash.mclib.math.functions.limit.Min;
-import net.dinomine.potioneer.beyonder.screen.AdvancementScreen;
+import net.dinomine.potioneer.beyonder.client.screen.AdvancementScreen;
 import net.minecraft.client.Minecraft;
+import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+
+import static net.dinomine.potioneer.util.misc.AdvancementDifficultyHelper.calculateDifficultyClient;
 
 @OnlyIn(Dist.CLIENT)
 public class ClientStatsData {
@@ -21,35 +23,9 @@ public class ClientStatsData {
     private static int minLuck = 0;
     private static int maxLuck = 0;
 
-    public static void attemptAdvancement(int newSeq){
-        //difference between the new sequence and current sequence
-        //plus one more difficulty for every 25% sanity lost
-        //plus 1 for each group of 8-6, 5-3 and 2-1 sequence levels
-        //plus 1 or 2 for undigested potions (TODO)
-        int levelDifference;
-        if(pathwayId == -1){ //adds 5 points of difficulty for every level you skip
-            levelDifference = 5*Math.max(9 - newSeq%10, 0);
-        } else {
-            levelDifference = 5*Math.max(pathwayId%10 - 1 - newSeq%10, 0);
-        }
-        int sanityDiff = Math.round(8f-sanity/12.5f); //from 0 to 8 more points depending on your sanity
-        int groupDiff = 3-Math.floorDiv(newSeq%10, 3) + (newSeq%10 == 0 ? 2 : 0); //plus 1 for each group
-        int actingDiff = (int) (3*(1-actingProgress)); //up to 3 added points of difficulty for not digested potion
-        //mind you, advancing without fully digesting a potion will lead to less maximum sanity.
+    public static void attemptAdvancement(int newSeq, int addedDifficulty){
 
-        int diff = levelDifference + sanityDiff + groupDiff + actingDiff;
-        if(pathwayId != -1){
-            int level = newSeq%10;
-            //if the target sequence is located between your current sequence and sequence 9,
-            //aka, a previous sequence to your current one
-            //add 4 points of difficulty
-            //this is to prevent ppl from drinking previous potions without consequence
-            if(level >= pathwayId%10) diff += 4;
-        }
-        // more points for demigod levels
-        if(newSeq%10 < 5) diff += (int) Math.max((6 - newSeq%10)/1.5f, 0);
-
-        ClientAdvancementManager.setDifficulty(diff); //adds from 0 to 3 points of difficulty
+        ClientAdvancementManager.setDifficulty(addedDifficulty + calculateDifficultyClient(pathwayId, newSeq, sanity, actingProgress));
 //        ClientAdvancementManager.difficulty = 10;     //Debug
         ClientAdvancementManager.targetSequence = Math.min(newSeq, pathwayId);
         if(pathwayId == -1) ClientAdvancementManager.targetSequence = newSeq;
@@ -123,6 +99,9 @@ public class ClientStatsData {
         }
         if(actingProgress < 0.75 && acting >= 0.75){
             Minecraft.getInstance().player.playSound(SoundEvents.EXPERIENCE_ORB_PICKUP, 1, 1);
+        }
+        if(acting >= 0.95 && actingProgress < 0.95){
+            Minecraft.getInstance().player.sendSystemMessage(Component.translatable("potioneer.message.acting_complete"));
         }
         actingProgress = acting;
     }

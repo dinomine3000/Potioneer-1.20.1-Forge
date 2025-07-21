@@ -1,7 +1,7 @@
 package net.dinomine.potioneer.beyonder.player;
 
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
-import net.dinomine.potioneer.beyonder.misc.ArtifactHelper;
+import net.dinomine.potioneer.util.misc.ArtifactHelper;
 import net.dinomine.potioneer.beyonder.player.luck.LuckRange;
 import net.dinomine.potioneer.entities.ModEntities;
 import net.dinomine.potioneer.entities.custom.AsteroidEntity;
@@ -15,7 +15,6 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -47,7 +46,7 @@ public class PlayerLuckManager {
         luckEventCountdown = 1;
     }
 
-    public void onTick(EntityBeyonderManager cap, LivingEntity target){
+    public void onTick(LivingEntityBeyonderCapability cap, LivingEntity target){
         //ticks once every 2 seconds
         if(target.level().isClientSide()) return;
         if(tick++ > 40){
@@ -108,7 +107,7 @@ public class PlayerLuckManager {
         return this.luck;
     }
 
-    private void triggerEvent(EntityBeyonderManager cap, LivingEntity target){
+    private void triggerEvent(LivingEntityBeyonderCapability cap, LivingEntity target){
         int event = target.getRandom().nextInt(7);
         luckEventCd = target.getRandom().nextInt(24);
         if(luck > LV3_THRESHOLD || luck < -LV3_THRESHOLD){
@@ -139,7 +138,7 @@ public class PlayerLuckManager {
         }
     }
 
-    private void triggerVeryUnluckyEvent(EntityBeyonderManager cap, LivingEntity target, int event){
+    private void triggerVeryUnluckyEvent(LivingEntityBeyonderCapability cap, LivingEntity target, int event){
         switch(event){
             case 0:
                 target.getMainHandItem().shrink(target.getRandom().nextInt(target.getMainHandItem().getMaxStackSize()) + 1);
@@ -165,7 +164,7 @@ public class PlayerLuckManager {
         }
     }
 
-    private void triggerMildlyUnluckyEvent(EntityBeyonderManager cap, LivingEntity target, int event){
+    private void triggerMildlyUnluckyEvent(LivingEntityBeyonderCapability cap, LivingEntity target, int event){
         switch(event){
             case 0:
                 if(target instanceof Player player){
@@ -187,7 +186,7 @@ public class PlayerLuckManager {
         }
     }
 
-    private void triggerMehUnluckyEvent(EntityBeyonderManager cap, LivingEntity target, int event){
+    private void triggerMehUnluckyEvent(LivingEntityBeyonderCapability cap, LivingEntity target, int event){
         switch(event){
             case 0:
                 if(target instanceof Player player){
@@ -199,8 +198,8 @@ public class PlayerLuckManager {
                 }
             case 1:
                 target.getArmorSlots().forEach(armorPiece -> {
-                    if(!passesLuckCheck(0.4f, 20, 10, target.getRandom())){
-                        armorPiece.setDamageValue(Mth.clamp(armorPiece.getMaxDamage() - target.getRandom().nextInt(100), 0, armorPiece.getMaxDamage()));
+                    if(armorPiece.isDamageableItem() && !passesLuckCheck(0.4f, 20, 10, target.getRandom())){
+                        armorPiece.setDamageValue(Mth.clamp(armorPiece.getDamageValue() + target.getRandom().nextInt(armorPiece.getMaxDamage() - armorPiece.getDamageValue()), 0, armorPiece.getMaxDamage()));
                     }
                 });
                 break;
@@ -209,7 +208,7 @@ public class PlayerLuckManager {
         }
     }
 
-    private void triggerVeryLuckyEvent(EntityBeyonderManager cap, LivingEntity target, int event){
+    private void triggerVeryLuckyEvent(LivingEntityBeyonderCapability cap, LivingEntity target, int event){
         switch(event){
             case 0:
                 target.addEffect(new MobEffectInstance(MobEffects.DAMAGE_BOOST, 600,
@@ -233,7 +232,7 @@ public class PlayerLuckManager {
         }
     }
 
-    private void triggerMildlyLuckyEvent(EntityBeyonderManager cap, LivingEntity target, int event){
+    private void triggerMildlyLuckyEvent(LivingEntityBeyonderCapability cap, LivingEntity target, int event){
         switch(event){
             case 0:
                 if(target instanceof Player player){
@@ -256,7 +255,7 @@ public class PlayerLuckManager {
         }
     }
 
-    private void triggerMehLuckyEvent(EntityBeyonderManager cap, LivingEntity target, int event){
+    private void triggerMehLuckyEvent(LivingEntityBeyonderCapability cap, LivingEntity target, int event){
         switch(event){
             case 0:
                 if(target instanceof Player player){

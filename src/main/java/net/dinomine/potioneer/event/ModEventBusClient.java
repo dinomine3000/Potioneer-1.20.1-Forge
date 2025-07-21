@@ -43,7 +43,6 @@ public class ModEventBusClient {
         event.register(new AbstractLiquidContainer.LiquidContainerTint(), ModItems.VIAL.get(), ModItems.FLASK.get());
         event.register(new CharacteristicItem.CharacteristicTint(), ModItems.CHARACTERISTIC.get());
         event.register(new ArtifactTint(), ModItems.RING.get());
-
     }
 
     @SubscribeEvent

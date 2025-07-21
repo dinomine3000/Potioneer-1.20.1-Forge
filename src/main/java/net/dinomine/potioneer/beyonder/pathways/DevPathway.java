@@ -13,7 +13,7 @@ import net.dinomine.potioneer.beyonder.player.PlayerAbilitiesManager;
 
 import java.util.ArrayList;
 
-public class DevPathway extends Beyonder {
+public class DevPathway extends BeyonderPathway {
 
     public DevPathway(int sequence){
         super(sequence, "Dev");

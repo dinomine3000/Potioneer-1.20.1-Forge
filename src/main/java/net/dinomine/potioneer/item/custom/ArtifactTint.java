@@ -1,8 +1,8 @@
 package net.dinomine.potioneer.item.custom;
 
 import net.dinomine.potioneer.beyonder.client.ClientAbilitiesData;
-import net.dinomine.potioneer.beyonder.misc.ArtifactHelper;
-import net.dinomine.potioneer.beyonder.pathways.Beyonder;
+import net.dinomine.potioneer.util.misc.ArtifactHelper;
+import net.dinomine.potioneer.beyonder.pathways.BeyonderPathway;
 import net.minecraft.client.color.item.ItemColor;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.api.distmarker.Dist;
@@ -21,7 +21,7 @@ public class ArtifactTint implements ItemColor {
         int color = 0xFFFF0000;
         if(itemStack.hasTag() && itemStack.getTag().contains(ArtifactHelper.BEYONDER_TAG_ID)){
             int pathwayId = itemStack.getTag().getCompound(ArtifactHelper.BEYONDER_TAG_ID).getInt("id");
-            color = Beyonder.getSequenceColorFromId(pathwayId);
+            color = BeyonderPathway.getSequenceColorFromId(pathwayId);
             if(itemStack.getTag().contains(ArtifactHelper.ARTIFACT_TAG_ID)){
                 List<String> abilityId = ArtifactHelper.getArtifactIdsFromItem(itemStack);
                 if(!abilityId.isEmpty()){

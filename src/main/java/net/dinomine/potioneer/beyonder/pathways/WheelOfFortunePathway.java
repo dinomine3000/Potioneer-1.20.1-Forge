@@ -7,7 +7,7 @@ import net.dinomine.potioneer.beyonder.player.PlayerAbilitiesManager;
 
 import java.util.ArrayList;
 
-public class WheelOfFortunePathway extends Beyonder {
+public class WheelOfFortunePathway extends BeyonderPathway {
 
     public WheelOfFortunePathway(int sequence) {
         super(sequence, "Wheel_of_Fortune");

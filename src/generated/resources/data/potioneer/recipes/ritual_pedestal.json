@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "D": {
+      "item": "minecraft:diorite"
+    },
+    "P": {
+      "item": "minecraft:polished_diorite"
+    },
+    "S": {
+      "item": "potioneer:sapphire"
+    }
+  },
+  "pattern": [
+    "DPD",
+    "PSP",
+    "PSP"
+  ],
+  "result": {
+    "item": "potioneer:ritual_pedestal"
+  },
+  "show_notification": true
+}

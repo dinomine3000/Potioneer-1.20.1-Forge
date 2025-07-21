@@ -3,6 +3,7 @@ package net.dinomine.potioneer.beyonder.client.HUD;
 import net.dinomine.potioneer.Potioneer;
 import net.dinomine.potioneer.beyonder.client.ClientConfigData;
 import net.dinomine.potioneer.beyonder.client.ClientStatsData;
+import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
@@ -38,13 +39,8 @@ public class MagicOrbOverlay {
         int frame = ((int) (tick / slowdown)) % 31;
 
         float mana_percent = Mth.clamp(Math.round(100f*ClientStatsData.getPlayerSpirituality() / ClientStatsData.getPlayerMaxSpirituality())/100f, 0, 1);
-        float sanity = Mth.clamp(ClientStatsData.getPlayerSanity()/100f, 0f, 1f);
-        int sanity_percent = switch((int)(sanity*4)){
-            case 0 -> 3;
-            case 1 -> 2;
-            case 2 -> 1;
-            default -> 0;
-        };
+
+        int sanity_percent = getSanityIndex();
 
         guiGraphics.blit(ORB, offsetLeft, yOffset,
                 bgSide, bgSide,
@@ -74,4 +70,13 @@ public class MagicOrbOverlay {
                 256, 128);
 
     });
+
+    public static int getSanityIndex(){
+        float sanity = Mth.clamp(ClientStatsData.getPlayerSanity(), 0, 100);
+        int sanity_percent = 0;
+        if(sanity < 87.5) sanity_percent++;
+        if(sanity < 30) sanity_percent++;
+        if(sanity < LivingEntityBeyonderCapability.SANITY_FOR_DROP) sanity_percent++;
+        return sanity_percent;
+    }
 }

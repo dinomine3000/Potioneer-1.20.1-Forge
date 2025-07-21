@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "B": {
+      "item": "minecraft:blaze_rod"
+    },
+    "S": {
+      "item": "potioneer:sapphire"
+    },
+    "T": {
+      "item": "minecraft:string"
+    }
+  },
+  "pattern": [
+    " S ",
+    " S ",
+    "TBT"
+  ],
+  "result": {
+    "item": "potioneer:ritualistic_dagger"
+  },
+  "show_notification": true
+}

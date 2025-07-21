@@ -1,8 +1,9 @@
 package net.dinomine.potioneer.savedata;
 
-import net.dinomine.potioneer.item.custom.CharacteristicItem;
 import net.dinomine.potioneer.recipe.PotionCauldronContainer;
 import net.dinomine.potioneer.recipe.PotionCauldronRecipe;
+import net.dinomine.potioneer.recipe.PotionRecipe;
+import net.dinomine.potioneer.recipe.PotionRecipeData;
 import net.dinomine.potioneer.util.JSONParserHelper;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;

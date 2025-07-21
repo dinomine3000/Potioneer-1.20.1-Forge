@@ -7,7 +7,7 @@ import net.dinomine.potioneer.beyonder.player.PlayerAbilitiesManager;
 
 import java.util.ArrayList;
 
-public class RedPriestPathway extends Beyonder {
+public class RedPriestPathway extends BeyonderPathway {
 
     public RedPriestPathway(int sequence){
         super(sequence, "Red_Priest");
@@ -79,8 +79,8 @@ public class RedPriestPathway extends Beyonder {
     public static String getSequenceName(int seq){
         return switch (seq) {
             case 9 -> "Warrior";
-            case 8 -> "Pyromaniac";
-            case 7 -> "Priest_of_Light";
+            case 8 -> "Fire_Priest";
+            case 7 -> "Pyromaniac";
             case 6 -> "Sun-Blessed";
             case 5 -> "Hunter";
             default -> "";

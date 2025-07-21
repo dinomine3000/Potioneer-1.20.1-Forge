@@ -23,9 +23,6 @@ import net.minecraft.world.entity.MobType;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.TieredItem;
-import net.minecraft.world.item.Tiers;
-import net.minecraftforge.common.Tags;
 import net.minecraftforge.event.entity.living.LivingDamageEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
@@ -37,7 +34,7 @@ public class PlayerEffectsManager {
     private ArrayList<BeyonderEffect> passives = new ArrayList<BeyonderEffect>();
     public BeyonderStats statsHolder;
 
-    public void onAttackDamageCalculation(LivingHurtEvent event, EntityBeyonderManager cap){
+    public void onAttackDamageCalculation(LivingHurtEvent event, LivingEntityBeyonderCapability cap){
         Entity attacker = event.getSource().getEntity();
         float dmg = event.getAmount();
         //TODO change this to account for multiple instances of similar effects
@@ -96,7 +93,7 @@ public class PlayerEffectsManager {
         event.setAmount(dmg);
     }
 
-    public void onTakeDamage(LivingDamageEvent event, EntityBeyonderManager cap){
+    public void onTakeDamage(LivingDamageEvent event, LivingEntityBeyonderCapability cap){
         LivingEntity entity = event.getEntity();
         if(hasEffect(BeyonderEffects.EFFECT.TYRANT_ELECTRIFICATION)){
             if(event.getSource().is(DamageTypeTags.IS_LIGHTNING)){
@@ -143,14 +140,14 @@ public class PlayerEffectsManager {
     }
 
 
-    public void onCraft(PlayerEvent.ItemCraftedEvent event, EntityBeyonderManager cap){
+    public void onCraft(PlayerEvent.ItemCraftedEvent event, LivingEntityBeyonderCapability cap){
         //TODO change this to account for multiple instances of similar effects
         if(hasEffect(BeyonderEffects.EFFECT.PARAGON_CRAFTING_SPIRITUALITY)){
             cap.changeSpirituality(cap.getMaxSpirituality() * 0.01f);
         }
     }
 
-    public void onPlayerDie(LivingDeathEvent event, EntityBeyonderManager cap) {
+    public void onPlayerDie(LivingDeathEvent event, LivingEntityBeyonderCapability cap) {
     }
 
     @Override
@@ -166,7 +163,7 @@ public class PlayerEffectsManager {
         statsHolder = new BeyonderStats();
     }
 
-    public void clearEffects(EntityBeyonderManager cap, Player player){
+    public void clearEffects(LivingEntityBeyonderCapability cap, Player player){
         for(BeyonderEffect eff : passives){
             eff.stopEffects(cap, player);
         }
@@ -186,7 +183,7 @@ public class PlayerEffectsManager {
      * @param target
      * @return
      */
-    public boolean addOrReplaceEffect(BeyonderEffect effect, EntityBeyonderManager cap, LivingEntity target){
+    public boolean addOrReplaceEffect(BeyonderEffect effect, LivingEntityBeyonderCapability cap, LivingEntity target){
         if(!hasEffectOrBetter(effect)){
             removeEffect(effect.getId(), cap, target);
             addEffect(effect, cap, target);
@@ -198,7 +195,7 @@ public class PlayerEffectsManager {
         return false;
     }
 
-    public boolean addEffectNoRefresh(BeyonderEffect effect, EntityBeyonderManager cap, LivingEntity target){
+    public boolean addEffectNoRefresh(BeyonderEffect effect, LivingEntityBeyonderCapability cap, LivingEntity target){
         if(!hasEffectOrBetter(effect)){
             removeEffect(effect.getId(), cap, target);
             addEffect(effect, cap, target);
@@ -207,11 +204,11 @@ public class PlayerEffectsManager {
         return false;
     }
 
-    public boolean addEffectNoCheck(BeyonderEffect effect, EntityBeyonderManager cap, LivingEntity target){
+    public boolean addEffectNoCheck(BeyonderEffect effect, LivingEntityBeyonderCapability cap, LivingEntity target){
         return addEffect(effect, cap, target);
     }
 
-    private boolean addEffect(BeyonderEffect effect, EntityBeyonderManager cap, LivingEntity target){
+    private boolean addEffect(BeyonderEffect effect, LivingEntityBeyonderCapability cap, LivingEntity target){
         passives.add(effect);
         effect.onAcquire(cap, target);
         return true;
@@ -275,7 +272,7 @@ public class PlayerEffectsManager {
         return passives.get(indexOf(effect, seq));
     }
 
-    public boolean removeEffect(BeyonderEffects.EFFECT effect, EntityBeyonderManager cap, LivingEntity target){
+    public boolean removeEffect(BeyonderEffects.EFFECT effect, LivingEntityBeyonderCapability cap, LivingEntity target){
         for(int i = 0; i < passives.size(); i++){
             if(passives.get(i).is(effect)) {
                 passives.get(i).stopEffects(cap, target);
@@ -286,7 +283,7 @@ public class PlayerEffectsManager {
         return false;
     }
 
-    public boolean removeEffect(BeyonderEffects.EFFECT effect, int seq, EntityBeyonderManager cap, LivingEntity target){
+    public boolean removeEffect(BeyonderEffects.EFFECT effect, int seq, LivingEntityBeyonderCapability cap, LivingEntity target){
         for(int i = 0; i < passives.size(); i++){
             if(passives.get(i).is(effect, seq)) {
                 passives.get(i).stopEffects(cap, target);
@@ -297,7 +294,7 @@ public class PlayerEffectsManager {
         return false;
     }
 
-    public void onTick(EntityBeyonderManager cap, LivingEntity target){
+    public void onTick(LivingEntityBeyonderCapability cap, LivingEntity target){
         statsHolder.resetStats();
         if(!passives.isEmpty()){
             passives.forEach(effect -> {
@@ -309,7 +306,7 @@ public class PlayerEffectsManager {
         if(target instanceof Player player) cap.getBeyonderStats().applyEffects(player, statsHolder);
     }
 
-    private void sweepEffects(EntityBeyonderManager cap, LivingEntity target){
+    private void sweepEffects(LivingEntityBeyonderCapability cap, LivingEntity target){
         for (int i = passives.size()-1; i >= 0; i--) {
             if(passives.get(i).endsWithin(0)){
                 passives.get(i).stopEffects(cap, target);
@@ -329,7 +326,7 @@ public class PlayerEffectsManager {
         nbt.put("effectData", effectsNbt);
     }
 
-    public void loadNBTData(CompoundTag nbt, EntityBeyonderManager cap, LivingEntity entity){
+    public void loadNBTData(CompoundTag nbt, LivingEntityBeyonderCapability cap, LivingEntity entity){
         CompoundTag effectsTag = nbt.getCompound("effectData");
         int size = effectsTag.getInt("size");
         for(int i = 0; i < size; i++){
@@ -352,7 +349,7 @@ public class PlayerEffectsManager {
      * @param cap
      * @param player
      */
-    public void copyFrom(PlayerEffectsManager otherEffects, EntityBeyonderManager cap, Player player) {
+    public void copyFrom(PlayerEffectsManager otherEffects, LivingEntityBeyonderCapability cap, Player player) {
         for (BeyonderEffect passive : otherEffects.passives) {
             if(passive.shouldPersistInDeath()){
                 addOrReplaceEffect(passive, cap, player);

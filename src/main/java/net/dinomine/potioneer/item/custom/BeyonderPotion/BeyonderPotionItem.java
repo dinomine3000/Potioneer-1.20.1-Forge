@@ -1,9 +1,9 @@
 package net.dinomine.potioneer.item.custom.BeyonderPotion;
 
 import net.dinomine.potioneer.beyonder.client.ClientStatsData;
-import net.dinomine.potioneer.beyonder.misc.CharacteristicHelper;
+import net.dinomine.potioneer.util.misc.CharacteristicHelper;
 import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
-import net.dinomine.potioneer.beyonder.player.EntityBeyonderManager;
+import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
 import net.dinomine.potioneer.util.GeoTintable;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.nbt.CompoundTag;
@@ -96,20 +96,18 @@ public class BeyonderPotionItem extends PotionItem implements GeoItem, GeoTintab
                 } catch (Exception e){
                     beyonder = false;
                 }
-                Optional<EntityBeyonderManager> capOp = player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve();
+                Optional<LivingEntityBeyonderCapability> capOp = player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve();
                 if(capOp.isPresent()){
-                    EntityBeyonderManager cap = capOp.get();
+                    LivingEntityBeyonderCapability cap = capOp.get();
                     if(!pLevel.isClientSide()){
                         if(name.equals("conflict")){
                             if(!player.isCreative()){
                                 cap.setSanity(0);
-                                player.kill();
                             }
                             player.sendSystemMessage(Component.literal("Lost control on the spot. oh well."));
                         } else if(beyonder && Math.floorDiv(Integer.parseInt(name), 10) != Math.floorDiv(cap.getPathwayId(), 10) && cap.isBeyonder()){
                             if(!player.isCreative()){
                                 cap.setSanity(0);
-                                player.kill();
                                 CharacteristicHelper.addCharacteristicToLevel(Integer.parseInt(name), pLevel, null, player.position(), player.getRandom());
                             }
                             System.out.println("Pathway mismatch: " + name + " for pathway " + Math.floorDiv(cap.getPathwayId(), 10));
@@ -117,7 +115,7 @@ public class BeyonderPotionItem extends PotionItem implements GeoItem, GeoTintab
                         }
                     } else {
                         if(beyonder && (Math.floorDiv(Integer.parseInt(name), 10) == Math.floorDiv(cap.getPathwayId(), 10) || !cap.isBeyonder())){
-                            ClientStatsData.attemptAdvancement(Integer.parseInt(name));
+                            ClientStatsData.attemptAdvancement(Integer.parseInt(name), 0);
                         }
                     }
                 }

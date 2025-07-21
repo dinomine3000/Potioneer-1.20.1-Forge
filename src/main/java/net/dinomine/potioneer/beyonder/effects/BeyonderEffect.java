@@ -1,6 +1,6 @@
 package net.dinomine.potioneer.beyonder.effects;
 
-import net.dinomine.potioneer.beyonder.player.EntityBeyonderManager;
+import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.LivingEntity;
 
@@ -96,7 +96,7 @@ public abstract class BeyonderEffect {
         return this.is(effect) && this.sequenceLevel >= effect.sequenceLevel;
     }
 
-    public void setActive(boolean active, EntityBeyonderManager cap, LivingEntity target){
+    public void setActive(boolean active, LivingEntityBeyonderCapability cap, LivingEntity target){
         this.active = active;
         if(!active){
             stopEffects(cap, target);
@@ -106,7 +106,7 @@ public abstract class BeyonderEffect {
         return this.active;
     }
 
-    public void effectTick(EntityBeyonderManager cap, LivingEntity target){
+    public void effectTick(LivingEntityBeyonderCapability cap, LivingEntity target){
         if(active){
             if(this.maxLife < 1){
                 doTick(cap, target);
@@ -130,9 +130,9 @@ public abstract class BeyonderEffect {
      * @param cap
      * @param target
      */
-    public abstract void onAcquire(EntityBeyonderManager cap, LivingEntity target);
-    protected abstract void doTick(EntityBeyonderManager cap, LivingEntity target);
-    public abstract void stopEffects(EntityBeyonderManager cap, LivingEntity target);
+    public abstract void onAcquire(LivingEntityBeyonderCapability cap, LivingEntity target);
+    protected abstract void doTick(LivingEntityBeyonderCapability cap, LivingEntity target);
+    public abstract void stopEffects(LivingEntityBeyonderCapability cap, LivingEntity target);
 
     public void toNbt(CompoundTag nbt){
         nbt.putInt("level", sequenceLevel);

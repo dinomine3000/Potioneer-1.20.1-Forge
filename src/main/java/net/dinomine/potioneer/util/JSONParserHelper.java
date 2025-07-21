@@ -4,8 +4,8 @@ import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.dinomine.potioneer.recipe.PotionContentData;
-import net.dinomine.potioneer.savedata.PotionRecipe;
-import net.dinomine.potioneer.savedata.PotionRecipeData;
+import net.dinomine.potioneer.recipe.PotionRecipe;
+import net.dinomine.potioneer.recipe.PotionRecipeData;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.TagParser;
 import net.minecraft.util.Mth;
@@ -271,7 +271,7 @@ public class JSONParserHelper {
             int amount = outputObj.has("amount") ? Mth.clamp(outputObj.get("amount").getAsInt(), 0, 2) : 1;
             int color = outputObj.has("color") ? outputObj.get("color").getAsInt() : (new Random()).nextInt(0xFFFFFF);
             boolean bottle = outputObj.has("bottle") && outputObj.get("bottle").getAsBoolean();
-            boolean canConflict = outputObj.has("canConflict") && outputObj.get("bottle").getAsBoolean();
+            boolean canConflict = outputObj.has("canConflict") && outputObj.get("canConflict").getAsBoolean();
 
             return new PotionRecipe(new PotionRecipeData(new ArrayList<>(mainIngs), new ArrayList<>(suppIngs), waterLevel, needsFire, -1),
                     new PotionContentData(name, amount, bottle, color, canConflict));

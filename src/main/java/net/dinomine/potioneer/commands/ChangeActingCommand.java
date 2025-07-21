@@ -4,7 +4,7 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
-import net.dinomine.potioneer.beyonder.player.EntityBeyonderManager;
+import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
 import net.dinomine.potioneer.beyonder.player.PlayerActingManager;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -36,7 +36,7 @@ public class ChangeActingCommand {
         ServerPlayer player = cmd.getSource().getPlayer();
         Component message;
         if(player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).isPresent()){
-            EntityBeyonderManager cap = player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve().get();
+            LivingEntityBeyonderCapability cap = player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve().get();
             PlayerActingManager mng = cap.getActingManager();
             message = mng.getDescComponent(cap.getPathwayId());
             player.sendSystemMessage(message);

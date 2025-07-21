@@ -7,7 +7,7 @@ import net.dinomine.potioneer.beyonder.player.PlayerAbilitiesManager;
 
 import java.util.ArrayList;
 
-public class ParagonPathway extends Beyonder {
+public class ParagonPathway extends BeyonderPathway {
 
     public static int[] paragonSpirituality = new int[]{0, 0, 0, 0, 1000, 1000, 1000, 1000, 500, 100};
 

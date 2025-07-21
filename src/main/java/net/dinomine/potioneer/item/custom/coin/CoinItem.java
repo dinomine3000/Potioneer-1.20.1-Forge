@@ -1,10 +1,10 @@
 package net.dinomine.potioneer.item.custom.coin;
 
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
-import net.dinomine.potioneer.beyonder.misc.DivinationResult;
-import net.dinomine.potioneer.beyonder.misc.MysticismHelper;
+import net.dinomine.potioneer.util.misc.DivinationResult;
+import net.dinomine.potioneer.util.misc.MysticismHelper;
 import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
-import net.dinomine.potioneer.beyonder.player.EntityBeyonderManager;
+import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
 import net.dinomine.potioneer.item.ModItems;
 import net.dinomine.potioneer.sound.ModSounds;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
@@ -128,7 +128,7 @@ public class CoinItem extends Item implements GeoItem {
         int sequence = -1;
         boolean seer = false;
         if(player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).isPresent()){
-            Optional<EntityBeyonderManager> cap = player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve();
+            Optional<LivingEntityBeyonderCapability> cap = player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve();
             sequence = cap.get().getPathwayId();
             seer = cap.get().getEffectsManager().hasEffect(BeyonderEffects.EFFECT.MISC_MYST);
         }
@@ -141,7 +141,7 @@ public class CoinItem extends Item implements GeoItem {
           return result.yesNo();
         } else{
             if(player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).isPresent()){
-                Optional<EntityBeyonderManager> cap = player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve();
+                Optional<LivingEntityBeyonderCapability> cap = player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve();
                 float luck = cap.get().getLuckManager().checkLuck(0.5f);
                 if(player.getRandom().nextFloat() < luck) return result.yesNo();
                 return player.getRandom().nextBoolean();

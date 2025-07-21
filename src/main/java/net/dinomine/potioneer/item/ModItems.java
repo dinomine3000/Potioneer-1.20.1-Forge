@@ -130,6 +130,12 @@ public class ModItems {
     public static final RegistryObject<Item> LEYMANOS_TRAVELS = ITEMS.register("leymanos_travels",
             () -> new LeymanosTravels(new Item.Properties().stacksTo(1).fireResistant().rarity(Rarity.EPIC)));
 
+    public static final RegistryObject<Item> RITUAL_DAGGER = ITEMS.register("ritualistic_dagger",
+            () -> new SwordItem(Tiers.IRON, 1, 5, new Item.Properties().defaultDurability(64).setNoRepair()));
+
+    public static final RegistryObject<Item> INK_BOTTLE = ITEMS.register("ink_bottle",
+            () -> new InkBottleItem(new Item.Properties().defaultDurability(50)));
+
 
     /*ublic static final RegistryObject<Item> METAL_ROD = ITEMS.register("metal_detector",
             () -> new MetalDetectorItem(new Item.Properties().stacksTo(1).durability(20)));*/

@@ -1,4 +1,4 @@
-// 1.20.1	2025-07-12T15:23:29.6829027	Item Models: potioneer
+// 1.20.1	2025-07-20T10:53:08.7917665	Item Models: potioneer
 f3317f59efd1cc9f0857f61ad86bffa96cf159fc assets/potioneer/models/item/asteroid_debug.json
 f37020734dc8df0b9b8a5d30b73cab7f1acdd119 assets/potioneer/models/item/beyonder_characteristic.json
 9806426a0c70b255515853af75ca0e089c0f3f76 assets/potioneer/models/item/chryon_core.json
@@ -12,10 +12,12 @@ ae533f7b4b929aabce1c0c7d553e3d18fb0486b0 assets/potioneer/models/item/fire_sword
 91ec900490b32faec1517eec0fbbc5d511a3f01d assets/potioneer/models/item/formula.json
 6aa30f2f58bf4e819401db93b5ee12db72721efc assets/potioneer/models/item/frozen_sword.json
 498f6e07284651c2101fac042201226f408f30f6 assets/potioneer/models/item/golden_drop.json
+20c804bc53423c260e8b2365dce68dfb38e9bbfb assets/potioneer/models/item/ink_bottle.json
 6f35a148a31ea1579b0fa28fbeeb943f332e05ae assets/potioneer/models/item/pecan_leaf.json
 240bf13ee4dbadf73c7837c2cf967d5a8596f02e assets/potioneer/models/item/pecan_shell.json
 63ec6c618a3a23eab4cab9c52d7d3250de9b516e assets/potioneer/models/item/pecan_spawn_egg.json
 eafea040b523f9f3c1f630eb47f019d4494a1f5e assets/potioneer/models/item/polished_diamond.json
+30ae3dd74e67ed1595f046b34048dd42ed370754 assets/potioneer/models/item/ritualistic_dagger.json
 355fede0302e92b2df32b4e02318eca36cb70ece assets/potioneer/models/item/roots.json
 4438b5cfe75e40102a82b5bf5134e3fd5fee3a91 assets/potioneer/models/item/sapphire.json
 e282f0d78e58ccfe4de9d8f53cd0b0a76b88117f assets/potioneer/models/item/solseer.json
