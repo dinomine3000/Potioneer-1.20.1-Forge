@@ -5,9 +5,9 @@ import net.dinomine.potioneer.rituals.criteria.ResponseCriteria;
 import net.dinomine.potioneer.rituals.responses.SpiritResponse;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
+import net.minecraft.world.level.Level;
 
 import java.util.List;
-import java.util.function.Consumer;
 
 public class RitualResponseLogic {
     ResponseCriteria responseCriteria;
@@ -28,26 +28,26 @@ public class RitualResponseLogic {
         this.normalResponse = responseLogic;
     }
 
-    public void onRitualToEntity(RitualInputData inputData){
+    public void onRitualToEntity(RitualInputData inputData, Level level){
         //check for punishments first
-        if(punishmentCriteria.checkCondition(inputData)){
-            castPunishment(inputData);
+        if(punishmentCriteria.checkCondition(inputData, level)){
+            castPunishment(inputData, level);
             return;
         }
 
         //check for successful responses
-        if(responseCriteria.checkCondition(inputData)){
-            castResponse(inputData);
+        if(responseCriteria.checkCondition(inputData, level)){
+            castResponse(inputData, level);
         }
 
     }
 
-    private void castResponse(RitualInputData inputData) {
-        normalResponse.enactResponse(inputData);
+    private void castResponse(RitualInputData inputData, Level level) {
+        normalResponse.enactResponse(inputData, level);
     }
 
-    private void castPunishment(RitualInputData inputData){
-        punishmentResponse.enactResponse(inputData);
+    private void castPunishment(RitualInputData inputData, Level level){
+        punishmentResponse.enactResponse(inputData, level);
     }
 
     public CompoundTag saveToNBT(){

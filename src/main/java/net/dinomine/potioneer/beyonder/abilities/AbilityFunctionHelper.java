@@ -1,5 +1,6 @@
 package net.dinomine.potioneer.beyonder.abilities;
 
+import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
@@ -16,8 +17,11 @@ public class AbilityFunctionHelper {
     }
 
     public static ArrayList<Entity> getEntitiesAroundPredicate(LivingEntity target, double radius, Predicate<? super Entity> pred){
-        Level level = target.level();
-        Vec3 pos = target.position();
+        return getEntitiesAroundPredicate(target.getOnPos(), target.level(), radius, pred);
+    }
+
+    public static ArrayList<Entity> getEntitiesAroundPredicate(BlockPos blockPos, Level level, double radius, Predicate<? super Entity> pred){
+        Vec3 pos = blockPos.getCenter();
         AABB box = new AABB(
                 pos.x-radius, pos.y-radius, pos.z-radius,
                 pos.x+radius, pos.y+radius, pos.z+radius

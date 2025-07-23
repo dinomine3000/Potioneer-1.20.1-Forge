@@ -26,7 +26,7 @@ public class PacketHandler {
         INSTANCE.registerMessage(i++, PlayerAdvanceMessage.class, PlayerAdvanceMessage::encode, PlayerAdvanceMessage::decode, PlayerAdvanceMessage::handle);
         INSTANCE.registerMessage(i++, SequenceSTCSyncRequest.class, SequenceSTCSyncRequest::encode, SequenceSTCSyncRequest::decode, SequenceSTCSyncRequest::handle);
         INSTANCE.registerMessage(i++, PlayerSTCHudStatsSync.class, PlayerSTCHudStatsSync::encode, PlayerSTCHudStatsSync::decode, PlayerSTCHudStatsSync::handle);
-        INSTANCE.registerMessage(i++, PlayerStatsSyncMessage.class, PlayerStatsSyncMessage::encode, PlayerStatsSyncMessage::decode, PlayerStatsSyncMessage::handle);
+        INSTANCE.registerMessage(i++, PlayerMiningSpeedSync.class, PlayerMiningSpeedSync::encode, PlayerMiningSpeedSync::decode, PlayerMiningSpeedSync::handle);
         INSTANCE.registerMessage(i++, PlayerCastAbilityMessageCTS.class, PlayerCastAbilityMessageCTS::encode, PlayerCastAbilityMessageCTS::decode, PlayerCastAbilityMessageCTS::handle);
         INSTANCE.registerMessage(i++, PlayerAbilityInfoSyncSTC.class, PlayerAbilityInfoSyncSTC::encode, PlayerAbilityInfoSyncSTC::decode, PlayerAbilityInfoSyncSTC::handle);
         INSTANCE.registerMessage(i++, PlayerAbilityCooldownSTC.class, PlayerAbilityCooldownSTC::encode, PlayerAbilityCooldownSTC::decode, PlayerAbilityCooldownSTC::handle);
@@ -34,9 +34,10 @@ public class PacketHandler {
         INSTANCE.registerMessage(i++, PlayerSyncHotbarMessage.class, PlayerSyncHotbarMessage::encode, PlayerSyncHotbarMessage::decode, PlayerSyncHotbarMessage::handle);
         INSTANCE.registerMessage(i++, OpenDivinationScreenSTC.class, OpenDivinationScreenSTC::encode, OpenDivinationScreenSTC::decode, OpenDivinationScreenSTC::handle);
         INSTANCE.registerMessage(i++, WaterPrisonEffectSTC.class, WaterPrisonEffectSTC::encode, WaterPrisonEffectSTC::decode, WaterPrisonEffectSTC::handle);
-        INSTANCE.registerMessage(i++, PlayerStatsMessageSTC.class, PlayerStatsMessageSTC::encode, PlayerStatsMessageSTC::decode, PlayerStatsMessageSTC::handle);
+        INSTANCE.registerMessage(i++, PlayerAttributesSyncMessageSTC.class, PlayerAttributesSyncMessageSTC::encode, PlayerAttributesSyncMessageSTC::decode, PlayerAttributesSyncMessageSTC::handle);
         INSTANCE.registerMessage(i++, EvaporateEffect.class, EvaporateEffect::encode, EvaporateEffect::decode, EvaporateEffect::handle);
         INSTANCE.registerMessage(i++, AdvancementFailMessageCTS.class, AdvancementFailMessageCTS::encode, AdvancementFailMessageCTS::decode, AdvancementFailMessageCTS::handle);
         INSTANCE.registerMessage(i++, PlayerArtifactSyncSTC.class, PlayerArtifactSyncSTC::encode, PlayerArtifactSyncSTC::decode, PlayerArtifactSyncSTC::handle);
+        INSTANCE.registerMessage(i++, RitualC2STextSync.class, RitualC2STextSync::encode, RitualC2STextSync::decode, RitualC2STextSync::handle);
     }
 }

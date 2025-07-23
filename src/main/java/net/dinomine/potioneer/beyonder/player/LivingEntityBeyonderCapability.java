@@ -132,6 +132,7 @@ public class LivingEntityBeyonderCapability {
     }
 
     public void onPlayerSleep(){
+        System.out.println("Player sleep method");
         changeSpirituality(this.maxSpirituality/5f);
     }
 
@@ -195,13 +196,13 @@ public class LivingEntityBeyonderCapability {
                     syncCD += 39;
                     abilitiesManager.updateArtifacts(this, player);
                     PacketHandler.INSTANCE.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) player),
-                            new PlayerSTCHudStatsSync(this.spirituality, this.maxSpirituality, (int) this.sanity, this.getPathwayId(), getAbilitiesManager().enabledDisabled, (float) actingManager.getAggregatedActingProgress(getPathwayId())));
+                            new PlayerSTCHudStatsSync(this.spirituality, this.maxSpirituality,
+                                    (int) this.sanity, this.getPathwayId(), getAbilitiesManager().enabledDisabled,
+                                    (float) actingManager.getAggregatedActingProgress(getPathwayId()),
+                                    luckManager.getLuck(),
+                                    luckManager.getMinPassiveLuck(),
+                                    luckManager.getMaxPassiveLuck()));
                 }
-                PacketHandler.INSTANCE.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) player),
-                        new PlayerStatsSyncMessage(getBeyonderStats().getMiningSpeed(),
-                                luckManager.getLuck(),
-                                luckManager.getMinPassiveLuck(),
-                                luckManager.getMaxPassiveLuck()));
             } else if(syncCD-- == entity.getId()%40){
                 applyCost();
                 syncCD += 39;
@@ -420,7 +421,7 @@ public class LivingEntityBeyonderCapability {
             PacketHandler.INSTANCE.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) player),
                     new PlayerAdvanceMessage(this.pathway.getId(), advancing));
             PacketHandler.INSTANCE.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) player),
-                    new PlayerStatsMessageSTC(getBeyonderStats().getIntStats()));
+                    new PlayerAttributesSyncMessageSTC(getBeyonderStats().getIntStats()));
         } else {
             //client side to server. messages are sent when client advances after succeeding in the minigame
             PacketHandler.INSTANCE.sendToServer(new PlayerAdvanceMessage(this.pathway.getId(), advancing));

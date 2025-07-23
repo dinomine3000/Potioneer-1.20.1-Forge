@@ -7,6 +7,7 @@ import net.dinomine.potioneer.recipe.PotionRecipeData;
 import net.dinomine.potioneer.util.JSONParserHelper;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.saveddata.SavedData;
@@ -178,12 +179,12 @@ public class PotionFormulaSaveData extends SavedData {
 //        }
     }
 
-    public ItemStack getRandomItemFromFormulaFor(int targetSequence){
+    public ItemStack getRandomItemFromFormulaFor(int targetSequence, RandomSource random){
         for (PotionRecipeData formula : getFormulas()) {
             if (formula.id() == targetSequence) {
                 ArrayList<ItemStack> ingredients = new ArrayList<>(formula.supplementary());
                 ingredients.addAll(new ArrayList<>(formula.main()));
-                return ingredients.get((new Random()).nextInt(ingredients.size()));
+                return ingredients.get(random.nextInt(ingredients.size()));
             }
         }
         return ItemStack.EMPTY;
@@ -219,7 +220,7 @@ public class PotionFormulaSaveData extends SavedData {
     }
 
     public String getClueForIngredient(ItemStack item){
-        if(!contains(totalIngredients, item)) return "";
+        if(!contains(totalIngredients, item)) return "a";
         return "Insert Ingredient Clue Logic Here";
     }
 
@@ -270,7 +271,7 @@ public class PotionFormulaSaveData extends SavedData {
 
     @Override
     public CompoundTag save(CompoundTag compoundTag) {
-//        System.out.println("saving to nbt");
+        System.out.println("[PotionFormulaSaveData] saving to nbt");
         compoundTag.putInt("size", recipes.size());
         for(int i = 0; i < recipes.size(); i++){
             CompoundTag temp = new CompoundTag();

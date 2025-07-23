@@ -1,11 +1,20 @@
 package net.dinomine.potioneer.block.custom;
 
+import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
+import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
 import net.dinomine.potioneer.block.entity.ModBlockEntities;
 import net.dinomine.potioneer.block.entity.PotionCauldronBlockEntity;
 import net.dinomine.potioneer.block.entity.RitualAltarBlockEntity;
+import net.dinomine.potioneer.config.PotioneerRitualsConfig;
+import net.dinomine.potioneer.item.ModItems;
+import net.dinomine.potioneer.rituals.RitualInputData;
+import net.dinomine.potioneer.savedata.RitualSpiritsSaveData;
 import net.minecraft.client.color.block.BlockColor;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.stats.Stats;
@@ -34,7 +43,12 @@ import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.network.NetworkHooks;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.ArrayList;
+import java.util.Optional;
+import java.util.function.Consumer;
 
 public class RitualAltarBlock extends BaseEntityBlock {
 
@@ -83,10 +97,29 @@ public class RitualAltarBlock extends BaseEntityBlock {
     @Override
     public InteractionResult use(BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, InteractionHand pHand, BlockHitResult pHit) {
         if(pLevel.isClientSide()) return InteractionResult.SUCCESS;
-        pLevel.setBlock(pPos, defaultBlockState()
-                .setValue(CANDLES, (pLevel.getBlockState(pPos).getValue(CANDLES) + 1)% 4)
-                .setValue(DIRECTION, pState.getValue(DIRECTION)),
-                Block.UPDATE_NONE);
+        if(pPlayer.getItemInHand(pHand).is(ModItems.RITUAL_DAGGER.get())){
+            BlockEntity entity = pLevel.getBlockEntity(pPos);
+            if(entity instanceof RitualAltarBlockEntity be){
+                be.onTriggerRitual(pPlayer);
+            }
+//            int pathwayId = -1;
+//            Optional<LivingEntityBeyonderCapability> cap = pPlayer.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve();
+//            if(cap.isPresent()) pathwayId = cap.get().getPathwayId();
+//            pathwayId = 48;
+//            ArrayList<ItemStack> items = new ArrayList<>();
+//            items.add(new ItemStack(Items.APPLE));
+//            items.add(new ItemStack(Items.BLAZE_POWDER));
+//            RitualSpiritsSaveData data = RitualSpiritsSaveData.from((ServerLevel) pLevel);
+//            RitualInputData inputData = new RitualInputData(RitualInputData.FIRST_VERSE.DEFERENT, RitualInputData.SECOND_VERSE.ARROGANT,
+//                    pPlayer, pPlayer, pathwayId, items, RitualInputData.ACTION.TRIGGER_LUCK_EVENT, "nop");
+//
+//            data.findSpiritForRitual(inputData);
+        } else {
+            BlockEntity entity = pLevel.getBlockEntity(pPos);
+            if(entity instanceof RitualAltarBlockEntity be && be.state == RitualAltarBlockEntity.STATE.STANDBY){
+                NetworkHooks.openScreen((ServerPlayer) pPlayer, be, be::writeStringsToBuffer);
+            }
+        }
         return InteractionResult.SUCCESS;
     }
 
@@ -101,33 +134,19 @@ public class RitualAltarBlock extends BaseEntityBlock {
         super.onRemove(pState, pLevel, pPos, pNewState, pIsMoving);
     }
 
-
-//    @Override
-//    public boolean onDestroyedByPlayer(BlockState state, Level level, BlockPos pos, Player player, boolean willHarvest, FluidState fluid) {
-//        boolean result = state.getValue(RESULT);
-//        if(!result && !level.isClientSide()){
-//            PotionCauldronBlockEntity be = (PotionCauldronBlockEntity) level.getBlockEntity(pos);
-//            assert be != null;
-//            be.dropIngredients(level, pos);
-//        }
-//
-//
-//        return super.onDestroyedByPlayer(state, level, pos, player, willHarvest, fluid);
-//    }
-
     @Override
     public @Nullable BlockEntity newBlockEntity(BlockPos blockPos, BlockState blockState) {
         return new RitualAltarBlockEntity(blockPos, blockState);
     }
 
-//    @Override
-//    public @Nullable <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level pLevel, BlockState pState, BlockEntityType<T> pBlockEntityType) {
-//        if(pLevel.isClientSide()){
-//            return createTickerHelper(pBlockEntityType, ModBlockEntities.POTION_CAULDRON_BLOCK_ENTITY.get(), PotionCauldronBlockEntity::particleTick);
-//        }
-//
-//        return createTickerHelper(pBlockEntityType, ModBlockEntities.POTION_CAULDRON_BLOCK_ENTITY.get(),
-//                ((pLevel1, pPos1, pState1, be1) -> be1.tick(pLevel1, pPos1, pState1)));
-//    }
+    @Override
+    public @Nullable <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level pLevel, BlockState pState, BlockEntityType<T> pBlockEntityType) {
+        if(pLevel.isClientSide()){
+            return createTickerHelper(pBlockEntityType, ModBlockEntities.RITUAL_ALTAR_BLOCK_ENTITY.get(), ((pLevel1, pPos1, pState1, be1) -> be1.clientTick(pLevel1, pPos1, pState1)));
+        }
+
+        return createTickerHelper(pBlockEntityType, ModBlockEntities.RITUAL_ALTAR_BLOCK_ENTITY.get(),
+                ((pLevel1, pPos1, pState1, be1) -> be1.serverTick(pLevel1, pPos1, pState1)));
+    }
 
 }

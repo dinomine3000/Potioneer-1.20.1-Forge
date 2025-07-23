@@ -5,6 +5,7 @@ import net.dinomine.potioneer.commands.*;
 import net.dinomine.potioneer.entities.custom.ChryonEntity;
 import net.dinomine.potioneer.item.ModItems;
 import net.dinomine.potioneer.savedata.PotionFormulaSaveData;
+import net.dinomine.potioneer.savedata.RitualSpiritsSaveData;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -32,6 +33,7 @@ public class ModEvents {
         new RefreshFormulasCommand(event.getDispatcher());
         new GiveCharacteristicCommand(event.getDispatcher());
         new ChangeActingCommand(event.getDispatcher());
+        new SpiritDebugCommand(event.getDispatcher());
 
         ConfigCommand.register(event.getDispatcher());
     }
@@ -52,6 +54,7 @@ public class ModEvents {
             MinecraftServer lvl = event.getLevel().getServer();
             if(lvl == null || lvl.overworld() != event.getLevel()) return;
             PotionFormulaSaveData.from((ServerLevel) event.getLevel());
+            RitualSpiritsSaveData.from((ServerLevel) event.getLevel());
         }
     }
 }

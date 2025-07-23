@@ -1,5 +1,7 @@
 package net.dinomine.potioneer.rituals.spirits.defaultGods;
 
+import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
+import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
 import net.dinomine.potioneer.config.PotioneerRitualsConfig;
 import net.dinomine.potioneer.rituals.RitualInputData;
 import net.dinomine.potioneer.rituals.RitualResponseLogic;
@@ -7,20 +9,22 @@ import net.dinomine.potioneer.rituals.criteria.PathwayCriteria;
 import net.dinomine.potioneer.rituals.criteria.ResponseCriteria;
 import net.dinomine.potioneer.rituals.criteria.SequenceLevelCriteria;
 import net.dinomine.potioneer.rituals.responses.DefaultResponse;
-import net.dinomine.potioneer.rituals.spirits.RitualSpiritResponse;
+import net.dinomine.potioneer.rituals.spirits.Deity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.level.Level;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class WheelOfFortuneResponse extends RitualSpiritResponse {
+public class WheelOfFortuneResponse extends Deity {
 
     public WheelOfFortuneResponse(){
-        super(null);
-        setupLogic();
+        super(0, PotioneerRitualsConfig.WOF_INGREDIENTS.get(), PotioneerRitualsConfig.WOF_INCENSE.get());
     }
 
-    private void setupLogic() {
+    protected void setupLogic() {
         ArrayList<ResponseCriteria> responseCriteria = new ArrayList<>();
         responseCriteria.add(new SequenceLevelCriteria(8));
 
@@ -37,33 +41,50 @@ public class WheelOfFortuneResponse extends RitualSpiritResponse {
         setLogic(logic);
     }
 
-    private void punishmentLogic(RitualInputData inputData){
+    private void punishmentLogic(RitualInputData inputData, Level level){
+        Player player = getPlayer(inputData, level, false);
+        if(player == null) return;
+        player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
+            cap.getEffectsManager().addOrReplaceEffect(BeyonderEffects.byId(BeyonderEffects.EFFECT.TYRANT_LIGHTNING_TARGET, 5, 0, 20*5, true),
+                    cap, level.getPlayerByUUID(inputData.caster()));
+        });
     }
 
-    private void responseLogic(RitualInputData inputData){
-
+    private void responseLogic(RitualInputData inputData, Level level){
+        String testString = inputData.thirdVerse().toLowerCase();
+        if(testString.contains("bless")) giveLuck(inputData, level);
+        else if(testString.contains("unluck") || testString.contains("misfortune")) giveLuck(inputData, level);
+        else if(testString.contains("trigger")) triggerLuck(inputData, level);
+        else defaultNormalResponse(inputData);
     }
 
-    @Override
-    protected void aidTarget(RitualInputData inputData) {
-
+    private void giveLuck(RitualInputData inputData, Level level){
+        Player target = getPlayer(inputData, level, false);
+        if(target == null) return;
+        target.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
+            cap.getLuckManager().grantLuck(target.getRandom().nextInt(-10, 100));
+            System.out.println("Given luck!");
+            for(ItemStack stack: inputData.offerings()){
+                if(stack.is(Items.DIAMOND))
+                    stack.setCount(0);
+                //stack = ItemStack.EMPTY;
+            }
+        });
     }
-
-    @Override
-    protected void guideTarget(RitualInputData inputData) {
-
+    private void giveUnluck(RitualInputData inputData, Level level){
+        Player target = getPlayer(inputData, level, false);
+        if(target == null) return;
+        target.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
+            cap.getLuckManager().consumeLuck(target.getRandom().nextInt(-10, 100));
+            System.out.println("Given unluck!");
+        });
     }
-
-    @Override
-    protected void inbueTarget(RitualInputData inputData) {
-
-    }
-
-    public boolean isValidIncense(String incenseId){
-        return incenseId.equalsIgnoreCase(PotioneerRitualsConfig.WOF_INCENSE.get());
-    }
-
-    public boolean isValidItems(List<ItemStack> items){
-        return items.stream().anyMatch(stack -> PotioneerRitualsConfig.WOF_INGREDIENTS.get().contains(stack.getItem().toString()));
+    private void triggerLuck(RitualInputData inputData, Level level){
+        Player target = getPlayer(inputData, level, false);
+        if(target == null) return;
+        target.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
+            cap.getLuckManager().castEvent(target);
+            System.out.println("Cast Event!");
+        });
     }
 }

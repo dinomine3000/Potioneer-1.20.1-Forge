@@ -1,0 +1,6 @@
+// 1.20.1	2025-07-22T16:04:09.5681686	Loot Tables
+ecf304a1a320ffec99a5c9a815e67556560399cf data/potioneer/loot_tables/blocks/potion_cauldron.json
+a783293ccf87ca885ceab7f19b388976baac9efb data/potioneer/loot_tables/blocks/raw_sapphire_block.json
+883c7ae389c19f436b58e83215d5804ac145a5de data/potioneer/loot_tables/blocks/ritual_altar.json
+15220c75943246ae6e5f097a3cf0d1ac7a7dd6a8 data/potioneer/loot_tables/blocks/ritual_pedestal.json
+b4ef95a18fd47c5ded52aa816d38f4927d15b99d data/potioneer/loot_tables/blocks/sapphire_block.json

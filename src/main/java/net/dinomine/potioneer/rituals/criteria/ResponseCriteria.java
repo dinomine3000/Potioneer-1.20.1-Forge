@@ -3,10 +3,11 @@ package net.dinomine.potioneer.rituals.criteria;
 import net.dinomine.potioneer.rituals.RitualInputData;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
+import net.minecraft.world.level.Level;
 
 public abstract class ResponseCriteria {
 
-    public abstract boolean checkCondition(RitualInputData input);
+    public abstract boolean checkCondition(RitualInputData input, Level level);
 
     public abstract Tag saveToNBT();
 
@@ -25,6 +26,7 @@ public abstract class ResponseCriteria {
             case "and_list" -> AndCriteria.getFromTag(tag);
             case "sequence_level" -> SequenceLevelCriteria.getFromTag(infoTag);
             case "pathway_id" -> PathwayCriteria.getFromTag(infoTag);
+            case "offerings" -> OfferingsCriteria.getFromTag(infoTag);
             // case "some_other" -> SomeOtherCriteria.loadFromNBT(tag);
             default -> throw new IllegalArgumentException("Unknown criteria type: " + type);
         };

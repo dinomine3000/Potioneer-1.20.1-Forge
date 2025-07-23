@@ -146,8 +146,7 @@ public class PotionCauldronBlock extends BaseEntityBlock {
 
     @Override
     public void onRemove(BlockState pState, Level pLevel, BlockPos pPos, BlockState pNewState, boolean pIsMoving) {
-        boolean result = pState.getValue(RESULT);
-        if(pState.getBlock() != pNewState.getBlock() && !result && !pLevel.isClientSide()){
+        if(pState.getBlock() != pNewState.getBlock() && !pLevel.isClientSide()){
             PotionCauldronBlockEntity be = (PotionCauldronBlockEntity) pLevel.getBlockEntity(pPos);
             if(be instanceof PotionCauldronBlockEntity){
                 be.dropIngredients(pLevel, pPos);
@@ -157,18 +156,17 @@ public class PotionCauldronBlock extends BaseEntityBlock {
     }
 
 
-    @Override
-    public boolean onDestroyedByPlayer(BlockState state, Level level, BlockPos pos, Player player, boolean willHarvest, FluidState fluid) {
-        boolean result = state.getValue(RESULT);
-        if(!result && !level.isClientSide()){
-            PotionCauldronBlockEntity be = (PotionCauldronBlockEntity) level.getBlockEntity(pos);
-            assert be != null;
-            be.dropIngredients(level, pos);
-        }
-
-
-        return super.onDestroyedByPlayer(state, level, pos, player, willHarvest, fluid);
-    }
+//    @Override
+//    public boolean onDestroyedByPlayer(BlockState state, Level level, BlockPos pos, Player player, boolean willHarvest, FluidState fluid) {
+//        if(!level.isClientSide()){
+//            PotionCauldronBlockEntity be = (PotionCauldronBlockEntity) level.getBlockEntity(pos);
+//            assert be != null;
+//            be.dropIngredients(level, pos);
+//        }
+//
+//
+//        return super.onDestroyedByPlayer(state, level, pos, player, willHarvest, fluid);
+//    }
 
     @Override
     public @Nullable BlockEntity newBlockEntity(BlockPos blockPos, BlockState blockState) {

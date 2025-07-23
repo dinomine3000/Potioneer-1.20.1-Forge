@@ -185,12 +185,12 @@ public class BeyonderScreen extends Screen {
                         leftPos + 32 - sanitDiff, topPos + 60, this.color, false);
             }
 
-            float sanityPercent = ClientStatsData.getPlayerSanity()/100f;
+            float sanityPercent = ClientStatsData.getPlayerSanity();
             Component warning = Component.translatable("message.potioneer.sanity.warning0");
-            if(sanityPercent < 0.875) {
+            if(sanityPercent < 87.5) {
                 warning = Component.translatable("message.potioneer.sanity.warning1").withStyle(ChatFormatting.DARK_GRAY);
             }
-            if(sanityPercent < 0.35){
+            if(sanityPercent < 45){
                 warning = Component.translatable("message.potioneer.sanity.warning2").withStyle(ChatFormatting.DARK_RED);
             }
             if(sanityPercent < LivingEntityBeyonderCapability.SANITY_FOR_DROP){

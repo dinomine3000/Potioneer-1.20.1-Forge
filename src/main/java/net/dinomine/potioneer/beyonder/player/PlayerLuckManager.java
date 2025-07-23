@@ -83,7 +83,7 @@ public class PlayerLuckManager {
         range.changeRange(minDelta, maxDelta, posDelta);
     }
 
-    private void castEvent(LivingEntity target){
+    public void castEvent(LivingEntity target){
         eventGoingOn = true;
         luckEventCountdown = target.getRandom().nextInt(20);
         target.sendSystemMessage(Component.translatable("potioneer.luck.event_cast_" + target.getRandom().nextInt(4)));

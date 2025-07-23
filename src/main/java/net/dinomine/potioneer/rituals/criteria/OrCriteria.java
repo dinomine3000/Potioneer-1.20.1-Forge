@@ -4,6 +4,7 @@ import net.dinomine.potioneer.rituals.RitualInputData;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
+import net.minecraft.world.level.Level;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,9 +17,9 @@ public class OrCriteria extends ResponseCriteria{
         this.criteriaList = criteriaList;
     }
     @Override
-    public boolean checkCondition(RitualInputData input) {
+    public boolean checkCondition(RitualInputData input, Level level) {
         for (ResponseCriteria responseCriteria : criteriaList) {
-            if (responseCriteria.checkCondition(input)) return true;
+            if (responseCriteria.checkCondition(input, level)) return true;
         }
         return false;
     }

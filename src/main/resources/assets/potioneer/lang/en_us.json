@@ -62,8 +62,10 @@
   "item.potioneer.solseer": "Solseer",
   "item.potioneer.wandering_cactus_prick": "Wandering Cactus Prick",
   "item.potioneer.vial.cactus_sap": "Wandering Cactus Sap Vial",
+  "item.potioneer.vial.generalized": "%s Vial",
   "item.potioneer.cactus_sap": "Wandering Cactus Sap",
   "item.potioneer.flask.cactus_sap": "Wandering Cactus Sap Flask",
+  "item.potioneer.flask.generalized": "%s Flask",
   "item.potioneer.straw_doll": "Straw Doll",
 
   "item.potioneer.leymanos_travels": "Leymano's Travels",
@@ -94,8 +96,13 @@
   "gui.potioneer.beyonder_menu": "Beyonder",
   "gui.potioneer.ability_menu": "Ability Menu",
   "gui.potioneer.options_menu": "Options Menu",
+  "gui.potioneer.ritual_menu": "Ritual Altar",
   "gui.potioneer.add_to_quick": "Add ability to Quick Select",
   "gui.potioneer.remove_from_quick": "Remove ability from quick select",
+
+  "rituals.potioneer.prayers": "Prayers",
+  "rituals.potioneer.candles": "Candles",
+  "rituals.potioneer.incense": "Incense",
 
   "gui.potioneer.options_save_button": "Save options to file",
   "gui.potioneer.options_slider_title": "Relative Orb Offset",
@@ -177,6 +184,9 @@
   "message.potioneer.sanity.warning2": "Danger",
   "message.potioneer.sanity.warning3": "Very Dangerous",
   "message.potioneer.sanity_warning": "Sanity: %s",
+  "message.potioneer.dream_clue": "You hear a message in your dreams: %s",
+  "message.potioneer.invalid_ink_area": "Invalid ink boundary. The maximum radius is %s",
+  "message.potioneer.invalid_prayer": "No prayer defined.",
 
   "potioneer.short_desc.cogitation": "Your essence... your being... this is what makes you",
   "potioneer.long_desc.cogitation": "Concentrate your spirituality and recuperate in a safe place.",

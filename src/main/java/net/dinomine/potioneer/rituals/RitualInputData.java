@@ -1,17 +1,22 @@
 package net.dinomine.potioneer.rituals;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public record RitualInputData(FIRST_VERSE firstVerse, SECOND_VERSE secondVerse,
-                              @Nullable Player caster, BlockPos casterPosition,
-                              @Nullable Player target, BlockPos targetPosition,
-                              int pathwayId,
-                              List<ItemStack> offerings, ACTION action,
+                              UUID caster, UUID target,
+                              int pathwayId, BlockPos pos,
+                              List<ItemStack> offerings, String thirdVerse,
                               String incense) {
     public enum FIRST_VERSE{
         EXALTATION, //mystery
@@ -30,6 +35,8 @@ public record RitualInputData(FIRST_VERSE firstVerse, SECOND_VERSE secondVerse,
     }
 
     public enum ACTION{
+        EMPTY, //nothing
+
         GUIDANCE, //pathway related items
         IMBUEMENT, //charm creation
         AID, //effect giving
@@ -51,5 +58,58 @@ public record RitualInputData(FIRST_VERSE firstVerse, SECOND_VERSE secondVerse,
         TRIGGER_LUCK_EVENT //wheel of fortune
     }
 
+    public CompoundTag saveToNBT(){
+        CompoundTag tag = new CompoundTag();
+        tag.putString("firstVerse", firstVerse.toString());
+        tag.putString("secondVerse", secondVerse.toString());
+        tag.putString("thirdVerse", thirdVerse);
+        tag.putString("incense", incense);
+        tag.putInt("pathwayId", pathwayId);
+        tag.putInt("blockPosX", pos.getX());
+        tag.putInt("blockPosY", pos.getY());
+        tag.putInt("blockPosZ", pos.getZ());
+        if(caster != null) tag.putUUID("casterId", caster);
+        if(target != null) tag.putUUID("targetId", target);
+        saveItemStackList(tag, "offerings", offerings);
+        return tag;
+    }
+
+    public static void saveItemStackList(CompoundTag tag, String key, List<ItemStack> items) {
+        ListTag listTag = new ListTag();
+        for (ItemStack stack : items) {
+            CompoundTag itemTag = new CompoundTag();
+            stack.save(itemTag);
+            listTag.add(itemTag);
+        }
+        tag.put(key, listTag);
+    }
+
+    public static RitualInputData loadFromNBT(CompoundTag tag, Level level){
+        FIRST_VERSE firstVerse = FIRST_VERSE.valueOf(tag.getString("firstVerse"));
+        SECOND_VERSE secondVerse = SECOND_VERSE.valueOf(tag.getString("secondVerse"));
+        String thirdVerse = tag.getString("thirdVerse");
+        String incense = tag.getString("incense");
+        int pathwayId = tag.getInt("pathwayId");
+        UUID caster = null;
+        if(tag.contains("casterId")) caster = tag.getUUID("casterId");
+        UUID target = null;
+        if(tag.contains("targetId")) target = tag.getUUID("targetId");
+        ArrayList<ItemStack> stacks = loadItemStackList(tag, "offerings");
+        BlockPos pos = new BlockPos(tag.getInt("blockPosX"), tag.getInt("blockPosY"), tag.getInt("blockPosZ"));
+        return new RitualInputData(firstVerse, secondVerse, caster, target, pathwayId, pos, stacks, thirdVerse, incense);
+    }
+
+    public static ArrayList<ItemStack> loadItemStackList(CompoundTag tag, String key) {
+        ArrayList<ItemStack> items = new ArrayList<>();
+        if (tag.contains(key, Tag.TAG_LIST)) {
+            ListTag listTag = tag.getList(key, Tag.TAG_COMPOUND);
+            for (Tag item : listTag) {
+                if (item instanceof CompoundTag compound) {
+                    items.add(ItemStack.of(compound));
+                }
+            }
+        }
+        return items;
+    }
 
 }

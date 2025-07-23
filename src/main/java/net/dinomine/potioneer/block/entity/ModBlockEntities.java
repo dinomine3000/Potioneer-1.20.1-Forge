@@ -38,6 +38,11 @@ public class ModBlockEntities {
                     () -> BlockEntityType.Builder.of(RitualAltarBlockEntity::new , ModBlocks.RITUAL_ALTAR.get())
                             .build(null));
 
+    public static RegistryObject<BlockEntityType<RitualPedestalBlockEntity>> RITUAL_PEDESTAL_BLOCK_ENTITY =
+            BLOCK_ENTITIES.register("ritual_pedestal_block_entity",
+                    () -> BlockEntityType.Builder.of(RitualPedestalBlockEntity::new , ModBlocks.RITUAL_PEDESTAL.get())
+                            .build(null));
+
     public static void register(IEventBus eventBus){
         BLOCK_ENTITIES.register(eventBus);
     }

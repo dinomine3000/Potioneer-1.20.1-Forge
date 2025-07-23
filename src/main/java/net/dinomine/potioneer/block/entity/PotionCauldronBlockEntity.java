@@ -10,6 +10,7 @@ import net.dinomine.potioneer.recipe.PotionContentData;
 import net.dinomine.potioneer.savedata.PotionFormulaSaveData;
 import net.dinomine.potioneer.recipe.PotionRecipe;
 import net.dinomine.potioneer.util.ModTags;
+import net.dinomine.potioneer.util.misc.CharacteristicHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
@@ -64,7 +65,6 @@ public class PotionCauldronBlockEntity extends BlockEntity {
         FINISHING
     }
     public State state;
-    private static final boolean checkCraftsEveryTick = false;
 
     private final ItemStackHandler itemHandler = new ItemStackHandler(MAX_CAPACITY){
         @Override
@@ -331,11 +331,27 @@ public class PotionCauldronBlockEntity extends BlockEntity {
     }
 
     public void dropIngredients(Level pLevel,BlockPos pPos){
-        NonNullList<ItemStack> items = NonNullList.withSize(itemHandler.getSlots(), ItemStack.EMPTY);
-        for(int i = 0; i < itemHandler.getSlots(); i++){
-            items.set(i, itemHandler.getStackInSlot(i));
+        if(getBlockState().getValue(RESULT)){
+            System.out.println(result.name);
+            if(result != null && isInteger(result.name)){
+                CharacteristicHelper.addCharacteristicToLevel(Integer.parseInt(result.name), pLevel, null, pPos.getCenter(), level.random);
+            }
+        } else {
+            NonNullList<ItemStack> items = NonNullList.withSize(itemHandler.getSlots(), ItemStack.EMPTY);
+            for(int i = 0; i < itemHandler.getSlots(); i++){
+                items.set(i, itemHandler.getStackInSlot(i));
+            }
+            Containers.dropContents(pLevel, pPos, items);
         }
-        Containers.dropContents(pLevel, pPos, items);
+    }
+
+    private boolean isInteger(String testString){
+        try {
+            Integer.parseInt(testString);
+            return true;
+        } catch (Exception e){
+            return false;
+        }
     }
 
     public boolean isEmpty(){

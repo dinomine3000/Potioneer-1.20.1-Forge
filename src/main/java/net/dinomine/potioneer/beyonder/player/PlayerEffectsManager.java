@@ -10,6 +10,7 @@ import net.dinomine.potioneer.item.ModItems;
 import net.dinomine.potioneer.util.ModTags;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.DamageTypeTags;
@@ -302,7 +303,7 @@ public class PlayerEffectsManager {
             });
         }
         sweepEffects(cap, target);
-        cap.getBeyonderStats().setStats(statsHolder);
+        cap.getBeyonderStats().setStats(statsHolder, target);
         if(target instanceof Player player) cap.getBeyonderStats().applyEffects(player, statsHolder);
     }
 

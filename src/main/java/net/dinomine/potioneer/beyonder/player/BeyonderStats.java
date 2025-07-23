@@ -3,11 +3,16 @@ package net.dinomine.potioneer.beyonder.player;
 import com.google.common.base.Suppliers;
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
+import net.dinomine.potioneer.network.PacketHandler;
+import net.dinomine.potioneer.network.messages.PlayerMiningSpeedSync;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.event.entity.player.PlayerEvent;
+import net.minecraftforge.network.PacketDistributor;
 
 import java.util.UUID;
 import java.util.function.Supplier;
@@ -52,15 +57,23 @@ public class BeyonderStats {
 
     public void multMiningSpeed(float mult){this.miningSpeedMult *= mult;}
 
+    public void updateClientIfMiningSpeedChanged(ServerPlayer player, float newSpeed){
+        PacketHandler.INSTANCE.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) player),
+                new PlayerMiningSpeedSync(newSpeed));
+    }
+
     public void resetStats(){
         miningSpeedMult = 1;
         mayFly = false;
         playerAttributes = new float[]{0, 0, 0, 0, 0};
     }
 
-    public void setStats(BeyonderStats oldStore){
-        this.miningSpeedMult = oldStore.miningSpeedMult;
-        this.mayFly = oldStore.mayFly;
+    public void setStats(BeyonderStats otherStats, LivingEntity target){
+        if(otherStats.miningSpeedMult != getMiningSpeed() && target instanceof ServerPlayer player){
+            updateClientIfMiningSpeedChanged(player, otherStats.miningSpeedMult);
+        }
+        this.miningSpeedMult = otherStats.miningSpeedMult;
+        this.mayFly = otherStats.mayFly;
         //this.playerEffectAttributes = oldStore.playerAttributes;
     }
 

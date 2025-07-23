@@ -97,7 +97,7 @@ public class DivinationRodEntity extends PlaceableItemEntity implements GeoEntit
             seer = pPlayer.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve().get().getEffectsManager().hasEffect(BeyonderEffects.EFFECT.MISC_MYST);
         }
 
-        DivinationResult result = MysticismHelper.doDivination(target, pPlayer, 128, this.getOnPos(), sequenceId);
+        DivinationResult result = MysticismHelper.doDivination(target, pPlayer, 128, this.getOnPos(), sequenceId, pPlayer.getRandom());
         if(result.positions().isEmpty()){
             if(!seer){
                 this.entityData.set(INTENDED_YAW, pPlayer.getRandom().nextFloat()*360);

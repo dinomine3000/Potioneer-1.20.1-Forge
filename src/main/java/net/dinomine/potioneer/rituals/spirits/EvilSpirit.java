@@ -1,6 +1,7 @@
 package net.dinomine.potioneer.rituals.spirits;
 
 import net.dinomine.potioneer.rituals.RitualResponseLogic;
+import net.dinomine.potioneer.rituals.spirits.defaultGods.WheelOfFortuneResponse;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
@@ -9,11 +10,18 @@ import net.minecraft.world.item.ItemStack;
 import java.util.ArrayList;
 import java.util.List;
 
+import static net.dinomine.potioneer.savedata.RitualSpiritsSaveData.loadStringList;
+import static net.dinomine.potioneer.savedata.RitualSpiritsSaveData.saveStringList;
+
 public class EvilSpirit extends RitualSpiritResponse{
-    private List<String> itemsId;
+    protected List<String> itemsId;
+
+    protected EvilSpirit(){
+        super(null);
+    }
 
     public EvilSpirit(RitualResponseLogic logic, List<String> validItems) {
-        super(null);
+        this();
         setupLogic(logic);
         itemsId = validItems;
     }
@@ -29,7 +37,7 @@ public class EvilSpirit extends RitualSpiritResponse{
 
     @Override
     public boolean isValidItems(List<ItemStack> items) {
-        return items.stream().anyMatch(itemStack -> itemsId.contains(itemStack.getItem().toString()));
+        return items.stream().anyMatch(itemStack -> itemsId.contains(itemStack.getItem().getDescriptionId()));
     }
 
     public CompoundTag saveToNBT(){
@@ -41,29 +49,15 @@ public class EvilSpirit extends RitualSpiritResponse{
     }
 
     public static EvilSpirit fromNBT(CompoundTag compoundTag){
-        RitualResponseLogic logic = RitualResponseLogic.fromNBT(compoundTag.getCompound("logic"));
-        List<String> itemIds = loadStringList(compoundTag, "items");
-        return new EvilSpirit(logic, itemIds);
+        if(compoundTag.contains("pathwayId")){
+            return Deity.getDeityFromNBT(compoundTag);
+        } else {
+            RitualResponseLogic logic = RitualResponseLogic.fromNBT(compoundTag.getCompound("logic"));
+            List<String> itemIds = loadStringList(compoundTag, "items");
+            return new EvilSpirit(logic, itemIds);
+        }
     }
 
-    public static void saveStringList(CompoundTag tag, String key, List<String> strings) {
-        ListTag listTag = new ListTag();
-        for (String s : strings) {
-            listTag.add(StringTag.valueOf(s));
-        }
-        tag.put(key, listTag);
-    }
-
-    public static List<String> loadStringList(CompoundTag tag, String key) {
-        List<String> result = new ArrayList<>();
-        if (tag.contains(key, 9)) { // 9 = ListTag
-            ListTag listTag = tag.getList(key, 8); // 8 = StringTag
-            for (int i = 0; i < listTag.size(); i++) {
-                result.add(listTag.getString(i));
-            }
-        }
-        return result;
-    }
 
     @Override
     public String toString() {

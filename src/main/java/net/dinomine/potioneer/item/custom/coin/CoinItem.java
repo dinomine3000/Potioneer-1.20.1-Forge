@@ -133,7 +133,7 @@ public class CoinItem extends Item implements GeoItem {
             seer = cap.get().getEffectsManager().hasEffect(BeyonderEffects.EFFECT.MISC_MYST);
         }
 
-        DivinationResult result = MysticismHelper.doDivination(divinationTarget, player, sequence);
+        DivinationResult result = MysticismHelper.doDivination(divinationTarget, player, sequence, player.getRandom());
         if(seer){
             MysticismHelper.updateOrApplyMysticismTag(player.getMainHandItem(), 0.2f, player);
             return result.yesNo();

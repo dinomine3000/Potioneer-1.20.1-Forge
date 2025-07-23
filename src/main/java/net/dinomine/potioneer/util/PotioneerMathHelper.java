@@ -115,7 +115,7 @@ public class PotioneerMathHelper {
             return res;
         }
 
-        public float[][] getPositionMatrix(float x, float y, float z){
+        public static float[][] getPositionMatrix(float x, float y, float z){
             float[][] res = new float[][]{
                     {x},
                     {y},

@@ -1,16 +1,21 @@
-package net.dinomine.potioneer.beyonder;
+package net.dinomine.potioneer.event;
 
 import net.dinomine.potioneer.Potioneer;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffect;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
+import net.dinomine.potioneer.item.ModItems;
 import net.dinomine.potioneer.util.misc.ArtifactHelper;
 import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
 import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
 import net.dinomine.potioneer.network.PacketHandler;
 import net.dinomine.potioneer.network.messages.PlayerAdvanceMessage;
 import net.dinomine.potioneer.network.messages.SequenceSTCSyncRequest;
+import net.dinomine.potioneer.util.misc.DivinationResult;
+import net.dinomine.potioneer.util.misc.MysticismHelper;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -19,6 +24,7 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraftforge.common.Tags;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
+import net.minecraftforge.event.ServerChatEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.event.entity.EntityStruckByLightningEvent;
@@ -29,6 +35,12 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.network.PacketDistributor;
+
+import java.nio.ByteBuffer;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.HexFormat;
+import java.util.UUID;
 
 @Mod.EventBusSubscriber
 public class BeyonderEvents {
@@ -95,10 +107,68 @@ public class BeyonderEvents {
         });
     }
 
+    @SubscribeEvent
+    public static void onPlayerChat(ServerChatEvent event){
+        if(event.getPlayer() != null){
+            if(event.getRawText().toLowerCase().contains("leodero")){
+                event.getPlayer().getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
+                    cap.getEffectsManager().addOrReplaceEffect(BeyonderEffects.byId(BeyonderEffects.EFFECT.TYRANT_LIGHTNING_TARGET, 1, 0, 20*10, true), cap, event.getPlayer());
+                    cap.requestActiveSpiritualityCost(1000);
+                    cap.changeSanity(-25);
+                });
+            }
+        }
+    }
 
     @SubscribeEvent
     public static void onPlayerSleep(PlayerWakeUpEvent event){
-        if(!event.updateLevel() && !event.getEntity().level().isClientSide()) event.getEntity().getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(LivingEntityBeyonderCapability::onPlayerSleep);
+        event.getEntity().getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
+            if(!event.updateLevel() && !event.getEntity().level().isClientSide()) cap.onPlayerSleep();
+
+            if(event.getEntity().level().isClientSide()) return;
+            DivinationResult result = null;
+            long id = event.getEntity().getUUID().getLeastSignificantBits()&0xFF + 100*(Math.floorDiv(event.getEntity().level().getDayTime(), 24000L));
+            long seed = stringToLong(String.valueOf(id));
+            RandomSource random = RandomSource.create(seed);
+            float chance = 0.1f;
+            if(cap.getEffectsManager().hasEffect(BeyonderEffects.EFFECT.MISC_MYST)){
+                chance += (10 - cap.getEffectsManager().getEffect(BeyonderEffects.EFFECT.MISC_MYST).getSequenceLevel())/10f;
+            }
+            if(random.nextFloat() <= chance){
+                ItemStack stack = ItemStack.EMPTY;
+                for(ItemStack item: event.getEntity().getInventory().items){
+                    if(item.is(ModItems.FORMULA.get())){
+                        stack = item.copy();
+                        break;
+                    }
+                    if(item.is(ModItems.BEYONDER_POTION.get())){
+                        stack = item.copy();
+                        break;
+                    }
+                    if(item.is(ModItems.CHARACTERISTIC.get())){
+                        stack = item.copy();
+                        break;
+                    }
+                }
+                result = MysticismHelper.doDivination(stack, event.getEntity(), cap.getPathwayId(), random);
+            }
+            if(result == null || result.clue().isEmpty()) return;
+            event.getEntity().sendSystemMessage(Component.translatable("message.potioneer.dream_clue", Component.translatable(result.clue())));
+        });
+
+    }
+
+    public static long stringToLong(String input) {
+        try {
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            byte[] hash = digest.digest(input.getBytes());
+
+            // Use first 8 bytes of hash to build a long
+            ByteBuffer buffer = ByteBuffer.wrap(hash);
+            return buffer.getLong();
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException("SHA-256 not available", e);
+        }
     }
 
     @SubscribeEvent
@@ -192,6 +262,7 @@ public class BeyonderEvents {
             livingEntity.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
                 if(cap.getEffectsManager().hasEffect(BeyonderEffects.EFFECT.TYRANT_ELECTRIFICATION)){
                     livingEntity.extinguishFire();
+                    cap.requestActiveSpiritualityCost(10);
                 }
             });
         }

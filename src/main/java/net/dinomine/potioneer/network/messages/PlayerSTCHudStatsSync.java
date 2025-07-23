@@ -22,8 +22,12 @@ public class PlayerSTCHudStatsSync {
     public int pathwayId;
     public Map<String, Boolean> enabledList;
     public float actingProgress;
+    public int luck;
+    public int maxLuck;
+    public int minLuck;
 
-    public PlayerSTCHudStatsSync(float spirituality, int maxSpirituality, int sanity, int pathwayId, Map<String, Boolean> enabled, float actingProgress) {
+    public PlayerSTCHudStatsSync(float spirituality, int maxSpirituality, int sanity, int pathwayId, Map<String, Boolean> enabled, float actingProgress
+                            , int luck, int maxLuck, int minLuck) {
         this.spirituality = spirituality;
         this.maxSpirituality = maxSpirituality;
         this.sanity = sanity;
@@ -47,6 +51,9 @@ public class PlayerSTCHudStatsSync {
             buffer.writeBoolean(entry.getValue());
         }
         buffer.writeFloat(msg.actingProgress);
+        buffer.writeInt(msg.luck);
+        buffer.writeInt(msg.maxLuck);
+        buffer.writeInt(msg.minLuck);
     }
 
     public static PlayerSTCHudStatsSync decode(FriendlyByteBuf buffer){
@@ -65,7 +72,10 @@ public class PlayerSTCHudStatsSync {
             res.put(idBuilder.toString(), buffer.readBoolean());
         }
         float acting = buffer.readFloat();
-        return new PlayerSTCHudStatsSync(spir, max, san, id, res, acting);
+        int luck = buffer.readInt();
+        int maxLuck = buffer.readInt();
+        int minLuck = buffer.readInt();
+        return new PlayerSTCHudStatsSync(spir, max, san, id, res, acting, luck, maxLuck, minLuck);
     }
 
     public static void handle(PlayerSTCHudStatsSync msg, Supplier<NetworkEvent.Context> contextSupplier){
@@ -100,6 +110,7 @@ class ClientHudStatsSyncMessage
         ClientStatsData.setSanity(msg.sanity);
         ClientStatsData.setPathwayId(msg.pathwayId);
         ClientStatsData.setActing(msg.actingProgress);
+        ClientStatsData.setLuck(msg.luck, msg.minLuck, msg.maxLuck);
 
         ClientAbilitiesData.setEnabledList(msg.enabledList);
         Minecraft.getInstance().player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {

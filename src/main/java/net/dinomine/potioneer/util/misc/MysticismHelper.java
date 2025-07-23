@@ -13,6 +13,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
@@ -48,24 +49,23 @@ public class MysticismHelper {
      * tries to locate the item (dropped items and/or mobs that drop it and in players inventories) around the player
      * block items (to find 1 copy of that block)
      */
-    public static DivinationResult doDivination(ItemStack item, Player seer, int radius, BlockPos position, int sequenceId){
+    public static DivinationResult doDivination(ItemStack item, Player seer, int radius, BlockPos position, int sequenceId, RandomSource random){
         if(seer.level().isClientSide()) return new DivinationResult(false, new ArrayList<>(), -1, 0f, "", ItemStack.EMPTY);
         ServerLevel level = (ServerLevel) seer.level();
         PotionFormulaSaveData savedData = PotionFormulaSaveData.from(level);
         Optional<LivingEntityBeyonderCapability> capability = seer.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve();
-        if(capability.isPresent()){
-            //progress acting for hydro shaman by 0.25% per divination
-            capability.get().getActingManager().progressActing(1/400f, 18);
-        }
+        //progress acting for hydro shaman by 0.25% per divination
+        capability.ifPresent(cap -> cap.getActingManager().progressActing(1 / 400f, 18));
         if(item.isEmpty()){
             //dream divination / miscelaneous divination
             //return something to do with the next step the player should take to advance
             //could give the name of the next sequence or a clue for an ingredient
-            if(Math.random() < 0.5f){
+            float trigger = random.nextFloat();
+            if(trigger < 0.5f){
                 //gives you the name of your next sequence.
                 //YesNo are become true
                 boolean yesNo = true;
-                String clue = BeyonderPathway.getSequenceNameFromId(sequenceId - 1, true);
+                String clue = "potioneer.beyonder.sequence." + BeyonderPathway.getSequenceNameFromId(sequenceId - 1, false);
                 int resSequence = sequenceId - 1;
                 ArrayList<BlockPos> responsePositions = new ArrayList<>();
                 return new DivinationResult(yesNo, responsePositions, resSequence, 1f, clue, ItemStack.EMPTY);
@@ -73,7 +73,7 @@ public class MysticismHelper {
                 //gives you a clue for your next ingredient, as well as their positions
                 //YesNo are become false
                 boolean yesNo = false;
-                ItemStack itemStack = savedData.getRandomItemFromFormulaFor(sequenceId - 1);
+                ItemStack itemStack = savedData.getRandomItemFromFormulaFor(sequenceId - 1, random);
                 String clue = savedData.getClueForIngredient(itemStack);
                 List<BlockPos> positions = findItemInArea(seer, itemStack, position, radius, level);
                 int resSequence = sequenceId - 1;
@@ -111,9 +111,9 @@ public class MysticismHelper {
             int charSequence = beyonderTag.getInt("id");
             boolean yesNo = charSequence == sequenceId - 1;
             float status = yesNo ? 1f : 0f;
-            String clue = Component.translatable("potioneer.beyonder.sequence." + BeyonderPathway.getSequenceNameFromId(charSequence, false)).toString();
-            ItemStack stack = savedData.getRandomItemFromFormulaFor(charSequence);
-            List<BlockPos> positions = findItemInArea(seer, savedData.getRandomItemFromFormulaFor(charSequence), position, 64, level);
+            String clue = "potioneer.beyonder.sequence." + BeyonderPathway.getSequenceNameFromId(charSequence, false);
+            ItemStack stack = savedData.getRandomItemFromFormulaFor(charSequence, random);
+            List<BlockPos> positions = findItemInArea(seer, stack, position, 64, level);
 
             Player target = getPlayerFromMysticismTag(mysticalTag, level, 0);
             if(target != null) {
@@ -148,11 +148,12 @@ public class MysticismHelper {
                 if(name.equalsIgnoreCase("conflict")){
                     yesNo = false;
                     status = 0.0f;
+                    clue = "Death";
                 } else {
                     yesNo = true;
                     try{
                         potionSequence = Integer.parseInt(name);
-                        clue = BeyonderPathway.getPathwayName(potionSequence, true);
+                        clue = "potioneer.beyonder.sequence." + BeyonderPathway.getSequenceNameFromId(potionSequence, false);
                         status = potionSequence%10 == (sequenceId - 1) % 10 ? 1f : 0.7f;
                     } catch (Exception e){
                         clue = name;
@@ -160,7 +161,8 @@ public class MysticismHelper {
                 }
                 return new DivinationResult(yesNo, new ArrayList<>(), potionSequence, status, clue, ItemStack.EMPTY);
             }
-        } else if(item.is(ModItems.FORMULA.get())) {
+        }
+        else if(item.is(ModItems.FORMULA.get())) {
             Optional<LivingEntityBeyonderCapability> cap = seer.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve();
             if(cap.isPresent()){
                 PotionRecipeData data = FormulaItem.applyOrReadFormulaNbt(item, level, sequenceId, cap.get());
@@ -182,12 +184,12 @@ public class MysticismHelper {
 
                 ItemStack stack;
                 if(i == data.main().size()){
-                    stack = data.main().get(seer.getRandom().nextInt(data.main().size()));
+                    stack = data.main().get(random.nextInt(data.main().size()));
                 } else {
                     stack = data.main().get(i);
                 }
 
-                return new DivinationResult(yesNo, positions, data.id(), status, BeyonderPathway.getSequenceNameFromId(data.id(), false), stack);
+                return new DivinationResult(yesNo, positions, data.id(), status, savedData.getClueForIngredient(stack), stack);
             }
         }
 
@@ -293,9 +295,9 @@ public class MysticismHelper {
         return null;
     }
 
-    public static DivinationResult doDivination(ItemStack item, Player seer, int sequenceId){
+    public static DivinationResult doDivination(ItemStack item, Player seer, int sequenceId, RandomSource random){
         BlockPos pos = seer.getOnPos();
-        return doDivination(item, seer, radius, pos, sequenceId);
+        return doDivination(item, seer, radius, pos, sequenceId, random);
     }
 
     private static List<BlockPos> findItemInArea(Player player, ItemStack item, BlockPos center, int radius, Level level){

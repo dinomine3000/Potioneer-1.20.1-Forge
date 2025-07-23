@@ -1,6 +1,8 @@
 package net.dinomine.potioneer;
 
 import com.mojang.logging.LogUtils;
+import net.dinomine.potioneer.config.PotioneerRitualsConfig;
+import net.dinomine.potioneer.menus.ritual_altar.RitualAltarScreen;
 import net.dinomine.potioneer.util.misc.ArtifactHelper;
 import net.dinomine.potioneer.block.ModBlocks;
 import net.dinomine.potioneer.block.entity.ModBlockEntities;
@@ -98,6 +100,7 @@ public class Potioneer
 
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, PotioneerCommonConfig.SPEC, "potioneer-common.toml");
         ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, PotioneerClientConfig.SPEC, "potioneer-client.toml");
+        ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, PotioneerRitualsConfig.SPEC, "potioneer-server-rituals.toml");
        // ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, PotioneerFormulaConfig.SPEC, "potioneer-formula.toml");
 
         // Register ourselves for server and other game events we are interested in
@@ -173,6 +176,7 @@ public class Potioneer
             event.enqueueWork(() -> {
                 MenuScreens.register(ModMenuTypes.CRAFTER_MENU.get(), CraftingScreen::new);
                 MenuScreens.register(ModMenuTypes.CRAFTER_ANVIL_MENU.get(), CrafterAnvilScreen::new);
+                MenuScreens.register(ModMenuTypes.RITUAL_ALTAR_MENU.get(), RitualAltarScreen::new);
 
                 ItemBlockRenderTypes.setRenderLayer(ModBlocks.STAR_FLOWER_BLOCK.get(), RenderType.cutout());
                 ItemBlockRenderTypes.setRenderLayer(ModBlocks.RITUAL_ALTAR.get(), RenderType.cutout());

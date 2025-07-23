@@ -3,34 +3,37 @@ package net.dinomine.potioneer.rituals.responses;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffect;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
 import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
+import net.dinomine.potioneer.rituals.RandomizableResponse;
 import net.dinomine.potioneer.rituals.RitualInputData;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
 
-public class AidResponse extends SpiritResponse{
+import static net.dinomine.potioneer.rituals.spirits.RitualSpiritResponse.getPlayer;
+
+public class AidResponse extends SpiritResponse implements RandomizableResponse<AidResponse> {
 
     private final int pathwayId;
     private final boolean targetCaster;
 
     public AidResponse(int pathwayId, boolean targetCaster) {
-        this.pathwayId = pathwayId;
+        this.pathwayId = Math.floorDiv(pathwayId, 10);
         this.targetCaster = targetCaster;
     }
 
     @Override
-    public void enactResponse(RitualInputData inputData) {
-        LivingEntity effectTarget = inputData.target();
-        if(targetCaster){
-            effectTarget = inputData.caster();
-        }
-        inputData.caster().getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
-            cap.getEffectsManager().addOrReplaceEffect(getRandomEffectByPathway(pathwayId), cap, inputData.caster());
+    public void enactResponse(RitualInputData inputData, Level level) {
+        Player effectTarget = getPlayer(inputData, level, targetCaster);
+        if(effectTarget == null) return;
+        effectTarget.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
+            cap.getEffectsManager().addOrReplaceEffect(getRandomEffectByPathway(pathwayId), cap, level.getPlayerByUUID(inputData.caster()));
         });
     }
 
@@ -72,7 +75,7 @@ public class AidResponse extends SpiritResponse{
         CompoundTag tag = new CompoundTag();
         tag.putInt("pathwayId", pathwayId);
         tag.putBoolean("targetCaster", targetCaster);
-        return envelopTag(tag, "pathway_id");
+        return envelopTag(tag, "aid");
     }
 
     public static AidResponse getFromTag(Tag tag){
@@ -80,5 +83,11 @@ public class AidResponse extends SpiritResponse{
         int pathwayId = compoundTag.getInt("pathwayId");
         boolean targetCaster = compoundTag.getBoolean("targetCaster");
         return new AidResponse(pathwayId, targetCaster);
+    }
+
+    @Override
+    public AidResponse getRandom() {
+        Random random = new Random();
+        return new AidResponse(random.nextInt(0, 5), random.nextBoolean());
     }
 }

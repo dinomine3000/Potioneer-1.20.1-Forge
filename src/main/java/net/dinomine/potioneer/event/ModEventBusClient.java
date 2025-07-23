@@ -7,7 +7,9 @@ import net.dinomine.potioneer.beyonder.client.KeyBindings;
 import net.dinomine.potioneer.block.ModBlocks;
 import net.dinomine.potioneer.block.custom.PotionCauldronBlock;
 import net.dinomine.potioneer.block.entity.ModBlockEntities;
+import net.dinomine.potioneer.block.entity.RitualPedestalBlockEntity;
 import net.dinomine.potioneer.block.entity.renderer.PotionCauldronBlockEntityRenderer;
+import net.dinomine.potioneer.block.entity.renderer.RitualPedestalBlockEntityRenderer;
 import net.dinomine.potioneer.item.ModItems;
 import net.dinomine.potioneer.item.custom.AbstractLiquidContainer;
 import net.dinomine.potioneer.item.custom.ArtifactTint;
@@ -29,6 +31,8 @@ public class ModEventBusClient {
     @SubscribeEvent
     public static void registerBER(EntityRenderersEvent.RegisterRenderers event){
         event.registerBlockEntityRenderer(ModBlockEntities.POTION_CAULDRON_BLOCK_ENTITY.get(), PotionCauldronBlockEntityRenderer::new);
+        event.registerBlockEntityRenderer(ModBlockEntities.RITUAL_PEDESTAL_BLOCK_ENTITY.get(), RitualPedestalBlockEntityRenderer::new);
+
     }
 
     @SubscribeEvent

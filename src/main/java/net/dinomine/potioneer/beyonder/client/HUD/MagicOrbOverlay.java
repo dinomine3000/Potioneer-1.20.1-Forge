@@ -75,7 +75,7 @@ public class MagicOrbOverlay {
         float sanity = Mth.clamp(ClientStatsData.getPlayerSanity(), 0, 100);
         int sanity_percent = 0;
         if(sanity < 87.5) sanity_percent++;
-        if(sanity < 30) sanity_percent++;
+        if(sanity < 45) sanity_percent++;
         if(sanity < LivingEntityBeyonderCapability.SANITY_FOR_DROP) sanity_percent++;
         return sanity_percent;
     }
