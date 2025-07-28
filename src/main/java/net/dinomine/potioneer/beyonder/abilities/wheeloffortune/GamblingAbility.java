@@ -5,6 +5,7 @@ import net.dinomine.potioneer.beyonder.abilities.AbilityInfo;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
 import net.dinomine.potioneer.beyonder.effects.wheeloffortune.BeyonderGamblingEffect;
 import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.LivingEntity;
 
 public class GamblingAbility extends Ability {
@@ -16,13 +17,16 @@ public class GamblingAbility extends Ability {
     @Override
     public boolean active(LivingEntityBeyonderCapability cap, LivingEntity target) {
         if(target.level().isClientSide()) return false;
-        flipEnable(cap, target);
+        if(flipEnable(cap, target)){
+            target.playSound(SoundEvents.ENCHANTMENT_TABLE_USE, 1, 1);
+        } else {
+            target.playSound(SoundEvents.EXPERIENCE_ORB_PICKUP, 1, 1);
+        }
         return true;
     }
 
     @Override
     public void onAcquire(LivingEntityBeyonderCapability cap, LivingEntity target) {
-        System.out.println("Disabling gambling on acquire...");
         disable(cap, target);
     }
 

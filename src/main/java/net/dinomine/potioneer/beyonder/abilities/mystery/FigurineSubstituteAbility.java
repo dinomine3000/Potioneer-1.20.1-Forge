@@ -10,7 +10,7 @@ import net.minecraft.world.entity.LivingEntity;
 public class FigurineSubstituteAbility extends Ability {
 
     public FigurineSubstituteAbility(int sequence){
-        this.info = new AbilityInfo(57, 224, "Figure Substitute", 20 + sequence, 40 + 10*(8-sequence), 1, "figure");
+        this.info = new AbilityInfo(57, 224, "Figure Substitute", 20 + sequence, 30 + 10*(9-sequence), 1, "figure");
         this.isActive = true;
     }
 

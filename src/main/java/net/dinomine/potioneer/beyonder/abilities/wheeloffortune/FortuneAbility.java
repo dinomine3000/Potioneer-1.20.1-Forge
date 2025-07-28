@@ -9,7 +9,7 @@ import net.minecraft.world.entity.LivingEntity;
 public class FortuneAbility extends Ability {
 
     public FortuneAbility(int sequence){
-        this.info = new AbilityInfo(5, 176, "Fortune Break", sequence, 0, getCooldown(), "fortune");
+        this.info = new AbilityInfo(5, 176, "Fortune Break", sequence, 5, getCooldown(), "fortune");
     }
 
     @Override
@@ -29,7 +29,7 @@ public class FortuneAbility extends Ability {
         if(cap.getSpirituality() < 3*(10-getSequence())) disable(cap, target);
         if(cap.getAbilitiesManager().isEnabled(this)){
             cap.getEffectsManager().addOrReplaceEffect(BeyonderEffects.byId(BeyonderEffects.EFFECT.WHEEL_FORTUNE,
-                    getSequence(), 3*(10-getSequence()), -1, true), cap, target);
+                    getSequence(), info.cost(), -1, true), cap, target);
         }
     }
 

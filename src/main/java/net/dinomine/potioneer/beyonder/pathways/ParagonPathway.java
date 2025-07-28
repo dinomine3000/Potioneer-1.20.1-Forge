@@ -9,7 +9,7 @@ import java.util.ArrayList;
 
 public class ParagonPathway extends BeyonderPathway {
 
-    public static int[] paragonSpirituality = new int[]{0, 0, 0, 0, 1000, 1000, 1000, 1000, 500, 100};
+    public static int[] paragonSpirituality = new int[]{3500, 2744, 1960, 1400, 1000, 700, 500, 350, 250, 100};
 
     public ParagonPathway(int sequence){
         super(sequence, "Paragon");
@@ -29,8 +29,10 @@ public class ParagonPathway extends BeyonderPathway {
         return switch (sequence){
             case 9 -> new float[]{0, 0, 0, 0, 0};
             case 8 -> new float[]{0, 0, 0, 0, 1};
-            case 7 -> new float[]{2, 0, 0, 0, 5};
-            default -> new float[]{2, 0, 0, 0, 5};
+            case 7 -> new float[]{1, 0, 0, 1, 5};
+            case 6 -> new float[]{2, 0, 0, 2, 5};
+            case 5 -> new float[]{2, 1, 0, 2, 5};
+            default -> new float[]{4, 2, 2, 0, 10};
         };
     }
 

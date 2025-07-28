@@ -1,6 +1,8 @@
 package net.dinomine.potioneer.item.custom;
 
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.Entity;
@@ -29,9 +31,11 @@ public class UnshadowedCrucifixItem extends Item {
             CompoundTag crucifixData = tag.getCompound(CRUCIFIX_TAG_ID);
             if(crucifixData.getInt("state")  == CrucifixState.ENABLED.id){
                 crucifixData.putInt("state", CrucifixState.DISABLED.id);
+                pLevel.playSound(null, pPlayer.getOnPos(), SoundEvents.GENERIC_EXTINGUISH_FIRE, SoundSource.PLAYERS, 1, 1.3f - pPlayer.getRandom().nextFloat()*0.6f);
             }
             else if(crucifixData.getInt("state")  == CrucifixState.DISABLED.id){
                 crucifixData.putInt("state", CrucifixState.ENABLED.id);
+                pLevel.playSound(null, pPlayer.getOnPos(), SoundEvents.FIRECHARGE_USE, SoundSource.PLAYERS, 1, 1.3f - pPlayer.getRandom().nextFloat()*0.6f);
             }
         } else {
             CompoundTag newTag = new CompoundTag();

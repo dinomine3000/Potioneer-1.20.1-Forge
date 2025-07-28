@@ -72,6 +72,7 @@
   "item.potioneer.unshadowed_crucifix": "Unshadowed Crucifix",
   "item.potioneer.sea_god_scepter": "Sea God Scepter",
   "item.potioneer.death_knell": "Death Knell",
+  "item.potioneer.mystical_charm": "Mystical Charm",
 
   "item.potioneer.golden_drop": "Golden Drop",
 
@@ -109,6 +110,15 @@
   "gui.potioneer.options_orb": "Orb Position and Scale",
   "gui.potioneer.options_hotbar": "Hotbar Position",
   "gui.potioneer.options_hotbar_slider": "Hotbar Scale",
+
+  "gui.potioneer.group_name_suggestion": "Name",
+  "gui.potioneer.group_password_suggestion": "Password",
+  "gui.potioneer.ally_menu": "Ally Menu",
+  "gui.potioneer.leave_group": "Leave Group",
+  "gui.potioneer.group_password": "Password",
+  "gui.potioneer.group_name": "Group Name",
+  "gui.potioneer.join_group": "Join Group",
+  "gui.potioneer.create_group": "Create Group",
 
   "potioneer.menu.conjurer_menu": "Conjurer",
   "potioneer.menu.crafter_menu": "Crafter",
@@ -158,8 +168,12 @@
 
   "creativetab.potioneer_tab": "Potioneer",
   "creativetab.potioneer_ingredients_tab": "Ingredients",
-  "potioneer.gui.main_ingredients": "Main Ingredients:",
-  "potioneer.gui.supplementary_ingredients": "Supplementary Ingredients:",
+  "gui.potioneer.main_ingredients": "Main Ingredients:",
+  "gui.potioneer.supplementary_ingredients": "Supplementary Ingredients:",
+  "gui.potioneer.needs_fire": "Needs fire underneath",
+  "gui.potioneer.no_fire": "Doesn't need fire",
+  "gui.potioneer.water_level": "Needs water level %s",
+  "gui.potioneer.ritual_button": "Ritual",
 
   "potioneer.pathway.trap_effect_0": "Trap effect set to Slowness",
   "potioneer.pathway.trap_effect_1": "Trap effect set to Water Prison",
@@ -378,5 +392,7 @@
   "potioneer.ability_name.gambling": "Patience",
   "potioneer.short_desc.luck_damage_reduction": "You have a chance of reducing incoming damage",
   "potioneer.long_desc.luck_damage_reduction": "10% chance to reduce damage in half. Can be enhanced by luck.",
-  "potioneer.ability_name.luck_damage_reduction": "Damage Reduction"
+  "potioneer.ability_name.luck_damage_reduction": "Damage Reduction",
+  "message.potioneer.luck_boost_grant": "The cogs of fate favor you for now...",
+  "message.potioneer.effect_already_exists": "Could not give effect: one already exists."
 }

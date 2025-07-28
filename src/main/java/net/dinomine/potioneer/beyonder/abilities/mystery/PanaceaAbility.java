@@ -13,7 +13,7 @@ import java.util.List;
 public class PanaceaAbility extends Ability {
 
     public PanaceaAbility(int sequence){
-        this.info = new AbilityInfo(57, 272, "Cure All", 20 + sequence, 100*(9-sequence), 20*10, "panacea");
+        this.info = new AbilityInfo(57, 272, "Cure All", 20 + sequence, 60 + 5*(9-sequence), 20*10, "panacea");
     }
 
     @Override

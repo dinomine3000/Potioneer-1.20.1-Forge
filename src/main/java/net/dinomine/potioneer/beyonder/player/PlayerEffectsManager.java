@@ -6,6 +6,7 @@ import net.dinomine.potioneer.beyonder.effects.mystery.BeyonderFigurineEffect;
 import net.dinomine.potioneer.beyonder.effects.mystery.BeyonderInvisibilityEffect;
 import net.dinomine.potioneer.beyonder.effects.mystery.BeyonderRegenEffect;
 import net.dinomine.potioneer.beyonder.effects.wheeloffortune.BeyonderLuckReduceDamageEffect;
+import net.dinomine.potioneer.beyonder.pathways.MysteryPathway;
 import net.dinomine.potioneer.item.ModItems;
 import net.dinomine.potioneer.util.ModTags;
 import net.minecraft.core.BlockPos;
@@ -43,10 +44,10 @@ public class PlayerEffectsManager {
             //additions
             if(hasEffect(BeyonderEffects.EFFECT.TYRANT_ELECTRIFICATION) && player.getMainHandItem().is(ModTags.Items.ELECTRIFICATION_WEAPONS)){
                 player.level().playSound(null, player, SoundEvents.LIGHTNING_BOLT_IMPACT, SoundSource.PLAYERS, 1, 0.5f);
-                dmg += 3;
+                dmg += 5;
             }
             if(hasEffect(BeyonderEffects.EFFECT.RED_LIGHT_BUFF)){
-                dmg += 3;
+                dmg += 4;
             }
             if(hasEffect(BeyonderEffects.EFFECT.RED_FIRE_BUFF)){
                 if(player.isOnFire() && cap.getSpirituality() >= getEffect(BeyonderEffects.EFFECT.RED_FIRE_BUFF).getCost()){
@@ -66,7 +67,8 @@ public class PlayerEffectsManager {
                     dmg *= ((10-eff.getSequenceLevel()) * 0.3f + 1f);
                 }
             }
-            if(hasEffect(BeyonderEffects.EFFECT.MYSTERY_REGEN)){
+            if(hasEffect(BeyonderEffects.EFFECT.MYSTERY_REGEN)
+                    && attacker.position().distanceTo(event.getEntity().position()) < MysteryPathway.MAX_SAP_DISTANCE){
                 BeyonderRegenEffect eff = (BeyonderRegenEffect) getEffect(BeyonderEffects.EFFECT.MYSTERY_REGEN);
                 if(attacker == event.getEntity().getLastAttacker()){
                     eff.combo = Math.min(3, eff.combo+1);

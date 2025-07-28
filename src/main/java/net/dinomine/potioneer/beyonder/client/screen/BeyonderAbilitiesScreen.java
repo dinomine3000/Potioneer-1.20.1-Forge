@@ -57,8 +57,7 @@ public class BeyonderAbilitiesScreen extends Screen {
     private Button addToQuickSelectButton;
     private Button removeFromQuickSelectButton;
 
-    private Button goToMainMenuButton;
-    private Button goToOptionsMenu;
+    private Button goToMainMenuButton, goToOptionsMenu, goToAllyMenu;
 
     public BeyonderAbilitiesScreen() {
         super(TITLE);
@@ -129,6 +128,9 @@ public class BeyonderAbilitiesScreen extends Screen {
             goToOptionsMenu = new ImageButton(leftPos + 89, topPos + 165, 43, 18,
                     163, 208, 0, TEXTURE, TEXTURE_WIDTH, TEXTURE_HEIGHT, btn -> {BeyonderScreen.goToOptionsMenu();});
             addRenderableWidget(goToOptionsMenu);
+            goToAllyMenu = new ImageButton(leftPos + 131, topPos + 165, 43, 18,
+                    163, 208, 0, TEXTURE, TEXTURE_WIDTH, TEXTURE_HEIGHT, btn -> {BeyonderScreen.goToAllyMenu();});
+            addRenderableWidget(goToAllyMenu);
 
             addRenderableWidget(addToHotbarButton);
             addRenderableWidget(removeFromHotbarButton);

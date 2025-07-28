@@ -9,7 +9,7 @@ import net.minecraft.world.entity.LivingEntity;
 public class ThunderCreateAbility extends Ability {
 
     public ThunderCreateAbility(int sequence){
-        this.info = new AbilityInfo(31, 224, "Summon Thunder", 10 + sequence, 250, 20*60, "summon_thunder");
+        this.info = new AbilityInfo(31, 224, "Summon Thunder", 10 + sequence, 160, 20*60, "summon_thunder");
     }
 
     @Override

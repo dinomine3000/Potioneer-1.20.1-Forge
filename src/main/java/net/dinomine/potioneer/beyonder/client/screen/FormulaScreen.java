@@ -5,6 +5,7 @@ import net.dinomine.potioneer.beyonder.pathways.BeyonderPathway;
 import net.dinomine.potioneer.recipe.PotionRecipeData;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -21,6 +22,9 @@ public class FormulaScreen extends Screen {
 
     private final int imageWidth, imageHeight;
     private int leftPos, topPos;
+
+    private boolean ritual = false;
+    private Button ritualButton;
 
     public FormulaScreen(PotionRecipeData data, boolean error) {
         super(Component.literal("formula"));
@@ -45,35 +49,47 @@ public class FormulaScreen extends Screen {
 
         this.leftPos = (this.width - 180) / 2;
         this.topPos = (this.height - 200) / 2;
+
+        if(data.includeRitual()){
+            ritualButton = Button.builder(Component.translatable("gui.potioneer.ritual_button"), btn -> flipRitual()).bounds(leftPos + 75, topPos + 170, 50, 20).build();
+            addRenderableWidget(ritualButton);
+        }
+    }
+
+    private void flipRitual(){
+        ritual = !ritual;
     }
 
     @Override
     public void render(GuiGraphics pGuiGraphics, int pMouseX, int pMouseY, float pPartialTick) {
 //        renderBackground(pGuiGraphics);
-        super.render(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
         pGuiGraphics.blit(TEXTURE, this.leftPos, this.topPos-15, 200, 230, error ? 179 : 0, 0, 178, 220, imageWidth, imageHeight);
 
         int topOffset = 5;
         //title with potion name
-        if(data.id() < 0){
-            drawCenteredTextWithScale(pGuiGraphics,
-                    Component.translatable("item.potioneer." + PotionRecipeData.getNameById(data.id())),
-                    1.5f, this.leftPos + 100, this.topPos + topOffset, 0, false);
-        } else {
-            drawCenteredTextWithScale(pGuiGraphics,
-                    Component.translatable("potioneer.beyonder.sequence." + BeyonderPathway.getSequenceNameFromId(data.id(), false)),
-                    1.5f, this.leftPos + 100, this.topPos + topOffset, 0, false);
-        }
+        drawCenteredTextWithScale(pGuiGraphics,
+                Component.literal(PotionRecipeData.getName(data)),
+                1.3f, this.leftPos + 100, this.topPos + topOffset, 0, false);
         topOffset += 15;
+
+        if(ritual){
+            Component comp = Component.literal("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.");
+
+            pGuiGraphics.drawWordWrap(this.font, comp,
+                    this.leftPos + 20, this.topPos + topOffset, 160, 0);
+            super.render(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
+            return;
+        }
+
         //main ingredients
         drawTextWithScale(pGuiGraphics,
-                Component.translatable("potioneer.gui.main_ingredients"), 1.2f, this.leftPos + 10,
+                Component.translatable("gui.potioneer.main_ingredients"), 1.2f, this.leftPos + 10,
                 this.topPos + topOffset, 0, false);
         topOffset += 12;
         topOffset += 10*drawIngredients(pGuiGraphics, 1f, data.main(), this.topPos + topOffset);
         //supplementary ingredients
         drawTextWithScale(pGuiGraphics,
-                Component.translatable("potioneer.gui.supplementary_ingredients"), 1.2f, this.leftPos + 10, this.topPos + topOffset, 0, false);
+                Component.translatable("gui.potioneer.supplementary_ingredients"), 1.2f, this.leftPos + 10, this.topPos + topOffset, 0, false);
         topOffset += 12;
         drawIngredients(pGuiGraphics, 1f, data.supplementary(), this.topPos + topOffset);
 
@@ -82,6 +98,8 @@ public class FormulaScreen extends Screen {
         if(!error)drawWater(pGuiGraphics, this.leftPos+140, this.topPos+160, 32, 32, data, pMouseX, pMouseY);
 //        pGuiGraphics.blit(TEXTURE, this.leftPos + 140, this.topPos + 128, 32, 32, 185 + (data.waterLevel() - 1)*32, 0, 32, 32, 512, 512);
 //        pGuiGraphics.blit(TEXTURE, this.leftPos + 140, this.topPos + 160, 32, 32, 185 + (data.fire() ? 0 : 1)*32, 32, 32, 32, 512, 512);
+
+        super.render(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
     }
 
     private void drawTextWithScale(GuiGraphics guiGraphics, String name, float scale, int px, int py, int color, boolean dropShadow){
@@ -92,9 +110,9 @@ public class FormulaScreen extends Screen {
                 0, 0, 0, scale
         );
         mat = mat.mul(guiGraphics.pose().last().pose());
-        minecraft.font.drawInBatch(name, px/scale, py/scale, color, dropShadow,
+        this.font.drawInBatch(name, px/scale, py/scale, color, dropShadow,
                 mat, guiGraphics.bufferSource(), Font.DisplayMode.NORMAL, 0,
-                15728880, minecraft.font.isBidirectional());
+                15728880, this.font.isBidirectional());
     }
 
     private void drawTextWithScale(GuiGraphics guiGraphics, Component name, float scale, int px, int py, int color, boolean dropShadow){
@@ -105,13 +123,13 @@ public class FormulaScreen extends Screen {
                 0, 0, 0, scale
         );
         mat = mat.mul(guiGraphics.pose().last().pose());
-        minecraft.font.drawInBatch(name, px/scale, py/scale, color, dropShadow,
+        this.font.drawInBatch(name, px/scale, py/scale, color, dropShadow,
                 mat, guiGraphics.bufferSource(), Font.DisplayMode.NORMAL, 0,
                 15728880);
     }
 
     private void drawCenteredTextWithScale(GuiGraphics guiGraphics, Component name, float scale, int px, int py, int color, boolean dropShadow){
-        int offset = (int) ((px - minecraft.font.width(name)*scale / 2f));
+        int offset = (int) ((px - this.font.width(name)*scale / 2f));
         Matrix4f mat = new Matrix4f(
                 scale, 0, 0, 0,
                 0, scale, 0, 0,
@@ -119,7 +137,7 @@ public class FormulaScreen extends Screen {
                 0, 0, 0, scale
         );
         mat = mat.mul(guiGraphics.pose().last().pose());
-        minecraft.font.drawInBatch(name, offset/scale, py/scale, color, dropShadow,
+        this.font.drawInBatch(name, offset/scale, py/scale, color, dropShadow,
                 mat, guiGraphics.bufferSource(), Font.DisplayMode.NORMAL, 0,
                 15728880);
     }
@@ -144,7 +162,7 @@ public class FormulaScreen extends Screen {
         pGuiGraphics.blit(TEXTURE, pX, pY, pWidth, pHeight, 400 + (data.fire() ? 0 : 1)*32,
                 32, 32, 32, imageWidth, imageHeight);
 
-        Component cp2 = Component.literal(data.fire() ? "Needs heat underneath." : "Doesn't need heat underneath." );
+        Component cp2 = Component.translatable(data.fire() ? "gui.potioneer.needs_fire" : "gui.potioneer.no_fire" );
         ArrayList<Component> fire = new ArrayList<>();
         fire.add(cp2);
         if(mouseX > pX && mouseX < pX + 32
@@ -157,7 +175,7 @@ public class FormulaScreen extends Screen {
         pGuiGraphics.blit(TEXTURE, pX, pY, pWidth, pHeight, 400 + (data.waterLevel() - 1)*32, 0,
                 32, 32, imageWidth, imageHeight);
 
-        Component cp = Component.literal("Needs " + (data.waterLevel() - 1) + " water bucket" + (data.waterLevel() > 2 ? "s." : "."));
+        Component cp = Component.translatable("gui.potioneer.water_level", (data.waterLevel() - 1));
         ArrayList<Component> comp = new ArrayList<>();
         comp.add(cp);
         if(mouseX > pX && mouseX < pX + 32

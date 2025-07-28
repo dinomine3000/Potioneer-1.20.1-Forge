@@ -21,7 +21,7 @@ import static net.dinomine.potioneer.block.custom.MinerLightSourceBlock.WATERLOG
 public class WaterTrapAbility extends Ability {
 
     public WaterTrapAbility(int sequence){
-        this.info = new AbilityInfo(31, 80, "Water Trap", 10 + sequence, 60*(9-sequence), 20*10, "water_trap");
+        this.info = new AbilityInfo(31, 80, "Water Trap", 10 + sequence, 40+40*(9-sequence), 20*10, "water_trap");
     }
 
     @Override

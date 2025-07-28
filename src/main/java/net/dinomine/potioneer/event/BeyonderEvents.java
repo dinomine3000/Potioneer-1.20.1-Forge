@@ -262,7 +262,7 @@ public class BeyonderEvents {
             livingEntity.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
                 if(cap.getEffectsManager().hasEffect(BeyonderEffects.EFFECT.TYRANT_ELECTRIFICATION)){
                     livingEntity.extinguishFire();
-                    cap.requestActiveSpiritualityCost(10);
+                    cap.requestActiveSpiritualityCost(50);
                 }
             });
         }

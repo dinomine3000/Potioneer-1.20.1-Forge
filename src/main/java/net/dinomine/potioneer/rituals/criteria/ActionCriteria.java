@@ -2,6 +2,7 @@ package net.dinomine.potioneer.rituals.criteria;
 
 import net.dinomine.potioneer.rituals.RitualInputData;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.world.level.Level;
 
 public class ActionCriteria extends ResponseCriteria{
@@ -21,7 +22,12 @@ public class ActionCriteria extends ResponseCriteria{
     public CompoundTag saveToNBT() {
         CompoundTag tag = new CompoundTag();
         tag.putString("action", action);
-        return tag;
+        return envelopTag(tag, "action");
+    }
+
+    public static ActionCriteria getFromTag(Tag tag){
+        if(!(tag instanceof CompoundTag compoundTag)) throw new IllegalArgumentException("Error: Tag given is not a compound tag");
+        return new ActionCriteria(compoundTag.getString("action"));
     }
 
     public static ActionCriteria loadFromNBT(CompoundTag tag) {

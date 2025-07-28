@@ -10,7 +10,7 @@ public class BeyonderLuckReduceDamageEffect extends BeyonderEffect {
     public static int luckCost = 10;
     public static int luckGain = 0;
     public static int sequenceForNegation = 5;
-    public static float damageReduction = 0.3f;
+    public static float damageReduction = 0.5f;
 
     public BeyonderLuckReduceDamageEffect(){
         this(0, 0f, 0, false, BeyonderEffects.EFFECT.WHEEL_TEMP_LUCK);

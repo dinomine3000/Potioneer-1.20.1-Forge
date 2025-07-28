@@ -39,6 +39,10 @@ public class PlayerLuckManager {
     private LuckRange range;
     public int luckEventChance = 1;
 
+    public void chanceLuckEventChange(int diffVal){
+        luckEventChance = Math.min(1, luckEventChance + diffVal);
+    }
+
     public PlayerLuckManager(){
         this.luck = 0;
         Random random = new Random();

@@ -34,9 +34,7 @@ public class PotionFormulaSaveData extends SavedData {
         this.recipes = new ArrayList<>();
         ArrayList<PotionCauldronRecipe> recipes = new ArrayList<>(level.getRecipeManager().getAllRecipesFor(PotionCauldronRecipe.Type.INSTANCE));
         recipes.forEach(rec -> {
-            if(rec.getDefaultRecipeData().id() > -1){
-                this.recipes.add(new PotionRecipe(rec));
-            }
+            this.recipes.add(new PotionRecipe(rec));
         });
 
         //add new recipes in json

@@ -8,6 +8,8 @@ import net.dinomine.potioneer.beyonder.abilities.tyrant.WaterAffinityAbility;
 import net.dinomine.potioneer.beyonder.abilities.wheeloffortune.MinerLightAbility;
 import net.dinomine.potioneer.beyonder.downsides.Downside;
 import net.dinomine.potioneer.beyonder.downsides.DummyDownside;
+import net.dinomine.potioneer.beyonder.effects.BeyonderEffect;
+import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
 import net.dinomine.potioneer.item.ModItems;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -26,9 +28,11 @@ import java.util.function.Function;
 public class ArtifactHelper {
     public static final String ARTIFACT_TAG_ID = "artifact_info";
     public static final String BEYONDER_TAG_ID = "beyonder_info";
+    public static final String CHARM_TAG_ID = "mystical_charm_info";
 
     private static final HashMap<String, MetaAbilityEntry> abilityMap = new HashMap<>();
     private static final HashMap<String, MetaAbilityEntry> downsideMap = new HashMap<>();
+    private static final HashMap<String, MetaEffectEntry> effectMap = new HashMap<>();
 
     static {
         //define minimum and maximum sequences here to define what levels can generate the ability
@@ -39,10 +43,37 @@ public class ArtifactHelper {
         abilityMap.put("crafting_gui", new MetaAbilityEntry(40, 50, CraftingGuiAbility::new));
 
         downsideMap.put("d_dummy", new MetaAbilityEntry(0, 50, DummyDownside::new));
+
+        effectMap.put("silk", new MetaEffectEntry(0, 8, dur -> BeyonderEffects.byId(BeyonderEffects.EFFECT.WHEEL_SILK_TOUCH, 8, 0, dur, true)));
+        effectMap.put("water_affinity", new MetaEffectEntry(10, 9, dur -> BeyonderEffects.byId(BeyonderEffects.EFFECT.TYRANT_WATER_AFFINITY, 9, 5, dur, true)));
+        effectMap.put("life_sap", new MetaEffectEntry(20, 9, dur -> BeyonderEffects.byId(BeyonderEffects.EFFECT.MYSTERY_REGEN, 9, 0, dur, true)));
     }
 
-//    public static void makeSealedArtifact(ItemStack stack, RandomSource random){
-//    }
+    public static BeyonderEffect getEffectFromCharm(ItemStack charm){
+        if(!charm.hasTag() || !charm.getTag().contains(CHARM_TAG_ID)) return null;
+        String effId = charm.getTag().getCompound(CHARM_TAG_ID).getString("effectId");
+        int duration = charm.getTag().getCompound(CHARM_TAG_ID).getInt("duration");
+        return effectMap.get(effId).constructor.apply(duration);
+    }
+
+    //artifact without beyonder info or downsides. single use
+    public static void makeCharm(ItemStack stack, int pathwayId, int duration){
+        String effId = getEffectId(pathwayId);
+        CompoundTag tag = stack.getOrCreateTag();
+        if(tag.contains(CHARM_TAG_ID) || effId.isEmpty()) return;
+
+        CompoundTag charmTag = new CompoundTag();
+        charmTag.putString("effectId", effId);
+        charmTag.putInt("duration", duration);
+        charmTag.putInt("pathwayId", pathwayId);
+        tag.put(CHARM_TAG_ID, charmTag);
+    }
+
+    //artifact with only passive and free abilities and no downsides and no beyonder tag
+    public static void makeAmulet(){}
+
+    //artifact weapons without downsides and without beyonder tag
+    public static void makeBeyonderWeapon(){}
 
     public static void makeSealedArtifact(ItemStack stack, int pathwayId, RandomSource random){
         CompoundTag root = stack.getOrCreateTag();
@@ -100,6 +131,18 @@ public class ArtifactHelper {
         if (matching.isEmpty()) System.out.println("No ability IDs match sequence: " + pathwayId);
 
         return matching.get(random.nextInt(matching.size())).getKey();
+    }
+    private static String getEffectId(int pathwayId) {
+        List<Map.Entry<String, MetaEffectEntry>> matching = effectMap.entrySet().stream()
+                .filter(entry -> entry.getValue().isInRange(pathwayId))
+                .toList();
+
+        if (matching.isEmpty()){
+            System.out.println("No ability IDs match sequence: " + pathwayId);
+            return "";
+        }
+
+        return matching.get(0).getKey();
     }
 
     public static boolean isValidItemForArtifact(ItemStack stack){
@@ -162,5 +205,9 @@ public class ArtifactHelper {
         boolean isInRange(int sequence) {
             return sequence >= minSequence && sequence < maxSequence;
         }
+    }
+
+    record MetaEffectEntry(int pathwayId, int minSequence, Function<Integer, BeyonderEffect> constructor){
+        boolean isInRange(int targetPathwayId) {return pathwayId/10 == targetPathwayId/10 && targetPathwayId%10 <= minSequence;}
     }
 }

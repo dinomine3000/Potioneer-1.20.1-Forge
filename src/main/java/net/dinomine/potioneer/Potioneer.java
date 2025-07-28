@@ -172,6 +172,14 @@ public class Potioneer
                         CompoundTag tag = itemStack.getOrCreateTag().getCompound(UnshadowedCrucifixItem.CRUCIFIX_TAG_ID);
                         return tag.getInt("state");
                     }));
+            ItemProperties.register(ModItems.CHARM.get(),
+                    new ResourceLocation(Potioneer.MOD_ID, "charm"),
+                    ((itemStack, clientLevel, livingEntity, i) -> {
+                        if(itemStack.hasTag() && itemStack.getTag().contains(ArtifactHelper.CHARM_TAG_ID)){
+                            return Math.floorDiv(itemStack.getTag().getCompound(ArtifactHelper.CHARM_TAG_ID).getInt("pathwayId"), 10);
+                        }
+                        return -1;
+                    }));
 
             event.enqueueWork(() -> {
                 MenuScreens.register(ModMenuTypes.CRAFTER_MENU.get(), CraftingScreen::new);

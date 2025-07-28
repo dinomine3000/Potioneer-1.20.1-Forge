@@ -21,7 +21,7 @@ public class WaterRemoveAbility extends Ability {
     private static final Direction[] ALL_DIRECTIONS = Direction.values();
 
     public WaterRemoveAbility(int sequence){
-        this.info = new AbilityInfo(31, 128, "Remove Water", 10 + sequence, 10, 20*2, "water_sponge");
+        this.info = new AbilityInfo(31, 128, "Remove Water", 10 + sequence, 5, 20*2, "water_sponge");
     }
 
     @Override

@@ -32,7 +32,20 @@ public abstract class Deity extends EvilSpirit {
 
     @Override
     protected void aidTarget(RitualInputData inputData) {
-
+        int id = pathwayId/10;
+        int level = inputData.pathwayId()%10;
+        switch (id){
+            case 0:
+                break;
+            case 1:
+                break;
+            case 2:
+                break;
+            case 3:
+                break;
+            case 4:
+                break;
+        }
     }
 
     @Override
@@ -42,7 +55,7 @@ public abstract class Deity extends EvilSpirit {
     }
 
     @Override
-    protected void inbueTarget(RitualInputData inputData) {
+    protected void imbue(RitualInputData inputData) {
 
     }
 

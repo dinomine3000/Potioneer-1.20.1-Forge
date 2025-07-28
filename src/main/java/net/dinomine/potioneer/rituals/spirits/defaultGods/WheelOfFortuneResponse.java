@@ -10,6 +10,8 @@ import net.dinomine.potioneer.rituals.criteria.ResponseCriteria;
 import net.dinomine.potioneer.rituals.criteria.SequenceLevelCriteria;
 import net.dinomine.potioneer.rituals.responses.DefaultResponse;
 import net.dinomine.potioneer.rituals.spirits.Deity;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -40,7 +42,7 @@ public class WheelOfFortuneResponse extends Deity {
 
         setLogic(logic);
     }
-
+    
     private void punishmentLogic(RitualInputData inputData, Level level){
         Player player = getPlayer(inputData, level, false);
         if(player == null) return;
@@ -53,7 +55,7 @@ public class WheelOfFortuneResponse extends Deity {
     private void responseLogic(RitualInputData inputData, Level level){
         String testString = inputData.thirdVerse().toLowerCase();
         if(testString.contains("bless")) giveLuck(inputData, level);
-        else if(testString.contains("unluck") || testString.contains("misfortune")) giveLuck(inputData, level);
+        else if(testString.contains("unluck") || testString.contains("misfortune")) giveUnluck(inputData, level);
         else if(testString.contains("trigger")) triggerLuck(inputData, level);
         else defaultNormalResponse(inputData);
     }
@@ -63,6 +65,7 @@ public class WheelOfFortuneResponse extends Deity {
         if(target == null) return;
         target.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
             cap.getLuckManager().grantLuck(target.getRandom().nextInt(-10, 100));
+            level.playSound( null, target, SoundEvents.BEACON_ACTIVATE, SoundSource.PLAYERS, 2, 1);
             System.out.println("Given luck!");
             for(ItemStack stack: inputData.offerings()){
                 if(stack.is(Items.DIAMOND))
@@ -76,6 +79,7 @@ public class WheelOfFortuneResponse extends Deity {
         if(target == null) return;
         target.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
             cap.getLuckManager().consumeLuck(target.getRandom().nextInt(-10, 100));
+            level.playSound( null, target, SoundEvents.BEACON_DEACTIVATE, SoundSource.PLAYERS, 2, 1);
             System.out.println("Given unluck!");
         });
     }
@@ -84,6 +88,7 @@ public class WheelOfFortuneResponse extends Deity {
         if(target == null) return;
         target.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
             cap.getLuckManager().castEvent(target);
+            level.playSound( null, target, SoundEvents.BEACON_ACTIVATE, SoundSource.PLAYERS, 2, 1);
             System.out.println("Cast Event!");
         });
     }

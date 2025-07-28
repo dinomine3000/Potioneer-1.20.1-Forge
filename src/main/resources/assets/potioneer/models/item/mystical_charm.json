@@ -1,0 +1,11 @@
+{
+  "parent": "item/generated",
+  "textures": {
+    "layer0": "potioneer:item/charm"
+  },
+  "overrides": [
+    { "predicate": { "potioneer:charm": 0 }, "model": "potioneer:item/wheel_of_fortune_charm" },
+    { "predicate": { "potioneer:charm": 1 }, "model": "potioneer:item/tyrant_charm" },
+    { "predicate": { "potioneer:charm": 2 }, "model": "potioneer:item/mystery_charm" }
+  ]
+}

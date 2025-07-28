@@ -16,7 +16,7 @@ public class WaterCreateAbility extends Ability {
     private static final float actingProgress = 0.002f;
 
     public WaterCreateAbility(int sequence){
-        this.info = new AbilityInfo(31, 104, "Conjure Water", 10 + sequence, 2, 1, "water_create");
+        this.info = new AbilityInfo(31, 104, "Conjure Water", 10 + sequence, 1 + 2*sequence, 1, "water_create");
     }
 
     @Override

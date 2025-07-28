@@ -35,7 +35,7 @@ public abstract class RitualSpiritResponse {
         else if(testString.contains("guide")
                 || testString.contains("guidance")) guideTarget(inputData);
         else if(testString.contains("imbue")
-                || testString.contains("infuse")) inbueTarget(inputData);
+                || testString.contains("infuse")) imbue(inputData);
     }
 
     protected void defaultMethod(RitualInputData inputData){
@@ -47,7 +47,7 @@ public abstract class RitualSpiritResponse {
     protected void guideTarget(RitualInputData inputData){
     }
 
-    protected void inbueTarget(RitualInputData inputData){
+    protected void imbue(RitualInputData inputData){
     }
 
     public abstract boolean isValidIncense(String incenseId);

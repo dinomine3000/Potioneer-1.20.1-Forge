@@ -18,7 +18,7 @@ import java.util.ArrayList;
 public class PushAbility extends Ability {
 
     public PushAbility(int sequence){
-        this.info = new AbilityInfo(57, 296, "Push Away", 20 + sequence, 50*(8-sequence), 3*20, "push_away");
+        this.info = new AbilityInfo(57, 296, "Push Away", 20 + sequence, 40 + 5*(9-sequence), 3*20, "push_away");
         this.isActive = true;
     }
 

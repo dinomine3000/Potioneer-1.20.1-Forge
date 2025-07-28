@@ -9,7 +9,7 @@ import net.minecraft.world.entity.LivingEntity;
 public class SilkTouchAbility extends Ability {
 
     public SilkTouchAbility(int sequence){
-        this.info = new AbilityInfo(5, 152, "Silk Touch Break", sequence, 0, getCooldown(), "silk");
+        this.info = new AbilityInfo(5, 152, "Silk Touch Break", sequence, 5, getCooldown(), "silk");
     }
 
     @Override
@@ -30,7 +30,7 @@ public class SilkTouchAbility extends Ability {
         if(cap.getSpirituality() < 3*(10-getSequence())) disable(cap, target);
         if(cap.getAbilitiesManager().isEnabled(this)){
             cap.getEffectsManager().addOrReplaceEffect(BeyonderEffects.byId(BeyonderEffects.EFFECT.WHEEL_SILK_TOUCH,
-                    getSequence(), 3*(10-getSequence()), -1, true), cap, target);
+                    getSequence(), info.cost(), -1, true), cap, target);
         }
     }
 

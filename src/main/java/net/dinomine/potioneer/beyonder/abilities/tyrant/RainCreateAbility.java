@@ -9,7 +9,7 @@ import net.minecraft.world.entity.LivingEntity;
 public class RainCreateAbility extends Ability {
 
     public RainCreateAbility(int sequence){
-        this.info = new AbilityInfo(31, 200, "Summon Rain", 10 + sequence, 100, 20*10, "summon_rain");
+        this.info = new AbilityInfo(31, 200, "Summon Rain", 10 + sequence, 70, 20*10, "summon_rain");
     }
 
     @Override

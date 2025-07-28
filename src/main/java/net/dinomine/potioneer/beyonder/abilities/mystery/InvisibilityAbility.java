@@ -10,7 +10,7 @@ import net.minecraft.world.entity.LivingEntity;
 public class InvisibilityAbility extends Ability {
 
     public InvisibilityAbility(int sequence){
-        this.info = new AbilityInfo(57, 128, "Invisibility", 20 + sequence, 40 + 150*(9-sequence), 5*10 + 2*40*((9-sequence)*10 + 5), "invisibility");
+        this.info = new AbilityInfo(57, 128, "Invisibility", 20 + sequence, 40 + 20*(9-sequence), 5*10 + 2*40*((9-sequence)*10 + 5), "invisibility");
         this.isActive = true;
     }
 

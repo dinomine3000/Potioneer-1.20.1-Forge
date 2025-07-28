@@ -63,6 +63,7 @@ public class RitualAltarBlockEntity extends BlockEntity implements MenuProvider 
     private String thirdVerse = "";
     private EvilSpirit spirit = null;
     private RitualInputData ritualInputData = null;
+    private final int FLAT_COST = 40;
 
     public void writeStringsToBuffer(FriendlyByteBuf buf){
         buf.writeBlockPos(getBlockPos());
@@ -148,14 +149,12 @@ public class RitualAltarBlockEntity extends BlockEntity implements MenuProvider 
     @Override
     public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
         if(cap == ForgeCapabilities.ITEM_HANDLER){
-            if(side == Direction.DOWN){
+            if(side != Direction.UP){
                 return candleOptional.cast();
             }
-            if(side == Direction.UP){
-                return incenseOptional.cast();
-            }
+            return incenseOptional.cast();
         }
-        return super.getCapability(cap);
+        return LazyOptional.empty();
     }
 
     @Override
@@ -237,6 +236,12 @@ public class RitualAltarBlockEntity extends BlockEntity implements MenuProvider 
         Optional<LivingEntityBeyonderCapability> cap = caster.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve();
         int pathwayId = -1;
         if(cap.isPresent()){
+            if(cap.get().getSpirituality() < FLAT_COST){
+                caster.level().playSound(null, caster, SoundEvents.SOUL_ESCAPE, SoundSource.BLOCKS, 1, 1);
+                return;
+            } else {
+                cap.get().requestActiveSpiritualityCost(FLAT_COST);
+            }
             pathwayId = cap.get().getPathwayId();
         }
         String incense = getIncenseString();
@@ -246,7 +251,8 @@ public class RitualAltarBlockEntity extends BlockEntity implements MenuProvider 
         System.out.println(ritualInputData);
 
         RitualSpiritsSaveData data = RitualSpiritsSaveData.from((ServerLevel) level);
-        spirit = data.getSpiritForRitual(ritualInputData);
+        if(getCandles() == 1) spirit = data.getPlayerSpirit();
+        else spirit = data.getSpiritForRitual(ritualInputData);
         /*if(spirit != null){
             cleanRitualArea();
         }*/
@@ -326,7 +332,7 @@ public class RitualAltarBlockEntity extends BlockEntity implements MenuProvider 
         return "";
     }
 
-    private final int CONSUME_SPIRITUALITY = 50;
+    private final int CONSUME_SPIRITUALITY = 20;
     private Player getPlayerTargetInRitual(Player caster, Set<BlockPos> ritualArea, List<ItemStack> offerings, Inventory casterInventory){
         if(getCandles() < 3) return caster;
         for(ItemStack stack: offerings){
@@ -378,7 +384,10 @@ public class RitualAltarBlockEntity extends BlockEntity implements MenuProvider 
             }
             List<Entity> entities = AbilityFunctionHelper.getEntitiesAroundPredicate(blockPos, level, MAXIMUM_RITUAL_RANGE, s -> true);
             for(Entity ent: entities){
-                if(ent instanceof LivingEntity entity && ritualArea.contains(ent.getOnPos().atY(y))) entity.addEffect(new MobEffectInstance(MobEffects.DARKNESS, 50, 2, false, false));
+                if(ent instanceof LivingEntity entity
+                        && (ritualArea.contains(ent.getOnPos().atY(y))
+                        || level.getBlockState(ent.getOnPos()).is(ModBlocks.RITUAL_INK.get())))
+                    entity.addEffect(new MobEffectInstance(MobEffects.DARKNESS, 50, 2, false, false));
             }
 
             level.playSound(null, blockPos, SoundEvents.TOTEM_USE, SoundSource.PLAYERS, 2 - timer/60f, 2 - timer/30f);
@@ -438,7 +447,8 @@ public class RitualAltarBlockEntity extends BlockEntity implements MenuProvider 
                 // Only process blocks at the same Y level
                 if (next.getY() != center.getY() || visited.contains(next)) continue;
 
-                if (next.distManhattan(center) > maxRadius) {
+                Vec3 diffVec = next.getCenter().subtract(center.getCenter());
+                if (diffVec.x > maxRadius || diffVec.z > maxRadius) {
                     // Escaped the boundary, area not closed
                     return null;
                 }
@@ -474,7 +484,8 @@ public class RitualAltarBlockEntity extends BlockEntity implements MenuProvider 
                 // Only process blocks at the same Y level
                 if (next.getY() != center.getY() || visited.contains(next)) continue;
 
-                if (next.distManhattan(center) > maxRadius) {
+                Vec3 diffVec = next.getCenter().subtract(center.getCenter());
+                if (diffVec.x > maxRadius || diffVec.z > maxRadius) {
                     // Escaped the boundary
                     escaped = true;
                     continue;

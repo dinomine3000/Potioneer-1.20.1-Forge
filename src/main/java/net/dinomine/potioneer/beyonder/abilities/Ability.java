@@ -42,11 +42,18 @@ public abstract class Ability {
         }
     }
 
-    public void flipEnable(LivingEntityBeyonderCapability cap, LivingEntity target){
+    /**
+     *
+     * @param cap
+     * @param target
+     * @return the updated status (enabled or disabled) after calling this method.
+     */
+    public boolean flipEnable(LivingEntityBeyonderCapability cap, LivingEntity target){
         boolean en = cap.getAbilitiesManager().isEnabled(this);
         if (en) disable(cap, target);
         else enable(cap, target);
         if(!target.level().isClientSide()) target.sendSystemMessage(Component.translatable("potioneer.ability." + (en ? "disabled" : "enabled"), Component.translatable("potioneer.ability_name." + info.descId())));
+        return !en;
     }
 
     @Override

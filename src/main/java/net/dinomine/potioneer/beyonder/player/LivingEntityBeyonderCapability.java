@@ -3,12 +3,15 @@ package net.dinomine.potioneer.beyonder.player;
 import net.dinomine.potioneer.beyonder.abilities.AbilityFunctionHelper;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
 import net.dinomine.potioneer.beyonder.pathways.BeyonderPathway;
+import net.dinomine.potioneer.util.misc.ArtifactHelper;
 import net.dinomine.potioneer.util.misc.CharacteristicHelper;
 import net.dinomine.potioneer.beyonder.pathways.*;
 import net.dinomine.potioneer.config.PotioneerCommonConfig;
 import net.dinomine.potioneer.entities.custom.CharacteristicEntity;
 import net.dinomine.potioneer.network.PacketHandler;
 import net.dinomine.potioneer.network.messages.*;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -18,10 +21,14 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.capabilities.AutoRegisterCapability;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.network.PacketDistributor;
 
@@ -231,26 +238,57 @@ public class LivingEntityBeyonderCapability {
             }
         } else if (entity instanceof Player player && characteristicXrayCd-- < 0){
             characteristicXrayCd = 120;
-            ArrayList<Entity> characteristics = AbilityFunctionHelper.getEntitiesAroundPredicate(player, 16, ent -> ent instanceof CharacteristicEntity);
+            int radius = 16;
+            ArrayList<Entity> characteristics = AbilityFunctionHelper.getEntitiesAroundPredicate(player, radius, ent -> ent instanceof CharacteristicEntity || ent instanceof ItemEntity);
             for(Entity ent: characteristics){
                 if(ent instanceof CharacteristicEntity charact
                         && Math.floorDiv(charact.getSequenceId(), 10) == Math.floorDiv(getPathwayId(), 10)){
-                    Vec3 position = charact.position();
-
-                    Vec3 pointing = position.subtract(player.getEyePosition()).normalize();
-                    float i = 0.2f;
-                    while(i < 1){
-                        Vec3 iterator = player.getEyePosition().add(pointing.scale(i));
-                        float speedScale = 0.2f;
-                        player.level().addAlwaysVisibleParticle(ParticleTypes.END_ROD, false,
-                                iterator.x, iterator.y, iterator.z, speedScale*pointing.x, speedScale*pointing.y, speedScale*pointing.z);
-                        i += 0.2f;
-                    }
-                    player.level().addAlwaysVisibleParticle(ParticleTypes.END_ROD, true, position.x, position.y, position.z, 0, 0.1, 0);
+                    characteristicXray(charact.position(), player);
+                    continue;
+                }
+                if(ent instanceof ItemEntity itemEnt && isItemOfSamePathway(itemEnt.getItem())){
+                        characteristicXray(itemEnt.position(), player);
                 }
             }
+//            BlockPos start = player.getOnPos().offset(-radius, -radius, -radius);
+//            BlockPos end = player.getOnPos().offset(radius, radius, radius);
+//            Level level = player.level();
+//            BlockPos.betweenClosed(start, end).forEach(pos -> {
+//                if(level.getBlockState(pos).hasBlockEntity()){
+//                    BlockEntity be = level.getBlockEntity(pos);
+//                    if(be == null) return;
+//                    be.getCapability(ForgeCapabilities.ITEM_HANDLER).ifPresent(cap -> {
+//                        System.out.println("Found handlers - " + be.getBlockState().getBlock().getName());
+//                        for (int i = 0; i < cap.getSlots(); i++) {
+//                            System.out.println("Item: " + cap.getStackInSlot(i));
+//                            if (isItemOfSamePathway(cap.getStackInSlot(i))) {
+//                                characteristicXray(pos.getCenter(), player);
+//                                return;
+//                            }
+//                        }
+//                    });
+//                }
+//            });
         }
 //        getBeyonderStats().onTick(this, entity);
+    }
+
+    private boolean isItemOfSamePathway(ItemStack stack){
+        return stack.hasTag() && stack.getTag().contains(ArtifactHelper.BEYONDER_TAG_ID)
+                && Math.floorDiv(stack.getTag().getCompound(ArtifactHelper.BEYONDER_TAG_ID).getInt("id"), 10) == Math.floorDiv(getPathwayId(), 10);
+    }
+
+    private void characteristicXray(Vec3 position, Player player){
+        Vec3 pointing = position.subtract(player.getEyePosition()).normalize();
+        float i = 0.2f;
+        while(i < 1){
+            Vec3 iterator = player.getEyePosition().add(pointing.scale(i));
+            float speedScale = 0.2f;
+            player.level().addAlwaysVisibleParticle(ParticleTypes.END_ROD, false,
+                    iterator.x, iterator.y, iterator.z, speedScale*pointing.x, speedScale*pointing.y, speedScale*pointing.z);
+            i += 0.2f;
+        }
+        player.level().addAlwaysVisibleParticle(ParticleTypes.END_ROD, true, position.x, position.y, position.z, 0, 0.1, 0);
     }
 
 

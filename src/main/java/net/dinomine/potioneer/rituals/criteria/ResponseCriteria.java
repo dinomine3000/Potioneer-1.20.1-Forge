@@ -27,6 +27,9 @@ public abstract class ResponseCriteria {
             case "sequence_level" -> SequenceLevelCriteria.getFromTag(infoTag);
             case "pathway_id" -> PathwayCriteria.getFromTag(infoTag);
             case "offerings" -> OfferingsCriteria.getFromTag(infoTag);
+            case "action" -> ActionCriteria.getFromTag(infoTag);
+            case "never" -> new NeverCriteria();
+            case "always" -> new AlwaysCriteria();
             // case "some_other" -> SomeOtherCriteria.loadFromNBT(tag);
             default -> throw new IllegalArgumentException("Unknown criteria type: " + type);
         };

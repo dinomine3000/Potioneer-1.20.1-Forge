@@ -134,18 +134,18 @@ public class PotionCauldronBlockEntity extends BlockEntity {
                     cauldron.changeWaterLevel(pLevel, pPos, -1);
                     result.amount = result.amount - 1;
                 } else {
-                    if(heldItemStack.getTag() != null && item == ModItems.FLASK.get()){
+                    if(heldItemStack.getTag() != null && heldItemStack.getTag().contains("potion_info")){
                         CompoundTag info = heldItemStack.getTag().getCompound("potion_info");
                         int level = info.getInt("amount");
                         result.amount = result.amount - 2 + level;
                         cauldron.changeWaterLevel(pLevel, pPos, -2 + level);
-
+                    } else {
+                        cauldron.changeWaterLevel(pLevel, pPos, -2);
+                        result.amount = 0;
                     }
-                    cauldron.changeWaterLevel(pLevel, pPos, -2);
-                    result.amount = 0;
                 }
                 //if the cauldron becomes empty then clear the result variable
-                if(level.getBlockState(getBlockPos()).getValue(WATER_LEVEL) < 2) {
+                if(result.amount < 1) {
                     this.state = State.STANDBY;
                     result = PotionContentData.EMPTY.copy();
                     countDown = 0;

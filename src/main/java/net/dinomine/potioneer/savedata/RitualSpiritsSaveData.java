@@ -13,6 +13,7 @@ import net.dinomine.potioneer.rituals.responses.HurtResponse;
 import net.dinomine.potioneer.rituals.responses.NegativeEffectResponse;
 import net.dinomine.potioneer.rituals.responses.SpiritResponse;
 import net.dinomine.potioneer.rituals.spirits.EvilSpirit;
+import net.dinomine.potioneer.rituals.spirits.PlayerRitualSpirit;
 import net.dinomine.potioneer.rituals.spirits.RitualSpiritResponse;
 import net.dinomine.potioneer.rituals.spirits.defaultGods.WheelOfFortuneResponse;
 import net.minecraft.nbt.CompoundTag;
@@ -29,6 +30,8 @@ import java.util.List;
 import java.util.function.Supplier;
 
 public class RitualSpiritsSaveData extends SavedData {
+    public static final PlayerRitualSpirit PLAYER_SPIRIT = new PlayerRitualSpirit();
+
     public static final WheelOfFortuneResponse WHEEL_OF_FORTUNE = new WheelOfFortuneResponse();
 
     private List<EvilSpirit> worldSpirits;
@@ -62,6 +65,10 @@ public class RitualSpiritsSaveData extends SavedData {
     public static RitualSpiritsSaveData from(ServerLevel level){
         return level.getServer().overworld().getDataStorage().computeIfAbsent((tag) -> loadSpirits(tag, level),
                 () -> new RitualSpiritsSaveData(level), "potioneer_rituals");
+    }
+
+    public EvilSpirit getPlayerSpirit(){
+        return PLAYER_SPIRIT;
     }
 
     public EvilSpirit getSpiritForRitual(RitualInputData inputData){
@@ -149,8 +156,8 @@ public class RitualSpiritsSaveData extends SavedData {
 
     public static class SpiritHelper {
 
-        private static ArrayList<Supplier<ResponseCriteria>> randomCriteria = new ArrayList<>();
-        private static ArrayList<Supplier<SpiritResponse>> randomResponses = new ArrayList<>();
+        public static ArrayList<Supplier<ResponseCriteria>> randomCriteria = new ArrayList<>();
+        public static ArrayList<Supplier<SpiritResponse>> randomResponses = new ArrayList<>();
 
         static{
             randomCriteria.add(() -> new PathwayCriteria(0));

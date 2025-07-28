@@ -12,7 +12,7 @@ public class WheelOfFortunePathway extends BeyonderPathway {
     public WheelOfFortunePathway(int sequence) {
         super(sequence, "Wheel_of_Fortune");
         this.color = 0x808080;
-        this.maxSpirituality = new int[]{0, 0, 0, 0, 0, 0, 0, 1000, 500, 100};
+        this.maxSpirituality = new int[]{2500, 1500, 1200, 900, 600, 450, 375, 250, 200, 100};
     }
 
     public static int getX(){
@@ -25,17 +25,17 @@ public class WheelOfFortunePathway extends BeyonderPathway {
 
     public static float[] getStatsFor(int sequence){
         return switch (sequence){
-            case 9 -> new float[]{0, 0, 0, 0, 0};
+            case 9 -> new float[]{0, 0, 2, 0, 0};
             case 8 -> new float[]{0, 0, 4, 0, 2};
-            case 7 -> new float[]{5, 0, 8, 2, 2};
+            case 7 -> new float[]{4, 0, 6, 2, 2};
+            case 6 -> new float[]{5, 0, 8, 2, 4};
+            case 5 -> new float[]{6, 0, 8, 2, 4};
             default -> new float[]{0, 0, 0, 0, 0};
         };
     }
 
     public static void getAbilities(int sequence, PlayerAbilitiesManager mng){
-        ArrayList<Ability> passiveAbilities = new ArrayList<>();
         ArrayList<Ability> activeAbilities = new ArrayList<>();
-
         switch(sequence){
             case 0:
             case 1:
@@ -45,27 +45,17 @@ public class WheelOfFortunePathway extends BeyonderPathway {
             case 5:
             case 6:
             case 7:
-                GamblingAbility gambl = new GamblingAbility(sequence);
-                LuckDamageReductionAbility luckDmgRed = new LuckDamageReductionAbility(sequence);
-                CalamityIncreaseAbility calamity = new CalamityIncreaseAbility(sequence);
-
                 activeAbilities.add(new WheelBoneMealAbility(sequence));
-                activeAbilities.add(gambl);
-                activeAbilities.add(luckDmgRed);
-                activeAbilities.add(calamity);
-
-                passiveAbilities.add(gambl);
-                passiveAbilities.add(luckDmgRed);
-                //passiveAbilities.add(calamity);
+                activeAbilities.add(new GamblingAbility(sequence));
+                activeAbilities.add(new LuckDamageReductionAbility(sequence));
+                activeAbilities.add(new CalamityIncreaseAbility(sequence));
             case 8:
-                FortuneAbility fortune = new FortuneAbility(sequence);
                 activeAbilities.add(new BlockSniffAbility(sequence));
                 activeAbilities.add(new LuckBoostAbility(sequence));
                 activeAbilities.add(new CheckLuckAbility(sequence));
-                activeAbilities.add(fortune);
+                activeAbilities.add(new FortuneAbility(sequence));
                 activeAbilities.add(new SilkTouchAbility(sequence));
 
-                passiveAbilities.add(fortune);
             case 9:
                 activeAbilities.add(new MinerLightAbility(sequence));
                 activeAbilities.add(new ConjurePickaxeAbility(sequence));
@@ -74,7 +64,6 @@ public class WheelOfFortunePathway extends BeyonderPathway {
         }
 
         mng.setPathwayActives(activeAbilities);
-        //mng.setPathwayPassives(passiveAbilities);
     }
 
     public static String getSequenceName(int seq, boolean show){

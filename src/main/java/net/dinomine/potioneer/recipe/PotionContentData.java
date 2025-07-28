@@ -54,19 +54,19 @@ public class PotionContentData {
     public int color;
     public boolean canConflict;
 
-    public boolean  isValidContainer(ItemStack stack){
+    public boolean isValidContainer(ItemStack stack){
         Item item = stack.getItem();
         System.out.println("analysing item: " + item);
         if(item == Items.GLASS_BOTTLE && this.bottle
                 || ((item == ModItems.VIAL.get() || item == ModItems.FLASK.get()) && !this.bottle)) {
-            if(stack.getTag() != null){
+            if(stack.getTag() != null && stack.getTag().contains("potion_info")){
                 System.out.println("tag isnt null");
                 CompoundTag info = stack.getTag().getCompound("potion_info");
                 System.out.println("info gotten: " + info);
                 int level = info.getInt("amount");
                 System.out.println("amount gotten: " + level);
                 if(item == ModItems.FLASK.get()){
-                    return level < 2;
+                    return level < 2 && info.getString("name").equals(name);
                 } else {
                     return level < 1;
                 }

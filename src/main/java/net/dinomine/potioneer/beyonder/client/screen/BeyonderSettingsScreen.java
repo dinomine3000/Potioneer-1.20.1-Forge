@@ -43,8 +43,7 @@ public class BeyonderSettingsScreen extends Screen {
     private Button hotbarPositionRight;
     private Button hotbarPositionTop;
 
-    private Button goToMainMenu;
-    private Button goToAbilitiesMenu;
+    private Button goToMainMenu, goToAbilitiesMenu, goToAllyMenu;
 
     private Button saveButton;
 
@@ -90,6 +89,9 @@ public class BeyonderSettingsScreen extends Screen {
         goToAbilitiesMenu = new ImageButton(leftPos + 47, topPos + 165, 42, 18,
                 234, 219, 0, TEXTURE, TEXTURE_WIDTH, TEXTURE_HEIGHT, btn -> {BeyonderScreen.goToAbilities();});
         addRenderableWidget(goToAbilitiesMenu);
+        goToAllyMenu = new ImageButton(leftPos + 131, topPos + 165, 42, 18,
+                234, 219, 0, TEXTURE, TEXTURE_WIDTH, TEXTURE_HEIGHT, btn -> {BeyonderScreen.goToAllyMenu();});
+        addRenderableWidget(goToAllyMenu);
 
         //save button
         Component saveButtonName = Component.translatable("gui.potioneer.options_save_button");
@@ -215,7 +217,6 @@ public class BeyonderSettingsScreen extends Screen {
                 TEXTURE_WIDTH, TEXTURE_HEIGHT);
         pGuiGraphics.blit(TEXTURE, currentHotbarSliderX, topPos + 100, 0, 217,
                 8, 13);
-
     }
 
     private void saveData(){
@@ -241,8 +242,8 @@ public class BeyonderSettingsScreen extends Screen {
     }
 
     @Override
-    public void onClose() {
+    public void removed() {
         showHotbarOnConfigScreen(false);
-        super.onClose();
+        super.removed();
     }
 }

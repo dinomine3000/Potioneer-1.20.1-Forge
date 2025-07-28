@@ -23,7 +23,7 @@ import static net.minecraft.world.level.block.DoorBlock.OPEN;
 public class DoorOpeningAbility extends Ability {
 
     public DoorOpeningAbility(int sequence){
-        this.info = new AbilityInfo(57, 80, "Door Opening", 20+sequence, 20 + 4*(9-sequence), 20, "door_opening");
+        this.info = new AbilityInfo(57, 80, "Door Opening", 20+sequence, 7 + 5*(10-sequence), 20, "door_opening");
         this.isActive = true;
     }
 

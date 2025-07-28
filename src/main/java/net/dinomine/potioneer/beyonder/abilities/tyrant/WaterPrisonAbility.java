@@ -23,7 +23,7 @@ public class WaterPrisonAbility extends Ability {
     private static final float actingProgress = 0.01f;
 
     public WaterPrisonAbility(int sequence){
-        this.info = new AbilityInfo(31, 152, "Cast Water Prison", 10 + sequence, 20 + 20*(9 - sequence), 20*20, "water_prison");
+        this.info = new AbilityInfo(31, 152, "Cast Water Prison", 10 + sequence, 40*(9 - sequence), 20*20, "water_prison");
     }
 
     @Override

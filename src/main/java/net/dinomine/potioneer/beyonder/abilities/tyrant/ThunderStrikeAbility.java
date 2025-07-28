@@ -20,7 +20,7 @@ public class ThunderStrikeAbility extends Ability {
     private static final float actingProgress = 0.001f;
 
     public ThunderStrikeAbility(int sequence){
-        this.info = new AbilityInfo(31, 248, "Thunder Strike", 10 + sequence, 70, this.getCooldown(), "thunder_strike");
+        this.info = new AbilityInfo(31, 248, "Thunder Strike", 10 + sequence, 50, this.getCooldown(), "thunder_strike");
         this.isActive = true;
     }
 
@@ -55,9 +55,15 @@ public class ThunderStrikeAbility extends Ability {
         cap.getActingManager().progressActing(actingProgress, 17);
         LightningBolt lightning = new LightningBolt(EntityType.LIGHTNING_BOLT, level);
         lightning.setPos(position);
-        lightning.setDamage(thundering ? -6 + 5*(10-getSequence()) : 1 + 2*(10-getSequence()));
+        int damage;
+        if(thundering){
+            damage = (int) (-8 + 5*(10-getSequence()) + 4*cap.getActingManager().getAggregatedActingProgress(10 + getSequence()));
+        } else {
+            damage = -2 + 2*(10-getSequence()) + (int)(3 * cap.getActingManager().getAggregatedActingProgress(10 + getSequence()));
+        }
+        lightning.setDamage(damage);
         level.addFreshEntity(lightning);
-        cap.requestActiveSpiritualityCost(info.cost());
+        cap.requestActiveSpiritualityCost(thundering ? info.cost() / 2f : info.cost());
 
     }
 

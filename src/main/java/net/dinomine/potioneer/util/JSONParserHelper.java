@@ -239,6 +239,7 @@ public class JSONParserHelper {
         public PotionRecipeData deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context){
             JsonObject obj = json.getAsJsonObject();
             int id = obj.has("id") ? obj.get("id").getAsInt() : -1;
+            String name = id < 0 && obj.has("name") ? obj.get("name").getAsString() : "";
             boolean needsFire = obj.has("needsFire") && obj.get("needsFire").getAsBoolean();
             int waterLevel = obj.has("waterLevel") ? obj.get("waterLevel").getAsInt() : 2;
             List<ItemStack> mainIngs = parseItemStacks(obj.getAsJsonArray("mainIngredients"));
@@ -248,7 +249,7 @@ public class JSONParserHelper {
                 throw new JsonParseException("Too many ingredients for shapeless recipe. The maximum is 9");
             }
 
-            return new PotionRecipeData(new ArrayList<>(mainIngs), new ArrayList<>(suppIngs), waterLevel, needsFire, id);
+            return new PotionRecipeData(new ArrayList<>(mainIngs), new ArrayList<>(suppIngs), waterLevel, needsFire, id, true, name);
         }
     }
 
@@ -273,7 +274,7 @@ public class JSONParserHelper {
             boolean bottle = outputObj.has("bottle") && outputObj.get("bottle").getAsBoolean();
             boolean canConflict = outputObj.has("canConflict") && outputObj.get("canConflict").getAsBoolean();
 
-            return new PotionRecipe(new PotionRecipeData(new ArrayList<>(mainIngs), new ArrayList<>(suppIngs), waterLevel, needsFire, -1),
+            return new PotionRecipe(new PotionRecipeData(new ArrayList<>(mainIngs), new ArrayList<>(suppIngs), waterLevel, needsFire, -1, false, name),
                     new PotionContentData(name, amount, bottle, color, canConflict));
         }
     }

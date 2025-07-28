@@ -9,10 +9,12 @@ import java.util.ArrayList;
 
 public class MysteryPathway extends BeyonderPathway {
 
+    public static final int MAX_SAP_DISTANCE = 4;
+
     public MysteryPathway(int sequence){
         super(sequence, "Mystery");
         this.color = 0x408040;
-        this.maxSpirituality = new int[]{2500, 2500, 1700, 1600, 1600, 1500, 700, 600, 500, 100};
+        this.maxSpirituality = new int[]{4000, 2744, 1960, 1400, 1000, 700, 420, 300, 140, 100};
     }
 
     public static int getX(){
@@ -27,9 +29,10 @@ public class MysteryPathway extends BeyonderPathway {
         return switch (sequence){
             case 9 -> new float[]{0, 0, 0, 0, 0};
             case 8 -> new float[]{0, 0, 0, 0, 1};
-            case 7 -> new float[]{0, 1, 0, 0, 2};
-            case 6, 5 -> new float[]{0, 2, 0, 0, 3};
-            default -> new float[]{0, 3, 0, 0, 4};
+            case 7 -> new float[]{2, 1, 0, 0, 5};
+            case 6 -> new float[]{2, 1, 2, 0, 8};
+            case 5 -> new float[]{4, 1, 2, 0, 8};
+            default -> new float[]{6, 2, 2, 0, 10};
         };
     }
 

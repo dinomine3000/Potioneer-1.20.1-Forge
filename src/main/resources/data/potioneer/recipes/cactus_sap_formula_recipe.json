@@ -15,6 +15,7 @@
       "error": false,
       "recipe_data": {
         "id": -1,
+        "name": "cactus_sap",
         "water": 1,
         "fire": false,
         "size_main": 1,

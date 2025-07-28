@@ -19,7 +19,7 @@ public class PlagueAbility extends Ability {
     public static final int PLAGUE_RANGE = 2;
 
     public PlagueAbility(int sequence){
-        this.info = new AbilityInfo(57, 248, "Cast Plague", 20 + sequence, 60*(9-sequence), 20*10, "cast_plague");
+        this.info = new AbilityInfo(57, 248, "Cast Plague", 20 + sequence, 90 + 5*(9-sequence), 20*10, "cast_plague");
     }
 
     @Override

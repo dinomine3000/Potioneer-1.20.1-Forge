@@ -17,7 +17,7 @@ import java.util.Optional;
 public class BlockSniffAbility extends Ability {
 
     public BlockSniffAbility(int sequence){
-        this.info = new AbilityInfo(5, 56, "Block Finder", sequence, 10 + 20*(8-sequence), 30*20, "xray");
+        this.info = new AbilityInfo(5, 56, "Block Finder", sequence, 10 + 5*(9-sequence), 30*20, "xray");
         this.isActive = true;
     }
 

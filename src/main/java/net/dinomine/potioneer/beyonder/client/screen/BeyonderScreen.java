@@ -45,8 +45,7 @@ public class BeyonderScreen extends Screen {
     private final int imageWidth, imageHeight;
     private int leftPos, topPos;
 
-    private Button goToAbilitiesMenu;
-    private Button goToOptionsMenu;
+    private Button goToAbilitiesMenu, goToOptionsMenu, goToAllyMenu;
 
     public BeyonderScreen() {
         super(TITLE);
@@ -97,6 +96,9 @@ public class BeyonderScreen extends Screen {
         goToOptionsMenu = new ImageButton(leftPos + 89, topPos + 165, 42, 18,
                 234, 219, 0, TEXTURE, TEXTURE_WIDTH, TEXTURE_HEIGHT, btn -> {goToOptionsMenu();});
         addRenderableWidget(goToOptionsMenu);
+        goToAllyMenu = new ImageButton(leftPos + 131, topPos + 165, 42, 18,
+                234, 219, 0, TEXTURE, TEXTURE_WIDTH, TEXTURE_HEIGHT, btn -> {goToAllyMenu();});
+        addRenderableWidget(goToAllyMenu);
     }
 
     public static void goToAbilities(){
@@ -109,6 +111,10 @@ public class BeyonderScreen extends Screen {
 
     public static void goToOptionsMenu(){
         Minecraft.getInstance().setScreen(new BeyonderSettingsScreen());
+    }
+
+    public static void goToAllyMenu(){
+        Minecraft.getInstance().setScreen(new BeyonderAllyScreen());
     }
 
     @Override

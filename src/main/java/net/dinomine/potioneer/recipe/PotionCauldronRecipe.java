@@ -207,7 +207,15 @@ public class PotionCauldronRecipe implements Recipe<PotionCauldronContainer> {
 
                 return new PotionCauldronRecipe(output, pRecipeId,
                                 new PotionRecipeData(new ArrayList<>(mainIngredients), new ArrayList<>(suppIngredients),
-                                waterLevel, needsFire, isNumeric(output.name) ? Integer.parseInt(output.name) : -1));
+                                //TODO maybe fix this, idk.
+                                //rn, the potion recipe data wont include anything specific for name and translatable bc
+                                //when a formula generates randomly it only generates one with an id >= 0,
+                                //in which case, the formula name will be based on the beyonder sequence.
+                                //in other words, if you ever generate random formulas for these these non-beyonder recipes,
+                                //you will need to change this and either make EVERY recipe include a name
+                                //OR somehow make it optional here.
+                                //as is, non beyonder formulas have "" name strings
+                                waterLevel, needsFire, isNumeric(output.name) ? Integer.parseInt(output.name) : -1, true, output.name));
             }
         }
 
@@ -228,25 +236,25 @@ public class PotionCauldronRecipe implements Recipe<PotionCauldronContainer> {
             boolean canConflict = GsonHelper.getAsBoolean(obj, "can_conflict");
             return new PotionContentData(name, count, bottle, color, canConflict);
         }
+//
+//        private long convertToHex(String string){
+//            char[] list = string.toCharArray();
+//            long res = 0;
+//            if(list[1] != 'x' || list.length != 10) throw new IllegalArgumentException("String is not a valid hexadecimal. Size or x is wrong");
+//            for(int i = 0; i < list.length; i ++){
+//                if(i == 0 && list[i] != '0') throw new IllegalArgumentException("String is not a valid hexadecimal. First character must be a 0");
+//                if(i > 1){
+//                    if(!isHexadecimalValid(list[i])) throw new IllegalArgumentException("String is not a hexadecimal. At least 1 character failed conversion");
+//                    res += (long) (Character.getNumericValue(list[i]) * Math.pow(16, (9-i)));
+//                }
+//            }
+//            return res;
+//        }
 
-        private long convertToHex(String string){
-            char[] list = string.toCharArray();
-            long res = 0;
-            if(list[1] != 'x' || list.length != 10) throw new IllegalArgumentException("String is not a valid hexadecimal. Size or x is wrong");
-            for(int i = 0; i < list.length; i ++){
-                if(i == 0 && list[i] != '0') throw new IllegalArgumentException("String is not a valid hexadecimal. First character must be a 0");
-                if(i > 1){
-                    if(!isHexadecimalValid(list[i])) throw new IllegalArgumentException("String is not a hexadecimal. At least 1 character failed conversion");
-                    res += (long) (Character.getNumericValue(list[i]) * Math.pow(16, (9-i)));
-                }
-            }
-            return res;
-        }
-
-        private boolean isHexadecimalValid(char obj){
-            int code = obj;
-            return (code > 64 && code < 71) || (code > 96 && code < 103) || (code > 47 && code < 58);
-        }
+//        private boolean isHexadecimalValid(char obj){
+//            int code = obj;
+//            return (code > 64 && code < 71) || (code > 96 && code < 103) || (code > 47 && code < 58);
+//        }
 
         private int count(NonNullList<ItemStack> stacks){
             int hold = 0;
@@ -294,8 +302,8 @@ public class PotionCauldronRecipe implements Recipe<PotionCauldronContainer> {
             int id = isNumeric(output.name) ? Integer.parseInt(output.name) : -1;
 
             return new PotionCauldronRecipe(output, resourceLocation,
-                    new PotionRecipeData(new ArrayList<>(mainIngredients), new ArrayList<>(suppIngredients), waterLevel, needsFire, id),
-                    new PotionRecipeData(new ArrayList<>(altMainIngredients), new ArrayList<>(altSuppIngredients), altWaterLevel, altNeedsFire, id));
+                    new PotionRecipeData(new ArrayList<>(mainIngredients), new ArrayList<>(suppIngredients), waterLevel, needsFire, id, true, output.name),
+                    new PotionRecipeData(new ArrayList<>(altMainIngredients), new ArrayList<>(altSuppIngredients), altWaterLevel, altNeedsFire, id, true, output.name));
         }
 
         @Override

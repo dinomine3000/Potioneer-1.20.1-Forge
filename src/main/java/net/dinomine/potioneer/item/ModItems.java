@@ -136,6 +136,9 @@ public class ModItems {
     public static final RegistryObject<Item> INK_BOTTLE = ITEMS.register("ink_bottle",
             () -> new InkBottleItem(new Item.Properties().defaultDurability(50)));
 
+    public static final RegistryObject<Item> CHARM = ITEMS.register("mystical_charm",
+            () -> new AbstractCharm(new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON)));
+
 
     /*ublic static final RegistryObject<Item> METAL_ROD = ITEMS.register("metal_detector",
             () -> new MetalDetectorItem(new Item.Properties().stacksTo(1).durability(20)));*/
