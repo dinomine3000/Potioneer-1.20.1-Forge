@@ -22,7 +22,7 @@
   },
   "gun_reload": {
     "sounds": [
-      "potioneer:gun_reload"
+      "potioneer:gun_reload_fast"
     ]
   },
   "gun_cloth": {

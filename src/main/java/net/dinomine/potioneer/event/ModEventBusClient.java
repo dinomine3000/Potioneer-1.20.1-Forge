@@ -11,9 +11,7 @@ import net.dinomine.potioneer.block.entity.RitualPedestalBlockEntity;
 import net.dinomine.potioneer.block.entity.renderer.PotionCauldronBlockEntityRenderer;
 import net.dinomine.potioneer.block.entity.renderer.RitualPedestalBlockEntityRenderer;
 import net.dinomine.potioneer.item.ModItems;
-import net.dinomine.potioneer.item.custom.AbstractLiquidContainer;
-import net.dinomine.potioneer.item.custom.ArtifactTint;
-import net.dinomine.potioneer.item.custom.CharacteristicItem;
+import net.dinomine.potioneer.item.custom.*;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.EntityRenderersEvent;
@@ -47,6 +45,8 @@ public class ModEventBusClient {
         event.register(new AbstractLiquidContainer.LiquidContainerTint(), ModItems.VIAL.get(), ModItems.FLASK.get());
         event.register(new CharacteristicItem.CharacteristicTint(), ModItems.CHARACTERISTIC.get());
         event.register(new ArtifactTint(), ModItems.RING.get());
+        event.register(new GemItem.GemItemTint(), ModItems.GEM.get());
+        event.register(new NecklaceItem.NecklaceItemTint(), ModItems.AMULET.get());
     }
 
     @SubscribeEvent

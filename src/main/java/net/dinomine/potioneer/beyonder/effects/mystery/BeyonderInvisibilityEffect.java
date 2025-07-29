@@ -25,7 +25,7 @@ public class BeyonderInvisibilityEffect extends BeyonderEffect {
     @Override
     protected void doTick(LivingEntityBeyonderCapability cap, LivingEntity target) {
         if(!target.hasEffect(MobEffects.INVISIBILITY)){
-            target.addEffect(new MobEffectInstance(MobEffects.INVISIBILITY, (this.maxLife-lifetime)/2, 1, false, false));
+            target.addEffect(new MobEffectInstance(MobEffects.INVISIBILITY, (this.maxLife-lifetime), 1, false, false));
         }
     }
 

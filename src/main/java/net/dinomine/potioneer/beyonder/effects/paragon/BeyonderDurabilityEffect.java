@@ -24,7 +24,7 @@ public class BeyonderDurabilityEffect extends BeyonderEffect {
 
     @Override
     protected void doTick(LivingEntityBeyonderCapability cap, LivingEntity target) {
-        if(tick++ > 58){
+        if(tick++ > 29){
             tick = 0;
             if(sequenceLevel <= 7){
                 if(target instanceof Player player){

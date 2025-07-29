@@ -11,7 +11,7 @@ import net.minecraft.world.entity.LivingEntity;
 public class LuckBoostAbility extends Ability {
 
     public LuckBoostAbility(int sequence){
-        this.info = new AbilityInfo(5, 128, "Luck Boost", sequence, 30 + 10*(9-sequence), 5*20, "luck_boost");
+        this.info = new AbilityInfo(5, 128, "Luck Boost", sequence, 30 + 10*(9-sequence), 20*60, "luck_boost");
     }
 
     @Override
@@ -20,7 +20,7 @@ public class LuckBoostAbility extends Ability {
 
         if(cap.getSpirituality() >= info.cost()){
             if(cap.getEffectsManager().addEffectNoRefresh(BeyonderEffects.byId(BeyonderEffects.EFFECT.WHEEL_TEMP_LUCK,
-                    getSequence(), 0, 40*60, true), cap, target)){
+                    getSequence(), 0, 20*60, true), cap, target)){
                 cap.requestActiveSpiritualityCost(info.cost());
                 cap.getLuckManager().grantLuck(51);
                 target.sendSystemMessage(Component.translatable("message.potioneer.luck_boost_grant"));

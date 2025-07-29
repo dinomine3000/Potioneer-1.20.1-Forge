@@ -15,6 +15,7 @@ public class AllySystemSaveData extends SavedData {
     private Map<String, AllyGroup> groups;
 
     public boolean isPlayerAllyOf(UUID testPlayer, UUID playerTarget){
+        if(testPlayer == null || playerTarget == null) return false;
         for (AllyGroup group: groups.values()){
             if(group.isPlayerInGroup(testPlayer) && group.isPlayerInGroup(playerTarget)) return true;
         }
@@ -105,6 +106,10 @@ public class AllySystemSaveData extends SavedData {
     public static AllySystemSaveData from(ServerLevel level){
         return level.getServer().overworld().getDataStorage().computeIfAbsent((tag) -> loadAllies(tag, level),
                 () -> new AllySystemSaveData(level), "potioneer_ally_groups");
+    }
+
+    public List<String> getGroups() {
+        return groups.keySet().stream().toList();
     }
 
     public static class AllyGroup{

@@ -64,6 +64,7 @@ public class BeyonderEffects {
         WHEEL_MINING,
         WHEEL_DAMAGE_REDUCE,
         WHEEL_GAMBLING,
+        WHEEL_LUCK_TREND,
         MISC_MYST,
         MISC_PLAGUE,
         MISC_COGITATION,
@@ -94,6 +95,7 @@ public class BeyonderEffects {
             case WHEEL_FORTUNE -> new BeyonderFortuneEffect(sequence, cost, duration, active, EFFECT.WHEEL_FORTUNE);
             case WHEEL_DAMAGE_REDUCE -> new BeyonderLuckReduceDamageEffect(sequence, cost, duration, active, EFFECT.WHEEL_DAMAGE_REDUCE);
             case WHEEL_GAMBLING -> new BeyonderGamblingEffect(sequence, cost, duration, active, EFFECT.WHEEL_GAMBLING);
+            case WHEEL_LUCK_TREND -> new BeyonderLuckTrendEffect(sequence, cost, duration, active, EFFECT.WHEEL_LUCK_TREND);
             case PARAGON_DURABILITY_REGEN -> new BeyonderDurabilityEffect(sequence, cost, duration, active, EFFECT.PARAGON_DURABILITY_REGEN);
             case PARAGON_XP_REDUCE -> new BeyonderXpReduceEffect(sequence, cost, duration, active, EFFECT.PARAGON_XP_REDUCE);
             case PARAGON_CRAFTING_SPIRITUALITY -> new BeyonderCraftingSpiritualityEffect(sequence, cost, duration, active, EFFECT.PARAGON_CRAFTING_SPIRITUALITY);

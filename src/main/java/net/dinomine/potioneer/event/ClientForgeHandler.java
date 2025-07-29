@@ -43,8 +43,12 @@ public class ClientForgeHandler {
             if(stack.hasTag() && stack.getTag().contains("recipe_data")){
                 tooltip.add(Component.literal(PotionRecipeData.getName(stack.getTag().getCompound("recipe_data"))));
             }
-            if(stack.hasTag() && stack.getTag().contains(ArtifactHelper.CHARM_TAG_ID)){
-                tooltip.add(Component.literal(stack.getTag().getCompound(ArtifactHelper.CHARM_TAG_ID).getString("effectId")));
+            if(stack.is(ModItems.CHARM.get())){
+                if(stack.hasTag() && stack.getTag().contains(ArtifactHelper.CHARM_TAG_ID)){
+                    tooltip.add(Component.translatable("beyondereffect.potioneer." + stack.getTag().getCompound(ArtifactHelper.CHARM_TAG_ID).getString("effectId")));
+                } else {
+                    tooltip.add(Component.translatable("charm.potioneer.no_effect"));
+                }
             }
                 //tooltip.add(Component.literal("★ Special Item!").withStyle(ChatFormatting.GOLD, ChatFormatting.BOLD));
         }
@@ -81,7 +85,7 @@ public class ClientForgeHandler {
     @SubscribeEvent
     public static void onItemLeftClick(InputEvent.MouseButton event){
         if(Minecraft.getInstance().player != null && Minecraft.getInstance().player.getMainHandItem().is(ModItems.LEYMANOS_TRAVELS.get())){
-            if(event.getButton() == 0 && event.getAction() == 1 && Minecraft.getInstance().screen == null){
+            if(!Minecraft.getInstance().isPaused() && event.getButton() == 0 && event.getAction() == 1 && Minecraft.getInstance().screen == null){
                 event.setCanceled(true);
             }
         }

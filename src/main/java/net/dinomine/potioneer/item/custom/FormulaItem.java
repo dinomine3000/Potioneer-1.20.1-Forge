@@ -77,13 +77,12 @@ public class FormulaItem extends Item {
                 int pathwayId = Math.floorDiv(id, 10);
 
                 double chanceOfNextFormula = sequenceLevelFunction(sequenceLevel) + 0.05;
-                double chanceOfSamePathwayFormula = 0.3;
-                if(sequenceLevel > 0 && pLevel.random.nextFloat() < cap.getLuckManager().checkLuck((float)chanceOfNextFormula)){
-                    cap.getLuckManager().consumeLuck(10);
+                double chanceOfSamePathwayFormula = 0.4;
+                if(sequenceLevel > 0 && cap.getLuckManager().passesLuckCheck((float)chanceOfNextFormula, 10, 0, pLevel.random)){
                     System.out.println("Generating next formula...");
                     result = data.getFormulaDataFromId(id-1);
                 } else {
-                    if(pLevel.random.nextFloat() < cap.getLuckManager().checkLuck((float)chanceOfSamePathwayFormula)){
+                    if(cap.getLuckManager().passesLuckCheck((float)chanceOfSamePathwayFormula, 0, 0, pLevel.random)){
                         System.out.println("Generating pathway formula...");
                         result = data.getFormulaDataFromId(10*pathwayId + getRandomSequenceLevel(9, pLevel.random.nextDouble()));
                     } else {
@@ -109,11 +108,12 @@ public class FormulaItem extends Item {
     }
 
     private static double sequenceLevelFunction(int sequenceLevel){
-        return 0.0023225*Math.pow(sequenceLevel, 2.2) + 0.003;
+        return 0.00232250*Math.pow(sequenceLevel, 2.2) + 0.003;
     }
 
     /**
      * function that will check if the formula for the given sequence should be generated, based on a random number from 0 to 1
+     * follows this desmos graph: <a href="https://www.desmos.com/calculator/ff70da0c33">...</a>
      * @param sequenceLevel - sequence level of the formula you want to generate.
      * @param rndNumber - random number from 0 to 1
      * @return
@@ -128,14 +128,6 @@ public class FormulaItem extends Item {
         return getRandomSequenceLevel(sequenceLevel - 1, Math.max(rndNumber - chance, 0));
     }
 
-    private void writeToNbt(ItemStack formulaItem, PotionRecipeData data){
-        CompoundTag tag = new CompoundTag();
-        data.save(tag);
-        CompoundTag finaltag = new CompoundTag();
-        finaltag.put("recipe_data", tag);
-        formulaItem.setTag(finaltag);
-    }
-
     public static void writeToNbt(ItemStack formulaItem, PotionRecipeData data, boolean error){
         CompoundTag tag = new CompoundTag();
         data.save(tag);
@@ -143,27 +135,5 @@ public class FormulaItem extends Item {
         finaltag.putBoolean("error", error);
         finaltag.put("recipe_data", tag);
         formulaItem.setTag(finaltag);
-    }
-
-    private static JsonObject readJsonObject(ResourceLocation path) throws IOException {
-        ResourceLocation newPath = path.withPrefix("../../data/" + Potioneer.MOD_ID + "/recipes/");
-        InputStream in = Minecraft.getInstance().getResourceManager().open(newPath);
-        BufferedReader reader = new BufferedReader(new InputStreamReader(in));
-        Gson gson = new Gson();
-        JsonElement je = gson.fromJson(reader, JsonElement.class);
-        JsonObject json = je.getAsJsonObject();
-        in.close();
-        return json;
-    }
-
-    private static NonNullList<ItemStack> itemsFromJson(JsonArray pItemArray) {
-        NonNullList<ItemStack> nonnulllist = NonNullList.create();
-
-        for(int i = 0; i < pItemArray.size(); ++i) {
-            ItemStack ingredient = ShapedRecipe.itemStackFromJson(pItemArray.get(i).getAsJsonObject());
-            nonnulllist.add(ingredient);
-        }
-
-        return nonnulllist;
     }
 }

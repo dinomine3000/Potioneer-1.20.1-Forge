@@ -3,7 +3,11 @@ package net.dinomine.potioneer.item.custom;
 import net.dinomine.potioneer.beyonder.abilities.AbilityFunctionHelper;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffect;
 import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
+import net.dinomine.potioneer.entities.ModEntities;
+import net.dinomine.potioneer.entities.custom.CharmEntity;
 import net.dinomine.potioneer.util.misc.ArtifactHelper;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.Entity;
@@ -26,14 +30,11 @@ public class AbstractCharm extends Item {
         if(pLevel.isClientSide())
             return InteractionResultHolder.success(stack);
         if(!isWorkingCharm(stack)){
-            System.out.println("Creating charm");
-            ArtifactHelper.makeCharm(stack, 29, 40*5);
+            ArtifactHelper.makeCharm(stack, 17, 40*5);
             return InteractionResultHolder.success(stack);
         }
-        if(pPlayer.isCrouching()) activateCharmOnSelf(pPlayer, stack, pUsedHand);
-        else throwCharm(pPlayer, stack, pUsedHand);
+        throwCharm(pPlayer, stack, pUsedHand, !pPlayer.isCrouching());;
 
-        System.out.println("end");
         return InteractionResultHolder.success(stack);
     }
 
@@ -50,22 +51,28 @@ public class AbstractCharm extends Item {
         });
     }
 
-    private void throwCharm(Player player, ItemStack stack, InteractionHand usedHand){
-        List<Entity> targets = AbilityFunctionHelper.getLivingEntitiesLooking(player, 15);
-        if(targets.isEmpty()) return;
-        for(Entity ent: targets){
-            if(!(ent instanceof LivingEntity livingEntity)) continue;
-            applyEffectToAnother(livingEntity, stack);
-            player.setItemInHand(usedHand, ItemStack.EMPTY);
-            return;
-        }
-    }
-
-    private void applyEffectToAnother(LivingEntity target, ItemStack stack){
-        BeyonderEffect eff = ArtifactHelper.getEffectFromCharm(stack);
-        target.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
-            if(cap.getEffectsManager().addOrReplaceEffect(eff, cap, target)){
+    private void throwCharm(Player player, ItemStack stack, InteractionHand usedHand, boolean targetAnother){
+        LivingEntity target = null;
+        if(!targetAnother){
+            target = player;
+        } else {
+            List<Entity> targets = AbilityFunctionHelper.getLivingEntitiesLooking(player, 32);
+            if(targets.isEmpty()) target = player;
+            else {
+                for(Entity ent: targets){
+                    if(!(ent instanceof LivingEntity livingEntity)) continue;
+                    if(livingEntity.getUUID().compareTo(player.getUUID()) == 0) continue;
+                    target = livingEntity;
+                    break;
+                }
+                if(target == null) target = player;
             }
-        });
+        }
+
+        int pathwayId = ArtifactHelper.getPathwayIdFromCharm(stack);
+        player.level().playSound(null, player, SoundEvents.ALLAY_AMBIENT_WITHOUT_ITEM, SoundSource.PLAYERS, 1.4f, 1.3f - player.getRandom().nextFloat()*0.6f);
+        player.setItemInHand(usedHand, ItemStack.EMPTY);
+        BeyonderEffect eff = ArtifactHelper.getEffectFromCharm(stack);
+        player.level().addFreshEntity(CharmEntity.createCharm(target.getUUID(), eff, player, pathwayId));
     }
 }

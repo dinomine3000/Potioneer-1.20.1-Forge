@@ -5,6 +5,7 @@ import net.dinomine.potioneer.beyonder.abilities.mystery.AirBulletAbility;
 import net.dinomine.potioneer.beyonder.abilities.paragon.CraftingGuiAbility;
 import net.dinomine.potioneer.beyonder.abilities.redpriest.MeltAbility;
 import net.dinomine.potioneer.beyonder.abilities.tyrant.WaterAffinityAbility;
+import net.dinomine.potioneer.beyonder.abilities.wheeloffortune.LuckTrendAbility;
 import net.dinomine.potioneer.beyonder.abilities.wheeloffortune.MinerLightAbility;
 import net.dinomine.potioneer.beyonder.downsides.Downside;
 import net.dinomine.potioneer.beyonder.downsides.DummyDownside;
@@ -14,7 +15,6 @@ import net.dinomine.potioneer.item.ModItems;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
-import net.minecraft.nbt.TagType;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.common.Tags;
@@ -27,6 +27,7 @@ import java.util.function.Function;
 
 public class ArtifactHelper {
     public static final String ARTIFACT_TAG_ID = "artifact_info";
+    public static final String GEM_TAG_ID = "gem_ability_info";
     public static final String BEYONDER_TAG_ID = "beyonder_info";
     public static final String CHARM_TAG_ID = "mystical_charm_info";
 
@@ -42,6 +43,9 @@ public class ArtifactHelper {
         abilityMap.put("melt", new MetaAbilityEntry(30, 40, MeltAbility::new));
         abilityMap.put("crafting_gui", new MetaAbilityEntry(40, 50, CraftingGuiAbility::new));
 
+        //abilities for gems and amulets
+        abilityMap.put("lucky_trend", new MetaAbilityEntry(-1, -1, LuckTrendAbility::new));
+
         downsideMap.put("d_dummy", new MetaAbilityEntry(0, 50, DummyDownside::new));
 
         effectMap.put("silk", new MetaEffectEntry(0, 8, dur -> BeyonderEffects.byId(BeyonderEffects.EFFECT.WHEEL_SILK_TOUCH, 8, 0, dur, true)));
@@ -50,10 +54,15 @@ public class ArtifactHelper {
     }
 
     public static BeyonderEffect getEffectFromCharm(ItemStack charm){
-        if(!charm.hasTag() || !charm.getTag().contains(CHARM_TAG_ID)) return null;
+        if(!charm.is(ModItems.CHARM.get()) || !charm.hasTag() || !charm.getTag().contains(CHARM_TAG_ID)) return null;
         String effId = charm.getTag().getCompound(CHARM_TAG_ID).getString("effectId");
         int duration = charm.getTag().getCompound(CHARM_TAG_ID).getInt("duration");
         return effectMap.get(effId).constructor.apply(duration);
+    }
+
+    public static int getPathwayIdFromCharm(ItemStack charm){
+        if(!charm.is(ModItems.CHARM.get()) || !charm.hasTag() || !charm.getTag().contains(CHARM_TAG_ID)) return -1;
+        return charm.getTag().getCompound(CHARM_TAG_ID).getInt("pathwayId");
     }
 
     //artifact without beyonder info or downsides. single use
@@ -70,7 +79,19 @@ public class ArtifactHelper {
     }
 
     //artifact with only passive and free abilities and no downsides and no beyonder tag
-    public static void makeAmulet(){}
+    public static void makeAmuletGem(ItemStack gemStack, String ablId, int pathwayId, int color){
+        CompoundTag ogTag = gemStack.getOrCreateTag();
+        if(ogTag.contains(ARTIFACT_TAG_ID) || ogTag.contains(GEM_TAG_ID)) return;
+        if(!gemStack.is(ModItems.GEM.get())) return;
+
+        CompoundTag gemTag = new CompoundTag();
+        ListTag abilitiesList = new ListTag();
+        abilitiesList.add(makeAbilityTag(ablId, pathwayId));
+        gemTag.put("abilities", abilitiesList);
+        gemTag.putInt("color", color);
+        ogTag.put(GEM_TAG_ID, gemTag);
+        gemStack.setTag(ogTag);
+    }
 
     //artifact weapons without downsides and without beyonder tag
     public static void makeBeyonderWeapon(){}
@@ -87,8 +108,8 @@ public class ArtifactHelper {
         CompoundTag artifactInfo = new CompoundTag();
         ListTag abilitiesList = new ListTag();
         ListTag downsidesList = new ListTag();
-        abilitiesList.add(makeAbilityTag(pathwayId, random));
-        downsidesList.add(makeDownsideTag(pathwayId, random));
+        abilitiesList.add(makeRandomAbilityTag(pathwayId, random));
+        downsidesList.add(makeRandomDownsideTag(pathwayId, random));
         artifactInfo.put("abilities", abilitiesList);
         artifactInfo.put("downsides", downsidesList);
         root.put(ARTIFACT_TAG_ID, artifactInfo);
@@ -96,16 +117,19 @@ public class ArtifactHelper {
         stack.setTag(root);
     }
 
-    private static CompoundTag makeAbilityTag(int pathwayId, RandomSource random){
-        //ability Id given should be the normalized one
+    private static CompoundTag makeAbilityTag(String ablId, int pathwayId){
         CompoundTag res = new CompoundTag();
-        String ablId = getRandomAbilityId(pathwayId, random);
         res.putString("ablId", ablId);
         res.putInt("sequence", pathwayId);
         return res;
     }
 
-    private static CompoundTag makeDownsideTag(int pathwayId, RandomSource random){
+    private static CompoundTag makeRandomAbilityTag(int pathwayId, RandomSource random){
+        //ability Id given should be the normalized one
+        return makeAbilityTag(getRandomAbilityId(pathwayId, random), pathwayId);
+    }
+
+    private static CompoundTag makeRandomDownsideTag(int pathwayId, RandomSource random){
         CompoundTag res = new CompoundTag();
         String ablId = getRandomDownsideId(pathwayId, random);
         res.putString("ablId", ablId);
@@ -150,7 +174,12 @@ public class ArtifactHelper {
     }
 
     public static boolean isValidArtifact(ItemStack stack){
-        return stack.hasTag() && stack.getTag().contains(ARTIFACT_TAG_ID);
+        boolean artifactCheck = stack.hasTag() && stack.getTag().contains(ARTIFACT_TAG_ID);
+//        boolean enabledCheck = artifactCheck &&
+//                (!stack.getTag().getCompound(ARTIFACT_TAG_ID).contains("enabled")
+//                        || stack.getTag().getCompound(ARTIFACT_TAG_ID).getBoolean("enabled")
+//                );
+        return artifactCheck;
     }
 
     public static Ability getAbilityFromId(String id, int sequence){
@@ -174,6 +203,10 @@ public class ArtifactHelper {
      */
     public static List<String> getArtifactIdsFromItem(ItemStack stack){
         if(!stack.hasTag() || !stack.getTag().contains(ARTIFACT_TAG_ID)) return new ArrayList<>();
+//        if(stack.is(ModItems.AMULET.get())) return new ArrayList<>();
+        if(stack.getTag().getCompound(ARTIFACT_TAG_ID).contains("enabled")){
+            if(!stack.getTag().getCompound(ARTIFACT_TAG_ID).getBoolean("enabled")) return new ArrayList<>();
+        }
         ArrayList<String> abilityIds = new ArrayList<>();
         CompoundTag artifactTag = stack.getTag().getCompound(ARTIFACT_TAG_ID);
         ListTag abilities = artifactTag.getList("abilities", ListTag.TAG_COMPOUND);

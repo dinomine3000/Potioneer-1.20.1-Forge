@@ -25,7 +25,7 @@ public class BeyonderFireAuraEffect extends BeyonderEffect {
 
     @Override
     protected void doTick(LivingEntityBeyonderCapability cap, LivingEntity target) {
-        if(tick++ > 40){
+        if(tick++ > 20){
             tick = 0;
             BlockPos pos = target.getOnPos();
             int radius = (9 - sequenceLevel)*2 + 2;

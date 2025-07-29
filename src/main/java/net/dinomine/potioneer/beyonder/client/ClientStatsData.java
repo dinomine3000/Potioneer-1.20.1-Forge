@@ -91,6 +91,10 @@ public class ClientStatsData {
     }
 
     public static void setActing(float acting) {
+        if(actingProgress == 0 && acting >= 0.95){
+            actingProgress = acting;
+            return;
+        }
         if(actingProgress < 0.25 && acting >= 0.25){
             Minecraft.getInstance().player.playSound(SoundEvents.EXPERIENCE_ORB_PICKUP, 1, 1);
         }

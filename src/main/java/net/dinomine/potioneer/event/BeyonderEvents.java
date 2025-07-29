@@ -181,19 +181,10 @@ public class BeyonderEvents {
     }
 
     @SubscribeEvent
-    public static void onPlayerTick(TickEvent.PlayerTickEvent event){
-        event.player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent( stats -> {
-            stats.onTick(event.player, event.side == LogicalSide.SERVER);
-        });
-    }
-
-    @SubscribeEvent
     public static void onEntityTick(LivingEvent.LivingTickEvent event){
-        if(!(event.getEntity() instanceof Player)){
-            event.getEntity().getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(stats -> {
-                 stats.onTick(event.getEntity(), true);
-            });
-        }
+        event.getEntity().getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(stats -> {
+            stats.onTick(event.getEntity(), !event.getEntity().level().isClientSide());
+        });
     }
 
     @SubscribeEvent

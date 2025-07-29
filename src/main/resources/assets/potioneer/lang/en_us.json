@@ -55,6 +55,7 @@
   "entity.potioneer.divination_rod": "Divination Rod",
   "entity.potioneer.asteroid": "Meteor",
   "entity.potioneer.sea_god_scepter": "Sea God Scepter",
+  "entity.potioneer.charm_entity": "Charm",
 
   "item.potioneer.beyonder_potion": "Mystery Potion",
   "item.potioneer.pecan_leaf": "Pecan Leaf",
@@ -73,6 +74,9 @@
   "item.potioneer.sea_god_scepter": "Sea God Scepter",
   "item.potioneer.death_knell": "Death Knell",
   "item.potioneer.mystical_charm": "Mystical Charm",
+  "item.potioneer.nazar": "Nazar Amulet",
+  "item.potioneer.mystical_gem": "Gem",
+  "item.potioneer.amulet": "Amulet",
 
   "item.potioneer.golden_drop": "Golden Drop",
 
@@ -80,6 +84,9 @@
   "effect.potioneer.bleed_effect": "Bleeding",
   "effect.potioneer.plague_effect": "Plague",
   "effect.potioneer.light_buff": "Strength Increase",
+
+  "charm.potioneer.no_effect": "Blank",
+  "beyondereffect.potioneer.silk": "Graceful Touch",
 
   "advancements.potioneer.formula.title": "Potioneer",
   "advancements.potioneer.formula.description": "Obtain a mysterious formula.",

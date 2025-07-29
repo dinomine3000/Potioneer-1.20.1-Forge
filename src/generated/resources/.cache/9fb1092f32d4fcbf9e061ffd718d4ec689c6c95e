@@ -1,4 +1,4 @@
-// 1.20.1	2025-07-20T12:35:06.0351113	Recipes
+// 1.20.1	2025-07-29T11:16:45.2563415	Recipes
 2e1c44770bcb45ad52431197284703239fc19816 data/potioneer/advancements/recipes/building_blocks/sapphire_block.json
 91a2153f85df0673c83f9b8768dd42df423255b8 data/potioneer/advancements/recipes/misc/coin.json
 95781ed3fe91abbea4ad4d67e4c96ec81d83b5fc data/potioneer/advancements/recipes/misc/flask.json
@@ -14,7 +14,7 @@ ca7274bfefd57ac2981e2ac78cc42e811dd2038f data/potioneer/advancements/recipes/mis
 c11fd03cbb420604f6dcb60229fae15679d7e1f6 data/potioneer/recipes/cane.json
 4becd3029302d2613eb40c3a891295761aaf7f1f data/potioneer/recipes/coin.json
 46521296d348aee9dde5724b6688b2da49f9c5c4 data/potioneer/recipes/flask.json
-afd7ea5ed8fb9b4f78eb0b35cbad3c680789e177 data/potioneer/recipes/ink_bottle.json
+9a44704d9ff5e5ad03a77e2ecb75f22f47b664fb data/potioneer/recipes/ink_bottle.json
 8aaf1c2c363af4f7ed0d8613a21ec216565756cc data/potioneer/recipes/potion_cauldron.json
 c94aa3a27d36cbb6825af9a91bfdd14eabef6b65 data/potioneer/recipes/ritualistic_dagger.json
 40a5e03d9d575ab2808576476035ab2396669266 data/potioneer/recipes/ritual_altar.json

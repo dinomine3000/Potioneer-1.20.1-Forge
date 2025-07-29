@@ -77,6 +77,12 @@ public class ModEntities {
                             .sized(0.2f, 1f)
                             .build(new ResourceLocation(Potioneer.MOD_ID, "sea_god_scepter").toString()));
 
+    public static final RegistryObject<EntityType<CharmEntity>> CHARM_ENTITY =
+            ENTITY_TYPES.register("charm_entity",
+                    () -> EntityType.Builder.of(CharmEntity::new, MobCategory.MISC)
+                            .sized(0.4f, 0.1f)
+                            .build(new ResourceLocation(Potioneer.MOD_ID, "charm_entity").toString()));
+
     public static void register(IEventBus eventBus){
         ENTITY_TYPES.register(eventBus);
     }

@@ -139,6 +139,15 @@ public class ModItems {
     public static final RegistryObject<Item> CHARM = ITEMS.register("mystical_charm",
             () -> new AbstractCharm(new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON)));
 
+    public static final RegistryObject<Item> NAZAR = ITEMS.register("nazar",
+            () -> new Item(new Item.Properties().stacksTo(1).rarity(Rarity.RARE)));
+
+    public static final RegistryObject<Item> GEM = ITEMS.register("mystical_gem",
+            () -> new GemItem(new Item.Properties().stacksTo(8).rarity(Rarity.UNCOMMON)));
+
+    public static final RegistryObject<Item> AMULET = ITEMS.register("amulet",
+            () -> new NecklaceItem(new Item.Properties().stacksTo(1)));
+
 
     /*ublic static final RegistryObject<Item> METAL_ROD = ITEMS.register("metal_detector",
             () -> new MetalDetectorItem(new Item.Properties().stacksTo(1).durability(20)));*/

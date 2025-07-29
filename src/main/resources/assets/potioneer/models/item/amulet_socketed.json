@@ -1,0 +1,7 @@
+{
+  "parent": "item/generated",
+  "textures": {
+    "layer0": "potioneer:item/amulet_socketed_chain",
+    "layer1": "potioneer:item/amulet_gem"
+  }
+}

@@ -25,6 +25,7 @@ import java.util.function.Consumer;
 public class DeathKnellItem extends Item implements GeoItem {
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
     private static final RawAnimation FIRE = RawAnimation.begin().then("fire", Animation.LoopType.PLAY_ONCE);
+    private static final RawAnimation RELOAD = RawAnimation.begin().then("reload_fast", Animation.LoopType.PLAY_ONCE);
 
     public DeathKnellItem(Properties pProperties) {
         super(pProperties);
@@ -34,6 +35,7 @@ public class DeathKnellItem extends Item implements GeoItem {
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar controllerRegistrar) {
         controllerRegistrar.add(new AnimationController<>(this, "gun_controller", 0, this::predicate)
+                .triggerableAnim("changeMode", RELOAD)
                 .triggerableAnim("shoot", FIRE)
                 .setSoundKeyframeHandler(state -> {
                     // Use helper method to avoid client-code in common class
@@ -42,8 +44,8 @@ public class DeathKnellItem extends Item implements GeoItem {
                         case "revolver_shot":
                             player.playSound(ModSounds.GUN_SHOOT.get(), 0.6f, 1.25f - player.getRandom().nextFloat()/2f);
                             break;
-                        case "gun_reload_sfx":
-                            player.playSound(ModSounds.GUN_RELOAD.get(), 0.6f, 1.25f - player.getRandom().nextFloat()/2f);
+                        case "gun_reload_fast_sfx":
+                            player.playSound(ModSounds.GUN_RELOAD.get(), 0.3f, 1.05f - player.getRandom().nextFloat()/3f);
                             break;
                         case "cloth2":
                             player.playSound(ModSounds.GUN_CLOTH.get(), 0.6f, 1.25f - player.getRandom().nextFloat()/2f);
@@ -55,8 +57,8 @@ public class DeathKnellItem extends Item implements GeoItem {
     }
 
     private PlayState predicate(AnimationState animationState) {
-        if(animationState.isCurrentAnimation(FIRE) && !animationState.getController().hasAnimationFinished()) return PlayState.STOP;
-        animationState.getController().setAnimation(RawAnimation.begin().then("reload", Animation.LoopType.HOLD_ON_LAST_FRAME));
+        if((animationState.isCurrentAnimation(FIRE) || animationState.isCurrentAnimation(RELOAD)) && !animationState.getController().hasAnimationFinished()) return PlayState.STOP;
+        animationState.getController().setAnimation(RawAnimation.begin().then("idle", Animation.LoopType.LOOP));
         return PlayState.CONTINUE;
     }
 
@@ -75,7 +77,7 @@ public class DeathKnellItem extends Item implements GeoItem {
     @Override
     public InteractionResultHolder<ItemStack> use(Level pLevel, Player pPlayer, InteractionHand pUsedHand) {
         if(!pLevel.isClientSide())
-            triggerAnim(pPlayer, GeoItem.getOrAssignId(pPlayer.getItemInHand(pUsedHand), (ServerLevel) pLevel), "gun_controller", "shoot");
+            triggerAnim(pPlayer, GeoItem.getOrAssignId(pPlayer.getItemInHand(pUsedHand), (ServerLevel) pLevel), "gun_controller", "changeMode");
         return super.use(pLevel, pPlayer, pUsedHand);
     }
 

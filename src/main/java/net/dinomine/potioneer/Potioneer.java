@@ -28,6 +28,7 @@ import net.dinomine.potioneer.sound.ModSounds;
 import net.dinomine.potioneer.util.JSONParserHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.MenuScreens;
+import net.minecraft.client.model.TridentModel;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
@@ -36,6 +37,7 @@ import net.minecraft.client.renderer.item.ItemProperties;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.CreativeModeTabs;
+import net.minecraft.world.item.TridentItem;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
@@ -142,6 +144,7 @@ public class Potioneer
             EntityRenderers.register(ModEntities.SEA_GOD_SCEPTER.get(), SeaGodRenderer::new);
             EntityRenderers.register(ModEntities.CHARACTERISTIC.get(), CharRenderer::new);
             EntityRenderers.register(ModEntities.ASTEROID.get(), AsteroidRenderer::new);
+            EntityRenderers.register(ModEntities.CHARM_ENTITY.get(), CharmRenderer::new);
 
 
 
@@ -180,6 +183,19 @@ public class Potioneer
                         }
                         return -1;
                     }));
+
+            ItemProperties.register(ModItems.AMULET.get(),
+                    new ResourceLocation(Potioneer.MOD_ID, "enabled"),
+                    ((itemStack, clientLevel, livingEntity, i) -> {
+                        if(itemStack.hasTag() && itemStack.getTag().contains(ArtifactHelper.ARTIFACT_TAG_ID)){
+                            return itemStack.getTag().getCompound(ArtifactHelper.ARTIFACT_TAG_ID).getBoolean("enabled") ? 1 : -1;
+                        }
+                        return -1;
+                    }));
+
+            ItemProperties.register(ModItems.LEYMANOS_TRAVELS.get(),
+                    new ResourceLocation(Potioneer.MOD_ID, "entity"),
+                    ((itemStack, clientLevel, livingEntity, i) -> livingEntity == null ? 1 : 0));
 
             event.enqueueWork(() -> {
                 MenuScreens.register(ModMenuTypes.CRAFTER_MENU.get(), CraftingScreen::new);

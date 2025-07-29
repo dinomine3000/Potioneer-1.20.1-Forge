@@ -13,6 +13,8 @@ public class LeymanosTravelsRenderer extends GeoItemRenderer<LeymanosTravels> {
         super(new LeymanosTravelsModel());
     }
 
+
+
     @Override
     public void renderByItem(ItemStack stack, ItemDisplayContext transformType, PoseStack poseStack, MultiBufferSource bufferSource, int packedLight, int packedOverlay) {
         LeymanosTravels.capture(stack);

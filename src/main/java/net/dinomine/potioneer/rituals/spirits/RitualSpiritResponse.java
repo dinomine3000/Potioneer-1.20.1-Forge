@@ -1,13 +1,24 @@
 package net.dinomine.potioneer.rituals.spirits;
 
+import net.dinomine.potioneer.item.ModItems;
 import net.dinomine.potioneer.rituals.RitualInputData;
 import net.dinomine.potioneer.rituals.RitualResponseLogic;
+import net.dinomine.potioneer.util.misc.ArtifactHelper;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraftforge.fml.ModList;
 import org.jetbrains.annotations.Nullable;
+import top.theillusivec4.curios.api.CuriosApi;
+import top.theillusivec4.curios.api.type.capability.ICuriosItemHandler;
+import top.theillusivec4.curios.api.type.inventory.ICurioStacksHandler;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 public abstract class RitualSpiritResponse {
     protected RitualResponseLogic responseLogic;
@@ -57,7 +68,7 @@ public abstract class RitualSpiritResponse {
 
     public static Player getPlayer(RitualInputData inputData, Level level, boolean targetCaster){
         Player player = level.getPlayerByUUID(inputData.target());
-        if(player == null || targetCaster){
+        if(player == null || targetCaster || isPlayerImmuneToTarget(player)){
             player = level.getPlayerByUUID(inputData.caster());
         }
 //        if(player == null){
@@ -65,5 +76,36 @@ public abstract class RitualSpiritResponse {
 //        }
         return player;
 
+    }
+
+    private static boolean isPlayerImmuneToTarget(Player player){
+        if(ModList.get().isLoaded("curios")){
+            if(CuriosApi.getCuriosInventory(player).resolve().isPresent()){
+                ICuriosItemHandler curiosInventory = CuriosApi.getCuriosInventory(player).resolve().get();
+                Map<String, ICurioStacksHandler> curios = curiosInventory.getCurios();
+                for(ICurioStacksHandler handler: curios.values()){
+                    for(int i = 0; i < handler.getSlots(); i++){
+                        ItemStack itemStack = handler.getStacks().getStackInSlot(i);
+                        if(itemStack.is(ModItems.NAZAR.get())){
+                            itemStack.setCount(0);
+                            player.level().playSound( null, player, SoundEvents.ITEM_BREAK, SoundSource.PLAYERS, 2, 1);
+//                            player.playSound(SoundEvents.ITEM_BREAK, 2, 1);
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+
+        for(ItemStack stack: player.inventoryMenu.getItems()){
+            if(stack.is(ModItems.NAZAR.get())){
+                stack.setCount(0);
+//                player.playSound(SoundEvents.ITEM_BREAK, 2, 1);
+                player.level().playSound( null, player, SoundEvents.ITEM_BREAK, SoundSource.PLAYERS, 2, 1);
+                return true;
+            }
+        }
+
+        return false;
     }
 }

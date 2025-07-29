@@ -6,6 +6,8 @@
   "overrides": [
     { "predicate": { "potioneer:charm": 0 }, "model": "potioneer:item/wheel_of_fortune_charm" },
     { "predicate": { "potioneer:charm": 1 }, "model": "potioneer:item/tyrant_charm" },
-    { "predicate": { "potioneer:charm": 2 }, "model": "potioneer:item/mystery_charm" }
+    { "predicate": { "potioneer:charm": 2 }, "model": "potioneer:item/mystery_charm" },
+    { "predicate": { "potioneer:charm": 3 }, "model": "potioneer:item/red_priest_charm" },
+    { "predicate": { "potioneer:charm": 4 }, "model": "potioneer:item/paragon_charm" }
   ]
 }

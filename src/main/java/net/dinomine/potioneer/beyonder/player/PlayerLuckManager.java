@@ -33,7 +33,7 @@ public class PlayerLuckManager {
 
     private boolean eventGoingOn = false;
     private int luckEventCountdown;
-    private int luckEventCd;
+    private int tenSecondTick = 0;
     private int luck;
     private int tick = 0;
     private LuckRange range;
@@ -54,6 +54,8 @@ public class PlayerLuckManager {
         //ticks once every 2 seconds
         if(target.level().isClientSide()) return;
         if(tick++ > 40){
+            if(target instanceof Player player)
+                //System.out.println("Luck Manager ticking..." + luck);
             tick = 0;
             if(eventGoingOn){
                 luckEventCountdown--;
@@ -70,7 +72,10 @@ public class PlayerLuckManager {
             }
             //random walk
             luck = range.changeLuck(luck, target.getRandom().nextBoolean() ? 1 : -1);
-            range.tenSecondTick();
+            if(tenSecondTick++ >= 5){
+                tenSecondTick = 0;
+                range.tenSecondTick();
+            }
 
         }
     }
@@ -113,7 +118,6 @@ public class PlayerLuckManager {
 
     private void triggerEvent(LivingEntityBeyonderCapability cap, LivingEntity target){
         int event = target.getRandom().nextInt(7);
-        luckEventCd = target.getRandom().nextInt(24);
         if(luck > LV3_THRESHOLD || luck < -LV3_THRESHOLD){
             target.sendSystemMessage(Component.translatable("potioneer.luck.trigger_3"));
             consumeLuck(100);

@@ -3,12 +3,14 @@ package net.dinomine.potioneer.block.entity;
 import net.dinomine.potioneer.Potioneer;
 import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
 import net.dinomine.potioneer.mob_effects.ModEffects;
+import net.dinomine.potioneer.savedata.AllySystemSaveData;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
@@ -79,7 +81,8 @@ public class WaterTrapBlockEntity extends BlockEntity implements GeoBlockEntity 
             assert level != null;
             Player caster = level.getPlayerByUUID(id);
             for(Entity ent: entities){
-                if(ent instanceof Player playerTrigger && playerTrigger.getUUID().compareTo(id) == 0) return;
+                if(!(ent instanceof LivingEntity living)) return;
+                if(isEntityAllyOfOwner(living)) return;
                 setChanged();
                 if(caster != null){
                     caster.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
@@ -94,6 +97,14 @@ public class WaterTrapBlockEntity extends BlockEntity implements GeoBlockEntity 
 
             pLevel.destroyBlock(pPos, false);
         }
+    }
+
+    private boolean isEntityAllyOfOwner(LivingEntity ent){
+        if(!(level instanceof ServerLevel serverLevel)) return false;
+        if(ent instanceof Player player){
+            AllySystemSaveData data = AllySystemSaveData.from(serverLevel);
+            return data.isPlayerAllyOf(player.getUUID(), id);
+        } return false;
     }
 
     private void applyEffectsToEntity(Level level, BlockPos pos, LivingEntity entity){

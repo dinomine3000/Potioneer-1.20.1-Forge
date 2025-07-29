@@ -168,7 +168,7 @@ public class LivingEntityBeyonderCapability {
     }
 
     public void requestActiveSpiritualityCost(float cost){
-        this.spiritualityCost += 40*cost;
+        this.spiritualityCost += 20*cost;
     }
 
     public void requestPassiveSpiritualityCost(float cost){
@@ -177,7 +177,7 @@ public class LivingEntityBeyonderCapability {
 
     private void applyCost(){
         if(maxSpirituality <= 0) return;
-        float amount = Math.round((1000*( - spiritualityCost/40f + (float) maxSpirituality /SECONDS_TO_MAX_SPIRITUALITY))) / 1000f;
+        float amount = Math.round((1000*( - spiritualityCost/20f + (float) maxSpirituality /SECONDS_TO_MAX_SPIRITUALITY))) / 1000f;
         changeSpirituality(amount);
         this.spiritualityCost = 0;
 
@@ -214,7 +214,7 @@ public class LivingEntityBeyonderCapability {
                 applyCost();
                 syncCD += 39;
             }
-            if(effectCd++ > 100){
+            if(effectCd++ > 50){
                 effectCd = 0;
                 if (spirituality < maxSpirituality*0.15f){
                     entity.addEffect(new MobEffectInstance(MobEffects.DIG_SLOWDOWN, 100, 1, true, true));
@@ -469,7 +469,8 @@ public class LivingEntityBeyonderCapability {
     public void onPlayerDie(LivingDeathEvent event) {
         boolean dropForLowSanity = sanity < SANITY_FOR_DROP && PotioneerCommonConfig.CHARACTERISTIC_DROP_CRITERIA_ENUM_VALUE.get() == PotioneerCommonConfig.CharacteristicDropCriteria.LOW_SANITY;
         boolean doDrop = PotioneerCommonConfig.CHARACTERISTIC_DROP_CRITERIA_ENUM_VALUE.get() == PotioneerCommonConfig.CharacteristicDropCriteria.ALWAYS;
-        if((doDrop || dropForLowSanity) && event.getEntity() instanceof Player player && isBeyonder()){
+        boolean switchingPathwaysCheck = PotioneerCommonConfig.ALLOW_CHANGING_PATHWAYS.get() || (isBeyonder() && getSequenceLevel() < 9);
+        if((doDrop || dropForLowSanity) && switchingPathwaysCheck && event.getEntity() instanceof Player player && isBeyonder()){
             CharacteristicHelper.addCharacteristicToLevel(getPathwayId(), player.level(), player, player.position(), player.getRandom());
             advance((getPathwayId() % 10 != 9) ? getPathwayId() + 1 : -1, player, true, true);
         }

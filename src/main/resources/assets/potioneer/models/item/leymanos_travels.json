@@ -125,5 +125,8 @@
   },
   "textures": {
     "particle": "potioneer:item/leymanos_travels"
-  }
+  },
+  "overrides": [
+    { "predicate": { "potioneer:entity": 1 }, "model": "potioneer:item/leymanos_travels_inventory" }
+  ]
 }

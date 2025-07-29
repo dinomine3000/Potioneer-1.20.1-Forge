@@ -19,6 +19,8 @@ public class PotioneerCommonConfig {
     public static final ForgeConfigSpec.DoubleValue MAXIMUM_PASSIVE_ACTING_LIMIT;
     public static final ForgeConfigSpec.DoubleValue MINIMUM_PASSIVE_ACTING_LIMIT;
     public static final ForgeConfigSpec.IntValue SECONDS_TO_MAX_SPIRITUALITY;
+    public static final ForgeConfigSpec.BooleanValue PUBLIC_GROUPS;
+    public static final ForgeConfigSpec.BooleanValue ALLOW_CHANGING_PATHWAYS;
 
     public static final ForgeConfigSpec.EnumValue<CharacteristicDropCriteria> CHARACTERISTIC_DROP_CRITERIA_ENUM_VALUE;
 
@@ -57,9 +59,19 @@ public class PotioneerCommonConfig {
         CHARACTERISTIC_DROP_CRITERIA_ENUM_VALUE = BUILDER.comment("What are the criteria for dropping a characteristic on death?")
                         .defineEnum("char_drop_criteria", CharacteristicDropCriteria.LOW_SANITY);
 
+        ALLOW_CHANGING_PATHWAYS = BUILDER.comment("Should players be able to change pathways?" +
+                "\nSetting this to true means that people can drop a sequence level at level 9, becoming beyonderless and allowing them to drink any other pathway potion." +
+                "\nSetting this to false means that you can never drop your sequence 9 characteristic, meaning you can never change pathways  if you don't use commands")
+                .define("can_change_pathways", false);
+
         SECONDS_TO_MAX_SPIRITUALITY = BUILDER.comment("How many seconds does it take for someone to regenerate their spirituality from 0 to full?" +
-                "\nNote: this also affects how fast sanity regenerates, but now how fast it drops")
+                "\nNote: this also affects how fast sanity regenerates, but not how fast it drops")
                 .defineInRange("seconds_to_full", 15*60, 1, Integer.MAX_VALUE);
+
+        PUBLIC_GROUPS = BUILDER.comment("Should every player be able to see every group in the server or just admins?\n"
+                + "True means everyone can see every group and their players, false will mean they can only see groups they're in.\n"
+                + "Note that this doesnt put them in the group - they'll still need the password to get in.")
+                        .define("public_groups", false);
 
         BUILDER.pop();
         SPEC = BUILDER.build();

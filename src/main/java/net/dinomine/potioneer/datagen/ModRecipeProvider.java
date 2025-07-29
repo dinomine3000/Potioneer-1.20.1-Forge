@@ -86,6 +86,7 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                 .unlockedBy(getHasName(Items.SOUL_TORCH), has(Items.SOUL_TORCH))
                 .save(consumer);
 
+        //coin
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.COIN_ITEM.get())
                 .pattern(" I ")
                 .pattern("INI")
@@ -95,6 +96,7 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                 .unlockedBy(getHasName(Items.GOLD_NUGGET), has(Items.GOLD_NUGGET))
                 .save(consumer);
 
+        //dagger
         ShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, ModItems.RITUAL_DAGGER.get())
                 .pattern(" S ")
                 .pattern(" S ")
@@ -105,6 +107,7 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                 .unlockedBy(getHasName(Items.BLAZE_ROD), has(Items.BLAZE_ROD))
                 .save(consumer);
 
+        //pedestal
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModBlocks.RITUAL_PEDESTAL.get())
                 .pattern("DPD")
                 .pattern("PSP")
@@ -115,6 +118,7 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                 .unlockedBy(getHasName(Items.DIORITE), has(Items.DIORITE))
                 .save(consumer);
 
+        //altar
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModBlocks.RITUAL_ALTAR.get())
                 .pattern("CSC")
                 .pattern("PPP")
@@ -126,14 +130,17 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                 .unlockedBy(getHasName(Items.CRYING_OBSIDIAN), has(ItemTags.WOOL))
                 .save(consumer);
 
+        //sapphire from block
         ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, ModItems.SAPPHIRE.get(), 9)
                 .requires(ModBlocks.SAPPHIRE_BLOCK.get())
                 .unlockedBy(getHasName(ModBlocks.SAPPHIRE_BLOCK.get()), has(ModBlocks.SAPPHIRE_BLOCK.get()))
                 .save(consumer);
 
+        //ink bottle
         ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, ModItems.INK_BOTTLE.get())
                 .requires(Items.INK_SAC)
                 .requires(ModItems.SAPPHIRE.get())
+                .requires(Items.FEATHER)
                 .unlockedBy(getHasName(Items.INK_SAC), has(Items.INK_SAC))
                 .save(consumer);
     }

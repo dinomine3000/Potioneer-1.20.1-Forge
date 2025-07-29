@@ -1,0 +1,9 @@
+{
+  "parent": "item/generated",
+  "textures": {
+    "layer0": "potioneer:item/amulet"
+  },
+  "overrides": [
+    { "predicate": { "potioneer:enabled": 1 }, "model": "potioneer:item/amulet_socketed" }
+  ]
+}

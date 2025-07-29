@@ -34,7 +34,7 @@ public class BeyonderGamblingEffect extends BeyonderEffect {
 
     @Override
     protected void doTick(LivingEntityBeyonderCapability cap, LivingEntity target) {
-        if(tick++ > 40){
+        if(tick++ > 20){
             tick = 0;
             if(quantity < time) quantity += 1;
         }
