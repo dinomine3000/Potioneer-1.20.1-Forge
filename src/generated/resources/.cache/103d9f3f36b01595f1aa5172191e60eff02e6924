@@ -1,4 +1,7 @@
-// 1.20.1	2024-12-23T22:59:58.4266909	Registries
+// 1.20.1	2025-07-30T12:53:03.6858679	Registries
 3cce78affad8816eed97fbfbc37b7a6524abcfbd data/potioneer/forge/biome_modifier/add_sapphire_ore.json
+7f196af31e5c7c1d8c43c9e00b90962b4126d8fd data/potioneer/forge/biome_modifier/add_star_flower.json
 50627a0a17ed2f0690b792ff3c4779ea07ce0125 data/potioneer/worldgen/configured_feature/sapphire_ore.json
+e6dff93f14b496a333b9811ef2318fbaa1db7575 data/potioneer/worldgen/configured_feature/star_flower_block.json
 982f304da29d990e17f68f4f9ddf07fe1b2bd81b data/potioneer/worldgen/placed_feature/sapphire_ore_placed.json
+97626678bdf5db59615a7ca6ca1278b434ae0ba1 data/potioneer/worldgen/placed_feature/star_flower_placed.json

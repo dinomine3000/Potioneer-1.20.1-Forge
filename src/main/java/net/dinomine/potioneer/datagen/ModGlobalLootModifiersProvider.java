@@ -20,6 +20,10 @@ public class ModGlobalLootModifiersProvider extends GlobalLootModifierProvider {
 
     @Override
     protected void start() {
+        add("spirit_seeds_from_grass", new AddItemModifier(new LootItemCondition[] {
+                new LootTableIdCondition.Builder(new ResourceLocation("blocks/grass")).build(),
+                LootItemRandomChanceCondition.randomChance(0.2f).build()}, ModItems.SPIRIT_FRUIT_SEEDS.get()));
+
 
         add("coin_from_archeology_pyramid", new AddItemModifier(new LootItemCondition[] {
                 new LootTableIdCondition.Builder(new ResourceLocation("archaeology/desert_pyramid")).build(),

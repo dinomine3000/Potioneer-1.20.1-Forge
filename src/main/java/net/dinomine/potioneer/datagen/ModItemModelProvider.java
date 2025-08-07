@@ -62,6 +62,8 @@ public class ModItemModelProvider extends ItemModelProvider {
         simpleItem(ModItems.INK_BOTTLE);
         simpleItem(ModItems.NAZAR);
         simpleItem(ModItems.GEM);
+        simpleItem(ModItems.SPIRIT_FRUIT_SEEDS);
+        simpleItem(ModItems.SPIRIT_FRUIT);
         handheldItem(ModItems.MINER_PICKAXE);
         handheldItem(ModItems.FIRE_SWORD);
         handheldItem(ModItems.FROZEN_SWORD);

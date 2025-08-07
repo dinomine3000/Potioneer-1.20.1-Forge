@@ -17,6 +17,10 @@ import java.util.List;
 
 public class BeyonderCogitationEffect extends BeyonderEffect {
     private List<String> deactivatedAbilities = new ArrayList<>();
+    private boolean slownlessCheck = false;
+    private boolean darknessCheck = false;
+    private boolean weaknessCheck = false;
+    private boolean glowingCheck = false;
 
     public BeyonderCogitationEffect(int level, float cost, int time, boolean active, BeyonderEffects.EFFECT id){
         super(level, cost, time, active, id);
@@ -33,25 +37,33 @@ public class BeyonderCogitationEffect extends BeyonderEffect {
 
     @Override
     protected void doTick(LivingEntityBeyonderCapability cap, LivingEntity target) {
-        if(!target.hasEffect(MobEffects.MOVEMENT_SLOWDOWN))
-            target.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, -1, 3, true, true));
+        if(!target.hasEffect(MobEffects.MOVEMENT_SLOWDOWN)){
+            slownlessCheck = true;
+            target.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 20*5, 3, true, true));
+        }
 
-        if(!target.hasEffect(MobEffects.DARKNESS))
-            target.addEffect(new MobEffectInstance(MobEffects.DARKNESS, -1, 3, true, true));
+        if(!target.hasEffect(MobEffects.DARKNESS)){
+            darknessCheck = true;
+            target.addEffect(new MobEffectInstance(MobEffects.DARKNESS, 20*5, 3, true, true));
+        }
 
-        if(!target.hasEffect(MobEffects.WEAKNESS))
-            target.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, -1, 3, true, true));
+        if(!target.hasEffect(MobEffects.WEAKNESS)){
+            weaknessCheck = true;
+            target.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 20*5, 3, true, true));
+        }
 
-        if(!target.hasEffect(MobEffects.GLOWING))
-            target.addEffect(new MobEffectInstance(MobEffects.GLOWING, -1, 3, true, true));
+        if(!target.hasEffect(MobEffects.GLOWING)){
+            glowingCheck = true;
+            target.addEffect(new MobEffectInstance(MobEffects.GLOWING, 20*5, 3, true, true));
+        }
     }
 
     @Override
     public void stopEffects(LivingEntityBeyonderCapability cap, LivingEntity target) {
-        target.removeEffect(MobEffects.MOVEMENT_SLOWDOWN);
-        target.removeEffect(MobEffects.DARKNESS);
-        target.removeEffect(MobEffects.WEAKNESS);
-        target.removeEffect(MobEffects.GLOWING);
+        if(slownlessCheck) target.removeEffect(MobEffects.MOVEMENT_SLOWDOWN);
+        if(darknessCheck) target.removeEffect(MobEffects.DARKNESS);
+        if(weaknessCheck) target.removeEffect(MobEffects.WEAKNESS);
+        if(glowingCheck) target.removeEffect(MobEffects.GLOWING);
 
         if(target instanceof Player player)
             cap.getAbilitiesManager().reactivateAbilities(player, deactivatedAbilities);

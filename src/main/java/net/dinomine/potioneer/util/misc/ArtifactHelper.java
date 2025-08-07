@@ -170,7 +170,7 @@ public class ArtifactHelper {
     }
 
     public static boolean isValidItemForArtifact(ItemStack stack){
-        return !isValidArtifact(stack) && (stack.is(Tags.Items.TOOLS) || stack.is(ModItems.RING.get())) && !stack.is(ModItems.CHARACTERISTIC.get());
+        return !isValidArtifact(stack) && (stack.is(Tags.Items.TOOLS) || stack.is(ModItems.RING.get()) || stack.is(ModItems.CROWN.get())) && !stack.is(ModItems.CHARACTERISTIC.get());
     }
 
     public static boolean isValidArtifact(ItemStack stack){

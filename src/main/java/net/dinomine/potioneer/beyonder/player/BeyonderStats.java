@@ -129,7 +129,7 @@ public class BeyonderStats {
     //Credit to the create mod
     private static Multimap<Attribute, AttributeModifier> getHealthModifier(float val){
         AttributeModifier singleRangeAttributeModifier =
-                new AttributeModifier(UUID.fromString("d42aaaa2-0d0d-458a-aaaa-ac7633600000"),
+                new AttributeModifier(UUID.fromString("60377805-43e1-4c53-966b-1f279744716b"),
                         "potioneer health mod", val,
 
                         AttributeModifier.Operation.ADDITION);
@@ -140,7 +140,7 @@ public class BeyonderStats {
 
     private static Multimap<Attribute, AttributeModifier> getAttackModifier(float val){
         AttributeModifier singleRangeAttributeModifier =
-                new AttributeModifier(UUID.fromString("d42aaaa2-0d0d-458a-aaaa-ac7633611111"),
+                new AttributeModifier(UUID.fromString("f73a5318-f269-4a29-900a-51d10838c33c"),
                         "potioneer attack mod", val,
 
                         AttributeModifier.Operation.ADDITION);
@@ -151,7 +151,7 @@ public class BeyonderStats {
 
     private static Multimap<Attribute, AttributeModifier> getArmorModifier(float val){
         AttributeModifier singleRangeAttributeModifier =
-                new AttributeModifier(UUID.fromString("d42aaaa2-0d0d-458a-aaaa-ac7633622222"),
+                new AttributeModifier(UUID.fromString("2d7b02cd-d93c-4abb-aa82-da8897bdd0c6"),
                         "potioneer armor mod", val,
 
                         AttributeModifier.Operation.ADDITION);
@@ -162,7 +162,7 @@ public class BeyonderStats {
 
     private static Multimap<Attribute, AttributeModifier> getToughnessModifier(float val){
         AttributeModifier singleRangeAttributeModifier =
-                new AttributeModifier(UUID.fromString("d42aaaa2-0d0d-458a-aaaa-ac7633633333"),
+                new AttributeModifier(UUID.fromString("5adc375c-e334-4eba-96a0-52bbc84b5b6c"),
                         "potioneer toughness mod", val,
 
                         AttributeModifier.Operation.ADDITION);
@@ -173,7 +173,7 @@ public class BeyonderStats {
 
     private static Multimap<Attribute, AttributeModifier> getKnockbackModifier(float val){
         AttributeModifier singleRangeAttributeModifier =
-                new AttributeModifier(UUID.fromString("d42aaaa2-0d0d-458a-aaaa-ac7633644444"),
+                new AttributeModifier(UUID.fromString("d6085650-f859-4600-8af6-357d76104b8c"),
                         "potioneer knockback mod", val,
 
                         AttributeModifier.Operation.ADDITION);

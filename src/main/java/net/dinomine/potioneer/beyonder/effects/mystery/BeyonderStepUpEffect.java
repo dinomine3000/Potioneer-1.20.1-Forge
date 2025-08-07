@@ -46,7 +46,7 @@ public class BeyonderStepUpEffect extends BeyonderEffect {
     //Credit to the create mod
     private static Multimap<Attribute, AttributeModifier> getStepModifier(int sequence){
         AttributeModifier singleRangeAttributeModifier =
-                new AttributeModifier(UUID.fromString("d42bbdf2-0d0d-458a-dddd-ac7633691f66"),
+                new AttributeModifier(UUID.fromString("e3461150-2bdc-40b9-b526-d16e2104e6c7"),
                         "Beyonder step modifier", 0.5f,
 
                         AttributeModifier.Operation.ADDITION);

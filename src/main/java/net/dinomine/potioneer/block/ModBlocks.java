@@ -49,17 +49,17 @@ public class ModBlocks {
                     .mapColor(MapColor.STONE).requiresCorrectToolForDrops()
                     .strength(2.0F).noOcclusion()));
 
-    public static final RegistryObject<Block> MINER_LIGHT = registerBlock("miner_light",
+    public static final RegistryObject<Block> MINER_LIGHT = BLOCKS.register("miner_light",
             () -> new MinerLightSourceBlock(
                     BlockBehaviour.Properties.of().instabreak().noCollission()
                             .lightLevel((p_50755_) -> 14).sound(SoundType.STONE).pushReaction(PushReaction.DESTROY)));
 
-    public static final RegistryObject<Block> WATER_TRAP_BLOCK = registerBlock("water_trap",
+    public static final RegistryObject<Block> WATER_TRAP_BLOCK = BLOCKS.register("water_trap",
             () -> new WaterTrapBlock(
                     BlockBehaviour.Properties.of().noCollission().friction(-1).destroyTime(10)
                             .sound(SoundType.LILY_PAD).pushReaction(PushReaction.DESTROY)));
 
-    public static final RegistryObject<Block> PRIEST_LIGHT = registerBlock("priest_light",
+    public static final RegistryObject<Block> PRIEST_LIGHT = BLOCKS.register("priest_light",
             () -> new PriestLightSourceBlock(
                     BlockBehaviour.Properties.of().instabreak().noCollission()
                             .lightLevel((p_50755_) -> 14).sound(SoundType.GLASS).pushReaction(PushReaction.DESTROY)));
@@ -83,6 +83,10 @@ public class ModBlocks {
     public static final RegistryObject<Block> RITUAL_PEDESTAL = registerBlock("ritual_pedestal",
             () -> new RitualPedestal(BlockBehaviour.Properties.copy(Blocks.DIORITE)
                     .mapColor(MapColor.QUARTZ)));
+
+
+        public static final RegistryObject<Block> SPIRIT_FRUIT_CROP = BLOCKS.register("spirit_fruit",
+            () -> new SpiritFruitCropBlock(BlockBehaviour.Properties.copy(Blocks.WHEAT).noOcclusion().noCollission()));
 
 
     private static <T extends Block> RegistryObject<T> registerBlock(String name, Supplier<T> block){

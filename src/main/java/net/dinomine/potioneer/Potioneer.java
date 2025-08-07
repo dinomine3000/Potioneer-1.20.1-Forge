@@ -131,6 +131,7 @@ public class Potioneer
     @Mod.EventBusSubscriber(modid = MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
     public static class ClientModEvents
     {
+
         @SubscribeEvent
         public static void onClientSetup(FMLClientSetupEvent event)
         {
@@ -164,6 +165,11 @@ public class Potioneer
                             itemStack.getTag() != null ? itemStack.getTag().getCompound("potion_info").getInt("amount") : 0));
 
             ItemProperties.register(ModItems.RING.get(),
+                    new ResourceLocation(Potioneer.MOD_ID, "artifact"),
+                    ((itemStack, clientLevel, livingEntity, i) ->
+                            itemStack.getTag() != null && itemStack.getTag().contains(ArtifactHelper.ARTIFACT_TAG_ID) ?  1f : 0f));
+
+            ItemProperties.register(ModItems.CROWN.get(),
                     new ResourceLocation(Potioneer.MOD_ID, "artifact"),
                     ((itemStack, clientLevel, livingEntity, i) ->
                             itemStack.getTag() != null && itemStack.getTag().contains(ArtifactHelper.ARTIFACT_TAG_ID) ?  1f : 0f));

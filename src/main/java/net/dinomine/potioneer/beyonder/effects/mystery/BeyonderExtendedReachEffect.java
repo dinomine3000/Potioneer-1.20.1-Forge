@@ -50,7 +50,7 @@ public class BeyonderExtendedReachEffect extends BeyonderEffect {
     //Credit to the create mod
     private static Multimap<Attribute, AttributeModifier> getBlockReachModifier(int sequence){
         AttributeModifier singleRangeAttributeModifier =
-                new AttributeModifier(UUID.fromString("c42bbdf2-0d0d-458a-aaaa-ac7633691f66"),
+                new AttributeModifier(UUID.fromString("a513a95f-5433-49ae-a928-e500cd0e8a84"),
                         "Beyonder range modifier", 3*(10-sequence),
 
                         AttributeModifier.Operation.ADDITION);
@@ -63,7 +63,7 @@ public class BeyonderExtendedReachEffect extends BeyonderEffect {
     //Credit to the create mod
     private static Multimap<Attribute, AttributeModifier> getEntityReachModifier(int sequence){
         AttributeModifier singleRangeAttributeModifier =
-                new AttributeModifier(UUID.fromString("d42bbdf2-0d0d-458a-aaaa-ac7633691f66"),
+                new AttributeModifier(UUID.fromString("d7f8685b-fda0-4c4f-862d-088bad3a8983"),
                         "Beyonder entity range modifier", 3*(10-sequence),
 
                         AttributeModifier.Operation.ADDITION);

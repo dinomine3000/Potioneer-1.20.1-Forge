@@ -71,7 +71,7 @@ public class WaterAffinityAbility extends Ability {
     //Credit to the create mod
     private static Multimap<Attribute, AttributeModifier> getEntitySwimSpeedModifier(int sequence){
         AttributeModifier singleRangeAttributeModifier =
-                new AttributeModifier(UUID.fromString("d42aaaa2-0d0d-aaaa-aaaa-ac7633691f66"),
+                new AttributeModifier(UUID.fromString("9716a637-f0c7-41fa-9852-918df4567a91"),
                         "Beyonder swim speed modifier", (sequence-8.7-8.5)*(sequence-3.6-8.5)*0.08,
 
                         AttributeModifier.Operation.MULTIPLY_BASE);

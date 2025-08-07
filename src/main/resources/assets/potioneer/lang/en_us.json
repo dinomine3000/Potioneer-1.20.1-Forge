@@ -22,6 +22,7 @@
   "item.potioneer.polished_diamond": "Polished Diamond",
   "item.potioneer.beyonder_characteristic": "Beyonder Characteristic",
   "item.potioneer.ring": "Ring",
+  "item.potioneer.crown": "Crown",
   "item.potioneer.ritualistic_dagger": "Ritualistic Dagger",
   "item.potioneer.ink_bottle": "Ink Bottle",
 
@@ -68,6 +69,8 @@
   "item.potioneer.flask.cactus_sap": "Wandering Cactus Sap Flask",
   "item.potioneer.flask.generalized": "%s Flask",
   "item.potioneer.straw_doll": "Straw Doll",
+  "item.potioneer.spirit_fruit": "Fruit of Spirit",
+  "item.potioneer.spirit_fruit_seeds": "Fruits of Spirit Seeds",
 
   "item.potioneer.leymanos_travels": "Leymano's Travels",
   "item.potioneer.unshadowed_crucifix": "Unshadowed Crucifix",

@@ -1,6 +1,7 @@
 package net.dinomine.potioneer.item;
 
 import net.dinomine.potioneer.Potioneer;
+import net.dinomine.potioneer.block.ModBlocks;
 import net.dinomine.potioneer.entities.ModEntities;
 import net.dinomine.potioneer.item.custom.BeyonderPotion.BeyonderPotionItem;
 import net.dinomine.potioneer.item.custom.*;
@@ -9,10 +10,10 @@ import net.dinomine.potioneer.item.custom.cane.CaneItem;
 import net.dinomine.potioneer.item.custom.coin.CoinItem;
 import net.dinomine.potioneer.item.custom.leymanosTravels.LeymanosTravels;
 import net.dinomine.potioneer.item.custom.scepter.cane.ScepterItem;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.Rarity;
-import net.minecraft.world.item.SwordItem;
-import net.minecraft.world.item.Tiers;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.food.FoodProperties;
+import net.minecraft.world.item.*;
 import net.minecraftforge.common.ForgeSpawnEggItem;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.registries.DeferredRegister;
@@ -35,8 +36,8 @@ public class ModItems {
     public static final RegistryObject<Item> SOLSEER = ITEMS.register("solseer",
             () -> new Item(new Item.Properties()));
 
-    public static final RegistryObject<Item> PARAGON_FUEL = ITEMS.register("paragon_cake",
-            () -> new Item(new Item.Properties().stacksTo(1)));
+//    public static final RegistryObject<Item> PARAGON_FUEL = ITEMS.register("paragon_cake",
+//            () -> new Item(new Item.Properties().stacksTo(1)));
 
     public static final RegistryObject<Item> WANDERING_CACTUS_PRICK = ITEMS.register("wandering_cactus_prick",
             () -> new Item(new Item.Properties()));
@@ -56,8 +57,8 @@ public class ModItems {
     public static final RegistryObject<Item> MINER_PICKAXE = ITEMS.register("conjured_pickaxe",
             () -> new ConjuredPickaxeItem(new Item.Properties().setNoRepair().durability(10)));
 
-    public static final RegistryObject<Item> GHOST_FISHING_ROD = ITEMS.register("ghostly_fishing_rod",
-            () -> new GhastlyFishingRod(new Item.Properties().rarity(Rarity.COMMON)));
+//    public static final RegistryObject<Item> GHOST_FISHING_ROD = ITEMS.register("ghostly_fishing_rod",
+//            () -> new GhastlyFishingRod(new Item.Properties().rarity(Rarity.COMMON)));
 
 
     public static final RegistryObject<Item> VIAL = ITEMS.register("vial", () -> new Vial(new Item.Properties()));
@@ -107,10 +108,14 @@ public class ModItems {
             () -> new Item(new Item.Properties()));
 
     public static final RegistryObject<Item> ROOTS = ITEMS.register("roots",
-            () -> new Item(new Item.Properties()));
+            () -> new Item(new Item.Properties().food(new FoodProperties.Builder().nutrition(2).saturationMod(1)
+                    .effect(() -> new MobEffectInstance(MobEffects.HUNGER), 0.1f).build())));
 
     public static final RegistryObject<Item> RING = ITEMS.register("ring",
             () -> new Item(new Item.Properties().stacksTo(1)));
+
+    public static final RegistryObject<Item> CROWN = ITEMS.register("crown",
+            () -> new ArmorItem(ArmorMaterials.GOLD, ArmorItem.Type.HELMET, new Item.Properties().stacksTo(1)));
 
     public static final RegistryObject<Item> ASTEROID_DEBUG = ITEMS.register("asteroid_debug",
             () -> new AsteroidDebugItem(new Item.Properties().stacksTo(1)));
@@ -147,6 +152,13 @@ public class ModItems {
 
     public static final RegistryObject<Item> AMULET = ITEMS.register("amulet",
             () -> new NecklaceItem(new Item.Properties().stacksTo(1)));
+
+    public static final RegistryObject<Item> SPIRIT_FRUIT_SEEDS = ITEMS.register("spirit_fruit_seeds",
+            () -> new ItemNameBlockItem(ModBlocks.SPIRIT_FRUIT_CROP.get(), new Item.Properties()));
+
+    public static final RegistryObject<Item> SPIRIT_FRUIT = ITEMS.register("spirit_fruit",
+            () -> new SpiritFruitItem(new Item.Properties().food(new FoodProperties.Builder().fast().nutrition(0).alwaysEat()
+                    .build())));
 
 
     /*ublic static final RegistryObject<Item> METAL_ROD = ITEMS.register("metal_detector",

@@ -20,6 +20,7 @@
     "potioneer:formula_from_temple",
     "potioneer:formula_from_buried",
     "potioneer:formula_from_ancient_city",
+    "potioneer:spirit_seeds_from_grass",
     "potioneer:formula_from_shipwreck"
   ],
   "replace": false

@@ -44,6 +44,7 @@ public class ModCreativeModTabs {
                         output.accept(ModItems.DIVINATION_ROD.get());
                         output.accept(ModItems.VOODOO_DOLL.get());
                         output.accept(ModItems.RING.get());
+                        output.accept(ModItems.CROWN.get());
                         output.accept(ModItems.CHARM.get());
                         output.accept(ModItems.AMULET.get());
                         output.accept(ModItems.GEM.get());
@@ -77,6 +78,8 @@ public class ModCreativeModTabs {
                         vial.setTag(tag);
                         output.accept(vial);
 
+                        output.accept(ModItems.SPIRIT_FRUIT.get());
+                        output.accept(ModItems.SPIRIT_FRUIT_SEEDS.get());
                         output.accept(ModItems.FROZEN_SWORD.get());
                         output.accept(ModItems.CHRYON_CORE.get());
                         output.accept(ModItems.CHRYON_SNOW.get());

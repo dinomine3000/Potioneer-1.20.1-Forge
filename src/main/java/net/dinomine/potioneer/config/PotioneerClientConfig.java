@@ -10,6 +10,7 @@ public class PotioneerClientConfig {
     public static final ForgeConfigSpec.DoubleValue ORB_OFFSET;
     public static final ForgeConfigSpec.ConfigValue<Integer> ORB_SCALE;
     public static final ForgeConfigSpec.DoubleValue HOTBAR_SCALE;
+    public static final ForgeConfigSpec.ConfigValue<Boolean> POTION_DIGESTED_MESSAGE;
 
     public enum HOTBAR_POS{
         LEFT,
@@ -37,6 +38,10 @@ public class PotioneerClientConfig {
 
         HOTBAR_SCALE = BUILDER.comment("Hotbar Scale, in decimal, between 1 and 5")
                 .defineInRange("Hotbar Scale", 1d, 1d, 5d);
+
+        POTION_DIGESTED_MESSAGE = BUILDER.comment("Should you get a message of fully digested potion every time you log in?" +
+                "\nTrue will send you a message everytime you join if you've completely digested it, false will only send it when you actually digest it for the first time")
+                        .define("Potion Digested Message on Join", false);
 
         BUILDER.pop();
         SPEC = BUILDER.build();

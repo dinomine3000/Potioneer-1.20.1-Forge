@@ -21,6 +21,16 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.fml.ModList;
+import top.theillusivec4.curios.api.CuriosApi;
+import top.theillusivec4.curios.api.type.capability.ICuriosItemHandler;
+import top.theillusivec4.curios.api.type.inventory.ICurioStacksHandler;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.StreamSupport;
 
 public class CharacteristicItem extends Item {
     public CharacteristicItem(Properties pProperties) {
@@ -65,7 +75,25 @@ public class CharacteristicItem extends Item {
         if(pLevel.isClientSide()) return;
         if(pStack.hasTag() && pStack.getTag().contains(ArtifactHelper.BEYONDER_TAG_ID) && pLevel.random.nextInt(200) == 1){
             if(pEntity instanceof Player player){
-                NonNullList<ItemStack> items = player.getInventory().items;
+                ArrayList<ItemStack> items = new ArrayList(player.getInventory().items.stream().toList());
+                items.addAll(StreamSupport.stream(player.getArmorSlots().spliterator(), false).toList());
+
+
+                if(ModList.get().isLoaded("curios")){
+                    if(CuriosApi.getCuriosInventory(player).resolve().isPresent()){
+                        ICuriosItemHandler curiosInventory = CuriosApi.getCuriosInventory(player).resolve().get();
+                        Map<String, ICurioStacksHandler> curios = curiosInventory.getCurios();
+                        for(ICurioStacksHandler handler: curios.values()){
+                            int slots = handler.getSlots();
+                            for(int i = 0; i < slots; i++){
+                                ItemStack itemStack = handler.getStacks().getStackInSlot(i);
+                                items.add(itemStack);
+                            }
+                        }
+                    }
+                }
+                items.add(player.getOffhandItem());
+
                 for(ItemStack stack: items){
                     if(ArtifactHelper.isValidItemForArtifact(stack)){
                         pLevel.playSound(null, pEntity.getOnPos(), SoundEvents.ENCHANTMENT_TABLE_USE, SoundSource.PLAYERS, 1, 1);

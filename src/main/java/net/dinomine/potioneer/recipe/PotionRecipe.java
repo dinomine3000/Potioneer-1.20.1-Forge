@@ -13,18 +13,21 @@ public record PotionRecipe(PotionRecipeData input, PotionContentData output) {
     }
 
     public boolean matches(PotionCauldronContainer container){
-        if(input.fire() && !container.isOnFire()) return false;
-        if(input.waterLevel() != container.getWaterLevel()) return false;
-
         //will return true if it finds a valid characteristic-like item
         for(int i = 0; i < container.getContainerSize(); i++){
             if(container.getItem(i).hasTag()
                     && container.getItem(i).getTag().contains(ArtifactHelper.BEYONDER_TAG_ID)){
                 CompoundTag beyonderTag = container.getItem(i).getTag().getCompound(ArtifactHelper.BEYONDER_TAG_ID);
-                if(beyonderTag.getInt("id") == input.id()) return true;
+                if(input.id() > -1 && beyonderTag.getInt("id") == input.id()) return true;
             }
         }
 
+        //if there are no main ingredients, it means its a special beyonder potion (seq 1 or 0) and should be based on other criteria,
+        //primarily, using the actual characteristics as main ingredients.
+        //so to not cause any meaningless conflicts, if a potion has no main ingredients it can only match
+        //if the cauldron contains its respective characteristic
+        //TODO make the code above actually check for 3 characteristics and uniqueness for seq0
+        if(input.main().isEmpty()) return false;
         //will return true if every item in the recipe is contained in the container
         for(ItemStack recipeItem: input.main()){
             if(!contains(container, recipeItem)) {
@@ -36,7 +39,8 @@ public record PotionRecipe(PotionRecipeData input, PotionContentData output) {
     
     public boolean canCraft(PotionCauldronContainer container){
         if(!matches(container)) return false;
-
+        if(input.fire() && !container.isOnFire()) return false;
+        if(input.waterLevel() != container.getWaterLevel()) return false;
         for(ItemStack recipeItem: input.supplementary()){
             if(!contains(container, recipeItem)) return false;
         }

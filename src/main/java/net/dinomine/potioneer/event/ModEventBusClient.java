@@ -45,6 +45,7 @@ public class ModEventBusClient {
         event.register(new AbstractLiquidContainer.LiquidContainerTint(), ModItems.VIAL.get(), ModItems.FLASK.get());
         event.register(new CharacteristicItem.CharacteristicTint(), ModItems.CHARACTERISTIC.get());
         event.register(new ArtifactTint(), ModItems.RING.get());
+        event.register(new ArtifactTint(), ModItems.CROWN.get());
         event.register(new GemItem.GemItemTint(), ModItems.GEM.get());
         event.register(new NecklaceItem.NecklaceItemTint(), ModItems.AMULET.get());
     }

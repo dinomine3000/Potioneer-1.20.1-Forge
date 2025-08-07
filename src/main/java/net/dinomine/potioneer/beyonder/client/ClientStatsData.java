@@ -1,6 +1,7 @@
 package net.dinomine.potioneer.beyonder.client;
 
 import net.dinomine.potioneer.beyonder.client.screen.AdvancementScreen;
+import net.dinomine.potioneer.config.PotioneerClientConfig;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
@@ -91,7 +92,7 @@ public class ClientStatsData {
     }
 
     public static void setActing(float acting) {
-        if(actingProgress == 0 && acting >= 0.95){
+        if(!PotioneerClientConfig.POTION_DIGESTED_MESSAGE.get() && actingProgress == 0 && acting >= 0.95){
             actingProgress = acting;
             return;
         }

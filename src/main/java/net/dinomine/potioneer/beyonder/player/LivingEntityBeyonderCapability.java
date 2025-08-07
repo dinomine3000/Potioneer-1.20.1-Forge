@@ -145,7 +145,7 @@ public class LivingEntityBeyonderCapability {
 
     public void onFoodEat(ItemStack item, LivingEntity target) {
         if(item.getFoodProperties(target) == null) return;
-        changeSpirituality(item.getFoodProperties(target).getNutrition() * getMaxSpirituality()/120f);
+        changeSpirituality(item.getFoodProperties(target).getNutrition() * getMaxSpirituality()/160f);
     }
 
     public float getSpirituality(){

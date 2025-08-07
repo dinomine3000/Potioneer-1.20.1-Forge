@@ -40,12 +40,16 @@ public class BeyonderDurabilityEffect extends BeyonderEffect {
                 }
             }
             ItemStack mainItem = target.getMainHandItem();
-            if(mainItem.getDamageValue() > 0 && cap.getSpirituality() > cost) cap.requestActiveSpiritualityCost(cost);
-            mainItem.setDamageValue(Math.max(mainItem.getDamageValue() - 5*(int)Math.pow(10-sequenceLevel, 2) - 15, 0));
+            if(mainItem.isDamageableItem() && mainItem.getDamageValue() > 0 && cap.getSpirituality() > cost){
+                cap.requestActiveSpiritualityCost(cost);
+                mainItem.setDamageValue(Math.max(mainItem.getDamageValue() - 5*(int)Math.pow(10-sequenceLevel, 2) - 15, 0));
+            }
 
             ItemStack offhandItem = target.getOffhandItem();
-            if(offhandItem.getDamageValue() > 0 && cap.getSpirituality() > cost/4f) cap.requestActiveSpiritualityCost(cost/4f);
-            offhandItem.setDamageValue(Math.max(offhandItem.getDamageValue() - 5*(int)Math.pow(10-sequenceLevel, 2) - 15, 0));
+            if(offhandItem.getDamageValue() > 0 && cap.getSpirituality() > cost/4f){
+                cap.requestActiveSpiritualityCost(cost/4f);
+                offhandItem.setDamageValue(Math.max(offhandItem.getDamageValue() - 5*(int)Math.pow(10-sequenceLevel, 2) - 15, 0));
+            }
         }
         if(lifetime >= maxLife){
             target.sendSystemMessage(Component.literal("Ability Durability Regen was turned off."));

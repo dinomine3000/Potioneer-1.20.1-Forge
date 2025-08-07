@@ -1,5 +1,5 @@
-// 1.20.1	2025-07-06T19:17:33.7232778	Global Loot Modifiers : potioneer
-4e198760542e100aa4ca0525ab07d13f60cfd5bf data/forge/loot_modifiers/global_loot_modifiers.json
+// 1.20.1	2025-07-30T11:13:04.0173982	Global Loot Modifiers : potioneer
+29472e545af721eb75f8d2be76fcb9484450d2e5 data/forge/loot_modifiers/global_loot_modifiers.json
 f763e66418fca1e3465c726cd5c2bd4bad5f270f data/potioneer/loot_modifiers/coin_from_archeology_cold.json
 63c880455362588cee689215ab32e911c0c2dc65 data/potioneer/loot_modifiers/coin_from_archeology_pyramid.json
 f5a8c8ec38830c5b67c4f21ffa36152bde0c7eef data/potioneer/loot_modifiers/coin_from_archeology_warm.json
@@ -21,3 +21,4 @@ e96878ada9753089391095d272177b9d092dc2fb data/potioneer/loot_modifiers/formula_f
 97de86057c9b246ec81c8a222e2f4f5806cde4c6 data/potioneer/loot_modifiers/formula_from_village_blacksmith.json
 6d90bd075c8659dd5c263702954dd7cf080a63a7 data/potioneer/loot_modifiers/formula_from_village_temple.json
 5cee54458df58877143b6f1d12cfdf9e36432c08 data/potioneer/loot_modifiers/formula_from_village_toolsmith.json
+8e8b60ee4ac0c8249e13fd4d539e0c928f324958 data/potioneer/loot_modifiers/spirit_seeds_from_grass.json
