@@ -16,6 +16,8 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraftforge.common.Tags;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.TickEvent;
@@ -237,35 +239,31 @@ public class PlayerBeyonderManager {
     @SubscribeEvent
     public static void onBlockBroken(BlockEvent.BreakEvent event){
         if(event.getPlayer().isCreative() || event.getPlayer().isSpectator()) return;
+        if(event.getPlayer().level().isClientSide()) return;
         event.getPlayer().getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
             int i = 1;
             ItemStack pick = event.getPlayer().getMainHandItem().copy();
+            if(pick.isEmpty()) pick = new ItemStack(Items.COMPASS);
             boolean fortune = cap.getEffectsManager().hasEffect(BeyonderEffects.EFFECT.WHEEL_FORTUNE);
             boolean silk = cap.getEffectsManager().hasEffect(BeyonderEffects.EFFECT.WHEEL_SILK_TOUCH);
 
             if(fortune && event.getState().is(Tags.Blocks.ORES)){
-                int lvl = (10 - cap.getEffectsManager().getEffect(BeyonderEffects.EFFECT.WHEEL_FORTUNE).getSequenceLevel())/2;
-                while(lvl > 1){
+                float lvl = 1 + (10 - cap.getEffectsManager().getEffect(BeyonderEffects.EFFECT.WHEEL_FORTUNE).getSequenceLevel())/2f;
+                while(lvl >= 1){
                     lvl--;
                     i++;
                 }
-                if(lvl < event.getLevel().getRandom().nextFloat()){
+                if(event.getLevel().getRandom().nextFloat() < lvl){
                     i++;
                 }
             }
             if (silk) {
-                CompoundTag enchTag = new CompoundTag();
-                ListTag list = new ListTag();
-                CompoundTag silkTouch = new CompoundTag();
-                silkTouch.putString("id", "minecraft:silk_touch");
-                silkTouch.putShort("lvl", (short) 1);
-                list.add(silkTouch);
-                enchTag.put("Enchantments", list);
-                pick.setTag(enchTag);
+                pick.enchant(Enchantments.SILK_TOUCH, 1);
             }
 
             if (fortune || silk) {
-                System.out.println("Applied at least one of the effects");
+//                System.out.println("Applied at least one of the effects");
+                event.setCanceled(true);
                 event.getLevel().removeBlock(event.getPos(), false);
 //                event.getLevel().destroyBlock(event.getPos(), false, event.getPlayer());
                 while (i-- > 0) {

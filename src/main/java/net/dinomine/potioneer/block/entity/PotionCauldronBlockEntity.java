@@ -112,7 +112,7 @@ public class PotionCauldronBlockEntity extends BlockEntity {
             return handler.cast();
         }
 
-        return super.getCapability(cap);
+        return super.getCapability(cap, side);
     }
 
     public InteractionResult onPlayerInteract(Item item, ItemStack heldItemStack, PotionCauldronBlock cauldron, Level pLevel, BlockPos pPos, Player pPlayer, InteractionHand pHand){
