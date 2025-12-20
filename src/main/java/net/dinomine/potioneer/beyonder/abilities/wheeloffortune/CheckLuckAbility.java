@@ -23,7 +23,7 @@ import java.util.function.Predicate;
 public class CheckLuckAbility extends Ability {
 
     public CheckLuckAbility(int sequence){
-        this.info = new AbilityInfo(5, 104, "Luck Check", sequence, 0, getCooldown(), "luck_check" + (sequence > 7 ? "1" : "2"));
+        this.info = new AbilityInfo(5, 104, "Luck Check", sequence, 0, getMaxCooldown(), "luck_check" + (sequence > 7 ? "1" : "2"));
     }
 
     @Override

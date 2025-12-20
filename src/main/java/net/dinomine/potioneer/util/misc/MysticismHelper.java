@@ -11,7 +11,6 @@ import net.dinomine.potioneer.recipe.PotionRecipeData;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.effect.MobEffectCategory;
@@ -55,7 +54,7 @@ public class MysticismHelper {
         PotionFormulaSaveData savedData = PotionFormulaSaveData.from(level);
         Optional<LivingEntityBeyonderCapability> capability = seer.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve();
         //progress acting for hydro shaman by 0.25% per divination
-        capability.ifPresent(cap -> cap.getActingManager().progressActing(1 / 400f, 18));
+        capability.ifPresent(cap -> cap.getCharacteristicManager().progressActing(1 / 400f, 18));
         if(item.isEmpty()){
             //dream divination / miscelaneous divination
             //return something to do with the next step the player should take to advance
@@ -89,7 +88,7 @@ public class MysticismHelper {
             if(target != null) {
                 Optional<LivingEntityBeyonderCapability> cap = target.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve();
                 if(cap.isPresent()){
-                    int targetSequence = cap.get().getPathwayId();
+                    int targetSequence = cap.get().getPathwaySequenceId();
                     float hp = target.getHealth() / target.getMaxHealth();
                     float spiritualityPercent = cap.get().getSpirituality() / cap.get().getMaxSpirituality();
                     float sanityPercent = cap.get().getSanity() / 100f;
@@ -119,7 +118,7 @@ public class MysticismHelper {
             if(target != null) {
                 Optional<LivingEntityBeyonderCapability> cap = target.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve();
                 if(cap.isPresent()){
-                    int targetSequence = cap.get().getPathwayId();
+                    int targetSequence = cap.get().getPathwaySequenceId();
                     float hp = target.getHealth() / target.getMaxHealth();
                     float spiritualityPercent = cap.get().getSpirituality() / cap.get().getMaxSpirituality();
                     float sanityPercent = cap.get().getSanity() / 100f;

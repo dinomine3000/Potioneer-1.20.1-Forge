@@ -6,7 +6,7 @@ import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
 import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
 import net.dinomine.potioneer.beyonder.player.PlayerLuckManager;
 import net.dinomine.potioneer.network.PacketHandler;
-import net.dinomine.potioneer.network.messages.abilityRelevant.OpenDivinationScreenSTC;
+import net.dinomine.potioneer.network.messages.abilityRelevant.abilitySpecific.OpenDivinationScreenSTC;
 import net.dinomine.potioneer.util.PotioneerMathHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
@@ -44,7 +44,7 @@ public class DivinationAbility extends Ability {
     }
 
     public DivinationAbility(int sequence){
-        this.info = new AbilityInfo(31, 56, "Divination", 10 + sequence, 0, this.getCooldown(), "divination");
+        this.info = new AbilityInfo(31, 56, "Divination", 10 + sequence, 0, this.getMaxCooldown(), "divination");
     }
 
     @Override

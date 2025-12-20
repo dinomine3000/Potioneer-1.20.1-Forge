@@ -1,4 +1,4 @@
-package net.dinomine.potioneer.network.messages;
+package net.dinomine.potioneer.network.messages.abilityRelevant;
 
 import net.dinomine.potioneer.beyonder.client.ClientAbilitiesData;
 import net.minecraft.network.FriendlyByteBuf;

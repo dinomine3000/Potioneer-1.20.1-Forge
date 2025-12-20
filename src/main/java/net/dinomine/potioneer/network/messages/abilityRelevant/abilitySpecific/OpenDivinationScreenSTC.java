@@ -1,4 +1,4 @@
-package net.dinomine.potioneer.network.messages.abilityRelevant;
+package net.dinomine.potioneer.network.messages.abilityRelevant.abilitySpecific;
 
 import net.dinomine.potioneer.beyonder.client.screen.DivinationScreen;
 import net.minecraft.client.Minecraft;

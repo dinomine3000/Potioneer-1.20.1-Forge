@@ -110,7 +110,7 @@ public class WaterTrapBlock extends BaseEntityBlock implements SimpleWaterlogged
         if(pLevel.isClientSide) return InteractionResult.SUCCESS;
         BlockEntity be = pLevel.getBlockEntity(pPos);
         if(be instanceof WaterTrapBlockEntity trapEntity && pPlayer.getCapability(BeyonderStatsProvider.BEYONDER_STATS).isPresent()){
-            trapEntity.incrementIndex(pPlayer, pPlayer.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve().get().getPathwayId());
+            trapEntity.incrementIndex(pPlayer, pPlayer.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve().get().getPathwaySequenceId());
             return InteractionResult.SUCCESS;
         }
         return InteractionResult.PASS;

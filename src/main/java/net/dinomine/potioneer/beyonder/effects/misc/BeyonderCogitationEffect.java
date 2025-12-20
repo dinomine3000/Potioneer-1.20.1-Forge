@@ -37,6 +37,7 @@ public class BeyonderCogitationEffect extends BeyonderEffect {
 
     @Override
     protected void doTick(LivingEntityBeyonderCapability cap, LivingEntity target) {
+        cap.requestPassiveSpiritualityCost(-(cap.getMaxSpirituality()/60f));
         if(!target.hasEffect(MobEffects.MOVEMENT_SLOWDOWN)){
             slownlessCheck = true;
             target.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 20*5, 3, true, true));

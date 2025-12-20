@@ -2,13 +2,14 @@ package net.dinomine.potioneer.beyonder.player;
 
 import net.dinomine.potioneer.beyonder.abilities.Ability;
 import net.dinomine.potioneer.beyonder.abilities.AbilityInfo;
+import net.dinomine.potioneer.beyonder.abilities.ArtifactHolder;
 import net.dinomine.potioneer.item.ModItems;
 import net.dinomine.potioneer.item.custom.NecklaceItem;
 import net.dinomine.potioneer.util.misc.ArtifactHelper;
 import net.dinomine.potioneer.network.PacketHandler;
-import net.dinomine.potioneer.network.messages.PlayerAbilityCooldownSTC;
-import net.dinomine.potioneer.network.messages.PlayerArtifactSyncSTC;
-import net.dinomine.potioneer.network.messages.PlayerCastAbilityMessageCTS;
+import net.dinomine.potioneer.network.messages.abilityRelevant.PlayerAbilityCooldownSTC;
+import net.dinomine.potioneer.network.messages.abilityRelevant.PlayerArtifactSyncSTC;
+import net.dinomine.potioneer.network.messages.abilityRelevant.PlayerCastAbilityMessageCTS;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
@@ -23,26 +24,31 @@ import top.theillusivec4.curios.api.type.inventory.ICurioStacksHandler;
 import java.util.*;
 
 public class PlayerAbilitiesManager {
-    private Map<String, Ability> pathwayActives = new HashMap<>();
-    public Map<String, Boolean> enabledDisabled = new HashMap<>();
+    private ArrayList<String> pathwayAbilities = new ArrayList<>();
+    //private ArrayList<String> replicatedAbilities = new ArrayList<>();
+    //private ArrayList<String> recordedAbilities = new ArrayList<>();
+    private ArrayList<ArtifactHolder> artifacts = new ArrayList<>();
+    public ArrayList<String> disabledList = new ArrayList<>();
     private Map<String, Integer> activeCooldowns = new HashMap<>();
-    private Map<String, Ability> artifactActives = new HashMap<>();
 
     public ArrayList<String> clientHotbar = new ArrayList<>();
     public String quickAbility = "";
 
     public void copyFrom(PlayerAbilitiesManager mng){
-        this.enabledDisabled = new HashMap<>(mng.enabledDisabled);
+        this.disabledList = new ArrayList<>(mng.disabledList);
         this.clientHotbar = mng.clientHotbar;
         this.quickAbility = mng.quickAbility;
     }
 
-    public void useArtifactAbililty(LivingEntityBeyonderCapability cap, Player player, List<String> artifactIds){
+    public Ability getAbility(String cAblId){
+    }
+
+    public void castArtifactAbilityAll(LivingEntityBeyonderCapability cap, Player player, String artifactId){
         if(artifactIds == null || artifactIds.isEmpty()) return;
         for(String artifactId: artifactIds){
             String id = artifactId.substring(3);
-            if(artifactActives.containsKey(id)
-                    || pathwayActives.containsKey(id)){
+            if(artifacts.containsKey(id)
+                    || pathwayAbilities.containsKey(id)){
                 useAbility(cap, player, id, true, true);
             }
         }
@@ -59,16 +65,16 @@ public class PlayerAbilitiesManager {
     public void updateAddArtifact(LivingEntityBeyonderCapability cap, Player player, String ablId, int sequence, boolean sync){
         Ability abl = ArtifactHelper.getAbilityFromId(ablId, sequence);
         if(abl == null) return;
-        if(!artifactActives.containsKey(ablId)){
+        if(!artifacts.containsKey(ablId)){
             System.out.println("Adding new artifact: " + ablId + " sequence " + sequence);
             enabledDisabled.putIfAbsent(ablId, true);
             activeCooldowns.putIfAbsent(ablId, 0);
         } else {
             System.out.println("Changing existing artifact instance to " + ablId + sequence);
-            artifactActives.get(ablId).deactivate(cap, player);
+            artifacts.get(ablId).deactivate(cap, player);
         }
         abl.onAcquire(cap, player);
-        artifactActives.put(ablId, abl);
+        artifacts.put(ablId, abl);
 
         if(sync){
             PacketHandler.INSTANCE.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) player),
@@ -77,10 +83,10 @@ public class PlayerAbilitiesManager {
     }
 
     public void updateRemoveArtifact(LivingEntityBeyonderCapability cap, Player player, String ablId, boolean sync){
-        if(artifactActives.containsKey(ablId)){
+        if(artifacts.containsKey(ablId)){
             System.out.println("Removing artifact: " + ablId);
-            artifactActives.get(ablId).deactivate(cap, player);
-            artifactActives.remove(ablId);
+            artifacts.get(ablId).deactivate(cap, player);
+            artifacts.remove(ablId);
             if(sync)
                 PacketHandler.INSTANCE.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) player),
                         new PlayerArtifactSyncSTC(ablId, 0, false));
@@ -97,8 +103,8 @@ public class PlayerAbilitiesManager {
     public void updateArtifacts(LivingEntityBeyonderCapability cap, Player player) {
         for (String ablId : new ArrayList<>(activeCooldowns.keySet())) {
             if(activeCooldowns.get(ablId) == 0
-                    && !artifactActives.containsKey(ablId)
-                    && !pathwayActives.containsKey(ablId)){
+                    && !artifacts.containsKey(ablId)
+                    && !pathwayAbilities.containsKey(ablId)){
                 System.out.println("Removing cooldown and enabled info for ability: " + ablId);
                 activeCooldowns.remove(ablId);
                 enabledDisabled.remove(ablId);
@@ -122,7 +128,7 @@ public class PlayerAbilitiesManager {
             }
         }
         //remove artifacts from list
-        for (String ablId : new ArrayList<>(artifactActives.keySet())) {
+        for (String ablId : new ArrayList<>(artifacts.keySet())) {
             if (!inventoryArtifacts.containsKey(ablId)) {
                 updateRemoveArtifact(cap, player, ablId, true);
             }
@@ -201,22 +207,22 @@ public class PlayerAbilitiesManager {
 
     private boolean shouldAddArtifact(String ablId, int sequenceLevel){
         //this method assumes the passed ability is the best found in the players inventory
-        boolean isIntrinsic = pathwayActives.containsKey(ablId);
+        boolean isIntrinsic = pathwayAbilities.containsKey(ablId);
         boolean isStrongerThanIntrinsic = !isIntrinsic
-                || pathwayActives.get(ablId).getSequence() > sequenceLevel;
-        boolean shouldReplaceInArtifacts = !artifactActives.containsKey(ablId)
-                || artifactActives.get(ablId).getSequence() != sequenceLevel;
+                || pathwayAbilities.get(ablId).getSequence() > sequenceLevel;
+        boolean shouldReplaceInArtifacts = !artifacts.containsKey(ablId)
+                || artifacts.get(ablId).getSequence() != sequenceLevel;
         return shouldReplaceInArtifacts && isStrongerThanIntrinsic;
     }
 
     public void onTick(LivingEntityBeyonderCapability cap, LivingEntity target){
-        if(!pathwayActives.isEmpty()){
-            pathwayActives.values().forEach(ability -> {
+        if(!pathwayAbilities.isEmpty()){
+            pathwayAbilities.values().forEach(ability -> {
                 ability.passive(cap, target);
             });
         }
-        if(!artifactActives.isEmpty()){
-            artifactActives.values().forEach(ability -> {
+        if(!artifacts.isEmpty()){
+            artifacts.values().forEach(ability -> {
                 ability.passive(cap, target);
             });
         }
@@ -244,8 +250,8 @@ public class PlayerAbilitiesManager {
             //however, if in the future an ability is added that is completely passive, this will be necessary
             //pathwayPassives.values().forEach(ability -> {if(!pathwayActives.containsKey(ability.getInfo().normalizedId())) ability.deactivate(cap, target);});
             //pathwayPassives = new HashMap<>();
-            pathwayActives.values().forEach(ability -> ability.deactivate(cap, target));
-            pathwayActives = new HashMap<>();
+            pathwayAbilities.stream().map(ablId -> ).forEach(ability -> ability.deactivate(cap, target));
+            pathwayAbilities = new ArrayList<>();
 //            activeCooldowns.keySet().removeIf(key -> !artifactActives.containsKey(key));
 //            enabledDisabled.keySet().removeIf(key -> !artifactActives.containsKey(key));
         }
@@ -253,40 +259,11 @@ public class PlayerAbilitiesManager {
 
     public void useAbility(LivingEntityBeyonderCapability cap, LivingEntity tar, String ablId, boolean sync, boolean artifactFirst){
         if(tar instanceof Player player){
-            boolean inArtifactsList = artifactActives.containsKey(ablId);
-            boolean inPathwayList = pathwayActives.containsKey(ablId);
             if(player.level().isClientSide()){
-                if(sync) PacketHandler.INSTANCE.sendToServer(new PlayerCastAbilityMessageCTS(ablId));
-                //System.out.println("Activating ability on client side: " + ablId);
-                if(artifactFirst && inArtifactsList) artifactActives.get(ablId).active(cap, tar);
-                else if(inPathwayList) pathwayActives.get(ablId).active(cap, tar);
-                else if(inArtifactsList) artifactActives.get(ablId).active(cap, tar);
-                else System.out.println("Ability ID specified was not found: " + ablId);
+                if(sync) PacketHandler.sendMessageCTS(new PlayerCastAbilityMessageCTS(ablId));
             } else {
-                if(activeCooldowns.get(ablId) != null && activeCooldowns.get(ablId) != 0){
-                    System.out.println("Tried to activate ability on cooldown");
-                    return;
-                }
-                boolean flag = false;
-                if((artifactFirst && inArtifactsList)
-                        || (!artifactFirst && !inPathwayList && inArtifactsList)){
-                    if(artifactActives.get(ablId).active(cap, tar)){
-                        System.out.println("Activating ability: " + ablId);
-                        Ability abl = artifactActives.get(ablId);
-                        flag = true;
-                        putOnCooldown(player, ablId, abl.getCooldown(), abl.getInfo().maxCooldown());
-                    }
-                } else if(inPathwayList){
-                    if(pathwayActives.get(ablId).active(cap, tar)){
-                        System.out.println("Activating ability: " + ablId);
-                        flag = true;
-                        putOnCooldown(player, ablId);
-                    }
-                } else System.out.println("Tried to cast ability that doesnt exist: " + ablId);
-
-                if(sync && flag)
-                    PacketHandler.INSTANCE.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) player),
-                        new PlayerCastAbilityMessageCTS(ablId));
+                if(sync)
+                    PacketHandler.sendMessageSTC(new PlayerCastAbilityMessageCTS(ablId), player);
             }
 
         }
@@ -309,39 +286,35 @@ public class PlayerAbilitiesManager {
             }
         }
 
-        if(newMap.size() < pathwayActives.size()){
+        if(newMap.size() < pathwayAbilities.size()){
             System.out.println("WARNING: received list is SMALLER than the pathwayActives list.\nProceed with caution!!!");
 //            System.out.println("List size: " + list.size());
 //            System.out.println("EnabledDisabled list size: " + enabledDisabled.size());
 //            System.out.println("pathwayActives list size: " + pathwayActives.size());
         }
-        for (Ability abilityInfo: pathwayActives.values()) {
-            if(abilityInfo.isActive) enabledDisabled.put(abilityInfo.getInfo().normalizedId(), true);
+        for (Ability abilityInfo: pathwayAbilities.values()) {
+            if(abilityInfo.isActive) enabledDisabled.put(abilityInfo.getInfo().ablId(), true);
         }
     }
 
-    public void setEnabled(Ability abl, boolean bol, LivingEntityBeyonderCapability cap, LivingEntity target){
-        String ablId = abl.getInfo().normalizedId();
-        if(enabledDisabled.containsKey(ablId)){
-            boolean prevStatus = enabledDisabled.get(ablId);
-            if(prevStatus && !bol){
-                abl.deactivate(cap, target);
-            } else if(!prevStatus && bol){
-                abl.activate(cap, target);
-            }
-            enabledDisabled.put(ablId, bol);
+    public void setEnabled(String cAblId, boolean enabling, LivingEntityBeyonderCapability cap, LivingEntity target){
+        boolean prevDisabled = disabledList.contains(cAblId);
+        if(prevDisabled && enabling){
+            getAbility(cAblId).activate(cap, target);
+            disabledList.remove(cAblId);
+        } else if(!prevDisabled && !enabling){
+            getAbility(cAblId).deactivate(cap, target);
+            disabledList.add(cAblId);
         }
     }
 
-    public boolean isEnabled(Ability abl){
-        String ablId = abl.getInfo().normalizedId();
-        if(!enabledDisabled.containsKey(ablId)) return false;
-        return enabledDisabled.get(ablId);
+    public boolean isEnabled(String cAblId){
+        return !disabledList.contains(cAblId);
     }
 
     public List<String> disabledALlAbilities(Player player, String abilityToIgnore){
         ArrayList<String> res = new ArrayList<>();
-        for(String ablId: pathwayActives.keySet()){
+        for(String ablId: pathwayAbilities.keySet()){
             if(abilityToIgnore.equals(ablId)) continue;
 
             putOnCooldown(player, ablId, -activeCooldowns.get(ablId)/2 - 1);
@@ -357,43 +330,42 @@ public class PlayerAbilitiesManager {
     }
 
     public void putOnCooldown(Player player, String ablId){
-        putOnCooldown(player, ablId, pathwayActives.get(ablId).getCooldown());
+        putOnCooldown(player, ablId, pathwayAbilities.get(ablId).getCooldown());
     }
 
     public void putOnCooldown(Player player, String ablId, int cd){
-        putOnCooldown(player, ablId, cd, pathwayActives.get(ablId).getInfo().maxCooldown());
+        putOnCooldown(player, ablId, cd, pathwayAbilities.get(ablId).getInfo().maxCooldown());
     }
 
     public void putOnCooldown(Player player, String ablId, int cd, int maxCd){
         activeCooldowns.put(ablId, cd*2);
         //tick methods ticks twice a fast as on client -> 40 ticks per second
-        if(pathwayActives.containsKey(ablId)){
+        if(pathwayAbilities.containsKey(ablId)){
             PacketHandler.INSTANCE.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) player),
                     new PlayerAbilityCooldownSTC(ablId, cd, maxCd));
         }
     }
 
     public void updateClientCooldownInfo(ServerPlayer player){
-        for (Ability pathwayActive : pathwayActives.values()) {
+        for (String ablId : pathwayAbilities) {
             String desc = pathwayActive.getInfo().normalizedId();
             if (activeCooldowns.get(desc) != 0) {
-                PacketHandler.INSTANCE.send(PacketDistributor.PLAYER.with(() -> player),
-                        new PlayerAbilityCooldownSTC(desc, activeCooldowns.get(desc), pathwayActive.getInfo().maxCooldown()));
+                PacketHandler.sendMessageSTC(new PlayerAbilityCooldownSTC(desc, activeCooldowns.get(desc), pathwayActive.getInfo().maxCooldown()), player);
             }
         }
     }
 
-    public void setPathwayActives(ArrayList<Ability> abilities){
+    public void setPathwayAbilities(ArrayList<Ability> abilities){
 //        System.out.println("Active abilities updates. Size is: " + abilities.size());
         if(abilities == null) return;
-        pathwayActives = new LinkedHashMap<>();
+        pathwayAbilities = new LinkedHashMap<>();
         for (Ability ability : abilities) {
-            String ablId = ability.getInfo().normalizedId();
-            pathwayActives.put(ablId, ability);
+            String ablId = ability.getInfo().ablId();
+            pathwayAbilities.put(ablId, ability);
             activeCooldowns.put(ablId, 0);
             enabledDisabled.put(ablId, true);
-            if(artifactActives.containsKey(ablId) && artifactActives.get(ablId).getSequence() >= ability.getSequence()){
-                artifactActives.remove(ablId);
+            if(artifacts.containsKey(ablId) && artifacts.get(ablId).getSequence() >= ability.getSequence()){
+                artifacts.remove(ablId);
             }
         }
     }
@@ -402,23 +374,14 @@ public class PlayerAbilitiesManager {
         //TODO: only going through actives. if you want for passives, youll need to add it
         // Check if its enabled for when the player loads into the world -> dont activate extended reach if the ability was previously disabled
         //its loading the enabledDisabled list before calling this onAcquire function when loading data
-        for (Ability ability : pathwayActives.values()) {
-            if (enabledDisabled.get(ability.getInfo().normalizedId())) ability.onAcquire(cap, target);
+        for (Ability ability : pathwayAbilities.values()) {
+            if (enabledDisabled.get(ability.getInfo().ablId())) ability.onAcquire(cap, target);
         }
     }
 
     public ArrayList<AbilityInfo> getActivesIds() {
-        return new ArrayList<>(pathwayActives.values().stream().map(Ability::getInfo).toList());
+        return new ArrayList<>(pathwayAbilities.values().stream().map(Ability::getInfo).toList());
     }
-
-//    public void setPathwayPassives(ArrayList<Ability> abilities){
-//        //System.out.println("Passive abilities updates. Size is: " + abilities.size());
-//        if(abilities == null) return;
-//        pathwayPassives = new HashMap<>();
-//        for (Ability ability : abilities) {
-//            pathwayPassives.put(ability.getInfo().normalizedId(), ability);
-//        }
-//    }
 
     public void saveNBTData(CompoundTag nbt){
         CompoundTag enabled = new CompoundTag();

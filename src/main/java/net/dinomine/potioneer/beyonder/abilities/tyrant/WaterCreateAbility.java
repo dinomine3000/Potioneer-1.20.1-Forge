@@ -29,7 +29,7 @@ public class WaterCreateAbility extends Ability {
                 //waterStack.useOn(new UseOnContext(player, InteractionHand.MAIN_HAND, block));
                 waterStack.use(player.level(), player, InteractionHand.MAIN_HAND);
                 cap.requestActiveSpiritualityCost(info.cost());
-                cap.getActingManager().progressActing(actingProgress, 18);
+                cap.getCharacteristicManager().progressActing(actingProgress, 18);
                 return true;
             }
 //            HitResult block = target.pick(target.getAttributeBaseValue(ForgeMod.BLOCK_REACH.get()) + 0.5, 0f, false);

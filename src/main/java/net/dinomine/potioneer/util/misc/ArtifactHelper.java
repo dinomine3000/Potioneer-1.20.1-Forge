@@ -217,7 +217,7 @@ public class ArtifactHelper {
                 String ablId = ablTag.getString("ablId");
                 int ablSequence = ablTag.getInt("sequence");
                 abilityIds.add((ablSequence < 10 ? "0" + ablSequence : ablSequence) + "_" + ablId);
-                biggestCd = Math.max(biggestCd, getAbilityFromId(ablId, ablSequence).getCooldown());
+                biggestCd = Math.max(biggestCd, getAbilityFromId(ablId, ablSequence).getMaxCooldown());
                 //System.out.println("Biggest CD: " + biggestCd);
             }
         }

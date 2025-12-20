@@ -9,7 +9,7 @@ import net.minecraft.world.entity.LivingEntity;
 public class ElectrificationAbility extends Ability {
 
     public ElectrificationAbility(int sequence){
-        this.info = new AbilityInfo(31, 272, "Electrification", 10 + sequence, 20, this.getCooldown(), "electrification");
+        this.info = new AbilityInfo(31, 272, "Electrification", 10 + sequence, 20, this.getMaxCooldown(), "electrification");
     }
 
     @Override

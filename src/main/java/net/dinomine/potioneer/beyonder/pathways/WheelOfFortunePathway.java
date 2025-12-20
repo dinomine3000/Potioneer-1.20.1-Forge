@@ -6,24 +6,29 @@ import net.dinomine.potioneer.beyonder.abilities.wheeloffortune.*;
 import net.dinomine.potioneer.beyonder.player.PlayerAbilitiesManager;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class WheelOfFortunePathway extends BeyonderPathway {
 
-    public WheelOfFortunePathway(int sequence) {
-        super(sequence, "Wheel_of_Fortune");
-        this.color = 0x808080;
-        this.maxSpirituality = new int[]{2500, 1500, 1200, 900, 600, 450, 375, 250, 200, 100};
+    public WheelOfFortunePathway() {
+        super("Wheel_of_Fortune", 0x808080, new int[]{2500, 1500, 1200, 900, 600, 450, 375, 250, 200, 100});
     }
 
-    public static int getX(){
+    @Override
+    public int getX(){
         return 0;
     }
 
-    public static int getY(){
+    @Override
+    public int getY(){
         return 0;
     }
 
-    public static float[] getStatsFor(int sequence){
+    @Override
+    public int getAbilityX(){return 5;}
+
+    @Override
+    public float[] getStatsFor(int sequence){
         return switch (sequence){
             case 9 -> new float[]{0, 0, 2, 0, 0};
             case 8 -> new float[]{0, 0, 4, 0, 2};
@@ -34,8 +39,9 @@ public class WheelOfFortunePathway extends BeyonderPathway {
         };
     }
 
-    public static void getAbilities(int sequence, PlayerAbilitiesManager mng){
-        ArrayList<Ability> activeAbilities = new ArrayList<>();
+    @Override
+    public List<Ability> getAbilities(int sequence){
+        ArrayList<Ability> abilities = new ArrayList<>();
         switch(sequence){
             case 0:
             case 1:
@@ -45,32 +51,34 @@ public class WheelOfFortunePathway extends BeyonderPathway {
             case 5:
             case 6:
             case 7:
-                activeAbilities.add(new WheelBoneMealAbility(sequence));
-                activeAbilities.add(new GamblingAbility(sequence));
-                activeAbilities.add(new LuckDamageReductionAbility(sequence));
-                activeAbilities.add(new CalamityIncreaseAbility(sequence));
+                abilities.add(new WheelBoneMealAbility(sequence));
+                abilities.add(new GamblingAbility(sequence));
+                abilities.add(new LuckDamageReductionAbility(sequence));
+                abilities.add(new CalamityIncreaseAbility(sequence));
             case 8:
-                activeAbilities.add(new BlockSniffAbility(sequence));
-                activeAbilities.add(new LuckBoostAbility(sequence));
-                activeAbilities.add(new CheckLuckAbility(sequence));
-                activeAbilities.add(new FortuneAbility(sequence));
-                activeAbilities.add(new SilkTouchAbility(sequence));
+                abilities.add(new BlockSniffAbility(sequence));
+                abilities.add(new LuckBoostAbility(sequence));
+                abilities.add(new CheckLuckAbility(sequence));
+                abilities.add(new FortuneAbility(sequence));
+                abilities.add(new SilkTouchAbility(sequence));
 
             case 9:
-                activeAbilities.add(new MinerLightAbility(sequence));
-                activeAbilities.add(new ConjurePickaxeAbility(sequence));
-                activeAbilities.add(new MiningSpeedAbility(sequence));
-                activeAbilities.add(new CogitationAbility(sequence));
+                abilities.add(new MinerLightAbility(sequence));
+                abilities.add(new ConjurePickaxeAbility(sequence));
+                abilities.add(new MiningSpeedAbility(sequence));
+                abilities.add(new CogitationAbility(sequence));
         }
 
-        mng.setPathwayActives(activeAbilities);
+        return abilities;
+//        mng.setPathwayAbilities(activeAbilities);
     }
 
-    public static String getSequenceName(int seq, boolean show){
-        return show ? getSequenceName(seq).replace("_", " ") : getSequenceName(seq).toLowerCase();
+    @Override
+    public String getSequenceNameFromId(int seq, boolean show){
+        return show ? getSequenceNameFromId(seq).replace("_", " ") : getSequenceNameFromId(seq).toLowerCase();
     }
 
-    public static String getSequenceName(int seq){
+    private String getSequenceNameFromId(int seq){
         return switch (seq) {
             case 9 -> "Miner";
             case 8 -> "Appraiser";
@@ -81,7 +89,7 @@ public class WheelOfFortunePathway extends BeyonderPathway {
         };
     }
 
-    public static int getSequenceColor(int seq){
+    public int getSequenceColorFromLevel(int seq){
         return switch (seq) {
             case 9 -> 10724259;
             case 8 -> 16383885;
@@ -92,7 +100,7 @@ public class WheelOfFortunePathway extends BeyonderPathway {
 
     @Override
     public int getId() {
-        return sequence;
+        return 0;
     }
 
 }

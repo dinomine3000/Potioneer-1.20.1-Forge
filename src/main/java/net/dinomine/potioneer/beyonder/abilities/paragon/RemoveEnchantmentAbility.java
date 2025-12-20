@@ -15,7 +15,7 @@ public class RemoveEnchantmentAbility extends Ability {
     private static final float percentDelta = 0.2f;
 
     public RemoveEnchantmentAbility(int sequence){
-        this.info = new AbilityInfo(109, 224, "Disenchant", 40 + sequence, 50, this.getCooldown(), "disenchant");
+        this.info = new AbilityInfo(109, 224, "Disenchant", 40 + sequence, 50, this.getMaxCooldown(), "disenchant");
         this.isActive = true;
     }
 

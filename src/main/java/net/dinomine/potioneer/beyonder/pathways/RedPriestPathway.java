@@ -62,7 +62,7 @@ public class RedPriestPathway extends BeyonderPathway {
                 if(sequence < 8) activeAbilities.add(new CogitationAbility(30 + sequence));
         }
 
-        mng.setPathwayActives(activeAbilities);
+        mng.setPathwayAbilities(activeAbilities);
         //mng.setPathwayPassives(passiveAbilities);
     }
 

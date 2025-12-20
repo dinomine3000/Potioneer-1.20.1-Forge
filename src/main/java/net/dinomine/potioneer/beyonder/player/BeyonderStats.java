@@ -58,8 +58,7 @@ public class BeyonderStats {
     public void multMiningSpeed(float mult){this.miningSpeedMult *= mult;}
 
     public void updateClientIfMiningSpeedChanged(ServerPlayer player, float newSpeed){
-        PacketHandler.INSTANCE.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) player),
-                new PlayerMiningSpeedSync(newSpeed));
+        PacketHandler.sendMessageSTC(new PlayerMiningSpeedSync(newSpeed), player);
     }
 
     public void resetStats(){
@@ -180,5 +179,11 @@ public class BeyonderStats {
         Supplier<Multimap<Attribute, AttributeModifier>> knockbackMod = Suppliers.memoize(() ->
                 ImmutableMultimap.of(Attributes.KNOCKBACK_RESISTANCE, singleRangeAttributeModifier));
         return knockbackMod.get();
+    }
+
+    public void copyFrom(BeyonderStats beyonderStats) {
+        this.playerAttributes = beyonderStats.playerAttributes;
+        this.mayFly = beyonderStats.mayFly;
+        this.miningSpeedMult = beyonderStats.miningSpeedMult;
     }
 }

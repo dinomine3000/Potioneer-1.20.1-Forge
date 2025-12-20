@@ -1,8 +1,7 @@
-package net.dinomine.potioneer.network.messages;
+package net.dinomine.potioneer.network.messages.AllySystem;
 
 import com.mojang.authlib.GameProfile;
 import net.dinomine.potioneer.beyonder.client.ClientAllyData;
-import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
 import net.dinomine.potioneer.config.PotioneerCommonConfig;
 import net.dinomine.potioneer.network.PacketHandler;
 import net.dinomine.potioneer.savedata.AllySystemSaveData;

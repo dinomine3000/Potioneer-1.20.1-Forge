@@ -20,7 +20,7 @@ public class FuelAbility extends Ability {
     private static final Logger log = LoggerFactory.getLogger(FuelAbility.class);
 
     public FuelAbility(int sequence){
-        this.info = new AbilityInfo(109, 80, "Create Golden Drop", 40 + sequence, 0, this.getCooldown(), "fuel");
+        this.info = new AbilityInfo(109, 80, "Create Golden Drop", 40 + sequence, 0, this.getMaxCooldown(), "fuel");
         this.isActive = true;
     }
 

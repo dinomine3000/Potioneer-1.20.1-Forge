@@ -9,7 +9,7 @@ import net.minecraft.world.entity.LivingEntity;
 public class SpiritualityRegenAbility extends Ability {
 
     public SpiritualityRegenAbility(int sequence){
-        this.info = new AbilityInfo(57, 32, "Regen on Damage", 20 + sequence, 0, this.getCooldown(), "spirituality_regen");
+        this.info = new AbilityInfo(57, 32, "Regen on Damage", 20 + sequence, 0, this.getMaxCooldown(), "spirituality_regen");
     }
 
     @Override

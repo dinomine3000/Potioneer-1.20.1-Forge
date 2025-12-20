@@ -1,4 +1,4 @@
-package net.dinomine.potioneer.network.messages;
+package net.dinomine.potioneer.network.messages.advancement;
 
 import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
 import net.minecraft.client.Minecraft;
@@ -44,7 +44,7 @@ public class PlayerAdvanceMessage {
                 System.out.println("Receiving on server side. Id = " + msg.id);
                 Player player = context.getSender();
                 player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
-                    cap.advance(msg.id, player, true, msg.advancing);
+                    cap.consumeCharacteristic(msg.id, player, true, msg.advancing);
                 });
             }
         });
@@ -65,7 +65,7 @@ class ClientSyncMessage
         {
             player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
                 System.out.println("Handling sequence syncing on client side...");
-                cap.advance(msg.id, player, false, msg.advancing);
+                cap.consumeCharacteristic(msg.id, player, false, msg.advancing);
             });
         }
     }

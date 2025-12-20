@@ -2,11 +2,19 @@ package net.dinomine.potioneer.network;
 
 import net.dinomine.potioneer.Potioneer;
 import net.dinomine.potioneer.network.messages.*;
-import net.dinomine.potioneer.network.messages.abilityRelevant.EvaporateEffect;
-import net.dinomine.potioneer.network.messages.abilityRelevant.OpenDivinationScreenSTC;
-import net.dinomine.potioneer.network.messages.abilityRelevant.WaterPrisonEffectSTC;
+import net.dinomine.potioneer.network.messages.AllySystem.AllyChangeMessageC2S;
+import net.dinomine.potioneer.network.messages.AllySystem.AllyGroupSyncMessage;
+import net.dinomine.potioneer.network.messages.abilityRelevant.*;
+import net.dinomine.potioneer.network.messages.abilityRelevant.abilitySpecific.EvaporateEffect;
+import net.dinomine.potioneer.network.messages.abilityRelevant.abilitySpecific.OpenDivinationScreenSTC;
+import net.dinomine.potioneer.network.messages.abilityRelevant.abilitySpecific.WaterPrisonEffectSTC;
+import net.dinomine.potioneer.network.messages.advancement.AdvancementFailMessageCTS;
+import net.dinomine.potioneer.network.messages.advancement.PlayerAdvanceMessage;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.network.NetworkRegistry;
+import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.network.simple.SimpleChannel;
 
 public class PacketHandler {
@@ -41,5 +49,13 @@ public class PacketHandler {
         INSTANCE.registerMessage(i++, RitualC2STextSync.class, RitualC2STextSync::encode, RitualC2STextSync::decode, RitualC2STextSync::handle);
         INSTANCE.registerMessage(i++, AllyChangeMessageC2S.class, AllyChangeMessageC2S::encode, AllyChangeMessageC2S::decode, AllyChangeMessageC2S::handle);
         INSTANCE.registerMessage(i++, AllyGroupSyncMessage.class, AllyGroupSyncMessage::encode, AllyGroupSyncMessage::decode, AllyGroupSyncMessage::handle);
+    }
+
+    public static <T> void sendMessageSTC(T message, Player player){
+        INSTANCE.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) player), message);
+    }
+
+    public static <T> void sendMessageCTS(T message){
+        INSTANCE.sendToServer(message);
     }
 }

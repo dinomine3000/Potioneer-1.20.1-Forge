@@ -11,7 +11,7 @@ import net.minecraft.world.entity.LivingEntity;
 public class GamblingAbility extends Ability {
 
     public GamblingAbility(int sequence){
-        this.info = new AbilityInfo(5, 296, "Patience", sequence, 0, getCooldown(), "gambling");
+        this.info = new AbilityInfo(5, 296, "Patience", sequence, 0, getMaxCooldown(), "gambling");
     }
 
     @Override

@@ -12,7 +12,7 @@ public class DurabilityRegenAbility extends Ability {
     private boolean levelUp;
     public DurabilityRegenAbility(int sequence){
         levelUp = sequence <= 7;
-        this.info = new AbilityInfo(109, 56, "Durability Regen", 40 + sequence, 30*(10-sequence), levelUp ? this.getCooldown() : 20*5, "durability_regen_" + (levelUp ? "2" : ""));
+        this.info = new AbilityInfo(109, 56, "Durability Regen", 40 + sequence, 30*(10-sequence), levelUp ? this.getMaxCooldown() : 20*5, "durability_regen_" + (levelUp ? "2" : ""));
     }
 
     @Override

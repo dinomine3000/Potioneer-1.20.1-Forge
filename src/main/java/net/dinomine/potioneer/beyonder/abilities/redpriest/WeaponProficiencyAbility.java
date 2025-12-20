@@ -9,7 +9,7 @@ import net.minecraft.world.entity.LivingEntity;
 public class WeaponProficiencyAbility extends Ability {
 
     public WeaponProficiencyAbility(int sequence){
-        this.info = new AbilityInfo(83, 32, "Weapon Proficiency", 30 + sequence, 0, this.getCooldown(), "weapons_master");
+        this.info = new AbilityInfo(83, 32, "Weapon Proficiency", 30 + sequence, 0, this.getMaxCooldown(), "weapons_master");
     }
 
     @Override

@@ -9,7 +9,7 @@ import net.minecraft.world.entity.LivingEntity;
 public class CraftingSpiritualityAbility extends Ability {
 
     public CraftingSpiritualityAbility(int sequence){
-        this.info = new AbilityInfo(109, 32, "Crafting Spirituality", 40 + sequence, 0, this.getCooldown(), "craft");
+        this.info = new AbilityInfo(109, 32, "Crafting Spirituality", 40 + sequence, 0, this.getMaxCooldown(), "craft");
     }
 
     @Override

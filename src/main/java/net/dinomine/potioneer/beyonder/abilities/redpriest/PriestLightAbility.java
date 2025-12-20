@@ -8,7 +8,7 @@ public class PriestLightAbility extends LightAbility {
 
     public PriestLightAbility(int sequence){
         super(sequence, ModBlocks.PRIEST_LIGHT.get().defaultBlockState());
-        this.info = new AbilityInfo(83, 200, "Light", 30 + sequence, 10, this.getCooldown(), "priest_light");
+        this.info = new AbilityInfo(83, 200, "Light", 30 + sequence, 10, this.getMaxCooldown(), "priest_light");
     }
 //
 //    @Override

@@ -9,7 +9,7 @@ public class CalamityIncreaseAbility extends Ability {
 
     private int addedChance;
     public CalamityIncreaseAbility(int sequence){
-        this.info = new AbilityInfo(5, 272, "Calamity Increase", sequence, 0, getCooldown(), "calamity");
+        this.info = new AbilityInfo(5, 272, "Calamity Increase", sequence, 0, getMaxCooldown(), "calamity");
         addedChance = 2 + Math.max(7-sequence, 0);
     }
 

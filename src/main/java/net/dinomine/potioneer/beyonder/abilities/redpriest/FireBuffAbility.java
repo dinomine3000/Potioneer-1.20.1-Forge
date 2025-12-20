@@ -9,7 +9,7 @@ import net.minecraft.world.entity.LivingEntity;
 public class FireBuffAbility extends Ability {
 
     public FireBuffAbility(int sequence){
-        this.info = new AbilityInfo(83, 80, "Fire Dance", 30 + sequence, 5, this.getCooldown(), "fire_buff");
+        this.info = new AbilityInfo(83, 80, "Fire Dance", 30 + sequence, 5, this.getMaxCooldown(), "fire_buff");
     }
 
     @Override

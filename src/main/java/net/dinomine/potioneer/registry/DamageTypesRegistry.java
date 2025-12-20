@@ -6,6 +6,7 @@ import net.minecraft.data.worldgen.BootstapContext;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.damagesource.DamageType;
+import net.minecraft.world.damagesource.DamageTypes;
 
 public class DamageTypesRegistry {
 
@@ -14,5 +15,6 @@ public class DamageTypesRegistry {
 
     public static void bootstrap(BootstapContext<DamageType> context) {
         context.register(CHRYON_PIERCE, new DamageType("pierce", 0.1F));
+        
     }
 }

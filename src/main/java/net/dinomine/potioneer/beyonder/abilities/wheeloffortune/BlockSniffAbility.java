@@ -53,7 +53,7 @@ public class BlockSniffAbility extends Ability {
                     }
                 });
             } else {
-                cap.getActingManager().progressActing(1/128d, 8);
+                cap.getCharacteristicManager().progressActing(1/128d, 8);
                 cap.requestActiveSpiritualityCost(info.cost());
             }
             //the early return above guarantees that the ability only returns true if it found anything.

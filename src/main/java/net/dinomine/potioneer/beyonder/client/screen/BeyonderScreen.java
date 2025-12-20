@@ -75,7 +75,7 @@ public class BeyonderScreen extends Screen {
             this.PATHWAY = Component.translatable(Potioneer.MOD_ID + ".beyonder.pathway." + cap.getPathwayName(false));
             this.SEQUENCE = Component.translatable(Potioneer.MOD_ID + ".beyonder.sequence." + cap.getSequenceName(false));
             this.color = cap.getPathwayColor();
-            this.pathwayId = Math.floorDiv(cap.getPathwayId(), 10);
+            this.pathwayId = Math.floorDiv(cap.getPathwaySequenceId(), 10);
 
 
             //this.PATHWAY = Component.literal("Path");

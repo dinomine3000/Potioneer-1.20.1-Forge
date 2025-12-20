@@ -18,7 +18,7 @@ import static net.dinomine.potioneer.block.custom.MinerLightSourceBlock.WATERLOG
 public class LightAbility extends Ability {
     private BlockState lightBlockState;
     public LightAbility(int sequence, BlockState lightBlock){
-        this.info = new AbilityInfo(5, 56, "Light", sequence, 0, this.getCooldown(), "");
+        this.info = new AbilityInfo(5, 56, "Light", sequence, 0, this.getMaxCooldown(), "");
         lightBlockState = lightBlock;
     }
 

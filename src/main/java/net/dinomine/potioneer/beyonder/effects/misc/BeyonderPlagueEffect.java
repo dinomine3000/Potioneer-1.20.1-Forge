@@ -53,7 +53,7 @@ public class BeyonderPlagueEffect extends BeyonderEffect {
                 Player caster = target.level().getPlayerByUUID(casterId);
                 if(caster != null)
                     caster.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(casterCap -> {
-                        if(Math.floorDiv(casterCap.getPathwayId(), 10) == 2)
+                        if(Math.floorDiv(casterCap.getPathwaySequenceId(), 10) == 2)
                             casterCap.requestActiveSpiritualityCost(-cost);
                     });
             }

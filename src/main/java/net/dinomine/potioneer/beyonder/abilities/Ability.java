@@ -6,39 +6,43 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.LivingEntity;
 
 public abstract class Ability {
-    public boolean isActive = false;
-    public boolean isPassive;
-//    public boolean enabled = true;
-//    protected int sequence;
-    protected AbilityInfo info = new AbilityInfo(0, 0, "default", 9, 0, 20, "");
+    private int posY;
+    private String ablId;
+    private int costSpirituality;
+    private int maxCooldown;
+//    protected AbilityInfo info = new AbilityInfo(0, 0, "default", 9, 0, 20, "");
 
-    public AbilityInfo getInfo(){
-        return info;
+//    public AbilityInfo getInfo(){
+//        return info;
+//    }
+
+    public Ability(int posY){
+        this.posY = posY;
     }
 
-    public int getCooldown(){
-        return info.maxCooldown();
+    public void setAblId(String newAblId){
+        this.ablId = newAblId;
     }
 
-    public int getSequence(){
-        return info.id()%10;
+    public int getMaxCooldown(){
+        return maxCooldown;
     }
 
-    public boolean isEnabled(PlayerAbilitiesManager mng){
-        return mng.isEnabled(this);
+    public boolean isEnabled(PlayerAbilitiesManager mng, String cAblId){
+        return mng.isEnabled(cAblId);
     }
 
-    public void disable(LivingEntityBeyonderCapability cap, LivingEntity target){
+    public void disable(LivingEntityBeyonderCapability cap, LivingEntity target, String cAblId){
         PlayerAbilitiesManager mng = cap.getAbilitiesManager();
-        if(mng.isEnabled(this)){
-            mng.setEnabled(this, false, cap, target);
+        if(isEnabled(mng, cAblId)){
+            mng.setEnabled(cAblId, false, cap, target);
         }
     }
 
-    public void enable(LivingEntityBeyonderCapability cap, LivingEntity target){
+    public void enable(LivingEntityBeyonderCapability cap, LivingEntity target, String cAblId){
         PlayerAbilitiesManager mng = cap.getAbilitiesManager();
-        if(!mng.isEnabled(this)){
-            mng.setEnabled(this, true, cap, target);
+        if(isEnabled(mng, cAblId)){
+            mng.setEnabled(cAblId, true, cap, target);
         }
     }
 
@@ -67,34 +71,35 @@ public abstract class Ability {
      * @param cap
      * @param target
      */
-    public abstract void onAcquire(LivingEntityBeyonderCapability cap, LivingEntity target);
+    public abstract void onAcquire(LivingEntityBeyonderCapability cap, LivingEntity target, String cAblId);
 
     /**
      * function that runs whenever the player casts the ability
      * @param cap
      * @param target
      */
-    public abstract boolean active(LivingEntityBeyonderCapability cap, LivingEntity target);
+    public abstract boolean active(LivingEntityBeyonderCapability cap, LivingEntity target, String cAblId);
 
     /**
      * function that runs every tick
      * @param cap
      * @param target
      */
-    public abstract void passive(LivingEntityBeyonderCapability cap, LivingEntity target);
+    public abstract void passive(LivingEntityBeyonderCapability cap, LivingEntity target, String cAblId);
 
     /**
      * function that implements behaviour for every time the ability is activated (like changing stuff for a setup)
      * @param cap
      * @param target
      */
-    public abstract void activate(LivingEntityBeyonderCapability cap, LivingEntity target);
+    public abstract void activate(LivingEntityBeyonderCapability cap, LivingEntity target, String cAblId);
 
     /**
      * function that implements behaviour for every time the ability is deactivated (like removing effects)
      * @param cap
      * @param target
      */
-    public abstract void deactivate(LivingEntityBeyonderCapability cap, LivingEntity target);
+    public abstract void deactivate(LivingEntityBeyonderCapability cap, LivingEntity target, String cAblId);
 
+    public abstract AbilityInfo getAbilityinfo(int sequenceLevel);
 }

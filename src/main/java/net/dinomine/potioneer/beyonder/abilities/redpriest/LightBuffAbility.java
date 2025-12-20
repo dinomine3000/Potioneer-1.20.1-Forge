@@ -16,7 +16,7 @@ import java.util.Optional;
 public class LightBuffAbility extends Ability {
 
     public LightBuffAbility(int sequence){
-        this.info = new AbilityInfo(83, 224, "Light Buff", 30 + sequence, 5, this.getCooldown(), "light_buff");
+        this.info = new AbilityInfo(83, 224, "Light Buff", 30 + sequence, 5, this.getMaxCooldown(), "light_buff");
     }
 
     @Override

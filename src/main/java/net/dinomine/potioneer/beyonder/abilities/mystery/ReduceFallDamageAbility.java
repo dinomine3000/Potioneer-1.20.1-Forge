@@ -9,7 +9,7 @@ import net.minecraft.world.entity.LivingEntity;
 public class ReduceFallDamageAbility extends Ability {
 
     public ReduceFallDamageAbility(int sequence){
-        this.info = new AbilityInfo(57, 32, "Reduce Fall Damage", 20 + sequence, 15 + 5*(9-sequence), this.getCooldown(), "fall_damage");
+        this.info = new AbilityInfo(57, 32, "Reduce Fall Damage", 20 + sequence, 15 + 5*(9-sequence), this.getMaxCooldown(), "fall_damage");
     }
 
     @Override

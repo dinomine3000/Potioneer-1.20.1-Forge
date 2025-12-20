@@ -9,7 +9,7 @@ import net.minecraft.world.entity.LivingEntity;
 public class XpCostReductionAbility extends Ability {
 
     public XpCostReductionAbility(int sequence){
-        this.info = new AbilityInfo(109, 200, "Xp Cost Reduction", 40 + sequence, 20, this.getCooldown(), "xp_reduce");
+        this.info = new AbilityInfo(109, 200, "Xp Cost Reduction", 40 + sequence, 20, this.getMaxCooldown(), "xp_reduce");
     }
 
     @Override

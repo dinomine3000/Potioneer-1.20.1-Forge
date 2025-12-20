@@ -1,20 +1,12 @@
 package net.dinomine.potioneer.item.custom;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import net.dinomine.potioneer.Potioneer;
 import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
 import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
 import net.dinomine.potioneer.network.PacketHandler;
 import net.dinomine.potioneer.network.messages.PlayerFormulaScreenSTCMessage;
 import net.dinomine.potioneer.savedata.PotionFormulaSaveData;
 import net.dinomine.potioneer.recipe.PotionRecipeData;
-import net.minecraft.client.Minecraft;
-import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
@@ -24,14 +16,8 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
-import net.minecraft.world.item.crafting.ShapedRecipe;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.network.PacketDistributor;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 
 public class FormulaItem extends Item {
     public FormulaItem(Properties pProperties) {
@@ -44,7 +30,7 @@ public class FormulaItem extends Item {
         if(pLevel.isClientSide()) return new InteractionResultHolder<ItemStack>(InteractionResult.SUCCESS, heldItem);
 
         pPlayer.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
-            PotionRecipeData result = applyOrReadFormulaNbt(heldItem, pLevel, cap.getPathwayId(), cap);
+            PotionRecipeData result = applyOrReadFormulaNbt(heldItem, pLevel, cap.getPathwaySequenceId(), cap);
             boolean error = heldItem.getTag().getBoolean("error");
 
             PacketHandler.INSTANCE.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) pPlayer),

@@ -1,6 +1,7 @@
 package net.dinomine.potioneer;
 
 import com.mojang.logging.LogUtils;
+import net.dinomine.potioneer.beyonder.abilities.Abilities;
 import net.dinomine.potioneer.config.PotioneerRitualsConfig;
 import net.dinomine.potioneer.menus.ritual_altar.RitualAltarScreen;
 import net.dinomine.potioneer.util.misc.ArtifactHelper;
@@ -50,6 +51,7 @@ import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.registries.NewRegistryEvent;
 import org.slf4j.Logger;
 import software.bernie.geckolib.GeckoLib;
 
@@ -125,6 +127,11 @@ public class Potioneer
     private void addCreative(BuildCreativeModeTabContentsEvent event){
         if(event.getTabKey() == CreativeModeTabs.INGREDIENTS){
         }
+    }
+
+    @SubscribeEvent
+    public void registerAblities(NewRegistryEvent event){
+
     }
 
     // You can use EventBusSubscriber to automatically register all static methods in the class annotated with @SubscribeEvent

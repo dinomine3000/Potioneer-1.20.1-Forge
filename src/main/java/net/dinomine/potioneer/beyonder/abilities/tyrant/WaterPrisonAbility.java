@@ -6,7 +6,7 @@ import net.dinomine.potioneer.beyonder.abilities.AbilityInfo;
 import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
 import net.dinomine.potioneer.mob_effects.ModEffects;
 import net.dinomine.potioneer.network.PacketHandler;
-import net.dinomine.potioneer.network.messages.abilityRelevant.WaterPrisonEffectSTC;
+import net.dinomine.potioneer.network.messages.abilityRelevant.abilitySpecific.WaterPrisonEffectSTC;
 import net.dinomine.potioneer.sound.ModSounds;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
@@ -43,7 +43,7 @@ public class WaterPrisonAbility extends Ability {
             }
             target.level().playSound(null, target.getOnPos(), ModSounds.WATER_PRISON.get(), SoundSource.PLAYERS, 1, 1);
             cap.requestActiveSpiritualityCost(info.cost());
-            cap.getActingManager().progressActing(actingProgress, 18);
+            cap.getCharacteristicManager().progressActing(actingProgress, 18);
             return true;
         }
         return false;

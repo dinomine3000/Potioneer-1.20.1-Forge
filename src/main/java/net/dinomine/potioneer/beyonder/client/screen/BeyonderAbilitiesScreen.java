@@ -168,7 +168,7 @@ public class BeyonderAbilitiesScreen extends Screen {
 
     private void addAbilityToQuickSelect(){
         int caretToAdd = selectedCaret;
-        String ablId = abilities.get(caretToAdd).normalizedId();
+        String ablId = abilities.get(caretToAdd).ablId();
         if(ClientAbilitiesData.getQuickAbilityCaret().equals(ablId)){
             ClientAbilitiesData.setQuickAbilityCaret("");
         } else {
@@ -180,7 +180,7 @@ public class BeyonderAbilitiesScreen extends Screen {
 
     private void addAbilityToHotbar(){
         int caretToAdd = selectedCaret;
-        String ablId = abilities.get(caretToAdd).normalizedId();
+        String ablId = abilities.get(caretToAdd).ablId();
         if(!ClientAbilitiesData.getHotbar().contains(ablId)){
             ClientAbilitiesData.getHotbar().add(ablId);
         } else {
@@ -193,7 +193,7 @@ public class BeyonderAbilitiesScreen extends Screen {
 
     private void updateHotbarButton(){
         int abilityCaret = selectedCaret;
-        String ablId = abilities.get(abilityCaret).normalizedId();
+        String ablId = abilities.get(abilityCaret).ablId();
         if(!ClientAbilitiesData.getHotbar().contains(ablId)){
             addToHotbarButton.active = true;
             addToHotbarButton.visible = true;
@@ -220,7 +220,7 @@ public class BeyonderAbilitiesScreen extends Screen {
     }
 
     private void castAbilityAt(){
-        ClientAbilitiesData.useAbility(Minecraft.getInstance().player, abilities.get(selectedCaret).normalizedId());
+        ClientAbilitiesData.useAbility(Minecraft.getInstance().player, abilities.get(selectedCaret).ablId());
     }
 
     private void changeCaret(int buttonIdx){
@@ -249,7 +249,7 @@ public class BeyonderAbilitiesScreen extends Screen {
 
         //cooldown gradient
         if(main){
-            float percent = Mth.clamp(1 - ((float) ClientAbilitiesData.getCooldown(data.normalizedId()) / ClientAbilitiesData.getMaxCooldown(data.normalizedId())),
+            float percent = Mth.clamp(1 - ((float) ClientAbilitiesData.getCooldown(data.ablId()) / ClientAbilitiesData.getMaxCooldown(data.ablId())),
                     0, 1);
 
             pGuiGraphics.fillGradient(posX - 7, (int) (posY - 5 + percent*46),
@@ -260,7 +260,7 @@ public class BeyonderAbilitiesScreen extends Screen {
         pGuiGraphics.blit(ABILITY_ICONS, posX, posY, (int) (scale * ICON_WIDTH), (int)(scale * ICON_HEIGHT),
                 data.posX(), data.posY(), ICON_WIDTH, ICON_HEIGHT, ICONS_WIDTH, ICONS_HEIGHT);
 
-        if(!main && ClientAbilitiesData.getQuickAbilityCaret().equals(data.normalizedId())){
+        if(!main && ClientAbilitiesData.getQuickAbilityCaret().equals(data.ablId())){
             pGuiGraphics.blit(TEXTURE, posX + 130, posY, 12, 12,
                     176, 149, 16, 16, TEXTURE_WIDTH, TEXTURE_HEIGHT);
         }
@@ -268,12 +268,12 @@ public class BeyonderAbilitiesScreen extends Screen {
         //enabled gradient
         if(main){
             //enabled gradient
-            if(!ClientAbilitiesData.isEnabled(data.normalizedId())){
+            if(!ClientAbilitiesData.isEnabled(data.ablId())){
                 pGuiGraphics.fillGradient(posX - 7, posY -5,
                         (int) (posX + 7 + scale*ICON_WIDTH), (int) (posY + 5 + ICON_HEIGHT*scale), 0xDD999999, 0xDD666666);
             }
             //barrier symbol if ability is disabled
-            if(ClientAbilitiesData.getCooldown(data.normalizedId()) < 0){
+            if(ClientAbilitiesData.getCooldown(data.ablId()) < 0){
                 //Copied from the icons part
                 pGuiGraphics.blit(ABILITY_ICONS, posX, posY,
                         (int)(ICON_WIDTH*scale), (int)(ICON_HEIGHT*scale), 130, 4, ICON_WIDTH, ICON_HEIGHT, ICONS_WIDTH, ICONS_HEIGHT);

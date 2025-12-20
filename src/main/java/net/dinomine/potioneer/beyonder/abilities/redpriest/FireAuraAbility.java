@@ -9,7 +9,7 @@ import net.minecraft.world.entity.LivingEntity;
 public class FireAuraAbility extends Ability {
 
     public FireAuraAbility(int sequence){
-        this.info = new AbilityInfo(83, 104, "Fire Guard", 30 + sequence, 1, this.getCooldown(), "fire_aura");
+        this.info = new AbilityInfo(83, 104, "Fire Guard", 30 + sequence, 1, this.getMaxCooldown(), "fire_aura");
     }
 
     @Override

@@ -10,7 +10,7 @@ import net.minecraft.world.phys.Vec3;
 public class LeapAbility extends Ability {
 
     public LeapAbility(int sequence){
-        this.info = new AbilityInfo(57, 200, "Leap", 20 + sequence, 33 - 3*(9-sequence), getCooldown(), "leap");
+        this.info = new AbilityInfo(57, 200, "Leap", 20 + sequence, 33 - 3*(9-sequence), getMaxCooldown(), "leap");
         this.isActive = true;
     }
 

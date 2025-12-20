@@ -5,7 +5,7 @@ import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
 import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
-import net.dinomine.potioneer.beyonder.player.PlayerActingManager;
+import net.dinomine.potioneer.beyonder.player.PlayerCharacteristicManager;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
@@ -27,7 +27,7 @@ public class ChangeActingCommand {
     private int setValue(CommandContext<CommandSourceStack> cmd){
         ServerPlayer player = cmd.getSource().getPlayer();
         player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap ->{
-            cap.getActingManager().setActing(IntegerArgumentType.getInteger(cmd, "percent")/100d, IntegerArgumentType.getInteger(cmd, "sequence"));
+            cap.getCharacteristicManager().setActing(IntegerArgumentType.getInteger(cmd, "percent")/100d, IntegerArgumentType.getInteger(cmd, "sequence"));
         });
         return 1;
     }
@@ -37,8 +37,8 @@ public class ChangeActingCommand {
         Component message;
         if(player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).isPresent()){
             LivingEntityBeyonderCapability cap = player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve().get();
-            PlayerActingManager mng = cap.getActingManager();
-            message = mng.getDescComponent(cap.getPathwayId());
+            PlayerCharacteristicManager mng = cap.getCharacteristicManager();
+            message = mng.getDescComponent();
             player.sendSystemMessage(message);
         }
         return 1;

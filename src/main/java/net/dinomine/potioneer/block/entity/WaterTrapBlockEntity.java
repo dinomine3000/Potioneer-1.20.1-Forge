@@ -86,7 +86,7 @@ public class WaterTrapBlockEntity extends BlockEntity implements GeoBlockEntity 
                 setChanged();
                 if(caster != null){
                     caster.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
-                        cap.getActingManager().progressActing(1f, 18);
+                        cap.getCharacteristicManager().progressActing(1f, 18);
                     });
                 }
                 applyEffectsToEntity(pLevel, pPos, (LivingEntity) ent);

@@ -9,7 +9,7 @@ import net.minecraft.world.entity.LivingEntity;
 public class PurificationAbility extends Ability {
 
     public PurificationAbility(int sequence){
-        this.info = new AbilityInfo(83, 176, "Purification", 30 + sequence, 5, this.getCooldown(), "purification");
+        this.info = new AbilityInfo(83, 176, "Purification", 30 + sequence, 5, this.getMaxCooldown(), "purification");
     }
 
     @Override

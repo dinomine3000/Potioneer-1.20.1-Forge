@@ -105,16 +105,16 @@ public class BeyonderPotionItem extends PotionItem implements GeoItem, GeoTintab
                                 cap.setSanity(0);
                             }
                             player.sendSystemMessage(Component.literal("Lost control on the spot. oh well."));
-                        } else if(beyonder && Math.floorDiv(Integer.parseInt(name), 10) != Math.floorDiv(cap.getPathwayId(), 10) && cap.isBeyonder()){
+                        } else if(beyonder && Math.floorDiv(Integer.parseInt(name), 10) != Math.floorDiv(cap.getPathwaySequenceId(), 10) && cap.isBeyonder()){
                             if(!player.isCreative()){
                                 cap.setSanity(0);
                                 CharacteristicHelper.addCharacteristicToLevel(Integer.parseInt(name), pLevel, null, player.position(), player.getRandom());
                             }
-                            System.out.println("Pathway mismatch: " + name + " for pathway " + Math.floorDiv(cap.getPathwayId(), 10));
+                            System.out.println("Pathway mismatch: " + name + " for pathway " + Math.floorDiv(cap.getPathwaySequenceId(), 10));
                             player.sendSystemMessage(Component.literal("Lost control on the spot. oh well."));
                         }
                     } else {
-                        if(beyonder && (Math.floorDiv(Integer.parseInt(name), 10) == Math.floorDiv(cap.getPathwayId(), 10) || !cap.isBeyonder())){
+                        if(beyonder && (Math.floorDiv(Integer.parseInt(name), 10) == Math.floorDiv(cap.getPathwaySequenceId(), 10) || !cap.isBeyonder())){
                             ClientStatsData.attemptAdvancement(Integer.parseInt(name), 0);
                         }
                     }

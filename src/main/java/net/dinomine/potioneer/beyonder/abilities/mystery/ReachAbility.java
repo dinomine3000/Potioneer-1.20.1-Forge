@@ -9,7 +9,7 @@ import net.minecraft.world.entity.LivingEntity;
 public class ReachAbility extends Ability {
 
     public ReachAbility(int sequence){
-        this.info = new AbilityInfo(57, 104, "Extended reach", 20 + sequence, 0, getCooldown(), "reach");
+        this.info = new AbilityInfo(57, 104, "Extended reach", 20 + sequence, 0, getMaxCooldown(), "reach");
     }
 
     @Override

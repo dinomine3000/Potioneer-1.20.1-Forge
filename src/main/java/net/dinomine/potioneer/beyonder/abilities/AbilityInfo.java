@@ -2,7 +2,11 @@ package net.dinomine.potioneer.beyonder.abilities;
 
 import net.minecraft.network.FriendlyByteBuf;
 
-public record AbilityInfo(int posX, int posY, String name, int id, int cost, int maxCooldown, String descId) {
+public class AbilityInfo {
+
+    public AbilityInfo(int posX, int posY, String name, int sequenceId, int cost, int maxCooldown, String descId){
+
+    }
 
     public void encode(FriendlyByteBuf buffer){
         buffer.writeInt(posX);
@@ -41,7 +45,7 @@ public record AbilityInfo(int posX, int posY, String name, int id, int cost, int
         return new AbilityInfo(x, y, name, id, cost, maxCd, desc);
     }
 
-    public String normalizedId(){
+    public String ablId(){
         return descId().replaceAll("_\\d+$", "");
         //return descId();
     }

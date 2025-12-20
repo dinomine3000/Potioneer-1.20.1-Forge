@@ -31,7 +31,7 @@ public class AnvilGuiAbility extends Ability {
     private boolean levelUp = false;
     public AnvilGuiAbility(int sequence){
         levelUp = sequence < 8;
-        this.info = new AbilityInfo(109, levelUp ? 104 : 248, "Anvil Gui", 40 + sequence, levelUp ? 10 : 100, this.getCooldown(), "anvil_gui_" + (levelUp ? "2" : "1"));
+        this.info = new AbilityInfo(109, levelUp ? 104 : 248, "Anvil Gui", 40 + sequence, levelUp ? 10 : 100, this.getMaxCooldown(), "anvil_gui_" + (levelUp ? "2" : "1"));
     }
 
     @Override

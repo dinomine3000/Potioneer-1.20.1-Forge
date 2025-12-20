@@ -1,12 +1,8 @@
 package net.dinomine.potioneer.menus.ritual_altar;
 
-import com.lowdragmc.lowdraglib.gui.widget.TextFieldWidget;
 import net.dinomine.potioneer.Potioneer;
-import net.dinomine.potioneer.beyonder.client.KeyBindings;
 import net.dinomine.potioneer.network.PacketHandler;
-import net.dinomine.potioneer.network.messages.AdvancementFailMessageCTS;
 import net.dinomine.potioneer.network.messages.RitualC2STextSync;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;

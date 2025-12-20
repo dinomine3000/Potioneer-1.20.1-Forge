@@ -3,7 +3,7 @@ package net.dinomine.potioneer.beyonder.client;
 import net.dinomine.potioneer.beyonder.abilities.AbilityInfo;
 import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
 import net.dinomine.potioneer.network.PacketHandler;
-import net.dinomine.potioneer.network.messages.PlayerSyncHotbarMessage;
+import net.dinomine.potioneer.network.messages.abilityRelevant.PlayerSyncHotbarMessage;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
@@ -62,8 +62,8 @@ public class ClientAbilitiesData {
     public static void setAbilities(List<AbilityInfo> abilities2, boolean changingPath) {
         abilities = new LinkedHashMap<>();
         for (AbilityInfo ability : abilities2) {
-            if (ability != null && !ability.normalizedId().isEmpty()) {
-                abilities.put(ability.normalizedId(), ability);
+            if (ability != null && !ability.ablId().isEmpty()) {
+                abilities.put(ability.ablId(), ability);
             }
         }
         if(changingPath) hotbar = new ArrayList<>();

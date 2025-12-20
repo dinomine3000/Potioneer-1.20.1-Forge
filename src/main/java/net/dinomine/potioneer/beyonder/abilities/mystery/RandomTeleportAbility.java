@@ -13,7 +13,7 @@ import net.minecraft.world.level.Level;
 public class RandomTeleportAbility extends Ability {
 
     public RandomTeleportAbility(int sequence){
-        this.info = new AbilityInfo(57, 56, "Random Teleport", 20 + sequence, 75, getCooldown(), "random_teleport");
+        this.info = new AbilityInfo(57, 56, "Random Teleport", 20 + sequence, 75, getMaxCooldown(), "random_teleport");
         this.isActive = true;
     }
 

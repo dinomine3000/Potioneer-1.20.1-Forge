@@ -21,7 +21,7 @@ public class ArtifactTint implements ItemColor {
         int color = 0xFFFF0000;
         if(itemStack.hasTag() && itemStack.getTag().contains(ArtifactHelper.BEYONDER_TAG_ID)){
             int pathwayId = itemStack.getTag().getCompound(ArtifactHelper.BEYONDER_TAG_ID).getInt("id");
-            color = BeyonderPathway.getSequenceColorFromId(pathwayId);
+            color = BeyonderPathway.getSequenceColorFromLevel(pathwayId);
             if(itemStack.getTag().contains(ArtifactHelper.ARTIFACT_TAG_ID)){
                 List<String> abilityId = ArtifactHelper.getArtifactIdsFromItem(itemStack);
                 if(!abilityId.isEmpty()){

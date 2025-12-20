@@ -129,7 +129,7 @@ public class CoinItem extends Item implements GeoItem {
         boolean seer = false;
         if(player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).isPresent()){
             Optional<LivingEntityBeyonderCapability> cap = player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve();
-            sequence = cap.get().getPathwayId();
+            sequence = cap.get().getPathwaySequenceId();
             seer = cap.get().getEffectsManager().hasEffect(BeyonderEffects.EFFECT.MISC_MYST);
         }
 

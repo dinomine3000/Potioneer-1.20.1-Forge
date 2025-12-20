@@ -6,7 +6,6 @@ import net.dinomine.potioneer.entities.ModEntities;
 import net.dinomine.potioneer.entities.custom.CharacteristicEntity;
 import net.dinomine.potioneer.item.ModItems;
 import net.minecraft.client.color.item.ItemColor;
-import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
@@ -27,8 +26,6 @@ import top.theillusivec4.curios.api.type.capability.ICuriosItemHandler;
 import top.theillusivec4.curios.api.type.inventory.ICurioStacksHandler;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 import java.util.stream.StreamSupport;
 
@@ -120,7 +117,7 @@ public class CharacteristicItem extends Item {
                     seq = itemStack.getTag().getCompound(ArtifactHelper.BEYONDER_TAG_ID).getInt("id");
                 }
             }
-            return BeyonderPathway.getSequenceColorFromId(seq);
+            return BeyonderPathway.getSequenceColorFromLevel(seq);
         }
     }
 }

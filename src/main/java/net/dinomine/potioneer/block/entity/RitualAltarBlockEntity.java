@@ -242,7 +242,7 @@ public class RitualAltarBlockEntity extends BlockEntity implements MenuProvider 
             } else {
                 cap.get().requestActiveSpiritualityCost(FLAT_COST);
             }
-            pathwayId = cap.get().getPathwayId();
+            pathwayId = cap.get().getPathwaySequenceId();
         }
         String incense = getIncenseString();
 

@@ -1,9 +1,7 @@
-package net.dinomine.potioneer.network.messages;
+package net.dinomine.potioneer.network.messages.AllySystem;
 
-import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
 import net.dinomine.potioneer.savedata.AllySystemSaveData;
 import net.dinomine.potioneer.util.BufferUtils;
-import net.dinomine.potioneer.util.misc.CharacteristicHelper;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;

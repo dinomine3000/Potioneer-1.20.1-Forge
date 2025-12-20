@@ -1,4 +1,4 @@
-package net.dinomine.potioneer.network.messages.abilityRelevant;
+package net.dinomine.potioneer.network.messages.abilityRelevant.abilitySpecific;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;

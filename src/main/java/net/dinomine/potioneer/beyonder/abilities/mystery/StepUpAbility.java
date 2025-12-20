@@ -9,7 +9,7 @@ import net.minecraft.world.entity.LivingEntity;
 public class StepUpAbility extends Ability {
 
     public StepUpAbility(int sequence){
-        this.info = new AbilityInfo(57, 152, "Step Assist", 20 + sequence, 0, this.getCooldown(), "step_up");
+        this.info = new AbilityInfo(57, 152, "Step Assist", 20 + sequence, 0, this.getMaxCooldown(), "step_up");
     }
 
     @Override

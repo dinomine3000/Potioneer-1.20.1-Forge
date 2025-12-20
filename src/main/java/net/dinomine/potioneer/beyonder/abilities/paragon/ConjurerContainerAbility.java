@@ -15,7 +15,7 @@ import net.minecraft.world.inventory.MenuType;
 
 public class ConjurerContainerAbility extends Ability {
     public ConjurerContainerAbility(int sequence){
-        this.info = new AbilityInfo(109, 176, "Conjure", 40 + sequence, 0, this.getCooldown(), "conjure_container");
+        this.info = new AbilityInfo(109, 176, "Conjure", 40 + sequence, 0, this.getMaxCooldown(), "conjure_container");
         this.isActive = true;
     }
 

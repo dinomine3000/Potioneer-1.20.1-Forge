@@ -60,7 +60,7 @@ public class DevPathway extends BeyonderPathway {
                 activeAbilities.add(new DurabilityRegenAbility(sequence));
         }
 
-        mng.setPathwayActives(activeAbilities);
+        mng.setPathwayAbilities(activeAbilities);
         //mng.setPathwayPassives(passiveAbilities);
     }
 

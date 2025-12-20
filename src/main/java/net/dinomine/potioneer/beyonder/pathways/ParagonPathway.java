@@ -68,7 +68,7 @@ public class ParagonPathway extends BeyonderPathway {
                 activeAbilities.add(new CogitationAbility(40 + sequence));
         }
 //        CraftingBonusAbility abl = new CraftingBonusAbility(sequence);
-        mng.setPathwayActives(activeAbilities);
+        mng.setPathwayAbilities(activeAbilities);
         //mng.setPathwayPassives(passiveAbilities);
     }
 

@@ -12,7 +12,7 @@ import net.minecraft.world.phys.Vec3;
 public class FireBallAbility extends Ability {
 
     public FireBallAbility(int sequence){
-        this.info = new AbilityInfo(83, 128, "Fire Ball", 30 + sequence, 20, this.getCooldown(), "fire_ball");
+        this.info = new AbilityInfo(83, 128, "Fire Ball", 30 + sequence, 20, this.getMaxCooldown(), "fire_ball");
     }
 
     @Override

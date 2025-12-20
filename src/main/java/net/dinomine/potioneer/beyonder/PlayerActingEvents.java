@@ -1,12 +1,10 @@
 package net.dinomine.potioneer.beyonder;
 
 import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
-import net.dinomine.potioneer.beyonder.player.PlayerActingManager;
-import net.minecraft.tags.BlockTags;
+import net.dinomine.potioneer.beyonder.player.PlayerCharacteristicManager;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.common.Tags;
-import net.minecraftforge.common.data.ForgeBlockTagsProvider;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.EntityStruckByLightningEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
@@ -23,7 +21,7 @@ public class PlayerActingEvents {
         Player player = event.player;
         Level level = event.player.level();
         player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
-            PlayerActingManager acting = cap.getActingManager();
+            PlayerCharacteristicManager acting = cap.getCharacteristicManager();
             if(player.isSwimming() && player.getDeltaMovement().lengthSqr() > 0.0001f){
                 //progress swimmer so it reaches 100% in 10 minutes of swimming
                 acting.progressActing(1/(20*60*10d), 19);
@@ -40,7 +38,7 @@ public class PlayerActingEvents {
         if(event.getEntity().level().isClientSide()) return;
         if(!(event.getEntity() instanceof Player player)) return;
         player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
-            cap.getActingManager().progressActing(0.001d, 17);
+            cap.getCharacteristicManager().progressActing(0.001d, 17);
         });
     }
 
@@ -49,7 +47,7 @@ public class PlayerActingEvents {
         if(event.getEntity().level().isClientSide()) return;
         Player player = event.getEntity();
         player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
-            PlayerActingManager acting = cap.getActingManager();
+            PlayerCharacteristicManager acting = cap.getCharacteristicManager();
             acting.progressActing(0.001d, 49);
         });
     }
@@ -59,7 +57,7 @@ public class PlayerActingEvents {
         if(event.getPlayer().level().isClientSide()) return;
         Player player = event.getPlayer();
         player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
-            PlayerActingManager acting = cap.getActingManager();
+            PlayerCharacteristicManager acting = cap.getCharacteristicManager();
             //needs to mine stone or ores, at y < 60, 320 times
             if(player.getBlockY() < 40
                     && (event.getState().is(Tags.Blocks.STONE) || event.getState().is(Tags.Blocks.ORES)))

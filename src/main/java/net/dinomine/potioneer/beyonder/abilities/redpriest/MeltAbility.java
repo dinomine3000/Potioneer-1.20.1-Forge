@@ -5,7 +5,7 @@ import net.dinomine.potioneer.beyonder.abilities.AbilityFunctionHelper;
 import net.dinomine.potioneer.beyonder.abilities.AbilityInfo;
 import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
 import net.dinomine.potioneer.network.PacketHandler;
-import net.dinomine.potioneer.network.messages.abilityRelevant.EvaporateEffect;
+import net.dinomine.potioneer.network.messages.abilityRelevant.abilitySpecific.EvaporateEffect;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.server.level.ServerLevel;
@@ -32,7 +32,7 @@ import java.util.ArrayList;
 public class MeltAbility extends Ability {
 
     public MeltAbility(int sequence){
-        this.info = new AbilityInfo(83, 80, "Melt", 30 + sequence, 20, this.getCooldown(), "melt");
+        this.info = new AbilityInfo(83, 80, "Melt", 30 + sequence, 20, this.getMaxCooldown(), "melt");
     }
 
     @Override

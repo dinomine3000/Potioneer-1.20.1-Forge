@@ -4,28 +4,35 @@ import net.dinomine.potioneer.beyonder.abilities.Ability;
 import net.dinomine.potioneer.beyonder.abilities.misc.CogitationAbility;
 import net.dinomine.potioneer.beyonder.abilities.tyrant.*;
 import net.dinomine.potioneer.beyonder.player.PlayerAbilitiesManager;
+import org.checkerframework.checker.units.qual.A;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class TyrantPathway extends BeyonderPathway {
 
-    public TyrantPathway(int sequence){
-        super(sequence, "Tyrant");
-        this.color = 0x404080;
-        this.maxSpirituality = new int[]{3400, 2500, 1800, 1300, 1000, 700, 425, 300, 140, 100};
-
+    public TyrantPathway(){
+        super("Tyrant", 0x404080, new int[]{3400, 2500, 1800, 1300, 1000, 700, 425, 300, 140, 100});
     }
 
-    public static int getX(){
+    @Override
+    public int getX(){
         return 64;
     }
 
-    public static int getY(){
+    @Override
+    public int getY(){
         return 0;
     }
 
-    public static float[] getStatsFor(int sequence){
-        return switch (sequence){
+    @Override
+    public int getAbilityX() {
+        return 31;
+    }
+
+    @Override
+    public float[] getStatsFor(int sequenceLevel){
+        return switch (sequenceLevel){
             case 9 -> new float[]{8, 1, 0, 0, 1};
             case 8 -> new float[]{8, 1, 0, 0, 2};
             case 7 -> new float[]{12, 2, 0, 0, 5};
@@ -35,8 +42,9 @@ public class TyrantPathway extends BeyonderPathway {
         };
     }
 
-    public static void getAbilities(int sequence, PlayerAbilitiesManager mng){
-        ArrayList<Ability> activeAbilities = new ArrayList<>();
+    @Override
+    public List<Ability> getAbilities(int sequence){
+        ArrayList<Ability> abilities = new ArrayList<>();
         switch(sequence){
             case 0:
             case 1:
@@ -46,35 +54,36 @@ public class TyrantPathway extends BeyonderPathway {
             case 5:
             case 6:
             case 7:
-                activeAbilities.add(new ThunderStrikeAbility(sequence));
-                activeAbilities.add(new ThunderCreateAbility(sequence));
-                activeAbilities.add(new RainCreateAbility(sequence));
-                activeAbilities.add(new RainLeapAbility(sequence));
-                activeAbilities.add(new ElectrificationAbility(sequence));
+                abilities.add(new ThunderStrikeAbility(sequence));
+                abilities.add(new ThunderCreateAbility(sequence));
+                abilities.add(new RainCreateAbility(sequence));
+                abilities.add(new RainLeapAbility(sequence));
+                abilities.add(new ElectrificationAbility(sequence));
             case 8:
-                activeAbilities.add(new WaterPrisonAbility(sequence));
-                activeAbilities.add(new WaterCreateAbility(sequence));
-                activeAbilities.add(new WaterRemoveAbility(sequence));
-                activeAbilities.add(new WaterTrapAbility(sequence));
-                activeAbilities.add(new DivinationAbility(sequence));
+                abilities.add(new WaterPrisonAbility(sequence));
+                abilities.add(new WaterCreateAbility(sequence));
+                abilities.add(new WaterRemoveAbility(sequence));
+                abilities.add(new WaterTrapAbility(sequence));
+                abilities.add(new DivinationAbility(sequence));
             case 9:
-                activeAbilities.add(new WaterAffinityAbility(sequence));
-                activeAbilities.add(new CogitationAbility(10 + sequence));
+                abilities.add(new WaterAffinityAbility(sequence));
+                abilities.add(new CogitationAbility(10 + sequence));
         }
 
-        mng.setPathwayActives(activeAbilities);
+        return abilities;
     }
 
     @Override
     public int getId() {
-        return 10 + this.sequence;
+        return 1;
     }
 
-    public static String getSequenceName(int seq, boolean show){
+    @Override
+    public String getSequenceNameFromId(int seq, boolean show){
         return show ? getSequenceName(seq).replace("_", " ") : getSequenceName(seq).toLowerCase();
     }
 
-    public static String getSequenceName(int seq){
+    private String getSequenceName(int seq){
         return switch (seq) {
             case 9 -> "Swimmer";
             case 8 -> "Hydro_Shaman";
@@ -85,7 +94,7 @@ public class TyrantPathway extends BeyonderPathway {
         };
     }
 
-    public static int getSequenceColor(int seq){
+    public int getSequenceColorFromLevel(int seq){
         return switch (seq) {
             case 9 -> 2146549;
             case 8 -> 8023295;

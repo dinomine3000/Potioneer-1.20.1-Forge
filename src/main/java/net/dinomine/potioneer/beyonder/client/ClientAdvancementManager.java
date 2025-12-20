@@ -2,7 +2,7 @@ package net.dinomine.potioneer.beyonder.client;
 
 import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
 import net.dinomine.potioneer.network.PacketHandler;
-import net.dinomine.potioneer.network.messages.AdvancementFailMessageCTS;
+import net.dinomine.potioneer.network.messages.advancement.AdvancementFailMessageCTS;
 import net.dinomine.potioneer.sound.ModSounds;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
@@ -67,7 +67,7 @@ public class ClientAdvancementManager {
         screen.onClose();
         if(success){
             Minecraft.getInstance().player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
-                cap.advance(targetSequence, Minecraft.getInstance().player, true, true);
+                cap.consumeCharacteristic(targetSequence, Minecraft.getInstance().player, true, true);
             });
         } else {
             Player player = Minecraft.getInstance().player;

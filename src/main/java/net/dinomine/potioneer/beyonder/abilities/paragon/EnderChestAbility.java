@@ -14,7 +14,7 @@ import net.minecraft.world.inventory.ChestMenu;
 
 public class EnderChestAbility extends Ability {
     public EnderChestAbility(int sequence){
-        this.info = new AbilityInfo(109, 152, "Ender Chest", 40 + sequence, 50, this.getCooldown(), "ender_chest");
+        this.info = new AbilityInfo(109, 152, "Ender Chest", 40 + sequence, 50, this.getMaxCooldown(), "ender_chest");
         this.isActive = true;
     }
 

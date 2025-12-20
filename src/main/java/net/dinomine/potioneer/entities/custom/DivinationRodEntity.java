@@ -93,7 +93,7 @@ public class DivinationRodEntity extends PlaceableItemEntity implements GeoEntit
         int sequenceId = -1;
         boolean seer = false;
         if(pPlayer.getCapability(BeyonderStatsProvider.BEYONDER_STATS).isPresent()){
-            sequenceId = pPlayer.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve().get().getPathwayId();
+            sequenceId = pPlayer.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve().get().getPathwaySequenceId();
             seer = pPlayer.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve().get().getEffectsManager().hasEffect(BeyonderEffects.EFFECT.MISC_MYST);
         }
 

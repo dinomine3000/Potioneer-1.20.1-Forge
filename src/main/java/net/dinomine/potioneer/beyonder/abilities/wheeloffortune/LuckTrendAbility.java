@@ -9,7 +9,7 @@ import net.minecraft.world.entity.LivingEntity;
 public class LuckTrendAbility extends Ability {
 
     public LuckTrendAbility(int sequence){
-        this.info = new AbilityInfo(5, 32, "Luck Trend", sequence, 0, this.getCooldown(), "lucky_trend");
+        this.info = new AbilityInfo(5, 32, "Luck Trend", sequence, 0, this.getMaxCooldown(), "lucky_trend");
     }
 
     @Override

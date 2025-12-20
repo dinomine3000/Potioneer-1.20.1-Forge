@@ -82,7 +82,7 @@ public class CharacteristicEntity extends PlaceableItemEntity implements GeoEnti
 
     @Override
     public int getHexColor() {
-       return BeyonderPathway.getSequenceColorFromId(entityData.get(BEYONDER_ID));
+       return BeyonderPathway.getSequenceColorFromLevel(entityData.get(BEYONDER_ID));
     }
 
     @Override

@@ -46,7 +46,7 @@ public class BeyonderGamblingEffect extends BeyonderEffect {
         int currentLuck = cap.getLuckManager().getLuck();
         int amm = Math.max(quantityToLuck(quantity), currentLuck) - currentLuck;
         cap.getLuckManager().grantLuck(amm);
-        cap.getActingManager().progressActing(0.2f*Math.pow(amm/(float)luck_limit, 2.6f), 7);
+        cap.getCharacteristicManager().progressActing(0.2f*Math.pow(amm/(float)luck_limit, 2.6f), 7);
         cap.getLuckManager().chanceLuckEventChange(-9+sequenceLevel);
         target.sendSystemMessage(Component.literal("You have been granted " + amm + " luck"));
     }

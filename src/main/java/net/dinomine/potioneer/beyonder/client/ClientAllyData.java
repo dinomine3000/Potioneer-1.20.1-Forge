@@ -1,7 +1,7 @@
 package net.dinomine.potioneer.beyonder.client;
 
 import net.dinomine.potioneer.network.PacketHandler;
-import net.dinomine.potioneer.network.messages.AllyGroupSyncMessage;
+import net.dinomine.potioneer.network.messages.AllySystem.AllyGroupSyncMessage;
 
 import java.util.*;
 

@@ -9,7 +9,7 @@ import net.minecraft.world.entity.LivingEntity;
 public class LuckDamageReductionAbility extends Ability {
 
     public LuckDamageReductionAbility(int sequence){
-        this.info = new AbilityInfo(5, 224, "Damage Reduction", sequence, 50, getCooldown(), "luck_damage_reduction");
+        this.info = new AbilityInfo(5, 224, "Damage Reduction", sequence, 50, getMaxCooldown(), "luck_damage_reduction");
     }
 
     @Override

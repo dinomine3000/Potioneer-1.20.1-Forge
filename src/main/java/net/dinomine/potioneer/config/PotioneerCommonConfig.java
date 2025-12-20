@@ -13,16 +13,18 @@ public class PotioneerCommonConfig {
 
 //    public static final ForgeConfigSpec.ConfigValue<Boolean> RANDOM_FORMULAS;
 //    public static final ForgeConfigSpec.ConfigValue<List<? extends String>> INGREDIENTS;
-    public static final ForgeConfigSpec.DoubleValue MAXIMUM_INTRINSIC_ACTING_MULTIPLIER;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> DO_INTRINSIC_ACTING_MULTIPLIERS;
+    public static final ForgeConfigSpec.BooleanValue DO_APTITUDE_PATHWAYS;
+    public static final ForgeConfigSpec.DoubleValue APTITUDE_MULTIPLIER;
     public static final ForgeConfigSpec.DoubleValue UNIVERSAL_ACTING_MULTIPLIER;
-    public static final ForgeConfigSpec.DoubleValue MAXIMUM_PASSIVE_ACTING_LIMIT;
-    public static final ForgeConfigSpec.DoubleValue MINIMUM_PASSIVE_ACTING_LIMIT;
+    public static final ForgeConfigSpec.DoubleValue PASSIVE_ACTING_LIMIT;
+    public static final ForgeConfigSpec.DoubleValue PASSIVE_ACTING_RATE;
+    public static final ForgeConfigSpec.BooleanValue PASSIVELY_DIGEST_ALL_CHARACTERISTICS;
     public static final ForgeConfigSpec.IntValue SECONDS_TO_MAX_SPIRITUALITY;
     public static final ForgeConfigSpec.BooleanValue PUBLIC_GROUPS;
     public static final ForgeConfigSpec.BooleanValue ALLOW_CHANGING_PATHWAYS;
 
     public static final ForgeConfigSpec.EnumValue<CharacteristicDropCriteria> CHARACTERISTIC_DROP_CRITERIA_ENUM_VALUE;
+    public static final ForgeConfigSpec.BooleanValue DROP_ALL_CHARACTERISTICS;
 
     public enum CharacteristicDropCriteria{
         ALWAYS,
@@ -33,31 +35,35 @@ public class PotioneerCommonConfig {
     static{
         BUILDER.push("Configs for Potioneer");
 
-        DO_INTRINSIC_ACTING_MULTIPLIERS = BUILDER.comment("Should each player have a random " +
-                        "intrinsic multiplier for how much acting progress they get per action?")
-                .define("intrinsic_acting_multipliers", true);
+        DO_APTITUDE_PATHWAYS = BUILDER.comment("Should players have a hidden pathway that is their aptitude?" +
+                "They get more lucky getting formulas for this pathway, and digest its characteristics faster")
+                .define("intrinsic_aptitudes", true);
 
-        MAXIMUM_INTRINSIC_ACTING_MULTIPLIER = BUILDER.comment("What is the maximum random intrinsic multiplier a player can have?" +
-                        " Values smaller than 1 will make everyone progress much slower.")
-                .defineInRange("maximum_intrinsic_multiplier", 1.3d, 0, Integer.MAX_VALUE);
+        APTITUDE_MULTIPLIER = BUILDER.comment("If the above is true, what should be the intrinsic acting multiplier a player gets?")
+                .defineInRange("aptitude_multiplier", 1.3d, 0, Integer.MAX_VALUE);
 
-        MAXIMUM_PASSIVE_ACTING_LIMIT = BUILDER.comment("What should be the maximum amount of acting progress" +
-                        "a player can passively get per sequence without doing any special actions?" +
-                        "\nEvery time someone advances a sequence, they get a random limit for their passive acting up to this value." +
-                        "\nWithout doing anything, they will get this much percentage progress towards this sequence's acting progress. it does not carry over once they advance." +
-                        "\n0 will disable it, 1 could allow people to digest a potion without doing anything")
-                .defineInRange("passive_acting_limit", 0.6d, 0, 1);
+        PASSIVE_ACTING_LIMIT = BUILDER.comment("How much should a characteristic be digested by doing nothing?" +
+                        "0 will disable passive acting, 1 will have all players eventually digest their characteristics")
+                .defineInRange("passive_acting_limit", 0.5d, 0, 1);
 
-        MINIMUM_PASSIVE_ACTING_LIMIT = BUILDER.comment("Guarantees that every player has at least this much passive acting limit." +
-                        "If it is bigger than the maximum, they will flip, aka this becomes the new maximum, and the maximum becomes the minimum.")
-                .defineInRange("minimum_passive_acting", 0d, 0, 1);
+        PASSIVE_ACTING_RATE = BUILDER.comment("How long should a characteristic take to passively digest up to its limit, in seconds? Default is 1 hour to reach the limit")
+                .defineInRange("passive_acting_period", 3600d, 1, Integer.MAX_VALUE);
+
+        PASSIVELY_DIGEST_ALL_CHARACTERISTICS = BUILDER.comment("Should players passively digest all characteristics, as opposed to just their current one?" +
+                        "true will make them digest every characteristic up to their passive acting limit, false will make this only happen to their current characteristic" +
+                        "(this characteristic is their highest level characteristics, and if there are more than 1 such characteristics, this refers to their last consumed one.")
+                .define("passive_digest_all", false);
 
         UNIVERSAL_ACTING_MULTIPLIER = BUILDER.comment("This value will be multiplied by any amount of acting someone gets per action, " +
                         "\n0 will disable digestion gained through acting, and only affects active acting progress (so passive like described above will not be affected)")
                 .defineInRange("universal_acting_progress_modifier", 1d, 0, Integer.MAX_VALUE);
 
         CHARACTERISTIC_DROP_CRITERIA_ENUM_VALUE = BUILDER.comment("What are the criteria for dropping a characteristic on death?")
-                        .defineEnum("char_drop_criteria", CharacteristicDropCriteria.LOW_SANITY);
+                .defineEnum("char_drop_criteria", CharacteristicDropCriteria.LOW_SANITY);
+
+        DROP_ALL_CHARACTERISTICS = BUILDER.comment("When someone drops a characteristics, should they drop all they have, or just their most recent highest level one?" +
+                        "True will make them drop everything, false will make them drop their highest sequence characteristic only, and if there are more than one such characteristics, it will drop the most recent one.")
+                .define("drop_all_characteristics", false);
 
         ALLOW_CHANGING_PATHWAYS = BUILDER.comment("Should players be able to change pathways?" +
                 "\nSetting this to true means that people can drop a sequence level at level 9, becoming beyonderless and allowing them to drink any other pathway potion." +
@@ -69,9 +75,9 @@ public class PotioneerCommonConfig {
                 .defineInRange("seconds_to_full", 15*60, 1, Integer.MAX_VALUE);
 
         PUBLIC_GROUPS = BUILDER.comment("Should every player be able to see every group in the server or just admins?\n"
-                + "True means everyone can see every group and their players, false will mean they can only see groups they're in.\n"
-                + "Note that this doesnt put them in the group - they'll still need the password to get in.")
-                        .define("public_groups", false);
+                        + "True means everyone can see every group and their players, false will mean they can only see groups they're in.\n"
+                        + "Note that this doesnt put them in the group - they'll still need the password to get in.")
+                .define("public_groups", false);
 
         BUILDER.pop();
         SPEC = BUILDER.build();
