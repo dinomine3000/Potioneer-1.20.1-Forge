@@ -2,6 +2,7 @@ package net.dinomine.potioneer.beyonder.abilities.tyrant;
 
 import net.dinomine.potioneer.beyonder.abilities.Ability;
 import net.dinomine.potioneer.beyonder.abilities.AbilityInfo;
+import net.dinomine.potioneer.beyonder.abilities.misc.PassiveAbility;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
 import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
 import net.dinomine.potioneer.beyonder.player.PlayerLuckManager;
@@ -23,7 +24,7 @@ import net.minecraftforge.network.PacketDistributor;
 
 import java.util.*;
 
-public class DivinationAbility extends Ability {
+public class DivinationAbility extends PassiveAbility {
     public static HashMap<BlockState, Float> banners_chances = new HashMap<>();
     public static ArrayList<BlockState> banners = new ArrayList<>();
     static {
@@ -44,15 +45,12 @@ public class DivinationAbility extends Ability {
     }
 
     public DivinationAbility(int sequence){
-        this.info = new AbilityInfo(31, 56, "Divination", 10 + sequence, 0, this.getMaxCooldown(), "divination");
+//        this.info = new AbilityInfo(31, 56, "Divination", 10 + sequence, 0, this.getMaxCooldown(), "divination");
+        super(sequence, BeyonderEffects.MISC_DIVINATION, level -> "divination");
     }
 
     @Override
-    public void onAcquire(LivingEntityBeyonderCapability cap, LivingEntity target) {
-        cap.getEffectsManager().addOrReplaceEffect(BeyonderEffects.byId(BeyonderEffects.EFFECT.MISC_MYST, getSequence(), 0, -1, true), cap, target);
-    }
-
-    public boolean active(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    public boolean primary(LivingEntityBeyonderCapability cap, LivingEntity target) {
         if(target.level().isClientSide()) return true;
 
 
@@ -126,21 +124,5 @@ public class DivinationAbility extends Ability {
             if (banner.getPos().equals(pos)) return true;
         }
         return false;
-    }
-
-    @Override
-    public void passive(LivingEntityBeyonderCapability cap, LivingEntity target) {
-        // THIS IS NOT RUNNING because this isnt a passive ability.
-//        if(cap.getEffectsManager().hasEffect(BeyonderEffects.EFFECT.MISC_MYST)) return;
-//        cap.getEffectsManager().addEffectNoNotify(BeyonderEffects.byId(BeyonderEffects.EFFECT.MISC_MYST, getSequence(), 0, -1, true));
-    }
-
-    @Override
-    public void activate(LivingEntityBeyonderCapability cap, LivingEntity target) {
-    }
-
-    @Override
-    public void deactivate(LivingEntityBeyonderCapability cap, LivingEntity target) {
-        cap.getEffectsManager().removeEffect(BeyonderEffects.EFFECT.MISC_MYST, getSequence(), cap, target);
     }
 }

@@ -20,33 +20,40 @@ import static net.dinomine.potioneer.block.custom.MinerLightSourceBlock.WATERLOG
 
 public class WaterTrapAbility extends Ability {
 
+    @Override
+    protected String getDescId(int sequenceLevel) {
+        return "water_trap";
+    }
+
     public WaterTrapAbility(int sequence){
-        this.info = new AbilityInfo(31, 80, "Water Trap", 10 + sequence, 40+40*(9-sequence), 20*10, "water_trap");
+//        this.info = new AbilityInfo(31, 80, "Water Trap", 10 + sequence, 40+40*(9-sequence), 20*10, "water_trap");
+        super(sequence);
+        setCost(level -> 40 + 40*(9 - level));
+        defaultMaxCooldown = 20*10;
     }
 
     @Override
-    public boolean active(LivingEntityBeyonderCapability cap, LivingEntity target) {
-        if(target.level().isClientSide()) return true;
+    public boolean primary(LivingEntityBeyonderCapability cap, LivingEntity target) {
+        if(target.level().isClientSide()) return putOnCooldown(target);
         if(!(target instanceof Player player)) return false;
         HitResult block = player.pick(player.getAttributeBaseValue(ForgeMod.BLOCK_REACH.get()) + 0.5, 0f, false);
         if(block instanceof BlockHitResult rayTrace){
             Level level = player.level();
             BlockPos targetPos = rayTrace.getBlockPos().relative(rayTrace.getDirection());
-            if(cap.getSpirituality() > info.cost()
+            if(cap.getSpirituality() > cost()
                     && level.getBlockState(rayTrace.getBlockPos()).canBeReplaced()
                     && level.getBlockState(rayTrace.getBlockPos().below()).isCollisionShapeFullBlock(level, targetPos)){
                 //if the block you are targeting can be replaced
-
 
                 boolean water = level.getFluidState(rayTrace.getBlockPos()).getType() == Fluids.WATER;
                 level.setBlockAndUpdate(rayTrace.getBlockPos(),
                         ModBlocks.WATER_TRAP_BLOCK.get().defaultBlockState().setValue(WATERLOGGED, water));
                 WaterTrapBlockEntity be = (WaterTrapBlockEntity) level.getBlockEntity(rayTrace.getBlockPos());
-                if(be != null) be.setPlacedByPlayer(player.getUUID(), getSequence());
-                cap.requestActiveSpiritualityCost(info.cost());
-                return true;
+                if(be != null) be.setPlacedByPlayer(player.getUUID(), getSequenceLevel());
+                cap.requestActiveSpiritualityCost(cost());
+                return putOnCooldown(target);
 
-            } else if(cap.getSpirituality() > info.cost()
+            } else if(cap.getSpirituality() > cost()
                     && !level.getBlockState(rayTrace.getBlockPos()).is(Blocks.AIR)
                     && level.getBlockState(targetPos).canBeReplaced()
                     && level.getBlockState(targetPos.below()).isCollisionShapeFullBlock(level, targetPos))
@@ -56,34 +63,18 @@ public class WaterTrapAbility extends Ability {
                 level.setBlockAndUpdate(targetPos,
                         ModBlocks.WATER_TRAP_BLOCK.get().defaultBlockState().setValue(WATERLOGGED, water));
                 WaterTrapBlockEntity be = (WaterTrapBlockEntity) level.getBlockEntity(targetPos);
-                if(be != null) be.setPlacedByPlayer(player.getUUID(), getSequence());
-                cap.requestActiveSpiritualityCost(info.cost());
-                return true;
+                if(be != null) be.setPlacedByPlayer(player.getUUID(), getSequenceLevel());
+                cap.requestActiveSpiritualityCost(cost());
+                return putOnCooldown(target);
             } else if(level.getBlockState(rayTrace.getBlockPos()).is(ModBlocks.WATER_TRAP_BLOCK.get())){
                 //if the block youre targeting is a water trap and its yours
                 BlockEntity be = level.getBlockEntity(rayTrace.getBlockPos());
-                if(be instanceof WaterTrapBlockEntity waterBe && waterBe.isOwner(player.getUUID(), info.id())){
+                if(be instanceof WaterTrapBlockEntity waterBe && waterBe.isOwner(player.getUUID(), 10 + getSequenceLevel())){
                     level.destroyBlock(rayTrace.getBlockPos(), false, target);
-                    cap.requestActiveSpiritualityCost(-info.cost()/2f);
+                    cap.requestActiveSpiritualityCost(-cost()/2f);
                 }
             }
         }
         return false;
-    }
-
-    @Override
-    public void onAcquire(LivingEntityBeyonderCapability cap, LivingEntity target) {
-    }
-
-    @Override
-    public void passive(LivingEntityBeyonderCapability cap, LivingEntity target) {
-    }
-
-    @Override
-    public void activate(LivingEntityBeyonderCapability cap, LivingEntity target) {
-    }
-
-    @Override
-    public void deactivate(LivingEntityBeyonderCapability cap, LivingEntity target) {
     }
 }

@@ -5,6 +5,7 @@ import net.dinomine.potioneer.beyonder.abilities.misc.CogitationAbility;
 import net.dinomine.potioneer.beyonder.abilities.misc.PassiveAbility;
 import net.dinomine.potioneer.beyonder.abilities.misc.TimedPassiveAbility;
 import net.dinomine.potioneer.beyonder.abilities.mystery.*;
+import net.dinomine.potioneer.beyonder.abilities.tyrant.*;
 import net.dinomine.potioneer.beyonder.abilities.wheeloffortune.*;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
 import net.minecraft.resources.ResourceLocation;
@@ -80,13 +81,48 @@ public class Abilities {
     public static final AbilityFactory MINER_BONE_MEAL = registerAbility("w_bone_meal",
             BoneMealAbility::new, 200, 0, 10);
 
-
+    // -------------------------- TYRANT ---------------------------------------------------
     public static final AbilityFactory WATER_AFFINITY = registerAbility("water_affinity",
             (Integer sequenceLevel) -> PassiveAbility.createAbility(sequenceLevel, BeyonderEffects.TYRANT_WATER_AFFINITY,
                             (ignored) -> "water_affinity")
                     .canFlip().withThreshold(0.15f).enabledOnAcquire().withCost(level -> sequenceLevel < 8 ? 15 : 5),
             32, 1, 10);
 
+    public static final AbilityFactory TYRANT_DIVINATION = registerAbility("divination",
+            (Integer level) -> (new DivinationAbility(level)).enabledOnAcquire(),
+            56, 1, 0).hasSecondaryFunction();
+
+    public static final AbilityFactory TYRANT_ELECTRIFICATION = registerAbility("electrification",
+            (Integer sequenceLevel) -> (PassiveAbility.createAbility(sequenceLevel, BeyonderEffects.TYRANT_ELECTRIFICATION,
+                    ignored -> "electrification"))
+                    .enabledOnAcquire().canFlip().withCost(ignored2 -> 20).withThreshold(0.01f),
+            272, 1, 0);
+
+    public static final AbilityFactory TYRANT_RAIN = registerAbility("summon_rain",
+            RainCreateAbility::new, 200, 1, 70);
+
+    public static final AbilityFactory TYRANT_LEAP = registerAbility("rain_leap",
+            RainLeapAbility::new, 176, 1, 25);
+
+    public static final AbilityFactory TYRANT_THUNDER = registerAbility("summon_thunder",
+            ThunderCreateAbility::new, 224, 1, 160);
+
+    public static final AbilityFactory TYRANT_LIGHTNING_STRIKE = registerAbility("thunder_strike",
+            ThunderStrikeAbility::new, 248, 1, 50);
+
+    public static final AbilityFactory TYRANT_CREATE_WATER = registerAbility("water_create",
+            WaterCreateAbility::new, 104, 1, 1).hasSecondaryFunction();
+
+    public static final AbilityFactory TYRANT_WATER_PRISON = registerAbility("water_prison",
+            WaterCreateAbility::new, 152, 1, 40);
+
+    public static final AbilityFactory TYRANT_REMOVE_WATER = registerAbility("water_sponge",
+            WaterRemoveAbility::new, 128, 1, 5);
+
+    public static final AbilityFactory TYRANT_WATER_TRAP = registerAbility("water_trap",
+            WaterTrapAbility::new, 80, 1, 80);
+
+    // -------------------------- MYSTERY ---------------------------------------------------
     public static final AbilityFactory AIR_BULLET = registerAbility("air_bullet",
             AirBulletAbility::new, 56, 2, 10);
 

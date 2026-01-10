@@ -3,6 +3,8 @@ package net.dinomine.potioneer.beyonder.effects;
 
 import net.dinomine.potioneer.beyonder.effects.misc.*;
 import net.dinomine.potioneer.beyonder.effects.mystery.*;
+import net.dinomine.potioneer.beyonder.effects.tyrant.BeyonderElectrificationEffect;
+import net.dinomine.potioneer.beyonder.effects.tyrant.BeyonderLightningTargetEffect;
 import net.dinomine.potioneer.beyonder.effects.tyrant.BeyonderWaterAffinityEffect;
 import net.dinomine.potioneer.beyonder.effects.wheeloffortune.*;
 
@@ -12,9 +14,9 @@ import java.util.function.Supplier;
 public class BeyonderEffects {
     private static final HashMap<String, BeyonderEffectType> EFFECTS = new HashMap<>();
 
-    public static final BeyonderEffectType TYRANT_WATER_AFFINITY = registerEffect("water_affinity", new BeyonderEffectType(BeyonderWaterAffinityEffect::new));
-    public static final BeyonderEffectType MYSTERY_FALL_NEGATE = registerEffect("negate_fall", new BeyonderEffectType(BeyonderFallDmgCancelEffect::new));
     public static final BeyonderEffectType COGITATION = registerEffect("cogitation", new BeyonderEffectType(BeyonderCogitationEffect::new));
+    public static final BeyonderEffectType MISC_DIVINATION = registerEffect("divination", new BeyonderEffectType(BeyonderMysticismEffect::new));
+    public static final BeyonderEffectType MYSTERY_FALL_NEGATE = registerEffect("negate_fall", new BeyonderEffectType(BeyonderFallDmgCancelEffect::new));
     public static final BeyonderEffectType MYSTERY_FIGURINE = registerEffect("figurine_substitute", new BeyonderEffectType(BlankEffect::new));
     public static final BeyonderEffectType MYSTERY_INVISIBLE = registerEffect("invisibility", new BeyonderEffectType(BlankEffect::new));
     public static final BeyonderEffectType MYSTERY_REACH = registerEffect("extended_reach", new BeyonderEffectType(BeyonderExtendedReachEffect::new));
@@ -28,6 +30,9 @@ public class BeyonderEffects {
     public static final BeyonderEffectType WHEEL_LUCK_DODGE = registerEffect("luck_dodge", new BeyonderEffectType(BeyonderLuckDodgeEffect::new));
     public static final BeyonderEffectType WHEEL_LUCK_TREND = registerEffect("lucky_trend", new BeyonderEffectType(BeyonderLuckTrendEffect::new));
     public static final BeyonderEffectType WHEEL_MINING = registerEffect("mining", new BeyonderEffectType(BeyonderMiningSpeedEffect::new));
+    public static final BeyonderEffectType TYRANT_WATER_AFFINITY = registerEffect("water_affinity", new BeyonderEffectType(BeyonderWaterAffinityEffect::new));
+    public static final BeyonderEffectType TYRANT_ELECTRIFICATION = registerEffect("electrification", new BeyonderEffectType(BeyonderElectrificationEffect::new));
+    public static final BeyonderEffectType TYRANT_LIGHTNING_TARGET = registerEffect("lightning_target", new BeyonderEffectType(BeyonderLightningTargetEffect::new));
 
 
     public static BeyonderEffectType registerEffect(String effectId, BeyonderEffectType baseEffect){

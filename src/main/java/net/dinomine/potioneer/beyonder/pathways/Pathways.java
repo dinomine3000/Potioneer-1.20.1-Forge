@@ -23,6 +23,12 @@ public class Pathways {
     public static final RegistryObject<BeyonderPathway> WHEEL_OF_FORTUNE =
             registerPathway("0", WheelOfFortunePathway::new);
 
+    public static final RegistryObject<BeyonderPathway> MYSTERY =
+            registerPathway("1", MysteryPathway::new);
+
+    public static final RegistryObject<BeyonderPathway> TYRANT =
+            registerPathway("2", TyrantPathway::new);
+
 
 
     public static <T extends BeyonderPathway> RegistryObject<T> registerPathway(String name, Supplier<T> abl){

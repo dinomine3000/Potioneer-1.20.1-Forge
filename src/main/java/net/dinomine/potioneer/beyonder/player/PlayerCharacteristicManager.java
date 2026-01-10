@@ -210,6 +210,15 @@ public class PlayerCharacteristicManager {
         return finalDigestion;
     }
 
+    /**
+     * returns the acting percent for the specific pathway-sequence id. used for abilities that want to scale on acting percent.
+     * @param pathwayId
+     * @return
+     */
+    public double getActingPercentForSequence(int pathwayId){
+        return actingProgress.getOrDefault(pathwayId, 0d);
+    }
+
 //    public double getAggregatedActingProgress(int maxSequenceLevel){
 //        if(actingProgress.isEmpty()) return 1d;
 //        double aggregatePercent = 0d;

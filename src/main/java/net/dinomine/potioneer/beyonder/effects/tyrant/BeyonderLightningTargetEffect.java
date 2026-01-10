@@ -8,12 +8,6 @@ import net.minecraft.world.entity.LightningBolt;
 import net.minecraft.world.entity.LivingEntity;
 
 public class BeyonderLightningTargetEffect extends BeyonderEffect {
-
-    public BeyonderLightningTargetEffect(int level, float cost, int time, boolean active, BeyonderEffects.EFFECT id){
-        super(level, cost, time, active, id);
-        this.name = "Tyrant Lightning Target";
-    }
-
     @Override
     public void onAcquire(LivingEntityBeyonderCapability cap, LivingEntity target) {
     }

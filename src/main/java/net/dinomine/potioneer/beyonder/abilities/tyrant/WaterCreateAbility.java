@@ -15,22 +15,30 @@ import net.minecraftforge.common.ForgeMod;
 public class WaterCreateAbility extends Ability {
     private static final float actingProgress = 0.002f;
 
+    @Override
+    protected String getDescId(int sequenceLevel) {
+        return "water_create";
+    }
+
     public WaterCreateAbility(int sequence){
-        this.info = new AbilityInfo(31, 104, "Conjure Water", 10 + sequence, 1 + 2*sequence, 1, "water_create");
+//        this.info = new AbilityInfo(31, 104, "Conjure Water", 10 + sequence, 1 + 2*sequence, 1, "water_create");
+        super(sequence);
+        setCost(level -> 1 + 2*level);
+        defaultMaxCooldown = 1;
     }
 
     @Override
-    public boolean active(LivingEntityBeyonderCapability cap, LivingEntity target) {
-        if(target.level().isClientSide()) return true;
-        if(cap.getSpirituality() > info.cost() && target instanceof Player player){
+    public boolean primary(LivingEntityBeyonderCapability cap, LivingEntity target) {
+        if(target.level().isClientSide()) return putOnCooldown(target);
+        if(cap.getSpirituality() > cost() && target instanceof Player player){
             HitResult res = player.pick(player.getAttributeValue(ForgeMod.BLOCK_REACH.get()) + 0.5f, 0, false);
-            if(res instanceof BlockHitResult block){
+            if(res instanceof BlockHitResult){
                 ItemStack waterStack = new ItemStack(Items.WATER_BUCKET);
                 //waterStack.useOn(new UseOnContext(player, InteractionHand.MAIN_HAND, block));
                 waterStack.use(player.level(), player, InteractionHand.MAIN_HAND);
-                cap.requestActiveSpiritualityCost(info.cost());
+                cap.requestActiveSpiritualityCost(cost());
                 cap.getCharacteristicManager().progressActing(actingProgress, 18);
-                return true;
+                return putOnCooldown(target);
             }
 //            HitResult block = target.pick(target.getAttributeBaseValue(ForgeMod.BLOCK_REACH.get()) + 0.5, 0f, false);
 //            if(block instanceof BlockHitResult rayTrace){
@@ -46,21 +54,5 @@ public class WaterCreateAbility extends Ability {
 //            }
         }
         return false;
-    }
-
-    @Override
-    public void onAcquire(LivingEntityBeyonderCapability cap, LivingEntity target) {
-    }
-
-    @Override
-    public void passive(LivingEntityBeyonderCapability cap, LivingEntity target) {
-    }
-
-    @Override
-    public void activate(LivingEntityBeyonderCapability cap, LivingEntity target) {
-    }
-
-    @Override
-    public void deactivate(LivingEntityBeyonderCapability cap, LivingEntity target) {
     }
 }

@@ -19,20 +19,21 @@ import java.util.ArrayList;
 public class ThunderStrikeAbility extends Ability {
     private static final float actingProgress = 0.001f;
 
+    @Override
+    protected String getDescId(int sequenceLevel) {
+        return "thunder_strike";
+    }
+
     public ThunderStrikeAbility(int sequence){
-        this.info = new AbilityInfo(31, 248, "Thunder Strike", 10 + sequence, 50, this.getMaxCooldown(), "thunder_strike");
-        this.isActive = true;
+//        this.info = new AbilityInfo(31, 248, "Thunder Strike", 10 + sequence, 50, this.getMaxCooldown(), "thunder_strike");
+//        this.isActive = true;
+        super(sequence);
+        setCost(ignored -> 50);
     }
-
     @Override
-    public void onAcquire(LivingEntityBeyonderCapability cap, LivingEntity target) {
-
-    }
-
-    @Override
-    public boolean active(LivingEntityBeyonderCapability cap, LivingEntity target) {
-        if(cap.getSpirituality() < getInfo().cost()) return false;
-        if(target.level().isClientSide()) return true;
+    public boolean primary(LivingEntityBeyonderCapability cap, LivingEntity target) {
+        if(cap.getSpirituality() < cost()) return false;
+        if(target.level().isClientSide()) return putOnCooldown(target);
         ServerLevel level = (ServerLevel) target.level();
         boolean thundering = level.isThundering();
         int radius = thundering ? 128 : 32;
@@ -40,13 +41,13 @@ public class ThunderStrikeAbility extends Ability {
         for(Entity ent: hits){
             if(ent instanceof LivingEntity entity && entity != target){
                 summonLightning(cap, entity.position(), level, thundering);
-                return true;
+                return putOnCooldown(target);
             }
         }
         HitResult hit = target.pick(radius, 0, false);
         if(hit instanceof BlockHitResult blockHit && !level.getBlockState(blockHit.getBlockPos()).is(Blocks.AIR)){
             summonLightning(cap, blockHit.getLocation(), level, thundering);
-            return true;
+            return putOnCooldown(target);
         }
         return false;
     }
@@ -56,27 +57,15 @@ public class ThunderStrikeAbility extends Ability {
         LightningBolt lightning = new LightningBolt(EntityType.LIGHTNING_BOLT, level);
         lightning.setPos(position);
         int damage;
+        double actingPercent = cap.getCharacteristicManager().getActingPercentForSequence(10 + getSequenceLevel());
         if(thundering){
-            damage = (int) (-8 + 5*(10-getSequence()) + 4*cap.getCharacteristicManager().getAggregatedActingProgress(10 + getSequence()));
+            damage = (int) (-8 + 5*(10-getSequenceLevel()) + 4*actingPercent);
         } else {
-            damage = -2 + 2*(10-getSequence()) + (int)(3 * cap.getCharacteristicManager().getAggregatedActingProgress(10 + getSequence()));
+            damage = -2 + 2*(10-getSequenceLevel()) + (int)(3 * actingPercent);
         }
         lightning.setDamage(damage);
         level.addFreshEntity(lightning);
-        cap.requestActiveSpiritualityCost(thundering ? info.cost() / 2f : info.cost());
+        cap.requestActiveSpiritualityCost(thundering ? cost() / 2f : cost());
 
-    }
-
-    @Override
-    public void passive(LivingEntityBeyonderCapability cap, LivingEntity target) {
-    }
-
-    @Override
-    public void activate(LivingEntityBeyonderCapability cap, LivingEntity target) {
-
-    }
-
-    @Override
-    public void deactivate(LivingEntityBeyonderCapability cap, LivingEntity target) {
     }
 }

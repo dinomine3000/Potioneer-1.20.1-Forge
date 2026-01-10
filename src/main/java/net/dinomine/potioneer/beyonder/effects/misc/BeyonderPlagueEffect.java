@@ -1,7 +1,6 @@
 package net.dinomine.potioneer.beyonder.effects.misc;
 
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffect;
-import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
 import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
 import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
 import net.dinomine.potioneer.mob_effects.ModEffects;
@@ -12,21 +11,15 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 
 import java.util.List;
-import java.util.Random;
 import java.util.UUID;
 
-import static net.dinomine.potioneer.beyonder.abilities.mystery.PlagueAbility.PLAGUE_RANGE;
 
 public class BeyonderPlagueEffect extends BeyonderEffect {
+    private static final double PLAGUE_RANGE = 5;
     private int lives = 1;
     private int spreadCd;
     private UUID casterId = null;
 
-    public BeyonderPlagueEffect(int level, float cost, int time, boolean active, BeyonderEffects.EFFECT id){
-        super(level, cost, time, active, id);
-        this.name = "Plagued";
-        this.spreadCd = new Random().nextInt(30);
-    }
 
     public void setCasterId(UUID id){
         this.casterId = id;
@@ -62,11 +55,11 @@ public class BeyonderPlagueEffect extends BeyonderEffect {
                 if(ent instanceof LivingEntity entity){
                     if(casterId != null && ent instanceof Player testPlayer && testPlayer.getUUID().compareTo(casterId) == 0) continue;
                     entity.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(newCap -> {
-                        if(!newCap.getEffectsManager().hasEffect(BeyonderEffects.EFFECT.MISC_PLAGUE)){
-                            BeyonderPlagueEffect eff = new BeyonderPlagueEffect(sequenceLevel, cost, -1, true, BeyonderEffects.EFFECT.MISC_PLAGUE);
-                            eff.setCasterId(casterId);
-                            newCap.getEffectsManager().addOrReplaceEffect(eff, newCap, entity);
-                        }
+//                        if(!newCap.getEffectsManager().hasEffect(BeyonderEffects.EFFECT.MISC_PLAGUE)){
+//                            BeyonderPlagueEffect eff = new BeyonderPlagueEffect(sequenceLevel, cost, -1, true, BeyonderEffects.EFFECT.MISC_PLAGUE);
+//                            eff.setCasterId(casterId);
+//                            newCap.getEffectsManager().addOrReplaceEffect(eff, newCap, entity);
+//                        }
                     });
                 }
             }

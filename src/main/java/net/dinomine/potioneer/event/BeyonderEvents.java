@@ -108,7 +108,7 @@ public class BeyonderEvents {
         if(event.getPlayer() != null){
             if(event.getRawText().toLowerCase().contains("leodero")){
                 event.getPlayer().getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
-                    cap.getEffectsManager().addOrReplaceEffect(BeyonderEffects.byId(BeyonderEffects.EFFECT.TYRANT_LIGHTNING_TARGET, 1, 0, 20*10, true), cap, event.getPlayer());
+                    cap.getEffectsManager().addOrReplaceEffect(BeyonderEffects.byId(BeyonderEffects.TYRANT_LIGHTNING_TARGET.getEffectId(), 1, 0, 20*10, true), cap, event.getPlayer());
                     cap.requestActiveSpiritualityCost(1000);
                     cap.changeSanity(-25);
                 });
@@ -127,8 +127,8 @@ public class BeyonderEvents {
             long seed = stringToLong(String.valueOf(id));
             RandomSource random = RandomSource.create(seed);
             float chance = 0.1f;
-            if(cap.getEffectsManager().hasEffect(BeyonderEffects.EFFECT.MISC_MYST)){
-                chance += (10 - cap.getEffectsManager().getEffect(BeyonderEffects.EFFECT.MISC_MYST).getSequenceLevel())/10f;
+            if(cap.getEffectsManager().hasEffect(BeyonderEffects.MISC_DIVINATION.getEffectId())){
+                chance += (10 - cap.getEffectsManager().getEffect(BeyonderEffects.MISC_DIVINATION.getEffectId()).getSequenceLevel())/10f;
             }
             if(random.nextFloat() <= chance){
                 ItemStack stack = ItemStack.EMPTY;
@@ -246,7 +246,7 @@ public class BeyonderEvents {
         //cancel this to negate the damage
         if(event.getEntity() instanceof LivingEntity livingEntity){
             livingEntity.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
-                if(cap.getEffectsManager().hasEffect(BeyonderEffects.EFFECT.TYRANT_ELECTRIFICATION)){
+                if(cap.getEffectsManager().hasEffect(BeyonderEffects.TYRANT_ELECTRIFICATION.getEffectId())){
                     livingEntity.extinguishFire();
                     cap.requestActiveSpiritualityCost(50);
                 }
@@ -287,11 +287,11 @@ public class BeyonderEvents {
             int i = 1;
             ItemStack pick = event.getPlayer().getMainHandItem().copy();
             if(pick.isEmpty()) pick = new ItemStack(Items.COMPASS);
-            boolean fortune = cap.getEffectsManager().hasEffect(BeyonderEffects.EFFECT.WHEEL_FORTUNE);
-            boolean silk = cap.getEffectsManager().hasEffect(BeyonderEffects.EFFECT.WHEEL_SILK_TOUCH);
+            boolean fortune = cap.getEffectsManager().hasEffect(BeyonderEffects.WHEEL_FORTUNE.getEffectId());
+            boolean silk = cap.getEffectsManager().hasEffect(BeyonderEffects.WHEEL_SILK.getEffectId());
 
             if(fortune && event.getState().is(Tags.Blocks.ORES)){
-                float lvl = 1 + (10 - cap.getEffectsManager().getEffect(BeyonderEffects.EFFECT.WHEEL_FORTUNE).getSequenceLevel())/2f;
+                float lvl = 1 + (10 - cap.getEffectsManager().getEffect(BeyonderEffects.WHEEL_FORTUNE.getEffectId()).getSequenceLevel())/2f;
                 while(lvl >= 1){
                     lvl--;
                     i++;

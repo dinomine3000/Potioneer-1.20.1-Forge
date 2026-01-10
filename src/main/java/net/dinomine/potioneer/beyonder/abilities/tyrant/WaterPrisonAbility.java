@@ -22,19 +22,27 @@ import java.util.ArrayList;
 public class WaterPrisonAbility extends Ability {
     private static final float actingProgress = 0.01f;
 
+    @Override
+    protected String getDescId(int sequenceLevel) {
+        return "water_prison";
+    }
+
     public WaterPrisonAbility(int sequence){
-        this.info = new AbilityInfo(31, 152, "Cast Water Prison", 10 + sequence, 40*(9 - sequence), 20*20, "water_prison");
+//        this.info = new AbilityInfo(31, 152, "Cast Water Prison", 10 + sequence, 40*(9 - sequence), 20*20, "water_prison");
+        super(sequence);
+        setCost(level -> 40*(9-level));
+        defaultMaxCooldown = 20*20;
     }
 
     @Override
-    public boolean active(LivingEntityBeyonderCapability cap, LivingEntity target) {
-        if(target.level().isClientSide()) return true;
-        if(cap.getSpirituality() > info.cost()){
-            double radius = target.getAttributeBaseValue(ForgeMod.ENTITY_REACH.get()) + (10 - getSequence());
+    public boolean primary(LivingEntityBeyonderCapability cap, LivingEntity target) {
+        if(target.level().isClientSide()) return putOnCooldown(target);
+        if(cap.getSpirituality() > cost()){
+            double radius = target.getAttributeBaseValue(ForgeMod.ENTITY_REACH.get()) + (10 - getSequenceLevel());
             ArrayList<Entity> hits = AbilityFunctionHelper.getLivingEntitiesAround(target, radius);
             for(Entity ent: hits){
                 LivingEntity entity = (LivingEntity) ent;
-                if(entity != target) entity.addEffect(new MobEffectInstance(ModEffects.WATER_PRISON.get(), 20*30, Math.floorDiv(10 - getSequence(), 2), false, false));
+                if(entity != target) entity.addEffect(new MobEffectInstance(ModEffects.WATER_PRISON.get(), 20*30, Math.floorDiv(10 - getSequenceLevel(), 2), false, false));
                 if(entity instanceof ServerPlayer player){
                     Vec3 pos = target.position();
                     PacketHandler.INSTANCE.send(PacketDistributor.PLAYER.with(() -> player),
@@ -42,26 +50,10 @@ public class WaterPrisonAbility extends Ability {
                 }
             }
             target.level().playSound(null, target.getOnPos(), ModSounds.WATER_PRISON.get(), SoundSource.PLAYERS, 1, 1);
-            cap.requestActiveSpiritualityCost(info.cost());
+            cap.requestActiveSpiritualityCost(cost());
             cap.getCharacteristicManager().progressActing(actingProgress, 18);
-            return true;
+            return putOnCooldown(target);
         }
         return false;
-    }
-
-    @Override
-    public void onAcquire(LivingEntityBeyonderCapability cap, LivingEntity target) {
-    }
-
-    @Override
-    public void passive(LivingEntityBeyonderCapability cap, LivingEntity target) {
-    }
-
-    @Override
-    public void activate(LivingEntityBeyonderCapability cap, LivingEntity target) {
-    }
-
-    @Override
-    public void deactivate(LivingEntityBeyonderCapability cap, LivingEntity target) {
     }
 }

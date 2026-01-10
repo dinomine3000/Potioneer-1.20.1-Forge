@@ -7,11 +7,6 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 
 public class BeyonderHungerRegenEffect extends BeyonderEffect {
-    public BeyonderHungerRegenEffect(int level, float cost, int time, boolean active, BeyonderEffects.EFFECT id){
-        super(level, cost, time, active, id);
-        this.name = "Plagued";
-    }
-
     @Override
     public void onAcquire(LivingEntityBeyonderCapability cap, LivingEntity target) {
     }

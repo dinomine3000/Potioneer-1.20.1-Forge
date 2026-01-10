@@ -10,7 +10,7 @@ import java.util.List;
 
 
 public class MysteryPathway extends BeyonderPathway {
-    public MysteryPathway(int sequence){
+    public MysteryPathway(){
         super("Mystery", 0x408040, new int[]{4000, 2744, 1960, 1400, 1000, 700, 420, 300, 140, 100});
     }
 
@@ -95,9 +95,10 @@ public class MysteryPathway extends BeyonderPathway {
         return switch (seq) {
             case 9 -> "Trickster";
             case 8 -> "Acrobat";
-            case 7 -> "Voodoo_Assassin";
-            case 6 -> "Parasite";
+            case 7 -> "Magician";
+            case 6 -> "Scribe";
             case 5 -> "Traveler";
+            case 4 -> "Space_Parasite";
             default -> "";
         };
     }

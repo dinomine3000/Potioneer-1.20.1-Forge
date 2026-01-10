@@ -8,34 +8,27 @@ import net.minecraft.world.entity.LivingEntity;
 
 public class ThunderCreateAbility extends Ability {
 
-    public ThunderCreateAbility(int sequence){
-        this.info = new AbilityInfo(31, 224, "Summon Thunder", 10 + sequence, 160, 20*60, "summon_thunder");
+    @Override
+    protected String getDescId(int sequenceLevel) {
+        return "summon_thunder";
     }
 
+    public ThunderCreateAbility(int sequence){
+//        this.info = new AbilityInfo(31, 224, "Summon Thunder", 10 + sequence, 160, 20*60, "summon_thunder");
+        super(sequence);
+        setCost(ignored -> 160);
+        defaultMaxCooldown = 20*60;
+    }
+
+
     @Override
-    public boolean active(LivingEntityBeyonderCapability cap, LivingEntity target) {
-        if(target.level().isClientSide()) return true;
-        if(cap.getSpirituality() > info.cost() && !target.level().isRaining()){
-            ((ServerLevel) target.level()).setWeatherParameters(0, 20*60*(1 + 2*(7-getSequence())), true, true);
-            cap.requestActiveSpiritualityCost(info.cost());
-            return true;
+    public boolean primary(LivingEntityBeyonderCapability cap, LivingEntity target) {
+        if(target.level().isClientSide()) return putOnCooldown(target);
+        if(cap.getSpirituality() > cost() && !target.level().isRaining()){
+            ((ServerLevel) target.level()).setWeatherParameters(0, 20*60*(1 + 2*(7-getSequenceLevel())), true, true);
+            cap.requestActiveSpiritualityCost(cost());
+            return putOnCooldown(target);
         }
         return false;
-    }
-
-    @Override
-    public void onAcquire(LivingEntityBeyonderCapability cap, LivingEntity target) {
-    }
-
-    @Override
-    public void passive(LivingEntityBeyonderCapability cap, LivingEntity target) {
-    }
-
-    @Override
-    public void activate(LivingEntityBeyonderCapability cap, LivingEntity target) {
-    }
-
-    @Override
-    public void deactivate(LivingEntityBeyonderCapability cap, LivingEntity target) {
     }
 }

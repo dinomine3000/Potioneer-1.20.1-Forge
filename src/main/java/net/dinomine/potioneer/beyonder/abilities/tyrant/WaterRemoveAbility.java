@@ -20,22 +20,30 @@ import static net.minecraft.world.level.block.Block.dropResources;
 public class WaterRemoveAbility extends Ability {
     private static final Direction[] ALL_DIRECTIONS = Direction.values();
 
+    @Override
+    protected String getDescId(int sequenceLevel) {
+        return "water_sponge";
+    }
+
     public WaterRemoveAbility(int sequence){
-        this.info = new AbilityInfo(31, 128, "Remove Water", 10 + sequence, 5, 20*2, "water_sponge");
+//        this.info = new AbilityInfo(31, 128, "Remove Water", 10 + sequence, 5, 20*2, "water_sponge");
+        super(sequence);
+        setCost(ignored -> 5);
+        defaultMaxCooldown = 20*2;
     }
 
     @Override
-    public boolean active(LivingEntityBeyonderCapability cap, LivingEntity target) {
-        if(target.level().isClientSide()) return true;
-        if(cap.getSpirituality() > info.cost()){
+    public boolean primary(LivingEntityBeyonderCapability cap, LivingEntity target) {
+        if(target.level().isClientSide()) return putOnCooldown(target);
+        if(cap.getSpirituality() > cost()){
             ServerLevel level = (ServerLevel) target.level();
             HitResult block = target.pick(target.getAttributeBaseValue(ForgeMod.BLOCK_REACH.get()) + 0.5f, 0f, false);
             if(block instanceof BlockHitResult rayTrace){
                 BlockPos targetPos = rayTrace.getBlockPos().relative(rayTrace.getDirection());
-                double radius = target.getAttributeBaseValue(ForgeMod.ENTITY_REACH.get()) + (10 - getSequence());
+                double radius = target.getAttributeBaseValue(ForgeMod.ENTITY_REACH.get()) + (10 - getSequenceLevel());
                 if(removeWaterBreadthFirstSearch(level, targetPos, (int) radius)){
-                    cap.requestActiveSpiritualityCost(info.cost());
-                    return true;
+                    cap.requestActiveSpiritualityCost(cost());
+                    return putOnCooldown(target);
                 }
             }
         }
@@ -73,21 +81,5 @@ public class WaterRemoveAbility extends Ability {
             }
             return true;
         }) > 1;
-    }
-
-    @Override
-    public void onAcquire(LivingEntityBeyonderCapability cap, LivingEntity target) {
-    }
-
-    @Override
-    public void passive(LivingEntityBeyonderCapability cap, LivingEntity target) {
-    }
-
-    @Override
-    public void activate(LivingEntityBeyonderCapability cap, LivingEntity target) {
-    }
-
-    @Override
-    public void deactivate(LivingEntityBeyonderCapability cap, LivingEntity target) {
     }
 }

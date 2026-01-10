@@ -55,20 +55,19 @@ public class TyrantPathway extends BeyonderPathway {
             case 5:
             case 6:
             case 7:
-                abilities.add(new ThunderStrikeAbility(sequence));
-                abilities.add(new ThunderCreateAbility(sequence));
-                abilities.add(new RainCreateAbility(sequence));
-                abilities.add(new RainLeapAbility(sequence));
-                abilities.add(new ElectrificationAbility(sequence));
+                abilities.add(Abilities.TYRANT_LIGHTNING_STRIKE.create(sequence));
+                abilities.add(Abilities.TYRANT_THUNDER.create(sequence));
+                abilities.add(Abilities.TYRANT_RAIN.create(sequence));
+                abilities.add(Abilities.TYRANT_LEAP.create(sequence));
+                abilities.add(Abilities.TYRANT_ELECTRIFICATION.create(sequence));
             case 8:
-                abilities.add(new WaterPrisonAbility(sequence));
-                abilities.add(new WaterCreateAbility(sequence));
-                abilities.add(new WaterRemoveAbility(sequence));
-                abilities.add(new WaterTrapAbility(sequence));
-                abilities.add(new DivinationAbility(sequence));
+                abilities.add(Abilities.TYRANT_WATER_PRISON.create(sequence));
+                abilities.add(Abilities.TYRANT_CREATE_WATER.create(sequence));
+                abilities.add(Abilities.TYRANT_REMOVE_WATER.create(sequence));
+                abilities.add(Abilities.TYRANT_WATER_TRAP.create(sequence));
+                abilities.add(Abilities.TYRANT_DIVINATION.create(sequence));
             case 9:
                 abilities.add(Abilities.WATER_AFFINITY.create(sequence));
-                abilities.add(new CogitationAbility(10 + sequence));
         }
 
         return abilities;
@@ -87,10 +86,11 @@ public class TyrantPathway extends BeyonderPathway {
     private String getSequenceName(int seq){
         return switch (seq) {
             case 9 -> "Swimmer";
-            case 8 -> "Hydro_Shaman";
-            case 7 -> "Tempest";
-            case 6 -> "Waterborn";
-            case 5 -> "Punisher";
+            case 8 -> "Water_Mage";
+            case 7 -> "Hydroborn_Enforcer";
+            case 6 -> "Chaotic_Magistrate";
+            case 5 -> "Tribunal";
+            case 4 -> "Punisher";
             default -> "";
         };
     }
