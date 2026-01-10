@@ -220,7 +220,8 @@ public class ClientAbilitiesData {
 
     public static boolean useQuickAbility(Player player){
         if(quickSelect.isEmpty() && hotbar.isEmpty()) return false;
-        return useAbility(player, quickSelect.isEmpty() ? hotbar.get(caret) : quickSelect, quickMode);
+        //TODO change mode here to reflect the MODE chosen for the quick select
+        return useAbility(player, quickSelect.isEmpty() ? hotbar.get(caret) : quickSelect, true);
     }
 
     public static boolean useAbility(Player player, boolean primary){

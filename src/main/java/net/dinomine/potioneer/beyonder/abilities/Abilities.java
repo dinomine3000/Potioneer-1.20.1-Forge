@@ -50,6 +50,10 @@ public class Abilities {
             296, 0, 0).hasSecondaryFunction(false);
     //add a secondary function, maybe, that tells you how much luck you will get.
 
+    public static final AbilityFactory BLOCK_SNIFF = registerAbility("xray",
+            BlockSniffAbility::new,
+            56, 0, 15);
+
     public static final AbilityFactory LUCK_BOOST = registerAbility("luck_boost",
             LuckBoostAbility::new,
             128, 0, 30);

@@ -1,5 +1,6 @@
 package net.dinomine.potioneer.beyonder.pathways;
 
+import net.dinomine.potioneer.beyonder.abilities.Abilities;
 import net.dinomine.potioneer.beyonder.abilities.Ability;
 import net.dinomine.potioneer.beyonder.abilities.misc.CogitationAbility;
 import net.dinomine.potioneer.beyonder.abilities.wheeloffortune.*;
@@ -50,22 +51,21 @@ public class WheelOfFortunePathway extends BeyonderPathway {
             case 5:
             case 6:
             case 7:
-                abilities.add(new WheelBoneMealAbility(sequence));
-                abilities.add(new PatienceAbility(sequence));
-                abilities.add(new LuckDamageReductionAbility(sequence));
-                abilities.add(new CalamityIncreaseAbility(sequence));
+                abilities.add(Abilities.MINER_BONE_MEAL.create(sequence));
+                abilities.add(Abilities.PATIENCE.create(sequence));
+                abilities.add(Abilities.DODGE_DAMAGE.create(sequence));
+                abilities.add(Abilities.CALAMITY_INCREASE.create(sequence));
             case 8:
-                abilities.add(new BlockSniffAbility(sequence));
-                abilities.add(new LuckBoostAbility(sequence));
-                abilities.add(new CheckLuckAbility(sequence));
-                abilities.add(new FortuneAbility(sequence));
-                abilities.add(new SilkTouchAbility(sequence));
+                abilities.add(Abilities.BLOCK_SNIFF.create(sequence));
+                abilities.add(Abilities.LUCK_BOOST.create(sequence));
+                abilities.add(Abilities.CHECK_LUCK.create(sequence));
+                abilities.add(Abilities.FORTUNE_ABILITY.create(sequence));
+                abilities.add(Abilities.SILK_TOUCH_ABILITY.create(sequence));
 
             case 9:
-                abilities.add(new MinerLightAbility(sequence));
-                abilities.add(new ConjurePickaxeAbility(sequence));
-                abilities.add(new MiningSpeedAbility(sequence));
-                abilities.add(new CogitationAbility(sequence));
+                abilities.add(Abilities.MINER_LIGHT.create(sequence));
+                abilities.add(Abilities.MINING_SPEED.create(sequence));
+                abilities.add(Abilities.MINING_SPEED.create(sequence));
         }
 
         return abilities;

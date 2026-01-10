@@ -1,16 +1,15 @@
 package net.dinomine.potioneer.util.misc;
 
+import net.dinomine.potioneer.beyonder.abilities.Abilities;
 import net.dinomine.potioneer.beyonder.abilities.Ability;
 import net.dinomine.potioneer.beyonder.abilities.mystery.AirBulletAbility;
 import net.dinomine.potioneer.beyonder.abilities.paragon.CraftingGuiAbility;
 import net.dinomine.potioneer.beyonder.abilities.redpriest.MeltAbility;
 import net.dinomine.potioneer.beyonder.abilities.tyrant.WaterAffinityAbility;
-import net.dinomine.potioneer.beyonder.abilities.wheeloffortune.LuckTrendAbility;
 import net.dinomine.potioneer.beyonder.abilities.wheeloffortune.MinerLightAbility;
 import net.dinomine.potioneer.beyonder.downsides.Downside;
 import net.dinomine.potioneer.beyonder.downsides.DummyDownside;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffect;
-import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
 import net.dinomine.potioneer.item.ModItems;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -44,7 +43,7 @@ public class ArtifactHelper {
         abilityMap.put("crafting_gui", new MetaAbilityEntry(40, 50, CraftingGuiAbility::new));
 
         //abilities for gems and amulets
-        abilityMap.put("lucky_trend", new MetaAbilityEntry(-1, -1, LuckTrendAbility::new));
+        abilityMap.put("lucky_trend", new MetaAbilityEntry(-1, -1, level -> Abilities.LUCK_TREND.create(level%10)));
 
         downsideMap.put("d_dummy", new MetaAbilityEntry(0, 50, DummyDownside::new));
 
