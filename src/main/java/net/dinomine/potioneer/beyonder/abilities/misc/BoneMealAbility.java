@@ -14,20 +14,19 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 
 public class BoneMealAbility extends Ability {
+    @Override
+    protected String getDescId(int sequenceLevel) {
+        return abilityId;
+    }
 
     public BoneMealAbility(int sequence){
-        this.info = new AbilityInfo(57, 56, "Bone Meal", 20 + sequence, 2*(10-sequence), 2*20, "");
-        this.isActive = true;
+        super(sequence);
+        setCost(level-> 2*(10-level));
     }
 
     @Override
-    public void onAcquire(LivingEntityBeyonderCapability cap, LivingEntity target) {
-
-    }
-
-    @Override
-    public boolean active(LivingEntityBeyonderCapability cap, LivingEntity target) {
-        if(cap.getSpirituality() < getInfo().cost()) return false;
+    public boolean primary(LivingEntityBeyonderCapability cap, LivingEntity target) {
+        if(cap.getSpirituality() < cost()) return false;
         if(!(target instanceof Player player)) return false;
         Level level = target.level();
         if (!(level instanceof ServerLevel )) return false;
@@ -37,20 +36,8 @@ public class BoneMealAbility extends Ability {
         BlockHitResult blockHit = (BlockHitResult) hitResult;
         UseOnContext context = new UseOnContext(level, player, player.getUsedItemHand(), ItemStack.EMPTY, blockHit);
         Items.BONE_MEAL.useOn(context);
-        cap.requestActiveSpiritualityCost(info.cost());
+        cap.requestActiveSpiritualityCost(cost());
+        putOnCooldown(2*20, target);
         return true;
-    }
-
-    @Override
-    public void passive(LivingEntityBeyonderCapability cap, LivingEntity target) {
-    }
-
-    @Override
-    public void activate(LivingEntityBeyonderCapability cap, LivingEntity target) {
-
-    }
-
-    @Override
-    public void deactivate(LivingEntityBeyonderCapability cap, LivingEntity target) {
     }
 }

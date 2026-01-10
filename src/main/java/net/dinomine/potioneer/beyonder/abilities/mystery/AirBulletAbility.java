@@ -17,30 +17,30 @@ import net.minecraft.world.phys.Vec3;
 import java.util.ArrayList;
 
 public class AirBulletAbility extends Ability {
+    @Override
+    protected String getDescId(int sequenceLevel) {
+        return "air_bullet";
+    }
 
     public AirBulletAbility(int sequence){
-        this.info =
-        this.isActive = true;
+        super(sequence);
+        setCost(i -> 60 + 10*(9-i));
     }
 
-    @Override
-    public AbilityInfo getAbilityinfo(int sequenceLevel) {
-        return new AbilityInfo(57, 56, "Air Bullet", 20 + sequenceLevel, 60 + 10*(9-sequenceLevel), 5*20, "air_bullet");
-    }
+//    @Override
+//    public AbilityInfo getAbilityinfo(int sequenceLevel) {
+//        return new AbilityInfo(57, 56, "Air Bullet", 20 + sequenceLevel, 60 + 10*(9-sequenceLevel), 5*20, "air_bullet");
+//    }
+
 
     @Override
-    public void onAcquire(LivingEntityBeyonderCapability cap, LivingEntity target) {
-
-    }
-
-    @Override
-    public boolean active(LivingEntityBeyonderCapability cap, LivingEntity target) {
-        if(cap.getSpirituality() < getInfo().cost()){
+    public boolean primary(LivingEntityBeyonderCapability cap, LivingEntity target) {
+        if(cap.getSpirituality() < cost() || target == null){
             System.out.println("Not enough spirituality to cast air bullet on client side: " + target.level().isClientSide());
             return false;
         }
         Level level = target.level();
-        double dist = Math.max((10 - getSequence())*8 - 8, 21);
+        double dist = Math.max((10 - getSequenceLevel())*8 - 8, 21);
         if(level.isClientSide()){
             HitResult hit = target.pick(dist, 0, false);
             float temp = 0.7f;
@@ -52,32 +52,20 @@ public class AirBulletAbility extends Ability {
             }
         }
         else {
-            cap.requestActiveSpiritualityCost(info.cost());
+            cap.requestActiveSpiritualityCost(cost());
             HitResult hit = target.pick(dist, 0, false);
             ArrayList<Entity> hits = AbilityFunctionHelper.getLivingEntitiesLooking(target,
                     Math.min(dist, hit.distanceTo(target))
             );
             hits.forEach(ent -> {
-                int pow = (9-getSequence());
+                int pow = (9-getSequenceLevel());
                 if(ent != target) ent.hurt(level.damageSources().indirectMagic(target, null),
                         (float) (0.384f*Math.pow(target.getAttribute(Attributes.ATTACK_DAMAGE).getBaseValue()*pow, 2) + 2.461f*pow + 3.938f));
             });
             level.playSound(null, target.getOnPos().above(), SoundEvents.GENERIC_EXTINGUISH_FIRE, SoundSource.PLAYERS, 1, 1);
         }
+        putOnCooldown(target);
         return true;
-    }
-
-    @Override
-    public void passive(LivingEntityBeyonderCapability cap, LivingEntity target) {
-    }
-
-    @Override
-    public void activate(LivingEntityBeyonderCapability cap, LivingEntity target) {
-
-    }
-
-    @Override
-    public void deactivate(LivingEntityBeyonderCapability cap, LivingEntity target) {
     }
 
 }

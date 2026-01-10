@@ -16,12 +16,8 @@ import java.util.UUID;
 import java.util.function.Supplier;
 
 public class BeyonderExtendedReachEffect extends BeyonderEffect {
-    public BeyonderExtendedReachEffect(int level, float cost, int time, boolean active, BeyonderEffects.EFFECT id){
-        super(level, cost, time, active, id);
-        this.name = "Extended Reach";
-    }
-
-
+    private static UUID entityId = UUID.fromString("d7f8685b-fda0-4c4f-862d-088bad3a8983");
+    private static UUID blockId = UUID.fromString("a513a95f-5433-49ae-a928-e500cd0e8a84");
     @Override
     public void onAcquire(LivingEntityBeyonderCapability cap, LivingEntity target) {
         if(target instanceof Player player){
@@ -50,7 +46,7 @@ public class BeyonderExtendedReachEffect extends BeyonderEffect {
     //Credit to the create mod
     private static Multimap<Attribute, AttributeModifier> getBlockReachModifier(int sequence){
         AttributeModifier singleRangeAttributeModifier =
-                new AttributeModifier(UUID.fromString("a513a95f-5433-49ae-a928-e500cd0e8a84"),
+                new AttributeModifier(blockId,
                         "Beyonder range modifier", 3*(10-sequence),
 
                         AttributeModifier.Operation.ADDITION);
@@ -63,7 +59,7 @@ public class BeyonderExtendedReachEffect extends BeyonderEffect {
     //Credit to the create mod
     private static Multimap<Attribute, AttributeModifier> getEntityReachModifier(int sequence){
         AttributeModifier singleRangeAttributeModifier =
-                new AttributeModifier(UUID.fromString("d7f8685b-fda0-4c4f-862d-088bad3a8983"),
+                new AttributeModifier(entityId,
                         "Beyonder entity range modifier", 3*(10-sequence),
 
                         AttributeModifier.Operation.ADDITION);

@@ -48,9 +48,9 @@ public class ArtifactHelper {
 
         downsideMap.put("d_dummy", new MetaAbilityEntry(0, 50, DummyDownside::new));
 
-        effectMap.put("silk", new MetaEffectEntry(0, 8, dur -> BeyonderEffects.byId(BeyonderEffects.EFFECT.WHEEL_SILK_TOUCH, 8, 0, dur, true)));
-        effectMap.put("water_affinity", new MetaEffectEntry(10, 9, dur -> BeyonderEffects.byId(BeyonderEffects.EFFECT.TYRANT_WATER_AFFINITY, 9, 5, dur, true)));
-        effectMap.put("life_sap", new MetaEffectEntry(20, 9, dur -> BeyonderEffects.byId(BeyonderEffects.EFFECT.MYSTERY_REGEN, 9, 0, dur, true)));
+//        effectMap.put("silk", new MetaEffectEntry(0, 8, dur -> BeyonderEffects.byId(BeyonderEffects.EFFECT.WHEEL_SILK_TOUCH, 8, 0, dur, true)));
+//        effectMap.put("water_affinity", new MetaEffectEntry(10, 9, dur -> BeyonderEffects.byId(BeyonderEffects.EFFECT.TYRANT_WATER_AFFINITY, 9, 5, dur, true)));
+//        effectMap.put("life_sap", new MetaEffectEntry(20, 9, dur -> BeyonderEffects.byId(BeyonderEffects.EFFECT.MYSTERY_REGEN, 9, 0, dur, true)));
     }
 
     public static BeyonderEffect getEffectFromCharm(ItemStack charm){
@@ -217,7 +217,7 @@ public class ArtifactHelper {
                 String ablId = ablTag.getString("ablId");
                 int ablSequence = ablTag.getInt("sequence");
                 abilityIds.add((ablSequence < 10 ? "0" + ablSequence : ablSequence) + "_" + ablId);
-                biggestCd = Math.max(biggestCd, getAbilityFromId(ablId, ablSequence).getMaxCooldown());
+//                biggestCd = Math.max(biggestCd, getAbilityFromId(ablId, ablSequence).getCooldownPercent());
                 //System.out.println("Biggest CD: " + biggestCd);
             }
         }
@@ -225,7 +225,7 @@ public class ArtifactHelper {
             if(tag instanceof CompoundTag ablTag){
                 String downId = ablTag.getString("ablId");
                 int downSequence = ablTag.getInt("sequence");
-                abilityIds.add((downSequence < 10 ? "0" + downSequence : downSequence) + "_" + downId + "_" + biggestCd);
+                abilityIds.add((downSequence < 10 ? "0" + downSequence : downSequence) + "_" + downId + "_" + 20);
 
             }
         }

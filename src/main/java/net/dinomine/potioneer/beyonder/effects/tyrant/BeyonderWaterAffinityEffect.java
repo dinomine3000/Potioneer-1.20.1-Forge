@@ -1,25 +1,34 @@
 package net.dinomine.potioneer.beyonder.effects.tyrant;
 
+import com.google.common.base.Suppliers;
+import com.google.common.collect.ImmutableMultimap;
+import com.google.common.collect.Multimap;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffect;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
 import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.attributes.Attribute;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraftforge.common.ForgeMod;
+
+import java.util.UUID;
+import java.util.function.Supplier;
 
 public class BeyonderWaterAffinityEffect extends BeyonderEffect {
-
+    private static UUID attributeId = UUID.fromString("9716a637-f0c7-41fa-9852-918df4567a91");
     private boolean levelUp;
-    public BeyonderWaterAffinityEffect(int level, float cost, int time, boolean active, BeyonderEffects.EFFECT id){
-        super(level, cost, time, active, id);
-        levelUp = sequenceLevel < 8;
-        this.name = "Tyrant Affinity";
-    }
 
     @Override
     public void onAcquire(LivingEntityBeyonderCapability cap, LivingEntity target) {
+        levelUp = sequenceLevel < 8;
+        this.name = "Tyrant Affinity";
+        if(target instanceof Player player){
+            player.getAttributes().addTransientAttributeModifiers(getEntitySwimSpeedModifier(sequenceLevel));
+        }
     }
 
     @Override
@@ -63,5 +72,21 @@ public class BeyonderWaterAffinityEffect extends BeyonderEffect {
     public void stopEffects(LivingEntityBeyonderCapability cap, LivingEntity target) {
         target.removeEffect(MobEffects.WATER_BREATHING);
         target.removeEffect(MobEffects.NIGHT_VISION);
+        if(target instanceof Player player){
+            player.getAttributes().removeAttributeModifiers(getEntitySwimSpeedModifier(sequenceLevel));
+        }
+    }
+
+    //Credit to the create mod
+    private static Multimap<Attribute, AttributeModifier> getEntitySwimSpeedModifier(int sequence){
+        AttributeModifier modifier =
+                new AttributeModifier(attributeId,
+                        "Beyonder swim speed modifier", (sequence-8.7-8.5)*(sequence-3.6-8.5)*0.08,
+
+                        AttributeModifier.Operation.MULTIPLY_BASE);
+
+        Supplier<Multimap<Attribute, AttributeModifier>> swimSpeedModifier = Suppliers.memoize(() ->
+                ImmutableMultimap.of(ForgeMod.SWIM_SPEED.get(), modifier));
+        return swimSpeedModifier.get();
     }
 }

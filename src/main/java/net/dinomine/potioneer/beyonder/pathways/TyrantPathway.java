@@ -1,5 +1,6 @@
 package net.dinomine.potioneer.beyonder.pathways;
 
+import net.dinomine.potioneer.beyonder.abilities.Abilities;
 import net.dinomine.potioneer.beyonder.abilities.Ability;
 import net.dinomine.potioneer.beyonder.abilities.misc.CogitationAbility;
 import net.dinomine.potioneer.beyonder.abilities.tyrant.*;
@@ -66,7 +67,7 @@ public class TyrantPathway extends BeyonderPathway {
                 abilities.add(new WaterTrapAbility(sequence));
                 abilities.add(new DivinationAbility(sequence));
             case 9:
-                abilities.add(new WaterAffinityAbility(sequence));
+                abilities.add(Abilities.WATER_AFFINITY.create(sequence));
                 abilities.add(new CogitationAbility(10 + sequence));
         }
 

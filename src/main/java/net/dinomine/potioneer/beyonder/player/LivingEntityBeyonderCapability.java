@@ -207,14 +207,10 @@ public class LivingEntityBeyonderCapability {
                         }
                     }
 
-                    abilitiesManager.updateArtifacts(this, player);
-                    PacketHandler.INSTANCE.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) player),
-                            new PlayerSTCHudStatsSync(this.spirituality, this.maxSpirituality,
-                                    (int) this.sanity, this.getPathwaySequenceId(), getAbilitiesManager().enabledDisabled,
-                                    (float) characteristicManager.getAdjustedActingPercent(getPathwaySequenceId()),
-                                    luckManager.getLuck(),
-                                    luckManager.getMinPassiveLuck(),
-                                    luckManager.getMaxPassiveLuck()));
+//                    abilitiesManager.updateArtifacts(this, player);
+                    PacketHandler.sendMessageSTC(new PlayerSTCHudStatsSync(this.spirituality, this.maxSpirituality,
+                            (int) this.sanity, this.getPathwaySequenceId(),
+                            (float) characteristicManager.getAdjustedActingPercent(getPathwaySequenceId())), player);
                 }
                 applyCost();
                 lowStatEffects();
@@ -263,7 +259,7 @@ public class LivingEntityBeyonderCapability {
     }
 
     public boolean resetBeyonder(boolean definitive){
-        this.abilitiesManager.clear(true, this, entity);
+        this.abilitiesManager.clear(this, entity);
         characteristicManager.reset();
         if(definitive) entity.sendSystemMessage(Component.literal("Reset beyonder powers."));
 
@@ -283,7 +279,7 @@ public class LivingEntityBeyonderCapability {
     public void consumeCharacteristic(int id){
         getBeyonderStats().setAttributes(Pathways.BEYONDERLESS.get().getStatsFor(0));
         characteristicManager.consumeCharacteristic(id);
-        characteristicManager.setAbilities(abilitiesManager);
+        characteristicManager.setAbilities(id, this, entity);
         characteristicManager.setAttributes(beyonderStats);
         maxSpirituality = characteristicManager.getMaxSpirituality();
         if(entity instanceof Player player) getBeyonderStats().applyStats(player, true);
@@ -435,20 +431,20 @@ public class LivingEntityBeyonderCapability {
 
         this.luckManager.loadNBTData(nbt);
         this.effectsManager.loadNBTData(nbt, this, entity);
-        //enabledDisabled BEFORE onAcquire bc of reach ability
-        this.abilitiesManager.loadNBTData(nbt);
-        this.characteristicManager.loadNBTData(nbt);
+        //characteristics before ablities because characteristics give abilities.
+        this.characteristicManager.loadNBTData(nbt, this, entity);
+        this.abilitiesManager.loadNBTData(nbt, this, entity);
         //this.abilitiesManager.onAcquireAbilities(this, entity);
         //TODO make abilities manager actually save and load item abilities.
         //this.abilitiesManager.loadNBTData(nbt);
     }
 
-    public void syncSequenceData(Player player, boolean advancing){
+    public void syncSequenceData(Player player){
         if(!player.level().isClientSide()){
             //System.out.println("syncing from server side");
             //server side to client. messages are sent when client joins world and when he advanced by means controlled by the server
             PacketHandler.INSTANCE.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) player),
-                    new PlayerAdvanceMessage(this.getPathwaySequenceId(), advancing));
+                    new PlayerAdvanceMessage(this.getPathwaySequenceId()));
             PacketHandler.INSTANCE.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) player),
                     new PlayerAttributesSyncMessageSTC(getBeyonderStats().getIntStats()));
         }
@@ -458,9 +454,15 @@ public class LivingEntityBeyonderCapability {
         boolean dropForLowSanity = sanity < SANITY_FOR_DROP && PotioneerCommonConfig.CHARACTERISTIC_DROP_CRITERIA_ENUM_VALUE.get() == PotioneerCommonConfig.CharacteristicDropCriteria.LOW_SANITY;
         boolean doDrop = PotioneerCommonConfig.CHARACTERISTIC_DROP_CRITERIA_ENUM_VALUE.get() == PotioneerCommonConfig.CharacteristicDropCriteria.ALWAYS;
         boolean switchingPathwaysCheck = PotioneerCommonConfig.ALLOW_CHANGING_PATHWAYS.get() || (isBeyonder() && getSequenceLevel() < 9);
-        if((doDrop || dropForLowSanity) && switchingPathwaysCheck && event.getEntity() instanceof Player player && isBeyonder()){
-            CharacteristicHelper.addCharacteristicToLevel(getPathwaySequenceId(), player.level(), player, player.position(), player.getRandom());
-            advance((getPathwaySequenceId() % 10 != 9) ? getPathwaySequenceId() + 1 : -1, player, true, true);
+        boolean dropEverything = PotioneerCommonConfig.DROP_ALL_CHARACTERISTICS.get();
+        if((doDrop || dropForLowSanity)
+                && (switchingPathwaysCheck || dropEverything)
+                && event.getEntity() instanceof Player player && isBeyonder()){
+            if(dropEverything){
+                CharacteristicHelper.addCharacteristicToLevel(characteristicManager.dropAllCharacteristics(), player.level(), player, player.position(), player.getRandom());
+            } else {
+                CharacteristicHelper.addCharacteristicToLevel(characteristicManager.dropLevel(), player.level(), player, player.position(), player.getRandom());
+            }
         }
     }
 }

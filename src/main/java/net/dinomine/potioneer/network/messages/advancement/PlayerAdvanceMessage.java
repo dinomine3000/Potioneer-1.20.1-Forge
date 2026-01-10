@@ -14,22 +14,19 @@ import java.util.function.Supplier;
 //called on world load and general syncing for advancing and updating the players pathway on both server and client
 public class PlayerAdvanceMessage {
     public int id;
-    public boolean advancing;
 
-    public PlayerAdvanceMessage(int pathwayId, boolean advancing){
+    public PlayerAdvanceMessage(int pathwayId){
         this.id = pathwayId;
-        this.advancing = advancing;
     }
 
     public static void encode(PlayerAdvanceMessage msg, FriendlyByteBuf buffer){
         buffer.writeInt(msg.id);
-        buffer.writeBoolean(msg.advancing);
     }
 
     public static PlayerAdvanceMessage decode(FriendlyByteBuf buffer){
         int id = buffer.readInt();
         boolean adv = buffer.readBoolean();
-        return new PlayerAdvanceMessage(id, adv);
+        return new PlayerAdvanceMessage(id);
     }
 
     public static void handle(PlayerAdvanceMessage msg, Supplier<NetworkEvent.Context> contextSupplier){
@@ -44,7 +41,7 @@ public class PlayerAdvanceMessage {
                 System.out.println("Receiving on server side. Id = " + msg.id);
                 Player player = context.getSender();
                 player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
-                    cap.consumeCharacteristic(msg.id, player, true, msg.advancing);
+                    cap.consumeCharacteristic(msg.id);
                 });
             }
         });
@@ -65,7 +62,7 @@ class ClientSyncMessage
         {
             player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
                 System.out.println("Handling sequence syncing on client side...");
-                cap.consumeCharacteristic(msg.id, player, false, msg.advancing);
+                cap.consumeCharacteristic(msg.id);
             });
         }
     }

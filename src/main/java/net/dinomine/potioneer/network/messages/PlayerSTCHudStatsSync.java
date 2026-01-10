@@ -1,8 +1,10 @@
 package net.dinomine.potioneer.network.messages;
 
+import net.dinomine.potioneer.beyonder.abilities.AbilityInfo;
 import net.dinomine.potioneer.beyonder.client.ClientAbilitiesData;
 import net.dinomine.potioneer.beyonder.client.ClientStatsData;
 import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
+import net.dinomine.potioneer.util.BufferUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.api.distmarker.Dist;
@@ -11,6 +13,7 @@ import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.network.NetworkEvent;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
 
@@ -20,19 +23,16 @@ public class PlayerSTCHudStatsSync {
     public int maxSpirituality;
     public int sanity;
     public int pathwayId;
-    public Map<String, Boolean> enabledList;
     public float actingProgress;
     public int luck;
     public int maxLuck;
     public int minLuck;
 
-    public PlayerSTCHudStatsSync(float spirituality, int maxSpirituality, int sanity, int pathwayId, Map<String, Boolean> enabled, float actingProgress
-                            , int luck, int maxLuck, int minLuck) {
+    public PlayerSTCHudStatsSync(float spirituality, int maxSpirituality, int sanity, int pathwayId, float actingProgress) {
         this.spirituality = spirituality;
         this.maxSpirituality = maxSpirituality;
         this.sanity = sanity;
         this.pathwayId = pathwayId;
-        this.enabledList = enabled;
         this.actingProgress = actingProgress;
     }
 
@@ -41,15 +41,6 @@ public class PlayerSTCHudStatsSync {
         buffer.writeInt(msg.maxSpirituality);
         buffer.writeInt(msg.sanity);
         buffer.writeInt(msg.pathwayId);
-        buffer.writeInt(msg.enabledList.size());
-        for(Map.Entry<String, Boolean> entry : msg.enabledList.entrySet()){
-            String id = entry.getKey();
-            buffer.writeInt(id.length());
-            for(int i = 0; i < id.length(); i++){
-                buffer.writeChar(id.charAt(i));
-            }
-            buffer.writeBoolean(entry.getValue());
-        }
         buffer.writeFloat(msg.actingProgress);
         buffer.writeInt(msg.luck);
         buffer.writeInt(msg.maxLuck);
@@ -61,21 +52,11 @@ public class PlayerSTCHudStatsSync {
         int max = buffer.readInt();
         int san = buffer.readInt();
         int id = buffer.readInt();
-        HashMap<String, Boolean> res = new HashMap<>();
-        int size = buffer.readInt();
-        for(int i = 0; i < size; i++){
-            int idLen = buffer.readInt();
-            StringBuilder idBuilder = new StringBuilder();
-            for(int j = 0; j < idLen; j++){
-                idBuilder.append(buffer.readChar());
-            }
-            res.put(idBuilder.toString(), buffer.readBoolean());
-        }
         float acting = buffer.readFloat();
         int luck = buffer.readInt();
         int maxLuck = buffer.readInt();
         int minLuck = buffer.readInt();
-        return new PlayerSTCHudStatsSync(spir, max, san, id, res, acting, luck, maxLuck, minLuck);
+        return new PlayerSTCHudStatsSync(spir, max, san, id, acting);
     }
 
     public static void handle(PlayerSTCHudStatsSync msg, Supplier<NetworkEvent.Context> contextSupplier){
@@ -112,9 +93,7 @@ class ClientHudStatsSyncMessage
         ClientStatsData.setActing(msg.actingProgress);
         ClientStatsData.setLuck(msg.luck, msg.minLuck, msg.maxLuck);
 
-        ClientAbilitiesData.setEnabledList(msg.enabledList);
         Minecraft.getInstance().player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
-            cap.getAbilitiesManager().setMap(cap.getAbilitiesManager().enabledDisabled, msg.enabledList);
             cap.setSpirituality(msg.spirituality);
             cap.setMaxSpirituality(msg.maxSpirituality);
             cap.setSanity(msg.sanity);

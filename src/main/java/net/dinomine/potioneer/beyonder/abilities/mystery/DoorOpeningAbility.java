@@ -22,19 +22,20 @@ import static net.minecraft.world.level.block.DoorBlock.OPEN;
 
 public class DoorOpeningAbility extends Ability {
 
+    @Override
+    protected String getDescId(int sequenceLevel) {
+        return "door_opening";
+    }
+
     public DoorOpeningAbility(int sequence){
-        this.info = new AbilityInfo(57, 80, "Door Opening", 20+sequence, 7 + 5*(10-sequence), 20, "door_opening");
-        this.isActive = true;
+//        this.info = new AbilityInfo(57, 80, "Door Opening", 20+sequence, , 20, "door_opening");
+        super(sequence);
+        setCost(level -> 7 + 5*(10-level));
     }
 
     @Override
-    public void onAcquire(LivingEntityBeyonderCapability cap, LivingEntity target) {
-
-    }
-
-    @Override
-    public boolean active(LivingEntityBeyonderCapability cap, LivingEntity target) {
-        if(target.level().isClientSide() || cap.getSpirituality() < info.cost()) return false;
+    public boolean primary(LivingEntityBeyonderCapability cap, LivingEntity target) {
+        if(target.level().isClientSide() || cap.getSpirituality() < cost()) return false;
         Level level = target.level();
         BlockPos pos = target.getOnPos().above();
         Direction dir = target.getDirection();
@@ -44,13 +45,13 @@ public class DoorOpeningAbility extends Ability {
             BlockState blockTar = level.getBlockState(rayTrace.getBlockPos());
             if(blockTar.is(BlockTags.DOORS)){
                 ((DoorBlock) blockTar.getBlock()).setOpen(null, level, blockTar, rayTrace.getBlockPos(), !blockTar.getValue(OPEN));
-                cap.requestActiveSpiritualityCost(info.cost());
-                return true;
+                cap.requestActiveSpiritualityCost(cost());
+                return putOnCooldown(target);
             }
         }
         int newZ = dir.getNormal().getZ();
         int newX = dir.getNormal().getX();
-        int range = (9-getSequence())*4 + 2;
+        int range = (9-getSequenceLevel())*4 + 2;
         int i = 0;
 
         while(i <= range){
@@ -63,11 +64,11 @@ public class DoorOpeningAbility extends Ability {
                     //target.teleportRelative(newX*(i+1), 0, newZ*(i+1));
                     BlockPos endPos = new BlockPos(pos.getX() + newX*(i+1), pos.getY(), pos.getZ() + newZ*(i+1));
                     target.teleportTo(endPos.getX() + 0.5, endPos.getY(), endPos.getZ() + 0.5);
-                    cap.requestActiveSpiritualityCost(info.cost()*(1+i));
+                    cap.requestActiveSpiritualityCost(cost()*(1+i));
                     level.playSound(null,
                             pos.offset(newX*(i+1), 0, newZ*(i+1)), SoundEvents.ENDERMAN_TELEPORT,
                             SoundSource.PLAYERS, 1, 1);
-                    return true;
+                    return putOnCooldown(target);
                 }
             }
 //            System.out.println("iterating i");
@@ -77,18 +78,5 @@ public class DoorOpeningAbility extends Ability {
             player.displayClientMessage(Component.literal("Wall is too thick for your level."), true);
         }
         return false;
-    }
-
-    @Override
-    public void passive(LivingEntityBeyonderCapability cap, LivingEntity target) {
-    }
-
-    @Override
-    public void activate(LivingEntityBeyonderCapability cap, LivingEntity target) {
-
-    }
-
-    @Override
-    public void deactivate(LivingEntityBeyonderCapability cap, LivingEntity target) {
     }
 }

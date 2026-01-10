@@ -13,19 +13,24 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraftforge.common.ForgeMod;
 
+import java.util.function.Function;
+
 import static net.dinomine.potioneer.block.custom.MinerLightSourceBlock.WATERLOGGED;
 
-public class LightAbility extends Ability {
+public abstract class LightAbility extends Ability {
     private BlockState lightBlockState;
-    public LightAbility(int sequence, BlockState lightBlock){
-        this.info = new AbilityInfo(5, 56, "Light", sequence, 0, this.getMaxCooldown(), "");
+    public LightAbility(int sequence, BlockState lightBlock, Function<Integer, Integer> cost){
+//        this.info = new AbilityInfo(5, 56, "Light", sequence, 0, this.getMaxCooldown(), "");
+        super(sequence);
         lightBlockState = lightBlock;
+        setCost(cost);
+        this.defaultMaxCooldown = 20;
     }
 
     @Override
-    public boolean active(LivingEntityBeyonderCapability cap, LivingEntity target) {
-        if(target.level().isClientSide()) return true;
-        if(cap.getSpirituality() > info.cost()){
+    public boolean primary(LivingEntityBeyonderCapability cap, LivingEntity target) {
+        if(target.level().isClientSide()) return putOnCooldown(target);
+        if(cap.getSpirituality() > cost()){
             HitResult block = target.pick(target.getAttributeBaseValue(ForgeMod.BLOCK_REACH.get()) + 0.5, 0f, false);
             if(block instanceof BlockHitResult rayTrace){
                 Level level = target.level();
@@ -37,8 +42,8 @@ public class LightAbility extends Ability {
 
                     level.setBlockAndUpdate(rayTrace.getBlockPos(),
                             lightBlockState.setValue(WATERLOGGED, water));
-                    cap.requestActiveSpiritualityCost(info.cost());
-                    return true;
+                    cap.requestActiveSpiritualityCost(cost());
+                    return putOnCooldown(target);
 
                 }
                 if(!level.getBlockState(rayTrace.getBlockPos()).is(Blocks.AIR)
@@ -48,27 +53,11 @@ public class LightAbility extends Ability {
 
                     level.setBlockAndUpdate(targetPos,
                             lightBlockState.setValue(WATERLOGGED, water));
-                    cap.requestActiveSpiritualityCost(info.cost());
-                    return true;
+                    cap.requestActiveSpiritualityCost(cost());
+                    return putOnCooldown(target);
                 }
             }
         }
         return false;
-    }
-
-    @Override
-    public void onAcquire(LivingEntityBeyonderCapability cap, LivingEntity target) {
-    }
-
-    @Override
-    public void passive(LivingEntityBeyonderCapability cap, LivingEntity target) {
-    }
-
-    @Override
-    public void activate(LivingEntityBeyonderCapability cap, LivingEntity target) {
-    }
-
-    @Override
-    public void deactivate(LivingEntityBeyonderCapability cap, LivingEntity target) {
     }
 }

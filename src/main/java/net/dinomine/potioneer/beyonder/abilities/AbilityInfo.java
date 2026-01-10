@@ -1,56 +1,93 @@
 package net.dinomine.potioneer.beyonder.abilities;
 
+import net.dinomine.potioneer.util.BufferUtils;
 import net.minecraft.network.FriendlyByteBuf;
 
 public class AbilityInfo {
+    private int posY;
+    private int pathwayId;
+    private int cost;
+    private float cooldownPercentage;
+    private String descId;
+    private boolean enabled;
+    private int maxCd;
+    private String innerAbilityId;
+    private String cAblId = null;
+    private boolean hasSecondaryFunction;
 
-    public AbilityInfo(int posX, int posY, String name, int sequenceId, int cost, int maxCooldown, String descId){
-
+    public AbilityInfo(int posY, int pathwayId, int cost, float cooldown, boolean enabled, String descId, String innerId, boolean hasSecondaryFunction) {
+        this.posY = posY;
+        this.pathwayId = pathwayId;
+        this.cost = cost;
+        this.cooldownPercentage = cooldown;
+        this.descId = descId;
+        this.enabled = enabled;
+        this.innerAbilityId = innerId;
+        this.hasSecondaryFunction = hasSecondaryFunction;
     }
 
+    public AbilityInfo withCompleteId(String cAblId){
+        this.cAblId = cAblId;
+        return this;
+    }
+
+    public String getCompleteId(){
+        return this.cAblId;
+    }
+
+//    public AbilityInfo(int posX, int posY, String name, int sequenceId, int cost, int maxCooldown, String descId){
+//
+//    }
+
     public void encode(FriendlyByteBuf buffer){
-        buffer.writeInt(posX);
         buffer.writeInt(posY);
-        buffer.writeInt(id);
+        buffer.writeInt(pathwayId);
         buffer.writeInt(cost);
-        buffer.writeInt(maxCooldown);
-        buffer.writeInt(name.length());
-        for(Character c : name.toCharArray()){
-            buffer.writeChar(c);
-        }
-        buffer.writeInt(descId.length());
-        for(Character c : descId.toCharArray()){
-            buffer.writeChar(c);
-        }
+        buffer.writeFloat(cooldownPercentage);
+        buffer.writeBoolean(enabled);
+        BufferUtils.writeStringToBuffer(descId, buffer);
+        BufferUtils.writeStringToBuffer(innerAbilityId, buffer);
+        buffer.writeBoolean(hasSecondaryFunction);
     }
 
     public static AbilityInfo decode(FriendlyByteBuf buffer){
-        int x = buffer.readInt();
         int y = buffer.readInt();
-        int id = buffer.readInt();
+        int pathwayId = buffer.readInt();
         int cost = buffer.readInt();
-        int maxCd = buffer.readInt();
-        int size = buffer.readInt();
-        StringBuilder stringBuilder = new StringBuilder();
-        for(int i = 0; i < size; i++){
-            stringBuilder.append(buffer.readChar());
-        }
-        String name = stringBuilder.toString();
-        size = buffer.readInt();
-        stringBuilder = new StringBuilder();
-        for(int i = 0; i < size; i++){
-            stringBuilder.append(buffer.readChar());
-        }
-        String desc = stringBuilder.toString();
-        return new AbilityInfo(x, y, name, id, cost, maxCd, desc);
+        float cooldown = buffer.readFloat();
+        boolean enabled = buffer.readBoolean();
+        String descId = BufferUtils.readString(buffer);
+        String innerId = BufferUtils.readString(buffer);
+        boolean secondary = buffer.readBoolean();
+        return new AbilityInfo(y, pathwayId, cost, cooldown, enabled, descId, innerId, secondary);
     }
 
-    public String ablId(){
-        return descId().replaceAll("_\\d+$", "");
-        //return descId();
+    public String innerId(){
+        return innerAbilityId;
     }
 
-    public AbilityInfo copy(int maxCd){
-        return new AbilityInfo(posX(), posY(), name(), id(), cost(), maxCd, descId);
+    public String descId(){
+        return descId;
+    }
+
+    public AbilityInfo withMaxCd(int maxCd) {
+        this.maxCd = maxCd;
+        return this;
+    }
+
+    public int maxCooldown() {
+        return this.maxCd;
+    }
+
+    public int getPathwayId(){
+        return pathwayId;
+    }
+
+    public int getPosY(){
+        return posY;
+    }
+
+    public boolean hasSecondaryFunction(){
+        return hasSecondaryFunction;
     }
 }

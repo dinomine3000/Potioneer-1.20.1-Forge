@@ -2,11 +2,13 @@ package net.dinomine.potioneer.beyonder.client.HUD;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.dinomine.potioneer.Potioneer;
+import net.dinomine.potioneer.beyonder.abilities.Abilities;
 import net.dinomine.potioneer.beyonder.abilities.AbilityInfo;
 import net.dinomine.potioneer.beyonder.client.ClientAbilitiesData;
 import net.dinomine.potioneer.beyonder.client.ClientConfigData;
 import net.dinomine.potioneer.beyonder.client.ClientStatsData;
 import net.dinomine.potioneer.beyonder.client.screen.BeyonderSettingsScreen;
+import net.dinomine.potioneer.beyonder.pathways.Pathways;
 import net.dinomine.potioneer.config.PotioneerClientConfig;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -165,15 +167,17 @@ public class AbilitiesHotbarHUD {
     public static void drawAbility(GuiGraphics guiGraphics, AbilityInfo info, int caret, int xPos, int yPos, float scale){
 
         //48 x 60 - case
-        int pathway = Math.floorDiv(info.id(), 10);
+        int pathway = Math.floorDiv(info.getPathwayId(), 10);
+        int abilityX = Pathways.getPathwayById(info.getPathwayId()).getAbilityX();
         int caseX = xPos - (int) (CASE_WIDTH * scale / 2);
-        guiGraphics.blit(ICONS, caseX, yPos, (int) (CASE_WIDTH*scale), (int) (CASE_HEIGHT*scale), 26*pathway, 0, CASE_WIDTH, CASE_HEIGHT, ICONS_WIDTH, ICONS_HEIGHT);
+        guiGraphics.blit(ICONS, caseX, yPos, (int) (CASE_WIDTH*scale), (int) (CASE_HEIGHT*scale), abilityX, 0, CASE_WIDTH, CASE_HEIGHT, ICONS_WIDTH, ICONS_HEIGHT);
 
         //ability icon
         if(!ClientAbilitiesData.isEnabled(caret)){
             RenderSystem.setShaderColor(0.6F, 0.6F, 0.6F, 1.0F); // Greyscale tint
         }
-        guiGraphics.blit(ICONS, caseX + (int) (5*scale), yPos + (int)(4*scale), (int)(ICON_WIDTH*scale), (int)(ICON_HEIGHT*scale), info.posX(), info.posY(), ICON_WIDTH, ICON_HEIGHT, ICONS_WIDTH, ICONS_HEIGHT);
+        ResourceLocation AbilityIcon = Abilities.getAbilityById(info.innerId()).getTextureLocation();
+        guiGraphics.blit(AbilityIcon, caseX + (int) (5*scale), yPos + (int)(4*scale), (int)(ICON_WIDTH*scale), (int)(ICON_HEIGHT*scale), abilityX, info.getPosY(), ICON_WIDTH, ICON_HEIGHT, ICONS_WIDTH, ICONS_HEIGHT);
 
         RenderSystem.setShaderColor(1F, 1F, 1F, 1F); // Reset color
 

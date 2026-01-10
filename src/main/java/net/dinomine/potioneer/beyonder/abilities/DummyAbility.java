@@ -8,35 +8,20 @@ import net.minecraft.world.entity.LivingEntity;
 
 public class DummyAbility extends Ability{
 
+    @Override
+    protected String getDescId(int sequenceLevel) {
+        return "dummy";
+    }
+
     public DummyAbility(int sequence){
-        this.info = new AbilityInfo(48, 0, "dummy", sequence, 10, 7*20, "");
+        super(sequence);
     }
 
     @Override
-    public void onAcquire(LivingEntityBeyonderCapability cap, LivingEntity target) {
-
-    }
-
-    @Override
-    public boolean active(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    public boolean primary(LivingEntityBeyonderCapability cap, LivingEntity target) {
         if(target.level().isClientSide()) return false;
         target.addEffect(new MobEffectInstance(MobEffects.NIGHT_VISION, 100, 1, false, false));
         target.sendSystemMessage(Component.literal("Night vision granted"));
         return true;
-    }
-
-    @Override
-    public void passive(LivingEntityBeyonderCapability cap, LivingEntity target) {
-
-    }
-
-    @Override
-    public void activate(LivingEntityBeyonderCapability cap, LivingEntity target) {
-
-    }
-
-    @Override
-    public void deactivate(LivingEntityBeyonderCapability cap, LivingEntity target) {
-
     }
 }

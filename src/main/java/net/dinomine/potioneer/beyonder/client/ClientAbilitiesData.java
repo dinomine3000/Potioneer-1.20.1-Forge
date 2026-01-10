@@ -54,16 +54,17 @@ public class ClientAbilitiesData {
         caret = Mth.clamp(caret, 0, hotbar.size() - 1);
     }
 
-    public static void setCooldown(String abilityId, int cd, int maxCd){
-        cooldowns.put(abilityId, cd);
-        abilities.put(abilityId, abilities.get(abilityId).copy(maxCd));
+    public static void setCooldown(String cAblId, int cd, int maxCd){
+        cooldowns.put(cAblId, cd);
+        abilities.put(cAblId, abilities.get(cAblId).withMaxCd(maxCd));
     }
 
-    public static void setAbilities(List<AbilityInfo> abilities2, boolean changingPath) {
+    public static void setAbilities(LinkedHashMap<String, AbilityInfo> abilities2, boolean changingPath) {
         abilities = new LinkedHashMap<>();
-        for (AbilityInfo ability : abilities2) {
-            if (ability != null && !ability.ablId().isEmpty()) {
-                abilities.put(ability.ablId(), ability);
+        for (String cAblId : abilities2.keySet()) {
+            AbilityInfo ability = abilities2.get(cAblId).withCompleteId(cAblId);
+            if (ability != null && !cAblId.isEmpty()) {
+                abilities.put(cAblId, ability);
             }
         }
         if(changingPath) hotbar = new ArrayList<>();
@@ -73,7 +74,7 @@ public class ClientAbilitiesData {
             cooldowns.put(abilityId, 0);
         }
         if(!hotbar.isEmpty()){
-            hotbar.removeIf(ablId -> !abilities.containsKey(ablId));
+            hotbar.removeIf(cAblId -> !abilities.containsKey(cAblId));
         }
         if(!quickSelect.isEmpty() && !abilities.containsKey(quickSelect)) quickSelect = "";
         setHotbarChanged();
@@ -122,19 +123,19 @@ public class ClientAbilitiesData {
         return getCooldown(caret);
     }
 
-    public static int getCooldown(String ablId){
-        return cooldowns.getOrDefault(ablId, 0);
+    public static int getCooldown(String cAblId){
+        return cooldowns.getOrDefault(cAblId, 0);
     }
 
     public static int getCooldown(int pos){
         if(hotbar.isEmpty()) return 0;
-        String ablId = hotbar.get(Math.floorMod(pos, hotbar.size()));
-        return cooldowns.get(ablId);
+        String cAblId = hotbar.get(Math.floorMod(pos, hotbar.size()));
+        return cooldowns.get(cAblId);
     }
 
-    public static int getMaxCooldown(String ablId){
-        if(!abilities.containsKey(ablId)) return 1;
-        return abilities.get(ablId).maxCooldown();
+    public static int getMaxCooldown(String cAblId){
+        if(!abilities.containsKey(cAblId)) return 1;
+        return abilities.get(cAblId).maxCooldown();
     }
 
     public static int getMaxCooldown(int pos){
@@ -204,8 +205,8 @@ public class ClientAbilitiesData {
         return abilities.get(hotbar.get(Math.floorMod(caretPos, hotbar.size())));
     }
 
-    public static boolean isEnabled(String ablId){
-        return enabledList.getOrDefault(ablId, true);
+    public static boolean isEnabled(String cAblId){
+        return enabledList.getOrDefault(cAblId, true);
     }
 
     public static boolean isEnabled(int pos){
@@ -213,33 +214,33 @@ public class ClientAbilitiesData {
             System.out.println("enabled list is empty");
             return false;
         }
-        String ablId = hotbar.get(Math.floorMod(pos, hotbar.size()));
-        return enabledList.get(ablId);
+        String cAblId = hotbar.get(Math.floorMod(pos, hotbar.size()));
+        return enabledList.get(cAblId);
     }
 
     public static boolean useQuickAbility(Player player){
         if(quickSelect.isEmpty() && hotbar.isEmpty()) return false;
-        return useAbility(player, quickSelect.isEmpty() ? hotbar.get(caret) : quickSelect);
+        return useAbility(player, quickSelect.isEmpty() ? hotbar.get(caret) : quickSelect, quickMode);
     }
 
-    public static boolean useAbility(Player player){
-        return useAbility(player, hotbar.get(Math.floorMod(caret, hotbar.size())));
+    public static boolean useAbility(Player player, boolean primary){
+        return useAbility(player, hotbar.get(Math.floorMod(caret, hotbar.size())), primary);
     }
 
-    public static boolean useAbility(Player player, String ablId){
-        if(abilities.isEmpty() || ablId.isEmpty()) return false;
-        if(cooldowns.get(ablId) == 0){
-            player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
+    public static boolean useAbility(Player player, String cAblId, boolean primary){
+        if(abilities.isEmpty() || cAblId.isEmpty()) return false;
+        player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
 //                    System.out.println(caret);
 //                    ClientStatsData.setSpirituality(ClientStatsData.getPlayerSpirituality() - abilities.get(caret).cost());
-                cap.getAbilitiesManager().useAbility(cap, player, ablId, true, false);
-                enabledList.put(ablId, false);
-            });
-        } else if(cooldowns.get(ablId) > 0){
-            player.sendSystemMessage(Component.translatable("potioneer.message.ability_cooldown"));
-        } else {
-            player.sendSystemMessage(Component.translatable("potioneer.message.ability_disabled"));
-        }
+            cap.getAbilitiesManager().useAbility(cap, player, cAblId, true, false);
+            enabledList.put(cAblId, false);
+        });
+//        if(cooldowns.get(cAblId) == 0){
+//        } else if(cooldowns.get(cAblId) > 0){
+//            player.sendSystemMessage(Component.translatable("potioneer.message.ability_cooldown"));
+//        } else {
+//            player.sendSystemMessage(Component.translatable("potioneer.message.ability_disabled"));
+//        }
         return true;
     }
 

@@ -7,10 +7,16 @@ import net.dinomine.potioneer.block.ModBlocks;
 public class PriestLightAbility extends LightAbility {
 
     public PriestLightAbility(int sequence){
-        super(sequence, ModBlocks.PRIEST_LIGHT.get().defaultBlockState());
-        this.info = new AbilityInfo(83, 200, "Light", 30 + sequence, 10, this.getMaxCooldown(), "priest_light");
+        super(sequence, ModBlocks.PRIEST_LIGHT.get().defaultBlockState(), ignored -> 10);
+//        this.info = new AbilityInfo(83, 200, "Light", 30 + sequence, 10, this.getMaxCooldown(), "priest_light");
     }
-//
+
+    @Override
+    protected String getDescId(int sequenceLevel) {
+        return "priest_light";
+    }
+
+    //
 //    @Override
 //    public boolean active(EntityBeyonderManager cap, LivingEntity target) {
 //        if(target.level().isClientSide()) return true;

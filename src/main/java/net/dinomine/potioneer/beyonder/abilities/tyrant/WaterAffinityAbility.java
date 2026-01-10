@@ -51,10 +51,6 @@ public class WaterAffinityAbility extends Ability {
 
     @Override
     public void activate(LivingEntityBeyonderCapability cap, LivingEntity target) {
-        if(target instanceof Player player){
-            player.getAttributes()
-                    .addTransientAttributeModifiers(getEntitySwimSpeedModifier(getSequence()));
-        }
     }
 
     @Override
@@ -62,22 +58,5 @@ public class WaterAffinityAbility extends Ability {
         if(cap.getEffectsManager().hasEffect(BeyonderEffects.EFFECT.TYRANT_WATER_AFFINITY, getSequence())){
             cap.getEffectsManager().removeEffect(BeyonderEffects.EFFECT.TYRANT_WATER_AFFINITY, getSequence(), cap, target);
         }
-        if(target instanceof Player player){
-            player.getAttributes()
-                    .removeAttributeModifiers(getEntitySwimSpeedModifier(getSequence()));
-        }
-    }
-
-    //Credit to the create mod
-    private static Multimap<Attribute, AttributeModifier> getEntitySwimSpeedModifier(int sequence){
-        AttributeModifier singleRangeAttributeModifier =
-                new AttributeModifier(UUID.fromString("9716a637-f0c7-41fa-9852-918df4567a91"),
-                        "Beyonder swim speed modifier", (sequence-8.7-8.5)*(sequence-3.6-8.5)*0.08,
-
-                        AttributeModifier.Operation.MULTIPLY_BASE);
-        Supplier<Multimap<Attribute, AttributeModifier>> swimSpeedModifier = Suppliers.memoize(() ->
-                // Holding an ExtendoGrip
-                ImmutableMultimap.of(ForgeMod.SWIM_SPEED.get(), singleRangeAttributeModifier));
-        return swimSpeedModifier.get();
     }
 }

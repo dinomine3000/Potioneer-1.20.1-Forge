@@ -1,5 +1,6 @@
 package net.dinomine.potioneer.event;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import net.dinomine.potioneer.Potioneer;
 import net.dinomine.potioneer.beyonder.client.ClientAbilitiesData;
 import net.dinomine.potioneer.beyonder.client.ClientStatsData;
@@ -96,8 +97,11 @@ public class ClientForgeHandler {
         if(!ClientAbilitiesData.showHotbar) return;
         Minecraft minecraft = Minecraft.getInstance();
         boolean success = false;
-        if(minecraft.player != null && event.getButton() == 0 && event.getAction() == 1){
-            success = ClientAbilitiesData.useAbility(minecraft.player);
+        if(minecraft.player != null && event.getAction() == InputConstants.PRESS){
+            if(event.getButton() == InputConstants.MOUSE_BUTTON_LEFT)
+                success = ClientAbilitiesData.useAbility(minecraft.player, true);
+            if(event.getButton() == InputConstants.MOUSE_BUTTON_RIGHT)
+                success = ClientAbilitiesData.useAbility(minecraft.player, false);
         }
         if(success){
             event.setCanceled(true);

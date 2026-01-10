@@ -22,14 +22,9 @@ public class BeyonderCogitationEffect extends BeyonderEffect {
     private boolean weaknessCheck = false;
     private boolean glowingCheck = false;
 
-    public BeyonderCogitationEffect(int level, float cost, int time, boolean active, BeyonderEffects.EFFECT id){
-        super(level, cost, time, active, id);
-        this.name = "Cogitation Effect";
-    }
-
-
     @Override
     public void onAcquire(LivingEntityBeyonderCapability cap, LivingEntity target) {
+        this.name = "Cogitation Effect";
         if(target instanceof Player player && deactivatedAbilities.isEmpty()){
             deactivatedAbilities = cap.getAbilitiesManager().disabledALlAbilities(player, "cogitation");
         }

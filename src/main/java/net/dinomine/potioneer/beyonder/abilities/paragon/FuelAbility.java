@@ -31,7 +31,7 @@ public class FuelAbility extends Ability {
 
     @Override
     public boolean active(LivingEntityBeyonderCapability cap, LivingEntity target) {
-        enable(cap, target);
+        setEnabled(cap, target);
         float adjustedPercent = percentCost - ((float) (9 - getSequence()) / 9 * percentDelta);
         if(target.level().isClientSide()) {
             return cap.getSpirituality() > cap.getMaxSpirituality() * adjustedPercent;

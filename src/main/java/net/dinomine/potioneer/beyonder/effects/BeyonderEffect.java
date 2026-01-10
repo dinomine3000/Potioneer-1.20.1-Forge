@@ -6,56 +6,54 @@ import net.minecraft.world.entity.LivingEntity;
 
 public abstract class BeyonderEffect {
     protected int sequenceLevel;
-    protected float cost;
     protected int lifetime = 0;
     protected int maxLife;
     public String name;
-    protected BeyonderEffects.EFFECT ID;
+    protected String effectId;
+    protected int cost = 0;
 
     protected boolean active;
 
-    public BeyonderEffect(int sequence, float cost, int time, boolean active, BeyonderEffects.EFFECT id) {
-        this.lifetime = 0;
-        this.sequenceLevel = sequence;
-        this.cost = cost;
-        this.maxLife = time;
-        this.lifetime = time == -1 ? -2 : 0;
-        this.active = active;
-        this.ID = id;
+    public BeyonderEffect() {
     }
 
-    public BeyonderEffect withParams(int sequence, float cost, int time, boolean active) {
+    public BeyonderEffect withParams(int sequence, int time, boolean active) {
         this.sequenceLevel = sequence;
-        this.cost = cost;
+        this.lifetime = time == -1 ? -2 : 0;
         this.maxLife = time;
         this.active = active;
         return this;
     }
 
-    public float getCost(){
-        return this.cost;
+    public BeyonderEffect withParams(int sequence, int time, boolean active, int cost) {
+        this.sequenceLevel = sequence%10;
+        this.lifetime = time == -1 ? -2 : 0;
+        this.maxLife = time;
+        this.active = active;
+        this.cost = cost;
+        return this;
     }
 
     public int getSequenceLevel() {
         return sequenceLevel;
     }
 
-    public BeyonderEffects.EFFECT getId(){
-        return this.ID;
+    public String getId(){
+        return effectId;
     }
-    public boolean is(BeyonderEffects.EFFECT id){
-        return this.ID == id;
+    public boolean is(String id){
+        return effectId.equals(id);
     }
 
     public boolean is(BeyonderEffect effect){
-        return this.ID == effect.getId();
+        return effectId.equals(effect.getId());
     }
 
-    public boolean is(BeyonderEffects.EFFECT id, int seq){
+    public boolean is(String id, int seq){
         return is(id) && this.sequenceLevel == seq;
     }
 
-    public boolean isOrBetter(BeyonderEffects.EFFECT id, int seq){
+    public boolean isOrBetter(String id, int seq){
         return is(id) && this.sequenceLevel <= seq;
     }
     @Override
@@ -70,6 +68,11 @@ public abstract class BeyonderEffect {
 
     public void refreshTime(){
         this.lifetime = 0;
+    }
+
+    public void refreshTime(BeyonderEffect effect){
+        this.lifetime = 0;
+        this.maxLife = effect.maxLife;
     }
 
     public void setLifetime(int life){
@@ -136,11 +139,10 @@ public abstract class BeyonderEffect {
 
     public void toNbt(CompoundTag nbt){
         nbt.putInt("level", sequenceLevel);
-        nbt.putFloat("cost", cost);
         nbt.putInt("lifetime", lifetime);
         nbt.putInt("maxLife", maxLife);
         nbt.putBoolean("active", active);
-        nbt.putString("ID", ID.name());
+        nbt.putString("ID", effectId);
     }
 
     public void loadNBTData(CompoundTag nbt){
@@ -149,5 +151,10 @@ public abstract class BeyonderEffect {
 
     public boolean shouldPersistInDeath() {
         return false;
+    }
+
+    public BeyonderEffect setId(String effectId) {
+        this.effectId = effectId;
+        return this;
     }
 }

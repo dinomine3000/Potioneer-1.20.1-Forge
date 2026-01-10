@@ -49,17 +49,17 @@ public class BeyonderEvents {
         }
     }
 
-    @SubscribeEvent
-    public static void onRightClickItem(PlayerInteractEvent.RightClickItem event){
-        if(!event.getEntity().level().isClientSide()){
-            if(ArtifactHelper.isValidArtifact(event.getItemStack())){
-                event.getEntity().getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
-                    //System.out.println(event.getItemStack().getTag());
-                    cap.getAbilitiesManager().castArtifactAbilityAll(cap, event.getEntity(), );
-                });
-            }
-        }
-    }
+//    @SubscribeEvent
+//    public static void onRightClickItem(PlayerInteractEvent.RightClickItem event){
+//        if(!event.getEntity().level().isClientSide()){
+//            if(ArtifactHelper.isValidArtifact(event.getItemStack())){
+//                event.getEntity().getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
+//                    //System.out.println(event.getItemStack().getTag());
+//                    cap.getAbilitiesManager().castArtifactAbilityAll(cap, event.getEntity(), );
+//                });
+//            }
+//        }
+//    }
 
     @SubscribeEvent
     public static void onPlayerDie(LivingDeathEvent event){
@@ -83,10 +83,10 @@ public class BeyonderEvents {
     public static void playerRespawn(PlayerEvent.PlayerRespawnEvent e) {
         if(e.getEntity().level().isClientSide()) return;
         //TODO: why?
-        e.getEntity().getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
-            PacketHandler.INSTANCE.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) e.getEntity()),
-                    new PlayerAdvanceMessage(cap.getPathwaySequenceId(), false));
-        });
+//        e.getEntity().getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
+//            PacketHandler.INSTANCE.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) e.getEntity()),
+//                    new PlayerAdvanceMessage(cap.getPathwaySequenceId()));
+//        });
     }
 
     @SubscribeEvent
@@ -272,11 +272,9 @@ public class BeyonderEvents {
     @SubscribeEvent
     public static void onFall(LivingFallEvent event){
         event.getEntity().getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
-            if(cap.getEffectsManager().hasEffect(BeyonderEffects.EFFECT.MYSTERY_FALL_NEGATE)){
+            if(cap.getEffectsManager().hasEffect(BeyonderEffects.MYSTERY_FALL_NEGATE.getEffectId())){
                 event.setDamageMultiplier(0);
-                cap.getEffectsManager().removeEffect(BeyonderEffects.EFFECT.MYSTERY_FALL_NEGATE,
-                        cap.getEffectsManager().getEffect(BeyonderEffects.EFFECT.MYSTERY_FALL_NEGATE).getSequenceLevel(),
-                        cap, event.getEntity());
+//                cap.getEffectsManager().removeEffect(BeyonderEffects.MYSTERY_FALL_NEGATE.getEffectId());
             }
             else if(event.getDistance() > 5 && cap.getEffectsManager().hasEffect(BeyonderEffects.EFFECT.MYSTERY_FALL)){
                 float cost = cap.getEffectsManager().getEffect(BeyonderEffects.EFFECT.MYSTERY_FALL).getCost();

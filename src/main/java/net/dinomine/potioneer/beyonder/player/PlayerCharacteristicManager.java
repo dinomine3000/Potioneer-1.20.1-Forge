@@ -1,5 +1,6 @@
 package net.dinomine.potioneer.beyonder.player;
 
+import net.dinomine.potioneer.beyonder.abilities.Ability;
 import net.dinomine.potioneer.beyonder.pathways.BeyonderPathway;
 import net.dinomine.potioneer.beyonder.pathways.Pathways;
 import net.dinomine.potioneer.config.PotioneerCommonConfig;
@@ -7,6 +8,7 @@ import net.minecraft.nbt.*;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
+import net.minecraft.world.entity.LivingEntity;
 
 import java.util.*;
 
@@ -277,7 +279,7 @@ public class PlayerCharacteristicManager {
         return list;
     }
 
-    public void loadNBTData(CompoundTag tag) {
+    public void loadNBTData(CompoundTag tag, LivingEntityBeyonderCapability cap, LivingEntity target) {
         if(!tag.contains("acting")) return;
         //build list of consumed characteristics
         CompoundTag acting = tag.getCompound("acting");
@@ -301,6 +303,51 @@ public class PlayerCharacteristicManager {
 
         //get aptitude pathway
         aptitudePathway = acting.getInt("aptitude");
+
+        //get abilities
+        setAllAbilities(cap, target);
+    }
+
+    private void setAllAbilities(LivingEntityBeyonderCapability cap, LivingEntity target) {
+        int highestLevel = getSequenceLevel();
+        List<Ability> allAbilities = new ArrayList<>();
+        //get highest level for each pathway
+        List<Integer> pathwayLevels = closestToLowerTens(lastConsumedCharacteristics);
+        //get abilities for each pathway
+        for(int sequence: pathwayLevels){
+            allAbilities.addAll(Pathways.getPathwayById(sequence).getAbilities(sequence%10));
+        }
+        //make sure every ability is the highest level
+        for(Ability abl: allAbilities){
+            abl.setSequenceLevel(highestLevel);
+        }
+        //set
+        for(Ability abl: allAbilities){
+            cap.getAbilitiesManager().addAbility(PlayerAbilitiesManager.AbilityList.INTRINSIC, abl, cap, target, false);
+        }
+    }
+
+    /**
+     * given a list of numbers, returns a list of every number that is closest to its lower multiple of 10.
+     * This way, we get the highest level for each pathway
+     * @param nums, a list of characteristics like [17, 18, 19, 25, 24, 29, 37, 36]
+     * @return the best levels for each pathway [17, 24, 36] for the above example
+     */
+    private static List<Integer> closestToLowerTens(List<Integer> nums) {
+        Map<Integer, Integer> bestPerTen = new HashMap<>();
+
+        for (int n : nums) {
+            int base = (n / 10) * 10;
+            int dist = n - base;
+
+            bestPerTen.compute(base, (k, currentBest) -> {
+                if (currentBest == null) return n;
+                int currentDist = currentBest - base;
+                return dist < currentDist ? n : currentBest;
+            });
+        }
+
+        return new ArrayList<>(bestPerTen.values());
     }
 
     private ArrayList<Double> fromDoubleListTag(ListTag list) {
@@ -326,12 +373,16 @@ public class PlayerCharacteristicManager {
         aptitudePathway = other.aptitudePathway;
     }
 
-    public void setAbilities(PlayerAbilitiesManager abilitiesManager) {
+    public void setAbilities(int characteristicId, LivingEntityBeyonderCapability cap, LivingEntity target) {
         //get all abilities from characteristics
         //create cogitation ability based on last consumed characteristic
         //update the abilities manager
         //maybe make it update the intrinsic abilities after the tick is over, so we dont change the list while its being run on the tick() method
 
+
+        List<Ability> newAbilities = Pathways.getPathwayById(characteristicId).getAbilities(characteristicId%10);
+        int pathwaySequenceId = getPathwaySequenceId();
+        cap.getAbilitiesManager().grantAbilities(newAbilities, pathwaySequenceId, cap, target);
     }
 
     public void setAttributes(BeyonderStats beyonderStats) {
@@ -348,6 +399,11 @@ public class PlayerCharacteristicManager {
     }
 
     public int getMaxSpirituality() {
-        //get the best spirituality among all pathways and return its value
+        int bestSpirituality = 0;
+        for(int i: lastConsumedCharacteristics){
+            int testSpir = Pathways.getPathwayById(i).getMaxSpirituality(i%10);
+            if(testSpir > bestSpirituality) bestSpirituality = testSpir;
+        }
+        return bestSpirituality;
     }
 }

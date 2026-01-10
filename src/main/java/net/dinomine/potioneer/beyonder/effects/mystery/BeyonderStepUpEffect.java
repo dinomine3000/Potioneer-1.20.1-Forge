@@ -16,11 +16,7 @@ import java.util.UUID;
 import java.util.function.Supplier;
 
 public class BeyonderStepUpEffect extends BeyonderEffect {
-    public BeyonderStepUpEffect(int level, float cost, int time, boolean active, BeyonderEffects.EFFECT id){
-        super(level, cost, time, active, id);
-        this.name = "Step Up";
-    }
-
+    private static final UUID attributeId = UUID.fromString("e3461150-2bdc-40b9-b526-d16e2104e6c7");
 
     @Override
     public void onAcquire(LivingEntityBeyonderCapability cap, LivingEntity target) {
@@ -42,11 +38,10 @@ public class BeyonderStepUpEffect extends BeyonderEffect {
         }
     }
 
-
     //Credit to the create mod
     private static Multimap<Attribute, AttributeModifier> getStepModifier(int sequence){
         AttributeModifier singleRangeAttributeModifier =
-                new AttributeModifier(UUID.fromString("e3461150-2bdc-40b9-b526-d16e2104e6c7"),
+                new AttributeModifier(attributeId,
                         "Beyonder step modifier", 0.5f,
 
                         AttributeModifier.Operation.ADDITION);

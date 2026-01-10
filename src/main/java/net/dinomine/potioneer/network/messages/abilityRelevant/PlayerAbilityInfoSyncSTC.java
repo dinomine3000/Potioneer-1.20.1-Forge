@@ -2,6 +2,7 @@ package net.dinomine.potioneer.network.messages.abilityRelevant;
 
 import net.dinomine.potioneer.beyonder.abilities.AbilityInfo;
 import net.dinomine.potioneer.beyonder.client.ClientAbilitiesData;
+import net.dinomine.potioneer.util.BufferUtils;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -9,38 +10,40 @@ import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.network.NetworkEvent;
 
 import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.function.Supplier;
 
 //message sent to client when advancing, to synchronize the abilities available to the player
 //it assumes the server data is the true data and sets the data on client side to that
 public class PlayerAbilityInfoSyncSTC {
-    public ArrayList<AbilityInfo> list;
+    public LinkedHashMap<String, AbilityInfo> abilityInfoMap;
     public boolean changing;
 
-    public PlayerAbilityInfoSyncSTC(ArrayList<AbilityInfo> list, boolean changing){
-        this.list = list;
+    public PlayerAbilityInfoSyncSTC(LinkedHashMap<String, AbilityInfo> list, boolean changing){
+        this.abilityInfoMap = list;
         this.changing = changing;
     }
 
-    public PlayerAbilityInfoSyncSTC(List<AbilityInfo> list, boolean changing){
-        this(new ArrayList<>(list), changing);
-    }
 
     public static void encode(PlayerAbilityInfoSyncSTC msg, FriendlyByteBuf buffer){
         buffer.writeBoolean(msg.changing);
-        buffer.writeInt(msg.list.size());
-        for(AbilityInfo i : msg.list){
-            i.encode(buffer);
+        buffer.writeInt(msg.abilityInfoMap.size());
+        for(String ablId: msg.abilityInfoMap.keySet()){
+            BufferUtils.writeStringToBuffer(ablId, buffer);
+            msg.abilityInfoMap.get(ablId).encode(buffer);
         }
     }
 
     public static PlayerAbilityInfoSyncSTC decode(FriendlyByteBuf buffer){
         boolean changing = buffer.readBoolean();
-        ArrayList<AbilityInfo> res = new ArrayList<>();
+        LinkedHashMap<String, AbilityInfo> res = new LinkedHashMap<>();
         int size = buffer.readInt();
         for(int i = 0; i < size; i++){
-            res.add(AbilityInfo.decode(buffer));
+            String ablId = BufferUtils.readString(buffer);
+            AbilityInfo ablInfo = AbilityInfo.decode(buffer);
+            res.put(ablId, ablInfo);
         }
         return new PlayerAbilityInfoSyncSTC(res ,changing);
     }
@@ -68,7 +71,7 @@ class ClientAbilityInfoSyncMessage
     public static void handlePacket(PlayerAbilityInfoSyncSTC msg, Supplier<NetworkEvent.Context> contextSupplier)
     {
 //                ClientAbilitiesData.setAbilities(msg.list.stream().map(Ability::getInfo).toList());
-        ClientAbilitiesData.setAbilities(msg.list, msg.changing);
+        ClientAbilitiesData.setAbilities(msg.abilityInfoMap, msg.changing);
     }
 
 }

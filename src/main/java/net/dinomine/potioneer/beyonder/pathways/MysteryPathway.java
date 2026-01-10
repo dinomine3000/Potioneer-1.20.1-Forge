@@ -1,17 +1,15 @@
 package net.dinomine.potioneer.beyonder.pathways;
 
+import net.dinomine.potioneer.beyonder.abilities.Abilities;
 import net.dinomine.potioneer.beyonder.abilities.Ability;
 import net.dinomine.potioneer.beyonder.abilities.misc.CogitationAbility;
 import net.dinomine.potioneer.beyonder.abilities.mystery.*;
-import net.dinomine.potioneer.beyonder.player.PlayerAbilitiesManager;
 
 import java.util.ArrayList;
 import java.util.List;
 
+
 public class MysteryPathway extends BeyonderPathway {
-
-    public static final int MAX_SAP_DISTANCE = 4;
-
     public MysteryPathway(int sequence){
         super("Mystery", 0x408040, new int[]{4000, 2744, 1960, 1400, 1000, 700, 420, 300, 140, 100});
     }
@@ -54,21 +52,19 @@ public class MysteryPathway extends BeyonderPathway {
             case 5:
             case 6:
             case 7:
-                activeAbilities.add(new AirBulletAbility(sequenceLevel));
-                activeAbilities.add(new FigurineSubstituteAbility(sequenceLevel));
-                activeAbilities.add(new PlagueAbility(sequenceLevel));
-                activeAbilities.add(new PanaceaAbility(sequenceLevel));
-                activeAbilities.add(new PushAbility(sequenceLevel));
+                activeAbilities.add(Abilities.AIR_BULLET.create(sequenceLevel));
+                activeAbilities.add(Abilities.PAPER_FIGURINE_SUBSTITUTE.create(sequenceLevel));
+                activeAbilities.add(Abilities.PANACEA.create(sequenceLevel));
+                activeAbilities.add(Abilities.PUSH.create(sequenceLevel));
             case 8:
-                activeAbilities.add(new ReduceFallDamageAbility(sequenceLevel));
-                activeAbilities.add(new StepUpAbility(sequenceLevel));
-                activeAbilities.add(new LeapAbility(sequenceLevel));
+                activeAbilities.add(Abilities.CANCEL_FALL_DAMAGE.create(sequenceLevel));
+                activeAbilities.add(Abilities.STEP_UP.create(sequenceLevel));
+                activeAbilities.add(Abilities.LEAP.create(sequenceLevel));
             case 9:
-                activeAbilities.add(new ReachAbility(sequenceLevel));
-                activeAbilities.add(new DoorOpeningAbility(sequenceLevel));
-                activeAbilities.add(new SpiritualityRegenAbility(sequenceLevel));
-                activeAbilities.add(new InvisibilityAbility(sequenceLevel));
-                activeAbilities.add(new CogitationAbility(20 + sequenceLevel));
+                activeAbilities.add(Abilities.EXTENDED_REACH.create(sequenceLevel));
+                activeAbilities.add(Abilities.DOOR_OPENING.create(sequenceLevel));
+                activeAbilities.add(Abilities.MYSTERY_REGEN.create(sequenceLevel));
+                activeAbilities.add(Abilities.INVISIBILITY.create(sequenceLevel));
         }
         return activeAbilities;
     }

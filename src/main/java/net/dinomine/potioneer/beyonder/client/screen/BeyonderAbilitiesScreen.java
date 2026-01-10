@@ -4,6 +4,7 @@ import net.dinomine.potioneer.Potioneer;
 import net.dinomine.potioneer.beyonder.abilities.AbilityInfo;
 import net.dinomine.potioneer.beyonder.client.ClientAbilitiesData;
 import net.dinomine.potioneer.beyonder.client.KeyBindings;
+import net.dinomine.potioneer.beyonder.pathways.Pathways;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
@@ -104,7 +105,7 @@ public class BeyonderAbilitiesScreen extends Screen {
             }
             ImageButton castAbilityButton = new ImageButton(leftPos + 12, topPos + 13, 38, 46, 176, 13,
                     46, TEXTURE, TEXTURE_WIDTH, TEXTURE_HEIGHT, hbut -> {
-                castAbilityAt();
+                castAbilityAt(true);
             });
             addRenderableWidget(castAbilityButton);
 
@@ -168,7 +169,7 @@ public class BeyonderAbilitiesScreen extends Screen {
 
     private void addAbilityToQuickSelect(){
         int caretToAdd = selectedCaret;
-        String ablId = abilities.get(caretToAdd).ablId();
+        String ablId = abilities.get(caretToAdd).descId();
         if(ClientAbilitiesData.getQuickAbilityCaret().equals(ablId)){
             ClientAbilitiesData.setQuickAbilityCaret("");
         } else {
@@ -180,7 +181,7 @@ public class BeyonderAbilitiesScreen extends Screen {
 
     private void addAbilityToHotbar(){
         int caretToAdd = selectedCaret;
-        String ablId = abilities.get(caretToAdd).ablId();
+        String ablId = abilities.get(caretToAdd).descId();
         if(!ClientAbilitiesData.getHotbar().contains(ablId)){
             ClientAbilitiesData.getHotbar().add(ablId);
         } else {
@@ -193,7 +194,7 @@ public class BeyonderAbilitiesScreen extends Screen {
 
     private void updateHotbarButton(){
         int abilityCaret = selectedCaret;
-        String ablId = abilities.get(abilityCaret).ablId();
+        String ablId = abilities.get(abilityCaret).descId();
         if(!ClientAbilitiesData.getHotbar().contains(ablId)){
             addToHotbarButton.active = true;
             addToHotbarButton.visible = true;
@@ -219,13 +220,14 @@ public class BeyonderAbilitiesScreen extends Screen {
         }
     }
 
-    private void castAbilityAt(){
-        ClientAbilitiesData.useAbility(Minecraft.getInstance().player, abilities.get(selectedCaret).ablId());
+    private void castAbilityAt(boolean primary){
+        ClientAbilitiesData.useAbility(Minecraft.getInstance().player, abilities.get(selectedCaret).getCompleteId(), primary);
     }
 
     private void changeCaret(int buttonIdx){
+        // when double clicking the list entry, cast ability
         if(selectedCaret == buttonIdx + buttonOffset && dClickCountdown > 0){
-            castAbilityAt();
+            castAbilityAt(true);
             dClickCountdown = 0;
         } else {
             this.selectedCaret = buttonIdx + buttonOffset;
@@ -249,7 +251,7 @@ public class BeyonderAbilitiesScreen extends Screen {
 
         //cooldown gradient
         if(main){
-            float percent = Mth.clamp(1 - ((float) ClientAbilitiesData.getCooldown(data.ablId()) / ClientAbilitiesData.getMaxCooldown(data.ablId())),
+            float percent = Mth.clamp(1 - ((float) ClientAbilitiesData.getCooldown(data.descId()) / ClientAbilitiesData.getMaxCooldown(data.descId())),
                     0, 1);
 
             pGuiGraphics.fillGradient(posX - 7, (int) (posY - 5 + percent*46),
@@ -257,10 +259,11 @@ public class BeyonderAbilitiesScreen extends Screen {
 
         }
         //icon itself
+        int abilityX = Pathways.getPathwayById(data.getPathwayId()).getAbilityX();
         pGuiGraphics.blit(ABILITY_ICONS, posX, posY, (int) (scale * ICON_WIDTH), (int)(scale * ICON_HEIGHT),
-                data.posX(), data.posY(), ICON_WIDTH, ICON_HEIGHT, ICONS_WIDTH, ICONS_HEIGHT);
+                abilityX, data.getPosY(), ICON_WIDTH, ICON_HEIGHT, ICONS_WIDTH, ICONS_HEIGHT);
 
-        if(!main && ClientAbilitiesData.getQuickAbilityCaret().equals(data.ablId())){
+        if(!main && ClientAbilitiesData.getQuickAbilityCaret().equals(data.descId())){
             pGuiGraphics.blit(TEXTURE, posX + 130, posY, 12, 12,
                     176, 149, 16, 16, TEXTURE_WIDTH, TEXTURE_HEIGHT);
         }
@@ -268,16 +271,18 @@ public class BeyonderAbilitiesScreen extends Screen {
         //enabled gradient
         if(main){
             //enabled gradient
-            if(!ClientAbilitiesData.isEnabled(data.ablId())){
+            if(!ClientAbilitiesData.isEnabled(data.descId())){
                 pGuiGraphics.fillGradient(posX - 7, posY -5,
                         (int) (posX + 7 + scale*ICON_WIDTH), (int) (posY + 5 + ICON_HEIGHT*scale), 0xDD999999, 0xDD666666);
             }
             //barrier symbol if ability is disabled
-            if(ClientAbilitiesData.getCooldown(data.ablId()) < 0){
+            if(ClientAbilitiesData.getCooldown(data.descId()) < 0){
                 //Copied from the icons part
                 pGuiGraphics.blit(ABILITY_ICONS, posX, posY,
                         (int)(ICON_WIDTH*scale), (int)(ICON_HEIGHT*scale), 130, 4, ICON_WIDTH, ICON_HEIGHT, ICONS_WIDTH, ICONS_HEIGHT);
             }
+
+            //make button to cast secondary ability here
 
             //description text
             Component short_description = Component.translatable("potioneer.short_desc." + data.descId());

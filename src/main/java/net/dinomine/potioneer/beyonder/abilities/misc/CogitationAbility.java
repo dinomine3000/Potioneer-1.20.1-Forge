@@ -1,41 +1,61 @@
 package net.dinomine.potioneer.beyonder.abilities.misc;
 
-import net.dinomine.potioneer.beyonder.abilities.Ability;
+import net.dinomine.potioneer.beyonder.abilities.Abilities;
 import net.dinomine.potioneer.beyonder.abilities.AbilityInfo;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
 import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
 import net.minecraft.world.entity.LivingEntity;
 
-public class CogitationAbility extends Ability {
+public class CogitationAbility extends PassiveAbility {
+    private int pathwayId;
 
     public CogitationAbility(int pathwayId){
-        this.info = new AbilityInfo((Math.floorDiv(pathwayId, 10))*26 + 5, 320, "Cogitation", pathwayId, 0, 2*20, "cogitation");
+        super(pathwayId, BeyonderEffects.COGITATION, integer -> "cogitation");
+        this.pathwayId = pathwayId;
     }
 
     @Override
-    public void onAcquire(LivingEntityBeyonderCapability cap, LivingEntity target) {
-        disable(cap, target);
+    public AbilityInfo getAbilityInfo() {
+        return Abilities.getInfo(abilityId, getCooldownPercent(), isEnabled(), getDescId(sequenceLevel), Math.floorDiv(pathwayId, 10));
     }
 
     @Override
-    public boolean active(LivingEntityBeyonderCapability cap, LivingEntity target) {
-        flipEnable(cap, target);
-        return true;
+    public void upgradeToLevel(int pathwaySequenceId, LivingEntityBeyonderCapability cap, LivingEntity target) {
+        if(pathwayId == pathwaySequenceId) return;
+        onUpgrade(pathwayId, pathwaySequenceId, cap, target);
+        pathwayId = pathwaySequenceId;
     }
 
     @Override
-    public void passive(LivingEntityBeyonderCapability cap, LivingEntity target) {
-        if(isEnabled(cap.getAbilitiesManager())) cap.getEffectsManager().addOrReplaceEffect(BeyonderEffects.byId(BeyonderEffects.EFFECT.MISC_COGITATION, getInfo().id(), info.cost(), -1, true), cap, target);
+    public int getSequenceLevel() {
+        return pathwayId%10;
     }
 
-    @Override
-    public void activate(LivingEntityBeyonderCapability cap, LivingEntity target) {
-    }
-
-    @Override
-    public void deactivate(LivingEntityBeyonderCapability cap, LivingEntity target) {
-        if(cap.getEffectsManager().hasEffect(BeyonderEffects.EFFECT.MISC_COGITATION)){
-            cap.getEffectsManager().removeEffect(BeyonderEffects.EFFECT.MISC_COGITATION, cap, target);
-        }
-    }
+    //
+//    @Override
+//    public void onAcquire(LivingEntityBeyonderCapability cap, LivingEntity target) {
+//        setEnabled(cap, target, false);
+//    }
+//
+//    @Override
+//    public boolean primary(LivingEntityBeyonderCapability cap, LivingEntity target) {
+//        flipEnable(cap, target);
+//        return true;
+//    }
+//
+//    @Override
+//    public void passive(LivingEntityBeyonderCapability cap, LivingEntity target) {
+////        if(isEnabled(cap.getAbilitiesManager())) cap.getEffectsManager().addOrReplaceEffect(BeyonderEffects.byId(BeyonderEffects.EFFECT.MISC_COGITATION, getInfo().id(), info.cost(), -1, true), cap, target);
+//    }
+//
+//    @Override
+//    public void activate(LivingEntityBeyonderCapability cap, LivingEntity target) {
+//    }
+//
+//    @Override
+//    public void deactivate(LivingEntityBeyonderCapability cap, LivingEntity target) {
+//        if(cap.getEffectsManager().hasEffect(BeyonderEffects.EFFECT.MISC_COGITATION)){
+//            cap.getEffectsManager().removeEffect(BeyonderEffects.EFFECT.MISC_COGITATION, cap, target);
+//        }
+//    }
 }

@@ -62,7 +62,8 @@ public class PotioneerCommonConfig {
                 .defineEnum("char_drop_criteria", CharacteristicDropCriteria.LOW_SANITY);
 
         DROP_ALL_CHARACTERISTICS = BUILDER.comment("When someone drops a characteristics, should they drop all they have, or just their most recent highest level one?" +
-                        "True will make them drop everything, false will make them drop their highest sequence characteristic only, and if there are more than one such characteristics, it will drop the most recent one.")
+                        "\nThis will let them change pathways, regardless of the next config." +
+                        "\nTrue will make them drop everything, false will make them drop their highest sequence characteristic only, and if there are more than one such characteristics, it will drop the most recent one.")
                 .define("drop_all_characteristics", false);
 
         ALLOW_CHANGING_PATHWAYS = BUILDER.comment("Should players be able to change pathways?" +

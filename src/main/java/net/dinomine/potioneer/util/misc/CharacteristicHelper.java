@@ -11,6 +11,8 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.List;
+
 public class CharacteristicHelper {
 
     public static void addCharacteristicToLevel(int sequenceId, Level level, @Nullable Player player, Vec3 position, RandomSource random){
@@ -29,5 +31,9 @@ public class CharacteristicHelper {
         entity.setSequenceId(sequenceId);
         entity.moveTo(position.offsetRandom(random, 1f).add(0, 1, 0));
         level.addFreshEntity(entity);
+    }
+
+    public static void addCharacteristicToLevel(List<Integer> sequenceId, Level level, @Nullable Player player, Vec3 position, RandomSource random){
+        //TODO
     }
 }

@@ -36,12 +36,12 @@ public class SequenceSTCSyncRequest {
                     PacketHandler.INSTANCE.send(PacketDistributor.PLAYER.with(() -> player),
                             new PlayerAdvanceMessage(cap.getPathwaySequenceId(), false));
                     PacketHandler.INSTANCE.send(PacketDistributor.PLAYER.with(() -> player),
-                            new PlayerAbilityInfoSyncSTC(cap.getAbilitiesManager().getActivesIds(), false));
+                            new PlayerAbilityInfoSyncSTC(cap.getAbilitiesManager().getAbilityInfos(), false));
                     PacketHandler.INSTANCE.send(PacketDistributor.PLAYER.with(() -> player),
                             new PlayerSyncHotbarMessage(cap.getAbilitiesManager().clientHotbar, cap.getAbilitiesManager().quickAbility));
                     PacketHandler.INSTANCE.send(PacketDistributor.PLAYER.with(() -> player),
                             new PlayerAttributesSyncMessageSTC(cap.getBeyonderStats().getIntStats()));
-                    cap.getAbilitiesManager().updateClientCooldownInfo(player);
+//                    cap.getAbilitiesManager().updateClientCooldownInfo(player);
                 }
             });
         });

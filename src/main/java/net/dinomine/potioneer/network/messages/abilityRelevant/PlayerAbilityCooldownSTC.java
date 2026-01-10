@@ -1,6 +1,7 @@
 package net.dinomine.potioneer.network.messages.abilityRelevant;
 
 import net.dinomine.potioneer.beyonder.client.ClientAbilitiesData;
+import net.dinomine.potioneer.util.BufferUtils;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -11,34 +12,33 @@ import java.util.function.Supplier;
 
 //used to sync ability cooldowns from server to client
 public class PlayerAbilityCooldownSTC {
-    public String descId;
+    public String cAblId;
     public int cd;
     public int maxCd;
 
-    public PlayerAbilityCooldownSTC(String descId, int cd, int maxCd){
+    public PlayerAbilityCooldownSTC(String cAblId, int cd, int maxCd){
         this.cd = cd;
-        this.descId = descId;
+        this.cAblId = cAblId;
         this.maxCd = maxCd;
+    }
+
+    public PlayerAbilityCooldownSTC(String cAblId, int cd){
+        this.cd = cd;
+        this.cAblId = cAblId;
+        this.maxCd = cd;
     }
 
     public static void encode(PlayerAbilityCooldownSTC msg, FriendlyByteBuf buffer){
         buffer.writeInt(msg.cd);
         buffer.writeInt(msg.maxCd);
-        buffer.writeInt(msg.descId.length());
-        for (int i = 0; i < msg.descId.length(); i++) {
-            buffer.writeChar(msg.descId.charAt(i));
-        }
+        BufferUtils.writeStringToBuffer(msg.cAblId, buffer);
     }
 
     public static PlayerAbilityCooldownSTC decode(FriendlyByteBuf buffer){
         int cd = buffer.readInt();
         int maxCd = buffer.readInt();
-        int idSize = buffer.readInt();
-        StringBuilder idBuilder = new StringBuilder();
-        for (int i = 0; i < idSize; i++) {
-            idBuilder.append(buffer.readChar());
-        }
-        return new PlayerAbilityCooldownSTC(idBuilder.toString(), cd, maxCd);
+        String cAblId = BufferUtils.readString(buffer);
+        return new PlayerAbilityCooldownSTC(cAblId, cd, maxCd);
     }
 
     public static void handle(PlayerAbilityCooldownSTC msg, Supplier<NetworkEvent.Context> contextSupplier){
@@ -47,8 +47,6 @@ public class PlayerAbilityCooldownSTC {
 
         //potion advancement
         context.enqueueWork(() -> {
-            System.out.println("Receiving ability cooldown info on client side");
-            System.out.println(msg.cd);
             DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> ClientAbilityCooldownSTC.handlePacket(msg, contextSupplier));
         });
 
@@ -63,7 +61,7 @@ class ClientAbilityCooldownSTC
     public static void handlePacket(PlayerAbilityCooldownSTC msg, Supplier<NetworkEvent.Context> contextSupplier)
     {
 //                ClientAbilitiesData.setAbilities(msg.list.stream().map(Ability::getInfo).toList());
-        ClientAbilitiesData.setCooldown(msg.descId, msg.cd, msg.maxCd);
+        ClientAbilitiesData.setCooldown(msg.cAblId, msg.cd, msg.maxCd);
     }
 
 }
