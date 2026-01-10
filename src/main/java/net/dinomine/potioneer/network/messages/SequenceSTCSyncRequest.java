@@ -34,7 +34,7 @@ public class SequenceSTCSyncRequest {
             player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
                 if(!context.getDirection().getReceptionSide().isClient()){
                     PacketHandler.INSTANCE.send(PacketDistributor.PLAYER.with(() -> player),
-                            new PlayerAdvanceMessage(cap.getPathwaySequenceId(), false));
+                            new PlayerAdvanceMessage(cap.getPathwaySequenceId()));
                     PacketHandler.INSTANCE.send(PacketDistributor.PLAYER.with(() -> player),
                             new PlayerAbilityInfoSyncSTC(cap.getAbilitiesManager().getAbilityInfos(), false));
                     PacketHandler.INSTANCE.send(PacketDistributor.PLAYER.with(() -> player),

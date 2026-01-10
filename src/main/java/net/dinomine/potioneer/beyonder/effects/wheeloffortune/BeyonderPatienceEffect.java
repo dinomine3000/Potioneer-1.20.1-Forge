@@ -1,35 +1,31 @@
 package net.dinomine.potioneer.beyonder.effects.wheeloffortune;
 
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffect;
-import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
 import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.LivingEntity;
 
-public class BeyonderGamblingEffect extends BeyonderEffect {
+import java.util.UUID;
+
+public class BeyonderPatienceEffect extends BeyonderEffect {
     private int quantity = 0;
     private int tick = 0;
     private int luck_limit;
     private static final float a = 2;
     private int time;
+    private static final UUID uuid = UUID.fromString("1323c552-fe64-45b6-b6a2-8cc0fbf152ac");
 
-    public BeyonderGamblingEffect(int level, float cost, int time, boolean active, BeyonderEffects.EFFECT id){
-        super(level, cost, time, active, id);
-
+    @Override
+    public void onAcquire(LivingEntityBeyonderCapability cap, LivingEntity target) {
         //limit for the maximum luck you can get to by using the effect. changes with sequence
         //This is calculated such that it reaches this maximum after, at most, 20 minutes
         this.luck_limit = 775 - 75 * sequenceLevel;
         //change this with sequence too. time in seconds to reach the maximum
         this.time = 300 + sequenceLevel * 130;
-        this.name = "Wheel of Fortune Gambling";
-    }
 
-
-    @Override
-    public void onAcquire(LivingEntityBeyonderCapability cap, LivingEntity target) {
         cap.getLuckManager().getRange().setSuppress(true);
-        cap.getLuckManager().chanceLuckEventChange(9-sequenceLevel);
+        cap.getLuckManager().chanceLuckEventChange(uuid, 9-sequenceLevel);
     }
 
     @Override
@@ -47,7 +43,7 @@ public class BeyonderGamblingEffect extends BeyonderEffect {
         int amm = Math.max(quantityToLuck(quantity), currentLuck) - currentLuck;
         cap.getLuckManager().grantLuck(amm);
         cap.getCharacteristicManager().progressActing(0.2f*Math.pow(amm/(float)luck_limit, 2.6f), 7);
-        cap.getLuckManager().chanceLuckEventChange(-9+sequenceLevel);
+        cap.getLuckManager().chanceLuckEventChange(uuid, -9+sequenceLevel);
         target.sendSystemMessage(Component.literal("You have been granted " + amm + " luck"));
     }
 

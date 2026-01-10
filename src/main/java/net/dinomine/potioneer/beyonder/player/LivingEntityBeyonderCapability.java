@@ -268,19 +268,23 @@ public class LivingEntityBeyonderCapability {
 
     public void setBeyonderSequence(int id){
         resetBeyonder(false);
-        consumeCharacteristic(id);
+        advance(id, false);
     }
 
-    public void advance(int id){
+    public void advance(int id, boolean fromLoading){
         consumeCharacteristic(id);
+        if(!fromLoading){
+            //confetti here;
+            entity.sendSystemMessage(Component.literal("You successfully advanced, hooray!"));
+        }
 
     }
 
-    public void consumeCharacteristic(int id){
+    private void consumeCharacteristic(int id){
         getBeyonderStats().setAttributes(Pathways.BEYONDERLESS.get().getStatsFor(0));
         characteristicManager.consumeCharacteristic(id);
         characteristicManager.setAbilities(id, this, entity);
-        characteristicManager.setAttributes(beyonderStats);
+        if(entity instanceof Player player) characteristicManager.setAttributes(beyonderStats, player);
         maxSpirituality = characteristicManager.getMaxSpirituality();
         if(entity instanceof Player player) getBeyonderStats().applyStats(player, true);
     }

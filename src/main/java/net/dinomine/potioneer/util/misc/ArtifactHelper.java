@@ -190,7 +190,7 @@ public class ArtifactHelper {
 //            System.out.println("Checking for ability at key value: " + id.substring(0, lastUnderscore));
 //            System.out.println("New cooldown for it is: " + newCd);
             Downside downside = (Downside) downsideMap.get(id.substring(0, lastUnderscore)).constructor.apply(sequence%10);
-            downside.copyCd(newCd);
+//            downside.copyCd(newCd);
             return downside;
         }
         return abilityMap.get(id).constructor.apply(sequence%10);

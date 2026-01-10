@@ -197,7 +197,7 @@ public class BeyonderEvents {
     public static void livingTarget(LivingChangeTargetEvent event){
         if(event.getNewTarget() instanceof Player player){
             player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
-                if(cap.getEffectsManager().hasEffect(BeyonderEffects.EFFECT.MYSTERY_INVIS)){
+                if(cap.getEffectsManager().hasEffect(BeyonderEffects.MYSTERY_INVISIBLE.getEffectId())){
                     event.setCanceled(true);
                 }
             });
@@ -275,15 +275,6 @@ public class BeyonderEvents {
             if(cap.getEffectsManager().hasEffect(BeyonderEffects.MYSTERY_FALL_NEGATE.getEffectId())){
                 event.setDamageMultiplier(0);
 //                cap.getEffectsManager().removeEffect(BeyonderEffects.MYSTERY_FALL_NEGATE.getEffectId());
-            }
-            else if(event.getDistance() > 5 && cap.getEffectsManager().hasEffect(BeyonderEffects.EFFECT.MYSTERY_FALL)){
-                float cost = cap.getEffectsManager().getEffect(BeyonderEffects.EFFECT.MYSTERY_FALL).getCost();
-                if(cap.getSpirituality() > cost){
-                    event.setDamageMultiplier(
-                            (cap.getEffectsManager().getEffect(BeyonderEffects.EFFECT.MYSTERY_FALL).getSequenceLevel())/16f
-                    );
-                    cap.requestActiveSpiritualityCost(cost);
-                }
             }
         });
     }

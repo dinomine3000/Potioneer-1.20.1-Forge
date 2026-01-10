@@ -165,11 +165,12 @@ public abstract class Ability {
      * only accepts positive or zero values
      * @param cooldownTicks
      */
-    public void putOnCooldown(int cooldownTicks, LivingEntity target){
-        if(cooldownTicks < 0) return;
+    public boolean putOnCooldown(int cooldownTicks, LivingEntity target){
+        if(cooldownTicks < 0) return false;
         if(maxCooldown < cooldownTicks) maxCooldown = cooldownTicks;
         cooldown = cooldownTicks;
         if(target instanceof Player player) updateCooldownClient(player);
+        return true;
     }
 
     public boolean putOnCooldown(LivingEntity target){
@@ -183,6 +184,7 @@ public abstract class Ability {
     }
 
     public void updateCooldownClient(Player player) {
+        if(player.level().isClientSide()) return;
         PacketHandler.sendMessageSTC(new PlayerAbilityCooldownSTC(cAbilityId, cooldown, maxCooldown), player);
     }
 

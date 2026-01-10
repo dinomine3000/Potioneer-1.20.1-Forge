@@ -12,18 +12,26 @@ import net.minecraft.world.item.ItemStack;
 
 public class ConjurePickaxeAbility extends Ability {
 
+    @Override
+    protected String getDescId(int sequenceLevel) {
+        return "pick";
+    }
+
     public ConjurePickaxeAbility(int sequence){
-        this.info = new AbilityInfo(5, 80, "Conjure Pickaxe", sequence, 10 + 10*(9-sequence), 20*5, "pick");
+//        this.info = new AbilityInfo(5, 80, "Conjure Pickaxe", sequence, 10 + 10*(9-sequence), 20*5, "pick");
+        super(sequence);
+        setCost(level -> 10 + 10*(9-level));
+        defaultMaxCooldown = 20*5;
     }
 
     @Override
-    public boolean active(LivingEntityBeyonderCapability cap, LivingEntity target) {
-        if(target.level().isClientSide() && cap.getSpirituality() >= info.cost()) return true;
-        if(cap.getSpirituality() >= info.cost()){
+    public boolean primary(LivingEntityBeyonderCapability cap, LivingEntity target) {
+        if(target.level().isClientSide() && cap.getSpirituality() >= cost()) return true;
+        if(cap.getSpirituality() >= cost()){
             if(target instanceof Player player){
                 if(!replacePickIfPresent(player)){
                     ItemStack newPick = new ItemStack(ModItems.MINER_PICKAXE.get());
-                    MysticismHelper.updateOrApplyMysticismTag(newPick, info.cost(), player);
+                    MysticismHelper.updateOrApplyMysticismTag(newPick, cost(), player);
                     if(!player.addItem(newPick)){
                         player.sendSystemMessage(Component.literal("Could not conjure pickaxe: Not enough space"));
                         return false;
@@ -31,8 +39,8 @@ public class ConjurePickaxeAbility extends Ability {
                 }
             }
 
-            cap.requestActiveSpiritualityCost(info.cost());
-            return true;
+            cap.requestActiveSpiritualityCost(cost());
+            return putOnCooldown(target);
         }
         return false;
     }
@@ -46,21 +54,5 @@ public class ConjurePickaxeAbility extends Ability {
             }
         }
         return false;
-    }
-
-    @Override
-    public void onAcquire(LivingEntityBeyonderCapability cap, LivingEntity target) {
-    }
-
-    @Override
-    public void passive(LivingEntityBeyonderCapability cap, LivingEntity target) {
-    }
-
-    @Override
-    public void activate(LivingEntityBeyonderCapability cap, LivingEntity target) {
-    }
-
-    @Override
-    public void deactivate(LivingEntityBeyonderCapability cap, LivingEntity target) {
     }
 }

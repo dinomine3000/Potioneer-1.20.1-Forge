@@ -61,11 +61,11 @@ class ClientArtifactSyncHandler
 //                ClientAbilitiesData.setAbilities(msg.list.stream().map(Ability::getInfo).toList());
         Player player = Minecraft.getInstance().player;
         player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
-            if(msg.add){
-                cap.getAbilitiesManager().updateAddArtifact(cap, player, msg.ablId, msg.sequence, false);
-            } else {
-                cap.getAbilitiesManager().updateRemoveArtifact(cap, player, msg.ablId, false);
-            }
+//            if(msg.add){
+//                cap.getAbilitiesManager().updateAddArtifact(cap, player, msg.ablId, msg.sequence, false);
+//            } else {
+//                cap.getAbilitiesManager().updateRemoveArtifact(cap, player, msg.ablId, false);
+//            }
         });
         contextSupplier.get().setPacketHandled(true);
     }

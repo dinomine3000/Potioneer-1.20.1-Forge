@@ -18,7 +18,7 @@ public class ResetBeyonderCommand {
                 .then(Commands.literal("reset").executes((command) -> {
             ServerPlayer player = command.getSource().getPlayer();
             player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
-                if(!player.level().isClientSide()) cap.resetBeyonder();
+                if(!player.level().isClientSide()) cap.resetBeyonder(true);
             });
 
             return 1;
@@ -28,7 +28,9 @@ public class ResetBeyonderCommand {
     private int setSequence(CommandContext<CommandSourceStack> cmd){
         ServerPlayer player = cmd.getSource().getPlayer();
         player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap ->{
-            if(!player.level().isClientSide()) cap.consumeCharacteristic(IntegerArgumentType.getInteger(cmd, "id"), player, true, true);
+            if(!player.level().isClientSide()){
+                cap.setBeyonderSequence(IntegerArgumentType.getInteger(cmd, "id"));
+            }
         });
         return 1;
     }

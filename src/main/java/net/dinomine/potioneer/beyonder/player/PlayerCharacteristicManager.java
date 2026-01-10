@@ -9,6 +9,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 
 import java.util.*;
 
@@ -385,10 +386,25 @@ public class PlayerCharacteristicManager {
         cap.getAbilitiesManager().grantAbilities(newAbilities, pathwaySequenceId, cap, target);
     }
 
-    public void setAttributes(BeyonderStats beyonderStats) {
+    public void setAttributes(BeyonderStats beyonderStats, Player player) {
         //get best attributes for each stat based on all the characteristics
         //give BeyonderStats that as the stats to update
         //it already deals with removing the old modifiers and applying these new ones
+        List<Integer> bestCharacts = closestToLowerTens(lastConsumedCharacteristics);
+        float[] bestStats = new float[5];
+        List<float[]> attributesList = new ArrayList<>();
+        for(int charac: bestCharacts){
+            attributesList.add(Pathways.getPathwayById(charac).getStatsFor(charac%10));
+        }
+        for(int i = 0; i < 5; i++){
+            float bestStat = 0;
+            for(float[] attributes: attributesList){
+                if(attributes[i] > bestStat) bestStat = attributes[i];
+            }
+            bestStats[i] = bestStat;
+        }
+        beyonderStats.setAttributes(bestStats);
+        beyonderStats.applyStats(player, true);
     }
 
     public void reset() {

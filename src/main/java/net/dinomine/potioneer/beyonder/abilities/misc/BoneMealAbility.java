@@ -37,7 +37,6 @@ public class BoneMealAbility extends Ability {
         UseOnContext context = new UseOnContext(level, player, player.getUsedItemHand(), ItemStack.EMPTY, blockHit);
         Items.BONE_MEAL.useOn(context);
         cap.requestActiveSpiritualityCost(cost());
-        putOnCooldown(2*20, target);
-        return true;
+        return putOnCooldown(target);
     }
 }

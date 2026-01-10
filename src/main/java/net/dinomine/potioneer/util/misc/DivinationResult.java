@@ -1,6 +1,7 @@
 package net.dinomine.potioneer.util.misc;
 
 import net.dinomine.potioneer.beyonder.pathways.BeyonderPathway;
+import net.dinomine.potioneer.beyonder.pathways.Pathways;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.item.ItemStack;
 
@@ -28,7 +29,7 @@ public record DivinationResult(boolean yesNo, List<BlockPos> positions, int sequ
     public String toString() {
         return "Yes/No? - " + yesNo
                 + "\nPositions - " + positions.toString()
-                + "\nSequence " + sequence + " " + BeyonderPathway.getSequenceNameFromId(sequence, true)
+                + "\nSequence " + sequence + " " + Pathways.getPathwayById(sequence).getSequenceNameFromId(sequence, true)
                 + "\nStatus value of " + status + " - " + getDescriptiveStatus()
                 + "\nClue - " + clue
                 + "\nAssociated Item - " + item.toString();

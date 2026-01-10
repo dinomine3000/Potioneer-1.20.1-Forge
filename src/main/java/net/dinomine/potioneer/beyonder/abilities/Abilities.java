@@ -1,9 +1,11 @@
 package net.dinomine.potioneer.beyonder.abilities;
 
+import net.dinomine.potioneer.beyonder.abilities.misc.BoneMealAbility;
 import net.dinomine.potioneer.beyonder.abilities.misc.CogitationAbility;
 import net.dinomine.potioneer.beyonder.abilities.misc.PassiveAbility;
 import net.dinomine.potioneer.beyonder.abilities.misc.TimedPassiveAbility;
 import net.dinomine.potioneer.beyonder.abilities.mystery.*;
+import net.dinomine.potioneer.beyonder.abilities.wheeloffortune.*;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
 import net.minecraft.resources.ResourceLocation;
 
@@ -17,6 +19,69 @@ public class Abilities {
             (Integer pathwayId) -> (new CogitationAbility(pathwayId)).canFlip(),
             320, 0, 0);
 
+    public static final AbilityFactory CALAMITY_INCREASE = registerAbility("calamity",
+            (Integer sequenceLevel) -> PassiveAbility.createAbility(sequenceLevel, BeyonderEffects.WHEEL_CALAMITY,
+                            (ignored) -> "calamity")
+                    .enabledOnAcquire(),
+            272, 0, 0);
+
+    public static final AbilityFactory CHECK_LUCK = registerAbility("check_luck",
+            CheckLuckAbility::new,
+            104, 0, 0);
+
+    public static final AbilityFactory CONJURE_PICKAXE = registerAbility("pick",
+            ConjurePickaxeAbility::new,
+            80, 0, 10);
+
+    public static final AbilityFactory FORTUNE_ABILITY = registerAbility("fortune",
+            (Integer sequenceLevel) -> PassiveAbility.createAbility(sequenceLevel, BeyonderEffects.WHEEL_FORTUNE,
+                            (ignored) -> "fortune")
+                    .canFlip().withThreshold(0.1f).withCost(level -> 5),
+            176, 0, 0);
+
+    public static final AbilityFactory SILK_TOUCH_ABILITY = registerAbility("silk",
+            (Integer sequenceLevel) -> PassiveAbility.createAbility(sequenceLevel, BeyonderEffects.WHEEL_SILK,
+                            (ignored) -> "silk")
+                    .canFlip().withThreshold(0.1f).withCost(level -> 5),
+            152, 0, 0);
+
+    public static final AbilityFactory PATIENCE = registerAbility("patience",
+            PatienceAbility::new,
+            296, 0, 0).hasSecondaryFunction(false);
+    //add a secondary function, maybe, that tells you how much luck you will get.
+
+    public static final AbilityFactory LUCK_BOOST = registerAbility("luck_boost",
+            LuckBoostAbility::new,
+            128, 0, 30);
+
+    public static final AbilityFactory DODGE_DAMAGE = registerAbility("luck_dodge",
+            (Integer sequenceLevel) -> PassiveAbility.createAbility(sequenceLevel, BeyonderEffects.WHEEL_LUCK_DODGE,
+                            (ignored) -> "luck_dodge")
+                    .canFlip().enabledOnAcquire(),
+            248, 0, 0);
+
+    public static final AbilityFactory LUCK_TREND = registerAbility("lucky_trend",
+            (Integer sequenceLevel) -> PassiveAbility.createAbility(sequenceLevel, BeyonderEffects.WHEEL_LUCK_TREND,
+                            (ignored) -> "lucky_trend")
+                    .enabledOnAcquire(),
+            32, 0, 0);
+
+    public static final AbilityFactory MINER_LIGHT = registerAbility("miner_light",
+            MinerLightAbility::new, 56, 0, 5);
+
+    public static final AbilityFactory MINING_SPEED = registerAbility("mining",
+            sequenceLevel -> (new MiningSpeedAbility(sequenceLevel)).canFlip().enabledOnAcquire(),
+            32, 0, 0).hasSecondaryFunction();
+
+    public static final AbilityFactory MINER_BONE_MEAL = registerAbility("w_bone_meal",
+            BoneMealAbility::new, 200, 0, 10);
+
+
+    public static final AbilityFactory WATER_AFFINITY = registerAbility("water_affinity",
+            (Integer sequenceLevel) -> PassiveAbility.createAbility(sequenceLevel, BeyonderEffects.TYRANT_WATER_AFFINITY,
+                            (ignored) -> "water_affinity")
+                    .canFlip().withThreshold(0.15f).enabledOnAcquire().withCost(level -> sequenceLevel < 8 ? 15 : 5),
+            32, 1, 10);
 
     public static final AbilityFactory AIR_BULLET = registerAbility("air_bullet",
             AirBulletAbility::new, 56, 2, 10);
@@ -62,12 +127,6 @@ public class Abilities {
                             (ignored) -> "step_up")
                     .canFlip().enabledOnAcquire(),
             152, 2, 0);
-
-    public static final AbilityFactory WATER_AFFINITY = registerAbility("water_affinity",
-            (Integer sequenceLevel) -> PassiveAbility.createAbility(sequenceLevel, BeyonderEffects.TYRANT_WATER_AFFINITY,
-                            (ignored) -> "water_affinity")
-                    .canFlip().withThreshold(0.15f).enabledOnAcquire().withCost(level -> sequenceLevel < 8 ? 15 : 5),
-            32, 1, 10);
 
     public static final AbilityFactory CANCEL_FALL_DAMAGE = registerAbility("negate_fall",
             (Integer sequenceLevel) -> PassiveAbility.createAbility(sequenceLevel, BeyonderEffects.MYSTERY_FALL_NEGATE,

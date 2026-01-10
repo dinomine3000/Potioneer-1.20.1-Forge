@@ -17,25 +17,28 @@ import java.util.Optional;
 public class BlockSniffAbility extends Ability {
 
     public BlockSniffAbility(int sequence){
-        this.info = new AbilityInfo(5, 56, "Block Finder", sequence, 10 + 5*(9-sequence), 30*20, "xray");
-        this.isActive = true;
+        super(sequence);
+//        this.info = new AbilityInfo(5, 56, "Block Finder", sequence, 10 + 5*(9-sequence), 30*20, "xray");
+//        this.isActive = true;
+        setCost(level -> 10 + 5*(9-sequence));
+        defaultMaxCooldown = 15*20;
     }
 
     @Override
-    public void onAcquire(LivingEntityBeyonderCapability cap, LivingEntity target) {
-
+    protected String getDescId(int sequenceLevel) {
+        return "xray";
     }
 
     @Override
-    public boolean active(LivingEntityBeyonderCapability cap, LivingEntity target) {
-        if(cap.getSpirituality() < getInfo().cost() || !(target instanceof Player player)) return false;
+    public boolean primary(LivingEntityBeyonderCapability cap, LivingEntity target) {
+        if(cap.getSpirituality() < cost() || !(target instanceof Player player)) return false;
         Level level = player.level();
 
         if(player.getMainHandItem().getItem() instanceof BlockItem blockItem
                 && blockItem.getBlock().defaultBlockState().is(Tags.Blocks.ORES)){
 
             BlockPos pos = BlockPos.containing(player.getX(), player.getY(), player.getZ());
-            int radius = (9 - info.id()%10)*3 + 7;
+            int radius = (9 - getSequenceLevel())*3 + 7;
             Optional<BlockPos> blocks = BlockPos.findClosestMatch(pos, radius, radius,
                     testPos -> level.getBlockState(testPos).is(blockItem.getBlock()));
 
@@ -49,29 +52,16 @@ public class BlockSniffAbility extends Ability {
                         float speedScale = 0.1f;
                         level.addAlwaysVisibleParticle(ParticleTypes.END_ROD, false,
                                 iterator.x, iterator.y, iterator.z, speedScale*pointing.x, speedScale*pointing.y, speedScale*pointing.z);
-                        i += 0.2;
+                        i += 0.2F;
                     }
                 });
             } else {
                 cap.getCharacteristicManager().progressActing(1/128d, 8);
-                cap.requestActiveSpiritualityCost(info.cost());
+                cap.requestActiveSpiritualityCost(cost());
             }
             //the early return above guarantees that the ability only returns true if it found anything.
-            return true;
+            return putOnCooldown(target);
         }
         return false;
-    }
-
-    @Override
-    public void passive(LivingEntityBeyonderCapability cap, LivingEntity target) {
-    }
-
-    @Override
-    public void activate(LivingEntityBeyonderCapability cap, LivingEntity target) {
-
-    }
-
-    @Override
-    public void deactivate(LivingEntityBeyonderCapability cap, LivingEntity target) {
     }
 }

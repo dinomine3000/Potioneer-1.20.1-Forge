@@ -2,6 +2,7 @@ package net.dinomine.potioneer.util.misc;
 
 import com.mojang.datafixers.util.Pair;
 import net.dinomine.potioneer.beyonder.pathways.BeyonderPathway;
+import net.dinomine.potioneer.beyonder.pathways.Pathways;
 import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
 import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
 import net.dinomine.potioneer.item.ModItems;
@@ -64,7 +65,7 @@ public class MysticismHelper {
                 //gives you the name of your next sequence.
                 //YesNo are become true
                 boolean yesNo = true;
-                String clue = "potioneer.beyonder.sequence." + BeyonderPathway.getSequenceNameFromId(sequenceId - 1, false);
+                String clue = "potioneer.beyonder.sequence." + Pathways.getPathwayById(sequenceId - 1).getSequenceNameFromId(sequenceId - 1, false);
                 int resSequence = sequenceId - 1;
                 ArrayList<BlockPos> responsePositions = new ArrayList<>();
                 return new DivinationResult(yesNo, responsePositions, resSequence, 1f, clue, ItemStack.EMPTY);
@@ -110,7 +111,7 @@ public class MysticismHelper {
             int charSequence = beyonderTag.getInt("id");
             boolean yesNo = charSequence == sequenceId - 1;
             float status = yesNo ? 1f : 0f;
-            String clue = "potioneer.beyonder.sequence." + BeyonderPathway.getSequenceNameFromId(charSequence, false);
+            String clue = "potioneer.beyonder.sequence." + Pathways.getPathwayById(charSequence).getSequenceNameFromId(charSequence, false);
             ItemStack stack = savedData.getRandomItemFromFormulaFor(charSequence, random);
             List<BlockPos> positions = findItemInArea(seer, stack, position, 64, level);
 
@@ -152,7 +153,7 @@ public class MysticismHelper {
                     yesNo = true;
                     try{
                         potionSequence = Integer.parseInt(name);
-                        clue = "potioneer.beyonder.sequence." + BeyonderPathway.getSequenceNameFromId(potionSequence, false);
+                        clue = "potioneer.beyonder.sequence." + Pathways.getPathwayById(potionSequence).getSequenceNameFromId(potionSequence, false);
                         status = potionSequence%10 == (sequenceId - 1) % 10 ? 1f : 0.7f;
                     } catch (Exception e){
                         clue = name;
@@ -236,7 +237,7 @@ public class MysticismHelper {
                 clue = dz > 0 ? Direction.SOUTH.getName() : Direction.NORTH.getName();
             }
         } else {
-            clue = BeyonderPathway.getPathwayName(highestSequence, true);
+            clue = Pathways.getPathwayById(highestSequence).getSequenceNameFromId(highestSequence, true);
         }
         return new DivinationResult(yesNo, positions, highestSequence, status, clue,ItemStack.EMPTY);
     }

@@ -105,6 +105,11 @@ public abstract class BeyonderEffect {
             stopEffects(cap, target);
         }
     }
+
+    public int getCost(){
+        return this.cost;
+    }
+
     public boolean isActive(){
         return this.active;
     }

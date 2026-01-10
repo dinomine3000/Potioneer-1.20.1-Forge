@@ -3,12 +3,6 @@ package net.dinomine.potioneer.beyonder.effects;
 
 import net.dinomine.potioneer.beyonder.effects.misc.*;
 import net.dinomine.potioneer.beyonder.effects.mystery.*;
-import net.dinomine.potioneer.beyonder.effects.paragon.BeyonderCraftingSpiritualityEffect;
-import net.dinomine.potioneer.beyonder.effects.paragon.BeyonderDurabilityEffect;
-import net.dinomine.potioneer.beyonder.effects.paragon.BeyonderXpReduceEffect;
-import net.dinomine.potioneer.beyonder.effects.redpriest.*;
-import net.dinomine.potioneer.beyonder.effects.tyrant.BeyonderElectrificationEffect;
-import net.dinomine.potioneer.beyonder.effects.tyrant.BeyonderLightningTargetEffect;
 import net.dinomine.potioneer.beyonder.effects.tyrant.BeyonderWaterAffinityEffect;
 import net.dinomine.potioneer.beyonder.effects.wheeloffortune.*;
 
@@ -26,6 +20,14 @@ public class BeyonderEffects {
     public static final BeyonderEffectType MYSTERY_REACH = registerEffect("extended_reach", new BeyonderEffectType(BeyonderExtendedReachEffect::new));
     public static final BeyonderEffectType MYSTERY_REGEN = registerEffect("spirituality_regen", new BeyonderEffectType(BeyonderRegenEffect::new));
     public static final BeyonderEffectType MYSTERY_STEP_UP = registerEffect("step_up", new BeyonderEffectType(BeyonderStepUpEffect::new));
+    public static final BeyonderEffectType WHEEL_CALAMITY = registerEffect("calamity", new BeyonderEffectType(BeyonderCalamityEffect::new));
+    public static final BeyonderEffectType WHEEL_FORTUNE = registerEffect("fortune", new BeyonderEffectType(BeyonderFortuneEffect::new));
+    public static final BeyonderEffectType WHEEL_SILK = registerEffect("silk", new BeyonderEffectType(BeyonderSilkTouchEffect::new));
+    public static final BeyonderEffectType WHEEL_PATIENCE = registerEffect("patience", new BeyonderEffectType(BeyonderPatienceEffect::new));
+    public static final BeyonderEffectType WHEEL_TEMP_LUCK = registerEffect("temp_luck", new BeyonderEffectType(BeyonderTempLuckEffect::new));
+    public static final BeyonderEffectType WHEEL_LUCK_DODGE = registerEffect("luck_dodge", new BeyonderEffectType(BeyonderLuckDodgeEffect::new));
+    public static final BeyonderEffectType WHEEL_LUCK_TREND = registerEffect("lucky_trend", new BeyonderEffectType(BeyonderLuckTrendEffect::new));
+    public static final BeyonderEffectType WHEEL_MINING = registerEffect("mining", new BeyonderEffectType(BeyonderMiningSpeedEffect::new));
 
 
     public static BeyonderEffectType registerEffect(String effectId, BeyonderEffectType baseEffect){

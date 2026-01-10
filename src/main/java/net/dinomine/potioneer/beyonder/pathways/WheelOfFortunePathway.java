@@ -3,7 +3,6 @@ package net.dinomine.potioneer.beyonder.pathways;
 import net.dinomine.potioneer.beyonder.abilities.Ability;
 import net.dinomine.potioneer.beyonder.abilities.misc.CogitationAbility;
 import net.dinomine.potioneer.beyonder.abilities.wheeloffortune.*;
-import net.dinomine.potioneer.beyonder.player.PlayerAbilitiesManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -52,7 +51,7 @@ public class WheelOfFortunePathway extends BeyonderPathway {
             case 6:
             case 7:
                 abilities.add(new WheelBoneMealAbility(sequence));
-                abilities.add(new GamblingAbility(sequence));
+                abilities.add(new PatienceAbility(sequence));
                 abilities.add(new LuckDamageReductionAbility(sequence));
                 abilities.add(new CalamityIncreaseAbility(sequence));
             case 8:

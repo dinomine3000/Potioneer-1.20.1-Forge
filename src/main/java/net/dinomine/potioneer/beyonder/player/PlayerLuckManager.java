@@ -22,6 +22,7 @@ import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
 
 import java.util.Random;
+import java.util.UUID;
 
 public class PlayerLuckManager {
     //corresponds to 20 minutes irl (ticks once every 10 seconds -> 1200 seconds = 20 mins)
@@ -37,10 +38,13 @@ public class PlayerLuckManager {
     private int luck;
     private int tick = 0;
     private LuckRange range;
-    public int luckEventChance = 1;
 
-    public void chanceLuckEventChange(int diffVal){
-        luckEventChance = Math.min(1, luckEventChance + diffVal);
+    public void removeLuckEventModifier(UUID uuid){
+        range.removeChanceModifier(uuid);
+    }
+
+    public void chanceLuckEventChange(UUID uuid, int diffVal){
+        range.changeChance(uuid, diffVal);
     }
 
     public PlayerLuckManager(){
@@ -54,7 +58,7 @@ public class PlayerLuckManager {
         //ticks once every 2 seconds
         if(target.level().isClientSide()) return;
         if(tick++ > 40){
-            if(target instanceof Player player)
+//            if(target instanceof Player player)
                 //System.out.println("Luck Manager ticking..." + luck);
             tick = 0;
             if(eventGoingOn){
@@ -66,7 +70,7 @@ public class PlayerLuckManager {
                 }
 
             } else {
-                if(target.getRandom().nextInt(10000) <= luckEventChance){
+                if(target.getRandom().nextInt(10000) <= range.getChance()){
                     castEvent(target);
                 }
             }
@@ -88,8 +92,12 @@ public class PlayerLuckManager {
         range.changeDecayRange(minDelta, maxDelta, posDelta);
     }
 
-    public void changeLuckRange(int minDelta, int maxDelta, int posDelta){
-        range.changeRange(minDelta, maxDelta, posDelta);
+    public void changeLuckRange(UUID uuid, int minDelta, int maxDelta, int posDelta){
+        range.changeRange(uuid, minDelta, maxDelta, posDelta);
+    }
+
+    public void removeModifier(UUID uuid){
+        this.range.removeModifier(uuid);
     }
 
     public void castEvent(LivingEntity target){
@@ -346,7 +354,7 @@ public class PlayerLuckManager {
     }
 
     public void copyFrom(PlayerLuckManager luckManager) {
-        this.range = luckManager.range;
+        this.range = luckManager.range.copyOnDeath();
         this.luck = luckManager.luck;
     }
 }

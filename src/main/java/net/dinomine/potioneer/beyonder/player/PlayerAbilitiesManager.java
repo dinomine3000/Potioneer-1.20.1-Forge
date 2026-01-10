@@ -27,6 +27,7 @@ public class PlayerAbilitiesManager {
     public void copyFrom(PlayerAbilitiesManager mng){
         this.clientHotbar = mng.clientHotbar;
         this.quickAbility = mng.quickAbility;
+        this.abilities = mng.abilities;
     }
 
     public Ability getAbility(String cAblId){

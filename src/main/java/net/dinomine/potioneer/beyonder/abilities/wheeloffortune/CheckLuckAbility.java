@@ -1,6 +1,7 @@
 package net.dinomine.potioneer.beyonder.abilities.wheeloffortune;
 
 import net.dinomine.potioneer.beyonder.abilities.Ability;
+import net.dinomine.potioneer.beyonder.abilities.AbilityFunctionHelper;
 import net.dinomine.potioneer.beyonder.abilities.AbilityInfo;
 import net.dinomine.potioneer.util.misc.MysticismHelper;
 import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
@@ -23,17 +24,23 @@ import java.util.function.Predicate;
 public class CheckLuckAbility extends Ability {
 
     public CheckLuckAbility(int sequence){
-        this.info = new AbilityInfo(5, 104, "Luck Check", sequence, 0, getMaxCooldown(), "luck_check" + (sequence > 7 ? "1" : "2"));
+//        this.info = new AbilityInfo(5, 104, "Luck Check", sequence, 0, getMaxCooldown(), "luck_check" + (sequence > 7 ? "1" : "2"));
+        super(sequence);
+        setCost(in -> 0);
     }
 
     @Override
-    public boolean active(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    protected String getDescId(int sequenceLevel) {
+        return "luck_check" + (sequenceLevel > 7 ? "1" : "2");
+    }
+
+    @Override
+    public boolean primary(LivingEntityBeyonderCapability cap, LivingEntity target) {
         if(target.level().isClientSide()) return true;
         PlayerLuckManager luckMng = cap.getLuckManager();
         LuckRange range = luckMng.getRange();
-        if(getSequence() > 7){
+        if(getSequenceLevel() > 7){
             target.sendSystemMessage(Component.literal("Your luck is: " + luckMng.getLuck()));
-            return true;
         } else {
             ItemStack item = target.getMainHandItem();
             Player itemTarget = MysticismHelper.getPlayerFromMysticalItem(item, (ServerLevel) target.level(), 0);
@@ -45,33 +52,12 @@ public class CheckLuckAbility extends Ability {
                             + "\nTheir luck range is: " + stats.get().getLuckManager().getMinPassiveLuck()
                             + " to " + stats.get().getLuckManager().getMaxPassiveLuck()));
                     System.out.println(stats.get().getLuckManager().getRange());
-                    return true;
+                    return putOnCooldown(target);
                 }
             }
-
-            ServerLevel level = (ServerLevel) target.level();
-            Vec3 lookAngle = target.getLookAngle();
-            Vec3 pos = target.position();
             int radius = 3;
-            AABB box = new AABB(
-                    pos.x-radius, pos.y-radius, pos.z-radius,
-                    pos.x+radius, pos.y+radius, pos.z+radius
-            );
-            ArrayList<Entity> hits = new ArrayList<>(level.getEntities(target, box, new Predicate<Entity>() {
-                @Override
-                public boolean test(Entity entity) {
-                    if(entity instanceof LivingEntity living){
-                        double dist = living.position().subtract(target.position()).length();
-//                        System.out.println(dist);
-//                        System.out.println(height);
-                        boolean hit = living.getBoundingBoxForCulling().intersects(target.getEyePosition(),
-                                target.getEyePosition().add(lookAngle.scale(dist+1)));
-//                        System.out.println(hit);
-                        return hit;
-                    }
-                    return false;
-                }
-            }));
+            ArrayList<Entity> hits = AbilityFunctionHelper.getLivingEntitiesLooking(target, radius);
+
             for(Entity ent: hits){
                 if(ent instanceof LivingEntity entity){
                     Optional<LivingEntityBeyonderCapability> stats = entity.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve();
@@ -81,7 +67,7 @@ public class CheckLuckAbility extends Ability {
                                 + "\nTheir luck range is: " + stats.get().getLuckManager().getMinPassiveLuck()
                                 + " to " + stats.get().getLuckManager().getMaxPassiveLuck()));
                         System.out.println(stats.get().getLuckManager().getRange());
-                        return true;
+                        return putOnCooldown(target);
                     }
                 }
             }
@@ -90,24 +76,7 @@ public class CheckLuckAbility extends Ability {
             target.sendSystemMessage(Component.literal("Your luck is: " + luckMng.getLuck()
                     + "\nYour range is: " + range.getMinLuck() + " to " + range.getMaxLuck()));
             System.out.println(luckMng.getRange());
-            return true;
         }
-    }
-
-    @Override
-    public void onAcquire(LivingEntityBeyonderCapability cap, LivingEntity target) {
-
-    }
-
-    @Override
-    public void passive(LivingEntityBeyonderCapability cap, LivingEntity target) {
-    }
-
-    @Override
-    public void activate(LivingEntityBeyonderCapability cap, LivingEntity target) {
-    }
-
-    @Override
-    public void deactivate(LivingEntityBeyonderCapability cap, LivingEntity target) {
+        return putOnCooldown(target);
     }
 }
