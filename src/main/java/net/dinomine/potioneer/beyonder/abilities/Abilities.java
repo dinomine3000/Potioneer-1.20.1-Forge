@@ -5,6 +5,8 @@ import net.dinomine.potioneer.beyonder.abilities.misc.CogitationAbility;
 import net.dinomine.potioneer.beyonder.abilities.misc.PassiveAbility;
 import net.dinomine.potioneer.beyonder.abilities.misc.TimedPassiveAbility;
 import net.dinomine.potioneer.beyonder.abilities.mystery.*;
+import net.dinomine.potioneer.beyonder.abilities.paragon.AnvilGuiAbility;
+import net.dinomine.potioneer.beyonder.abilities.paragon.DurabilityRegenAbility;
 import net.dinomine.potioneer.beyonder.abilities.redpriest.*;
 import net.dinomine.potioneer.beyonder.abilities.tyrant.*;
 import net.dinomine.potioneer.beyonder.abilities.wheeloffortune.*;
@@ -224,7 +226,45 @@ public class Abilities {
                     .enabledOnAcquire().canFlip(),
             32, 3, 0);
 
+    // -------------------------- PARAGON ---------------------------------------------------
 
+    public static final AbilityFactory ANVIL_GUI = registerAbility("anvil_gui",
+            AnvilGuiAbility::new, 104, 4, 10);
+
+    public static final AbilityFactory CONJURER_CONTAINER = registerAbility("conjure_container",
+            AnvilGuiAbility::new, 176, 4, 0);
+
+    public static final AbilityFactory CRAFTING_GUI = registerAbility("crafting_gui",
+            AnvilGuiAbility::new, 32, 4, 10);
+
+    public static final AbilityFactory ENDER_CHEST = registerAbility("ender_chest",
+            AnvilGuiAbility::new, 152, 4, 50);
+
+    public static final AbilityFactory FUEL_CREATE = registerAbility("fuel",
+            AnvilGuiAbility::new, 80, 4, 0);
+
+    public static final AbilityFactory CRAFTER_BONE_MEAL = registerAbility("p_bone_meal",
+            AnvilGuiAbility::new, 128, 4, 2);
+
+    public static final AbilityFactory REMOVE_ENCHANTMENT = registerAbility("disenchant",
+            AnvilGuiAbility::new, 224, 4, 50);
+
+//        this.info = new AbilityInfo(109, 32, "Crafting Spirituality", 40 + sequence, 0, this.getMaxCooldown(), "craft");
+    public static final AbilityFactory CRAFTING_SPIRITUALITY = registerAbility("crafting_spirituality",
+            (Integer sequenceLevel) -> PassiveAbility.createAbility(sequenceLevel, BeyonderEffects.PARAGON_CRAFTING,
+                            (ignored) -> "craft")
+                    .enabledOnAcquire().canFlip(),
+            32, 4, 0);
+
+//        this.info = new AbilityInfo(109, 200, "Xp Cost Reduction", 40 + sequence, 20, this.getMaxCooldown(), "xp_reduce");
+    public static final AbilityFactory XP_COST_REDUCE = registerAbility("xp_reduce",
+            (Integer sequenceLevel) -> PassiveAbility.createAbility(sequenceLevel, BeyonderEffects.PARAGON_XP,
+                            (ignored) -> "xp_reduce")
+                    .enabledOnAcquire().canFlip(),
+            200, 4, 0);
+
+    public static final AbilityFactory DURABILITY_REGEN = registerAbility("durability_regen",
+            DurabilityRegenAbility::new, 56, 4, 3);
 
     private static AbilityFactory registerAbility(String ablId, Function<Integer, Ability> constructor, int posY, int pathwayId, int minSpirToActivate){
         if(ABILITIES.containsKey(ablId)){

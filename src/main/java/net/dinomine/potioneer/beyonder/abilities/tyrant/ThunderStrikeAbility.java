@@ -31,9 +31,9 @@ public class ThunderStrikeAbility extends Ability {
         setCost(ignored -> 50);
     }
     @Override
-    public boolean primary(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    protected boolean primary(LivingEntityBeyonderCapability cap, LivingEntity target) {
         if(cap.getSpirituality() < cost()) return false;
-        if(target.level().isClientSide()) return putOnCooldown(target);
+        if(target.level().isClientSide()) return true;
         ServerLevel level = (ServerLevel) target.level();
         boolean thundering = level.isThundering();
         int radius = thundering ? 128 : 32;
@@ -41,13 +41,13 @@ public class ThunderStrikeAbility extends Ability {
         for(Entity ent: hits){
             if(ent instanceof LivingEntity entity && entity != target){
                 summonLightning(cap, entity.position(), level, thundering);
-                return putOnCooldown(target);
+                return true;
             }
         }
         HitResult hit = target.pick(radius, 0, false);
         if(hit instanceof BlockHitResult blockHit && !level.getBlockState(blockHit.getBlockPos()).is(Blocks.AIR)){
             summonLightning(cap, blockHit.getLocation(), level, thundering);
-            return putOnCooldown(target);
+            return true;
         }
         return false;
     }

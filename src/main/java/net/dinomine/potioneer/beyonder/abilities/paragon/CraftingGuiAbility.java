@@ -23,28 +23,30 @@ import java.util.Optional;
 
 public class CraftingGuiAbility extends Ability {
 
+    @Override
+    protected String getDescId(int sequenceLevel) {
+        return "crafting_gui";
+    }
+
     public CraftingGuiAbility(int sequence){
-        this.info = new AbilityInfo(109, 32, "Crafting Gui", 40 + sequence, 10, this.getMaxCooldown(), "crafting_gui");
+//        this.info = new AbilityInfo(109, 32, "Crafting Gui", 40 + sequence, 10, this.getMaxCooldown(), "crafting_gui");
+        super(sequence);
+        setCost(ignored -> 10);
     }
 
     @Override
-    public void onAcquire(LivingEntityBeyonderCapability cap, LivingEntity target) {
-
-    }
-
-    @Override
-    public boolean active(LivingEntityBeyonderCapability cap, LivingEntity target) {
-        if(target.level().isClientSide()) return true;
-        if(cap.getSpirituality() > info.cost() && target instanceof ServerPlayer player){
+    public boolean primary(LivingEntityBeyonderCapability cap, LivingEntity target) {
+        if(target.level().isClientSide()) return putOnCooldown(target);
+        if(cap.getSpirituality() > cost() && target instanceof ServerPlayer player){
             NetworkHooks.openScreen(
                     player,
                     new SimpleMenuProvider((i, inventory, player1) ->
-                            new CrafterMenu(i, inventory, ContainerLevelAccess.create(player1.level(), player1.getOnPos()), getSequence()),
+                            new CrafterMenu(i, inventory, ContainerLevelAccess.create(player1.level(), player1.getOnPos()), getSequenceLevel()),
                             Component.translatable("potioneer.menu.crafter_menu")),
-                    buff -> buff.writeInt(getSequence()));
+                    buff -> buff.writeInt(getSequenceLevel()));
 
-            cap.requestActiveSpiritualityCost(info.cost());
-            return true;
+            cap.requestActiveSpiritualityCost(cost());
+            return putOnCooldown(target);
         }
         return false;
     }
@@ -89,19 +91,5 @@ public class CraftingGuiAbility extends Ability {
                 player.connection.send(new ClientboundContainerSetSlotPacket(pMenu.containerId, pMenu.incrementStateId(), 0, result));
             }
         }
-    }
-
-    @Override
-    public void passive(LivingEntityBeyonderCapability cap, LivingEntity target) {
-
-    }
-
-    @Override
-    public void activate(LivingEntityBeyonderCapability cap, LivingEntity target) {
-
-    }
-
-    @Override
-    public void deactivate(LivingEntityBeyonderCapability cap, LivingEntity target) {
     }
 }

@@ -12,4 +12,9 @@ public class WheelBoneMealAbility extends BoneMealAbility {
 //        this.info = new AbilityInfo(5, 200, "Bone Meal", sequence, 10 + 10*(9-sequence), 2*20, "w_bone_meal");
 //        this.isActive = true;
     }
+
+    @Override
+    protected String getDescId(int sequenceLevel) {
+        return "w_bone_meal";
+    }
 }

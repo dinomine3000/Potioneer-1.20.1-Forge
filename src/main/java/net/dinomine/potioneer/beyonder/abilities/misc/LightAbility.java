@@ -28,8 +28,8 @@ public abstract class LightAbility extends Ability {
     }
 
     @Override
-    public boolean primary(LivingEntityBeyonderCapability cap, LivingEntity target) {
-        if(target.level().isClientSide()) return putOnCooldown(target);
+    protected boolean primary(LivingEntityBeyonderCapability cap, LivingEntity target) {
+        if(target.level().isClientSide()) return true;
         if(cap.getSpirituality() > cost()){
             HitResult block = target.pick(target.getAttributeBaseValue(ForgeMod.BLOCK_REACH.get()) + 0.5, 0f, false);
             if(block instanceof BlockHitResult rayTrace){
@@ -43,7 +43,7 @@ public abstract class LightAbility extends Ability {
                     level.setBlockAndUpdate(rayTrace.getBlockPos(),
                             lightBlockState.setValue(WATERLOGGED, water));
                     cap.requestActiveSpiritualityCost(cost());
-                    return putOnCooldown(target);
+                    return true;
 
                 }
                 if(!level.getBlockState(rayTrace.getBlockPos()).is(Blocks.AIR)
@@ -54,7 +54,7 @@ public abstract class LightAbility extends Ability {
                     level.setBlockAndUpdate(targetPos,
                             lightBlockState.setValue(WATERLOGGED, water));
                     cap.requestActiveSpiritualityCost(cost());
-                    return putOnCooldown(target);
+                    return true;
                 }
             }
         }

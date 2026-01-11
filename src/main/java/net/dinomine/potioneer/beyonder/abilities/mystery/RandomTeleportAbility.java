@@ -24,7 +24,7 @@ public class RandomTeleportAbility extends Ability {
     }
 
     @Override
-    public boolean primary(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    protected boolean primary(LivingEntityBeyonderCapability cap, LivingEntity target) {
         if(cap.getSpirituality() < cost()) return false;
         Level pLevel = target.level();
         pLevel.playSound(target, target.getOnPos().above(), SoundEvents.CHORUS_FRUIT_TELEPORT, SoundSource.PLAYERS, 1, 1);
@@ -36,6 +36,6 @@ public class RandomTeleportAbility extends Ability {
             target.fallDistance = 0;
             target.randomTeleport(d3, d4, d5, false);
         }
-        return putOnCooldown(target);
+        return true;
     }
 }

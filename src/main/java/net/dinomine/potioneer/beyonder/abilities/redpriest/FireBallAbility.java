@@ -22,9 +22,9 @@ public class FireBallAbility extends Ability {
         setCost(ignored -> 20);
     }
 
-
-    public boolean active(LivingEntityBeyonderCapability cap, LivingEntity target) {
-        if(target.level().isClientSide() && cap.getSpirituality() >= cost()) return putOnCooldown(target);
+    @Override
+    protected boolean primary(LivingEntityBeyonderCapability cap, LivingEntity target) {
+        if(target.level().isClientSide() && cap.getSpirituality() >= cost()) return true;
         if(cap.getSpirituality() < cost()) return false;
         float magnitude = 10f;
         Vec3 look = target.getLookAngle();
@@ -40,6 +40,6 @@ public class FireBallAbility extends Ability {
         }
 
         cap.requestActiveSpiritualityCost(cost());
-        return putOnCooldown(target);
+        return true;
     }
 }

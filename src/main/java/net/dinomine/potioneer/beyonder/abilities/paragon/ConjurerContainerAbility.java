@@ -15,24 +15,24 @@ import net.minecraft.world.inventory.MenuType;
 
 public class ConjurerContainerAbility extends Ability {
     public ConjurerContainerAbility(int sequence){
-        this.info = new AbilityInfo(109, 176, "Conjure", 40 + sequence, 0, this.getMaxCooldown(), "conjure_container");
-        this.isActive = true;
+//        this.info = new AbilityInfo(109, 176, "Conjure", 40 + sequence, 0, this.getMaxCooldown(), "conjure_container");
+        super(sequence);
     }
 
     @Override
-    public void onAcquire(LivingEntityBeyonderCapability cap, LivingEntity target) {
-
+    protected String getDescId(int sequenceLevel) {
+        return "conjure_container";
     }
 
     @Override
-    public boolean active(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    public boolean primary(LivingEntityBeyonderCapability cap, LivingEntity target) {
         if(target.level().isClientSide()
                 && target instanceof LocalPlayer player
-                && cap.getSpirituality() >= info.cost()){
+                && cap.getSpirituality() >= cost()){
             player.playSound(SoundEvents.CHEST_OPEN);
-            return true;
+            return putOnCooldown(target);
         }
-        if(cap.getSpirituality() > info.cost() && !target.level().isClientSide()){
+        if(cap.getSpirituality() > cost() && !target.level().isClientSide()){
             if(target instanceof Player player){
                 ConjurerContainer cont = cap.getConjurerContainer(0);
 //
@@ -44,25 +44,11 @@ public class ConjurerContainerAbility extends Ability {
                 player.openMenu(new SimpleMenuProvider((id, playerInv, container) -> {
                     return new ConjurerContainerMenu(MenuType.GENERIC_9x1, id, playerInv, cont, 1);
                 }, Component.translatable("potioneer.menu.conjurer_menu")));
-                cap.requestActiveSpiritualityCost(info.cost());
-                return true;
+                cap.requestActiveSpiritualityCost(cost());
+                return putOnCooldown(target);
             }
         }
 
         return false;
-    }
-
-    @Override
-    public void passive(LivingEntityBeyonderCapability cap, LivingEntity target) {
-
-    }
-
-    @Override
-    public void activate(LivingEntityBeyonderCapability cap, LivingEntity target) {
-
-    }
-
-    @Override
-    public void deactivate(LivingEntityBeyonderCapability cap, LivingEntity target) {
     }
 }

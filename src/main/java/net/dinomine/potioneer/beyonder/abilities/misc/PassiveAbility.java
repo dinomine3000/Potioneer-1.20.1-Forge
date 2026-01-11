@@ -13,7 +13,7 @@ import java.util.function.Function;
  * by default, cost is 0. you can use withCost() to set the cost, and itll be passed down to the effect instance. do with that what you will
  */
 public class PassiveAbility extends Ability {
-    private boolean canFlip = true;
+    private boolean canFlip = false;
     private boolean enabledOnAcquire = true;
     protected final BeyonderEffects.BeyonderEffectType effect;
     /**
@@ -86,15 +86,14 @@ public class PassiveAbility extends Ability {
     }
 
     @Override
-    public boolean primary(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    protected boolean primary(LivingEntityBeyonderCapability cap, LivingEntity target) {
         if(target.level().isClientSide()) return false;
         if(!isEnabled() || canFlip) flipEnable(cap, target);
-        putOnCooldown(target);
         return true;
     }
 
     @Override
-    public boolean secondary(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    protected boolean secondary(LivingEntityBeyonderCapability cap, LivingEntity target) {
         return false;
     }
 

@@ -24,7 +24,7 @@ public class BeyonderInvisibilityEffect extends BeyonderEffect {
     public void stopEffects(LivingEntityBeyonderCapability cap, LivingEntity target) {
         if(target.hasEffect(MobEffects.INVISIBILITY)){
             target.removeEffect(MobEffects.INVISIBILITY);
-            cap.getAbilitiesManager().disableAbility(Abilities.INVISIBILITY.getAblId(), getSequenceLevel(), cap, target);
+            cap.getAbilitiesManager().setAbilityEnabled(Abilities.INVISIBILITY.getAblId(), getSequenceLevel(), false, cap, target);
         }
     }
 

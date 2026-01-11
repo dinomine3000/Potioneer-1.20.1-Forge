@@ -28,8 +28,8 @@ public class WaterCreateAbility extends Ability {
     }
 
     @Override
-    public boolean primary(LivingEntityBeyonderCapability cap, LivingEntity target) {
-        if(target.level().isClientSide()) return putOnCooldown(target);
+    protected boolean primary(LivingEntityBeyonderCapability cap, LivingEntity target) {
+        if(target.level().isClientSide()) return true;
         if(cap.getSpirituality() > cost() && target instanceof Player player){
             HitResult res = player.pick(player.getAttributeValue(ForgeMod.BLOCK_REACH.get()) + 0.5f, 0, false);
             if(res instanceof BlockHitResult){
@@ -38,7 +38,7 @@ public class WaterCreateAbility extends Ability {
                 waterStack.use(player.level(), player, InteractionHand.MAIN_HAND);
                 cap.requestActiveSpiritualityCost(cost());
                 cap.getCharacteristicManager().progressActing(actingProgress, 18);
-                return putOnCooldown(target);
+                return true;
             }
 //            HitResult block = target.pick(target.getAttributeBaseValue(ForgeMod.BLOCK_REACH.get()) + 0.5, 0f, false);
 //            if(block instanceof BlockHitResult rayTrace){

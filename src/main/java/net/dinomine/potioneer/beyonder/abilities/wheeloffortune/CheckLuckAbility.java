@@ -35,7 +35,7 @@ public class CheckLuckAbility extends Ability {
     }
 
     @Override
-    public boolean primary(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    protected boolean primary(LivingEntityBeyonderCapability cap, LivingEntity target) {
         if(target.level().isClientSide()) return true;
         PlayerLuckManager luckMng = cap.getLuckManager();
         LuckRange range = luckMng.getRange();
@@ -52,7 +52,7 @@ public class CheckLuckAbility extends Ability {
                             + "\nTheir luck range is: " + stats.get().getLuckManager().getMinPassiveLuck()
                             + " to " + stats.get().getLuckManager().getMaxPassiveLuck()));
                     System.out.println(stats.get().getLuckManager().getRange());
-                    return putOnCooldown(target);
+                    return true;
                 }
             }
             int radius = 3;
@@ -67,7 +67,7 @@ public class CheckLuckAbility extends Ability {
                                 + "\nTheir luck range is: " + stats.get().getLuckManager().getMinPassiveLuck()
                                 + " to " + stats.get().getLuckManager().getMaxPassiveLuck()));
                         System.out.println(stats.get().getLuckManager().getRange());
-                        return putOnCooldown(target);
+                        return true;
                     }
                 }
             }
@@ -77,6 +77,6 @@ public class CheckLuckAbility extends Ability {
                     + "\nYour range is: " + range.getMinLuck() + " to " + range.getMaxLuck()));
             System.out.println(luckMng.getRange());
         }
-        return putOnCooldown(target);
+        return true;
     }
 }

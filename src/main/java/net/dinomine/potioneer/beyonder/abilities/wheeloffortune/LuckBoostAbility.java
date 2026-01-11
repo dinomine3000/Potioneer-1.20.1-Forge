@@ -23,8 +23,8 @@ public class LuckBoostAbility extends Ability {
     }
 
     @Override
-    public boolean primary(LivingEntityBeyonderCapability cap, LivingEntity target) {
-        if(target.level().isClientSide() && cap.getSpirituality() >= cost()) return putOnCooldown(target);
+    protected boolean primary(LivingEntityBeyonderCapability cap, LivingEntity target) {
+        if(target.level().isClientSide() && cap.getSpirituality() >= cost()) return true;
 
         if(cap.getSpirituality() >= cost()){
             if(cap.getEffectsManager().addEffectNoRefresh(BeyonderEffects.byId(BeyonderEffects.WHEEL_TEMP_LUCK.getEffectId(),
@@ -37,6 +37,6 @@ public class LuckBoostAbility extends Ability {
                 target.sendSystemMessage(Component.translatable("message.potioneer.effect_already_exists"));
             }
         }
-        return putOnCooldown(target);
+        return true;
     }
 }

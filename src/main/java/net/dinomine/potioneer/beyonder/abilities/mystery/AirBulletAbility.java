@@ -34,7 +34,7 @@ public class AirBulletAbility extends Ability {
 
 
     @Override
-    public boolean primary(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    protected boolean primary(LivingEntityBeyonderCapability cap, LivingEntity target) {
         if(cap.getSpirituality() < cost() || target == null){
             System.out.println("Not enough spirituality to cast air bullet on client side: " + target.level().isClientSide());
             return false;
@@ -64,7 +64,6 @@ public class AirBulletAbility extends Ability {
             });
             level.playSound(null, target.getOnPos().above(), SoundEvents.GENERIC_EXTINGUISH_FIRE, SoundSource.PLAYERS, 1, 1);
         }
-        putOnCooldown(target);
         return true;
     }
 

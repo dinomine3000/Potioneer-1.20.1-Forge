@@ -25,7 +25,7 @@ public class BoneMealAbility extends Ability {
     }
 
     @Override
-    public boolean primary(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    protected boolean primary(LivingEntityBeyonderCapability cap, LivingEntity target) {
         if(cap.getSpirituality() < cost()) return false;
         if(!(target instanceof Player player)) return false;
         Level level = target.level();
@@ -37,6 +37,6 @@ public class BoneMealAbility extends Ability {
         UseOnContext context = new UseOnContext(level, player, player.getUsedItemHand(), ItemStack.EMPTY, blockHit);
         Items.BONE_MEAL.useOn(context);
         cap.requestActiveSpiritualityCost(cost());
-        return putOnCooldown(target);
+        return true;
     }
 }

@@ -20,21 +20,23 @@ public class FuelAbility extends Ability {
     private static final Logger log = LoggerFactory.getLogger(FuelAbility.class);
 
     public FuelAbility(int sequence){
-        this.info = new AbilityInfo(109, 80, "Create Golden Drop", 40 + sequence, 0, this.getMaxCooldown(), "fuel");
-        this.isActive = true;
+//        this.info = new AbilityInfo(109, 80, "Create Golden Drop", 40 + sequence, 0, this.getMaxCooldown(), "fuel");
+//        this.isActive = true;
+        super(sequence);
     }
 
     @Override
-    public void onAcquire(LivingEntityBeyonderCapability cap, LivingEntity target) {
-
+    protected String getDescId(int sequenceLevel) {
+        return "fuel";
     }
 
     @Override
-    public boolean active(LivingEntityBeyonderCapability cap, LivingEntity target) {
-        setEnabled(cap, target);
-        float adjustedPercent = percentCost - ((float) (9 - getSequence()) / 9 * percentDelta);
+    public boolean primary(LivingEntityBeyonderCapability cap, LivingEntity target) {
+        float adjustedPercent = percentCost - ((float) (9 - getSequenceLevel()) / 9 * percentDelta);
         if(target.level().isClientSide()) {
-            return cap.getSpirituality() > cap.getMaxSpirituality() * adjustedPercent;
+            if(cap.getSpirituality() > cap.getMaxSpirituality() * adjustedPercent){
+                return putOnCooldown(target);
+            }
         }
         if(cap.getSpirituality() > cap.getMaxSpirituality()*adjustedPercent){
             if(target instanceof Player player){
@@ -44,24 +46,10 @@ public class FuelAbility extends Ability {
                     player.drop(result, false, true);
                 }
                 cap.requestActiveSpiritualityCost(cap.getMaxSpirituality()*adjustedPercent);
-                return true;
+                return putOnCooldown(target);
             }
         }
 
         return false;
-    }
-
-    @Override
-    public void passive(LivingEntityBeyonderCapability cap, LivingEntity target) {
-
-    }
-
-    @Override
-    public void activate(LivingEntityBeyonderCapability cap, LivingEntity target) {
-
-    }
-
-    @Override
-    public void deactivate(LivingEntityBeyonderCapability cap, LivingEntity target) {
     }
 }

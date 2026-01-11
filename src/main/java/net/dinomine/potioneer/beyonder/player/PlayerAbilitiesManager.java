@@ -266,18 +266,54 @@ public class PlayerAbilitiesManager {
         }
     }
 
-    public void disableAbility(String innerId, int sequenceLevel, LivingEntityBeyonderCapability cap, LivingEntity target) {
+    public void setAbilityEnabled(String innerId, int sequenceLevel, boolean state, LivingEntityBeyonderCapability cap, LivingEntity target) {
         for(Map.Entry<String, Ability> abilityEntry: abilities.entrySet()){
             if(!abilityEntry.getKey().contains(innerId)) continue;
             int i = sequenceLevel;
             while(i <= 9){
                 if(abilityEntry.getKey().contains(innerId.concat(":" + i))){
-                    abilityEntry.getValue().setEnabled(cap, target, false);
+                    abilityEntry.getValue().setEnabled(cap, target, state);
                     break;
                 }
                 i++;
             }
         }
+    }
+
+    /**
+     * function to put all abilities of this level or lower on cooldown.
+     * it doesnt disable them (see: setAbilityEnabled) just puts them on cooldown
+     * @param innerId
+     * @param sequenceLevel
+     * @param cooldownTicks
+     * @param target
+     */
+    public void putAbilityOnCooldown(String innerId, int sequenceLevel, int cooldownTicks, LivingEntity target){
+        for(Map.Entry<String, Ability> abilityEntry: abilities.entrySet()){
+            if(!abilityEntry.getKey().contains(innerId)) continue;
+            int i = sequenceLevel;
+            while(i <= 9){
+                if(abilityEntry.getKey().contains(innerId.concat(":" + i))){
+                    abilityEntry.getValue().putOnCooldown(cooldownTicks, target);
+                    break;
+                }
+                i++;
+            }
+        }
+    }
+
+    public boolean isEnabled(String innerId, int sequenceLevel) {
+        for(Map.Entry<String, Ability> abilityEntry: abilities.entrySet()){
+            if(!abilityEntry.getKey().contains(innerId)) continue;
+            int i = sequenceLevel;
+            while(i <= 9){
+                if(abilityEntry.getKey().contains(innerId.concat(":" + i))){
+                    return true;
+                }
+                i++;
+            }
+        }
+        return false;
     }
 
     public enum AbilityList{
@@ -309,12 +345,7 @@ public class PlayerAbilitiesManager {
     public void useAbility(LivingEntityBeyonderCapability cap, LivingEntity tar, String cAblId, boolean sync, boolean primary){
         Ability ability = abilities.get(cAblId);
         if(ability != null){
-            if(primary){
-                ability.primary(cap, tar);
-            }
-            else{
-                ability.secondary(cap, tar);
-            }
+            ability.castAbility(cap, tar, primary);
             if(sync){
                 if(tar.level().isClientSide()){
                     PacketHandler.sendMessageCTS(new PlayerCastAbilityMessageCTS(cAblId));

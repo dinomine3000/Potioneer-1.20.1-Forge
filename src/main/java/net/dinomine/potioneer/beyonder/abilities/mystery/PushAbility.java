@@ -30,7 +30,7 @@ public class PushAbility extends Ability {
     }
 
     @Override
-    public boolean primary(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    protected boolean primary(LivingEntityBeyonderCapability cap, LivingEntity target) {
         if(cap.getSpirituality() < cost()) return false;
         Level level = target.level();
         if(level.isClientSide()){
@@ -57,12 +57,12 @@ public class PushAbility extends Ability {
             });
             level.playSound(null, target.getOnPos().above(), SoundEvents.GENERIC_EXTINGUISH_FIRE, SoundSource.PLAYERS, 1, 1);
         }
-        return putOnCooldown(target);
+        return true;
     }
 
     @Override
     public boolean secondary(LivingEntityBeyonderCapability cap, LivingEntity target) {
         System.out.println("Warning: tried to cast secondary ability of Push (pull) but it hasnt been implemented yet");
-        return putOnCooldown(target);
+        return true;
     }
 }

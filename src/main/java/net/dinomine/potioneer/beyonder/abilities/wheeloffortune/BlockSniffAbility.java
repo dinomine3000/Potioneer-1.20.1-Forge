@@ -30,7 +30,7 @@ public class BlockSniffAbility extends Ability {
     }
 
     @Override
-    public boolean primary(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    protected boolean primary(LivingEntityBeyonderCapability cap, LivingEntity target) {
         if(cap.getSpirituality() < cost() || !(target instanceof Player player)) return false;
         Level level = player.level();
 
@@ -60,7 +60,7 @@ public class BlockSniffAbility extends Ability {
                 cap.requestActiveSpiritualityCost(cost());
             }
             //the early return above guarantees that the ability only returns true if it found anything.
-            return putOnCooldown(target);
+            return true;
         }
         return false;
     }

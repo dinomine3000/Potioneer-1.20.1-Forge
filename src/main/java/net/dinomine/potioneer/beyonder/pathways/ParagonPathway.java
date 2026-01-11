@@ -1,5 +1,6 @@
 package net.dinomine.potioneer.beyonder.pathways;
 
+import net.dinomine.potioneer.beyonder.abilities.Abilities;
 import net.dinomine.potioneer.beyonder.abilities.Ability;
 import net.dinomine.potioneer.beyonder.abilities.misc.CogitationAbility;
 import net.dinomine.potioneer.beyonder.abilities.paragon.*;
@@ -54,21 +55,18 @@ public class ParagonPathway extends BeyonderPathway {
             case 5:
             case 6:
             case 7:
-                XpCostReductionAbility xp = new XpCostReductionAbility(sequence);
-                activeAbilities.add(xp);
-                activeAbilities.add(new RemoveEnchantmentAbility(sequence));
+                activeAbilities.add(Abilities.XP_COST_REDUCE.create(sequence));
+                activeAbilities.add(Abilities.REMOVE_ENCHANTMENT.create(sequence));
             case 8:
-                activeAbilities.add(new AnvilGuiAbility(sequence));
-                activeAbilities.add(new ParagonBoneMealAbility(sequence));
-                activeAbilities.add(new ConjurerContainerAbility(sequence));
-                activeAbilities.add(new EnderChestAbility(sequence));
+                activeAbilities.add(Abilities.ANVIL_GUI.create(sequence));
+                activeAbilities.add(Abilities.CONJURER_CONTAINER.create(sequence));
+                activeAbilities.add(Abilities.CRAFTER_BONE_MEAL.create(sequence));
+                activeAbilities.add(Abilities.ENDER_CHEST.create(sequence));
             case 9:
-                CraftingSpiritualityAbility craftingSpiritualityAbility = new CraftingSpiritualityAbility(sequence);
-                activeAbilities.add(craftingSpiritualityAbility);
-                activeAbilities.add(new CraftingGuiAbility(sequence));
-                activeAbilities.add(new FuelAbility(sequence));
-                activeAbilities.add(new DurabilityRegenAbility(sequence));
-                activeAbilities.add(new CogitationAbility(40 + sequence));
+                activeAbilities.add(Abilities.CRAFTING_SPIRITUALITY.create(sequence));
+                activeAbilities.add(Abilities.CRAFTING_GUI.create(sequence));
+                activeAbilities.add(Abilities.FUEL_CREATE.create(sequence));
+                activeAbilities.add(Abilities.DURABILITY_REGEN.create(sequence));
         }
 //        CraftingBonusAbility abl = new CraftingBonusAbility(sequence);
 //        mng.setPathwayAbilities(activeAbilities);

@@ -33,8 +33,8 @@ public class WaterTrapAbility extends Ability {
     }
 
     @Override
-    public boolean primary(LivingEntityBeyonderCapability cap, LivingEntity target) {
-        if(target.level().isClientSide()) return putOnCooldown(target);
+    protected boolean primary(LivingEntityBeyonderCapability cap, LivingEntity target) {
+        if(target.level().isClientSide()) return true;
         if(!(target instanceof Player player)) return false;
         HitResult block = player.pick(player.getAttributeBaseValue(ForgeMod.BLOCK_REACH.get()) + 0.5, 0f, false);
         if(block instanceof BlockHitResult rayTrace){
@@ -51,7 +51,7 @@ public class WaterTrapAbility extends Ability {
                 WaterTrapBlockEntity be = (WaterTrapBlockEntity) level.getBlockEntity(rayTrace.getBlockPos());
                 if(be != null) be.setPlacedByPlayer(player.getUUID(), getSequenceLevel());
                 cap.requestActiveSpiritualityCost(cost());
-                return putOnCooldown(target);
+                return true;
 
             } else if(cap.getSpirituality() > cost()
                     && !level.getBlockState(rayTrace.getBlockPos()).is(Blocks.AIR)
@@ -65,7 +65,7 @@ public class WaterTrapAbility extends Ability {
                 WaterTrapBlockEntity be = (WaterTrapBlockEntity) level.getBlockEntity(targetPos);
                 if(be != null) be.setPlacedByPlayer(player.getUUID(), getSequenceLevel());
                 cap.requestActiveSpiritualityCost(cost());
-                return putOnCooldown(target);
+                return true;
             } else if(level.getBlockState(rayTrace.getBlockPos()).is(ModBlocks.WATER_TRAP_BLOCK.get())){
                 //if the block youre targeting is a water trap and its yours
                 BlockEntity be = level.getBlockEntity(rayTrace.getBlockPos());

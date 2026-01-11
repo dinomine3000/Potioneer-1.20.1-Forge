@@ -21,7 +21,7 @@ public class LeapAbility extends Ability {
     }
 
     @Override
-    public boolean primary(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    protected boolean primary(LivingEntityBeyonderCapability cap, LivingEntity target) {
         if(cap.getSpirituality() < cost()) return false;
         Vec3 look = target.getLookAngle();
         double mult = 1 + 1.2*(9-getSequenceLevel());
@@ -35,7 +35,6 @@ public class LeapAbility extends Ability {
         if(!target.level().isClientSide()){
             cap.requestActiveSpiritualityCost(cost());
         }
-        putOnCooldown(target);
         return true;
     }
 }

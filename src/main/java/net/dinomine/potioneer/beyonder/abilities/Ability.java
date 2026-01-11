@@ -194,6 +194,18 @@ public abstract class Ability {
         sequenceLevel = level;
     }
 
+    public void castAbility(LivingEntityBeyonderCapability cap, LivingEntity target, boolean primary){
+        if(primary){
+            if(primary(cap, target)){
+                putOnCooldown(target);
+            }
+        } else {
+            if(secondary(cap, target)){
+                putOnCooldown(target);
+            }
+        }
+    }
+
     /**
      * code that will run whenever the level of this ability is changed.
      * mainly called when ascending the sequence. Generally speaking, this method is useless, but if an ability changes with sequence and needs to know
@@ -216,17 +228,17 @@ public abstract class Ability {
      * function that runs whenever the player casts the main ability
      * @param cap
      * @param target
-     * @return whether the ability successfuly casted or not
+     * @return true to be put on default cooldown, false to not be put on default cooldown
      */
-    public boolean primary(LivingEntityBeyonderCapability cap, LivingEntity target){return false;}
+    protected boolean primary(LivingEntityBeyonderCapability cap, LivingEntity target){return false;}
 
     /**
      * function that runs whenever the player casts the secondary ability
      * @param cap
      * @param target
-     * @return whether the ability successfuly casted or not
+     * @return true to be put on default cooldown, false to not be put on default cooldown
      */
-    public boolean secondary(LivingEntityBeyonderCapability cap, LivingEntity target){return false;}
+    protected boolean secondary(LivingEntityBeyonderCapability cap, LivingEntity target){return false;}
 
     /**
      * function that runs every tick

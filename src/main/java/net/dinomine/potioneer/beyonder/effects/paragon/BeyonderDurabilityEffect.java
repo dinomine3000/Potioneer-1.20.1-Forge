@@ -1,5 +1,6 @@
 package net.dinomine.potioneer.beyonder.effects.paragon;
 
+import net.dinomine.potioneer.beyonder.abilities.Abilities;
 import net.dinomine.potioneer.beyonder.abilities.paragon.DurabilityRegenAbility;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffect;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
@@ -11,21 +12,13 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
 public class BeyonderDurabilityEffect extends BeyonderEffect {
-
-    private int tick = 0;
-    public BeyonderDurabilityEffect(int level, float cost, int time, boolean active, BeyonderEffects.EFFECT id){
-        super(level, cost, time, active, id);
-        this.name = "Paragon Durability Regen";
-    }
-
     @Override
     public void onAcquire(LivingEntityBeyonderCapability cap, LivingEntity target) {
     }
 
     @Override
     protected void doTick(LivingEntityBeyonderCapability cap, LivingEntity target) {
-        if(tick++ > 29){
-            tick = 0;
+        if(target.tickCount%29 == 0){
             if(sequenceLevel <= 7){
                 if(target instanceof Player player){
                     Inventory inv = player.getInventory();
@@ -51,19 +44,14 @@ public class BeyonderDurabilityEffect extends BeyonderEffect {
                 offhandItem.setDamageValue(Math.max(offhandItem.getDamageValue() - 5*(int)Math.pow(10-sequenceLevel, 2) - 15, 0));
             }
         }
-        if(lifetime >= maxLife){
-            target.sendSystemMessage(Component.literal("Ability Durability Regen was turned off."));
-            cap.getAbilitiesManager().setEnabled(new DurabilityRegenAbility(sequenceLevel), false, cap, target);
-
-            if (target instanceof Player player){
-                DurabilityRegenAbility abl = new DurabilityRegenAbility(sequenceLevel);
-                cap.getAbilitiesManager().putOnCooldown(player, abl.getInfo().descId(), abl.getInfo().maxCooldown(), abl.getInfo().maxCooldown());
-            }
-        }
 
     }
 
     @Override
     public void stopEffects(LivingEntityBeyonderCapability cap, LivingEntity target) {
+        if(cap.getAbilitiesManager().isEnabled(Abilities.DURABILITY_REGEN.getAblId(), sequenceLevel%10)){
+            cap.getAbilitiesManager().setAbilityEnabled(Abilities.DURABILITY_REGEN.getAblId(), sequenceLevel%10, false, cap, target);
+            cap.getAbilitiesManager().putAbilityOnCooldown(Abilities.DURABILITY_REGEN.getAblId(), sequenceLevel%10, 20*5, target);
+        }
     }
 }

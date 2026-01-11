@@ -71,8 +71,7 @@ public abstract class BeyonderEffect {
     }
 
     public void refreshTime(BeyonderEffect effect){
-        this.lifetime = 0;
-        this.maxLife = effect.maxLife;
+        this.maxLife += effect.maxLife;
     }
 
     public void setLifetime(int life){

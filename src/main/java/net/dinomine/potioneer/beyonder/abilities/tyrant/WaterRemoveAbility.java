@@ -33,8 +33,8 @@ public class WaterRemoveAbility extends Ability {
     }
 
     @Override
-    public boolean primary(LivingEntityBeyonderCapability cap, LivingEntity target) {
-        if(target.level().isClientSide()) return putOnCooldown(target);
+    protected boolean primary(LivingEntityBeyonderCapability cap, LivingEntity target) {
+        if(target.level().isClientSide()) return true;
         if(cap.getSpirituality() > cost()){
             ServerLevel level = (ServerLevel) target.level();
             HitResult block = target.pick(target.getAttributeBaseValue(ForgeMod.BLOCK_REACH.get()) + 0.5f, 0f, false);
@@ -43,7 +43,7 @@ public class WaterRemoveAbility extends Ability {
                 double radius = target.getAttributeBaseValue(ForgeMod.ENTITY_REACH.get()) + (10 - getSequenceLevel());
                 if(removeWaterBreadthFirstSearch(level, targetPos, (int) radius)){
                     cap.requestActiveSpiritualityCost(cost());
-                    return putOnCooldown(target);
+                    return true;
                 }
             }
         }

@@ -24,7 +24,7 @@ public class PanaceaAbility extends Ability {
     }
 
     @Override
-    public boolean primary(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    protected boolean primary(LivingEntityBeyonderCapability cap, LivingEntity target) {
         if(target.level().isClientSide()) return true;
         if(cap.getSpirituality() > cost() && !target.getActiveEffects().isEmpty()){
             boolean flag = false;
@@ -37,7 +37,6 @@ public class PanaceaAbility extends Ability {
                     flag = true;
                 }
             }
-            if(flag) putOnCooldown(target);
             return flag;
         }
         return false;

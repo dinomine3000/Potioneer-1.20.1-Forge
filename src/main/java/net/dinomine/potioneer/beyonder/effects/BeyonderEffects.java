@@ -3,6 +3,9 @@ package net.dinomine.potioneer.beyonder.effects;
 
 import net.dinomine.potioneer.beyonder.effects.misc.*;
 import net.dinomine.potioneer.beyonder.effects.mystery.*;
+import net.dinomine.potioneer.beyonder.effects.paragon.BeyonderCraftingSpiritualityEffect;
+import net.dinomine.potioneer.beyonder.effects.paragon.BeyonderDurabilityEffect;
+import net.dinomine.potioneer.beyonder.effects.paragon.BeyonderXpReduceEffect;
 import net.dinomine.potioneer.beyonder.effects.redpriest.*;
 import net.dinomine.potioneer.beyonder.effects.tyrant.BeyonderElectrificationEffect;
 import net.dinomine.potioneer.beyonder.effects.tyrant.BeyonderLightningTargetEffect;
@@ -39,6 +42,9 @@ public class BeyonderEffects {
     public static final BeyonderEffectType RED_LIGHT_BUFF = registerEffect("light_buff", new BeyonderEffectType(BeyonderLightBuffEffect::new));
     public static final BeyonderEffectType RED_PURIFICATION = registerEffect("purification", new BeyonderEffectType(BeyonderPurificationEffect::new));
     public static final BeyonderEffectType RED_PROFICIENCY = registerEffect("weapon_proficiency", new BeyonderEffectType(BeyonderWeaponProficiencyEffect::new));
+    public static final BeyonderEffectType PARAGON_CRAFTING = registerEffect("crafting_spirituality", new BeyonderEffectType(BeyonderCraftingSpiritualityEffect::new));
+    public static final BeyonderEffectType PARAGON_XP = registerEffect("reduced_xp", new BeyonderEffectType(BeyonderXpReduceEffect::new));
+    public static final BeyonderEffectType PARAGON_REGEN = registerEffect("durability_regen", new BeyonderEffectType(BeyonderDurabilityEffect::new));
 
 
     public static BeyonderEffectType registerEffect(String effectId, BeyonderEffectType baseEffect){

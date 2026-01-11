@@ -16,14 +16,14 @@ public class PatienceAbility extends PassiveAbility {
     }
 
     @Override
-    public boolean primary(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    protected boolean primary(LivingEntityBeyonderCapability cap, LivingEntity target) {
         if(target.level().isClientSide()) return false;
         if(flipEnable(cap, target)){
             target.playSound(SoundEvents.ENCHANTMENT_TABLE_USE, 1, 1);
         } else {
             target.playSound(SoundEvents.EXPERIENCE_ORB_PICKUP, 1, 1);
         }
-        return putOnCooldown(target);
+        return true;
     }
 
     @Override

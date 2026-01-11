@@ -25,7 +25,7 @@ public class ConjureFireSwordAbility extends Ability {
     }
 
     @Override
-    public boolean primary(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    protected boolean primary(LivingEntityBeyonderCapability cap, LivingEntity target) {
         if(target.level().isClientSide() && cap.getSpirituality() >= cost()) return true;
         if(cap.getSpirituality() >= cost()){
             if(target instanceof Player player){
@@ -40,7 +40,7 @@ public class ConjureFireSwordAbility extends Ability {
             }
 
             cap.requestActiveSpiritualityCost(cost());
-            return putOnCooldown(target);
+            return true;
         }
         return false;
     }

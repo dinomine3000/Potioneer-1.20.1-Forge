@@ -15,9 +15,9 @@ public class MiningSpeedAbility extends PassiveAbility {
     }
 
     @Override
-    public boolean secondary(LivingEntityBeyonderCapability cap, LivingEntity target) {
-        if(target.level().isClientSide()) return putOnCooldown(target);
+    protected boolean secondary(LivingEntityBeyonderCapability cap, LivingEntity target) {
+        if(target.level().isClientSide()) return true;
         System.out.println("Warning: Havent implemented secondary ability for mining speed");
-        return putOnCooldown(target);
+        return true;
     }
 }

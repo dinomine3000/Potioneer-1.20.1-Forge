@@ -7,11 +7,6 @@ import net.minecraft.world.entity.LivingEntity;
 
 public class BeyonderXpReduceEffect extends BeyonderEffect {
 
-    public BeyonderXpReduceEffect(int level, float cost, int time, boolean active, BeyonderEffects.EFFECT id){
-        super(level, cost, time, active, id);
-        this.name = "Paragon XP";
-    }
-
     @Override
     public void onAcquire(LivingEntityBeyonderCapability cap, LivingEntity target) {
 

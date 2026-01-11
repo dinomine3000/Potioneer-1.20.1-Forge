@@ -30,7 +30,8 @@ public class HealAbility extends Ability {
         defaultMaxCooldown = 20*10;
     }
 
-    public boolean active(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    @Override
+    protected boolean primary(LivingEntityBeyonderCapability cap, LivingEntity target) {
         ArrayList<Entity> hits = AbilityFunctionHelper.getLivingEntitiesLooking(target, target.getAttributeValue(ForgeMod.ENTITY_REACH.get()) + 0.5f);
         hits.sort((a, b) -> (int) (a.position().distanceTo(target.position()) - b.position().distanceTo(target.position())));
         boolean flag = false;
@@ -58,7 +59,7 @@ public class HealAbility extends Ability {
         }
         if(flag){
             cap.requestActiveSpiritualityCost(cost());
-            putOnCooldown(target);
+            return true;
         }
         return flag;
     }

@@ -42,8 +42,9 @@ public class MeltAbility extends Ability {
         return "melt";
     }
 
-    public boolean active(LivingEntityBeyonderCapability cap, LivingEntity target) {
-        if(target.level().isClientSide() && cap.getSpirituality() >= cost()) return putOnCooldown(target);
+    @Override
+    protected boolean primary(LivingEntityBeyonderCapability cap, LivingEntity target) {
+        if(target.level().isClientSide() && cap.getSpirituality() >= cost()) return true;
         if(cap.getSpirituality() < cost()) return false;
         HitResult hit = target.pick(target.getAttributeValue(ForgeMod.BLOCK_REACH.get()) + 0.5f, 0, true);
         ArrayList<Entity> players = AbilityFunctionHelper.getEntitiesAroundPredicate(target, 16, ent -> ent instanceof Player);
@@ -66,7 +67,7 @@ public class MeltAbility extends Ability {
                                 new EvaporateEffect(pos.getX(), pos.getY(), pos.getZ()));
                     }
                 }
-                return putOnCooldown(target);
+                return true;
             } else if(blockState.is(Blocks.WATER)
                     || blockState.isFlammable(target.level(), pos, blockHit.getDirection())){
                 level.setBlock(pos, Blocks.AIR.defaultBlockState(), Block.UPDATE_ALL);
@@ -78,7 +79,7 @@ public class MeltAbility extends Ability {
                                 new EvaporateEffect(pos.getX(), pos.getY(), pos.getZ()));
                     }
                 }
-                return putOnCooldown(target);
+                return true;
             }
         }
 
@@ -102,7 +103,7 @@ public class MeltAbility extends Ability {
         if(flag){
             target.level().playSound(null, target, SoundEvents.GENERIC_EXTINGUISH_FIRE, SoundSource.PLAYERS, 1, 1.5f - target.getRandom().nextFloat());
             cap.requestActiveSpiritualityCost(cost());
-            return putOnCooldown(target);
+            return true;
         }
         return false;
     }

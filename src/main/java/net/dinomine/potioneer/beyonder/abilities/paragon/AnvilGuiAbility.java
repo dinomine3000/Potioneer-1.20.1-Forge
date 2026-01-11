@@ -26,33 +26,36 @@ import net.minecraftforge.event.ForgeEventFactory;
 import net.minecraftforge.network.NetworkHooks;
 
 import java.util.List;
+import java.util.function.Supplier;
 
 public class AnvilGuiAbility extends Ability {
-    private boolean levelUp = false;
+    private Supplier<Boolean> levelUp = () -> sequenceLevel < 8;
     public AnvilGuiAbility(int sequence){
-        levelUp = sequence < 8;
-        this.info = new AbilityInfo(109, levelUp ? 104 : 248, "Anvil Gui", 40 + sequence, levelUp ? 10 : 100, this.getMaxCooldown(), "anvil_gui_" + (levelUp ? "2" : "1"));
+//        levelUp = sequence < 8;
+//        this.info = new AbilityInfo(109, levelUp ? 104 : 248, "Anvil Gui", 40 + sequence, levelUp ? 10 : 100, this.getMaxCooldown(), "anvil_gui_" + (levelUp ? "2" : "1"));
+        super(sequence);
+        setCost(level -> levelUp.get() ? 10 : 100);
     }
 
     @Override
-    public void onAcquire(LivingEntityBeyonderCapability cap, LivingEntity target) {
-
+    protected String getDescId(int sequenceLevel) {
+        return "anvil_gui_" + (levelUp.get() ? "2" : "1");
     }
 
     @Override
-    public boolean active(LivingEntityBeyonderCapability cap, LivingEntity target) {
-        if(target.level().isClientSide()) return true;
-        if(cap.getSpirituality() > info.cost() && target instanceof ServerPlayer player){
-            if(levelUp) {
+    public boolean primary(LivingEntityBeyonderCapability cap, LivingEntity target) {
+        if(target.level().isClientSide()) return putOnCooldown(target);
+        if(cap.getSpirituality() > cost() && target instanceof ServerPlayer player){
+            if(levelUp.get()) {
                 NetworkHooks.openScreen(
                         player,
                         new SimpleMenuProvider((i, inventory, player1) ->
-                                new CrafterAnvilMenu(i, inventory, ContainerLevelAccess.create(player1.level(), player1.getOnPos()), getSequence()),
+                                new CrafterAnvilMenu(i, inventory, ContainerLevelAccess.create(player1.level(), player1.getOnPos()), getSequenceLevel()),
                                 Component.translatable("potioneer.menu.anvil_menu")),
-                        buff -> buff.writeInt(getSequence()));
+                        buff -> buff.writeInt(getSequenceLevel()));
 
-                cap.requestActiveSpiritualityCost(info.cost());
-                return true;
+                cap.requestActiveSpiritualityCost(cost());
+                return putOnCooldown(target);
             } else {
                 ItemStack book = player.getMainHandItem();
                 if(!book.is(Items.BOOK)) return false;
@@ -90,8 +93,8 @@ public class AnvilGuiAbility extends Ability {
                     if(fuel.is(ModItems.GOLDEN_DROP.get()) && fuel.getCount() > 0){
                         fuel.shrink(1);
                     } else {
-                        cap.requestActiveSpiritualityCost(info.cost());
-                        return true;
+                        cap.requestActiveSpiritualityCost(cost());
+                        return putOnCooldown(target);
                     }
 
                     //this.enchantSlots.setChanged();
@@ -101,19 +104,5 @@ public class AnvilGuiAbility extends Ability {
             }
         }
         return false;
-    }
-
-    @Override
-    public void passive(LivingEntityBeyonderCapability cap, LivingEntity target) {
-
-    }
-
-    @Override
-    public void activate(LivingEntityBeyonderCapability cap, LivingEntity target) {
-
-    }
-
-    @Override
-    public void deactivate(LivingEntityBeyonderCapability cap, LivingEntity target) {
     }
 }

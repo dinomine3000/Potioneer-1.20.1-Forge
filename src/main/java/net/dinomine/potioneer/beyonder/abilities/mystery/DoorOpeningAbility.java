@@ -34,7 +34,7 @@ public class DoorOpeningAbility extends Ability {
     }
 
     @Override
-    public boolean primary(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    protected boolean primary(LivingEntityBeyonderCapability cap, LivingEntity target) {
         if(target.level().isClientSide() || cap.getSpirituality() < cost()) return false;
         Level level = target.level();
         BlockPos pos = target.getOnPos().above();
@@ -46,7 +46,7 @@ public class DoorOpeningAbility extends Ability {
             if(blockTar.is(BlockTags.DOORS)){
                 ((DoorBlock) blockTar.getBlock()).setOpen(null, level, blockTar, rayTrace.getBlockPos(), !blockTar.getValue(OPEN));
                 cap.requestActiveSpiritualityCost(cost());
-                return putOnCooldown(target);
+                return true;
             }
         }
         int newZ = dir.getNormal().getZ();
@@ -68,7 +68,7 @@ public class DoorOpeningAbility extends Ability {
                     level.playSound(null,
                             pos.offset(newX*(i+1), 0, newZ*(i+1)), SoundEvents.ENDERMAN_TELEPORT,
                             SoundSource.PLAYERS, 1, 1);
-                    return putOnCooldown(target);
+                    return true;
                 }
             }
 //            System.out.println("iterating i");

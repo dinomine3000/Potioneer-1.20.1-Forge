@@ -25,7 +25,8 @@ public class LightBuffAbility extends Ability {
         return "light_buff";
     }
 
-    public boolean active(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    @Override
+    protected boolean primary(LivingEntityBeyonderCapability cap, LivingEntity target) {
         if(target.level().isClientSide()) return cap.getSpirituality() >= cost();
 
         ArrayList<Entity> hits = AbilityFunctionHelper.getLivingEntitiesLooking(target, target.getAttributeValue(ForgeMod.ENTITY_REACH.get()) + 0.5f);
@@ -38,7 +39,7 @@ public class LightBuffAbility extends Ability {
                             , otherCap.get(), livingEntity);
                     cap.requestActiveSpiritualityCost(cost());
                     System.out.println("Applied strength buff to " + livingEntity.getName());
-                    return putOnCooldown(target);
+                    return true;
                 }
             }
         }

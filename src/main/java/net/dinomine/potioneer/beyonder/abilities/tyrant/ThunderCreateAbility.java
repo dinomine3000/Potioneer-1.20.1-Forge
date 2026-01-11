@@ -22,12 +22,12 @@ public class ThunderCreateAbility extends Ability {
 
 
     @Override
-    public boolean primary(LivingEntityBeyonderCapability cap, LivingEntity target) {
-        if(target.level().isClientSide()) return putOnCooldown(target);
+    protected boolean primary(LivingEntityBeyonderCapability cap, LivingEntity target) {
+        if(target.level().isClientSide()) return true;
         if(cap.getSpirituality() > cost() && !target.level().isRaining()){
             ((ServerLevel) target.level()).setWeatherParameters(0, 20*60*(1 + 2*(7-getSequenceLevel())), true, true);
             cap.requestActiveSpiritualityCost(cost());
-            return putOnCooldown(target);
+            return true;
         }
         return false;
     }
