@@ -33,7 +33,7 @@ public class TyrantPathway extends BeyonderPathway {
 
     @Override
     public float[] getStatsFor(int sequenceLevel){
-        return switch (sequenceLevel){
+        return switch (sequenceLevel%10){
             case 9 -> new float[]{8, 1, 0, 0, 1};
             case 8 -> new float[]{8, 1, 0, 0, 2};
             case 7 -> new float[]{12, 2, 0, 0, 5};
@@ -46,7 +46,7 @@ public class TyrantPathway extends BeyonderPathway {
     @Override
     public List<Ability> getAbilities(int sequence){
         ArrayList<Ability> abilities = new ArrayList<>();
-        switch(sequence){
+        switch(sequence%10){
             case 0:
             case 1:
             case 2:
@@ -84,7 +84,7 @@ public class TyrantPathway extends BeyonderPathway {
     }
 
     private String getSequenceName(int seq){
-        return switch (seq) {
+        return switch (seq%10) {
             case 9 -> "Swimmer";
             case 8 -> "Water_Mage";
             case 7 -> "Hydroborn_Enforcer";
@@ -95,8 +95,9 @@ public class TyrantPathway extends BeyonderPathway {
         };
     }
 
+    @Override
     public int getSequenceColorFromLevel(int seq){
-        return switch (seq) {
+        return switch (seq%10) {
             case 9 -> 2146549;
             case 8 -> 8023295;
             case 7 -> 8167853;

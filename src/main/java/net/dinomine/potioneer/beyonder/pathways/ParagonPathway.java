@@ -6,27 +6,32 @@ import net.dinomine.potioneer.beyonder.abilities.paragon.*;
 import net.dinomine.potioneer.beyonder.player.PlayerAbilitiesManager;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class ParagonPathway extends BeyonderPathway {
 
-    public static int[] paragonSpirituality = new int[]{3500, 2744, 1960, 1400, 1000, 700, 500, 350, 250, 100};
-
-    public ParagonPathway(int sequence){
-        super(sequence, "Paragon");
-        this.color = 0x908020;
-        this.maxSpirituality = paragonSpirituality;
+    public ParagonPathway(){
+        super("Paragon", 0x908020, new int[]{3500, 2744, 1960, 1400, 1000, 700, 500, 350, 250, 100});
     }
 
-    public static int getX(){
+    @Override
+    public int getX(){
         return 0;
     }
 
-    public static int getY(){
+    @Override
+    public int getY(){
         return 64;
     }
 
-    public static float[] getStatsFor(int sequence){
-        return switch (sequence){
+    @Override
+    public int getAbilityX(){
+        return 109;
+    }
+
+    @Override
+    public float[] getStatsFor(int sequence){
+        return switch (sequence%10){
             case 9 -> new float[]{0, 0, 0, 0, 0};
             case 8 -> new float[]{0, 0, 0, 0, 1};
             case 7 -> new float[]{1, 0, 0, 1, 5};
@@ -36,11 +41,11 @@ public class ParagonPathway extends BeyonderPathway {
         };
     }
 
-    public static void getAbilities(int sequence, PlayerAbilitiesManager mng){
-        ArrayList<Ability> passiveAbilities = new ArrayList<>();
+    @Override
+    public List<Ability> getAbilities(int sequence){
         ArrayList<Ability> activeAbilities = new ArrayList<>();
 
-        switch(sequence){
+        switch(sequence%10){
             case 0:
             case 1:
             case 2:
@@ -51,7 +56,6 @@ public class ParagonPathway extends BeyonderPathway {
             case 7:
                 XpCostReductionAbility xp = new XpCostReductionAbility(sequence);
                 activeAbilities.add(xp);
-                passiveAbilities.add(xp);
                 activeAbilities.add(new RemoveEnchantmentAbility(sequence));
             case 8:
                 activeAbilities.add(new AnvilGuiAbility(sequence));
@@ -61,28 +65,29 @@ public class ParagonPathway extends BeyonderPathway {
             case 9:
                 CraftingSpiritualityAbility craftingSpiritualityAbility = new CraftingSpiritualityAbility(sequence);
                 activeAbilities.add(craftingSpiritualityAbility);
-                passiveAbilities.add(craftingSpiritualityAbility);
                 activeAbilities.add(new CraftingGuiAbility(sequence));
                 activeAbilities.add(new FuelAbility(sequence));
                 activeAbilities.add(new DurabilityRegenAbility(sequence));
                 activeAbilities.add(new CogitationAbility(40 + sequence));
         }
 //        CraftingBonusAbility abl = new CraftingBonusAbility(sequence);
-        mng.setPathwayAbilities(activeAbilities);
+//        mng.setPathwayAbilities(activeAbilities);
+        return activeAbilities;
         //mng.setPathwayPassives(passiveAbilities);
     }
 
     @Override
     public int getId() {
-        return 40 + this.sequence;
+        return 4;
     }
 
-    public static String getSequenceName(int seq, boolean show){
+    @Override
+    public String getSequenceNameFromId(int seq, boolean show){
         return show ? getSequenceName(seq).replace("_", " ") : getSequenceName(seq).toLowerCase();
     }
 
-    public static String getSequenceName(int seq){
-        return switch (seq) {
+    private String getSequenceName(int seq){
+        return switch (seq%10) {
             case 9 -> "Crafter";
             case 8 -> "Conjurer";
             case 7 -> "Enchanter";
@@ -92,8 +97,9 @@ public class ParagonPathway extends BeyonderPathway {
         };
     }
 
-    public static int getSequenceColor(int seq){
-        return switch (seq) {
+    @Override
+    public int getSequenceColorFromLevel(int seq){
+        return switch (seq%10) {
             case 9 -> 16770989;
             case 8 -> 28791;
             case 7 -> 10107903;

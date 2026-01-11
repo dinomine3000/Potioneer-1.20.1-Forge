@@ -1,30 +1,38 @@
 package net.dinomine.potioneer.beyonder.pathways;
 
+import net.dinomine.potioneer.beyonder.abilities.Abilities;
 import net.dinomine.potioneer.beyonder.abilities.Ability;
 import net.dinomine.potioneer.beyonder.abilities.misc.CogitationAbility;
 import net.dinomine.potioneer.beyonder.abilities.redpriest.*;
 import net.dinomine.potioneer.beyonder.player.PlayerAbilitiesManager;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class RedPriestPathway extends BeyonderPathway {
 
-    public RedPriestPathway(int sequence){
-        super(sequence, "Red_Priest");
-        this.color = 0x804040;
-        this.maxSpirituality = new int[]{2000, 1500, 1200, 1000, 800, 500, 320, 150, 100, 50};
+    public RedPriestPathway(){
+        super("Red_Priest", 0x804040, new int[]{2000, 1500, 1200, 1000, 800, 500, 320, 150, 100, 50});
     }
 
-    public static int getX(){
+    @Override
+    public int getX(){
         return 192;
     }
 
-    public static int getY(){
+    @Override
+    public int getY(){
         return 0;
     }
 
-    public static float[] getStatsFor(int sequence){
-        return switch (sequence){
+    @Override
+    public int getAbilityX() {
+        return 83;
+    }
+
+    @Override
+    public float[] getStatsFor(int sequence){
+        return switch (sequence%10){
             case 9 -> new float[]{4, 1, 0, 0, 0};
             case 8 -> new float[]{4, 1, 0, 0, 2};
             case 7 -> new float[]{6, 3, 3, 0, 4};
@@ -34,11 +42,12 @@ public class RedPriestPathway extends BeyonderPathway {
         };
     }
 
-    public static void getAbilities(int sequence, PlayerAbilitiesManager mng){
+    @Override
+    public List<Ability> getAbilities(int sequence){
         //ArrayList<Ability> passiveAbilities = new ArrayList<>();
-        ArrayList<Ability> activeAbilities = new ArrayList<>();
+        ArrayList<Ability> abilities = new ArrayList<>();
 
-        switch(sequence){
+        switch(sequence%10){
             case 0:
             case 1:
             case 2:
@@ -47,37 +56,38 @@ public class RedPriestPathway extends BeyonderPathway {
             case 5:
             case 6:
             case 7:
-                activeAbilities.add(new FireAuraAbility(sequence));
-                activeAbilities.add(new FireBuffAbility(sequence));
-                activeAbilities.add(new FireBallAbility(sequence));
-                activeAbilities.add(new ConjureFireSwordAbility(sequence));
+                abilities.add(Abilities.FIRE_AURA.create(sequence));
+                abilities.add(Abilities.FIRE_BUFF.create(sequence));
+                abilities.add(Abilities.FIRE_BALL.create(sequence));
+                abilities.add(Abilities.FIRE_SWORD.create(sequence));
             case 8:
-                activeAbilities.add(new PriestLightAbility(sequence));
-                activeAbilities.add(new LightBuffAbility(sequence));
-                activeAbilities.add(new HealAbility(sequence));
-                activeAbilities.add(new MeltAbility(sequence));
-                activeAbilities.add(new PurificationAbility(sequence));
+                abilities.add(Abilities.PRIEST_LIGHT.create(sequence));
+                abilities.add(Abilities.LIGHT_BUFF.create(sequence));
+                abilities.add(Abilities.HEALING.create(sequence));
+                abilities.add(Abilities.MELT_ABILITY.create(sequence));
+                abilities.add(Abilities.PURIFICATION.create(sequence));
             case 9:
-                activeAbilities.add(new WeaponProficiencyAbility(sequence));
-                if(sequence < 8) activeAbilities.add(new CogitationAbility(30 + sequence));
+                abilities.add(Abilities.WEAPON_PROFICIENCY.create(sequence));
         }
 
-        mng.setPathwayAbilities(activeAbilities);
+        return abilities;
+//        mng.setPathwayAbilities(activeAbilities);
         //mng.setPathwayPassives(passiveAbilities);
     }
 
     @Override
     public int getId() {
-        return 30 + this.sequence;
+        return 3;
     }
 
 
-    public static String getSequenceName(int seq, boolean show){
-        return show ? getSequenceName(seq).replace("_", " ") : getSequenceName(seq).toLowerCase();
+    @Override
+    public String getSequenceNameFromId(int seq, boolean show){
+        return show ? getSequenceNameFromId(seq).replace("_", " ") : getSequenceNameFromId(seq).toLowerCase();
     }
 
-    public static String getSequenceName(int seq){
-        return switch (seq) {
+    private String getSequenceNameFromId(int seq){
+        return switch (seq%10) {
             case 9 -> "Warrior";
             case 8 -> "Fire_Priest";
             case 7 -> "Pyromaniac";
@@ -87,8 +97,9 @@ public class RedPriestPathway extends BeyonderPathway {
         };
     }
 
-    public static int getSequenceColor(int seq){
-        return switch (seq) {
+    @Override
+    public int getSequenceColorFromLevel(int seq){
+        return switch (seq%10) {
             case 9 -> 10251629;
             case 8 -> 16749056;
             case 7 -> 16775936;

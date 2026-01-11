@@ -150,6 +150,7 @@ public abstract class BeyonderEffect {
         nbt.putString("ID", effectId);
     }
 
+    //nbt data is loaded in the effects manager
     public void loadNBTData(CompoundTag nbt){
     }
 

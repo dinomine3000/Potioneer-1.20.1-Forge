@@ -18,12 +18,16 @@ import java.util.ArrayList;
 
 public class HealAbility extends Ability {
 
-    public HealAbility(int sequence){
-        this.info = new AbilityInfo(83, 152, "Healing", 30 + sequence, 20, 20*10, "heal");
+    @Override
+    protected String getDescId(int sequenceLevel) {
+        return "heal";
     }
 
-    @Override
-    public void onAcquire(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    public HealAbility(int sequence){
+//        this.info = new AbilityInfo(83, 152, "Healing", 30 + sequence, 20, 20*10, "heal");
+        super(sequence);
+        setCost(ignored -> 20);
+        defaultMaxCooldown = 20*10;
     }
 
     public boolean active(LivingEntityBeyonderCapability cap, LivingEntity target) {
@@ -53,20 +57,10 @@ public class HealAbility extends Ability {
             }
         }
         if(flag){
-            cap.requestActiveSpiritualityCost(info.cost());
+            cap.requestActiveSpiritualityCost(cost());
+            putOnCooldown(target);
         }
         return flag;
     }
 
-    @Override
-    public void passive(LivingEntityBeyonderCapability cap, LivingEntity target) {
-    }
-
-    @Override
-    public void activate(LivingEntityBeyonderCapability cap, LivingEntity target) {
-    }
-
-    @Override
-    public void deactivate(LivingEntityBeyonderCapability cap, LivingEntity target) {
-    }
 }

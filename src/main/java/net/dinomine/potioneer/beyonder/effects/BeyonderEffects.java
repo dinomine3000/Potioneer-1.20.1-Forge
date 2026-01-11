@@ -3,6 +3,7 @@ package net.dinomine.potioneer.beyonder.effects;
 
 import net.dinomine.potioneer.beyonder.effects.misc.*;
 import net.dinomine.potioneer.beyonder.effects.mystery.*;
+import net.dinomine.potioneer.beyonder.effects.redpriest.*;
 import net.dinomine.potioneer.beyonder.effects.tyrant.BeyonderElectrificationEffect;
 import net.dinomine.potioneer.beyonder.effects.tyrant.BeyonderLightningTargetEffect;
 import net.dinomine.potioneer.beyonder.effects.tyrant.BeyonderWaterAffinityEffect;
@@ -33,6 +34,11 @@ public class BeyonderEffects {
     public static final BeyonderEffectType TYRANT_WATER_AFFINITY = registerEffect("water_affinity", new BeyonderEffectType(BeyonderWaterAffinityEffect::new));
     public static final BeyonderEffectType TYRANT_ELECTRIFICATION = registerEffect("electrification", new BeyonderEffectType(BeyonderElectrificationEffect::new));
     public static final BeyonderEffectType TYRANT_LIGHTNING_TARGET = registerEffect("lightning_target", new BeyonderEffectType(BeyonderLightningTargetEffect::new));
+    public static final BeyonderEffectType RED_FIRE_AURA = registerEffect("fire_aura", new BeyonderEffectType(BeyonderFireAuraEffect::new));
+    public static final BeyonderEffectType RED_FIRE_BUFF = registerEffect("fire_buff", new BeyonderEffectType(BeyonderFireBuffEffect::new));
+    public static final BeyonderEffectType RED_LIGHT_BUFF = registerEffect("light_buff", new BeyonderEffectType(BeyonderLightBuffEffect::new));
+    public static final BeyonderEffectType RED_PURIFICATION = registerEffect("purification", new BeyonderEffectType(BeyonderPurificationEffect::new));
+    public static final BeyonderEffectType RED_PROFICIENCY = registerEffect("weapon_proficiency", new BeyonderEffectType(BeyonderWeaponProficiencyEffect::new));
 
 
     public static BeyonderEffectType registerEffect(String effectId, BeyonderEffectType baseEffect){

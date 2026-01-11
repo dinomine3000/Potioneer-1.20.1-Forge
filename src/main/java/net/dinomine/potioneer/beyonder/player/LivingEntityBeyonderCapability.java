@@ -144,7 +144,7 @@ public class LivingEntityBeyonderCapability {
     }
 
     public float getSpirituality(){
-        return this.spirituality;
+        return Math.max(this.spirituality, 0);
     }
 
     public void changeSpirituality(float val){

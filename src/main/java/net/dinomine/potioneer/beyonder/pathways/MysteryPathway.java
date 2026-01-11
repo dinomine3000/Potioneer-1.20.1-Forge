@@ -31,7 +31,7 @@ public class MysteryPathway extends BeyonderPathway {
 
     @Override
     public int getSequenceColorFromLevel(int sequenceLevel) {
-        return switch (sequenceLevel) {
+        return switch (sequenceLevel%10) {
             case 9 -> 12117700;
             case 8 -> 65294;
             case 7 -> 16121785;
@@ -43,7 +43,7 @@ public class MysteryPathway extends BeyonderPathway {
     public List<Ability> getAbilities(int sequenceLevel) {
         ArrayList<Ability> activeAbilities = new ArrayList<>();
 
-        switch(sequenceLevel){
+        switch(sequenceLevel%10){
             case 0:
             case 1:
             case 2:
@@ -76,7 +76,7 @@ public class MysteryPathway extends BeyonderPathway {
 
     @Override
     public float[] getStatsFor(int sequence){
-        return switch (sequence){
+        return switch (sequence%10){
             case 9 -> new float[]{0, 0, 0, 0, 0};
             case 8 -> new float[]{0, 0, 0, 0, 1};
             case 7 -> new float[]{2, 1, 0, 0, 5};
@@ -91,8 +91,8 @@ public class MysteryPathway extends BeyonderPathway {
         return 2;
     }
 
-    public String getSequenceName(int seq){
-        return switch (seq) {
+    private String getSequenceName(int seq){
+        return switch (seq%10) {
             case 9 -> "Trickster";
             case 8 -> "Acrobat";
             case 7 -> "Magician";

@@ -16,15 +16,17 @@ import java.util.Optional;
 public class LightBuffAbility extends Ability {
 
     public LightBuffAbility(int sequence){
-        this.info = new AbilityInfo(83, 224, "Light Buff", 30 + sequence, 5, this.getMaxCooldown(), "light_buff");
+//        this.info = new AbilityInfo(83, 224, "Light Buff", 30 + sequence, 5, this.getMaxCooldown(), "light_buff");
+        super(sequence);
     }
 
     @Override
-    public void onAcquire(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    protected String getDescId(int sequenceLevel) {
+        return "light_buff";
     }
 
     public boolean active(LivingEntityBeyonderCapability cap, LivingEntity target) {
-        if(target.level().isClientSide()) return cap.getSpirituality() >= info.cost();
+        if(target.level().isClientSide()) return cap.getSpirituality() >= cost();
 
         ArrayList<Entity> hits = AbilityFunctionHelper.getLivingEntitiesLooking(target, target.getAttributeValue(ForgeMod.ENTITY_REACH.get()) + 0.5f);
         hits.sort((a, b) -> (int) (a.position().distanceTo(target.position()) - b.position().distanceTo(target.position())));
@@ -32,26 +34,14 @@ public class LightBuffAbility extends Ability {
             if(ent instanceof LivingEntity livingEntity){
                 Optional<LivingEntityBeyonderCapability> otherCap = livingEntity.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve();
                 if(otherCap.isPresent()){
-                    otherCap.get().getEffectsManager().addOrReplaceEffect(BeyonderEffects.byId(BeyonderEffects.EFFECT.RED_LIGHT_BUFF, getSequence(), 0, livingEntity != target ? 2*20*60*5 : 2*20*60, true)
+                    otherCap.get().getEffectsManager().addOrReplaceEffect(BeyonderEffects.byId(BeyonderEffects.RED_LIGHT_BUFF.getEffectId(), getSequenceLevel(), 0, livingEntity != target ? 2*20*60*5 : 2*20*60, true)
                             , otherCap.get(), livingEntity);
-                    cap.requestActiveSpiritualityCost(info.cost());
+                    cap.requestActiveSpiritualityCost(cost());
                     System.out.println("Applied strength buff to " + livingEntity.getName());
-                    return true;
+                    return putOnCooldown(target);
                 }
             }
         }
         return false;
-    }
-
-    @Override
-    public void passive(LivingEntityBeyonderCapability cap, LivingEntity target) {
-    }
-
-    @Override
-    public void activate(LivingEntityBeyonderCapability cap, LivingEntity target) {
-    }
-
-    @Override
-    public void deactivate(LivingEntityBeyonderCapability cap, LivingEntity target) {
     }
 }

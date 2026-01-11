@@ -11,20 +11,24 @@ import net.minecraft.world.phys.Vec3;
 
 public class FireBallAbility extends Ability {
 
-    public FireBallAbility(int sequence){
-        this.info = new AbilityInfo(83, 128, "Fire Ball", 30 + sequence, 20, this.getMaxCooldown(), "fire_ball");
+    @Override
+    protected String getDescId(int sequenceLevel) {
+        return "fire_ball";
     }
 
-    @Override
-    public void onAcquire(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    public FireBallAbility(int sequence){
+//        this.info = new AbilityInfo(83, 128, "Fire Ball", 30 + sequence, 20, this.getMaxCooldown(), "fire_ball");
+        super(sequence);
+        setCost(ignored -> 20);
     }
+
 
     public boolean active(LivingEntityBeyonderCapability cap, LivingEntity target) {
-        if(target.level().isClientSide() && cap.getSpirituality() >= info.cost()) return true;
-        if(cap.getSpirituality() < info.cost()) return false;
+        if(target.level().isClientSide() && cap.getSpirituality() >= cost()) return putOnCooldown(target);
+        if(cap.getSpirituality() < cost()) return false;
         float magnitude = 10f;
         Vec3 look = target.getLookAngle();
-        int iterations = (9 - getSequence());
+        int iterations = (9 - getSequenceLevel());
         for(int i = 0; i < iterations; i++){
             Vec3 offset = new Vec3(target.getRandom().triangle(0, 2), 2, target.getRandom().triangle(0, 2));
 
@@ -35,19 +39,7 @@ public class FireBallAbility extends Ability {
             target.level().playSound(null, target.getOnPos(), SoundEvents.FIRECHARGE_USE, SoundSource.PLAYERS);
         }
 
-        cap.requestActiveSpiritualityCost(info.cost());
-        return true;
-    }
-
-    @Override
-    public void passive(LivingEntityBeyonderCapability cap, LivingEntity target) {
-    }
-
-    @Override
-    public void activate(LivingEntityBeyonderCapability cap, LivingEntity target) {
-    }
-
-    @Override
-    public void deactivate(LivingEntityBeyonderCapability cap, LivingEntity target) {
+        cap.requestActiveSpiritualityCost(cost());
+        return putOnCooldown(target);
     }
 }

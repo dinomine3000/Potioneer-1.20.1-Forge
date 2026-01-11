@@ -29,7 +29,7 @@ public class WheelOfFortunePathway extends BeyonderPathway {
 
     @Override
     public float[] getStatsFor(int sequence){
-        return switch (sequence){
+        return switch (sequence%10){
             case 9 -> new float[]{0, 0, 2, 0, 0};
             case 8 -> new float[]{0, 0, 4, 0, 2};
             case 7 -> new float[]{4, 0, 6, 2, 2};
@@ -42,7 +42,7 @@ public class WheelOfFortunePathway extends BeyonderPathway {
     @Override
     public List<Ability> getAbilities(int sequence){
         ArrayList<Ability> abilities = new ArrayList<>();
-        switch(sequence){
+        switch(sequence%10){
             case 0:
             case 1:
             case 2:
@@ -78,7 +78,7 @@ public class WheelOfFortunePathway extends BeyonderPathway {
     }
 
     private String getSequenceNameFromId(int seq){
-        return switch (seq) {
+        return switch (seq%10) {
             case 9 -> "Miner";
             case 8 -> "Appraiser";
             case 7 -> "Nimble_Gambler";
@@ -89,8 +89,9 @@ public class WheelOfFortunePathway extends BeyonderPathway {
         };
     }
 
+    @Override
     public int getSequenceColorFromLevel(int seq){
-        return switch (seq) {
+        return switch (seq%10) {
             case 9 -> 10724259;
             case 8 -> 16383885;
             case 7 -> 14989311;

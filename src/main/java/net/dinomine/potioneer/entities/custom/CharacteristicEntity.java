@@ -1,6 +1,7 @@
 package net.dinomine.potioneer.entities.custom;
 
 import net.dinomine.potioneer.beyonder.pathways.BeyonderPathway;
+import net.dinomine.potioneer.beyonder.pathways.Pathways;
 import net.dinomine.potioneer.util.GeoTintable;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -82,7 +83,8 @@ public class CharacteristicEntity extends PlaceableItemEntity implements GeoEnti
 
     @Override
     public int getHexColor() {
-       return BeyonderPathway.getSequenceColorFromLevel(entityData.get(BEYONDER_ID));
+        int pathwaySequenceId = entityData.get(BEYONDER_ID);
+       return Pathways.getPathwayById(pathwaySequenceId).getSequenceColorFromLevel(pathwaySequenceId);
     }
 
     @Override

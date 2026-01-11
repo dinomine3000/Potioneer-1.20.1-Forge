@@ -8,10 +8,6 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
 
 public class BeyonderLightBuffEffect extends BeyonderEffect {
-    public BeyonderLightBuffEffect(int level, float cost, int time, boolean active, BeyonderEffects.EFFECT id){
-        super(level, cost, time, active, id);
-        this.name = "Red Priest Light Buff";
-    }
 
     @Override
     public void onAcquire(LivingEntityBeyonderCapability cap, LivingEntity target) {

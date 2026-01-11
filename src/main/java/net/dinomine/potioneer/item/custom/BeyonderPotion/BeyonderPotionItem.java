@@ -76,11 +76,6 @@ public class BeyonderPotionItem extends PotionItem implements GeoItem, GeoTintab
     }
 
     @Override
-    public String getDescriptionId(ItemStack pStack) {
-        return this.getDescriptionId();
-    }
-
-    @Override
     public void appendHoverText(ItemStack pStack, @Nullable Level pLevel, List<Component> pTooltip, TooltipFlag pFlag) {
     }
 

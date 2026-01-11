@@ -1,5 +1,6 @@
 package net.dinomine.potioneer.item.custom;
 
+import net.dinomine.potioneer.beyonder.pathways.Pathways;
 import net.dinomine.potioneer.util.misc.ArtifactHelper;
 import net.dinomine.potioneer.beyonder.pathways.BeyonderPathway;
 import net.dinomine.potioneer.entities.ModEntities;
@@ -117,7 +118,7 @@ public class CharacteristicItem extends Item {
                     seq = itemStack.getTag().getCompound(ArtifactHelper.BEYONDER_TAG_ID).getInt("id");
                 }
             }
-            return BeyonderPathway.getSequenceColorFromLevel(seq);
+            return Pathways.getPathwayById(seq).getSequenceColorFromLevel(seq);
         }
     }
 }

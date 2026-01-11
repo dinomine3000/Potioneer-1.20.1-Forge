@@ -12,18 +12,26 @@ import net.minecraft.world.item.ItemStack;
 
 public class ConjureFireSwordAbility extends Ability {
 
+    @Override
+    protected String getDescId(int sequenceLevel) {
+        return "fire_sword";
+    }
+
     public ConjureFireSwordAbility(int sequence){
-        this.info = new AbilityInfo(83, 56, "Create Sword", 30 + sequence, 25, 20*30, "fire_sword");
+//        this.info = new AbilityInfo(83, 56, "Create Sword", 30 + sequence, 25, 20*30, "fire_sword");
+        super(sequence);
+        setCost(ignored -> 25);
+        defaultMaxCooldown = 20*30;
     }
 
     @Override
-    public boolean active(LivingEntityBeyonderCapability cap, LivingEntity target) {
-        if(target.level().isClientSide() && cap.getSpirituality() >= info.cost()) return true;
-        if(cap.getSpirituality() >= info.cost()){
+    public boolean primary(LivingEntityBeyonderCapability cap, LivingEntity target) {
+        if(target.level().isClientSide() && cap.getSpirituality() >= cost()) return true;
+        if(cap.getSpirituality() >= cost()){
             if(target instanceof Player player){
                 if(!replacePickIfPresent(player)){
                     ItemStack newSword = new ItemStack(ModItems.FIRE_SWORD.get());
-                    MysticismHelper.updateOrApplyMysticismTag(newSword, info.cost(), player);
+                    MysticismHelper.updateOrApplyMysticismTag(newSword, cost(), player);
                     if(!player.addItem(newSword)){
                         player.sendSystemMessage(Component.literal("Could not conjure sword: Not enough space"));
                         return false;
@@ -31,8 +39,8 @@ public class ConjureFireSwordAbility extends Ability {
                 }
             }
 
-            cap.requestActiveSpiritualityCost(info.cost());
-            return true;
+            cap.requestActiveSpiritualityCost(cost());
+            return putOnCooldown(target);
         }
         return false;
     }
@@ -46,21 +54,5 @@ public class ConjureFireSwordAbility extends Ability {
             }
         }
         return false;
-    }
-
-    @Override
-    public void onAcquire(LivingEntityBeyonderCapability cap, LivingEntity target) {
-    }
-
-    @Override
-    public void passive(LivingEntityBeyonderCapability cap, LivingEntity target) {
-    }
-
-    @Override
-    public void activate(LivingEntityBeyonderCapability cap, LivingEntity target) {
-    }
-
-    @Override
-    public void deactivate(LivingEntityBeyonderCapability cap, LivingEntity target) {
     }
 }

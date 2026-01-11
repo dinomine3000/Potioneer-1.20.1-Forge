@@ -12,21 +12,13 @@ import net.minecraft.world.phys.AABB;
 import java.util.List;
 
 public class BeyonderFireAuraEffect extends BeyonderEffect {
-    private int tick = 0;
-
-    public BeyonderFireAuraEffect(int level, float cost, int time, boolean active, BeyonderEffects.EFFECT id){
-        super(level, cost, time, active, id);
-        this.name = "Red Priest Fire Aura";
-    }
-
     @Override
     public void onAcquire(LivingEntityBeyonderCapability cap, LivingEntity target) {
     }
 
     @Override
     protected void doTick(LivingEntityBeyonderCapability cap, LivingEntity target) {
-        if(tick++ > 20){
-            tick = 0;
+        if(target.tickCount%20 == 0){
             BlockPos pos = target.getOnPos();
             int radius = (9 - sequenceLevel)*2 + 2;
             List<Entity> entities = target.level().getEntities(target, new AABB(pos.offset(-radius, -radius, -radius), pos.offset(radius, radius, radius)), entity -> entity instanceof Mob mob && (mob.getTarget() != null) && mob.getTarget().is(target));

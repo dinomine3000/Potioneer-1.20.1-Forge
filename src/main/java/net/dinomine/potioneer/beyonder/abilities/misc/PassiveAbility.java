@@ -20,6 +20,7 @@ public class PassiveAbility extends Ability {
      * percentage of maximum spirituality below which the ability stops working
      */
     protected float minimumSpiritualityThreshold = 0f;
+    protected int minSpiritualityAbsolute = 0;
     private Function<Integer, String> descId;
 
     protected PassiveAbility(int sequenceLevel, BeyonderEffects.BeyonderEffectType effect, Function<Integer, String> descId){
@@ -33,11 +34,22 @@ public class PassiveAbility extends Ability {
         return new PassiveAbility(level, effect, descId);
     }
 
+    /**
+     * Associate a cost to the effect.
+     * The passive ability will NOT apply this cost, that is up to the effect
+     * @param costFunction function that returns the cost to be passed on to the effect based on the sequence level
+     * @return same instance
+     */
     public PassiveAbility withCost(Function<Integer, Integer> costFunction){
         setCost(costFunction);
         return this;
     }
 
+    /**
+     * Wheter you can flip the state of this ability.
+     * Of note, if the ability is ever disabled, you can always enable it. This option prevents players from disabling the ability.
+     * @return
+     */
     public PassiveAbility canFlip(){
         this.canFlip = true;
         return this;
@@ -48,7 +60,17 @@ public class PassiveAbility extends Ability {
         return this;
     }
 
+    /**
+     * A spirituality threshold as a float. If spirituality ever dips below this percentage, it will disable itself
+     * @param thresh
+     * @return
+     */
     public PassiveAbility withThreshold(float thresh){
+        this.minimumSpiritualityThreshold = thresh;
+        return this;
+    }
+
+    public PassiveAbility withThreshold(int thresh){
         this.minimumSpiritualityThreshold = thresh;
         return this;
     }
@@ -80,7 +102,8 @@ public class PassiveAbility extends Ability {
     public void passive(LivingEntityBeyonderCapability cap, LivingEntity target) {
         if(isEnabled()){
             cap.getEffectsManager().addOrReplaceEffect(effect.createInstance(sequenceLevel, cost(), -1, true), cap, target);
-            if(cap.getSpirituality() <= cap.getMaxSpirituality()*minimumSpiritualityThreshold) flipEnable(cap, target);
+            if(cap.getSpirituality() < cap.getMaxSpirituality()*minimumSpiritualityThreshold
+                || cap.getSpirituality() < minSpiritualityAbsolute) setEnabled(cap, target, false);
         }
     }
 

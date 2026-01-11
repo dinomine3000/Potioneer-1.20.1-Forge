@@ -5,9 +5,11 @@ import net.dinomine.potioneer.beyonder.abilities.misc.CogitationAbility;
 import net.dinomine.potioneer.beyonder.abilities.misc.PassiveAbility;
 import net.dinomine.potioneer.beyonder.abilities.misc.TimedPassiveAbility;
 import net.dinomine.potioneer.beyonder.abilities.mystery.*;
+import net.dinomine.potioneer.beyonder.abilities.redpriest.*;
 import net.dinomine.potioneer.beyonder.abilities.tyrant.*;
 import net.dinomine.potioneer.beyonder.abilities.wheeloffortune.*;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
+import net.dinomine.potioneer.item.custom.FireSword;
 import net.minecraft.resources.ResourceLocation;
 
 import java.util.HashMap;
@@ -173,6 +175,56 @@ public class Abilities {
                             (ignored) -> "negate_fall")
                     .enabledOnAcquire(),
             32, 2, 0);
+
+    // -------------------------- RED PRIEST ---------------------------------------------------
+
+    public static final AbilityFactory FIRE_SWORD = registerAbility("fire_sword",
+            ConjureFireSwordAbility::new, 56, 3, 25);
+
+//        this.info = new AbilityInfo(83, 104, "Fire Guard", 30 + sequence, 1, this.getMaxCooldown(), "fire_aura");
+    public static final AbilityFactory FIRE_AURA = registerAbility("fire_aura",
+            (Integer sequenceLevel) -> PassiveAbility.createAbility(sequenceLevel, BeyonderEffects.RED_FIRE_AURA,
+                            (ignored) -> "fire_aura")
+                    .canFlip().withThreshold(0.05f).withCost(ignored -> 1),
+            104, 3, 0);
+
+    public static final AbilityFactory FIRE_BALL = registerAbility("fire_ball",
+            FireBallAbility::new, 128, 3, 20);
+
+//        this.info = new AbilityInfo(83, 80, "Fire Dance", 30 + sequence, 5, this.getMaxCooldown(), "fire_buff");
+    public static final AbilityFactory FIRE_BUFF = registerAbility("fire_buff",
+            (Integer sequenceLevel) -> PassiveAbility.createAbility(sequenceLevel, BeyonderEffects.RED_FIRE_BUFF,
+                            (ignored) -> "fire_buff")
+                    .enabledOnAcquire().canFlip().withThreshold(5).withCost(ignored -> 5),
+            80, 3, 0);
+
+    public static final AbilityFactory HEALING = registerAbility("heal",
+            HealAbility::new, 152, 3, 20);
+
+    public static final AbilityFactory LIGHT_BUFF = registerAbility("light_buff",
+            LightBuffAbility::new, 224, 3, 5);
+
+    public static final AbilityFactory MELT_ABILITY = registerAbility("melt",
+            MeltAbility::new, 80, 3, 20);
+
+    public static final AbilityFactory PRIEST_LIGHT = registerAbility("priest_light",
+            PriestLightAbility::new, 200, 3, 10);
+
+//        this.info = new AbilityInfo(83, 176, "Purification", 30 + sequence, 5, this.getMaxCooldown(), "purification");
+    public static final AbilityFactory PURIFICATION = registerAbility("purification",
+            (Integer sequenceLevel) -> PassiveAbility.createAbility(sequenceLevel, BeyonderEffects.RED_PURIFICATION,
+                            (ignored) -> "purification")
+                    .enabledOnAcquire().canFlip().withThreshold(5).withCost(ignored -> 5),
+            176, 3, 0);
+
+//        this.info = new AbilityInfo(83, 32, "Weapon Proficiency", 30 + sequence, 0, this.getMaxCooldown(), "weapons_master");
+    public static final AbilityFactory WEAPON_PROFICIENCY = registerAbility("weapon_proficiency",
+            (Integer sequenceLevel) -> PassiveAbility.createAbility(sequenceLevel, BeyonderEffects.RED_PROFICIENCY,
+                            (ignored) -> "weapon_proficiency")
+                    .enabledOnAcquire().canFlip(),
+            32, 3, 0);
+
+
 
     private static AbilityFactory registerAbility(String ablId, Function<Integer, Ability> constructor, int posY, int pathwayId, int minSpirToActivate){
         if(ABILITIES.containsKey(ablId)){

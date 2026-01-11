@@ -32,18 +32,21 @@ import java.util.ArrayList;
 public class MeltAbility extends Ability {
 
     public MeltAbility(int sequence){
-        this.info = new AbilityInfo(83, 80, "Melt", 30 + sequence, 20, this.getMaxCooldown(), "melt");
+//        this.info = new AbilityInfo(83, 80, "Melt", 30 + sequence, 20, this.getMaxCooldown(), "melt");
+        super(sequence);
+        setCost(ignored -> 20);
     }
 
     @Override
-    public void onAcquire(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    protected String getDescId(int sequenceLevel) {
+        return "melt";
     }
 
     public boolean active(LivingEntityBeyonderCapability cap, LivingEntity target) {
-        if(target.level().isClientSide() && cap.getSpirituality() >= info.cost()) return true;
-        if(cap.getSpirituality() < info.cost()) return false;
+        if(target.level().isClientSide() && cap.getSpirituality() >= cost()) return putOnCooldown(target);
+        if(cap.getSpirituality() < cost()) return false;
         HitResult hit = target.pick(target.getAttributeValue(ForgeMod.BLOCK_REACH.get()) + 0.5f, 0, true);
-        ArrayList<Entity> players = AbilityFunctionHelper.getEntitiesAroundPredicate(target, 16, ent -> ent instanceof Player player);
+        ArrayList<Entity> players = AbilityFunctionHelper.getEntitiesAroundPredicate(target, 16, ent -> ent instanceof Player);
         ServerLevel level = (ServerLevel) target.level();
         if(hit instanceof BlockHitResult blockHit){
             BlockPos pos = blockHit.getBlockPos();
@@ -56,26 +59,26 @@ public class MeltAbility extends Ability {
                 level.playSound(null, target, SoundEvents.GENERIC_EXTINGUISH_FIRE, SoundSource.PLAYERS, 1, 1);
                 ItemEntity itemEntity = new ItemEntity(level, pos.getX(), pos.getY(), pos.getZ(), burnResult, 0, 0, 0);
                 level.addFreshEntity(itemEntity);
-                cap.requestActiveSpiritualityCost(info.cost());
+                cap.requestActiveSpiritualityCost(cost());
                 for(Entity ent: players){
                     if(ent instanceof ServerPlayer player){
                         PacketHandler.INSTANCE.send(PacketDistributor.PLAYER.with(() -> player),
                                 new EvaporateEffect(pos.getX(), pos.getY(), pos.getZ()));
                     }
                 }
-                return true;
+                return putOnCooldown(target);
             } else if(blockState.is(Blocks.WATER)
                     || blockState.isFlammable(target.level(), pos, blockHit.getDirection())){
                 level.setBlock(pos, Blocks.AIR.defaultBlockState(), Block.UPDATE_ALL);
                 level.playSound(null, target, SoundEvents.GENERIC_EXTINGUISH_FIRE, SoundSource.PLAYERS, 1, 1);
-                cap.requestActiveSpiritualityCost(info.cost());
+                cap.requestActiveSpiritualityCost(cost());
                 for(Entity ent: players){
                     if(ent instanceof ServerPlayer player){
                         PacketHandler.INSTANCE.send(PacketDistributor.PLAYER.with(() -> player),
                                 new EvaporateEffect(pos.getX(), pos.getY(), pos.getZ()));
                     }
                 }
-                return true;
+                return putOnCooldown(target);
             }
         }
 
@@ -98,8 +101,8 @@ public class MeltAbility extends Ability {
         }
         if(flag){
             target.level().playSound(null, target, SoundEvents.GENERIC_EXTINGUISH_FIRE, SoundSource.PLAYERS, 1, 1.5f - target.getRandom().nextFloat());
-            cap.requestActiveSpiritualityCost(info.cost());
-            return true;
+            cap.requestActiveSpiritualityCost(cost());
+            return putOnCooldown(target);
         }
         return false;
     }
@@ -114,15 +117,4 @@ public class MeltAbility extends Ability {
                 .orElse(ItemStack.EMPTY);
     }
 
-    @Override
-    public void passive(LivingEntityBeyonderCapability cap, LivingEntity target) {
-    }
-
-    @Override
-    public void activate(LivingEntityBeyonderCapability cap, LivingEntity target) {
-    }
-
-    @Override
-    public void deactivate(LivingEntityBeyonderCapability cap, LivingEntity target) {
-    }
 }
