@@ -3,6 +3,7 @@ package net.dinomine.potioneer;
 import com.mojang.logging.LogUtils;
 import net.dinomine.potioneer.beyonder.ModAttributes;
 import net.dinomine.potioneer.beyonder.abilities.Abilities;
+import net.dinomine.potioneer.beyonder.pathways.Pathways;
 import net.dinomine.potioneer.config.PotioneerRitualsConfig;
 import net.dinomine.potioneer.menus.ritual_altar.RitualAltarScreen;
 import net.dinomine.potioneer.util.misc.ArtifactHelper;
@@ -93,6 +94,8 @@ public class Potioneer
         ModEffects.register(eventBus);
 
         ModMenuTypes.MENU_TYPES.register(eventBus);
+
+        Pathways.register(eventBus);
 
 //        ModAttributes.REGISTRY.register(eventBus);
 

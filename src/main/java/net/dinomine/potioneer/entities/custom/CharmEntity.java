@@ -77,9 +77,9 @@ public class CharmEntity extends Entity implements GeoEntity {
         if(compoundTag.contains("associatedEffect")){
             CompoundTag effTag = compoundTag.getCompound("associatedEffect");
             BeyonderEffect effect = BeyonderEffects.byId(
-                    BeyonderEffects.EFFECT.valueOf(effTag.getString("ID")),
+                    effTag.getString("ID"),
                     effTag.getInt("level"),
-                    effTag.getFloat("cost"),
+                    effTag.getInt("cost"),
                     effTag.getInt("maxLife"),
                     effTag.getBoolean("active"));
             effect.setLifetime(effTag.getInt("lifetime"));

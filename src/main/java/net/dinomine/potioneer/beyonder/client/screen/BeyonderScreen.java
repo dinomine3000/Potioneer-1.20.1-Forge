@@ -5,7 +5,8 @@ import net.dinomine.potioneer.beyonder.abilities.AbilityInfo;
 import net.dinomine.potioneer.beyonder.client.ClientAbilitiesData;
 import net.dinomine.potioneer.beyonder.client.ClientStatsData;
 import net.dinomine.potioneer.beyonder.client.KeyBindings;
-import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
+import net.dinomine.potioneer.beyonder.pathways.BeyonderPathway;
+import net.dinomine.potioneer.beyonder.pathways.Pathways;
 import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
@@ -35,11 +36,11 @@ public class BeyonderScreen extends Screen {
 
     private final int TEXTURE_WIDTH, TEXTURE_HEIGHT;
 
-    private Component PATHWAY;
-    private Component SEQUENCE;
-    private Component SEQUENCE_LEVEL;
+    private Component PATHWAY_NAME;
+    private Component SEQUENCE_NAME;
+    private BeyonderPathway pathway;
     private int color;
-    private int pathwayId;
+    private int pathwaySequenceId;
     private float tick = 0;
 
     private final int imageWidth, imageHeight;
@@ -71,19 +72,23 @@ public class BeyonderScreen extends Screen {
         this.leftPos = (this.width - this.imageWidth) / 2;
         this.topPos = (this.height- this.imageHeight) / 2;
 
-        Minecraft.getInstance().player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
-            this.PATHWAY = Component.translatable(Potioneer.MOD_ID + ".beyonder.pathway." + cap.getPathwayName(false));
-            this.SEQUENCE = Component.translatable(Potioneer.MOD_ID + ".beyonder.sequence." + cap.getSequenceName(false));
-            this.color = cap.getPathwayColor();
-            this.pathwayId = Math.floorDiv(cap.getPathwaySequenceId(), 10);
-
-
-            //this.PATHWAY = Component.literal("Path");
-            //this.SEQUENCE = Component.literal("sequence");
-            //this.color = 0x404080;
-            //this.SEQUENCE_LEVEL = Component.literal(String.valueOf(cap.getSequence()));
-
-        });
+        this.pathwaySequenceId = ClientStatsData.getPathwayId();
+        this.pathway = Pathways.getPathwayById(pathwaySequenceId);
+        this.PATHWAY_NAME = Component.translatable(Potioneer.MOD_ID + ".beyonder.pathway." + pathway.getPathwayName(false));
+        this.SEQUENCE_NAME = Component.translatable(Potioneer.MOD_ID + ".beyonder.sequence." + pathway.getSequenceNameFromId(pathwaySequenceId %10, false));
+        this.color = pathway.getColor();
+//        Minecraft.getInstance().player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
+////            this.PATHWAY = Component.translatable(Potioneer.MOD_ID + ".beyonder.pathway." + cap.getPathwayName(false));
+////            this.SEQUENCE = Component.translatable(Potioneer.MOD_ID + ".beyonder.sequence." + cap.getSequenceName(false));
+//            this.color = cap.getPathwayColor();
+//
+//
+//            //this.PATHWAY = Component.literal("Path");
+//            //this.SEQUENCE = Component.literal("sequence");
+//            //this.color = 0x404080;
+//            //this.SEQUENCE_LEVEL = Component.literal(String.valueOf(cap.getSequence()));
+//
+//        });
         /*this.button = addRenderableWidget(
                 Button.builder(
                     ABILITIES_BUTTON,
@@ -121,7 +126,7 @@ public class BeyonderScreen extends Screen {
     public void render(GuiGraphics pGuiGraphics, int pMouseX, int pMouseY, float pPartialTick) {
         renderBackground(pGuiGraphics);
         //blit pathway-related background
-        pGuiGraphics.blit(TEXTURE, leftPos, topPos, imageWidth, imageHeight, (pathwayId + 1)*imageWidth,
+        pGuiGraphics.blit(TEXTURE, leftPos, topPos, imageWidth, imageHeight, (pathway.getId() + 1)*imageWidth,
                 0, imageWidth, imageHeight, TEXTURE_WIDTH, TEXTURE_HEIGHT);
 
         //blit spirituality fog
@@ -157,14 +162,14 @@ public class BeyonderScreen extends Screen {
                 0, imageWidth, imageHeight, TEXTURE_WIDTH, TEXTURE_HEIGHT);
 
         //blit pathway icon
-        pGuiGraphics.blit(PATHWAY_ICONS, leftPos, topPos + 1, 64, 64, (pathwayId%4)*64,
-                Math.floorDiv(pathwayId, 4)*64, 64, 64, 256, 128);
+        pGuiGraphics.blit(PATHWAY_ICONS, leftPos, topPos + 1, 64, 64, (pathwaySequenceId %4)*64,
+                Math.floorDiv(pathwaySequenceId, 4)*64, 64, 64, 256, 128);
 
-        float scale = Math.min(1, 106f/this.font.width(PATHWAY.getString()));
-        drawScaledString(pGuiGraphics, this.font, PATHWAY.getString(), this.leftPos + 64, this.topPos + 22, scale, this.color);
+        float scale = Math.min(1, 106f/this.font.width(PATHWAY_NAME.getString()));
+        drawScaledString(pGuiGraphics, this.font, PATHWAY_NAME.getString(), this.leftPos + 64, this.topPos + 22, scale, this.color);
         //pGuiGraphics.drawString(this.font, PATHWAY, this.leftPos + 64, this.topPos + 10, this.color, false);
         pGuiGraphics.drawString(this.font, Minecraft.getInstance().player.getDisplayName(), this.leftPos + 64, this.topPos + 10, 0x707070, false);
-        pGuiGraphics.drawWordWrap(this.font, SEQUENCE, this.leftPos + 63, this.topPos + 45, 100, 0xFF909090);
+        pGuiGraphics.drawWordWrap(this.font, SEQUENCE_NAME, this.leftPos + 63, this.topPos + 45, 100, 0xFF909090);
 
         if(!ClientAbilitiesData.getHotbar().isEmpty()){
             for(int i = 0; i < Math.min(3, ClientAbilitiesData.getHotbar().size()); i++){
@@ -240,7 +245,8 @@ public class BeyonderScreen extends Screen {
     }
 
     private static void drawAbilityIcon(GuiGraphics pGuiGraphics, int pX, int pY, float scale, AbilityInfo info){
-        pGuiGraphics.blit(ICONS, pX + (int) (5*scale), pY + (int)(4*scale), (int)(ICON_WIDTH*scale), (int)(ICON_HEIGHT*scale), info.posX(), info.posY(), ICON_WIDTH, ICON_HEIGHT, ICONS_WIDTH, ICONS_HEIGHT);
+        int pathwaySequenceId = info.getPathwayId();
+        pGuiGraphics.blit(ICONS, pX + (int) (5*scale), pY + (int)(4*scale), (int)(ICON_WIDTH*scale), (int)(ICON_HEIGHT*scale), Pathways.getPathwayById(pathwaySequenceId).getAbilityX(), info.getPosY(), ICON_WIDTH, ICON_HEIGHT, ICONS_WIDTH, ICONS_HEIGHT);
     }
 
     @Override

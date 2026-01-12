@@ -46,6 +46,7 @@ public class ClientStatsData {
     }
 
     public static void setPathwayId(int id){
+        System.out.println("Set pathway id on client to " + id);
         ClientStatsData.pathwayId = id;
     }
 

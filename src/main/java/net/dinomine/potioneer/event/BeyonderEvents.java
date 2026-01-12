@@ -258,8 +258,8 @@ public class BeyonderEvents {
     public static void onExperienceChange(PlayerXpEvent.LevelChange event){
         //event.setLevels(Math.max(event.getLevels(), (int) Math.floor(event.getLevels() / 2f)));
         event.getEntity().getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent( cap -> {
-           if(cap.getEffectsManager().hasEffect(BeyonderEffects.EFFECT.PARAGON_XP_REDUCE)){
-               BeyonderEffect eff = cap.getEffectsManager().getEffect(BeyonderEffects.EFFECT.PARAGON_XP_REDUCE);
+           if(cap.getEffectsManager().hasEffect(BeyonderEffects.PARAGON_XP.getEffectId())){
+               BeyonderEffect eff = cap.getEffectsManager().getEffect(BeyonderEffects.PARAGON_XP.getEffectId());
                event.setLevels(Math.max(event.getLevels(),
                        (int) Math.floor((2 * event.getLevels()) /(float)(10 - eff.getSequenceLevel()))
                        ));

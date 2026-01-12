@@ -85,7 +85,7 @@ public class PlayerCharacteristicManager {
             double count = characteristicCountMap.get(droppedCharacteristic);
 
             //adjust acting progress
-            actingProgress.put(droppedCharacteristic, Mth.clamp(actingProgress.get(droppedCharacteristic)*(count+1d)/(count), 0d, 1d));
+            actingProgress.put(droppedCharacteristic, Mth.clamp(getActing(droppedCharacteristic)*(count+1d)/(count), 0d, 1d));
         }
 
 
@@ -97,7 +97,7 @@ public class PlayerCharacteristicManager {
 
         if(!PotioneerCommonConfig.ALLOW_CHANGING_PATHWAYS.get()){
             int lockedCharacId = characteristicsHolder.remove(0);
-            double digestion = actingProgress.get(lockedCharacId);
+            double digestion = getActing(lockedCharacId);
 
             characteristicCountMap = new HashMap<>();
             characteristicCountMap.put(lockedCharacId, 1);
@@ -142,9 +142,11 @@ public class PlayerCharacteristicManager {
                 actingProgress.put(acting.getKey(), Mth.clamp(acting.getValue() + tickVal, 0d, 1));
             }
         } else {
-            if(actingProgress.get(getPathwaySequenceId()) >= PotioneerCommonConfig.PASSIVE_ACTING_LIMIT.get()) return;
+            int id = getPathwaySequenceId();
+            if(id < 0) return;
+            if(getActing(id) >= PotioneerCommonConfig.PASSIVE_ACTING_LIMIT.get()) return;
             double tickVal = PotioneerCommonConfig.PASSIVE_ACTING_LIMIT.get()/PotioneerCommonConfig.PASSIVE_ACTING_RATE.get()*20d;
-            actingProgress.put(getPathwaySequenceId(), Mth.clamp(actingProgress.get(getPathwaySequenceId()) + tickVal, 0d, 1));
+            actingProgress.put(id, Mth.clamp(getActing(id) + tickVal, 0d, 1));
         }
     }
 
@@ -152,7 +154,7 @@ public class PlayerCharacteristicManager {
         if(!actingProgress.containsKey(pathwayId)) return;
         double aptitude_mult = PotioneerCommonConfig.DO_APTITUDE_PATHWAYS.get() ? PotioneerCommonConfig.APTITUDE_MULTIPLIER.get() : 1;
         double newVal = Mth.clamp(
-                actingProgress.get(pathwayId)
+                getActing(pathwayId)
                         + (
                             amount
                                 *(Math.floorDiv(pathwayId, 10) == aptitudePathway ? aptitude_mult : 1)
@@ -205,7 +207,7 @@ public class PlayerCharacteristicManager {
             finalDigestion += charac.getValue();
         }
         finalDigestion /= count;
-        double currentSequenceActing = actingProgress.get(currentSequenceLevel);
+        double currentSequenceActing = getActing(currentSequenceLevel);
         finalDigestion = (1 - currentSequenceWeight) * finalDigestion + currentSequenceWeight * currentSequenceActing;
         return finalDigestion;
     }
@@ -242,6 +244,10 @@ public class PlayerCharacteristicManager {
 //        passiveActing = 0;
 //    }
 
+    private double getActing(int pathwaySequenceId){
+        return actingProgress.getOrDefault(pathwaySequenceId, 0d);
+    }
+
     public void setActing(double value, int pathwayId){
         actingProgress.put(pathwayId, Mth.clamp(value, 0, 1));
     }
@@ -254,7 +260,7 @@ public class PlayerCharacteristicManager {
             int count = characteristicCountMap.get(id);
             result = result.concat("You have " + count + " " +  Pathways.getPathwayById(id).getSequenceNameFromId(id%10, true)
                     + (id == 1 ? " characteristic that is " : " characteristics that are ")
-                    + Math.round(actingProgress.get(id)*100d)  + "% digested.\n");
+                    + Math.round(getActing(id)*100d)  + "% digested.\n");
         }
         result = result.concat("Complete acting progress is at " + Math.round(getAdjustedActingPercent(getPathwaySequenceId())*100d));
         result = result.concat("Complete list of characteristics:\n" + lastConsumedCharacteristics.stream().map(val -> Pathways.getPathwayById(val).getSequenceNameFromId(val%10, true)));
@@ -269,7 +275,7 @@ public class PlayerCharacteristicManager {
         for(int id: lastConsumedCharacteristics){
             if(!hold.contains(id)){
                 hold.add(id);
-                finalActing.add(actingProgress.get(id));
+                finalActing.add(getActing(id));
             }
         }
         acting.put("acting_progress", toListTag(finalActing));

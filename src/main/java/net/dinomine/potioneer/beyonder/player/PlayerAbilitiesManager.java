@@ -252,6 +252,7 @@ public class PlayerAbilitiesManager {
                 return;
             }
         }
+        addAbility(AbilityList.INTRINSIC, Abilities.COGITATION.create(pathwaySequenceId), cap, target, true);
     }
 
     private void upgradeAbilitiesToLevel(int sequenceLevel, LivingEntityBeyonderCapability cap, LivingEntity target){
@@ -344,11 +345,13 @@ public class PlayerAbilitiesManager {
 
     public void useAbility(LivingEntityBeyonderCapability cap, LivingEntity tar, String cAblId, boolean sync, boolean primary){
         Ability ability = abilities.get(cAblId);
+        System.out.println(cAblId);
         if(ability != null){
+            System.out.println("Found ability. On client side? " + tar.level().isClientSide());
             ability.castAbility(cap, tar, primary);
             if(sync){
                 if(tar.level().isClientSide()){
-                    PacketHandler.sendMessageCTS(new PlayerCastAbilityMessageCTS(cAblId));
+                    PacketHandler.sendMessageCTS(new PlayerCastAbilityMessageCTS(cAblId, primary));
                 }
             }
         }
@@ -388,6 +391,7 @@ public class PlayerAbilitiesManager {
 
     public void reactivateAbilities(Player player, List<String> deactivatedAbilities) {
         for(String ablID: deactivatedAbilities){
+            if(!abilities.containsKey(ablID)) continue;
             abilities.get(ablID).undoRevoke(player);
         }
     }

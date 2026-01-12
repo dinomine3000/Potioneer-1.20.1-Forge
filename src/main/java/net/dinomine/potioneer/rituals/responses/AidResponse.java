@@ -38,7 +38,7 @@ public class AidResponse extends SpiritResponse implements RandomizableResponse<
     }
 
     private BeyonderEffect getRandomEffectByPathway(int pathwayId) {
-        BeyonderEffects.EFFECT effectId = null;
+        BeyonderEffects.BeyonderEffectType effectId = null;
         switch (pathwayId){
             case 0:
                 effectId = getRandomEffectByPrefix("WHEEL");
@@ -55,19 +55,23 @@ public class AidResponse extends SpiritResponse implements RandomizableResponse<
             case 4:
                 effectId = getRandomEffectByPrefix("PARAGON");
                 break;
+            default:
+                effectId = getRandomEffectByPrefix("");
+                break;
         }
-        return BeyonderEffects.byId(effectId, pathwayId%10, 0, 20*60, true);
+        return BeyonderEffects.byId(effectId.getEffectId(), pathwayId%10, 0, 20*60, true);
     }
 
 
-    private static BeyonderEffects.EFFECT getRandomEffectByPrefix(String prefix) {
-        List<BeyonderEffects.EFFECT> matching = Arrays.stream(BeyonderEffects.EFFECT.values())
-                .filter(e -> e.name().startsWith(prefix))
-                .collect(Collectors.toList());
+    private static BeyonderEffects.BeyonderEffectType getRandomEffectByPrefix(String prefix) {
+        //TODO make this work
+//        List<BeyonderEffects.BeyonderEffectType> matching = Arrays.stream(BeyonderEffects.EFFECT.values())
+//                .filter(e -> e.name().startsWith(prefix))
+//                .collect(Collectors.toList());
+//
+//        if (matching.isEmpty()) return null; // Or throw an exception
 
-        if (matching.isEmpty()) return null; // Or throw an exception
-
-        return matching.get(new Random().nextInt(matching.size()));
+        return BeyonderEffects.PARAGON_REGEN;
     }
 
     @Override

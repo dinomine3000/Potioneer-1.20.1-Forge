@@ -130,7 +130,7 @@ public class CoinItem extends Item implements GeoItem {
         if(player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).isPresent()){
             Optional<LivingEntityBeyonderCapability> cap = player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve();
             sequence = cap.get().getPathwaySequenceId();
-            seer = cap.get().getEffectsManager().hasEffect(BeyonderEffects.EFFECT.MISC_MYST);
+            seer = cap.get().getEffectsManager().hasEffect(BeyonderEffects.MISC_DIVINATION.getEffectId());
         }
 
         DivinationResult result = MysticismHelper.doDivination(divinationTarget, player, sequence, player.getRandom());

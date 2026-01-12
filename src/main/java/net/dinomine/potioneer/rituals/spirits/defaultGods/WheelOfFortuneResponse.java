@@ -47,7 +47,7 @@ public class WheelOfFortuneResponse extends Deity {
         Player player = getPlayer(inputData, level, false);
         if(player == null) return;
         player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
-            cap.getEffectsManager().addOrReplaceEffect(BeyonderEffects.byId(BeyonderEffects.EFFECT.TYRANT_LIGHTNING_TARGET, 5, 0, 20*5, true),
+            cap.getEffectsManager().addOrReplaceEffect(BeyonderEffects.byId(BeyonderEffects.TYRANT_LIGHTNING_TARGET.getEffectId(), 5, 0, 20*5, true),
                     cap, level.getPlayerByUUID(inputData.caster()));
         });
     }

@@ -14,7 +14,7 @@ import java.util.function.Function;
  */
 public class PassiveAbility extends Ability {
     private boolean canFlip = false;
-    private boolean enabledOnAcquire = true;
+    private boolean enabledOnAcquire = false;
     protected final BeyonderEffects.BeyonderEffectType effect;
     /**
      * percentage of maximum spirituality below which the ability stops working

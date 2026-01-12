@@ -14,7 +14,7 @@ import java.util.function.Function;
 public abstract class Ability {
     private boolean state = true;
     private int cooldown = 0;
-    private int maxCooldown = 0;
+    private int maxCooldown = 1;
     protected int defaultMaxCooldown = 20;
     protected int sequenceLevel;
     protected String abilityId;
@@ -22,7 +22,7 @@ public abstract class Ability {
     private Function<Integer, Integer> costFunction;
 
     public AbilityInfo getAbilityInfo(){
-        return Abilities.getInfo(abilityId, getCooldownPercent(), state, getDescId(sequenceLevel));
+        return Abilities.getInfo(abilityId, cooldown, maxCooldown, state, getDescId(sequenceLevel));
     }
 
     protected abstract String getDescId(int sequenceLevel);
@@ -178,9 +178,12 @@ public abstract class Ability {
         return true;
     }
 
-    public float getCooldownPercent(){
-        if(cooldown < 1) return 0;
-        return (float) cooldown / maxCooldown;
+    public int getCooldown(){
+        return cooldown;
+    }
+
+    public int getMaxCooldown(){
+        return maxCooldown;
     }
 
     public void updateCooldownClient(Player player) {
@@ -291,5 +294,10 @@ public abstract class Ability {
      */
     protected void loadExtraNbtInfo(CompoundTag tag){
 
+    }
+
+    public Ability withId(String ablId) {
+        this.abilityId = ablId;
+        return this;
     }
 }

@@ -63,14 +63,14 @@ public class AbilityFactory {
     public int getPathwayId(){return pathwayId;}
 
     public Ability create(int pathwaySequenceId){
-        return createFunction.apply(pathwaySequenceId);
+        return createFunction.apply(pathwaySequenceId).withId(ablId);
     }
 
-    public AbilityInfo getInfo(float cooldown, boolean enabled, String descId, String innerId) {
-        return new AbilityInfo(posY, pathwayId, costSpirituality, cooldown, enabled, descId, innerId, hasSecondaryFunction);
+    public AbilityInfo getInfo(int cooldown, int maxCd, boolean enabled, String descId, String innerId) {
+        return new AbilityInfo(posY, pathwayId, costSpirituality, cooldown, maxCd, enabled, descId, innerId, hasSecondaryFunction);
     }
 
-    public AbilityInfo getInfo(float cooldown, boolean enabled, String descId, String innerId, int pathwayId) {
-        return new AbilityInfo(posY, pathwayId, costSpirituality, cooldown, enabled, descId, innerId, hasSecondaryFunction);
+    public AbilityInfo getInfo(int cooldown, int maxCd, boolean enabled, String descId, String innerId, int pathwayId) {
+        return new AbilityInfo(posY, pathwayId, costSpirituality, cooldown, maxCd, enabled, descId, innerId, hasSecondaryFunction);
     }
 }

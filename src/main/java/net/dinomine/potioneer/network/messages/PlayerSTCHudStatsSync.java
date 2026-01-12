@@ -24,9 +24,6 @@ public class PlayerSTCHudStatsSync {
     public int sanity;
     public int pathwayId;
     public float actingProgress;
-    public int luck;
-    public int maxLuck;
-    public int minLuck;
 
     public PlayerSTCHudStatsSync(float spirituality, int maxSpirituality, int sanity, int pathwayId, float actingProgress) {
         this.spirituality = spirituality;
@@ -42,9 +39,6 @@ public class PlayerSTCHudStatsSync {
         buffer.writeInt(msg.sanity);
         buffer.writeInt(msg.pathwayId);
         buffer.writeFloat(msg.actingProgress);
-        buffer.writeInt(msg.luck);
-        buffer.writeInt(msg.maxLuck);
-        buffer.writeInt(msg.minLuck);
     }
 
     public static PlayerSTCHudStatsSync decode(FriendlyByteBuf buffer){
@@ -53,9 +47,6 @@ public class PlayerSTCHudStatsSync {
         int san = buffer.readInt();
         int id = buffer.readInt();
         float acting = buffer.readFloat();
-        int luck = buffer.readInt();
-        int maxLuck = buffer.readInt();
-        int minLuck = buffer.readInt();
         return new PlayerSTCHudStatsSync(spir, max, san, id, acting);
     }
 
@@ -91,7 +82,7 @@ class ClientHudStatsSyncMessage
         ClientStatsData.setSanity(msg.sanity);
         ClientStatsData.setPathwayId(msg.pathwayId);
         ClientStatsData.setActing(msg.actingProgress);
-        ClientStatsData.setLuck(msg.luck, msg.minLuck, msg.maxLuck);
+//        ClientStatsData.setLuck(msg.luck, msg.minLuck, msg.maxLuck);
 
         Minecraft.getInstance().player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
             cap.setSpirituality(msg.spirituality);

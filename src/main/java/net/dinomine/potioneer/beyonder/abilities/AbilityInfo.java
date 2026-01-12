@@ -7,19 +7,20 @@ public class AbilityInfo {
     private int posY;
     private int pathwayId;
     private int cost;
-    private float cooldownPercentage;
     private String descId;
     private boolean enabled;
+    private int cooldown;
     private int maxCd;
     private String innerAbilityId;
     private String cAblId = null;
     private boolean hasSecondaryFunction;
 
-    public AbilityInfo(int posY, int pathwayId, int cost, float cooldown, boolean enabled, String descId, String innerId, boolean hasSecondaryFunction) {
+    public AbilityInfo(int posY, int pathwayId, int cost, int cooldown, int maxCooldown, boolean enabled, String descId, String innerId, boolean hasSecondaryFunction) {
         this.posY = posY;
         this.pathwayId = pathwayId;
         this.cost = cost;
-        this.cooldownPercentage = cooldown;
+        this.cooldown = cooldown;
+        this.maxCd = maxCooldown;
         this.descId = descId;
         this.enabled = enabled;
         this.innerAbilityId = innerId;
@@ -43,7 +44,8 @@ public class AbilityInfo {
         buffer.writeInt(posY);
         buffer.writeInt(pathwayId);
         buffer.writeInt(cost);
-        buffer.writeFloat(cooldownPercentage);
+        buffer.writeInt(cooldown);
+        buffer.writeInt(maxCd);
         buffer.writeBoolean(enabled);
         BufferUtils.writeStringToBuffer(descId, buffer);
         BufferUtils.writeStringToBuffer(innerAbilityId, buffer);
@@ -54,12 +56,13 @@ public class AbilityInfo {
         int y = buffer.readInt();
         int pathwayId = buffer.readInt();
         int cost = buffer.readInt();
-        float cooldown = buffer.readFloat();
+        int cooldown = buffer.readInt();
+        int maxCd = buffer.readInt();
         boolean enabled = buffer.readBoolean();
         String descId = BufferUtils.readString(buffer);
         String innerId = BufferUtils.readString(buffer);
         boolean secondary = buffer.readBoolean();
-        return new AbilityInfo(y, pathwayId, cost, cooldown, enabled, descId, innerId, secondary);
+        return new AbilityInfo(y, pathwayId, cost, cooldown, maxCd, enabled, descId, innerId, secondary);
     }
 
     public String innerId(){
@@ -68,11 +71,6 @@ public class AbilityInfo {
 
     public String descId(){
         return descId;
-    }
-
-    public AbilityInfo withMaxCd(int maxCd) {
-        this.maxCd = maxCd;
-        return this;
     }
 
     public int maxCooldown() {
@@ -89,5 +87,27 @@ public class AbilityInfo {
 
     public boolean hasSecondaryFunction(){
         return hasSecondaryFunction;
+    }
+
+    public void setEnabled(boolean state){
+        enabled = state;
+    }
+
+    public boolean isEnabled(){
+        return enabled;
+    }
+
+    public int getCooldown(){
+        return cooldown;
+    }
+
+    public void tickCooldown(){
+        if(cooldown > 0) cooldown--;
+    }
+
+    public AbilityInfo withCooldown(int cd, int maxCd){
+        this.cooldown = cd;
+        this.maxCd = maxCd;
+        return this;
     }
 }

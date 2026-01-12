@@ -5,7 +5,6 @@ import net.dinomine.potioneer.beyonder.abilities.Ability;
 import net.dinomine.potioneer.beyonder.abilities.mystery.AirBulletAbility;
 import net.dinomine.potioneer.beyonder.abilities.paragon.CraftingGuiAbility;
 import net.dinomine.potioneer.beyonder.abilities.redpriest.MeltAbility;
-import net.dinomine.potioneer.beyonder.abilities.tyrant.WaterAffinityAbility;
 import net.dinomine.potioneer.beyonder.abilities.wheeloffortune.MinerLightAbility;
 import net.dinomine.potioneer.beyonder.downsides.Downside;
 import net.dinomine.potioneer.beyonder.downsides.DummyDownside;
@@ -37,7 +36,7 @@ public class ArtifactHelper {
     static {
         //define minimum and maximum sequences here to define what levels can generate the ability
         abilityMap.put("miner_light", new MetaAbilityEntry(0, 10, MinerLightAbility::new));
-        abilityMap.put("water_affinity", new MetaAbilityEntry(10, 20, WaterAffinityAbility::new));
+//        abilityMap.put("water_affinity", new MetaAbilityEntry(10, 20, WaterAffinityAbility::new));
         abilityMap.put("air_bullet", new MetaAbilityEntry(20, 30, AirBulletAbility::new));
         abilityMap.put("melt", new MetaAbilityEntry(30, 40, MeltAbility::new));
         abilityMap.put("crafting_gui", new MetaAbilityEntry(40, 50, CraftingGuiAbility::new));

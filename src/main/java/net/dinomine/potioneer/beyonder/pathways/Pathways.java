@@ -23,11 +23,11 @@ public class Pathways {
     public static final RegistryObject<BeyonderPathway> WHEEL_OF_FORTUNE =
             registerPathway("0", WheelOfFortunePathway::new);
 
-    public static final RegistryObject<BeyonderPathway> MYSTERY =
-            registerPathway("1", MysteryPathway::new);
-
     public static final RegistryObject<BeyonderPathway> TYRANT =
-            registerPathway("2", TyrantPathway::new);
+            registerPathway("1", TyrantPathway::new);
+
+    public static final RegistryObject<BeyonderPathway> MYSTERY =
+            registerPathway("2", MysteryPathway::new);
 
     public static final RegistryObject<BeyonderPathway> RED_PRIEST =
             registerPathway("3", RedPriestPathway::new);

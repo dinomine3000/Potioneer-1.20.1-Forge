@@ -197,7 +197,7 @@ public class PlayerLuckManager {
                 break;
             case 2:
                 cap.getEffectsManager().addEffectNoCheck(
-                        BeyonderEffects.byId(BeyonderEffects.EFFECT.TYRANT_LIGHTNING_TARGET, 5, 0, 10*20, true),
+                        BeyonderEffects.byId(BeyonderEffects.TYRANT_LIGHTNING_TARGET.getEffectId(), 5, 0, 10*20, true),
                         cap, target);
         }
     }
@@ -262,8 +262,8 @@ public class PlayerLuckManager {
                     break;
                 }
             case 1:
-                cap.getEffectsManager().addOrReplaceEffect(BeyonderEffects.byId(BeyonderEffects.EFFECT.WHEEL_FORTUNE, 0, 0, 240, true), cap, target);
-                cap.getEffectsManager().addOrReplaceEffect(BeyonderEffects.byId(BeyonderEffects.EFFECT.WHEEL_MINING, 5, 0, 240, true), cap, target);
+                cap.getEffectsManager().addOrReplaceEffect(BeyonderEffects.byId(BeyonderEffects.WHEEL_FORTUNE.getEffectId(), 0, 0, 240, true), cap, target);
+                cap.getEffectsManager().addOrReplaceEffect(BeyonderEffects.byId(BeyonderEffects.WHEEL_MINING.getEffectId(), 5, 0, 240, true), cap, target);
                 target.sendSystemMessage(Component.translatable("potioneer.luck.fortune_event"));
                 break;
             case 2:
@@ -282,7 +282,7 @@ public class PlayerLuckManager {
                 break;
             case 1:
                 if(target instanceof Player){
-                    cap.getEffectsManager().addEffectNoCheck(BeyonderEffects.byId(BeyonderEffects.EFFECT.MISC_HUNGER_REGEN,
+                    cap.getEffectsManager().addEffectNoCheck(BeyonderEffects.byId(BeyonderEffects.HUNGER_REGEN.getEffectId(),
                             0, 0, target.getRandom().nextInt(5)*20, true), cap, target);
                     break;
                 }

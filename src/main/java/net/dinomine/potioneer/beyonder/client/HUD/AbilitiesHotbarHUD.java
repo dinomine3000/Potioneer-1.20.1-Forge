@@ -170,7 +170,7 @@ public class AbilitiesHotbarHUD {
         int pathway = Math.floorDiv(info.getPathwayId(), 10);
         int abilityX = Pathways.getPathwayById(info.getPathwayId()).getAbilityX();
         int caseX = xPos - (int) (CASE_WIDTH * scale / 2);
-        guiGraphics.blit(ICONS, caseX, yPos, (int) (CASE_WIDTH*scale), (int) (CASE_HEIGHT*scale), abilityX, 0, CASE_WIDTH, CASE_HEIGHT, ICONS_WIDTH, ICONS_HEIGHT);
+        guiGraphics.blit(ICONS, caseX, yPos, (int) (CASE_WIDTH*scale), (int) (CASE_HEIGHT*scale), abilityX - 5, 0, CASE_WIDTH, CASE_HEIGHT, ICONS_WIDTH, ICONS_HEIGHT);
 
         //ability icon
         if(!ClientAbilitiesData.isEnabled(caret)){

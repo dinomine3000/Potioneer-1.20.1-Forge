@@ -145,6 +145,7 @@ public abstract class BeyonderEffect {
         nbt.putInt("level", sequenceLevel);
         nbt.putInt("lifetime", lifetime);
         nbt.putInt("maxLife", maxLife);
+        nbt.putInt("cost", cost);
         nbt.putBoolean("active", active);
         nbt.putString("ID", effectId);
     }

@@ -1,6 +1,7 @@
 package net.dinomine.potioneer.recipe;
 
 import net.dinomine.potioneer.beyonder.pathways.BeyonderPathway;
+import net.dinomine.potioneer.beyonder.pathways.Pathways;
 import net.dinomine.potioneer.savedata.PotionFormulaSaveData;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.nbt.CompoundTag;
@@ -123,7 +124,7 @@ public record PotionRecipeData(ArrayList<ItemStack> main, ArrayList<ItemStack> s
     public static String getName(PotionRecipeData data){
         if(data.id >= 0)
             return Component.translatable(
-                "potioneer.beyonder.sequence." + BeyonderPathway.getSequenceNameFromId(data.id, false)
+                    "potioneer.beyonder.sequence." + Pathways.getPathwayById(data.id).getSequenceNameFromId(data.id, false)
             ).getString();
 
         String key = "item.potioneer." + data.name;

@@ -45,6 +45,7 @@ public class BeyonderEffects {
     public static final BeyonderEffectType PARAGON_CRAFTING = registerEffect("crafting_spirituality", new BeyonderEffectType(BeyonderCraftingSpiritualityEffect::new));
     public static final BeyonderEffectType PARAGON_XP = registerEffect("reduced_xp", new BeyonderEffectType(BeyonderXpReduceEffect::new));
     public static final BeyonderEffectType PARAGON_REGEN = registerEffect("durability_regen", new BeyonderEffectType(BeyonderDurabilityEffect::new));
+    public static final BeyonderEffectType HUNGER_REGEN = registerEffect("hunger_regen", new BeyonderEffectType(BeyonderHungerRegenEffect::new));
 
 
     public static BeyonderEffectType registerEffect(String effectId, BeyonderEffectType baseEffect){

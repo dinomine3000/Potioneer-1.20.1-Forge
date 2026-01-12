@@ -292,8 +292,8 @@ public class Abilities {
         return ABILITIES.get(abl_id).create(sequenceLevel);
     }
 
-    public static AbilityInfo getInfo(String abilityId, float cooldown, boolean enabled, String descId){
-        return ABILITIES.get(abilityId).getInfo(cooldown, enabled, descId, abilityId);
+    public static AbilityInfo getInfo(String abilityId, int cooldown, int maxCd, boolean enabled, String descId){
+        return ABILITIES.get(abilityId).getInfo(cooldown, maxCd, enabled, descId, abilityId);
     }
 
     /**
@@ -307,7 +307,7 @@ public class Abilities {
      * @param pathwayId
      * @return
      */
-    public static AbilityInfo getInfo(String abilityId, float cooldown, boolean enabled, String descId, int pathwayId){
-        return ABILITIES.get(abilityId).getInfo(cooldown, enabled, descId, abilityId, pathwayId);
+    public static AbilityInfo getInfo(String abilityId, int cooldown, int maxCd, boolean enabled, String descId, int pathwayId){
+        return ABILITIES.get(abilityId).getInfo(cooldown, maxCd, enabled, descId, abilityId, pathwayId);
     }
 }

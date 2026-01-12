@@ -64,7 +64,7 @@ public class WheelOfFortunePathway extends BeyonderPathway {
 
             case 9:
                 abilities.add(Abilities.MINER_LIGHT.create(sequence));
-                abilities.add(Abilities.MINING_SPEED.create(sequence));
+                abilities.add(Abilities.CONJURE_PICKAXE.create(sequence));
                 abilities.add(Abilities.MINING_SPEED.create(sequence));
         }
 

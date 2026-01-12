@@ -55,8 +55,11 @@ public class ClientAbilitiesData {
     }
 
     public static void setCooldown(String cAblId, int cd, int maxCd){
-        cooldowns.put(cAblId, cd);
-        abilities.put(cAblId, abilities.get(cAblId).withMaxCd(maxCd));
+        if(abilities.containsKey(cAblId)){
+            abilities.get(cAblId).withCooldown(cd, maxCd);
+            return;
+        }
+        System.out.println("Warning: Couldn't find ability: " + cAblId);
     }
 
     public static void setAbilities(LinkedHashMap<String, AbilityInfo> abilities2, boolean changingPath) {
@@ -69,19 +72,11 @@ public class ClientAbilitiesData {
         }
         if(changingPath) hotbar = new ArrayList<>();
         if(changingPath) quickSelect = "";
-        cooldowns = new HashMap<>();
-        for (String abilityId : abilities.keySet()) {
-            cooldowns.put(abilityId, 0);
-        }
         if(!hotbar.isEmpty()){
             hotbar.removeIf(cAblId -> !abilities.containsKey(cAblId));
         }
         if(!quickSelect.isEmpty() && !abilities.containsKey(quickSelect)) quickSelect = "";
         setHotbarChanged();
-    }
-
-    public static void setEnabledList(Map<String, Boolean> map){
-        enabledList = map;
     }
 
     public static String getQuickAbilityCaret(){
@@ -113,7 +108,7 @@ public class ClientAbilitiesData {
         time += dt;
         if(time > 1){
             for(Map.Entry<String, AbilityInfo> entry: abilities.entrySet()){
-                if(cooldowns.get(entry.getKey()) > 0) cooldowns.put(entry.getKey(), cooldowns.get(entry.getKey())-1);
+                if(getCooldown(entry.getKey()) > 0) abilities.get(entry.getKey()).tickCooldown();
             }
             time = 0;
         }
@@ -124,13 +119,14 @@ public class ClientAbilitiesData {
     }
 
     public static int getCooldown(String cAblId){
-        return cooldowns.getOrDefault(cAblId, 0);
+        return abilities.get(cAblId).getCooldown();
     }
 
     public static int getCooldown(int pos){
         if(hotbar.isEmpty()) return 0;
         String cAblId = hotbar.get(Math.floorMod(pos, hotbar.size()));
-        return cooldowns.get(cAblId);
+        if(cAblId == null || cAblId.isEmpty()) return 0;
+        return getCooldown(cAblId);
     }
 
     public static int getMaxCooldown(String cAblId){
@@ -174,8 +170,6 @@ public class ClientAbilitiesData {
     public static float scaleAnimationTime = 0;
     private static HashMap<String, AbilityInfo> abilities = new HashMap<>();
     //private static ArrayList<String> abilitiesByIndex;
-    private static Map<String, Integer> cooldowns = new HashMap<>(0);
-    private static Map<String, Boolean> enabledList = new HashMap<>(0);
     private static ArrayList<String> hotbar;
     private static String quickSelect = "";
     /**
@@ -206,16 +200,13 @@ public class ClientAbilitiesData {
     }
 
     public static boolean isEnabled(String cAblId){
-        return enabledList.getOrDefault(cAblId, true);
+        return abilities.get(cAblId).isEnabled();
     }
 
     public static boolean isEnabled(int pos){
-        if(enabledList.isEmpty()){
-            System.out.println("enabled list is empty");
-            return false;
-        }
         String cAblId = hotbar.get(Math.floorMod(pos, hotbar.size()));
-        return enabledList.get(cAblId);
+        if(cAblId == null || cAblId.isEmpty()) return false;
+        return isEnabled(cAblId);
     }
 
     public static boolean useQuickAbility(Player player){
@@ -233,8 +224,9 @@ public class ClientAbilitiesData {
         player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
 //                    System.out.println(caret);
 //                    ClientStatsData.setSpirituality(ClientStatsData.getPlayerSpirituality() - abilities.get(caret).cost());
-            cap.getAbilitiesManager().useAbility(cap, player, cAblId, true, false);
-            enabledList.put(cAblId, false);
+            System.out.println("Primary? " + primary);
+            cap.getAbilitiesManager().useAbility(cap, player, cAblId, true, primary);
+            abilities.get(cAblId).setEnabled(false);
         });
 //        if(cooldowns.get(cAblId) == 0){
 //        } else if(cooldowns.get(cAblId) > 0){

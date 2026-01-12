@@ -3,6 +3,8 @@ package net.dinomine.potioneer.beyonder.player;
 import net.dinomine.potioneer.beyonder.abilities.AbilityFunctionHelper;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
 import net.dinomine.potioneer.beyonder.pathways.BeyonderPathway;
+import net.dinomine.potioneer.network.messages.abilityRelevant.PlayerAbilityInfoSyncSTC;
+import net.dinomine.potioneer.network.messages.abilityRelevant.PlayerSyncHotbarMessage;
 import net.dinomine.potioneer.network.messages.advancement.PlayerAdvanceMessage;
 import net.dinomine.potioneer.util.misc.ArtifactHelper;
 import net.dinomine.potioneer.util.misc.CharacteristicHelper;
@@ -262,13 +264,14 @@ public class LivingEntityBeyonderCapability {
         this.abilitiesManager.clear(this, entity);
         characteristicManager.reset();
         if(definitive) entity.sendSystemMessage(Component.literal("Reset beyonder powers."));
-
+        if(entity instanceof Player player) syncSequenceData(player);
         return true;
     }
 
     public void setBeyonderSequence(int id){
         resetBeyonder(false);
         advance(id, false);
+        if(entity instanceof Player player) syncSequenceData(player);
     }
 
     public void advance(int id, boolean fromLoading){
@@ -451,6 +454,10 @@ public class LivingEntityBeyonderCapability {
                     new PlayerAdvanceMessage(this.getPathwaySequenceId()));
             PacketHandler.INSTANCE.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) player),
                     new PlayerAttributesSyncMessageSTC(getBeyonderStats().getIntStats()));
+            PacketHandler.INSTANCE.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) player),
+                    new PlayerAbilityInfoSyncSTC(getAbilitiesManager().getAbilityInfos(), false));
+            PacketHandler.INSTANCE.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) player),
+                    new PlayerSyncHotbarMessage(getAbilitiesManager().clientHotbar, getAbilitiesManager().quickAbility));
         }
     }
 
