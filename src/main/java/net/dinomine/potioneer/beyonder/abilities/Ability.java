@@ -2,12 +2,11 @@ package net.dinomine.potioneer.beyonder.abilities;
 
 import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
 import net.dinomine.potioneer.network.PacketHandler;
-import net.dinomine.potioneer.network.messages.abilityRelevant.PlayerAbilityCooldownSTC;
+import net.dinomine.potioneer.network.messages.abilityRelevant.AbilitySyncMessage;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import org.checkerframework.checker.units.qual.C;
 
 import java.util.function.Function;
 
@@ -18,11 +17,15 @@ public abstract class Ability {
     protected int defaultMaxCooldown = 20;
     protected int sequenceLevel;
     protected String abilityId;
-    public String cAbilityId;
+    protected AbilityKey key;
     private Function<Integer, Integer> costFunction;
 
     public AbilityInfo getAbilityInfo(){
-        return Abilities.getInfo(abilityId, cooldown, maxCooldown, state, getDescId(sequenceLevel));
+        if(key == null){
+            System.out.println("Warning: tried to get ability info with a null key");
+            return Abilities.getInfo(abilityId, cooldown, maxCooldown, state, getDescId(sequenceLevel));
+        }
+        return Abilities.getInfo(abilityId, cooldown, maxCooldown, state, getDescId(sequenceLevel), key);
     }
 
     protected abstract String getDescId(int sequenceLevel);
@@ -45,21 +48,13 @@ public abstract class Ability {
         return costFunction == null ? 0 : costFunction.apply(sequenceLevel%10);
     }
 
-    public void setAbilityId(String newId){
-        this.abilityId = newId;
-    }
-
     public int getSequenceLevel(){
         return sequenceLevel;
     }
 
-    public void setSequenceLevel(int level){
-        sequenceLevel = level;
-    }
-
     public String getType(){
-        if(cAbilityId == null || cAbilityId.contains(":")) return "";
-        return cAbilityId.split(":")[0];
+        if(key == null) return "";
+        return this.key.getGroup();
     }
 
     /**
@@ -81,10 +76,11 @@ public abstract class Ability {
     /**
      * function to update the complete ability id.
      * in it, it contains the outer id, as well as an identifier for the source of the ability (was it recorded, intrinstic, replicated etc...)
-     * @param cAbilityId something like "intrinsic:water_affinity:9"
+     * @param abilityList an identifier for the group this ability belongs to (like Recorded, Replicated, Intrinsice, Grazed etc...)
      */
-    public void setCompleteId(String cAbilityId) {
-        this.cAbilityId = cAbilityId;
+    public AbilityKey setAbilityKey(String abilityList) {
+        this.key = new AbilityKey(abilityList, abilityId, sequenceLevel);
+        return this.key;
     }
 
     public boolean isEnabled(){
@@ -110,9 +106,11 @@ public abstract class Ability {
         if(!state && enable){
             state = true;
             activate(cap, target);
+            sendUpdateMessageToClient(target);
         } else if(state && !enable){
             state = false;
             deactivate(cap, target);
+            sendUpdateMessageToClient(target);
         }
         return state;
     }
@@ -121,29 +119,38 @@ public abstract class Ability {
     /**
      * Function that will put the ability on a special cooldown
      * here, the time left will not be shown to the player, instead itll show the disabled/block symbol
-     * -1 will disabled it indefinitely
-     * any value below -2 will function like a cooldown, and it will automatically re-enable after the time runs out
+     * -1 will disable it indefinitely
+     * any value below -2 will function like a cooldown, and it will automatically re-enable after the time runs out (once it reaches -2)
      * @param time - time in ticks until its to be re-enabled. setting this to 0 means removing the ability from cooldown.
      */
-    public void revoke(int time){
-        if(cooldown > 0) maxCooldown = cooldown;
+    public void revoke(int time, LivingEntityBeyonderCapability cap, LivingEntity target){
+        if(time == 0) return;
+        if(cooldown >= 0){
+            onRevoke(cap, target);
+            maxCooldown = Math.max(cooldown, 20);
+        }
         if(time > 0) time = -time;
         cooldown = time;
+        if (target instanceof Player player) updateCooldownClient(player);
     }
 
     /**
      * revokes the ability indefinitely
      */
-    public void revoke(){
-        revoke(-1);
+    public void revoke(LivingEntityBeyonderCapability cap, LivingEntity target){
+        revoke(-1, cap, target);
     }
 
     /**
      * automatically re-enables the ability if its been revoked. if its on cooldown, it does nothing
      */
-    public void undoRevoke(Player player){
-        if(cooldown < 0) cooldown = 0;
-        putOnCooldown(maxCooldown, player);
+    public void undoRevoke(LivingEntityBeyonderCapability cap, LivingEntity target){
+        putOnCooldown(maxCooldown, target);
+        onUndoRevoke(cap, target);
+    }
+
+    public boolean isRevoked(){
+        return cooldown < 0;
     }
 
     public void tickCooldown(){
@@ -188,16 +195,36 @@ public abstract class Ability {
 
     public void updateCooldownClient(Player player) {
         if(player.level().isClientSide()) return;
-        PacketHandler.sendMessageSTC(new PlayerAbilityCooldownSTC(cAbilityId, cooldown, maxCooldown), player);
+        sendUpdateMessageToClient(player);
+    }
+
+    private void sendUpdateMessageToClient(LivingEntity ent){
+        if(ent instanceof Player player && !player.level().isClientSide()) PacketHandler.sendMessageSTC(new AbilitySyncMessage(getAbilityInfo(), AbilitySyncMessage.UPDATE), player);
+    }
+
+    public void setSequenceLevelSilent(int level){
+        sequenceLevel = level;
+        if(key != null)
+            this.key = new AbilityKey(key.getGroup(), key.getAbilityId(), level);
     }
 
     public void upgradeToLevel(int level, LivingEntityBeyonderCapability cap, LivingEntity target) {
         if(sequenceLevel == level) return;
         onUpgrade(sequenceLevel, level, cap, target);
         sequenceLevel = level;
+        if(this.key != null)
+            this.key = new AbilityKey(key.getGroup(), key.getAbilityId(), level);
     }
 
+    /**
+     * runs the abilities active methods (that is, primary() or secondary()) if the ability is off cooldown.
+     * if an ability wants to run while on cooldown (that is, allow the player to cast the ability primary() or secondary() while on cooldown) it should override this.
+     * @param cap
+     * @param target
+     * @param primary
+     */
     public void castAbility(LivingEntityBeyonderCapability cap, LivingEntity target, boolean primary){
+        if(cooldown != 0) return;
         if(primary){
             if(primary(cap, target)){
                 putOnCooldown(target);
@@ -264,6 +291,26 @@ public abstract class Ability {
      */
     public void deactivate(LivingEntityBeyonderCapability cap, LivingEntity target){}
 
+    /**
+     * function that implements behaviour for every time the ability is revoked.
+     * By default, disables itself, which triggers deactivate(). Any abilities that dont want to be disabled on revoke should override this function
+     * @param cap
+     * @param target
+     */
+    public void onRevoke(LivingEntityBeyonderCapability cap, LivingEntity target){
+        setEnabled(cap, target, false);
+    }
+
+    /**
+     * function that implements behaviour for every time the ability is un-revoked.
+     * By default, enables the ability, which triggers activate(). Any abilities that dont want to be enabled upon being un-revoked should override this function
+     * @param cap
+     * @param target
+     */
+    public void onUndoRevoke(LivingEntityBeyonderCapability cap, LivingEntity target){
+        setEnabled(cap, target, true);
+    }
+
     public Tag saveNbt() {
         CompoundTag tag = new CompoundTag();
         tag.putInt("cooldown", cooldown);
@@ -278,8 +325,8 @@ public abstract class Ability {
      * @param tag - the complete nbt tag for the abilities manager. Check if your own cAblId is in here, and if so you can load it.
      */
     public void loadNbt(CompoundTag tag){
-        if(tag.contains(cAbilityId)){
-            CompoundTag tag2 = tag.getCompound(cAbilityId);
+        if(tag.contains(key.toString())){
+            CompoundTag tag2 = tag.getCompound(key.toString());
             cooldown = tag2.getInt("cooldown");
             maxCooldown = tag2.getInt("cooldown");
             state = tag2.getBoolean("enabled");
@@ -296,8 +343,18 @@ public abstract class Ability {
 
     }
 
-    public Ability withId(String ablId) {
+    public Ability withAbilityId(String ablId) {
         this.abilityId = ablId;
         return this;
+    }
+
+    @Override
+    public String toString() {
+        if(key == null) return abilityId.concat(":" + sequenceLevel);
+        return key.toString();
+    }
+
+    public AbilityKey getKey() {
+        return this.key;
     }
 }

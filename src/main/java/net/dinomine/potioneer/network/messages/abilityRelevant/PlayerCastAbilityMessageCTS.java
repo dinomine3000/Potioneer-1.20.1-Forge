@@ -1,7 +1,7 @@
 package net.dinomine.potioneer.network.messages.abilityRelevant;
 
+import net.dinomine.potioneer.beyonder.abilities.AbilityKey;
 import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
-import net.dinomine.potioneer.util.BufferUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Player;
@@ -14,21 +14,21 @@ import java.util.function.Supplier;
 
 //message sent to the server when a client has authorized the casting of an ability
 public class PlayerCastAbilityMessageCTS {
-    public String ablId;
+    public AbilityKey key;
     public boolean primary;
 
-    public PlayerCastAbilityMessageCTS(String ablId, boolean primary){
-        this.ablId = ablId;
+    public PlayerCastAbilityMessageCTS(AbilityKey key, boolean primary){
+        this.key = key;
         this.primary = primary;
     }
 
     public static void encode(PlayerCastAbilityMessageCTS msg, FriendlyByteBuf buffer){
-        BufferUtils.writeStringToBuffer(msg.ablId, buffer);
+        msg.key.writeToBuffer(buffer);
         buffer.writeBoolean(msg.primary);
     }
 
     public static PlayerCastAbilityMessageCTS decode(FriendlyByteBuf buffer){
-        String ablId = BufferUtils.readString(buffer);
+        AbilityKey ablId = AbilityKey.readFromBuffer(buffer);
         boolean primary = buffer.readBoolean();
         return new PlayerCastAbilityMessageCTS(ablId, primary);
     }
@@ -37,13 +37,12 @@ public class PlayerCastAbilityMessageCTS {
 
         NetworkEvent.Context context = contextSupplier.get();
 
-        //potion advancement
         context.enqueueWork(() -> {
             if(!context.getDirection().getReceptionSide().isClient()){
-//                System.out.println("Receiving ability cast on server side");
+                //on server side
                 Player player = context.getSender();
                 player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
-                    cap.getAbilitiesManager().useAbility(cap, player, msg.ablId, false, msg.primary);
+                    cap.getAbilitiesManager().useAbility(cap, player, msg.key, false, msg.primary);
                 });
             } else {
                 context.enqueueWork(() -> DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> ClientCastAbilityMessage.handlePacket(msg, contextSupplier)));
@@ -59,10 +58,9 @@ class ClientCastAbilityMessage
 {
     public static void handlePacket(PlayerCastAbilityMessageCTS msg, Supplier<NetworkEvent.Context> contextSupplier)
     {
-//                ClientAbilitiesData.setAbilities(msg.list.stream().map(Ability::getInfo).toList());
         Player player = Minecraft.getInstance().player;
         player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
-            cap.getAbilitiesManager().useAbility(cap, player, msg.ablId, false, msg.primary);
+            cap.getAbilitiesManager().useAbility(cap, player, msg.key, false, msg.primary);
         });
     }
 

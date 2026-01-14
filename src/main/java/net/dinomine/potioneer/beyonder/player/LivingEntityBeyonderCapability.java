@@ -1,22 +1,19 @@
 package net.dinomine.potioneer.beyonder.player;
 
 import net.dinomine.potioneer.beyonder.abilities.AbilityFunctionHelper;
-import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
 import net.dinomine.potioneer.beyonder.pathways.BeyonderPathway;
-import net.dinomine.potioneer.network.messages.abilityRelevant.PlayerAbilityInfoSyncSTC;
+import net.dinomine.potioneer.beyonder.pathways.Pathways;
+import net.dinomine.potioneer.config.PotioneerCommonConfig;
+import net.dinomine.potioneer.entities.custom.CharacteristicEntity;
+import net.dinomine.potioneer.network.PacketHandler;
+import net.dinomine.potioneer.network.messages.PlayerSTCStatsSync;
 import net.dinomine.potioneer.network.messages.abilityRelevant.PlayerSyncHotbarMessage;
 import net.dinomine.potioneer.network.messages.advancement.PlayerAdvanceMessage;
 import net.dinomine.potioneer.util.misc.ArtifactHelper;
 import net.dinomine.potioneer.util.misc.CharacteristicHelper;
-import net.dinomine.potioneer.beyonder.pathways.*;
-import net.dinomine.potioneer.config.PotioneerCommonConfig;
-import net.dinomine.potioneer.entities.custom.CharacteristicEntity;
-import net.dinomine.potioneer.network.PacketHandler;
-import net.dinomine.potioneer.network.messages.*;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
@@ -28,7 +25,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.capabilities.AutoRegisterCapability;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
-import net.minecraftforge.network.PacketDistributor;
 
 import java.util.ArrayList;
 import java.util.function.Supplier;
@@ -73,7 +69,10 @@ public class LivingEntityBeyonderCapability {
         effectsManager = new PlayerEffectsManager();
         luckManager = new PlayerLuckManager();
         characteristicManager = new PlayerCharacteristicManager();
-        maxSanity = () -> (int) (characteristicManager.getActingPercentForSanityCalculation()*100d);
+        if(entity.level().isClientSide)
+            maxSanity = () -> 100;
+        else
+            maxSanity = () -> (int) (characteristicManager.getActingPercentForSanityCalculation()*100d);
         if(entity instanceof Player player) conjurerContainers.add(new ConjurerContainer(player, 9));
         this.entity = entity;
     }
@@ -186,9 +185,9 @@ public class LivingEntityBeyonderCapability {
     }
 
     public void onTick(LivingEntity entity, boolean serverSide){
+        abilitiesManager.onTick(this, entity);
+        effectsManager.onTick(this, entity);
         if(serverSide){
-            abilitiesManager.onTick(this, entity);
-            effectsManager.onTick(this, entity);
             luckManager.onTick(this, entity);
             characteristicManager.tick();
             if(entity.tickCount%40 == entity.getId()%40){
@@ -210,9 +209,9 @@ public class LivingEntityBeyonderCapability {
                     }
 
 //                    abilitiesManager.updateArtifacts(this, player);
-                    PacketHandler.sendMessageSTC(new PlayerSTCHudStatsSync(this.spirituality, this.maxSpirituality,
-                            (int) this.sanity, this.getPathwaySequenceId(),
-                            (float) characteristicManager.getAdjustedActingPercent(getPathwaySequenceId())), player);
+                    PacketHandler.sendMessageSTC(new PlayerSTCStatsSync(this.spirituality, this.maxSpirituality,
+                            (int) this.sanity, (float) characteristicManager.getAdjustedActingPercent(getPathwaySequenceId()),
+                            beyonderStats.getIntStats()), player);
                 }
                 applyCost();
                 lowStatEffects();
@@ -264,7 +263,7 @@ public class LivingEntityBeyonderCapability {
         this.abilitiesManager.clear(this, entity);
         characteristicManager.reset();
         if(definitive) entity.sendSystemMessage(Component.literal("Reset beyonder powers."));
-        if(entity instanceof Player player) syncSequenceData(player);
+        if(definitive && entity instanceof Player player) syncSequenceData(player);
         return true;
     }
 
@@ -279,95 +278,19 @@ public class LivingEntityBeyonderCapability {
         if(!fromLoading){
             //confetti here;
             entity.sendSystemMessage(Component.literal("You successfully advanced, hooray!"));
+            spirituality = maxSpirituality;
         }
-
     }
 
     private void consumeCharacteristic(int id){
+        System.out.println("Consuming characterstic " + id + " on side client? " + entity.level().isClientSide);
         getBeyonderStats().setAttributes(Pathways.BEYONDERLESS.get().getStatsFor(0));
         characteristicManager.consumeCharacteristic(id);
-        characteristicManager.setAbilities(id, this, entity);
+        characteristicManager.setAbilities(this, entity);
         if(entity instanceof Player player) characteristicManager.setAttributes(beyonderStats, player);
         maxSpirituality = characteristicManager.getMaxSpirituality();
         if(entity instanceof Player player) getBeyonderStats().applyStats(player, true);
     }
-//        this.maxSpirituality = characteristicManager.getMaxSpirituality();
-//        if(advancing){
-//            this.abilitiesManager.onAcquireAbilities(this, entity);
-//            setSpirituality(this.maxSpirituality);
-//        }
-//        boolean changingPathway = Math.floorDiv(getPathwayId(), 10) != Math.floorDiv(id, 10);
-//        this.abilitiesManager.clear(true, this, player);
-//        if(advancing) characteristicManager.resetPassiveActing(luckManager, player.getRandom(), getPathwayId());
-//        int seq = id%10;
-//
-//
-//        setPathway(id, advancing);
-//        if(!player.level().isClientSide()){
-//            PacketHandler.INSTANCE.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) player),
-//                    new PlayerAbilityInfoSyncSTC(getAbilitiesManager().getActivesIds(), changingPathway));
-//        }
-//
-//        //not translated. either make it translatable or delete it for final version
-//        if(!player.level().isClientSide && advancing && id > -1){
-//            player.sendSystemMessage(Component.literal("Successfully advanced to Sequence " + String.valueOf(seq)
-//                    + " " + BeyonderPathway.getSequenceNameFromId(id, true) + "!"));
-//        }
-//        if(sync) syncSequenceData(player, advancing);
-//    public void setPathway(int id, boolean advancing){
-//        if(id < 0){
-//            this.pathway = new BeyonderPathway(10);
-//        } else {
-//            int pathway = Math.floorDiv(id, 10);
-//            if(id > 59) pathway = 7;
-//            int seq = id%10;
-//            switch(pathway){
-//                case 0:
-//                    this.pathway = new WheelOfFortunePathway(seq);
-//                    WheelOfFortunePathway.getAbilities(seq, getAbilitiesManager());
-//                    getBeyonderStats().setAttributes(WheelOfFortunePathway.getStatsFor(seq));
-//                    break;
-//                case 1:
-//                    this.pathway = new TyrantPathway(seq);
-//                    TyrantPathway.getAbilities(seq, getAbilitiesManager());
-//                    getBeyonderStats().setAttributes(TyrantPathway.getStatsFor(seq));
-//                    break;
-//                case 2:
-//                    this.pathway = new MysteryPathway(seq);
-//                    MysteryPathway.getAbilities(seq, getAbilitiesManager());
-//                    getBeyonderStats().setAttributes(MysteryPathway.getStatsFor(seq));
-//                    break;
-//                case 3:
-//                    this.pathway = new RedPriestPathway(seq);
-//                    RedPriestPathway.getAbilities(seq, getAbilitiesManager());
-//                    getBeyonderStats().setAttributes(RedPriestPathway.getStatsFor(seq));
-//                    break;
-//                case 4:
-//                    this.pathway = new ParagonPathway(seq);
-//                    ParagonPathway.getAbilities(seq, getAbilitiesManager());
-//                    getBeyonderStats().setAttributes(ParagonPathway.getStatsFor(seq));
-//                    break;
-//                case 5:
-//                    System.out.println("Advancing as Dev.");
-//                    this.pathway = new DevPathway(seq);
-//                    DevPathway.getAbilities(seq, getAbilitiesManager());
-//                    break;
-//                default:
-//                    System.out.println("Invalid pathway Id. Defaulting to beyonderless...");
-//                    this.pathway = new BeyonderPathway(10);
-//                    break;
-//            }
-//            this.maxSpirituality = this.pathway.getMaxSpirituality(seq);
-//            //TODO if effect also need an "on acquire" funciton, add it here
-//            //TODO move this into the "set active abilities" in the ability manager, will require changint the getAbilities
-//            //in the pathway classes
-//            //TODO make the effects manager also do the "on Acquire" abilities
-//            if(advancing) this.abilitiesManager.onAcquireAbilities(this, entity);
-//            if(advancing) setSpirituality(this.maxSpirituality);
-//        }
-//        if(entity instanceof Player player) getBeyonderStats().applyStats(player, true);
-//        //if hp changes, add a heal to the player here IF ADVANCING!!
-//    }
 
     public String getPathwayName(boolean capitalize){
         return Pathways.getPathwayById(getPathwaySequenceId()).getPathwayName(capitalize);
@@ -394,6 +317,7 @@ public class LivingEntityBeyonderCapability {
         this.beyonderStats.copyFrom(source.beyonderStats);
         getBeyonderStats().applyStats(player, true);
         this.characteristicManager.copyFrom(source.characteristicManager);
+        maxSpirituality = characteristicManager.getMaxSpirituality();
         this.sanity = Math.min(Math.max(source.sanity, SANITY_MIN_RESPAWN), maxSanity.get());
         //this.abilitiesManager.onAcquireAbilities(this, player);
     }
@@ -440,24 +364,20 @@ public class LivingEntityBeyonderCapability {
         this.effectsManager.loadNBTData(nbt, this, entity);
         //characteristics before ablities because characteristics give abilities.
         this.characteristicManager.loadNBTData(nbt, this, entity);
+        maxSpirituality = characteristicManager.getMaxSpirituality();
         this.abilitiesManager.loadNBTData(nbt, this, entity);
         //this.abilitiesManager.onAcquireAbilities(this, entity);
         //TODO make abilities manager actually save and load item abilities.
         //this.abilitiesManager.loadNBTData(nbt);
     }
 
+    //server side to client. messages are sent when client joins world and when he advanced by means controlled by the server
     public void syncSequenceData(Player player){
         if(!player.level().isClientSide()){
-            //System.out.println("syncing from server side");
-            //server side to client. messages are sent when client joins world and when he advanced by means controlled by the server
-            PacketHandler.INSTANCE.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) player),
-                    new PlayerAdvanceMessage(this.getPathwaySequenceId()));
-            PacketHandler.INSTANCE.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) player),
-                    new PlayerAttributesSyncMessageSTC(getBeyonderStats().getIntStats()));
-            PacketHandler.INSTANCE.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) player),
-                    new PlayerAbilityInfoSyncSTC(getAbilitiesManager().getAbilityInfos(), false));
-            PacketHandler.INSTANCE.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) player),
-                    new PlayerSyncHotbarMessage(getAbilitiesManager().clientHotbar, getAbilitiesManager().quickAbility));
+            PacketHandler.sendMessageSTC(new PlayerAdvanceMessage(getCharacteristicManager().getLastConsumedCharacteristics()), player);
+            getAbilitiesManager().updateClientAbilityInfo(player);
+            PacketHandler.sendMessageSTC(new PlayerSyncHotbarMessage(getAbilitiesManager().clientHotbar, getAbilitiesManager().quickAbility), player);
+            getEffectsManager().syncToClient(player);
         }
     }
 

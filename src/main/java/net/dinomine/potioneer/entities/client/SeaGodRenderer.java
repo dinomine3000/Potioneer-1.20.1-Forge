@@ -3,7 +3,6 @@ package net.dinomine.potioneer.entities.client;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import net.dinomine.potioneer.Potioneer;
-import net.dinomine.potioneer.entities.custom.DivinationRodEntity;
 import net.dinomine.potioneer.entities.custom.SeaGodScepterEntity;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.resources.ResourceLocation;

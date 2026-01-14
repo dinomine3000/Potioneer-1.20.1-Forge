@@ -14,7 +14,6 @@ import net.dinomine.potioneer.rituals.responses.NegativeEffectResponse;
 import net.dinomine.potioneer.rituals.responses.SpiritResponse;
 import net.dinomine.potioneer.rituals.spirits.EvilSpirit;
 import net.dinomine.potioneer.rituals.spirits.PlayerRitualSpirit;
-import net.dinomine.potioneer.rituals.spirits.RitualSpiritResponse;
 import net.dinomine.potioneer.rituals.spirits.defaultGods.WheelOfFortuneResponse;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;

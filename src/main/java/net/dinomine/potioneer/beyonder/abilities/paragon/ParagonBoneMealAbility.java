@@ -1,6 +1,5 @@
 package net.dinomine.potioneer.beyonder.abilities.paragon;
 
-import net.dinomine.potioneer.beyonder.abilities.AbilityInfo;
 import net.dinomine.potioneer.beyonder.abilities.misc.BoneMealAbility;
 
 public class ParagonBoneMealAbility extends BoneMealAbility {

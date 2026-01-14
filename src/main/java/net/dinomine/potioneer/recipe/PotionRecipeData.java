@@ -1,6 +1,5 @@
 package net.dinomine.potioneer.recipe;
 
-import net.dinomine.potioneer.beyonder.pathways.BeyonderPathway;
 import net.dinomine.potioneer.beyonder.pathways.Pathways;
 import net.dinomine.potioneer.savedata.PotionFormulaSaveData;
 import net.minecraft.client.resources.language.I18n;

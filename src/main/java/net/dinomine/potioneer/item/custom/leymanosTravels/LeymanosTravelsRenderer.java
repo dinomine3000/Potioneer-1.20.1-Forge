@@ -1,8 +1,6 @@
 package net.dinomine.potioneer.item.custom.leymanosTravels;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import net.dinomine.potioneer.item.custom.coin.CoinItem;
-import net.dinomine.potioneer.item.custom.coin.CoinItemModel;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;

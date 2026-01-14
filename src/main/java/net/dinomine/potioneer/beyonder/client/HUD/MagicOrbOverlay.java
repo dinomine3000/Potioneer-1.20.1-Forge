@@ -19,7 +19,7 @@ public class MagicOrbOverlay {
     private static final Minecraft minecraft = Minecraft.getInstance();
 
     public static final IGuiOverlay HUD_MAGIC = ((forgeGui, guiGraphics, partialTick, width, height) -> {
-        int id = ClientStatsData.getPathwayId();
+        int id = ClientStatsData.getPathwaySequenceId();
         if(id < 0) return;
         ClientConfigData.updateData();
 

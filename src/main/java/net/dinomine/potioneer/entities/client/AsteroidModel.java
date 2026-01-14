@@ -2,7 +2,6 @@ package net.dinomine.potioneer.entities.client;
 
 import net.dinomine.potioneer.Potioneer;
 import net.dinomine.potioneer.entities.custom.AsteroidEntity;
-import net.dinomine.potioneer.entities.custom.CharacteristicEntity;
 import net.minecraft.resources.ResourceLocation;
 import software.bernie.geckolib.model.GeoModel;
 

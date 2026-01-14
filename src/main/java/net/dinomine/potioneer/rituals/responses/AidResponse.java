@@ -7,14 +7,10 @@ import net.dinomine.potioneer.rituals.RandomizableResponse;
 import net.dinomine.potioneer.rituals.RitualInputData;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 
-import java.util.Arrays;
-import java.util.List;
 import java.util.Random;
-import java.util.stream.Collectors;
 
 import static net.dinomine.potioneer.rituals.spirits.RitualSpiritResponse.getPlayer;
 

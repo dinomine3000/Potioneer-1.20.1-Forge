@@ -1,11 +1,8 @@
 package net.dinomine.potioneer.beyonder.effects.paragon;
 
 import net.dinomine.potioneer.beyonder.abilities.Abilities;
-import net.dinomine.potioneer.beyonder.abilities.paragon.DurabilityRegenAbility;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffect;
-import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
 import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
-import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -49,7 +46,8 @@ public class BeyonderDurabilityEffect extends BeyonderEffect {
 
     @Override
     public void stopEffects(LivingEntityBeyonderCapability cap, LivingEntity target) {
-        if(cap.getAbilitiesManager().isEnabled(Abilities.DURABILITY_REGEN.getAblId(), sequenceLevel%10)){
+        if(target.level().isClientSide) return;
+        if(cap.getAbilitiesManager().isEnabledAtLevelOrLower(Abilities.DURABILITY_REGEN.getAblId(), sequenceLevel%10)){
             cap.getAbilitiesManager().setAbilityEnabled(Abilities.DURABILITY_REGEN.getAblId(), sequenceLevel%10, false, cap, target);
             cap.getAbilitiesManager().putAbilityOnCooldown(Abilities.DURABILITY_REGEN.getAblId(), sequenceLevel%10, 20*5, target);
         }

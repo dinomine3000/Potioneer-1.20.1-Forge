@@ -1,7 +1,9 @@
 package net.dinomine.potioneer.beyonder.client;
 
 import net.dinomine.potioneer.beyonder.abilities.AbilityInfo;
+import net.dinomine.potioneer.beyonder.abilities.AbilityKey;
 import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
+import net.dinomine.potioneer.beyonder.player.PlayerAbilitiesManager;
 import net.dinomine.potioneer.network.PacketHandler;
 import net.dinomine.potioneer.network.messages.abilityRelevant.PlayerSyncHotbarMessage;
 import net.minecraft.client.Minecraft;
@@ -21,7 +23,7 @@ public class ClientAbilitiesData {
 
     public static void setShowHotbar(boolean val){
         if(configScreenOpenAnimation) return;
-        if(!showHotbar && val && !hotbar.isEmpty()){
+        if(!showHotbar && val && !hotbar.isEmpty() && abilities.get(hotbar.get(caret)) != null){
             assert Minecraft.getInstance().player != null;
             Minecraft.getInstance().player.displayClientMessage(Component.translatable("potioneer.ability_name." + abilities.get(hotbar.get(caret)).descId()), true);
             openAnimation = true;
@@ -54,48 +56,126 @@ public class ClientAbilitiesData {
         caret = Mth.clamp(caret, 0, hotbar.size() - 1);
     }
 
-    public static void setCooldown(String cAblId, int cd, int maxCd){
-        if(abilities.containsKey(cAblId)){
-            abilities.get(cAblId).withCooldown(cd, maxCd);
-            return;
+//    public static void setEnabled(String cAblId, boolean enabled){
+//        if(abilities.containsKey(cAblId)){
+//            abilities.get(cAblId).setEnabled(enabled);
+//            return;
+//        }
+//        System.out.println("Warning: Couldn't find enabled ability: " + cAblId);
+//    }
+//
+//    public static void setCooldown(String cAblId, int cd, int maxCd){
+//        if(abilities.containsKey(cAblId)){
+//            abilities.get(cAblId).withCooldown(cd, maxCd);
+//            return;
+//        }
+//        System.out.println("Warning: Couldn't find cooldown ability: " + cAblId);
+//    }
+
+    public static void setAbilities(List<AbilityInfo> abilities2) {
+        abilities = new LinkedHashMap<>();
+        for (AbilityInfo abl : abilities2) {
+            abilities.put(abl.getKey(), abl);
         }
-        System.out.println("Warning: Couldn't find ability: " + cAblId);
+        updateHotbarOnChange();
+//        if(changingPath) hotbar = new ArrayList<>();
+//        if(changingPath) quickSelect = "";
+        if(!hasQuickSelect() && !abilities.containsKey(quickSelect)) quickSelect = null;
+        ClientStatsData.getCapability().ifPresent(cap -> {
+            if(Minecraft.getInstance().player != null)
+                cap.getAbilitiesManager().setAbilitiesOnClient(abilities2, cap, Minecraft.getInstance().player);
+            else
+                System.out.println("Player is null while trying to set abilities on client side.");
+        });
     }
 
-    public static void setAbilities(LinkedHashMap<String, AbilityInfo> abilities2, boolean changingPath) {
-        abilities = new LinkedHashMap<>();
-        for (String cAblId : abilities2.keySet()) {
-            AbilityInfo ability = abilities2.get(cAblId).withCompleteId(cAblId);
-            if (ability != null && !cAblId.isEmpty()) {
-                abilities.put(cAblId, ability);
+    public static boolean hasQuickSelect(){
+        return quickSelect != null;
+    }
+
+    public static void addAbilities(List<AbilityInfo> abilities2){
+        for(AbilityInfo info: abilities2){
+            if(abilities.containsKey(info.getKey())) continue;
+            abilities.put(info.getKey(), info);
+        }
+        ClientStatsData.getCapability().ifPresent(cap -> {
+            if(Minecraft.getInstance().player != null)
+                cap.getAbilitiesManager().addAbilitiesOnClient(abilities2, cap, Minecraft.getInstance().player, true);
+            else
+                System.out.println("Player is null while trying to add abilities on client side.");
+        });
+
+    }
+
+    public static void removeAbilities(List<AbilityInfo> abilities2){
+        for(AbilityInfo info: abilities2){
+            if(!abilities.containsKey(info.getKey())) continue;
+            abilities.remove(info.getKey());
+        }
+
+        ClientStatsData.getCapability().ifPresent(cap -> {
+            if(Minecraft.getInstance().player != null)
+                cap.getAbilitiesManager().removeAbilitiesOnClient(abilities2, cap, Minecraft.getInstance().player);
+            else
+                System.out.println("Player is null while trying to remove abilities on client side.");
+        });
+        updateHotbarOnChange();
+    }
+
+    public static void updateAbilities(List<AbilityInfo> abilities2){
+        for(AbilityInfo abl: abilities2){
+            AbilityKey key = abl.getKey();
+            if(key == null){
+                System.out.println("Warning: tried to update an ability with a null id: " + abl.descId());
+                continue;
+            }
+            abilities.put(key, abl);
+        }
+
+        ClientStatsData.getCapability().ifPresent(cap -> {
+            if(Minecraft.getInstance().player != null)
+                cap.getAbilitiesManager().updateAbilitiesOnClient(abilities2, cap, Minecraft.getInstance().player);
+            else
+                System.out.println("Player is null while trying to update abilities on client side.");
+        });
+    }
+
+    private static void updateHotbarOnChange(){
+        //TODO make logic here to mantain abilities that just leveled up
+        //
+        for(AbilityKey key: hotbar){
+            if (abilities.containsKey(key)) continue;
+            if (!key.getGroup().equals(PlayerAbilitiesManager.AbilityList.INTRINSIC.name())) continue;
+            for(AbilityKey iKey: abilities.keySet()){
+                if(iKey.isSameAbility(key.getAbilityId())
+                        && iKey.isSameGroup(PlayerAbilitiesManager.AbilityList.INTRINSIC.name()))
+                    key.setSequenceLevel(iKey.getSequenceLevel());
+                break;
             }
         }
-        if(changingPath) hotbar = new ArrayList<>();
-        if(changingPath) quickSelect = "";
+
         if(!hotbar.isEmpty()){
-            hotbar.removeIf(cAblId -> !abilities.containsKey(cAblId));
+            hotbar.removeIf(key -> !abilities.containsKey(key));
         }
-        if(!quickSelect.isEmpty() && !abilities.containsKey(quickSelect)) quickSelect = "";
+        System.out.println("Hotbar updated to:\n" + hotbar);
         setHotbarChanged();
     }
 
-    public static String getQuickAbilityCaret(){
+    public static AbilityKey getQuickAbility(){
         return quickSelect;
     }
 
-    public static void setQuickAbilityCaret(String id){
+    public static void setQuickAbility(AbilityKey id){
         quickSelect = id;
     }
 
-    public static ArrayList<String> getHotbar() {
+    public static ArrayList<AbilityKey> getHotbar() {
         return hotbar;
     }
 
-    public static void setHotbar(ArrayList<String> hotbar2) {
+    public static void setHotbar(ArrayList<AbilityKey> hotbar2) {
         hotbar = hotbar2;
-        if(!hotbar.isEmpty()){
-            caret = Mth.clamp(caret, 0, hotbar.size() - 1);
-        }
+        updateHotbarOnChange();
     }
 
     public static void tick(float dt){
@@ -107,7 +187,7 @@ public class ClientAbilitiesData {
 
         time += dt;
         if(time > 1){
-            for(Map.Entry<String, AbilityInfo> entry: abilities.entrySet()){
+            for(Map.Entry<AbilityKey, AbilityInfo> entry: abilities.entrySet()){
                 if(getCooldown(entry.getKey()) > 0) abilities.get(entry.getKey()).tickCooldown();
             }
             time = 0;
@@ -118,20 +198,20 @@ public class ClientAbilitiesData {
         return getCooldown(caret);
     }
 
-    public static int getCooldown(String cAblId){
-        return abilities.get(cAblId).getCooldown();
+    public static int getCooldown(AbilityKey key){
+        return abilities.get(key).getCooldown();
     }
 
     public static int getCooldown(int pos){
         if(hotbar.isEmpty()) return 0;
-        String cAblId = hotbar.get(Math.floorMod(pos, hotbar.size()));
-        if(cAblId == null || cAblId.isEmpty()) return 0;
-        return getCooldown(cAblId);
+        AbilityKey key = hotbar.get(Math.floorMod(pos, hotbar.size()));
+        if(key == null) return 0;
+        return getCooldown(key);
     }
 
-    public static int getMaxCooldown(String cAblId){
-        if(!abilities.containsKey(cAblId)) return 1;
-        return abilities.get(cAblId).maxCooldown();
+    public static int getMaxCooldown(AbilityKey key){
+        if(!abilities.containsKey(key)) return 1;
+        return Math.max(abilities.get(key).maxCooldown(), 1);
     }
 
     public static int getMaxCooldown(int pos){
@@ -145,7 +225,7 @@ public class ClientAbilitiesData {
         } else {
             caret = 0;
         }
-        PacketHandler.INSTANCE.sendToServer(new PlayerSyncHotbarMessage(getHotbar(), getQuickAbilityCaret()));
+        PacketHandler.INSTANCE.sendToServer(new PlayerSyncHotbarMessage(getHotbar(), getQuickAbility()));
 //        Minecraft.getInstance().player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
 //            cap.getAbilitiesManager().clientHotbar = new ArrayList<>(hotbar);
 //        });
@@ -168,10 +248,10 @@ public class ClientAbilitiesData {
     public static float animationTime = 0;
     private static float time = 0;
     public static float scaleAnimationTime = 0;
-    private static HashMap<String, AbilityInfo> abilities = new HashMap<>();
+    private static HashMap<AbilityKey, AbilityInfo> abilities = new HashMap<>();
     //private static ArrayList<String> abilitiesByIndex;
-    private static ArrayList<String> hotbar;
-    private static String quickSelect = "";
+    private static ArrayList<AbilityKey> hotbar;
+    private static AbilityKey quickSelect = null;
     /**
      * caret refers to the index in the hotbar -> current selected ability in hotbar
      */
@@ -199,34 +279,34 @@ public class ClientAbilitiesData {
         return abilities.get(hotbar.get(Math.floorMod(caretPos, hotbar.size())));
     }
 
-    public static boolean isEnabled(String cAblId){
-        return abilities.get(cAblId).isEnabled();
+    public static boolean isEnabled(AbilityKey key){
+        return abilities.get(key).isEnabled();
     }
 
     public static boolean isEnabled(int pos){
-        String cAblId = hotbar.get(Math.floorMod(pos, hotbar.size()));
-        if(cAblId == null || cAblId.isEmpty()) return false;
-        return isEnabled(cAblId);
+        AbilityKey key = hotbar.get(Math.floorMod(pos, hotbar.size()));
+        if(key == null) return false;
+        return isEnabled(key);
     }
 
     public static boolean useQuickAbility(Player player){
-        if(quickSelect.isEmpty() && hotbar.isEmpty()) return false;
+        if(!hasQuickSelect() && hotbar.isEmpty()) return false;
         //TODO change mode here to reflect the MODE chosen for the quick select
-        return useAbility(player, quickSelect.isEmpty() ? hotbar.get(caret) : quickSelect, true);
+        return useAbility(player, hasQuickSelect() ? quickSelect : hotbar.get(caret), true);
     }
 
     public static boolean useAbility(Player player, boolean primary){
         return useAbility(player, hotbar.get(Math.floorMod(caret, hotbar.size())), primary);
     }
 
-    public static boolean useAbility(Player player, String cAblId, boolean primary){
-        if(abilities.isEmpty() || cAblId.isEmpty()) return false;
+    public static boolean useAbility(Player player, AbilityKey key, boolean primary){
+        if(abilities.isEmpty() || key == null) return false;
         player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
 //                    System.out.println(caret);
 //                    ClientStatsData.setSpirituality(ClientStatsData.getPlayerSpirituality() - abilities.get(caret).cost());
             System.out.println("Primary? " + primary);
-            cap.getAbilitiesManager().useAbility(cap, player, cAblId, true, primary);
-            abilities.get(cAblId).setEnabled(false);
+            cap.getAbilitiesManager().useAbility(cap, player, key, true, primary);
+//            abilities.get(cAblId).setEnabled(false);
         });
 //        if(cooldowns.get(cAblId) == 0){
 //        } else if(cooldowns.get(cAblId) > 0){

@@ -7,7 +7,6 @@ import net.dinomine.potioneer.beyonder.client.KeyBindings;
 import net.dinomine.potioneer.block.ModBlocks;
 import net.dinomine.potioneer.block.custom.PotionCauldronBlock;
 import net.dinomine.potioneer.block.entity.ModBlockEntities;
-import net.dinomine.potioneer.block.entity.RitualPedestalBlockEntity;
 import net.dinomine.potioneer.block.entity.renderer.PotionCauldronBlockEntityRenderer;
 import net.dinomine.potioneer.block.entity.renderer.RitualPedestalBlockEntityRenderer;
 import net.dinomine.potioneer.item.ModItems;
@@ -20,7 +19,6 @@ import net.minecraftforge.client.event.RegisterGuiOverlaysEvent;
 import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 
 @OnlyIn(Dist.CLIENT)
 @Mod.EventBusSubscriber(modid = Potioneer.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)

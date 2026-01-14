@@ -2,15 +2,10 @@ package net.dinomine.potioneer.item.custom;
 
 import net.dinomine.potioneer.util.misc.ArtifactHelper;
 import net.minecraft.client.color.item.ItemColor;
-import net.minecraft.client.resources.language.I18n;
-import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-
-import java.util.Arrays;
-import java.util.stream.Collectors;
 
 public class GemItem extends Item {
     public GemItem(Properties pProperties) {

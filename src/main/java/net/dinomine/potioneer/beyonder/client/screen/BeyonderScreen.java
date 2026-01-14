@@ -21,8 +21,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 
-import java.util.Objects;
-
 import static net.dinomine.potioneer.beyonder.client.HUD.AbilitiesHotbarHUD.*;
 import static net.dinomine.potioneer.beyonder.client.HUD.MagicOrbOverlay.getSanityIndex;
 
@@ -72,7 +70,7 @@ public class BeyonderScreen extends Screen {
         this.leftPos = (this.width - this.imageWidth) / 2;
         this.topPos = (this.height- this.imageHeight) / 2;
 
-        this.pathwaySequenceId = ClientStatsData.getPathwayId();
+        this.pathwaySequenceId = ClientStatsData.getPathwaySequenceId();
         this.pathway = Pathways.getPathwayById(pathwaySequenceId);
         this.PATHWAY_NAME = Component.translatable(Potioneer.MOD_ID + ".beyonder.pathway." + pathway.getPathwayName(false));
         this.SEQUENCE_NAME = Component.translatable(Potioneer.MOD_ID + ".beyonder.sequence." + pathway.getSequenceNameFromId(pathwaySequenceId %10, false));
@@ -173,7 +171,9 @@ public class BeyonderScreen extends Screen {
 
         if(!ClientAbilitiesData.getHotbar().isEmpty()){
             for(int i = 0; i < Math.min(3, ClientAbilitiesData.getHotbar().size()); i++){
-                drawAbilityIcon(pGuiGraphics, leftPos + 8 + 15*i, topPos + 130, 0.65f, Objects.requireNonNull(ClientAbilitiesData.getAbilityAt(i)));
+                AbilityInfo abl = ClientAbilitiesData.getAbilityAt(i);
+                if(abl == null) continue;
+                drawAbilityIcon(pGuiGraphics, leftPos + 8 + 15*i, topPos + 130, 0.65f, abl);
             }
         }
 

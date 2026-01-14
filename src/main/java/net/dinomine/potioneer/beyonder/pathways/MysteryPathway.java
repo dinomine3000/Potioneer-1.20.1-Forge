@@ -2,8 +2,6 @@ package net.dinomine.potioneer.beyonder.pathways;
 
 import net.dinomine.potioneer.beyonder.abilities.Abilities;
 import net.dinomine.potioneer.beyonder.abilities.Ability;
-import net.dinomine.potioneer.beyonder.abilities.misc.CogitationAbility;
-import net.dinomine.potioneer.beyonder.abilities.mystery.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,9 +39,14 @@ public class MysteryPathway extends BeyonderPathway {
 
     @Override
     public List<Ability> getAbilities(int sequenceLevel) {
+        return getAbilities(sequenceLevel%10, sequenceLevel%10);
+    }
+
+    @Override
+    public List<Ability> getAbilities(int ofSequenceLevel, int atSequenceLevel) {
         ArrayList<Ability> activeAbilities = new ArrayList<>();
 
-        switch(sequenceLevel%10){
+        switch(ofSequenceLevel%10){
             case 0:
             case 1:
             case 2:
@@ -52,19 +55,19 @@ public class MysteryPathway extends BeyonderPathway {
             case 5:
             case 6:
             case 7:
-                activeAbilities.add(Abilities.AIR_BULLET.create(sequenceLevel));
-                activeAbilities.add(Abilities.PAPER_FIGURINE_SUBSTITUTE.create(sequenceLevel));
-                activeAbilities.add(Abilities.PANACEA.create(sequenceLevel));
-                activeAbilities.add(Abilities.PUSH.create(sequenceLevel));
+                activeAbilities.add(Abilities.AIR_BULLET.create(atSequenceLevel));
+                activeAbilities.add(Abilities.PAPER_FIGURINE_SUBSTITUTE.create(atSequenceLevel));
+                activeAbilities.add(Abilities.PANACEA.create(atSequenceLevel));
+                activeAbilities.add(Abilities.PUSH.create(atSequenceLevel));
             case 8:
-                activeAbilities.add(Abilities.CANCEL_FALL_DAMAGE.create(sequenceLevel));
-                activeAbilities.add(Abilities.STEP_UP.create(sequenceLevel));
-                activeAbilities.add(Abilities.LEAP.create(sequenceLevel));
+                activeAbilities.add(Abilities.CANCEL_FALL_DAMAGE.create(atSequenceLevel));
+                activeAbilities.add(Abilities.STEP_UP.create(atSequenceLevel));
+                activeAbilities.add(Abilities.LEAP.create(atSequenceLevel));
             case 9:
-                activeAbilities.add(Abilities.EXTENDED_REACH.create(sequenceLevel));
-                activeAbilities.add(Abilities.DOOR_OPENING.create(sequenceLevel));
-                activeAbilities.add(Abilities.MYSTERY_REGEN.create(sequenceLevel));
-                activeAbilities.add(Abilities.INVISIBILITY.create(sequenceLevel));
+                activeAbilities.add(Abilities.EXTENDED_REACH.create(atSequenceLevel));
+                activeAbilities.add(Abilities.DOOR_OPENING.create(atSequenceLevel));
+                activeAbilities.add(Abilities.MYSTERY_REGEN.create(atSequenceLevel));
+                activeAbilities.add(Abilities.INVISIBILITY.create(atSequenceLevel));
         }
         return activeAbilities;
     }

@@ -1,7 +1,7 @@
 package net.dinomine.potioneer.network.messages.advancement;
 
-import net.dinomine.potioneer.util.misc.CharacteristicHelper;
 import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
+import net.dinomine.potioneer.util.misc.CharacteristicHelper;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.network.NetworkEvent;

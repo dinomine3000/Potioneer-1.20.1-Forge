@@ -12,7 +12,6 @@ import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.event.entity.player.PlayerEvent;
-import net.minecraftforge.network.PacketDistributor;
 
 import java.util.UUID;
 import java.util.function.Supplier;
@@ -87,6 +86,15 @@ public class BeyonderStats {
 
     public void setAttributes(float[] atts){
         this.playerAttributes = atts;
+    }
+
+    public void setAttributes(int[] atts){
+        float hp = (float) atts[0];
+        float dmg = (float) atts[1];
+        float arm = (float) atts[2];
+        float tou = (float) atts[3];
+        float kno = (float) atts[4];
+        this.playerAttributes = new float[]{hp, dmg, arm, tou, kno};
     }
 
     public void applyEffects(Player player, BeyonderStats statsHolder) {

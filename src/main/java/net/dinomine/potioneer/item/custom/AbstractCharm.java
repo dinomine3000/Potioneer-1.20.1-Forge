@@ -3,7 +3,6 @@ package net.dinomine.potioneer.item.custom;
 import net.dinomine.potioneer.beyonder.abilities.AbilityFunctionHelper;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffect;
 import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
-import net.dinomine.potioneer.entities.ModEntities;
 import net.dinomine.potioneer.entities.custom.CharmEntity;
 import net.dinomine.potioneer.util.misc.ArtifactHelper;
 import net.minecraft.sounds.SoundEvents;

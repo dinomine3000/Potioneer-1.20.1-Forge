@@ -31,7 +31,7 @@ public class PlayerCharacteristicManager {
      * calling getPathwaySequenceId() will return the "peek" of this stack, aka the most recent characteristic of a high level.
      */
     private ArrayList<Integer> lastConsumedCharacteristics = new ArrayList<>();
-
+    private boolean isClientSide = false;
     private int aptitudePathway;
 
     public PlayerCharacteristicManager(){
@@ -126,6 +126,17 @@ public class PlayerCharacteristicManager {
         return res == null ? -1 : res;
     }
 
+    /**
+     * On client side, the only thing that matters is the last consumed characterstics.
+     * @param player
+     * @param lastConsumedCharacteristics
+     */
+    public void setCharacteristicsOnClient(Player player, List<Integer> lastConsumedCharacteristics){
+        if(!player.level().isClientSide()) return;
+        this.lastConsumedCharacteristics = new ArrayList<>(lastConsumedCharacteristics);
+        this.isClientSide = true;
+    }
+
     public int getPathwayId(){
         return Math.floorDiv(getPathwaySequenceId(), 10);
     }
@@ -167,31 +178,13 @@ public class PlayerCharacteristicManager {
 
     public double getActingPercentForSanityCalculation(){
         if(actingProgress.isEmpty()) return 1;
+        if(isClientSide) return 1;
         if(lastConsumedCharacteristics.size() == 1){
             return 0.6d + 0.4d*actingProgress.values().stream().findFirst().get();
         } else {
             return getAdjustedActingPercent(getPathwaySequenceId());
         }
     }
-//        //System.out.println("Warning: CHeck this method later, doesnt seem like its being called as often as it should: PlayerCharacteristicManager.getActingPercentForSanityCalculation");
-//        int minSequenceLevel = 10;
-//        double aggregatePercent = 0d;
-//        int i = 0;
-//        for(Map.Entry<Integer, Double> charac: actingProgress.entrySet()){
-//            i++;
-//            int pathwayId = charac.getKey();
-//            aggregatePercent += charac.getValue();
-//            if (pathwayId%10 < minSequenceLevel){
-//                minSequenceLevel = pathwayId%10;
-//            }
-//        }
-//        aggregatePercent = aggregatePercent/i;
-//        //if youre a sequence 9, guarantees a minimum of 60% sanity, with the remaining 40% depending on your acting
-//        if(minSequenceLevel >= 9) return (0.6 + 0.4*aggregatePercent);
-//        //for sequences 8 and onwards, the percentage depends on the acting for each lower sequence
-//        //60% depends on the digestion of previous sequences, 40% on the current one.
-//        return getAggregatedActingProgress(minSequenceLevel + 1)*0.6 + 0.4*(list[sequenceLevel%10]);
-//    }
 
     /**
      * calculates the acting percent, adjusting for all characteristics, and giving the last consumed characteristic (in the argument currentSequenceLevel) a special weight in the final percent.
@@ -335,11 +328,11 @@ public class PlayerCharacteristicManager {
         }
         //make sure every ability is the highest level
         for(Ability abl: allAbilities){
-            abl.setSequenceLevel(highestLevel);
+            abl.setSequenceLevelSilent(highestLevel);
         }
         //set
         for(Ability abl: allAbilities){
-            cap.getAbilitiesManager().addAbility(PlayerAbilitiesManager.AbilityList.INTRINSIC, abl, cap, target, false);
+            cap.getAbilitiesManager().addAbility(PlayerAbilitiesManager.AbilityList.INTRINSIC.name(), abl, cap, target, false, false);
         }
     }
 
@@ -389,15 +382,18 @@ public class PlayerCharacteristicManager {
         aptitudePathway = other.aptitudePathway;
     }
 
-    public void setAbilities(int characteristicId, LivingEntityBeyonderCapability cap, LivingEntity target) {
+    public void setAbilities(LivingEntityBeyonderCapability cap, LivingEntity target) {
         //get all abilities from characteristics
         //create cogitation ability based on last consumed characteristic
         //update the abilities manager
         //maybe make it update the intrinsic abilities after the tick is over, so we dont change the list while its being run on the tick() method
 
 
-        List<Ability> newAbilities = Pathways.getPathwayById(characteristicId).getAbilities(characteristicId%10);
         int pathwaySequenceId = getPathwaySequenceId();
+        List<Ability> newAbilities = new ArrayList<>();
+        for(Integer characId: closestToLowerTens(lastConsumedCharacteristics)){
+            newAbilities.addAll(Pathways.getPathwayById(characId).getAbilities(characId%10, pathwaySequenceId%10));
+        }
         cap.getAbilitiesManager().grantAbilities(newAbilities, pathwaySequenceId, cap, target);
     }
 
@@ -436,5 +432,9 @@ public class PlayerCharacteristicManager {
             if(testSpir > bestSpirituality) bestSpirituality = testSpir;
         }
         return bestSpirituality;
+    }
+
+    public ArrayList<Integer> getLastConsumedCharacteristics() {
+        return lastConsumedCharacteristics;
     }
 }

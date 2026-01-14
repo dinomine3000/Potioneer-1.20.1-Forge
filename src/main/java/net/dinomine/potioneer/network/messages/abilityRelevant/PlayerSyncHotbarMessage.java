@@ -1,5 +1,6 @@
 package net.dinomine.potioneer.network.messages.abilityRelevant;
 
+import net.dinomine.potioneer.beyonder.abilities.AbilityKey;
 import net.dinomine.potioneer.beyonder.client.ClientAbilitiesData;
 import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
 import net.minecraft.network.FriendlyByteBuf;
@@ -14,10 +15,10 @@ import java.util.function.Supplier;
 
 //message sent between server and client to keep the ability hotbar info between world loads
 public class PlayerSyncHotbarMessage {
-    public ArrayList<String> hotbar;
-    public String quick;
+    public ArrayList<AbilityKey> hotbar;
+    public AbilityKey quick;
 
-    public PlayerSyncHotbarMessage(ArrayList<String> hotbar, String quickAbility){
+    public PlayerSyncHotbarMessage(ArrayList<AbilityKey> hotbar, AbilityKey quickAbility){
         this.hotbar = new ArrayList<>(hotbar);
         this.quick = quickAbility;
     }
@@ -25,36 +26,19 @@ public class PlayerSyncHotbarMessage {
     public static void encode(PlayerSyncHotbarMessage msg, FriendlyByteBuf buffer){
         buffer.writeInt(msg.hotbar.size());
         for(int i = 0; i < msg.hotbar.size(); i++){
-            String id = msg.hotbar.get(i);
-            buffer.writeInt(id.length());
-            for(int j = 0; j < id.length(); j++){
-                buffer.writeChar(id.charAt(j));
-            }
+            msg.hotbar.get(i).writeToBuffer(buffer);
         }
-        buffer.writeInt(msg.quick.length());
-        for(int i = 0; i < msg.quick.length(); i++){
-            buffer.writeChar(msg.quick.charAt(i));
-        }
+        msg.quick.writeToBuffer(buffer);
     }
 
     public static PlayerSyncHotbarMessage decode(FriendlyByteBuf buffer){
         int size = buffer.readInt();
-        ArrayList<String> hotbar = new ArrayList<>();
-        StringBuilder builder;
+        ArrayList<AbilityKey> hotbar = new ArrayList<>();
         for(int i = 0; i < size; i++){
-            builder = new StringBuilder();
-            int iterations = buffer.readInt();
-            for(int j = 0; j < iterations; j++){
-                builder.append(buffer.readChar());
-            }
-            hotbar.add(builder.toString());
+            hotbar.add(AbilityKey.readFromBuffer(buffer));
         }
-        int quickSize = buffer.readInt();
-        builder = new StringBuilder();
-        for(int i = 0; i < quickSize; i++){
-            builder.append(buffer.readChar());
-        }
-        return new PlayerSyncHotbarMessage(hotbar, builder.toString());
+
+        return new PlayerSyncHotbarMessage(hotbar, AbilityKey.readFromBuffer(buffer));
     }
 
     public static void handle(PlayerSyncHotbarMessage msg, Supplier<NetworkEvent.Context> contextSupplier){
@@ -86,6 +70,6 @@ class ClientHotbarSyncMessage
     public static void handlePacket(PlayerSyncHotbarMessage msg, Supplier<NetworkEvent.Context> contextSupplier)
     {
         ClientAbilitiesData.setHotbar(msg.hotbar);
-        ClientAbilitiesData.setQuickAbilityCaret(msg.quick);
+        ClientAbilitiesData.setQuickAbility(msg.quick);
     }
 }

@@ -1,7 +1,6 @@
 package net.dinomine.potioneer.datagen;
 
 import net.dinomine.potioneer.Potioneer;
-import net.dinomine.potioneer.block.ModBlocks;
 import net.dinomine.potioneer.item.ModItems;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceKey;

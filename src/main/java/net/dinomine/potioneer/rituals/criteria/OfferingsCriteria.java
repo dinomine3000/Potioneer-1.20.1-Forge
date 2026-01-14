@@ -2,14 +2,11 @@ package net.dinomine.potioneer.rituals.criteria;
 
 import net.dinomine.potioneer.rituals.RandomizableCriteria;
 import net.dinomine.potioneer.rituals.RitualInputData;
-import net.dinomine.potioneer.rituals.spirits.EvilSpirit;
 import net.dinomine.potioneer.savedata.RitualSpiritsSaveData;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 

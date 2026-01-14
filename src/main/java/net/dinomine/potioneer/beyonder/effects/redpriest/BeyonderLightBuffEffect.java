@@ -1,7 +1,6 @@
 package net.dinomine.potioneer.beyonder.effects.redpriest;
 
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffect;
-import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
 import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
 import net.dinomine.potioneer.mob_effects.ModEffects;
 import net.minecraft.world.effect.MobEffectInstance;

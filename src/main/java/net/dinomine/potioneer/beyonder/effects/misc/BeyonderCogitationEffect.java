@@ -1,22 +1,17 @@
 package net.dinomine.potioneer.beyonder.effects.misc;
 
+import net.dinomine.potioneer.beyonder.abilities.AbilityKey;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffect;
-import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
 import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.StringTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.player.Player;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class BeyonderCogitationEffect extends BeyonderEffect {
-    private List<String> deactivatedAbilities = new ArrayList<>();
+    private List<AbilityKey> deactivatedAbilities = new ArrayList<>();
     private boolean slownlessCheck = false;
     private boolean darknessCheck = false;
     private boolean weaknessCheck = false;
@@ -24,10 +19,10 @@ public class BeyonderCogitationEffect extends BeyonderEffect {
 
     @Override
     public void onAcquire(LivingEntityBeyonderCapability cap, LivingEntity target) {
-        this.name = "Cogitation Effect";
-        if(target instanceof Player player && deactivatedAbilities.isEmpty()){
-            deactivatedAbilities = cap.getAbilitiesManager().disabledALlAbilities(player, "cogitation");
-        }
+//        this.name = "Cogitation Effect";
+//        if(target instanceof Player player && deactivatedAbilities.isEmpty()){
+//            deactivatedAbilities = cap.getAbilitiesManager().disabledAllAbilities(player, "cogitation");
+//        }
     }
 
     @Override
@@ -61,31 +56,30 @@ public class BeyonderCogitationEffect extends BeyonderEffect {
         if(weaknessCheck) target.removeEffect(MobEffects.WEAKNESS);
         if(glowingCheck) target.removeEffect(MobEffects.GLOWING);
 
-        if(target instanceof Player player)
-            cap.getAbilitiesManager().reactivateAbilities(player, deactivatedAbilities);
+        cap.getAbilitiesManager().unrevokeAll(cap, target);
     }
-
-    @Override
-    public void toNbt(CompoundTag nbt) {
-        super.toNbt(nbt);
-        ListTag deactivated = new ListTag();
-        for(String ablID: deactivatedAbilities){
-            deactivated.add(StringTag.valueOf(ablID));
-        }
-        nbt.put("deactivated", deactivated);
-    }
-
-    @Override
-    public void loadNBTData(CompoundTag nbt) {
-        super.loadNBTData(nbt);
-
-        deactivatedAbilities = new ArrayList<>();
-        ListTag deactivated = nbt.getList("deactivated", ListTag.TAG_STRING);
-        for(Tag tag: deactivated){
-            if(tag instanceof StringTag ablTag){
-                String ablId = ablTag.getAsString();
-                deactivatedAbilities.add(ablId);
-            }
-        }
-    }
+//
+//    @Override
+//    public void toNbt(CompoundTag nbt) {
+//        super.toNbt(nbt);
+//        ListTag deactivated = new ListTag();
+//        for(String ablID: deactivatedAbilities){
+//            deactivated.add(StringTag.valueOf(ablID));
+//        }
+//        nbt.put("deactivated", deactivated);
+//    }
+//
+//    @Override
+//    public void loadNBTData(CompoundTag nbt) {
+//        super.loadNBTData(nbt);
+//
+//        deactivatedAbilities = new ArrayList<>();
+//        ListTag deactivated = nbt.getList("deactivated", ListTag.TAG_STRING);
+//        for(Tag tag: deactivated){
+//            if(tag instanceof StringTag ablTag){
+//                String ablId = ablTag.getAsString();
+//                deactivatedAbilities.add(ablId);
+//            }
+//        }
+//    }
 }

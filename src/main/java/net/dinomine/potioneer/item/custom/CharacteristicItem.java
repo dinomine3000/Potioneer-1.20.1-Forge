@@ -1,11 +1,10 @@
 package net.dinomine.potioneer.item.custom;
 
 import net.dinomine.potioneer.beyonder.pathways.Pathways;
-import net.dinomine.potioneer.util.misc.ArtifactHelper;
-import net.dinomine.potioneer.beyonder.pathways.BeyonderPathway;
 import net.dinomine.potioneer.entities.ModEntities;
 import net.dinomine.potioneer.entities.custom.CharacteristicEntity;
 import net.dinomine.potioneer.item.ModItems;
+import net.dinomine.potioneer.util.misc.ArtifactHelper;
 import net.minecraft.client.color.item.ItemColor;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;

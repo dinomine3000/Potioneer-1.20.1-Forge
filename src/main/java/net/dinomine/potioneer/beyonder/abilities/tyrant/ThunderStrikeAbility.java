@@ -2,7 +2,6 @@ package net.dinomine.potioneer.beyonder.abilities.tyrant;
 
 import net.dinomine.potioneer.beyonder.abilities.Ability;
 import net.dinomine.potioneer.beyonder.abilities.AbilityFunctionHelper;
-import net.dinomine.potioneer.beyonder.abilities.AbilityInfo;
 import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;

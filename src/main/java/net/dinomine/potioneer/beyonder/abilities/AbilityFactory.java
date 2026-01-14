@@ -63,7 +63,7 @@ public class AbilityFactory {
     public int getPathwayId(){return pathwayId;}
 
     public Ability create(int pathwaySequenceId){
-        return createFunction.apply(pathwaySequenceId).withId(ablId);
+        return createFunction.apply(pathwaySequenceId).withAbilityId(ablId);
     }
 
     public AbilityInfo getInfo(int cooldown, int maxCd, boolean enabled, String descId, String innerId) {

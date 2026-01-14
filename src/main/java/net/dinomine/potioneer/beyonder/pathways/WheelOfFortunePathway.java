@@ -2,8 +2,6 @@ package net.dinomine.potioneer.beyonder.pathways;
 
 import net.dinomine.potioneer.beyonder.abilities.Abilities;
 import net.dinomine.potioneer.beyonder.abilities.Ability;
-import net.dinomine.potioneer.beyonder.abilities.misc.CogitationAbility;
-import net.dinomine.potioneer.beyonder.abilities.wheeloffortune.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,8 +39,13 @@ public class WheelOfFortunePathway extends BeyonderPathway {
 
     @Override
     public List<Ability> getAbilities(int sequence){
+        return getAbilities(sequence%10, sequence%10);
+    }
+
+    @Override
+    public List<Ability> getAbilities(int ofSequenceLevel, int atSequenceLevel) {
         ArrayList<Ability> abilities = new ArrayList<>();
-        switch(sequence%10){
+        switch(ofSequenceLevel%10){
             case 0:
             case 1:
             case 2:
@@ -51,25 +54,24 @@ public class WheelOfFortunePathway extends BeyonderPathway {
             case 5:
             case 6:
             case 7:
-                abilities.add(Abilities.MINER_BONE_MEAL.create(sequence));
-                abilities.add(Abilities.PATIENCE.create(sequence));
-                abilities.add(Abilities.DODGE_DAMAGE.create(sequence));
-                abilities.add(Abilities.CALAMITY_INCREASE.create(sequence));
+                abilities.add(Abilities.MINER_BONE_MEAL.create(atSequenceLevel));
+                abilities.add(Abilities.PATIENCE.create(atSequenceLevel));
+                abilities.add(Abilities.DODGE_DAMAGE.create(atSequenceLevel));
+                abilities.add(Abilities.CALAMITY_INCREASE.create(atSequenceLevel));
             case 8:
-                abilities.add(Abilities.BLOCK_SNIFF.create(sequence));
-                abilities.add(Abilities.LUCK_BOOST.create(sequence));
-                abilities.add(Abilities.CHECK_LUCK.create(sequence));
-                abilities.add(Abilities.FORTUNE_ABILITY.create(sequence));
-                abilities.add(Abilities.SILK_TOUCH_ABILITY.create(sequence));
-
+                abilities.add(Abilities.BLOCK_SNIFF.create(atSequenceLevel));
+                abilities.add(Abilities.LUCK_BOOST.create(atSequenceLevel));
+                abilities.add(Abilities.CHECK_LUCK.create(atSequenceLevel));
+                abilities.add(Abilities.FORTUNE_ABILITY.create(atSequenceLevel));
+                abilities.add(Abilities.SILK_TOUCH_ABILITY.create(atSequenceLevel));
             case 9:
-                abilities.add(Abilities.MINER_LIGHT.create(sequence));
-                abilities.add(Abilities.CONJURE_PICKAXE.create(sequence));
-                abilities.add(Abilities.MINING_SPEED.create(sequence));
+                abilities.add(Abilities.MINER_LIGHT.create(atSequenceLevel));
+                abilities.add(Abilities.CONJURE_PICKAXE.create(atSequenceLevel));
+                abilities.add(Abilities.MINING_SPEED.create(atSequenceLevel));
         }
 
         return abilities;
-//        mng.setPathwayAbilities(activeAbilities);
+
     }
 
     @Override

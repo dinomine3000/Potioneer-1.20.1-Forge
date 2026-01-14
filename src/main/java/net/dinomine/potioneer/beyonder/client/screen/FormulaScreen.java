@@ -1,7 +1,6 @@
 package net.dinomine.potioneer.beyonder.client.screen;
 
 import net.dinomine.potioneer.Potioneer;
-import net.dinomine.potioneer.beyonder.pathways.BeyonderPathway;
 import net.dinomine.potioneer.recipe.PotionRecipeData;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;

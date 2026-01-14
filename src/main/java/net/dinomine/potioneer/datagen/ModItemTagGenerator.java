@@ -1,13 +1,10 @@
 package net.dinomine.potioneer.datagen;
 
 import net.dinomine.potioneer.Potioneer;
-import net.dinomine.potioneer.item.ModItems;
 import net.dinomine.potioneer.util.ModTags;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.tags.ItemTagsProvider;
-import net.minecraft.nbt.Tag;
-import net.minecraft.tags.ItemTags;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Block;
 import net.minecraftforge.common.Tags;

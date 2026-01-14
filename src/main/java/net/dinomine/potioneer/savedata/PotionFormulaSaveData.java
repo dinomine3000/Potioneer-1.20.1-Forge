@@ -14,7 +14,6 @@ import net.minecraft.world.level.saveddata.SavedData;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 public class PotionFormulaSaveData extends SavedData {
     private ArrayList<PotionRecipe> recipes = new ArrayList<>();

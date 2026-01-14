@@ -3,7 +3,6 @@ package net.dinomine.potioneer.rituals.responses;
 import net.dinomine.potioneer.rituals.RitualInputData;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 
 public abstract class SpiritResponse {

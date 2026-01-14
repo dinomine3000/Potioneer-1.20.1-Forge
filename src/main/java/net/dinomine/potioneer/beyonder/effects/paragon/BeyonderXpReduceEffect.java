@@ -1,7 +1,6 @@
 package net.dinomine.potioneer.beyonder.effects.paragon;
 
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffect;
-import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
 import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
 import net.minecraft.world.entity.LivingEntity;
 

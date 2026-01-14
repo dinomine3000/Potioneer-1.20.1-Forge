@@ -2,8 +2,6 @@ package net.dinomine.potioneer.entities.client;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.math.Axis;
-import net.dinomine.potioneer.entities.custom.AsteroidEntity;
 import net.dinomine.potioneer.entities.custom.CharmEntity;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;

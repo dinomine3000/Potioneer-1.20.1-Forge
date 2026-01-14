@@ -1,12 +1,12 @@
 package net.dinomine.potioneer.item.custom.coin;
 
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
-import net.dinomine.potioneer.util.misc.DivinationResult;
-import net.dinomine.potioneer.util.misc.MysticismHelper;
 import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
 import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
 import net.dinomine.potioneer.item.ModItems;
 import net.dinomine.potioneer.sound.ModSounds;
+import net.dinomine.potioneer.util.misc.DivinationResult;
+import net.dinomine.potioneer.util.misc.MysticismHelper;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;

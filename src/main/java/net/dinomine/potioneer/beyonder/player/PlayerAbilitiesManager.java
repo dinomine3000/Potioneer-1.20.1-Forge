@@ -3,26 +3,29 @@ package net.dinomine.potioneer.beyonder.player;
 import net.dinomine.potioneer.beyonder.abilities.Abilities;
 import net.dinomine.potioneer.beyonder.abilities.Ability;
 import net.dinomine.potioneer.beyonder.abilities.AbilityInfo;
+import net.dinomine.potioneer.beyonder.abilities.AbilityKey;
+import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
 import net.dinomine.potioneer.network.PacketHandler;
-import net.dinomine.potioneer.network.messages.abilityRelevant.PlayerAbilityCooldownSTC;
+import net.dinomine.potioneer.network.messages.abilityRelevant.AbilitySyncMessage;
 import net.dinomine.potioneer.network.messages.abilityRelevant.PlayerCastAbilityMessageCTS;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraftforge.network.PacketDistributor;
+import org.jetbrains.annotations.NotNull;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 public class PlayerAbilitiesManager {
-    private LinkedHashMap<String, Ability> abilities = new LinkedHashMap<>();
+    private LinkedHashMap<AbilityKey, Ability> abilities = new LinkedHashMap<>();
     //private ArrayList<String> replicatedAbilities = new ArrayList<>();
     //private ArrayList<String> recordedAbilities = new ArrayList<>();
     //private ArrayList<ArtifactHolder> artifacts = new ArrayList<>();
 
-    public ArrayList<String> clientHotbar = new ArrayList<>();
-    public String quickAbility = "";
+    public ArrayList<AbilityKey> clientHotbar = new ArrayList<>();
+    public AbilityKey quickAbility = null;
 
     public void copyFrom(PlayerAbilitiesManager mng){
         this.clientHotbar = mng.clientHotbar;
@@ -30,8 +33,8 @@ public class PlayerAbilitiesManager {
         this.abilities = mng.abilities;
     }
 
-    public Ability getAbility(String cAblId){
-        return abilities.get(cAblId);
+    public Ability getAbility(AbilityKey key){
+        return abilities.get(key);
     }
 
 //    public void castArtifactAbilityAll(LivingEntityBeyonderCapability cap, Player player, String artifactId){
@@ -208,6 +211,11 @@ public class PlayerAbilitiesManager {
         if(!abilities.isEmpty()){
             abilities.values().forEach(ability -> {
                 ability.passive(cap, target);
+                if(cap.getEffectsManager().hasEffect(BeyonderEffects.COGITATION.getEffectId())
+                        && !ability.getAbilityId().equals(Abilities.COGITATION.getAblId())
+                        && !ability.isRevoked()){
+                    ability.revoke(cap, target);
+                }
                 ability.tickCooldown();
             });
         }
@@ -219,18 +227,19 @@ public class PlayerAbilitiesManager {
 
     }
 
+    public void unrevokeAll(LivingEntityBeyonderCapability cap, LivingEntity target){
+        if(!abilities.isEmpty()){
+            abilities.values().forEach(ability -> {
+                if(ability.isRevoked()){
+                    ability.undoRevoke(cap, target);
+                }
+            });
+        }
+    }
+
     public void clear(LivingEntityBeyonderCapability cap, LivingEntity target){
         abilities.values().forEach(ability -> ability.deactivate(cap, target));
         abilities = new LinkedHashMap<>();
-    }
-
-    /**
-     * function that returns client relevant information of every ability they possess.
-     * used to sync their ability info.
-     * @return
-     */
-    public Map<String, AbilityInfo> getAbilityInfo() {
-        return null;
     }
 
     public void grantAbilities(List<Ability> newAbilities, int pathwaySequenceId, LivingEntityBeyonderCapability cap, LivingEntity target) {
@@ -239,44 +248,50 @@ public class PlayerAbilitiesManager {
         //then grant new abilities
         for(Ability abl: newAbilities){
             //already checks if it exists
-            addAbility(AbilityList.INTRINSIC, abl, cap, target, true);
+            addAbility(AbilityList.INTRINSIC.name(), abl, cap, target, true, false);
         }
         //then replace any cogitation abilities with the
         replaceCogitation(pathwaySequenceId, cap, target);
+
+        //finally, update client info
+        if(target instanceof Player player) updateClientAbilityInfo(player);
     }
 
     private void replaceCogitation(int pathwaySequenceId, LivingEntityBeyonderCapability cap, LivingEntity target) {
-        for(String key: abilities.keySet()){
-            if(key.contains(Abilities.COGITATION.getAblId())){
+        for(AbilityKey key: abilities.keySet()){
+            if(key.isSameAbility(Abilities.COGITATION.getAblId())){
                 abilities.get(key).upgradeToLevel(pathwaySequenceId, cap, target);
                 return;
             }
         }
-        addAbility(AbilityList.INTRINSIC, Abilities.COGITATION.create(pathwaySequenceId), cap, target, true);
+        addAbility(AbilityList.INTRINSIC.name(), Abilities.COGITATION.create(pathwaySequenceId), cap, target, true, false);
     }
 
     private void upgradeAbilitiesToLevel(int sequenceLevel, LivingEntityBeyonderCapability cap, LivingEntity target){
         for(Ability abl: abilities.values()){
             if(abl.getSequenceLevel() > sequenceLevel && abl.getType().equals(AbilityList.INTRINSIC.name())){
-                abilities.remove(abl.cAbilityId);
+                abilities.remove(abl.getKey());
                 abl.upgradeToLevel(sequenceLevel, cap, target);
-                String cAblId = AbilityList.INTRINSIC.name().concat(":" + abl.getOuterId());
-                abilities.put(cAblId, abl);
-                abl.cAbilityId = cAblId;
+                AbilityKey newKey = abl.setAbilityKey(AbilityList.INTRINSIC.name());
+                abilities.put(newKey, abl);
             }
         }
     }
 
-    public void setAbilityEnabled(String innerId, int sequenceLevel, boolean state, LivingEntityBeyonderCapability cap, LivingEntity target) {
-        for(Map.Entry<String, Ability> abilityEntry: abilities.entrySet()){
-            if(!abilityEntry.getKey().contains(innerId)) continue;
-            int i = sequenceLevel;
-            while(i <= 9){
-                if(abilityEntry.getKey().contains(innerId.concat(":" + i))){
-                    abilityEntry.getValue().setEnabled(cap, target, state);
-                    break;
-                }
-                i++;
+    /**
+     * sets the enabled state of the target ability to the given state.
+     * this will apply to every ability at this sequence level or lower (that is, between that level and level 9)
+     * @param abilityId
+     * @param sequenceLevel
+     * @param state
+     * @param cap
+     * @param target
+     */
+    public void setAbilityEnabled(String abilityId, int sequenceLevel, boolean state, LivingEntityBeyonderCapability cap, LivingEntity target) {
+        for(Map.Entry<AbilityKey, Ability> abilityEntry: abilities.entrySet()){
+            AbilityKey iKey = abilityEntry.getKey();
+            if(iKey.isSameAbility(abilityId) && iKey.getSequenceLevel() >= sequenceLevel){
+                abilityEntry.getValue().setEnabled(cap, target, state);
             }
         }
     }
@@ -284,122 +299,180 @@ public class PlayerAbilitiesManager {
     /**
      * function to put all abilities of this level or lower on cooldown.
      * it doesnt disable them (see: setAbilityEnabled) just puts them on cooldown
-     * @param innerId
+     * @param abilityId
      * @param sequenceLevel
      * @param cooldownTicks
      * @param target
      */
-    public void putAbilityOnCooldown(String innerId, int sequenceLevel, int cooldownTicks, LivingEntity target){
-        for(Map.Entry<String, Ability> abilityEntry: abilities.entrySet()){
-            if(!abilityEntry.getKey().contains(innerId)) continue;
-            int i = sequenceLevel;
-            while(i <= 9){
-                if(abilityEntry.getKey().contains(innerId.concat(":" + i))){
-                    abilityEntry.getValue().putOnCooldown(cooldownTicks, target);
-                    break;
-                }
-                i++;
+    public void putAbilityOnCooldown(String abilityId, int sequenceLevel, int cooldownTicks, LivingEntity target){
+        for(Map.Entry<AbilityKey, Ability> abilityEntry: abilities.entrySet()){
+            AbilityKey iKey = abilityEntry.getKey();
+            if(iKey.isSameAbility(abilityId) && iKey.getSequenceLevel() >= sequenceLevel){
+                abilityEntry.getValue().putOnCooldown(cooldownTicks, target);
             }
         }
     }
 
-    public boolean isEnabled(String innerId, int sequenceLevel) {
-        for(Map.Entry<String, Ability> abilityEntry: abilities.entrySet()){
-            if(!abilityEntry.getKey().contains(innerId)) continue;
-            int i = sequenceLevel;
-            while(i <= 9){
-                if(abilityEntry.getKey().contains(innerId.concat(":" + i))){
-                    return true;
-                }
-                i++;
+    public boolean isEnabledExactLevel(String abilityId, int sequenceLevel){
+        for(Map.Entry<AbilityKey, Ability> abilityEntry: abilities.entrySet()){
+            AbilityKey iKey = abilityEntry.getKey();
+            if(iKey.isSameAbility(abilityId) && iKey.getSequenceLevel() == sequenceLevel){
+                return abilityEntry.getValue().isEnabled();
             }
         }
         return false;
     }
 
-    public enum AbilityList{
-        INTRINSIC,
-        ARTIFACT_ABILITY,
-        RECORDED,
-        REPLICATED
-    }
-    public boolean addAbility(AbilityList abilityType, Ability ability, LivingEntityBeyonderCapability cap, LivingEntity target, boolean runOnAcquire){
-        String cAbilityId = abilityType.name()
-                .concat(":" + ability.getOuterId());
-        if(abilities.containsKey(cAbilityId)) return false;
-        ability.setCompleteId(cAbilityId);
-        abilities.put(cAbilityId, ability);
-        if (runOnAcquire) ability.onAcquire(cap, target);
-        return true;
+    public boolean isEnabledAtLevelOrLower(String abilityId, int sequenceLevel) {
+        for(Map.Entry<AbilityKey, Ability> abilityEntry: abilities.entrySet()){
+            AbilityKey iKey = abilityEntry.getKey();
+            if(iKey.isSameAbility(abilityId) && iKey.getSequenceLevel() >= sequenceLevel){
+                return abilityEntry.getValue().isEnabled();
+            }
+        }
+        return false;
     }
 
-    public boolean removeAbility(AbilityList abilityType, Ability ability, LivingEntityBeyonderCapability cap, LivingEntity target){
-        if(abilityType == AbilityList.INTRINSIC || abilityType == AbilityList.ARTIFACT_ABILITY) return false;
-        String cAbilityId = abilityType.name()
-                .concat(":" + ability.getOuterId());
-        if(!abilities.containsKey(cAbilityId)) return false;
-        abilities.get(cAbilityId).deactivate(cap, target);
-        abilities.remove(cAbilityId);
-        return true;
+    /**
+     * method to set the abilities on the client-side manager to match with server-side, based on the corresponding ability infos
+     * @param abilities
+     */
+    public void setAbilitiesOnClient(List<AbilityInfo> abilities, LivingEntityBeyonderCapability cap, LivingEntity target) {
+        if(!target.level().isClientSide()) return;
+        clear(cap, target);
+        addAbilitiesOnClient(abilities, cap, target, false);
     }
 
-    public void useAbility(LivingEntityBeyonderCapability cap, LivingEntity tar, String cAblId, boolean sync, boolean primary){
-        Ability ability = abilities.get(cAblId);
-        System.out.println(cAblId);
-        if(ability != null){
-            System.out.println("Found ability. On client side? " + tar.level().isClientSide());
-            ability.castAbility(cap, tar, primary);
-            if(sync){
-                if(tar.level().isClientSide()){
-                    PacketHandler.sendMessageCTS(new PlayerCastAbilityMessageCTS(cAblId, primary));
-                }
+
+    public void addAbilitiesOnClient(List<AbilityInfo> abilities, @NotNull LivingEntityBeyonderCapability cap, LivingEntity target, boolean runOnAcquire) {
+        if(!target.level().isClientSide()) return;
+        for(AbilityInfo abl: abilities){
+            AbilityKey key = abl.getKey();
+            if(key == null){
+                System.out.println("Warning: Read an ability with a null key: " + abl.descId());
+                continue;
+            }
+            Ability ability = Abilities.getAbilityByKey(key);
+            if(!addAbility(key, ability, cap, target, runOnAcquire, false)){
+                System.out.println("Warning: Tried to add an ability that already exists on client: " + abl.getKey());
             }
         }
     }
 
-    public boolean setEnabled(String cAblId, boolean enabling, LivingEntityBeyonderCapability cap, LivingEntity target){
+    public void removeAbilitiesOnClient(List<AbilityInfo> abilities, @NotNull LivingEntityBeyonderCapability cap, LivingEntity target) {
+        if(!target.level().isClientSide()) return;
+        for(AbilityInfo abl: abilities){
+            AbilityKey key = abl.getKey();
+            if(key == null){
+                System.out.println("Warning: Read an ability with a null key: " + abl.descId());
+                continue;
+            }
+            if(!removeAbility(key, cap, target, false)){
+                System.out.println("Warning: Tried to remove an ability that doesnt exist on client: " + key);
+            }
+        }
+    }
+
+    public void updateAbilitiesOnClient(List<AbilityInfo> abilities2, @NotNull LivingEntityBeyonderCapability cap, LivingEntity target) {
+        if(!target.level().isClientSide()) return;
+        for(AbilityInfo info: abilities2){
+            AbilityKey key = info.getKey();
+            if(key == null){
+                System.out.println("Warning: Read an ability with a null key: " + info.descId());
+                continue;
+            }
+            if(!this.abilities.containsKey(key)){
+                System.out.println("Warning: Tried to update an ability with a non existent key: " + key);
+                continue;
+            }
+
+            Ability abl = this.abilities.get(key);
+            if(abl.isEnabled() != info.isEnabled()){
+                abl.setEnabled(cap, target, info.isEnabled());
+            }
+            abl.putOnCooldown(info.getCooldown(), target);
+        }
+    }
+
+    public enum AbilityList{
+        INTRINSIC,
+        RECORDED,
+        REPLICATED
+    }
+
+    public boolean addAbility(String abilityGroup, Ability ability, LivingEntityBeyonderCapability cap, LivingEntity target, boolean runOnAcquire, boolean sync){
+        return addAbility(new AbilityKey(abilityGroup, ability.getAbilityId(), ability.getSequenceLevel()), ability, cap, target, runOnAcquire, sync);
+    }
+
+    public boolean addAbility(AbilityKey key, Ability ability, LivingEntityBeyonderCapability cap, LivingEntity target, boolean runOnAcquire, boolean sync){
+        if(abilities.containsKey(key)) return false;
+        ability.setAbilityKey(key.getGroup());
+        abilities.put(key, ability);
+        if (runOnAcquire) ability.onAcquire(cap, target);
+        if(sync && target instanceof Player player) updateClientAbilityInfo(player);
+        return true;
+    }
+
+    public boolean removeAbility(AbilityKey key, LivingEntityBeyonderCapability cap, LivingEntity target, boolean sync){
+        if(key.getGroup().equals(AbilityList.INTRINSIC.name())) return false;
+        if(!abilities.containsKey(key)) return false;
+        abilities.get(key).deactivate(cap, target);
+        abilities.remove(key);
+        if(sync && target instanceof Player player) updateClientAbilityInfo(player);
+        return true;
+    }
+
+    public void useAbility(LivingEntityBeyonderCapability cap, LivingEntity tar, AbilityKey key, boolean sync, boolean primary){
+        Ability ability = abilities.get(key);
+        System.out.println(key);
+        System.out.println(abilities);
+        System.out.println("On client side? " + tar.level().isClientSide());
+        if(ability != null){
+            System.out.println("Found ability.");
+            ability.castAbility(cap, tar, primary);
+            if(sync && tar.level().isClientSide()){
+                PacketHandler.sendMessageCTS(new PlayerCastAbilityMessageCTS(key, primary));
+            }
+        }
+    }
+
+    public void setEnabledAtLevel(String ablId, int sequenceLevel, boolean enabling, LivingEntityBeyonderCapability cap, LivingEntity target){
+        for(Map.Entry<AbilityKey, Ability> entry: abilities.entrySet()){
+            AbilityKey iKey = entry.getKey();
+            if(iKey.isSameAbility(ablId) && iKey.getSequenceLevel() == sequenceLevel){
+                entry.getValue().setEnabled(cap, target, enabling);
+            }
+        }
+    }
+
+    public void setEnabledAtLevelOrLower(String ablId, int sequenceLevel, boolean enabling, LivingEntityBeyonderCapability cap, LivingEntity target){
+        for(Map.Entry<AbilityKey, Ability> entry: abilities.entrySet()){
+            AbilityKey iKey = entry.getKey();
+            if(iKey.isSameAbility(ablId) && iKey.getSequenceLevel() >= sequenceLevel){
+                entry.getValue().setEnabled(cap, target, enabling);
+            }
+        }
+    }
+
+    /**
+     *
+     * @param key
+     * @param enabling
+     * @param cap
+     * @param target
+     * @return the new enabled state for that ability
+     */
+    public boolean setEnabled(AbilityKey key, boolean enabling, LivingEntityBeyonderCapability cap, LivingEntity target){
         //cAblId example: Artifact:23:water_affinity:9
         // Intrinsic:water_affinity:8
         // artifact abilities point to the specific artifact, intrinsic and other abilities just point to that ability.
         //if the argument cAblId is incomplete ("water_affinity:8" or just "water_affinity") we must apply this enableDisable to every such ability
         //      of that sequence level or lower.
-        String[] identifiers = cAblId.split(":");
-        switch(identifiers.length){
-            case 3:
-                return abilities.get(cAblId).setEnabled(cap, target, enabling);
-            case 4:
-                break;
-            default:
-                System.out.println("Warning: Not implemented enable/disable abilities without a cAblId.");
-        }
-        return false;
+        return abilities.get(key).setEnabled(cap, target, enabling);
     }
 
-    public List<String> disabledALlAbilities(Player player, String abilityToIgnore){
-        //TODO fix what happens when abilityies are unrevoked during cogitation
-        //ie when a tribunal revokes abilities, then the targets use cogitation and the original ability is unrevoked during that effect
-        ArrayList<String> res = new ArrayList<>();
-        for(String ablId: abilities.keySet()){
-            if(ablId.contains(abilityToIgnore)) continue;
-
-            Ability ability = abilities.get(ablId);
-            ability.revoke();
-            res.add(ablId);
-        }
-        return res;
-    }
-
-    public void reactivateAbilities(Player player, List<String> deactivatedAbilities) {
-        for(String ablID: deactivatedAbilities){
-            if(!abilities.containsKey(ablID)) continue;
-            abilities.get(ablID).undoRevoke(player);
-        }
-    }
-
-    public void updateClientCooldownInfo(ServerPlayer player){
-        for (Ability abl : abilities.values()) {
-            abl.updateCooldownClient(player);
-        }
+    public void updateClientAbilityInfo(Player player){
+        PacketHandler.sendMessageSTC(new AbilitySyncMessage(getAbilityInfos(), AbilitySyncMessage.UPDATE), player);
     }
 
 //    public void setPathwayAbilities(ArrayList<Ability> abilities){
@@ -423,10 +496,10 @@ public class PlayerAbilitiesManager {
 //        }
 //    }
 
-    public LinkedHashMap<String, AbilityInfo> getAbilityInfos() {
-        LinkedHashMap<String, AbilityInfo> res = new LinkedHashMap<>();
-        for(String ablId: abilities.keySet()){
-            res.put(ablId, abilities.get(ablId).getAbilityInfo());
+    private List<AbilityInfo> getAbilityInfos() {
+        List<AbilityInfo> res = new ArrayList<>();
+        for(AbilityKey key: abilities.keySet()){
+            res.add(abilities.get(key).getAbilityInfo());
         }
         return res;
     }
@@ -435,21 +508,21 @@ public class PlayerAbilitiesManager {
         CompoundTag hotbar = new CompoundTag();
         hotbar.putInt("size", clientHotbar.size());
         for(int j = 0; j < clientHotbar.size(); j++){
-            hotbar.putString(String.valueOf(j), clientHotbar.get(j));
+            hotbar.putString(String.valueOf(j), clientHotbar.get(j).toString());
         }
-        hotbar.putString("quick", quickAbility);
+        hotbar.putString("quick", quickAbility.toString());
         nbt.put("hotbar", hotbar);
         for(Ability abl: abilities.values()){
-            nbt.put(abl.cAbilityId, abl.saveNbt());
+            nbt.put(abl.getKey().toString(), abl.saveNbt());
         }
     }
 
     private List<Ability> bufferNewAbilities = new ArrayList<>();
-    private List<AbilityList> bufferAbilityTypes = new ArrayList<>();
+    private List<String> bufferAbilityGroups = new ArrayList<>();
 
-    public void bufferAddAbility(AbilityList type, Ability abl){
+    public void bufferAddAbility(String group, Ability abl){
         bufferNewAbilities.add(abl);
-        bufferAbilityTypes.add(type);
+        bufferAbilityGroups.add(group);
     }
 
     public void loadNBTData(CompoundTag nbt, LivingEntityBeyonderCapability cap, LivingEntity target){
@@ -457,16 +530,22 @@ public class PlayerAbilitiesManager {
         int sizeHot = hot.getInt("size");
         if(sizeHot != 0){
             for(int i = 0; i < sizeHot; i++){
-                clientHotbar.add(hot.getString(String.valueOf(i)));
+                AbilityKey key = AbilityKey.fromString(hot.getString(String.valueOf(i)));
+                if(key == null){
+                    System.out.println("Read invalid ability key from NBT data: " + hot.getString(String.valueOf(i)));
+                    continue;
+                }
+                clientHotbar.add(key);
             }
         }
-        quickAbility = hot.getString("quick");
+        quickAbility = AbilityKey.fromString(hot.getString("quick"));
         for(Ability abl: abilities.values()){
             abl.loadNbt(nbt);
         }
-        for(int i = 0; i < bufferAbilityTypes.size(); i++){
+
+        for(int i = 0; i < bufferAbilityGroups.size(); i++){
             Ability abl = bufferNewAbilities.get(i);
-            addAbility(bufferAbilityTypes.get(i), abl, cap, target, false);
+            addAbility(bufferAbilityGroups.get(i), abl, cap, target, false, false);
             abl.loadNbt(nbt);
         }
         bufferNewAbilities.clear();

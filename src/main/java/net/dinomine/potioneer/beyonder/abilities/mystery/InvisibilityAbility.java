@@ -1,11 +1,6 @@
 package net.dinomine.potioneer.beyonder.abilities.mystery;
 
 import net.dinomine.potioneer.beyonder.abilities.Ability;
-import net.dinomine.potioneer.beyonder.abilities.AbilityInfo;
-import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
-import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
-import net.minecraft.network.chat.Component;
-import net.minecraft.world.entity.LivingEntity;
 
 public class InvisibilityAbility extends Ability {
     /**

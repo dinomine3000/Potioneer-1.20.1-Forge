@@ -1,8 +1,6 @@
 package net.dinomine.potioneer.entities.client;
 
 import net.dinomine.potioneer.entities.custom.AsteroidEntity;
-import net.dinomine.potioneer.entities.custom.CharacteristicEntity;
-import net.dinomine.potioneer.util.TintableGlowingGeoLayer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import software.bernie.geckolib.renderer.GeoEntityRenderer;
 import software.bernie.geckolib.renderer.layer.AutoGlowingGeoLayer;

@@ -2,6 +2,7 @@ package net.dinomine.potioneer.beyonder.client.screen;
 
 import net.dinomine.potioneer.Potioneer;
 import net.dinomine.potioneer.beyonder.abilities.AbilityInfo;
+import net.dinomine.potioneer.beyonder.abilities.AbilityKey;
 import net.dinomine.potioneer.beyonder.client.ClientAbilitiesData;
 import net.dinomine.potioneer.beyonder.client.KeyBindings;
 import net.dinomine.potioneer.beyonder.pathways.Pathways;
@@ -169,11 +170,11 @@ public class BeyonderAbilitiesScreen extends Screen {
 
     private void addAbilityToQuickSelect(){
         int caretToAdd = selectedCaret;
-        String ablId = abilities.get(caretToAdd).getCompleteId();
-        if(ClientAbilitiesData.getQuickAbilityCaret().equals(ablId)){
-            ClientAbilitiesData.setQuickAbilityCaret("");
+        AbilityKey key = abilities.get(caretToAdd).getKey();
+        if(ClientAbilitiesData.getQuickAbility().equals(key)){
+            ClientAbilitiesData.setQuickAbility(null);
         } else {
-            ClientAbilitiesData.setQuickAbilityCaret(ablId);
+            ClientAbilitiesData.setQuickAbility(key);
         }
         updateHotbarButton();
         ClientAbilitiesData.setHotbarChanged();
@@ -181,11 +182,11 @@ public class BeyonderAbilitiesScreen extends Screen {
 
     private void addAbilityToHotbar(){
         int caretToAdd = selectedCaret;
-        String ablId = abilities.get(caretToAdd).getCompleteId();
-        if(!ClientAbilitiesData.getHotbar().contains(ablId)){
-            ClientAbilitiesData.getHotbar().add(ablId);
+        AbilityKey key = abilities.get(caretToAdd).getKey();
+        if(!ClientAbilitiesData.getHotbar().contains(key)){
+            ClientAbilitiesData.getHotbar().add(key);
         } else {
-            ClientAbilitiesData.getHotbar().remove(ablId);
+            ClientAbilitiesData.getHotbar().remove(key);
         }
         ClientAbilitiesData.updateCaret();
         updateHotbarButton();
@@ -194,7 +195,7 @@ public class BeyonderAbilitiesScreen extends Screen {
 
     private void updateHotbarButton(){
         int abilityCaret = selectedCaret;
-        String ablId = abilities.get(abilityCaret).getCompleteId();
+        AbilityKey ablId = abilities.get(abilityCaret).getKey();
         if(!ClientAbilitiesData.getHotbar().contains(ablId)){
             addToHotbarButton.active = true;
             addToHotbarButton.visible = true;
@@ -207,7 +208,7 @@ public class BeyonderAbilitiesScreen extends Screen {
             removeFromHotbarButton.visible = true;
         }
 
-        if(ClientAbilitiesData.getQuickAbilityCaret().equals(ablId)){
+        if(ClientAbilitiesData.getQuickAbility().equals(ablId)){
             addToQuickSelectButton.active = false;
             addToQuickSelectButton.visible = false;
             removeFromQuickSelectButton.active = true;
@@ -221,7 +222,7 @@ public class BeyonderAbilitiesScreen extends Screen {
     }
 
     private void castAbilityAt(boolean primary){
-        ClientAbilitiesData.useAbility(Minecraft.getInstance().player, abilities.get(selectedCaret).getCompleteId(), primary);
+        ClientAbilitiesData.useAbility(Minecraft.getInstance().player, abilities.get(selectedCaret).getKey(), primary);
     }
 
     private void changeCaret(int buttonIdx){
@@ -241,7 +242,7 @@ public class BeyonderAbilitiesScreen extends Screen {
     }
     private void drawAbilityIcon(GuiGraphics pGuiGraphics, int posX, int posY, float scale, int abilityIndex, boolean main, int mouseX, int mouseY){
         AbilityInfo data = abilities.get(abilityIndex);
-        String ablId = data.getCompleteId();
+        AbilityKey key = data.getKey();
         //int caret = abilities.size() - 1 - abilityIndex;
 
         //name title
@@ -252,7 +253,7 @@ public class BeyonderAbilitiesScreen extends Screen {
 
         //cooldown gradient
         if(main){
-            float percent = Mth.clamp(1 - ((float) ClientAbilitiesData.getCooldown(ablId) / ClientAbilitiesData.getMaxCooldown(ablId)),
+            float percent = Mth.clamp(1 - ((float) ClientAbilitiesData.getCooldown(key) / ClientAbilitiesData.getMaxCooldown(key)),
                     0, 1);
 
             pGuiGraphics.fillGradient(posX - 7, (int) (posY - 5 + percent*46),
@@ -264,7 +265,7 @@ public class BeyonderAbilitiesScreen extends Screen {
         pGuiGraphics.blit(ABILITY_ICONS, posX, posY, (int) (scale * ICON_WIDTH), (int)(scale * ICON_HEIGHT),
                 abilityX, data.getPosY(), ICON_WIDTH, ICON_HEIGHT, ICONS_WIDTH, ICONS_HEIGHT);
 
-        if(!main && ClientAbilitiesData.getQuickAbilityCaret().equals(ablId)){
+        if(!main && ClientAbilitiesData.getQuickAbility().equals(key)){
             pGuiGraphics.blit(TEXTURE, posX + 130, posY, 12, 12,
                     176, 149, 16, 16, TEXTURE_WIDTH, TEXTURE_HEIGHT);
         }
@@ -272,12 +273,12 @@ public class BeyonderAbilitiesScreen extends Screen {
         //enabled gradient
         if(main){
             //enabled gradient
-            if(!ClientAbilitiesData.isEnabled(ablId)){
+            if(!ClientAbilitiesData.isEnabled(key)){
                 pGuiGraphics.fillGradient(posX - 7, posY -5,
                         (int) (posX + 7 + scale*ICON_WIDTH), (int) (posY + 5 + ICON_HEIGHT*scale), 0xDD999999, 0xDD666666);
             }
             //barrier symbol if ability is disabled
-            if(ClientAbilitiesData.getCooldown(ablId) < 0){
+            if(ClientAbilitiesData.getCooldown(key) < 0){
                 //Copied from the icons part
                 pGuiGraphics.blit(ABILITY_ICONS, posX, posY,
                         (int)(ICON_WIDTH*scale), (int)(ICON_HEIGHT*scale), 130, 4, ICON_WIDTH, ICON_HEIGHT, ICONS_WIDTH, ICONS_HEIGHT);

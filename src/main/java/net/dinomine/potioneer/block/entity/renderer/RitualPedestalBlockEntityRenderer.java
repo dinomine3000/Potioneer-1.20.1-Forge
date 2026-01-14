@@ -3,23 +3,14 @@ package net.dinomine.potioneer.block.entity.renderer;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import net.dinomine.potioneer.block.entity.RitualPedestalBlockEntity;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.entity.ItemRenderer;
-import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.QuartPos;
-import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.phys.Vec3;
-import org.joml.Vector3f;
-
-import static net.dinomine.potioneer.block.custom.PotionCauldronBlock.DIRECTION;
-import static net.dinomine.potioneer.block.entity.renderer.PotionCauldronBlockEntityRenderer.getLightLevel;
 
 public class RitualPedestalBlockEntityRenderer implements BlockEntityRenderer<RitualPedestalBlockEntity> {
     private ItemRenderer itemRenderer;

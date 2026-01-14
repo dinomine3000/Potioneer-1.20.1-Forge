@@ -1,6 +1,5 @@
 package net.dinomine.potioneer.beyonder.abilities.redpriest;
 
-import net.dinomine.potioneer.beyonder.abilities.AbilityInfo;
 import net.dinomine.potioneer.beyonder.abilities.misc.LightAbility;
 import net.dinomine.potioneer.block.ModBlocks;
 

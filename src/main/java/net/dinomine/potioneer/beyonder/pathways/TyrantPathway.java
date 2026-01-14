@@ -2,10 +2,6 @@ package net.dinomine.potioneer.beyonder.pathways;
 
 import net.dinomine.potioneer.beyonder.abilities.Abilities;
 import net.dinomine.potioneer.beyonder.abilities.Ability;
-import net.dinomine.potioneer.beyonder.abilities.misc.CogitationAbility;
-import net.dinomine.potioneer.beyonder.abilities.tyrant.*;
-import net.dinomine.potioneer.beyonder.player.PlayerAbilitiesManager;
-import org.checkerframework.checker.units.qual.A;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,8 +41,13 @@ public class TyrantPathway extends BeyonderPathway {
 
     @Override
     public List<Ability> getAbilities(int sequence){
+        return getAbilities(sequence%10, sequence%10);
+    }
+
+    @Override
+    public List<Ability> getAbilities(int ofSequenceLevel, int atSequenceLevel){
         ArrayList<Ability> abilities = new ArrayList<>();
-        switch(sequence%10){
+        switch(ofSequenceLevel%10){
             case 0:
             case 1:
             case 2:
@@ -55,19 +56,19 @@ public class TyrantPathway extends BeyonderPathway {
             case 5:
             case 6:
             case 7:
-                abilities.add(Abilities.TYRANT_LIGHTNING_STRIKE.create(sequence));
-                abilities.add(Abilities.TYRANT_THUNDER.create(sequence));
-                abilities.add(Abilities.TYRANT_RAIN.create(sequence));
-                abilities.add(Abilities.TYRANT_LEAP.create(sequence));
-                abilities.add(Abilities.TYRANT_ELECTRIFICATION.create(sequence));
+                abilities.add(Abilities.TYRANT_LIGHTNING_STRIKE.create(atSequenceLevel));
+                abilities.add(Abilities.TYRANT_THUNDER.create(atSequenceLevel));
+                abilities.add(Abilities.TYRANT_RAIN.create(atSequenceLevel));
+                abilities.add(Abilities.TYRANT_LEAP.create(atSequenceLevel));
+                abilities.add(Abilities.TYRANT_ELECTRIFICATION.create(atSequenceLevel));
             case 8:
-                abilities.add(Abilities.TYRANT_WATER_PRISON.create(sequence));
-                abilities.add(Abilities.TYRANT_CREATE_WATER.create(sequence));
-                abilities.add(Abilities.TYRANT_REMOVE_WATER.create(sequence));
-                abilities.add(Abilities.TYRANT_WATER_TRAP.create(sequence));
-                abilities.add(Abilities.TYRANT_DIVINATION.create(sequence));
+                abilities.add(Abilities.TYRANT_WATER_PRISON.create(atSequenceLevel));
+                abilities.add(Abilities.TYRANT_CREATE_WATER.create(atSequenceLevel));
+                abilities.add(Abilities.TYRANT_REMOVE_WATER.create(atSequenceLevel));
+                abilities.add(Abilities.TYRANT_WATER_TRAP.create(atSequenceLevel));
+                abilities.add(Abilities.TYRANT_DIVINATION.create(atSequenceLevel));
             case 9:
-                abilities.add(Abilities.WATER_AFFINITY.create(sequence));
+                abilities.add(Abilities.WATER_AFFINITY.create(atSequenceLevel));
         }
 
         return abilities;

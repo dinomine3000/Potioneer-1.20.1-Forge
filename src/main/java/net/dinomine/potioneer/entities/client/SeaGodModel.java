@@ -1,7 +1,6 @@
 package net.dinomine.potioneer.entities.client;
 
 import net.dinomine.potioneer.Potioneer;
-import net.dinomine.potioneer.entities.custom.DivinationRodEntity;
 import net.dinomine.potioneer.entities.custom.SeaGodScepterEntity;
 import net.minecraft.resources.ResourceLocation;
 import software.bernie.geckolib.model.GeoModel;

@@ -1,13 +1,9 @@
 package net.dinomine.potioneer.rituals.spirits;
 
 import net.dinomine.potioneer.rituals.RitualResponseLogic;
-import net.dinomine.potioneer.rituals.spirits.defaultGods.WheelOfFortuneResponse;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.StringTag;
 import net.minecraft.world.item.ItemStack;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static net.dinomine.potioneer.savedata.RitualSpiritsSaveData.loadStringList;

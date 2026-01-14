@@ -1,7 +1,9 @@
 package net.dinomine.potioneer.beyonder.effects;
 
 import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
+import net.dinomine.potioneer.util.BufferUtils;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.LivingEntity;
 
 public abstract class BeyonderEffect {
@@ -152,6 +154,22 @@ public abstract class BeyonderEffect {
 
     //nbt data is loaded in the effects manager
     public void loadNBTData(CompoundTag nbt){
+    }
+
+    public void writeToBuffer(FriendlyByteBuf buffer){
+        BufferUtils.writeStringToBuffer(getId(), buffer);
+        buffer.writeInt(sequenceLevel);
+    }
+
+    /**
+     * should only run on client side. adds the effect with unlimited duration, 0 cost and active
+     * @param buffer
+     * @return
+     */
+    public static BeyonderEffect readFromBuffer(FriendlyByteBuf buffer){
+        String id = BufferUtils.readString(buffer);
+        int level = buffer.readInt();
+        return BeyonderEffects.byId(id, level, 0, -1, true);
     }
 
 

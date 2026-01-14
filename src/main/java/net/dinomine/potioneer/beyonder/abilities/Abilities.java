@@ -11,7 +11,6 @@ import net.dinomine.potioneer.beyonder.abilities.redpriest.*;
 import net.dinomine.potioneer.beyonder.abilities.tyrant.*;
 import net.dinomine.potioneer.beyonder.abilities.wheeloffortune.*;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
-import net.dinomine.potioneer.item.custom.FireSword;
 import net.minecraft.resources.ResourceLocation;
 
 import java.util.HashMap;
@@ -292,8 +291,16 @@ public class Abilities {
         return ABILITIES.get(abl_id).create(sequenceLevel);
     }
 
+    public static Ability getAbilityByKey(AbilityKey key){
+        return getAbilityById(key.getAbilityId(), key.getSequenceLevel());
+    }
+
     public static AbilityInfo getInfo(String abilityId, int cooldown, int maxCd, boolean enabled, String descId){
         return ABILITIES.get(abilityId).getInfo(cooldown, maxCd, enabled, descId, abilityId);
+    }
+
+    public static AbilityInfo getInfo(String abilityId, int cooldown, int maxCd, boolean enabled, String descId, AbilityKey key){
+        return ABILITIES.get(abilityId).getInfo(cooldown, maxCd, enabled, descId, abilityId).withKey(key);
     }
 
     /**

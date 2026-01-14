@@ -1,6 +1,5 @@
 package net.dinomine.potioneer.util.misc;
 
-import net.dinomine.potioneer.beyonder.pathways.BeyonderPathway;
 import net.dinomine.potioneer.beyonder.pathways.Pathways;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.item.ItemStack;

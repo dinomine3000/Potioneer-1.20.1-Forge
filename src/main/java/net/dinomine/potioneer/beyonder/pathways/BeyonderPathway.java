@@ -1,7 +1,6 @@
 package net.dinomine.potioneer.beyonder.pathways;
 
 import net.dinomine.potioneer.beyonder.abilities.Ability;
-import net.minecraft.resources.ResourceLocation;
 
 import java.util.List;
 
@@ -59,7 +58,20 @@ public abstract class BeyonderPathway {
 //        return color;
 //    }
 
+    /**
+     * return all abilities given at this level or lower, with their sequence levels being the highest.
+     * @param sequenceLevel, like 5
+     * @return a list of all abilities given from sequences 9-5, all at level 5
+     */
     public abstract List<Ability> getAbilities(int sequenceLevel);
+
+    /**
+     * return all abilities given at sequenceLevel level or lower, with their sequence levels being atSequenceLevel.
+     * @param sequenceLevel, like 5
+     * @param atSequenceLevel, like 3
+     * @return a list of all abilities given from sequences 9-5, all at level 3
+     */
+    public abstract List<Ability> getAbilities(int sequenceLevel, int atSequenceLevel);
 
 
     public abstract String getSequenceNameFromId(int sequenceLevel, boolean show);

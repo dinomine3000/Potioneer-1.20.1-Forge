@@ -2,6 +2,8 @@ package net.dinomine.potioneer.beyonder.player;
 
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffect;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
+import net.dinomine.potioneer.network.PacketHandler;
+import net.dinomine.potioneer.network.messages.abilityRelevant.BeyonderEffectSyncMessage;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -10,8 +12,10 @@ import net.minecraftforge.event.entity.living.LivingDamageEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class PlayerEffectsManager {
     private ArrayList<BeyonderEffect> passives = new ArrayList<>();
@@ -137,7 +141,7 @@ public class PlayerEffectsManager {
     public String toString(){
         String res = "";
         for(BeyonderEffect eff : passives){
-            res = res.concat(eff.name.concat("\n"));
+            res = res.concat(eff.getId().concat(String.valueOf(eff.getSequenceLevel())).concat("\n"));
         }
         return res;
     }
@@ -169,7 +173,7 @@ public class PlayerEffectsManager {
     public boolean addOrReplaceEffect(BeyonderEffect effect, LivingEntityBeyonderCapability cap, LivingEntity target){
         if(!hasEffectOrBetter(effect)){
             removeEffect(effect.getId());
-            addEffect(effect, cap, target);
+            addEffect(effect, cap, target, true);
             return true;
         } else if(hasEffect(effect.getId(), effect.getSequenceLevel())){
             BeyonderEffect oldEffect = getEffect(effect.getId(), effect.getSequenceLevel());
@@ -182,19 +186,20 @@ public class PlayerEffectsManager {
     public boolean addEffectNoRefresh(BeyonderEffect effect, LivingEntityBeyonderCapability cap, LivingEntity target){
         if(!hasEffectOrBetter(effect)){
             removeEffect(effect.getId());
-            addEffect(effect, cap, target);
+            addEffect(effect, cap, target, true);
             return true;
         }
         return false;
     }
 
     public boolean addEffectNoCheck(BeyonderEffect effect, LivingEntityBeyonderCapability cap, LivingEntity target){
-        return addEffect(effect, cap, target);
+        return addEffect(effect, cap, target, true);
     }
 
-    private boolean addEffect(BeyonderEffect effect, LivingEntityBeyonderCapability cap, LivingEntity target){
+    private boolean addEffect(BeyonderEffect effect, LivingEntityBeyonderCapability cap, LivingEntity target, boolean sync){
         passives.add(effect);
         effect.onAcquire(cap, target);
+        if(sync) sendUpdateToClient(List.of(effect), BeyonderEffectSyncMessage.ADD, target);
         return true;
     }
 
@@ -258,6 +263,34 @@ public class PlayerEffectsManager {
         return false;
     }
 
+    private void sendUpdateToClient(List<BeyonderEffect> effects, int operation, LivingEntity target){
+        if(target instanceof Player player && target.level().isClientSide())
+            PacketHandler.sendMessageSTC(new BeyonderEffectSyncMessage(effects, operation), player);
+    }
+
+    public void addEffectsOnClient(List<BeyonderEffect> effects, @NotNull LivingEntityBeyonderCapability cap, Player player) {
+        for(BeyonderEffect eff: effects){
+            addEffect(eff, cap, player, false);
+        }
+    }
+
+    public void removeEffectsOnClient(List<BeyonderEffect> effects, @NotNull LivingEntityBeyonderCapability cap, Player player) {
+        for(BeyonderEffect eff: effects){
+            removeEffect(eff.getId(), eff.getSequenceLevel());
+        }
+    }
+
+    public void setEffectsOnClient(List<BeyonderEffect> effects, @NotNull LivingEntityBeyonderCapability cap, Player player) {
+        clearEffects(cap, player);
+        for(BeyonderEffect eff: effects){
+            addEffect(eff, cap, player, false);
+        }
+    }
+
+    public void syncToClient(Player player) {
+        sendUpdateToClient(passives, BeyonderEffectSyncMessage.SET, player);
+    }
+
     public void onTick(LivingEntityBeyonderCapability cap, LivingEntity target){
         statsHolder.resetStats();
         if(!passives.isEmpty()){
@@ -273,8 +306,10 @@ public class PlayerEffectsManager {
     private void sweepEffects(LivingEntityBeyonderCapability cap, LivingEntity target){
         for (int i = passives.size()-1; i >= 0; i--) {
             if(passives.get(i).endsWithin(0)){
-                passives.get(i).stopEffects(cap, target);
+                BeyonderEffect eff = passives.get(i);
+                eff.stopEffects(cap, target);
                 passives.remove(i);
+                sendUpdateToClient(List.of(eff), BeyonderEffectSyncMessage.REMOVE, target);
             }
         }
     }
@@ -303,7 +338,7 @@ public class PlayerEffectsManager {
                         iterator.getBoolean("active"));
             effect.setLifetime(iterator.getInt("lifetime"));
             effect.loadNBTData(iterator);
-            addEffect(effect, cap, entity);
+            addEffect(effect, cap, entity, false);
         }
     }
 
@@ -320,4 +355,5 @@ public class PlayerEffectsManager {
             }
         }
     }
+
 }

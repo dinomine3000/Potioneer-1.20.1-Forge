@@ -1,14 +1,13 @@
 package net.dinomine.potioneer.util.misc;
 
 import com.mojang.datafixers.util.Pair;
-import net.dinomine.potioneer.beyonder.pathways.BeyonderPathway;
 import net.dinomine.potioneer.beyonder.pathways.Pathways;
 import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
 import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
 import net.dinomine.potioneer.item.ModItems;
 import net.dinomine.potioneer.item.custom.FormulaItem;
-import net.dinomine.potioneer.savedata.PotionFormulaSaveData;
 import net.dinomine.potioneer.recipe.PotionRecipeData;
+import net.dinomine.potioneer.savedata.PotionFormulaSaveData;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;

@@ -24,7 +24,7 @@ public class WaterTrapBlockRenderer extends GeoBlockRenderer<WaterTrapBlockEntit
         Minecraft mc = Minecraft.getInstance();
         if (mc.player != null) {
             UUID playerUUID = mc.player.getUUID();
-            if (!animatable.isOwner(playerUUID, ClientStatsData.getPathwayId())) {
+            if (!animatable.isOwner(playerUUID, ClientStatsData.getPathwaySequenceId())) {
                 // Do not render for non-owners
                 return;
             }

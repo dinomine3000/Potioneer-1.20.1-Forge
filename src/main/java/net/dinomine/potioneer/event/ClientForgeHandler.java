@@ -5,12 +5,11 @@ import net.dinomine.potioneer.Potioneer;
 import net.dinomine.potioneer.beyonder.client.ClientAbilitiesData;
 import net.dinomine.potioneer.beyonder.client.ClientStatsData;
 import net.dinomine.potioneer.beyonder.client.KeyBindings;
+import net.dinomine.potioneer.beyonder.client.screen.BeyonderScreen;
+import net.dinomine.potioneer.item.ModItems;
 import net.dinomine.potioneer.recipe.PotionRecipeData;
 import net.dinomine.potioneer.util.misc.ArtifactHelper;
 import net.dinomine.potioneer.util.misc.MysticismHelper;
-import net.dinomine.potioneer.beyonder.pathways.BeyonderPathway;
-import net.dinomine.potioneer.beyonder.client.screen.BeyonderScreen;
-import net.dinomine.potioneer.item.ModItems;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
@@ -34,7 +33,7 @@ public class ClientForgeHandler {
         Level level = event.getEntity() != null ? event.getEntity().level() : null;
         // Only run client-side
         if (level != null) {
-            if(ClientStatsData.getPathwayId() > -1){
+            if(ClientStatsData.getPathwaySequenceId() > -1){
                 int spirituality = (int) MysticismHelper.getSpiritualityOfItem(stack);
                 if (spirituality > 0) tooltip.add(Component.literal("Spirituality: " + spirituality).withStyle(ChatFormatting.GRAY));
             }
@@ -61,10 +60,10 @@ public class ClientForgeHandler {
 
         if(!KeyBindings.INSTANCE.quickAbilityKey.isDown()) ClientStatsData.keyPressed = false;
 
-        if(ClientStatsData.getPathwayId() > -1 && KeyBindings.INSTANCE.beyonderMenuKey.consumeClick() && minecraft.player != null ){
+        if(ClientStatsData.getPathwaySequenceId() > -1 && KeyBindings.INSTANCE.beyonderMenuKey.consumeClick() && minecraft.player != null ){
             Minecraft.getInstance().setScreen(new BeyonderScreen());
             //DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> Minecraft.getInstance().setScreen(new BeyonderScreen()));
-        } else if(ClientStatsData.getPathwayId() > -1 && KeyBindings.INSTANCE.quickAbilityKey.consumeClick() && minecraft.player != null){
+        } else if(ClientStatsData.getPathwaySequenceId() > -1 && KeyBindings.INSTANCE.quickAbilityKey.consumeClick() && minecraft.player != null){
             if (!ClientStatsData.keyPressed){
                 ClientAbilitiesData.useQuickAbility(minecraft.player);
                 ClientStatsData.keyPressed = true;

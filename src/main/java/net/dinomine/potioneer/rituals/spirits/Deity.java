@@ -1,18 +1,9 @@
 package net.dinomine.potioneer.rituals.spirits;
 
-import net.dinomine.potioneer.config.PotioneerRitualsConfig;
 import net.dinomine.potioneer.rituals.RitualInputData;
-import net.dinomine.potioneer.rituals.RitualResponseLogic;
-import net.dinomine.potioneer.rituals.criteria.PathwayCriteria;
-import net.dinomine.potioneer.rituals.criteria.ResponseCriteria;
-import net.dinomine.potioneer.rituals.criteria.SequenceLevelCriteria;
-import net.dinomine.potioneer.rituals.responses.DefaultResponse;
-import net.dinomine.potioneer.rituals.spirits.defaultGods.WheelOfFortuneResponse;
 import net.dinomine.potioneer.savedata.RitualSpiritsSaveData;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.item.ItemStack;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public abstract class Deity extends EvilSpirit {

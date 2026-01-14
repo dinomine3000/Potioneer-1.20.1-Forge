@@ -1,9 +1,7 @@
 package net.dinomine.potioneer.beyonder.effects.wheeloffortune;
 
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffect;
-import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
 import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.LivingEntity;
 
 public class BeyonderLuckTrendEffect extends BeyonderEffect {

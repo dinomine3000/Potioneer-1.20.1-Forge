@@ -1,9 +1,5 @@
 package net.dinomine.potioneer.util;
 
-import net.dinomine.potioneer.beyonder.abilities.Ability;
-
-import java.util.Map;
-
 public class OtherStuffToDelete {
 
 

@@ -2,9 +2,6 @@ package net.dinomine.potioneer.beyonder.pathways;
 
 import net.dinomine.potioneer.beyonder.abilities.Abilities;
 import net.dinomine.potioneer.beyonder.abilities.Ability;
-import net.dinomine.potioneer.beyonder.abilities.misc.CogitationAbility;
-import net.dinomine.potioneer.beyonder.abilities.paragon.*;
-import net.dinomine.potioneer.beyonder.player.PlayerAbilitiesManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,9 +41,14 @@ public class ParagonPathway extends BeyonderPathway {
 
     @Override
     public List<Ability> getAbilities(int sequence){
+        return getAbilities(sequence%10, sequence%10);
+    }
+
+    @Override
+    public List<Ability> getAbilities(int ofSequenceLevel, int atSequenceLevel) {
         ArrayList<Ability> activeAbilities = new ArrayList<>();
 
-        switch(sequence%10){
+        switch(ofSequenceLevel%10){
             case 0:
             case 1:
             case 2:
@@ -55,23 +57,20 @@ public class ParagonPathway extends BeyonderPathway {
             case 5:
             case 6:
             case 7:
-                activeAbilities.add(Abilities.XP_COST_REDUCE.create(sequence));
-                activeAbilities.add(Abilities.REMOVE_ENCHANTMENT.create(sequence));
+                activeAbilities.add(Abilities.XP_COST_REDUCE.create(atSequenceLevel));
+                activeAbilities.add(Abilities.REMOVE_ENCHANTMENT.create(atSequenceLevel));
             case 8:
-                activeAbilities.add(Abilities.ANVIL_GUI.create(sequence));
-                activeAbilities.add(Abilities.CONJURER_CONTAINER.create(sequence));
-                activeAbilities.add(Abilities.CRAFTER_BONE_MEAL.create(sequence));
-                activeAbilities.add(Abilities.ENDER_CHEST.create(sequence));
+                activeAbilities.add(Abilities.ANVIL_GUI.create(atSequenceLevel));
+                activeAbilities.add(Abilities.CONJURER_CONTAINER.create(atSequenceLevel));
+                activeAbilities.add(Abilities.CRAFTER_BONE_MEAL.create(atSequenceLevel));
+                activeAbilities.add(Abilities.ENDER_CHEST.create(atSequenceLevel));
             case 9:
-                activeAbilities.add(Abilities.CRAFTING_SPIRITUALITY.create(sequence));
-                activeAbilities.add(Abilities.CRAFTING_GUI.create(sequence));
-                activeAbilities.add(Abilities.FUEL_CREATE.create(sequence));
-                activeAbilities.add(Abilities.DURABILITY_REGEN.create(sequence));
+                activeAbilities.add(Abilities.CRAFTING_SPIRITUALITY.create(atSequenceLevel));
+                activeAbilities.add(Abilities.CRAFTING_GUI.create(atSequenceLevel));
+                activeAbilities.add(Abilities.FUEL_CREATE.create(atSequenceLevel));
+                activeAbilities.add(Abilities.DURABILITY_REGEN.create(atSequenceLevel));
         }
-//        CraftingBonusAbility abl = new CraftingBonusAbility(sequence);
-//        mng.setPathwayAbilities(activeAbilities);
         return activeAbilities;
-        //mng.setPathwayPassives(passiveAbilities);
     }
 
     @Override

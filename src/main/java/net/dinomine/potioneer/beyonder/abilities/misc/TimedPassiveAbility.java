@@ -1,6 +1,5 @@
 package net.dinomine.potioneer.beyonder.abilities.misc;
 
-import com.mojang.datafixers.types.Func;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
 import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
 import net.minecraft.world.entity.LivingEntity;

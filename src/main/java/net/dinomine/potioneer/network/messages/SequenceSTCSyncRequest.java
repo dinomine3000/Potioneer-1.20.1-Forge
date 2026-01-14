@@ -1,14 +1,9 @@
 package net.dinomine.potioneer.network.messages;
 
 import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
-import net.dinomine.potioneer.network.PacketHandler;
-import net.dinomine.potioneer.network.messages.abilityRelevant.PlayerAbilityInfoSyncSTC;
-import net.dinomine.potioneer.network.messages.abilityRelevant.PlayerSyncHotbarMessage;
-import net.dinomine.potioneer.network.messages.advancement.PlayerAdvanceMessage;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.network.NetworkEvent;
-import net.minecraftforge.network.PacketDistributor;
 
 import java.util.function.Supplier;
 
@@ -33,15 +28,7 @@ public class SequenceSTCSyncRequest {
         context.enqueueWork(() -> {
             player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
                 if(!context.getDirection().getReceptionSide().isClient()){
-                    PacketHandler.INSTANCE.send(PacketDistributor.PLAYER.with(() -> player),
-                            new PlayerAdvanceMessage(cap.getPathwaySequenceId()));
-                    PacketHandler.INSTANCE.send(PacketDistributor.PLAYER.with(() -> player),
-                            new PlayerAbilityInfoSyncSTC(cap.getAbilitiesManager().getAbilityInfos(), false));
-                    PacketHandler.INSTANCE.send(PacketDistributor.PLAYER.with(() -> player),
-                            new PlayerSyncHotbarMessage(cap.getAbilitiesManager().clientHotbar, cap.getAbilitiesManager().quickAbility));
-                    PacketHandler.INSTANCE.send(PacketDistributor.PLAYER.with(() -> player),
-                            new PlayerAttributesSyncMessageSTC(cap.getBeyonderStats().getIntStats()));
-//                    cap.getAbilitiesManager().updateClientCooldownInfo(player);
+                    cap.syncSequenceData(player);
                 }
             });
         });

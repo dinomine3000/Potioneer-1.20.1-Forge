@@ -1,6 +1,5 @@
 package net.dinomine.potioneer.beyonder.client;
 
-import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
 import net.dinomine.potioneer.network.PacketHandler;
 import net.dinomine.potioneer.network.messages.advancement.AdvancementFailMessageCTS;
 import net.dinomine.potioneer.network.messages.advancement.PlayerAdvanceMessage;
@@ -8,11 +7,12 @@ import net.dinomine.potioneer.sound.ModSounds;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
-import net.minecraft.server.packs.repository.Pack;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+
+import java.util.List;
 
 @OnlyIn(Dist.CLIENT)
 public class ClientAdvancementManager {
@@ -68,7 +68,7 @@ public class ClientAdvancementManager {
     public static void gameOver(Screen screen, boolean success){
         screen.onClose();
         if(success){
-            PacketHandler.sendMessageCTS(new PlayerAdvanceMessage(targetSequence));
+            PacketHandler.sendMessageCTS(new PlayerAdvanceMessage(List.of(targetSequence)));
         } else {
             Player player = Minecraft.getInstance().player;
             if(!player.isCreative()){

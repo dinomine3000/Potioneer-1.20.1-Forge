@@ -12,7 +12,7 @@ public class AbilityInfo {
     private int cooldown;
     private int maxCd;
     private String innerAbilityId;
-    private String cAblId = null;
+    private AbilityKey key = null;
     private boolean hasSecondaryFunction;
 
     public AbilityInfo(int posY, int pathwayId, int cost, int cooldown, int maxCooldown, boolean enabled, String descId, String innerId, boolean hasSecondaryFunction) {
@@ -27,13 +27,13 @@ public class AbilityInfo {
         this.hasSecondaryFunction = hasSecondaryFunction;
     }
 
-    public AbilityInfo withCompleteId(String cAblId){
-        this.cAblId = cAblId;
+    public AbilityInfo withKey(AbilityKey key){
+        this.key = key;
         return this;
     }
 
-    public String getCompleteId(){
-        return this.cAblId;
+    public AbilityKey getKey(){
+        return this.key;
     }
 
 //    public AbilityInfo(int posX, int posY, String name, int sequenceId, int cost, int maxCooldown, String descId){
@@ -49,6 +49,7 @@ public class AbilityInfo {
         buffer.writeBoolean(enabled);
         BufferUtils.writeStringToBuffer(descId, buffer);
         BufferUtils.writeStringToBuffer(innerAbilityId, buffer);
+        key.writeToBuffer(buffer);
         buffer.writeBoolean(hasSecondaryFunction);
     }
 
@@ -61,8 +62,9 @@ public class AbilityInfo {
         boolean enabled = buffer.readBoolean();
         String descId = BufferUtils.readString(buffer);
         String innerId = BufferUtils.readString(buffer);
+        AbilityKey key = AbilityKey.readFromBuffer(buffer);
         boolean secondary = buffer.readBoolean();
-        return new AbilityInfo(y, pathwayId, cost, cooldown, maxCd, enabled, descId, innerId, secondary);
+        return new AbilityInfo(y, pathwayId, cost, cooldown, maxCd, enabled, descId, innerId, secondary).withKey(key);
     }
 
     public String innerId(){

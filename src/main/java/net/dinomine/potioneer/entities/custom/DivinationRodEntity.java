@@ -1,9 +1,9 @@
 package net.dinomine.potioneer.entities.custom;
 
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
+import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
 import net.dinomine.potioneer.util.misc.DivinationResult;
 import net.dinomine.potioneer.util.misc.MysticismHelper;
-import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;

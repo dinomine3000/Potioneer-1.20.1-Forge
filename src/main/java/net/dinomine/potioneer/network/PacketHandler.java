@@ -1,10 +1,12 @@
 package net.dinomine.potioneer.network;
 
 import net.dinomine.potioneer.Potioneer;
-import net.dinomine.potioneer.network.messages.*;
 import net.dinomine.potioneer.network.messages.AllySystem.AllyChangeMessageC2S;
 import net.dinomine.potioneer.network.messages.AllySystem.AllyGroupSyncMessage;
-import net.dinomine.potioneer.network.messages.abilityRelevant.*;
+import net.dinomine.potioneer.network.messages.*;
+import net.dinomine.potioneer.network.messages.abilityRelevant.PlayerArtifactSyncSTC;
+import net.dinomine.potioneer.network.messages.abilityRelevant.PlayerCastAbilityMessageCTS;
+import net.dinomine.potioneer.network.messages.abilityRelevant.PlayerSyncHotbarMessage;
 import net.dinomine.potioneer.network.messages.abilityRelevant.abilitySpecific.EvaporateEffect;
 import net.dinomine.potioneer.network.messages.abilityRelevant.abilitySpecific.OpenDivinationScreenSTC;
 import net.dinomine.potioneer.network.messages.abilityRelevant.abilitySpecific.WaterPrisonEffectSTC;
@@ -26,14 +28,11 @@ public class PacketHandler {
             PROTOCOL_VERSION::equals
             );
 
-    //TODO can improve performance by removing messages that try to sync the capability between client and server
-    //the beyonder capability on client is mostly redundant, all calculations are performed on server and the needed
-    //info is then synched to client-side classes for player use
     public static void init() {
         int i = 0;
         INSTANCE.registerMessage(i++, PlayerAdvanceMessage.class, PlayerAdvanceMessage::encode, PlayerAdvanceMessage::decode, PlayerAdvanceMessage::handle);
         INSTANCE.registerMessage(i++, SequenceSTCSyncRequest.class, SequenceSTCSyncRequest::encode, SequenceSTCSyncRequest::decode, SequenceSTCSyncRequest::handle);
-        INSTANCE.registerMessage(i++, PlayerSTCHudStatsSync.class, PlayerSTCHudStatsSync::encode, PlayerSTCHudStatsSync::decode, PlayerSTCHudStatsSync::handle);
+        INSTANCE.registerMessage(i++, PlayerSTCStatsSync.class, PlayerSTCStatsSync::encode, PlayerSTCStatsSync::decode, PlayerSTCStatsSync::handle);
         INSTANCE.registerMessage(i++, PlayerMiningSpeedSync.class, PlayerMiningSpeedSync::encode, PlayerMiningSpeedSync::decode, PlayerMiningSpeedSync::handle);
         INSTANCE.registerMessage(i++, PlayerCastAbilityMessageCTS.class, PlayerCastAbilityMessageCTS::encode, PlayerCastAbilityMessageCTS::decode, PlayerCastAbilityMessageCTS::handle);
         INSTANCE.registerMessage(i++, PlayerAbilityInfoSyncSTC.class, PlayerAbilityInfoSyncSTC::encode, PlayerAbilityInfoSyncSTC::decode, PlayerAbilityInfoSyncSTC::handle);
@@ -49,9 +48,11 @@ public class PacketHandler {
         INSTANCE.registerMessage(i++, RitualC2STextSync.class, RitualC2STextSync::encode, RitualC2STextSync::decode, RitualC2STextSync::handle);
         INSTANCE.registerMessage(i++, AllyChangeMessageC2S.class, AllyChangeMessageC2S::encode, AllyChangeMessageC2S::decode, AllyChangeMessageC2S::handle);
         INSTANCE.registerMessage(i++, AllyGroupSyncMessage.class, AllyGroupSyncMessage::encode, AllyGroupSyncMessage::decode, AllyGroupSyncMessage::handle);
+        INSTANCE.registerMessage(i++, PlayerAbilityEnabledStateSTC.class, PlayerAbilityEnabledStateSTC::encode, PlayerAbilityEnabledStateSTC::decode, PlayerAbilityEnabledStateSTC::handle);
     }
 
     public static <T> void sendMessageSTC(T message, Player player){
+        if(player.level().isClientSide) return;
         INSTANCE.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) player), message);
     }
 

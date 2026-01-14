@@ -1,12 +1,8 @@
 package net.dinomine.potioneer.block.custom;
 
-import com.lowdragmc.lowdraglib.syncdata.managed.IManagedVar;
 import net.dinomine.potioneer.block.entity.ModBlockEntities;
-import net.dinomine.potioneer.block.entity.PotionCauldronBlockEntity;
-import net.dinomine.potioneer.block.entity.RitualAltarBlockEntity;
 import net.dinomine.potioneer.block.entity.RitualPedestalBlockEntity;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
@@ -22,7 +18,6 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.pathfinder.PathComputationType;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;

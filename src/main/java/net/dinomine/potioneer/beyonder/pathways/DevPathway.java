@@ -1,7 +1,10 @@
 package net.dinomine.potioneer.beyonder.pathways;
 
 import net.dinomine.potioneer.beyonder.abilities.Ability;
-import net.dinomine.potioneer.beyonder.abilities.mystery.*;
+import net.dinomine.potioneer.beyonder.abilities.mystery.AirBulletAbility;
+import net.dinomine.potioneer.beyonder.abilities.mystery.DoorOpeningAbility;
+import net.dinomine.potioneer.beyonder.abilities.mystery.InvisibilityAbility;
+import net.dinomine.potioneer.beyonder.abilities.mystery.ReachAbility;
 import net.dinomine.potioneer.beyonder.abilities.paragon.CraftingGuiAbility;
 import net.dinomine.potioneer.beyonder.abilities.paragon.DurabilityRegenAbility;
 import net.dinomine.potioneer.beyonder.abilities.wheeloffortune.ConjurePickaxeAbility;

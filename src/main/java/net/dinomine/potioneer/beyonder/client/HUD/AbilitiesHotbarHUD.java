@@ -28,7 +28,7 @@ public class AbilitiesHotbarHUD {
     private static final Minecraft minecraft = Minecraft.getInstance();
 
     public static boolean shouldDisplayBar() {
-        return (ClientAbilitiesData.showHotbar || minecraft.screen instanceof BeyonderSettingsScreen) && ClientStatsData.getPathwayId() > -1 && !ClientAbilitiesData.getHotbar().isEmpty();
+        return (ClientAbilitiesData.showHotbar || minecraft.screen instanceof BeyonderSettingsScreen) && ClientStatsData.getPathwaySequenceId() > -1 && !ClientAbilitiesData.getHotbar().isEmpty();
     }
 
     public static final IGuiOverlay ABILITY_HOTBAR = ((forgeGui, guiGraphics, partialTick, width, height) -> {
@@ -56,6 +56,7 @@ public class AbilitiesHotbarHUD {
         int xOffset = minecraft.getWindow().getGuiScaledWidth()/2;
 
         if(hotbarPos == PotioneerClientConfig.HOTBAR_POS.LEFT){
+            //TODO maybe deal with integer/float division here?
             xOffset = (int) (scale*(CASE_WIDTH/2 -70 + (90*ClientAbilitiesData.openingAnimationPercent)));
             yOffset = minecraft.getWindow().getGuiScaledHeight()/2 + (int)(10*scale*(CASE_HEIGHT/2 - 20));
         } else if(hotbarPos == PotioneerClientConfig.HOTBAR_POS.RIGHT){
@@ -167,7 +168,6 @@ public class AbilitiesHotbarHUD {
     public static void drawAbility(GuiGraphics guiGraphics, AbilityInfo info, int caret, int xPos, int yPos, float scale){
 
         //48 x 60 - case
-        int pathway = Math.floorDiv(info.getPathwayId(), 10);
         int abilityX = Pathways.getPathwayById(info.getPathwayId()).getAbilityX();
         int caseX = xPos - (int) (CASE_WIDTH * scale / 2);
         guiGraphics.blit(ICONS, caseX, yPos, (int) (CASE_WIDTH*scale), (int) (CASE_HEIGHT*scale), abilityX - 5, 0, CASE_WIDTH, CASE_HEIGHT, ICONS_WIDTH, ICONS_HEIGHT);
@@ -206,9 +206,8 @@ public class AbilitiesHotbarHUD {
         }
 
 
-        float percent = Mth.clamp(1 - ((float) ClientAbilitiesData.getCooldown(caret) / ClientAbilitiesData.getMaxCooldown(caret)), 0, 1);
         //cooldown gradient
-
+        float percent = Mth.clamp(1 - ((float) ClientAbilitiesData.getCooldown(caret) / ClientAbilitiesData.getMaxCooldown(caret)), 0, 1);
         guiGraphics.fillGradient(caseX + (int) (5*scale), (int) (yPos + (int) (4*scale) + (percent)*ICON_HEIGHT*scale),
                 (int) (caseX + (int) (5*scale) + ICON_WIDTH*scale), (int) (yPos + (int) (4*scale) + ICON_HEIGHT*scale), 0xDD696969, 0xDD424242);
 

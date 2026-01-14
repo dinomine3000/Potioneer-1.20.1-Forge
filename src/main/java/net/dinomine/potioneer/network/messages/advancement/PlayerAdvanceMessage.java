@@ -9,31 +9,35 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.network.NetworkEvent;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Supplier;
 
-//called on world load and general syncing for advancing and updating the players pathway on both server and client
+//message to synchronize the client to have the same characteristics as the server.
+//the server has final say in the advancement.
+// S2C -> the client saves the characteristics
+// C2S -> client tells the server to consume that characteristic
 public class PlayerAdvanceMessage {
-    public int id;
-    public boolean fromLoading = false;
+    public List<Integer> characteristics;
 
-    public PlayerAdvanceMessage(int pathwayId){
-        this.id = pathwayId;
-    }
-
-    public PlayerAdvanceMessage(int pathwayId, boolean fromLoading){
-        this.id = pathwayId;
-        this.fromLoading = fromLoading;
+    public PlayerAdvanceMessage(List<Integer> characteristicList){
+        this.characteristics = characteristicList;
     }
 
     public static void encode(PlayerAdvanceMessage msg, FriendlyByteBuf buffer){
-        buffer.writeInt(msg.id);
-        buffer.writeBoolean(msg.fromLoading);
+        buffer.writeInt(msg.characteristics.size());
+        for(Integer charac: msg.characteristics){
+            buffer.writeInt(charac);
+        }
     }
 
     public static PlayerAdvanceMessage decode(FriendlyByteBuf buffer){
-        int id = buffer.readInt();
-        boolean fromLoading = buffer.readBoolean();
-        return new PlayerAdvanceMessage(id, fromLoading);
+        ArrayList<Integer> characteristics = new ArrayList<>();
+        int size = buffer.readInt();
+        for(int i = 0; i < size; i++){
+            characteristics.add(buffer.readInt());
+        }
+        return new PlayerAdvanceMessage(characteristics);
     }
 
     public static void handle(PlayerAdvanceMessage msg, Supplier<NetworkEvent.Context> contextSupplier){
@@ -45,10 +49,13 @@ public class PlayerAdvanceMessage {
             if(context.getDirection().getReceptionSide().isClient()){
                 context.enqueueWork(() -> DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> ClientSyncMessage.handlePacket(msg, contextSupplier)));
             } else {
-                System.out.println("Receiving on server side. Id = " + msg.id);
+                if(!msg.characteristics.isEmpty())
+                    System.out.println("Client advanced. Consuming Id = " + msg.characteristics.get(0));
                 Player player = context.getSender();
                 player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
-                    cap.advance(msg.id, msg.fromLoading);
+                    for(Integer charac: msg.characteristics){
+                        cap.advance(charac, false);
+                    }
                 });
             }
         });
@@ -68,8 +75,8 @@ class ClientSyncMessage
         if (player != null)
         {
             player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
-                System.out.println("Handling sequence syncing on client side...");
-                cap.advance(msg.id, msg.fromLoading);
+                System.out.println("Handling characteristic data syncing on client side...");
+                cap.getCharacteristicManager().setCharacteristicsOnClient(player, msg.characteristics);
             });
         }
     }

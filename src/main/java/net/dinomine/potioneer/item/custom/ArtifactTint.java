@@ -3,7 +3,6 @@ package net.dinomine.potioneer.item.custom;
 import net.dinomine.potioneer.beyonder.client.ClientAbilitiesData;
 import net.dinomine.potioneer.beyonder.pathways.Pathways;
 import net.dinomine.potioneer.util.misc.ArtifactHelper;
-import net.dinomine.potioneer.beyonder.pathways.BeyonderPathway;
 import net.minecraft.client.color.item.ItemColor;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.api.distmarker.Dist;

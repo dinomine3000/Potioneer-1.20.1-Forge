@@ -1,18 +1,7 @@
 package net.dinomine.potioneer.particle.custom;
 
-import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.brigadier.StringReader;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import net.dinomine.potioneer.particle.ModParticles;
-import net.minecraft.client.Camera;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.*;
-import net.minecraft.core.particles.ParticleOptions;
-import net.minecraft.core.particles.ParticleType;
-import net.minecraft.core.particles.SimpleParticleType;
-import net.minecraft.network.FriendlyByteBuf;
-
-import javax.annotation.Nullable;
 
 public class IncenseSmokeParticle extends TextureSheetParticle {
     private final float red;

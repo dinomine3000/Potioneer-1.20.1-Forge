@@ -1,12 +1,12 @@
 package net.dinomine.potioneer.beyonder.player;
 
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
-import net.dinomine.potioneer.util.misc.ArtifactHelper;
 import net.dinomine.potioneer.beyonder.player.luck.LuckRange;
 import net.dinomine.potioneer.entities.ModEntities;
 import net.dinomine.potioneer.entities.custom.AsteroidEntity;
 import net.dinomine.potioneer.item.ModItems;
 import net.dinomine.potioneer.mob_effects.ModEffects;
+import net.dinomine.potioneer.util.misc.ArtifactHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
