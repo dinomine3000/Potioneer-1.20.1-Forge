@@ -28,7 +28,7 @@ public class AbilitiesHotbarHUD {
     private static final Minecraft minecraft = Minecraft.getInstance();
 
     public static boolean shouldDisplayBar() {
-        return (ClientAbilitiesData.showHotbar || minecraft.screen instanceof BeyonderSettingsScreen) && ClientStatsData.getPathwaySequenceId() > -1 && !ClientAbilitiesData.getHotbar().isEmpty();
+        return (ClientAbilitiesData.showHotbar || minecraft.screen instanceof BeyonderSettingsScreen) && Minecraft.getInstance().player != null && ClientStatsData.getPathwaySequenceId() > -1 && !ClientAbilitiesData.getHotbar().isEmpty();
     }
 
     public static final IGuiOverlay ABILITY_HOTBAR = ((forgeGui, guiGraphics, partialTick, width, height) -> {

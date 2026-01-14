@@ -80,6 +80,11 @@ public class DevPathway extends BeyonderPathway {
     }
 
     @Override
+    public List<Ability> getAbilities(int sequenceLevel, int atSequenceLevel) {
+        return List.of();
+    }
+
+    @Override
     public String getSequenceNameFromId(int sequenceLevel, boolean show) {
         return "";
     }

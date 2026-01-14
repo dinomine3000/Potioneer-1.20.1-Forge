@@ -25,7 +25,8 @@ public class ArtifactTint implements ItemColor {
             if(itemStack.getTag().contains(ArtifactHelper.ARTIFACT_TAG_ID)){
                 List<String> abilityId = ArtifactHelper.getArtifactIdsFromItem(itemStack);
                 if(!abilityId.isEmpty()){
-                    boolean enabled = ClientAbilitiesData.isEnabled(abilityId.get(0));
+                    //TODO adjust this once artifacts are done
+                    boolean enabled = false;
                     color = enabled ? color : (int)(color*0.3);
                 }
             }

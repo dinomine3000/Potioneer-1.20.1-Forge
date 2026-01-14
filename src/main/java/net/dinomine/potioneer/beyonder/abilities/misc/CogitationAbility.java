@@ -16,7 +16,7 @@ public class CogitationAbility extends PassiveAbility {
 
     @Override
     public AbilityInfo getAbilityInfo() {
-        return Abilities.getInfo(abilityId, getCooldown(), getMaxCooldown(), isEnabled(), getDescId(sequenceLevel), Math.floorDiv(pathwayId, 10));
+        return Abilities.getInfo(abilityId, getCooldown(), getMaxCooldown(), isEnabled(), getDescId(sequenceLevel), getKey(), Math.floorDiv(pathwayId, 10));
     }
 
     @Override

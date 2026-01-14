@@ -75,7 +75,7 @@ class ClientSyncMessage
         if (player != null)
         {
             player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
-                System.out.println("Handling characteristic data syncing on client side...");
+                System.out.println("Handling 2 characteristic data syncing on client side...");
                 cap.getCharacteristicManager().setCharacteristicsOnClient(player, msg.characteristics);
             });
         }

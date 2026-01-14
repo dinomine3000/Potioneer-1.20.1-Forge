@@ -57,6 +57,7 @@ public class ClientForgeHandler {
     @SubscribeEvent
     public static void clientTick(TickEvent.ClientTickEvent event){
         Minecraft minecraft = Minecraft.getInstance();
+        if(Minecraft.getInstance().player == null) return;
 
         if(!KeyBindings.INSTANCE.quickAbilityKey.isDown()) ClientStatsData.keyPressed = false;
 

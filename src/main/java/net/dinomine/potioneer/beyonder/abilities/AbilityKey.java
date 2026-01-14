@@ -11,6 +11,13 @@ public class AbilityKey {
     private int sequenceLevel;
     private int hash;
 
+    public AbilityKey(){
+        this.abilityGroup = "";
+        this.abilityId= "";
+        this.sequenceLevel = -1;
+        doHash();
+    }
+
     public AbilityKey(String abilityGroup, String abilityId, int level){
         this.abilityGroup = abilityGroup;
         this.abilityId = abilityId;
@@ -19,15 +26,16 @@ public class AbilityKey {
     }
 
     public static AbilityKey fromString(String string) {
-        if(string == null) return null;
-        if(string.isEmpty()) return null;
+        if(string == null) return new AbilityKey();
+        if(string.isEmpty()) return new AbilityKey();
         String[] id = string.split(":");
-        if(id.length != 3) return null;
+        if(id.length != 3) return new AbilityKey();
         return new AbilityKey(id[0], id[1], Integer.parseInt(id[2]));
     }
 
     @Override
     public String toString() {
+        if(isEmpty()) return "";
         return abilityGroup.concat(":" + abilityId).concat(":" + sequenceLevel);
     }
 
@@ -74,12 +82,24 @@ public class AbilityKey {
     }
     
     public void writeToBuffer(FriendlyByteBuf buffer){
-        BufferUtils.writeStringToBuffer(this.abilityGroup, buffer);
-        BufferUtils.writeStringToBuffer(this.abilityId, buffer);
-        buffer.writeInt(sequenceLevel);
+        if(abilityId.isEmpty()){
+            buffer.writeBoolean(true);
+        } else {
+            buffer.writeBoolean(false);
+            BufferUtils.writeStringToBuffer(this.abilityGroup, buffer);
+            BufferUtils.writeStringToBuffer(this.abilityId, buffer);
+            buffer.writeInt(sequenceLevel);
+        }
+    }
+
+    public boolean isEmpty(){
+        return abilityId.isEmpty();
     }
     
     public static AbilityKey readFromBuffer(FriendlyByteBuf buffer){
+        if(buffer.readBoolean()){
+            return new AbilityKey();
+        }
         String list = BufferUtils.readString(buffer);
         String abilityId = BufferUtils.readString(buffer);
         int level = buffer.readInt();

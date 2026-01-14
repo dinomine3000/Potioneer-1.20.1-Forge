@@ -12,7 +12,7 @@ public class AbilityInfo {
     private int cooldown;
     private int maxCd;
     private String innerAbilityId;
-    private AbilityKey key = null;
+    private AbilityKey key = new AbilityKey();
     private boolean hasSecondaryFunction;
 
     public AbilityInfo(int posY, int pathwayId, int cost, int cooldown, int maxCooldown, boolean enabled, String descId, String innerId, boolean hasSecondaryFunction) {

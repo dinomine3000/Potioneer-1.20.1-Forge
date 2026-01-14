@@ -31,6 +31,11 @@ public class BeyonderlessPathway extends BeyonderPathway{
     }
 
     @Override
+    public List<Ability> getAbilities(int sequenceLevel, int atSequenceLevel) {
+        return List.of();
+    }
+
+    @Override
     public int getSequenceColorFromLevel(int sequenceLevel) {
         return 16742143;
     }

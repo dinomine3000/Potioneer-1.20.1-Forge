@@ -25,7 +25,7 @@ public class PlayerAbilitiesManager {
     //private ArrayList<ArtifactHolder> artifacts = new ArrayList<>();
 
     public ArrayList<AbilityKey> clientHotbar = new ArrayList<>();
-    public AbilityKey quickAbility = null;
+    public AbilityKey quickAbility = new AbilityKey();
 
     public void copyFrom(PlayerAbilitiesManager mng){
         this.clientHotbar = mng.clientHotbar;
@@ -340,7 +340,7 @@ public class PlayerAbilitiesManager {
     public void setAbilitiesOnClient(List<AbilityInfo> abilities, LivingEntityBeyonderCapability cap, LivingEntity target) {
         if(!target.level().isClientSide()) return;
         clear(cap, target);
-        addAbilitiesOnClient(abilities, cap, target, false);
+        addAbilitiesOnClient(abilities, cap, target, true);
     }
 
 
@@ -472,7 +472,7 @@ public class PlayerAbilitiesManager {
     }
 
     public void updateClientAbilityInfo(Player player){
-        PacketHandler.sendMessageSTC(new AbilitySyncMessage(getAbilityInfos(), AbilitySyncMessage.UPDATE), player);
+        PacketHandler.sendMessageSTC(new AbilitySyncMessage(getAbilityInfos(), AbilitySyncMessage.SET), player);
     }
 
 //    public void setPathwayAbilities(ArrayList<Ability> abilities){
@@ -531,7 +531,7 @@ public class PlayerAbilitiesManager {
         if(sizeHot != 0){
             for(int i = 0; i < sizeHot; i++){
                 AbilityKey key = AbilityKey.fromString(hot.getString(String.valueOf(i)));
-                if(key == null){
+                if(key.isEmpty()){
                     System.out.println("Read invalid ability key from NBT data: " + hot.getString(String.valueOf(i)));
                     continue;
                 }

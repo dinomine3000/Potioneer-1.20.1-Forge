@@ -171,6 +171,7 @@ public class PlayerEffectsManager {
      * @return
      */
     public boolean addOrReplaceEffect(BeyonderEffect effect, LivingEntityBeyonderCapability cap, LivingEntity target){
+        if(target.level().isClientSide()) return false;
         if(!hasEffectOrBetter(effect)){
             removeEffect(effect.getId());
             addEffect(effect, cap, target, true);
@@ -184,6 +185,7 @@ public class PlayerEffectsManager {
     }
 
     public boolean addEffectNoRefresh(BeyonderEffect effect, LivingEntityBeyonderCapability cap, LivingEntity target){
+        if(target.level().isClientSide()) return false;
         if(!hasEffectOrBetter(effect)){
             removeEffect(effect.getId());
             addEffect(effect, cap, target, true);
@@ -193,6 +195,7 @@ public class PlayerEffectsManager {
     }
 
     public boolean addEffectNoCheck(BeyonderEffect effect, LivingEntityBeyonderCapability cap, LivingEntity target){
+        if(target.level().isClientSide()) return false;
         return addEffect(effect, cap, target, true);
     }
 

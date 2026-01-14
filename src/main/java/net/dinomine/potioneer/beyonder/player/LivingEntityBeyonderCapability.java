@@ -285,11 +285,17 @@ public class LivingEntityBeyonderCapability {
     private void consumeCharacteristic(int id){
         System.out.println("Consuming characterstic " + id + " on side client? " + entity.level().isClientSide);
         getBeyonderStats().setAttributes(Pathways.BEYONDERLESS.get().getStatsFor(0));
+        System.out.println("Set 0 stats");
         characteristicManager.consumeCharacteristic(id);
+        System.out.println("Consumed characteristic");
         characteristicManager.setAbilities(this, entity);
+        System.out.println("Set abilities");
         if(entity instanceof Player player) characteristicManager.setAttributes(beyonderStats, player);
+        System.out.println("Set attriubutes");
         maxSpirituality = characteristicManager.getMaxSpirituality();
+        System.out.println("Set spirituality");
         if(entity instanceof Player player) getBeyonderStats().applyStats(player, true);
+        System.out.println("Applied stats");
     }
 
     public String getPathwayName(boolean capitalize){
@@ -374,10 +380,15 @@ public class LivingEntityBeyonderCapability {
     //server side to client. messages are sent when client joins world and when he advanced by means controlled by the server
     public void syncSequenceData(Player player){
         if(!player.level().isClientSide()){
+            System.out.println("Syncing sequence data...");
             PacketHandler.sendMessageSTC(new PlayerAdvanceMessage(getCharacteristicManager().getLastConsumedCharacteristics()), player);
+            System.out.println("Sent advance message");
             getAbilitiesManager().updateClientAbilityInfo(player);
+            System.out.println("Sent ability message");
             PacketHandler.sendMessageSTC(new PlayerSyncHotbarMessage(getAbilitiesManager().clientHotbar, getAbilitiesManager().quickAbility), player);
+            System.out.println("Sent hotbar message");
             getEffectsManager().syncToClient(player);
+            System.out.println("Sent effect message");
         }
     }
 

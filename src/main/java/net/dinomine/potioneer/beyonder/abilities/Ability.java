@@ -17,13 +17,13 @@ public abstract class Ability {
     protected int defaultMaxCooldown = 20;
     protected int sequenceLevel;
     protected String abilityId;
-    protected AbilityKey key;
+    protected AbilityKey key = new AbilityKey();
     private Function<Integer, Integer> costFunction;
 
     public AbilityInfo getAbilityInfo(){
         if(key == null){
             System.out.println("Warning: tried to get ability info with a null key");
-            return Abilities.getInfo(abilityId, cooldown, maxCooldown, state, getDescId(sequenceLevel));
+            return Abilities.getInfo(abilityId, cooldown, maxCooldown, state, getDescId(sequenceLevel), new AbilityKey());
         }
         return Abilities.getInfo(abilityId, cooldown, maxCooldown, state, getDescId(sequenceLevel), key);
     }

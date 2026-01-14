@@ -80,7 +80,7 @@ public class ClientAbilitiesData {
         updateHotbarOnChange();
 //        if(changingPath) hotbar = new ArrayList<>();
 //        if(changingPath) quickSelect = "";
-        if(!hasQuickSelect() && !abilities.containsKey(quickSelect)) quickSelect = null;
+        if(!hasQuickSelect() && !abilities.containsKey(quickSelect)) quickSelect = new AbilityKey();
         ClientStatsData.getCapability().ifPresent(cap -> {
             if(Minecraft.getInstance().player != null)
                 cap.getAbilitiesManager().setAbilitiesOnClient(abilities2, cap, Minecraft.getInstance().player);
@@ -90,7 +90,7 @@ public class ClientAbilitiesData {
     }
 
     public static boolean hasQuickSelect(){
-        return quickSelect != null;
+        return quickSelect != null && !quickSelect.isEmpty();
     }
 
     public static void addAbilities(List<AbilityInfo> abilities2){
@@ -167,6 +167,7 @@ public class ClientAbilitiesData {
 
     public static void setQuickAbility(AbilityKey id){
         quickSelect = id;
+        if(id == null) quickSelect = new AbilityKey();
     }
 
     public static ArrayList<AbilityKey> getHotbar() {
@@ -251,7 +252,7 @@ public class ClientAbilitiesData {
     private static HashMap<AbilityKey, AbilityInfo> abilities = new HashMap<>();
     //private static ArrayList<String> abilitiesByIndex;
     private static ArrayList<AbilityKey> hotbar;
-    private static AbilityKey quickSelect = null;
+    private static AbilityKey quickSelect = new AbilityKey();
     /**
      * caret refers to the index in the hotbar -> current selected ability in hotbar
      */

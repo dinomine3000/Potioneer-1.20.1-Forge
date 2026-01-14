@@ -172,7 +172,7 @@ public class BeyonderAbilitiesScreen extends Screen {
         int caretToAdd = selectedCaret;
         AbilityKey key = abilities.get(caretToAdd).getKey();
         if(ClientAbilitiesData.getQuickAbility().equals(key)){
-            ClientAbilitiesData.setQuickAbility(null);
+            ClientAbilitiesData.setQuickAbility(new AbilityKey());
         } else {
             ClientAbilitiesData.setQuickAbility(key);
         }

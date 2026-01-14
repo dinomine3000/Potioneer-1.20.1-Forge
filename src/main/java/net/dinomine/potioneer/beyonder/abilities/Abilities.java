@@ -295,10 +295,6 @@ public class Abilities {
         return getAbilityById(key.getAbilityId(), key.getSequenceLevel());
     }
 
-    public static AbilityInfo getInfo(String abilityId, int cooldown, int maxCd, boolean enabled, String descId){
-        return ABILITIES.get(abilityId).getInfo(cooldown, maxCd, enabled, descId, abilityId);
-    }
-
     public static AbilityInfo getInfo(String abilityId, int cooldown, int maxCd, boolean enabled, String descId, AbilityKey key){
         return ABILITIES.get(abilityId).getInfo(cooldown, maxCd, enabled, descId, abilityId).withKey(key);
     }
@@ -314,7 +310,7 @@ public class Abilities {
      * @param pathwayId
      * @return
      */
-    public static AbilityInfo getInfo(String abilityId, int cooldown, int maxCd, boolean enabled, String descId, int pathwayId){
-        return ABILITIES.get(abilityId).getInfo(cooldown, maxCd, enabled, descId, abilityId, pathwayId);
+    public static AbilityInfo getInfo(String abilityId, int cooldown, int maxCd, boolean enabled, String descId, AbilityKey key, int pathwayId){
+        return ABILITIES.get(abilityId).getInfo(cooldown, maxCd, enabled, descId, abilityId, pathwayId).withKey(key);
     }
 }
