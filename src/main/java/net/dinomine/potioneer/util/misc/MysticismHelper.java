@@ -48,7 +48,7 @@ public class MysticismHelper {
      * tries to locate the item (dropped items and/or mobs that drop it and in players inventories) around the player
      * block items (to find 1 copy of that block)
      */
-    public static DivinationResult doDivination(ItemStack item, Player seer, int radius, BlockPos position, int sequenceId, RandomSource random){
+    public static DivinationResult doDivination(ItemStack item, Player seer, int radius, BlockPos position, int pathwaySequenceId, RandomSource random){
         if(seer.level().isClientSide()) return new DivinationResult(false, new ArrayList<>(), -1, 0f, "", ItemStack.EMPTY);
         ServerLevel level = (ServerLevel) seer.level();
         PotionFormulaSaveData savedData = PotionFormulaSaveData.from(level);
@@ -64,18 +64,18 @@ public class MysticismHelper {
                 //gives you the name of your next sequence.
                 //YesNo are become true
                 boolean yesNo = true;
-                String clue = "potioneer.beyonder.sequence." + Pathways.getPathwayById(sequenceId - 1).getSequenceNameFromId(sequenceId - 1, false);
-                int resSequence = sequenceId - 1;
+                String clue = "potioneer.beyonder.sequence." + Pathways.getPathwayBySequenceId(pathwaySequenceId - 1).getSequenceNameFromId(pathwaySequenceId - 1, false);
+                int resSequence = pathwaySequenceId - 1;
                 ArrayList<BlockPos> responsePositions = new ArrayList<>();
                 return new DivinationResult(yesNo, responsePositions, resSequence, 1f, clue, ItemStack.EMPTY);
             } else {
                 //gives you a clue for your next ingredient, as well as their positions
                 //YesNo are become false
                 boolean yesNo = false;
-                ItemStack itemStack = savedData.getRandomItemFromFormulaFor(sequenceId - 1, random);
+                ItemStack itemStack = savedData.getRandomItemFromFormulaFor(pathwaySequenceId - 1, random);
                 String clue = savedData.getClueForIngredient(itemStack);
                 List<BlockPos> positions = findItemInArea(seer, itemStack, position, radius, level);
-                int resSequence = sequenceId - 1;
+                int resSequence = pathwaySequenceId - 1;
                 return new DivinationResult(yesNo, positions, resSequence, 0f, clue, itemStack);
             }
         }
@@ -94,7 +94,7 @@ public class MysticismHelper {
                     float sanityPercent = cap.get().getSanity() / 100f;
                     float hunger = target.getFoodData().getFoodLevel() / 20f;
                     float status = 0.3f*hp + 0.4f*spiritualityPercent + 0.2f*sanityPercent + 0.1f*hunger;
-                    boolean yesNo = targetSequence % 10 < sequenceId % 10 || status > 0.5;
+                    boolean yesNo = targetSequence % 10 < pathwaySequenceId % 10 || status > 0.5;
                     List<BlockPos> positions = new ArrayList<>();
                     positions.add(target.getOnPos());
 
@@ -108,9 +108,9 @@ public class MysticismHelper {
             CompoundTag mysticalTag = item.getTag().getCompound(mysticismTagId);
             CompoundTag beyonderTag = item.getTag().getCompound("beyonder_info");
             int charSequence = beyonderTag.getInt("id");
-            boolean yesNo = charSequence == sequenceId - 1;
+            boolean yesNo = charSequence == pathwaySequenceId - 1;
             float status = yesNo ? 1f : 0f;
-            String clue = "potioneer.beyonder.sequence." + Pathways.getPathwayById(charSequence).getSequenceNameFromId(charSequence, false);
+            String clue = "potioneer.beyonder.sequence." + Pathways.getPathwayBySequenceId(charSequence).getSequenceNameFromId(charSequence, false);
             ItemStack stack = savedData.getRandomItemFromFormulaFor(charSequence, random);
             List<BlockPos> positions = findItemInArea(seer, stack, position, 64, level);
 
@@ -124,7 +124,7 @@ public class MysticismHelper {
                     float sanityPercent = cap.get().getSanity() / 100f;
                     float hunger = target.getFoodData().getFoodLevel() / 20f;
                     status = 0.3f*hp + 0.4f*spiritualityPercent + 0.2f*sanityPercent + 0.1f*hunger;
-                    yesNo = targetSequence % 10 < sequenceId % 10 || status > 0.5;
+                    yesNo = targetSequence % 10 < pathwaySequenceId % 10 || status > 0.5;
                     positions.add(target.getOnPos());
                     clue = target.getName().getString();
                     stack = target.getMainHandItem();
@@ -152,8 +152,8 @@ public class MysticismHelper {
                     yesNo = true;
                     try{
                         potionSequence = Integer.parseInt(name);
-                        clue = "potioneer.beyonder.sequence." + Pathways.getPathwayById(potionSequence).getSequenceNameFromId(potionSequence, false);
-                        status = potionSequence%10 == (sequenceId - 1) % 10 ? 1f : 0.7f;
+                        clue = "potioneer.beyonder.sequence." + Pathways.getPathwayBySequenceId(potionSequence).getSequenceNameFromId(potionSequence, false);
+                        status = potionSequence%10 == (pathwaySequenceId - 1) % 10 ? 1f : 0.7f;
                     } catch (Exception e){
                         clue = name;
                     }
@@ -164,11 +164,11 @@ public class MysticismHelper {
         else if(item.is(ModItems.FORMULA.get())) {
             Optional<LivingEntityBeyonderCapability> cap = seer.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve();
             if(cap.isPresent()){
-                PotionRecipeData data = FormulaItem.applyOrReadFormulaNbt(item, level, sequenceId, cap.get());
+                PotionRecipeData data = FormulaItem.applyOrReadFormulaNbt(item, level, pathwaySequenceId, cap.get());
                 boolean yesNo = savedData.isFormulaCorrect(data);
                 float status = 0f;
                 if(yesNo){
-                    status = data.id() == sequenceId - 1 ? 1f : 0.7f;
+                    status = data.id() == pathwaySequenceId - 1 ? 1f : 0.7f;
                 }
                 ArrayList<BlockPos> positions = new ArrayList<>();
                 int i = 0;
@@ -216,7 +216,7 @@ public class MysticismHelper {
         //and superimposing that is whether or not the item is used for your next potion. even if its edible,
         //itll always be true if its your next ingredient
         if(!item.isEdible()) {yesNo = !positions.isEmpty();}
-        if(savedData.isIngredientForSequence(item, sequenceId - 1)){
+        if(savedData.isIngredientForSequence(item, pathwaySequenceId - 1)){
             yesNo = true;
             status = 1f;
         }
@@ -236,7 +236,7 @@ public class MysticismHelper {
                 clue = dz > 0 ? Direction.SOUTH.getName() : Direction.NORTH.getName();
             }
         } else {
-            clue = Pathways.getPathwayById(highestSequence).getSequenceNameFromId(highestSequence, true);
+            clue = Pathways.getPathwayBySequenceId(highestSequence).getSequenceNameFromId(highestSequence, true);
         }
         return new DivinationResult(yesNo, positions, highestSequence, status, clue,ItemStack.EMPTY);
     }

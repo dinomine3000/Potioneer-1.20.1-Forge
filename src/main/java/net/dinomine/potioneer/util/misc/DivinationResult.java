@@ -28,7 +28,7 @@ public record DivinationResult(boolean yesNo, List<BlockPos> positions, int sequ
     public String toString() {
         return "Yes/No? - " + yesNo
                 + "\nPositions - " + positions.toString()
-                + "\nSequence " + sequence + " " + Pathways.getPathwayById(sequence).getSequenceNameFromId(sequence, true)
+                + "\nSequence " + sequence + " " + Pathways.getPathwayBySequenceId(sequence).getSequenceNameFromId(sequence, true)
                 + "\nStatus value of " + status + " - " + getDescriptiveStatus()
                 + "\nClue - " + clue
                 + "\nAssociated Item - " + item.toString();

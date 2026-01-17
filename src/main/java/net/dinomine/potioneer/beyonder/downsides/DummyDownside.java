@@ -12,6 +12,7 @@ public class DummyDownside extends Downside{
 
     public DummyDownside(int sequenceLevel){
         super(sequenceLevel);
+        defaultMaxCooldown = 0;
     }
 
     @Override

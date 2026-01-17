@@ -1,31 +1,39 @@
 package net.dinomine.potioneer.beyonder.player;
 
-import net.dinomine.potioneer.beyonder.abilities.Abilities;
-import net.dinomine.potioneer.beyonder.abilities.Ability;
-import net.dinomine.potioneer.beyonder.abilities.AbilityInfo;
-import net.dinomine.potioneer.beyonder.abilities.AbilityKey;
+import net.dinomine.potioneer.beyonder.abilities.*;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
 import net.dinomine.potioneer.network.PacketHandler;
 import net.dinomine.potioneer.network.messages.abilityRelevant.AbilitySyncMessage;
+import net.dinomine.potioneer.network.messages.abilityRelevant.PlayerArtifactSyncSTC;
 import net.dinomine.potioneer.network.messages.abilityRelevant.PlayerCastAbilityMessageCTS;
+import net.dinomine.potioneer.util.misc.MysticalItemHelper;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraftforge.fml.ModList;
 import org.jetbrains.annotations.NotNull;
+import top.theillusivec4.curios.api.CuriosApi;
+import top.theillusivec4.curios.api.type.capability.ICuriosItemHandler;
+import top.theillusivec4.curios.api.type.inventory.ICurioStacksHandler;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.function.Consumer;
 
 public class PlayerAbilitiesManager {
     private LinkedHashMap<AbilityKey, Ability> abilities = new LinkedHashMap<>();
-    //private ArrayList<String> replicatedAbilities = new ArrayList<>();
-    //private ArrayList<String> recordedAbilities = new ArrayList<>();
-    //private ArrayList<ArtifactHolder> artifacts = new ArrayList<>();
+    private LinkedHashMap<UUID, ArtifactHolder> artifacts = new LinkedHashMap<>();
 
     public ArrayList<AbilityKey> clientHotbar = new ArrayList<>();
     public AbilityKey quickAbility = new AbilityKey();
+
+    @Override
+    public String toString() {
+        return "Abilities: " + abilities.keySet().stream().map(AbilityKey::toString).toList() +
+                "\nArtifacts: " + artifacts.values().stream().map(ArtifactHolder::toString).toList();
+    }
 
     public void copyFrom(PlayerAbilitiesManager mng){
         this.clientHotbar = mng.clientHotbar;
@@ -33,179 +41,179 @@ public class PlayerAbilitiesManager {
         this.abilities = mng.abilities;
     }
 
+    public void castArtifactAbility(UUID artifactKey, LivingEntityBeyonderCapability cap, LivingEntity target){
+        if(!target.level().isClientSide() && target instanceof Player player){
+            PacketHandler.sendMessageSTC(new PlayerCastAbilityMessageCTS(artifactKey), player);
+        }
+        ArtifactHolder artifact = artifacts.get(artifactKey);
+        artifact.castDefaultAbilities(cap, target);
+
+    }
+
     public Ability getAbility(AbilityKey key){
+        if(key.isArtifactKey()) return artifacts.get(key.getArtifactId()).getAbility(key);
         return abilities.get(key);
     }
 
-//    public void castArtifactAbilityAll(LivingEntityBeyonderCapability cap, Player player, String artifactId){
-//        if(artifactIds == null || artifactIds.isEmpty()) return;
-//        for(String artifactId: artifactIds){
-//            String id = artifactId.substring(3);
-//            if(artifacts.containsKey(id)
-//                    || pathwayAbilities.containsKey(id)){
-//                useAbility(cap, player, id, true, true);
-//            }
-//        }
-//    }
-//
-//    /**
-//     * this method is only used for adding artifacts.
-//     * the logic of whether this specific ID should be added is not handled here
-//     * @param cap
-//     * @param player
-//     * @param ablId
-//     * @param sequence
-//     */
-//    public void updateAddArtifact(LivingEntityBeyonderCapability cap, Player player, String ablId, int sequence, boolean sync){
-//        Ability abl = ArtifactHelper.getAbilityFromId(ablId, sequence);
-//        if(abl == null) return;
-//        if(!artifacts.containsKey(ablId)){
-//            System.out.println("Adding new artifact: " + ablId + " sequence " + sequence);
-//            enabledDisabled.putIfAbsent(ablId, true);
-//            activeCooldowns.putIfAbsent(ablId, 0);
-//        } else {
-//            System.out.println("Changing existing artifact instance to " + ablId + sequence);
-//            artifacts.get(ablId).deactivate(cap, player);
-//        }
-//        abl.onAcquire(cap, player);
-//        artifacts.put(ablId, abl);
-//
-//        if(sync){
-//            PacketHandler.INSTANCE.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) player),
-//                    new PlayerArtifactSyncSTC(ablId, sequence, true));
-//        }
-//    }
-//
-//    public void updateRemoveArtifact(LivingEntityBeyonderCapability cap, Player player, String ablId, boolean sync){
-//        if(artifacts.containsKey(ablId)){
-//            System.out.println("Removing artifact: " + ablId);
-//            artifacts.get(ablId).deactivate(cap, player);
-//            artifacts.remove(ablId);
-//            if(sync)
-//                PacketHandler.INSTANCE.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) player),
-//                        new PlayerArtifactSyncSTC(ablId, 0, false));
-//        } else System.out.println("Tried to remove a non existent artifact ability");
-//
-//    }
-//
-//    /**
-//     * this methods is the one that goes through the inventory and gets the list of artifacts to change.
-//     * happens about once a second on server side only.
-//     * @param cap
-//     * @param player
-//     */
-//    public void updateArtifacts(LivingEntityBeyonderCapability cap, Player player) {
-//        for (String ablId : new ArrayList<>(activeCooldowns.keySet())) {
-//            if(activeCooldowns.get(ablId) == 0
-//                    && !artifacts.containsKey(ablId)
-//                    && !pathwayAbilities.containsKey(ablId)){
-//                System.out.println("Removing cooldown and enabled info for ability: " + ablId);
-//                activeCooldowns.remove(ablId);
-//                enabledDisabled.remove(ablId);
-//            }
-//        }
-//        //because artifacts depend on NBT data, it makes no sense to try to update them on client side.
-//        //use messages to update the client.
-//        if(player.level().isClientSide()) return;
-//
-//        //1 - create list of the best artifact abilities from inventory data
-//        //returns a map, connecting ablIds to artifactIds
-//        Map<String, String> inventoryArtifacts = getArtifactsFromInventory(player);
-//        //2 - update artifacts list attribute if anything changed
-//        //add new artifacts to list
-//        for (String artifactId : inventoryArtifacts.values()) {
-//            String ablId = artifactId.substring(3);
-//            int newLevel = artifactId.charAt(1) - '0';
-//
-//            if (shouldAddArtifact(ablId, newLevel)) {
-//                updateAddArtifact(cap, player, ablId, newLevel, true);
-//            }
-//        }
-//        //remove artifacts from list
-//        for (String ablId : new ArrayList<>(artifacts.keySet())) {
-//            if (!inventoryArtifacts.containsKey(ablId)) {
-//                updateRemoveArtifact(cap, player, ablId, true);
-//            }
-//            //when you advance, removing newly-turned-useless artifact abilities is dealt with in the set abilites method
-//        }
-//
-//    }
-//
-//    /**
-//     * This method should return a map, connectin AblID to ArtifactID.
-//     * Returns the best abilities found in the inventory
-//     */
-//    private Map<String, String> getArtifactsFromInventory(Player player) {
-//        HashMap<String, String> resMap = new HashMap<>();
+    /**
+     * this methods is the one that goes through the inventory and gets the list of artifacts to change.
+     * happens about once a second on server side only.
+     * @param cap
+     * @param player
+     */
+    public void updateArtifacts(LivingEntityBeyonderCapability cap, Player player) {
+        //because artifacts depend on NBT data, it makes no sense to try to update them on client side.
+        //use messages to update the client.
+        if(player.level().isClientSide()) return;
+
+        //1 - create list of artifacts from inventory data
+        //returns a map, connecting ablIds to artifactIds
+        Map<UUID, ArtifactHolder> inventoryArtifacts = getArtifactsFromInventory(player);
+        //2 - update artifacts list attribute if anything changed
+        //add new artifacts to list
+        for (Map.Entry<UUID, ArtifactHolder> entry: inventoryArtifacts.entrySet()) {
+            UUID artifactKey = entry.getKey();
+            ArtifactHolder artifact = entry.getValue();
+
+            if (!artifacts.containsKey(artifactKey)) {
+                addArtifact(artifact, cap, player, true, true);
+            }
+        }
+        //remove artifacts from list
+        for (UUID artifactId : new ArrayList<>(artifacts.keySet())) {
+            if (!inventoryArtifacts.containsKey(artifactId)) {
+                removeArtifact(artifactId, cap, player, true);
+            }
+        }
+
+        //3 - update artifact data into the item tags.
+        iterateThroughInventory(player, itemStack -> {
+            UUID id = MysticalItemHelper.getArtifactIdFromItem(itemStack);
+            if(id != null) MysticalItemHelper.updateArtifactTagOnItem(artifacts.get(id), itemStack);
+        });
+    }
+
+    /**
+     * This method should return a map, connectin artifact id to artifact instance.
+     */
+    private HashMap<UUID, ArtifactHolder> getArtifactsFromInventory(Player player) {
 //        ItemStack validAmuletEnabled = ItemStack.EMPTY;
 //        boolean tooManyAmulets = false;
-//        for(ItemStack itemStack: player.getInventory().items){
-//            if(itemStack.is(ModItems.AMULET.get()) && ArtifactHelper.isValidArtifact(itemStack)){
-//                if(validAmuletEnabled.isEmpty()){
-//                    validAmuletEnabled = itemStack;
-//                } else {
-//                    tooManyAmulets = true;
-//                    NecklaceItem.enableAmulet(validAmuletEnabled, false);
-//                    NecklaceItem.enableAmulet(itemStack, false);
-//                }
-//            }
-//            List<String> ablDown = ArtifactHelper.getArtifactIdsFromItem(itemStack);
-//            for(String artifactId: ablDown){
-//                addAbilityToMap(artifactId, resMap);
-//            }
-//        }
-//        if(ModList.get().isLoaded("curios")){
-//            if(CuriosApi.getCuriosInventory(player).resolve().isPresent()){
-//                ICuriosItemHandler curiosInventory = CuriosApi.getCuriosInventory(player).resolve().get();
-//                Map<String, ICurioStacksHandler> curios = curiosInventory.getCurios();
-//                for(ICurioStacksHandler handler: curios.values()){
-//                    int slots = handler.getSlots();
-//                    for(int i = 0; i < slots; i++){
-//                        ItemStack itemStack = handler.getStacks().getStackInSlot(i);
-//                        if(itemStack.is(ModItems.AMULET.get()) && ArtifactHelper.isValidArtifact(itemStack)){
-//                            if(validAmuletEnabled.isEmpty()){
-//                                validAmuletEnabled = itemStack;
-//                            } else {
-//                                tooManyAmulets = true;
-//                                NecklaceItem.enableAmulet(validAmuletEnabled, false);
-//                                NecklaceItem.enableAmulet(itemStack, false);
-//                            }
-//                        }
-//                        List<String> ablDown = ArtifactHelper.getArtifactIdsFromItem(itemStack);
-//                        for(String artifactId: ablDown){
-//                            addAbilityToMap(artifactId, resMap);
-//                        }
-//                    }
-//                }
-//            }
-//        }
-//        if(!validAmuletEnabled.isEmpty() && !tooManyAmulets){
-//            NecklaceItem.enableAmulet(validAmuletEnabled, true);
-//        }
-//        return resMap;
-//    }
+        HashMap<UUID, ArtifactHolder> resMap = new HashMap<>();
+        iterateThroughInventory(player, itemStack -> {
+            ArtifactHolder artifact = MysticalItemHelper.getArtifactFromitem(itemStack);
+            if(artifact != null)
+                resMap.put(artifact.getArtifactId(), artifact);
+        });
+////        for(ItemStack itemStack: player.getInventory().items){
+////            if(itemStack.is(ModItems.AMULET.get()) && MysticalItemHelper.isValidArtifact(itemStack)){
+////                if(validAmuletEnabled.isEmpty()){
+////                    validAmuletEnabled = itemStack;
+////                } else {
+////                    tooManyAmulets = true;
+////                    NecklaceItem.enableAmulet(validAmuletEnabled, false);
+////                    NecklaceItem.enableAmulet(itemStack, false);
+////                }
+////            }
+////            ArtifactHolder artifact = MysticalItemHelper.getArtifactFromitem(itemStack);
+////            resMap.put(artifact.getArtifactId(), artifact);
+////           //addArtifact(artifact, cap, player, true);
+////        }
+////        if(ModList.get().isLoaded("curios")){
+////            if(CuriosApi.getCuriosInventory(player).resolve().isPresent()){
+////                ICuriosItemHandler curiosInventory = CuriosApi.getCuriosInventory(player).resolve().get();
+////                Map<String, ICurioStacksHandler> curios = curiosInventory.getCurios();
+////                for(ICurioStacksHandler handler: curios.values()){
+////                    int slots = handler.getSlots();
+////                    for(int i = 0; i < slots; i++){
+////                        ItemStack itemStack = handler.getStacks().getStackInSlot(i);
+////                        if(itemStack.is(ModItems.AMULET.get()) && ArtifactHelper.isValidArtifact(itemStack)){
+////                            if(validAmuletEnabled.isEmpty()){
+////                                validAmuletEnabled = itemStack;
+////                            } else {
+////                                tooManyAmulets = true;
+////                                NecklaceItem.enableAmulet(validAmuletEnabled, false);
+////                                NecklaceItem.enableAmulet(itemStack, false);
+////                            }
+////                        }
+////                        ArtifactHolder artifact = MysticalItemHelper.getArtifactFromitem(itemStack);
+////                        resMap.put(artifact.getArtifactId(), artifact);
+////                    }
+////                }
+////            }
+////        }
+////        if(!validAmuletEnabled.isEmpty() && !tooManyAmulets){
+////            NecklaceItem.enableAmulet(validAmuletEnabled, true);
+////        }
+        return resMap;
+    }
 
-//    private void addAbilityToMap(String id, Map<String, String> map){
-//        if(map.containsKey(id.substring(3))){
-//            int ablLevel = id.charAt(1) - '0';
-//            int prevLevel = map.get(id.substring(3)).charAt(1) - '0';
-//            if(ablLevel < prevLevel){
-//                map.put(id.substring(3), id);
-//            }
-//        } else {
-//            map.put(id.substring(3), id);
-//        }
-//    }
-//
-//    private boolean shouldAddArtifact(String ablId, int sequenceLevel){
-//        //this method assumes the passed ability is the best found in the players inventory
-//        boolean isIntrinsic = pathwayAbilities.containsKey(ablId);
-//        boolean isStrongerThanIntrinsic = !isIntrinsic
-//                || pathwayAbilities.get(ablId).getSequence() > sequenceLevel;
-//        boolean shouldReplaceInArtifacts = !artifacts.containsKey(ablId)
-//                || artifacts.get(ablId).getSequence() != sequenceLevel;
-//        return shouldReplaceInArtifacts && isStrongerThanIntrinsic;
-//    }
+    private boolean addArtifact(ArtifactHolder artifact, LivingEntityBeyonderCapability cap, Player player, boolean runOnAcquire, boolean sync){
+        if(artifact == null || artifact.isEmpty()) return false;
+        if(artifacts.containsKey(artifact.getArtifactId())) return false;
+        artifacts.put(artifact.getArtifactId(), artifact);
+        if (runOnAcquire) artifact.onAcquire(cap, player);
+        if(sync) updateClientArtifactInfo(player, List.of(artifact), PlayerArtifactSyncSTC.ADD);
+        return true;
+    }
+
+    private boolean removeArtifact(UUID artifactId, LivingEntityBeyonderCapability cap, Player player, boolean sync){
+        if(artifactId == null) return false;
+        ArtifactHolder artifact = artifacts.remove(artifactId);
+        artifact.onRemove(cap, player);
+        if(sync) updateClientArtifactInfo(player, List.of(artifact), PlayerArtifactSyncSTC.REMOVE);
+        return true;
+    }
+
+    /**
+     * method that saves the artifact ability data to its respective item
+     * @param artifactId
+     * @param player
+     */
+    public void updateDataOnArtifact(UUID artifactId, Player player){
+        if(artifactId == null || player.level().isClientSide()) return;
+        for(ItemStack itemStack: player.getInventory().items){
+            if(Objects.equals(MysticalItemHelper.getArtifactIdFromItem(itemStack), artifactId)){
+                MysticalItemHelper.updateArtifactTagOnItem(artifacts.get(artifactId), itemStack);
+                return;
+            }
+        }
+        if(ModList.get().isLoaded("curios")){
+            if(CuriosApi.getCuriosInventory(player).resolve().isPresent()){
+                ICuriosItemHandler curiosInventory = CuriosApi.getCuriosInventory(player).resolve().get();
+                Map<String, ICurioStacksHandler> curios = curiosInventory.getCurios();
+                for(ICurioStacksHandler handler: curios.values()){
+                    int slots = handler.getSlots();
+                    for(int i = 0; i < slots; i++){
+                        ItemStack itemStack = handler.getStacks().getStackInSlot(i);
+                        if(Objects.equals(MysticalItemHelper.getArtifactIdFromItem(itemStack), artifactId)){
+                            MysticalItemHelper.updateArtifactTagOnItem(artifacts.get(artifactId), itemStack);
+                            return;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private void iterateThroughInventory(Player player, Consumer<ItemStack> consumer){
+        for(ItemStack itemStack: player.getInventory().items){
+            consumer.accept(itemStack);
+        }
+        if(ModList.get().isLoaded("curios")){
+            if(CuriosApi.getCuriosInventory(player).resolve().isPresent()){
+                ICuriosItemHandler curiosInventory = CuriosApi.getCuriosInventory(player).resolve().get();
+                Map<String, ICurioStacksHandler> curios = curiosInventory.getCurios();
+                for(ICurioStacksHandler handler: curios.values()){
+                    int slots = handler.getSlots();
+                    for(int i = 0; i < slots; i++){
+                        ItemStack itemStack = handler.getStacks().getStackInSlot(i);
+                        consumer.accept(itemStack);
+                    }
+                }
+            }
+        }
+    }
 
     public void onTick(LivingEntityBeyonderCapability cap, LivingEntity target){
         if(!abilities.isEmpty()){
@@ -219,11 +227,9 @@ public class PlayerAbilitiesManager {
                 ability.tickCooldown();
             });
         }
-//        if(!artifacts.isEmpty()){
-//            artifacts.values().forEach(ability -> {
-//                ability.passive(cap, target);
-//            });
-//        }
+        artifacts.values().forEach(ability -> {
+            ability.passives(cap, target);
+        });
 
     }
 
@@ -237,9 +243,14 @@ public class PlayerAbilitiesManager {
         }
     }
 
-    public void clear(LivingEntityBeyonderCapability cap, LivingEntity target){
+    public void clearAbilities(LivingEntityBeyonderCapability cap, LivingEntity target){
         abilities.values().forEach(ability -> ability.deactivate(cap, target));
         abilities = new LinkedHashMap<>();
+    }
+
+    public void clearArtifacts(LivingEntityBeyonderCapability cap, LivingEntity target){
+        artifacts.values().forEach(ability -> ability.onRemove(cap, target));
+        artifacts = new LinkedHashMap<>();
     }
 
     public void grantAbilities(List<Ability> newAbilities, int pathwaySequenceId, LivingEntityBeyonderCapability cap, LivingEntity target) {
@@ -251,24 +262,24 @@ public class PlayerAbilitiesManager {
             addAbility(AbilityList.INTRINSIC.name(), abl, cap, target, true, false);
         }
         //then replace any cogitation abilities with the
-        replaceCogitation(pathwaySequenceId, cap, target);
+        replaceCogitation(pathwaySequenceId, cap, target, true);
 
         //finally, update client info
-        if(target instanceof Player player) updateClientAbilityInfo(player);
+        if(target instanceof Player player) updateClientAbilityInfo(player, AbilitySyncMessage.SET);
     }
 
-    private void replaceCogitation(int pathwaySequenceId, LivingEntityBeyonderCapability cap, LivingEntity target) {
-        for(AbilityKey key: abilities.keySet()){
+    public void replaceCogitation(int pathwaySequenceId, LivingEntityBeyonderCapability cap, LivingEntity target, boolean runOnAcquire) {
+        for(AbilityKey key: new ArrayList<>(abilities.keySet())){
             if(key.isSameAbility(Abilities.COGITATION.getAblId())){
-                abilities.get(key).upgradeToLevel(pathwaySequenceId, cap, target);
-                return;
+                abilities.remove(key);
+                break;
             }
         }
-        addAbility(AbilityList.INTRINSIC.name(), Abilities.COGITATION.create(pathwaySequenceId), cap, target, true, false);
+        addAbility(AbilityList.INTRINSIC.name(), Abilities.COGITATION.create(pathwaySequenceId), cap, target, runOnAcquire, false);
     }
 
     private void upgradeAbilitiesToLevel(int sequenceLevel, LivingEntityBeyonderCapability cap, LivingEntity target){
-        for(Ability abl: abilities.values()){
+        for(Ability abl: new ArrayList<>(abilities.values())){
             if(abl.getSequenceLevel() > sequenceLevel && abl.getType().equals(AbilityList.INTRINSIC.name())){
                 abilities.remove(abl.getKey());
                 abl.upgradeToLevel(sequenceLevel, cap, target);
@@ -339,10 +350,16 @@ public class PlayerAbilitiesManager {
      */
     public void setAbilitiesOnClient(List<AbilityInfo> abilities, LivingEntityBeyonderCapability cap, LivingEntity target) {
         if(!target.level().isClientSide()) return;
-        clear(cap, target);
+        clearAbilities(cap, target);
         addAbilitiesOnClient(abilities, cap, target, true);
+        updateAbilitiesOnClient(abilities, cap, target);
     }
 
+    public void setArtifactsOnClient(List<ArtifactHolder> artifacts, LivingEntityBeyonderCapability cap, Player player) {
+        if(!player.level().isClientSide()) return;
+        clearArtifacts(cap, player);
+        addArtifactsOnClient(artifacts, cap, player, false);
+    }
 
     public void addAbilitiesOnClient(List<AbilityInfo> abilities, @NotNull LivingEntityBeyonderCapability cap, LivingEntity target, boolean runOnAcquire) {
         if(!target.level().isClientSide()) return;
@@ -355,6 +372,20 @@ public class PlayerAbilitiesManager {
             Ability ability = Abilities.getAbilityByKey(key);
             if(!addAbility(key, ability, cap, target, runOnAcquire, false)){
                 System.out.println("Warning: Tried to add an ability that already exists on client: " + abl.getKey());
+            }
+        }
+    }
+
+    public void addArtifactsOnClient(List<ArtifactHolder> artifacts, @NotNull LivingEntityBeyonderCapability cap, Player player, boolean runOnAcquire) {
+        if(!player.level().isClientSide()) return;
+        for(ArtifactHolder artifact: artifacts){
+            UUID artifactId = artifact.getArtifactId();
+            if(artifactId == null){
+                System.out.println("Warning: Read an artifact with a null key: " + artifact.toString());
+                continue;
+            }
+            if(!addArtifact(artifact, cap, player, runOnAcquire, false)){
+                System.out.println("Warning: Tried to add an artifact that already exists on client: " + artifact.getArtifactId());
             }
         }
     }
@@ -373,6 +404,20 @@ public class PlayerAbilitiesManager {
         }
     }
 
+    public void removeArtifactsOnClient(List<ArtifactHolder> artifacts, @NotNull LivingEntityBeyonderCapability cap, Player player) {
+        if(!player.level().isClientSide()) return;
+        for(ArtifactHolder artifact: artifacts){
+            UUID uuid = artifact.getArtifactId();
+            if(uuid == null){
+                System.out.println("Warning: Read an artifact with a null key: " + artifact);
+                continue;
+            }
+            if(!removeArtifact(uuid, cap, player, false)){
+                System.out.println("Warning: Tried to remove an artifact that doesnt exist on client: " + artifact.getArtifactId());
+            }
+        }
+    }
+
     public void updateAbilitiesOnClient(List<AbilityInfo> abilities2, @NotNull LivingEntityBeyonderCapability cap, LivingEntity target) {
         if(!target.level().isClientSide()) return;
         for(AbilityInfo info: abilities2){
@@ -381,23 +426,42 @@ public class PlayerAbilitiesManager {
                 System.out.println("Warning: Read an ability with a null key: " + info.descId());
                 continue;
             }
+            if(key.isArtifactKey() && artifacts.containsKey(key.getArtifactId())){
+                artifacts.get(key.getArtifactId()).getAbility(key).receiveUpdateOnClient(info, cap, target);
+                continue;
+            }
             if(!this.abilities.containsKey(key)){
-                System.out.println("Warning: Tried to update an ability with a non existent key: " + key);
+                //System.out.println("Warning: Tried to update an ability with a non existent key: " + key);
                 continue;
             }
 
             Ability abl = this.abilities.get(key);
-            if(abl.isEnabled() != info.isEnabled()){
-                abl.setEnabled(cap, target, info.isEnabled());
-            }
-            abl.putOnCooldown(info.getCooldown(), target);
+            abl.receiveUpdateOnClient(info, cap, target);
         }
     }
+
+//    public void updateArtifactsOnClient(List<ArtifactHolder> artifacts,  @NotNull LivingEntityBeyonderCapability cap, Player player) {
+//        if(!player.level().isClientSide()) return;
+//        for(ArtifactHolder artifact: artifacts){
+//            UUID uuid = artifact.getArtifactId();
+//            if(uuid == null){
+//                System.out.println("Warning: Read an artifact with a null key: " + artifact);
+//                continue;
+//            }
+//            if(!this.artifacts.containsKey(uuid)){
+//                //System.out.println("Warning: Tried to update an ability with a non existent key: " + key);
+//                continue;
+//            }
+//            this.artifacts.get(uuid).updateOnClient(artifact);
+//        }
+//    }
+
 
     public enum AbilityList{
         INTRINSIC,
         RECORDED,
-        REPLICATED
+        REPLICATED,
+        ARTIFACT,
     }
 
     public boolean addAbility(String abilityGroup, Ability ability, LivingEntityBeyonderCapability cap, LivingEntity target, boolean runOnAcquire, boolean sync){
@@ -409,31 +473,39 @@ public class PlayerAbilitiesManager {
         ability.setAbilityKey(key.getGroup());
         abilities.put(key, ability);
         if (runOnAcquire) ability.onAcquire(cap, target);
-        if(sync && target instanceof Player player) updateClientAbilityInfo(player);
+        if(sync && target instanceof Player player) updateClientAbilityInfo(player, List.of(ability.getAbilityInfo()), AbilitySyncMessage.ADD);
         return true;
     }
 
     public boolean removeAbility(AbilityKey key, LivingEntityBeyonderCapability cap, LivingEntity target, boolean sync){
         if(key.getGroup().equals(AbilityList.INTRINSIC.name())) return false;
         if(!abilities.containsKey(key)) return false;
-        abilities.get(key).deactivate(cap, target);
+        Ability abl = abilities.get(key);
+        abl.deactivate(cap, target);
         abilities.remove(key);
-        if(sync && target instanceof Player player) updateClientAbilityInfo(player);
+        if(sync && target instanceof Player player) updateClientAbilityInfo(player, List.of(abl.getAbilityInfo()), AbilitySyncMessage.REMOVE);
         return true;
     }
 
     public void useAbility(LivingEntityBeyonderCapability cap, LivingEntity tar, AbilityKey key, boolean sync, boolean primary){
-        Ability ability = abilities.get(key);
-        System.out.println(key);
-        System.out.println(abilities);
-        System.out.println("On client side? " + tar.level().isClientSide());
-        if(ability != null){
-            System.out.println("Found ability.");
-            ability.castAbility(cap, tar, primary);
+        if(key.isArtifactKey()){
+            ArtifactHolder artifact = artifacts.get(key.getArtifactId());
+            if(artifact != null){
+                artifact.castAbility(key, primary, cap, tar);
+            }
             if(sync && tar.level().isClientSide()){
                 PacketHandler.sendMessageCTS(new PlayerCastAbilityMessageCTS(key, primary));
             }
+        } else {
+            Ability ability = abilities.get(key);
+            if(ability != null){
+                ability.castAbility(cap, tar, primary);
+                if(sync && tar.level().isClientSide()){
+                    PacketHandler.sendMessageCTS(new PlayerCastAbilityMessageCTS(key, primary));
+                }
+            }
         }
+//        if(ability != null && cap.getSpirituality() >= Abilities.getAbilityById(key.getAbilityId()).getCostSpirituality()){
     }
 
     public void setEnabledAtLevel(String ablId, int sequenceLevel, boolean enabling, LivingEntityBeyonderCapability cap, LivingEntity target){
@@ -471,30 +543,25 @@ public class PlayerAbilitiesManager {
         return abilities.get(key).setEnabled(cap, target, enabling);
     }
 
-    public void updateClientAbilityInfo(Player player){
-        PacketHandler.sendMessageSTC(new AbilitySyncMessage(getAbilityInfos(), AbilitySyncMessage.SET), player);
+    public void updateClientAbilityInfo(Player player, List<AbilityInfo> abilities, int operation){
+        if(player.level().isClientSide()) return;
+        PacketHandler.sendMessageSTC(new AbilitySyncMessage(abilities, operation), player);
     }
 
-//    public void setPathwayAbilities(ArrayList<Ability> abilities){
-////        System.out.println("Active abilities updates. Size is: " + abilities.size());
-//        if(abilities == null) return;
-////        this.abilities = new LinkedHashMap<>();
-////        for (Ability ability : abilities) {
-////            String ablId = ability.getInfo().ablId();
-////            this.abilities.put(ablId, ability);
-////        }
-//
-//    }
+    public void updateClientAbilityInfo(Player player, int operation){
+        if(player.level().isClientSide()) return;
+        PacketHandler.sendMessageSTC(new AbilitySyncMessage(getAbilityInfos(), operation), player);
+    }
 
-//
-//    public void onAcquireAbilities(LivingEntityBeyonderCapability cap, LivingEntity target){
-//        //TODO: only going through actives. if you want for passives, youll need to add it
-//        // Check if its enabled for when the player loads into the world -> dont activate extended reach if the ability was previously disabled
-//        //its loading the enabledDisabled list before calling this onAcquire function when loading data
-//        for (Ability ability : abilities.values()) {
-//            if (enabledDisabled.get(ability.getInfo().ablId())) ability.onAcquire(cap, target);
-//        }
-//    }
+    public void updateClientArtifactInfo(Player player, List<ArtifactHolder> artifacts, int operation) {
+        if(player.level().isClientSide()) return;
+        PacketHandler.sendMessageSTC(new PlayerArtifactSyncSTC(artifacts, operation), player);
+    }
+
+    public void updateClientArtifactInfo(Player player, int operation) {
+        if(player.level().isClientSide()) return;
+        PacketHandler.sendMessageSTC(new PlayerArtifactSyncSTC(artifacts.values().stream().toList(), operation), player);
+    }
 
     private List<AbilityInfo> getAbilityInfos() {
         List<AbilityInfo> res = new ArrayList<>();
@@ -515,6 +582,11 @@ public class PlayerAbilitiesManager {
         for(Ability abl: abilities.values()){
             nbt.put(abl.getKey().toString(), abl.saveNbt());
         }
+        ListTag artifactsTag = new ListTag();
+        for(ArtifactHolder artifact: artifacts.values()){
+            artifactsTag.add(artifact.saveToTag(new CompoundTag()));
+        }
+        nbt.put("artifacts", artifactsTag);
     }
 
     private List<Ability> bufferNewAbilities = new ArrayList<>();
@@ -526,6 +598,12 @@ public class PlayerAbilitiesManager {
     }
 
     public void loadNBTData(CompoundTag nbt, LivingEntityBeyonderCapability cap, LivingEntity target){
+        for(Ability abl: abilities.values()){
+            abl.loadNbt(nbt);
+        }
+
+        if(!(target instanceof Player player)) return;
+
         CompoundTag hot = nbt.getCompound("hotbar");
         int sizeHot = hot.getInt("size");
         if(sizeHot != 0){
@@ -539,16 +617,19 @@ public class PlayerAbilitiesManager {
             }
         }
         quickAbility = AbilityKey.fromString(hot.getString("quick"));
-        for(Ability abl: abilities.values()){
-            abl.loadNbt(nbt);
-        }
-
         for(int i = 0; i < bufferAbilityGroups.size(); i++){
             Ability abl = bufferNewAbilities.get(i);
             addAbility(bufferAbilityGroups.get(i), abl, cap, target, false, false);
             abl.loadNbt(nbt);
         }
         bufferNewAbilities.clear();
+
+        ListTag artifactTag = nbt.getList("artifacts", ListTag.TAG_COMPOUND);
+        for(Tag tag: artifactTag){
+            if(tag instanceof CompoundTag artTag){
+                addArtifact(ArtifactHolder.loadFromTag(artTag), cap, player, false, false);
+            }
+        }
     }
 
 }

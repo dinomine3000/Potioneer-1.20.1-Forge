@@ -49,8 +49,6 @@ public class PlayerAdvanceMessage {
             if(context.getDirection().getReceptionSide().isClient()){
                 context.enqueueWork(() -> DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> ClientSyncMessage.handlePacket(msg, contextSupplier)));
             } else {
-                if(!msg.characteristics.isEmpty())
-                    System.out.println("Client advanced. Consuming Id = " + msg.characteristics.get(0));
                 Player player = context.getSender();
                 player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
                     for(Integer charac: msg.characteristics){
@@ -75,7 +73,6 @@ class ClientSyncMessage
         if (player != null)
         {
             player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
-                System.out.println("Handling 2 characteristic data syncing on client side...");
                 cap.getCharacteristicManager().setCharacteristicsOnClient(player, msg.characteristics);
             });
         }

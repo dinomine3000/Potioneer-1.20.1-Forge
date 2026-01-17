@@ -8,7 +8,7 @@ import net.dinomine.potioneer.beyonder.client.KeyBindings;
 import net.dinomine.potioneer.beyonder.client.screen.BeyonderScreen;
 import net.dinomine.potioneer.item.ModItems;
 import net.dinomine.potioneer.recipe.PotionRecipeData;
-import net.dinomine.potioneer.util.misc.ArtifactHelper;
+import net.dinomine.potioneer.util.misc.MysticalItemHelper;
 import net.dinomine.potioneer.util.misc.MysticismHelper;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
@@ -37,15 +37,15 @@ public class ClientForgeHandler {
                 int spirituality = (int) MysticismHelper.getSpiritualityOfItem(stack);
                 if (spirituality > 0) tooltip.add(Component.literal("Spirituality: " + spirituality).withStyle(ChatFormatting.GRAY));
             }
-            if(stack.hasTag() && stack.getTag().contains(ArtifactHelper.BEYONDER_TAG_ID)){
+            if(stack.hasTag() && stack.getTag().contains(MysticalItemHelper.BEYONDER_TAG_ID)){
                 tooltip.add(Component.literal("Sequence Level " + stack.getTag().getCompound("beyonder_info").getInt("id")%10));
             }
             if(stack.hasTag() && stack.getTag().contains("recipe_data")){
                 tooltip.add(Component.literal(PotionRecipeData.getName(stack.getTag().getCompound("recipe_data"))));
             }
             if(stack.is(ModItems.CHARM.get())){
-                if(stack.hasTag() && stack.getTag().contains(ArtifactHelper.CHARM_TAG_ID)){
-                    tooltip.add(Component.translatable("beyondereffect.potioneer." + stack.getTag().getCompound(ArtifactHelper.CHARM_TAG_ID).getString("effectId")));
+                if(stack.hasTag() && stack.getTag().contains(MysticalItemHelper.CHARM_TAG_ID)){
+                    tooltip.add(Component.translatable("beyondereffect.potioneer." + stack.getTag().getCompound(MysticalItemHelper.CHARM_TAG_ID).getString("effectId")));
                 } else {
                     tooltip.add(Component.translatable("charm.potioneer.no_effect"));
                 }

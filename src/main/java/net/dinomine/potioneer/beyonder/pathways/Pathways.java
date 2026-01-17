@@ -41,8 +41,12 @@ public class Pathways {
         return PATHWAYS.register(name, abl);
     }
 
-    public static BeyonderPathway getPathwayById(int pathwayId){
+    public static BeyonderPathway getPathwayBySequenceId(int pathwayId){
         return getPathwayById(new ResourceLocation(Potioneer.MOD_ID, String.valueOf(Math.floorDiv(pathwayId, 10))));
+    }
+
+    public static BeyonderPathway getPathwayById(int pathwayId){
+        return getPathwayById(new ResourceLocation(Potioneer.MOD_ID, String.valueOf(pathwayId)));
     }
 
     public static BeyonderPathway getPathwayById(ResourceLocation id){

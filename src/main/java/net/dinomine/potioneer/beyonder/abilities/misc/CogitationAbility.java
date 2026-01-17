@@ -7,28 +7,28 @@ import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
 import net.minecraft.world.entity.LivingEntity;
 
 public class CogitationAbility extends PassiveAbility {
-    private int pathwayId;
+    private int pathwaySequenceId;
 
     public CogitationAbility(int pathwayId){
         super(pathwayId, BeyonderEffects.COGITATION, integer -> "cogitation");
-        this.pathwayId = pathwayId;
+        this.pathwaySequenceId = pathwayId;
     }
 
     @Override
     public AbilityInfo getAbilityInfo() {
-        return Abilities.getInfo(abilityId, getCooldown(), getMaxCooldown(), isEnabled(), getDescId(sequenceLevel), getKey(), Math.floorDiv(pathwayId, 10));
+        return Abilities.getInfo(abilityId, getCooldown(), getMaxCooldown(), isEnabled(), getDescId(sequenceLevel), getKey(), Math.floorDiv(pathwaySequenceId, 10));
     }
 
     @Override
     public void upgradeToLevel(int pathwaySequenceId, LivingEntityBeyonderCapability cap, LivingEntity target) {
-        if(pathwayId == pathwaySequenceId) return;
-        onUpgrade(pathwayId, pathwaySequenceId, cap, target);
-        pathwayId = pathwaySequenceId;
+        if(this.pathwaySequenceId == pathwaySequenceId) return;
+        onUpgrade(this.pathwaySequenceId, pathwaySequenceId, cap, target);
+        this.pathwaySequenceId = pathwaySequenceId;
     }
 
     @Override
     public int getSequenceLevel() {
-        return pathwayId%10;
+        return pathwaySequenceId %10;
     }
 
     //

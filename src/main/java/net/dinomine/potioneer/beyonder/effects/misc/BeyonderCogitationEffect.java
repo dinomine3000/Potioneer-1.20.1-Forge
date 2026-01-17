@@ -30,22 +30,22 @@ public class BeyonderCogitationEffect extends BeyonderEffect {
         cap.requestPassiveSpiritualityCost(-(cap.getMaxSpirituality()/60f));
         if(!target.hasEffect(MobEffects.MOVEMENT_SLOWDOWN)){
             slownlessCheck = true;
-            target.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 20*5, 3, true, true));
+            target.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, -1, 3, true, true));
         }
 
         if(!target.hasEffect(MobEffects.DARKNESS)){
             darknessCheck = true;
-            target.addEffect(new MobEffectInstance(MobEffects.DARKNESS, 20*5, 3, true, true));
+            target.addEffect(new MobEffectInstance(MobEffects.DARKNESS, -1, 3, true, true));
         }
 
         if(!target.hasEffect(MobEffects.WEAKNESS)){
             weaknessCheck = true;
-            target.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 20*5, 3, true, true));
+            target.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, -1, 3, true, true));
         }
 
         if(!target.hasEffect(MobEffects.GLOWING)){
             glowingCheck = true;
-            target.addEffect(new MobEffectInstance(MobEffects.GLOWING, 20*5, 3, true, true));
+            target.addEffect(new MobEffectInstance(MobEffects.GLOWING, -1, 3, true, true));
         }
     }
 

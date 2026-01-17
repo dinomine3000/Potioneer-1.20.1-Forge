@@ -1,6 +1,6 @@
 package net.dinomine.potioneer.recipe;
 
-import net.dinomine.potioneer.util.misc.ArtifactHelper;
+import net.dinomine.potioneer.util.misc.MysticalItemHelper;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
 
@@ -16,8 +16,8 @@ public record PotionRecipe(PotionRecipeData input, PotionContentData output) {
         //will return true if it finds a valid characteristic-like item
         for(int i = 0; i < container.getContainerSize(); i++){
             if(container.getItem(i).hasTag()
-                    && container.getItem(i).getTag().contains(ArtifactHelper.BEYONDER_TAG_ID)){
-                CompoundTag beyonderTag = container.getItem(i).getTag().getCompound(ArtifactHelper.BEYONDER_TAG_ID);
+                    && container.getItem(i).getTag().contains(MysticalItemHelper.BEYONDER_TAG_ID)){
+                CompoundTag beyonderTag = container.getItem(i).getTag().getCompound(MysticalItemHelper.BEYONDER_TAG_ID);
                 if(input.id() > -1 && beyonderTag.getInt("id") == input.id()) return true;
             }
         }

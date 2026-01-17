@@ -5,12 +5,13 @@ import net.dinomine.potioneer.beyonder.abilities.misc.CogitationAbility;
 import net.dinomine.potioneer.beyonder.abilities.misc.PassiveAbility;
 import net.dinomine.potioneer.beyonder.abilities.misc.TimedPassiveAbility;
 import net.dinomine.potioneer.beyonder.abilities.mystery.*;
-import net.dinomine.potioneer.beyonder.abilities.paragon.AnvilGuiAbility;
-import net.dinomine.potioneer.beyonder.abilities.paragon.DurabilityRegenAbility;
+import net.dinomine.potioneer.beyonder.abilities.paragon.*;
 import net.dinomine.potioneer.beyonder.abilities.redpriest.*;
 import net.dinomine.potioneer.beyonder.abilities.tyrant.*;
 import net.dinomine.potioneer.beyonder.abilities.wheeloffortune.*;
+import net.dinomine.potioneer.beyonder.downsides.DummyDownside;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
+import net.dinomine.potioneer.beyonder.player.ConjurerContainer;
 import net.minecraft.resources.ResourceLocation;
 
 import java.util.HashMap;
@@ -22,6 +23,11 @@ public class Abilities {
     public static final AbilityFactory COGITATION = registerAbility("cogitation",
             (Integer pathwayId) -> (new CogitationAbility(pathwayId)).canFlip(),
             320, 0, 0);
+
+    public static final AbilityFactory DUMMY_DOWNSIDE = registerAbility("d_dummy",
+            DummyDownside::new, 0, 0, 0);
+
+    // -------------------------- WHEEL OF FORTUNE ---------------------------------------------------
 
     public static final AbilityFactory CALAMITY_INCREASE = registerAbility("calamity",
             (Integer sequenceLevel) -> PassiveAbility.createAbility(sequenceLevel, BeyonderEffects.WHEEL_CALAMITY,
@@ -117,7 +123,7 @@ public class Abilities {
             WaterCreateAbility::new, 104, 1, 1).hasSecondaryFunction();
 
     public static final AbilityFactory TYRANT_WATER_PRISON = registerAbility("water_prison",
-            WaterCreateAbility::new, 152, 1, 40);
+            WaterPrisonAbility::new, 152, 1, 40);
 
     public static final AbilityFactory TYRANT_REMOVE_WATER = registerAbility("water_sponge",
             WaterRemoveAbility::new, 128, 1, 5);
@@ -231,22 +237,22 @@ public class Abilities {
             AnvilGuiAbility::new, 104, 4, 10);
 
     public static final AbilityFactory CONJURER_CONTAINER = registerAbility("conjure_container",
-            AnvilGuiAbility::new, 176, 4, 0);
+            ConjurerContainerAbility::new, 176, 4, 0);
 
     public static final AbilityFactory CRAFTING_GUI = registerAbility("crafting_gui",
-            AnvilGuiAbility::new, 32, 4, 10);
+            CraftingGuiAbility::new, 32, 4, 10);
 
     public static final AbilityFactory ENDER_CHEST = registerAbility("ender_chest",
-            AnvilGuiAbility::new, 152, 4, 50);
+            EnderChestAbility::new, 152, 4, 50);
 
     public static final AbilityFactory FUEL_CREATE = registerAbility("fuel",
-            AnvilGuiAbility::new, 80, 4, 0);
+            FuelAbility::new, 80, 4, 0);
 
     public static final AbilityFactory CRAFTER_BONE_MEAL = registerAbility("p_bone_meal",
-            AnvilGuiAbility::new, 128, 4, 2);
+            ParagonBoneMealAbility::new, 128, 4, 2);
 
     public static final AbilityFactory REMOVE_ENCHANTMENT = registerAbility("disenchant",
-            AnvilGuiAbility::new, 224, 4, 50);
+            RemoveEnchantmentAbility::new, 224, 4, 50);
 
 //        this.info = new AbilityInfo(109, 32, "Crafting Spirituality", 40 + sequence, 0, this.getMaxCooldown(), "craft");
     public static final AbilityFactory CRAFTING_SPIRITUALITY = registerAbility("crafting_spirituality",

@@ -6,6 +6,7 @@ import net.dinomine.potioneer.beyonder.abilities.AbilityKey;
 import net.dinomine.potioneer.beyonder.client.ClientAbilitiesData;
 import net.dinomine.potioneer.beyonder.client.KeyBindings;
 import net.dinomine.potioneer.beyonder.pathways.Pathways;
+import net.dinomine.potioneer.util.CustomImageButton;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
@@ -104,10 +105,10 @@ public class BeyonderAbilitiesScreen extends Screen {
             for(int i = 0; i < Math.min(6, abilities.size()); i++){
                 createButtons(i);
             }
-            ImageButton castAbilityButton = new ImageButton(leftPos + 12, topPos + 13, 38, 46, 176, 13,
+            ImageButton castAbilityButton = new CustomImageButton(leftPos + 12, topPos + 13, 38, 46, 176, 13,
                     46, TEXTURE, TEXTURE_WIDTH, TEXTURE_HEIGHT, hbut -> {
                 castAbilityAt(true);
-            });
+            }, button -> castAbilityAt(false));
             addRenderableWidget(castAbilityButton);
 
             addToHotbarButton = new ImageButton(hotbarButtonRight - hotbarButtonSide, hotbarButtonBottom - hotbarButtonSide, hotbarButtonSide, hotbarButtonSide,

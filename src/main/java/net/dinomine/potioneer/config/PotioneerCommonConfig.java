@@ -17,6 +17,7 @@ public class PotioneerCommonConfig {
     public static final ForgeConfigSpec.IntValue SECONDS_TO_MAX_SPIRITUALITY;
     public static final ForgeConfigSpec.BooleanValue PUBLIC_GROUPS;
     public static final ForgeConfigSpec.BooleanValue ALLOW_CHANGING_PATHWAYS;
+    public static final ForgeConfigSpec.DoubleValue CHANCE_TO_MAKE_ARTIFACT_ON_DEATH;
 
     public static final ForgeConfigSpec.EnumValue<CharacteristicDropCriteria> CHARACTERISTIC_DROP_CRITERIA_ENUM_VALUE;
     public static final ForgeConfigSpec.BooleanValue DROP_ALL_CHARACTERISTICS;
@@ -61,14 +62,20 @@ public class PotioneerCommonConfig {
                         "\nTrue will make them drop everything, false will make them drop their highest sequence characteristic only, and if there are more than one such characteristics, it will drop the most recent one.")
                 .define("drop_all_characteristics", false);
 
-        ALLOW_CHANGING_PATHWAYS = BUILDER.comment("Should players be able to change pathways?" +
+        ALLOW_CHANGING_PATHWAYS = BUILDER.comment("Should players be able to change pathways completely? This is not related to being a dual-pathway beyonder." +
                 "\nSetting this to true means that people can drop a sequence level at level 9, becoming beyonderless and allowing them to drink any other pathway potion." +
-                "\nSetting this to false means that you can never drop your sequence 9 characteristic, meaning you can never change pathways  if you don't use commands")
+                "\nSetting this to false means that you can never drop the first characteristic you consumed, meaning you can never change pathways if you don't use commands")
                 .define("can_change_pathways", false);
 
         SECONDS_TO_MAX_SPIRITUALITY = BUILDER.comment("How many seconds does it take for someone to regenerate their spirituality from 0 to full?" +
-                "\nNote: this also affects how fast sanity regenerates, but not how fast it drops")
+                        "\nNote: this also affects how fast sanity regenerates, but not how fast it drops")
                 .defineInRange("seconds_to_full", 15*60, 1, Integer.MAX_VALUE);
+
+        CHANCE_TO_MAKE_ARTIFACT_ON_DEATH = BUILDER.comment("What is the chance, when someone dies and they drop their characteristic, that this characteristic" +
+                        "fuses with one of their items. " +
+                        "\nIf this chance passes (not dependent on the players luck) then it'll look for a valid item in the inventory." +
+                        "\nIf they drop more than 1 characteristic, this chance will be applied to each one individually.")
+                .defineInRange("chance_to_make_artifact", 0.25, 0, 1);
 
         PUBLIC_GROUPS = BUILDER.comment("Should every player be able to see every group in the server or just admins?\n"
                         + "True means everyone can see every group and their players, false will mean they can only see groups they're in.\n"

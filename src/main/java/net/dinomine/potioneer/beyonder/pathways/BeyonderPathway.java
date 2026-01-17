@@ -89,4 +89,12 @@ public abstract class BeyonderPathway {
 //    }
 
     public abstract float[] getStatsFor(int sequence);
+
+    public int getIconX() {
+        return 0;
+    }
+
+    public int getIconY() {
+        return 0;
+    }
 }

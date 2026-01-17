@@ -27,6 +27,10 @@ public class ParagonPathway extends BeyonderPathway {
         return 109;
     }
 
+    public int getIconY() {
+        return 64;
+    }
+
     @Override
     public float[] getStatsFor(int sequence){
         return switch (sequence%10){

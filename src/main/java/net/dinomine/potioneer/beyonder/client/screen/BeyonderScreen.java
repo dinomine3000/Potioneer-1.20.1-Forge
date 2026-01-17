@@ -71,7 +71,7 @@ public class BeyonderScreen extends Screen {
         this.topPos = (this.height- this.imageHeight) / 2;
 
         this.pathwaySequenceId = ClientStatsData.getPathwaySequenceId();
-        this.pathway = Pathways.getPathwayById(pathwaySequenceId);
+        this.pathway = Pathways.getPathwayBySequenceId(pathwaySequenceId);
         this.PATHWAY_NAME = Component.translatable(Potioneer.MOD_ID + ".beyonder.pathway." + pathway.getPathwayName(false));
         this.SEQUENCE_NAME = Component.translatable(Potioneer.MOD_ID + ".beyonder.sequence." + pathway.getSequenceNameFromId(pathwaySequenceId %10, false));
         this.color = pathway.getColor();
@@ -160,8 +160,10 @@ public class BeyonderScreen extends Screen {
                 0, imageWidth, imageHeight, TEXTURE_WIDTH, TEXTURE_HEIGHT);
 
         //blit pathway icon
-        pGuiGraphics.blit(PATHWAY_ICONS, leftPos, topPos + 1, 64, 64, (pathwaySequenceId %4)*64,
-                Math.floorDiv(pathwaySequenceId, 4)*64, 64, 64, 256, 128);
+        int iconX = pathway.getIconX();
+        int iconY = pathway.getIconY();
+        pGuiGraphics.blit(PATHWAY_ICONS, leftPos, topPos + 1, 64, 64, iconX,
+                iconY, 64, 64, 256, 128);
 
         float scale = Math.min(1, 106f/this.font.width(PATHWAY_NAME.getString()));
         drawScaledString(pGuiGraphics, this.font, PATHWAY_NAME.getString(), this.leftPos + 64, this.topPos + 22, scale, this.color);
@@ -245,8 +247,8 @@ public class BeyonderScreen extends Screen {
     }
 
     private static void drawAbilityIcon(GuiGraphics pGuiGraphics, int pX, int pY, float scale, AbilityInfo info){
-        int pathwaySequenceId = info.getPathwayId();
-        pGuiGraphics.blit(ICONS, pX + (int) (5*scale), pY + (int)(4*scale), (int)(ICON_WIDTH*scale), (int)(ICON_HEIGHT*scale), Pathways.getPathwayById(pathwaySequenceId).getAbilityX(), info.getPosY(), ICON_WIDTH, ICON_HEIGHT, ICONS_WIDTH, ICONS_HEIGHT);
+        int pathwayId = info.getPathwayId();
+        pGuiGraphics.blit(ICONS, pX + (int) (5*scale), pY + (int)(4*scale), (int)(ICON_WIDTH*scale), (int)(ICON_HEIGHT*scale), Pathways.getPathwayById(pathwayId).getAbilityX(), info.getPosY(), ICON_WIDTH, ICON_HEIGHT, ICONS_WIDTH, ICONS_HEIGHT);
     }
 
     @Override

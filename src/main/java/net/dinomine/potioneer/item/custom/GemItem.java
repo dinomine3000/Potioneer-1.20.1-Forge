@@ -1,6 +1,6 @@
 package net.dinomine.potioneer.item.custom;
 
-import net.dinomine.potioneer.util.misc.ArtifactHelper;
+import net.dinomine.potioneer.util.misc.MysticalItemHelper;
 import net.minecraft.client.color.item.ItemColor;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -19,8 +19,8 @@ public class GemItem extends Item {
         public int getColor(ItemStack itemStack, int i) {
             if(i != 0) return -1;
             if(itemStack.hasTag()){
-                if(!itemStack.getTag().getCompound(ArtifactHelper.GEM_TAG_ID).isEmpty()){
-                    return itemStack.getTag().getCompound(ArtifactHelper.GEM_TAG_ID).getInt("color");
+                if(!itemStack.getTag().getCompound(MysticalItemHelper.GEM_TAG_ID).isEmpty()){
+                    return itemStack.getTag().getCompound(MysticalItemHelper.GEM_TAG_ID).getInt("color");
                 }
             }
             return -1;

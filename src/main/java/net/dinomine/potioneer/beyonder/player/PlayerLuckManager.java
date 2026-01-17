@@ -6,7 +6,7 @@ import net.dinomine.potioneer.entities.ModEntities;
 import net.dinomine.potioneer.entities.custom.AsteroidEntity;
 import net.dinomine.potioneer.item.ModItems;
 import net.dinomine.potioneer.mob_effects.ModEffects;
-import net.dinomine.potioneer.util.misc.ArtifactHelper;
+import net.dinomine.potioneer.util.misc.MysticalItemHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -253,7 +253,7 @@ public class PlayerLuckManager {
             case 0:
                 if(target instanceof Player player){
                     ItemStack res = new ItemStack(ModItems.RING.get());
-                    ArtifactHelper.makeSealedArtifact(res,
+                    MysticalItemHelper.generateSealedArtifact(res,
                             target.getRandom().nextInt(4)*10 + 10 + target.getRandom().nextInt(3) + 6,
                             target.getRandom());
                     if(!player.addItem(res)){

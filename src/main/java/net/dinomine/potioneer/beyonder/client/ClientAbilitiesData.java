@@ -129,6 +129,7 @@ public class ClientAbilitiesData {
                 System.out.println("Warning: tried to update an ability with a null id: " + abl.descId());
                 continue;
             }
+            if(key.isArtifactKey()) continue;
             abilities.put(key, abl);
         }
 
@@ -143,21 +144,22 @@ public class ClientAbilitiesData {
     private static void updateHotbarOnChange(){
         //TODO make logic here to mantain abilities that just leveled up
         //
+        if(hotbar == null) hotbar = new ArrayList<>();
         for(AbilityKey key: hotbar){
             if (abilities.containsKey(key)) continue;
             if (!key.getGroup().equals(PlayerAbilitiesManager.AbilityList.INTRINSIC.name())) continue;
             for(AbilityKey iKey: abilities.keySet()){
                 if(iKey.isSameAbility(key.getAbilityId())
-                        && iKey.isSameGroup(PlayerAbilitiesManager.AbilityList.INTRINSIC.name()))
+                        && iKey.isSameGroup(PlayerAbilitiesManager.AbilityList.INTRINSIC.name())){
                     key.setSequenceLevel(iKey.getSequenceLevel());
-                break;
+                    break;
+                }
             }
         }
 
         if(!hotbar.isEmpty()){
             hotbar.removeIf(key -> !abilities.containsKey(key));
         }
-        System.out.println("Hotbar updated to:\n" + hotbar);
         setHotbarChanged();
     }
 
@@ -251,7 +253,7 @@ public class ClientAbilitiesData {
     public static float scaleAnimationTime = 0;
     private static HashMap<AbilityKey, AbilityInfo> abilities = new HashMap<>();
     //private static ArrayList<String> abilitiesByIndex;
-    private static ArrayList<AbilityKey> hotbar;
+    private static ArrayList<AbilityKey> hotbar = new ArrayList<>();
     private static AbilityKey quickSelect = new AbilityKey();
     /**
      * caret refers to the index in the hotbar -> current selected ability in hotbar
@@ -301,11 +303,11 @@ public class ClientAbilitiesData {
     }
 
     public static boolean useAbility(Player player, AbilityKey key, boolean primary){
-        if(abilities.isEmpty() || key == null) return false;
+        if(abilities.isEmpty() || key == null || abilities.get(key) == null ) return false;
+        if(abilities.get(key).getCooldown() < 0) return false;
         player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
 //                    System.out.println(caret);
 //                    ClientStatsData.setSpirituality(ClientStatsData.getPlayerSpirituality() - abilities.get(caret).cost());
-            System.out.println("Primary? " + primary);
             cap.getAbilitiesManager().useAbility(cap, player, key, true, primary);
 //            abilities.get(cAblId).setEnabled(false);
         });

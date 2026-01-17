@@ -26,7 +26,7 @@ import net.dinomine.potioneer.particle.ModParticles;
 import net.dinomine.potioneer.recipe.ModRecipes;
 import net.dinomine.potioneer.sound.ModSounds;
 import net.dinomine.potioneer.util.JSONParserHelper;
-import net.dinomine.potioneer.util.misc.ArtifactHelper;
+import net.dinomine.potioneer.util.misc.MysticalItemHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
@@ -176,12 +176,12 @@ public class Potioneer
             ItemProperties.register(ModItems.RING.get(),
                     new ResourceLocation(Potioneer.MOD_ID, "artifact"),
                     ((itemStack, clientLevel, livingEntity, i) ->
-                            itemStack.getTag() != null && itemStack.getTag().contains(ArtifactHelper.ARTIFACT_TAG_ID) ?  1f : 0f));
+                            itemStack.getTag() != null && itemStack.getTag().contains(MysticalItemHelper.ARTIFACT_TAG_ID) ?  1f : 0f));
 
             ItemProperties.register(ModItems.CROWN.get(),
                     new ResourceLocation(Potioneer.MOD_ID, "artifact"),
                     ((itemStack, clientLevel, livingEntity, i) ->
-                            itemStack.getTag() != null && itemStack.getTag().contains(ArtifactHelper.ARTIFACT_TAG_ID) ?  1f : 0f));
+                            itemStack.getTag() != null && itemStack.getTag().contains(MysticalItemHelper.ARTIFACT_TAG_ID) ?  1f : 0f));
 
             ItemProperties.register(ModItems.UNSHADOWED_CRUCIFIX.get(),
                     new ResourceLocation(Potioneer.MOD_ID, "crucifix_state"),
@@ -193,8 +193,8 @@ public class Potioneer
             ItemProperties.register(ModItems.CHARM.get(),
                     new ResourceLocation(Potioneer.MOD_ID, "charm"),
                     ((itemStack, clientLevel, livingEntity, i) -> {
-                        if(itemStack.hasTag() && itemStack.getTag().contains(ArtifactHelper.CHARM_TAG_ID)){
-                            return Math.floorDiv(itemStack.getTag().getCompound(ArtifactHelper.CHARM_TAG_ID).getInt("pathwayId"), 10);
+                        if(itemStack.hasTag() && itemStack.getTag().contains(MysticalItemHelper.CHARM_TAG_ID)){
+                            return Math.floorDiv(itemStack.getTag().getCompound(MysticalItemHelper.CHARM_TAG_ID).getInt("pathwayId"), 10);
                         }
                         return -1;
                     }));
@@ -202,8 +202,8 @@ public class Potioneer
             ItemProperties.register(ModItems.AMULET.get(),
                     new ResourceLocation(Potioneer.MOD_ID, "enabled"),
                     ((itemStack, clientLevel, livingEntity, i) -> {
-                        if(itemStack.hasTag() && itemStack.getTag().contains(ArtifactHelper.ARTIFACT_TAG_ID)){
-                            return itemStack.getTag().getCompound(ArtifactHelper.ARTIFACT_TAG_ID).getBoolean("enabled") ? 1 : -1;
+                        if(itemStack.hasTag() && itemStack.getTag().contains(MysticalItemHelper.ARTIFACT_TAG_ID)){
+                            return itemStack.getTag().getCompound(MysticalItemHelper.ARTIFACT_TAG_ID).getBoolean("enabled") ? 1 : -1;
                         }
                         return -1;
                     }));

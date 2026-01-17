@@ -68,7 +68,7 @@ public class PlayerCharacteristicManager {
      * To drop all of them at once, use another method
      * @return the pathway-sequence id of the dropped characteristic
      */
-    public int dropLevel(){
+    public int dropLevel(LivingEntityBeyonderCapability cap, LivingEntity target){
         //remove from the stack
         int droppedCharacteristic = -1;
         if(!PotioneerCommonConfig.ALLOW_CHANGING_PATHWAYS.get() && getSequenceLevel() == 9 && lastConsumedCharacteristics.size() == 1){
@@ -88,11 +88,15 @@ public class PlayerCharacteristicManager {
             actingProgress.put(droppedCharacteristic, Mth.clamp(getActing(droppedCharacteristic)*(count+1d)/(count), 0d, 1d));
         }
 
-
+        setAllAbilities(cap, target, false);
+        if(target instanceof Player player){
+            setAttributes(cap.getBeyonderStats(), player);
+            cap.getBeyonderStats().applyStats(player, true);
+        }
         return droppedCharacteristic;
     }
 
-    public List<Integer> dropAllCharacteristics(){
+    public List<Integer> dropAllCharacteristics(LivingEntityBeyonderCapability cap, LivingEntity target){
         List<Integer> characteristicsHolder = new ArrayList<>(lastConsumedCharacteristics);
 
         if(!PotioneerCommonConfig.ALLOW_CHANGING_PATHWAYS.get()){
@@ -111,6 +115,14 @@ public class PlayerCharacteristicManager {
             characteristicCountMap = new HashMap<>();
             actingProgress = new HashMap<>();
             lastConsumedCharacteristics = new ArrayList<>();
+        }
+
+        if(!characteristicsHolder.isEmpty()){
+            setAllAbilities(cap, target, false);
+            if(target instanceof Player player){
+                setAttributes(cap.getBeyonderStats(), player);
+                cap.getBeyonderStats().applyStats(player, true);
+            }
         }
 
         return characteristicsHolder;
@@ -142,7 +154,7 @@ public class PlayerCharacteristicManager {
     }
 
     public BeyonderPathway getPathway(){
-        return Pathways.getPathwayById(getPathwayId());
+        return Pathways.getPathwayBySequenceId(getPathwaySequenceId());
     }
 
     public void tick(){
@@ -156,9 +168,13 @@ public class PlayerCharacteristicManager {
             int id = getPathwaySequenceId();
             if(id < 0) return;
             if(getActing(id) >= PotioneerCommonConfig.PASSIVE_ACTING_LIMIT.get()) return;
-            double tickVal = PotioneerCommonConfig.PASSIVE_ACTING_LIMIT.get()/PotioneerCommonConfig.PASSIVE_ACTING_RATE.get()*20d;
-            actingProgress.put(id, Mth.clamp(getActing(id) + tickVal, 0d, 1));
+            double tickVal = PotioneerCommonConfig.PASSIVE_ACTING_LIMIT.get()/(PotioneerCommonConfig.PASSIVE_ACTING_RATE.get()*20d);
+            progressActing(tickVal, id);
         }
+    }
+
+    private int getCount(int pathSeqId){
+        return characteristicCountMap.getOrDefault(pathSeqId, 0);
     }
 
     public void progressActing(double amount, int pathwayId){
@@ -170,7 +186,7 @@ public class PlayerCharacteristicManager {
                             amount
                                 *(Math.floorDiv(pathwayId, 10) == aptitudePathway ? aptitude_mult : 1)
                                 * PotioneerCommonConfig.UNIVERSAL_ACTING_MULTIPLIER.get()
-                                / characteristicCountMap.get(pathwayId)
+                                / getCount(pathwayId)
                         ),
                     0, 1);
         actingProgress.put(pathwayId, newVal);
@@ -180,7 +196,8 @@ public class PlayerCharacteristicManager {
         if(actingProgress.isEmpty()) return 1;
         if(isClientSide) return 1;
         if(lastConsumedCharacteristics.size() == 1){
-            return 0.6d + 0.4d*actingProgress.values().stream().findFirst().get();
+//            return 0.6d + 0.4d * actingProgress.values().stream().findFirst().get();
+            return Mth.clamp(0.6d + 0.4d*actingProgress.values().stream().findFirst().get() - 0.25*(9-getSequenceLevel()), 0, 1);
         } else {
             return getAdjustedActingPercent(getPathwaySequenceId());
         }
@@ -199,9 +216,9 @@ public class PlayerCharacteristicManager {
             count += 1;
             finalDigestion += charac.getValue();
         }
-        finalDigestion /= count;
+        finalDigestion /= Math.max(count, 1);
         double currentSequenceActing = getActing(currentSequenceLevel);
-        finalDigestion = (1 - currentSequenceWeight) * finalDigestion + currentSequenceWeight * currentSequenceActing;
+        finalDigestion = count == 0 ? currentSequenceActing : (1 - currentSequenceWeight) * finalDigestion + currentSequenceWeight * currentSequenceActing;
         return finalDigestion;
     }
 
@@ -251,12 +268,12 @@ public class PlayerCharacteristicManager {
         for(Map.Entry<Integer, Double> charact: actingProgress.entrySet()){
             int id = charact.getKey();
             int count = characteristicCountMap.get(id);
-            result = result.concat("You have " + count + " " +  Pathways.getPathwayById(id).getSequenceNameFromId(id%10, true)
-                    + (id == 1 ? " characteristic that is " : " characteristics that are ")
+            result = result.concat("You have " + count + " " +  Pathways.getPathwayBySequenceId(id).getSequenceNameFromId(id%10, true)
+                    + (count == 1 ? " characteristic that is " : " characteristics that are ")
                     + Math.round(getActing(id)*100d)  + "% digested.\n");
         }
-        result = result.concat("Complete acting progress is at " + Math.round(getAdjustedActingPercent(getPathwaySequenceId())*100d));
-        result = result.concat("Complete list of characteristics:\n" + lastConsumedCharacteristics.stream().map(val -> Pathways.getPathwayById(val).getSequenceNameFromId(val%10, true)));
+        result = result.concat("Complete acting progress is at " + Math.round(getAdjustedActingPercent(getPathwaySequenceId())*100d) + "%");
+        result = result.concat("\nComplete list of characteristics:\n" + lastConsumedCharacteristics.stream().map(val -> Pathways.getPathwayBySequenceId(val).getSequenceNameFromId(val%10, true)).toList());
         return Component.literal(result);
     }
 
@@ -293,7 +310,6 @@ public class PlayerCharacteristicManager {
         //build list of consumed characteristics
         CompoundTag acting = tag.getCompound("acting");
         lastConsumedCharacteristics = fromIntListTag(acting.getList("characteristics", Tag.TAG_INT));
-
         //build map of acting progress
         //at the same time as i check for repeat, i also build the characteristic counted map
         actingProgress = new HashMap<>();
@@ -314,26 +330,35 @@ public class PlayerCharacteristicManager {
         aptitudePathway = acting.getInt("aptitude");
 
         //get abilities
-        setAllAbilities(cap, target);
+        setAllAbilities(cap, target, true);
+
+        //set stats
+        if(target instanceof Player player){
+            setAttributes(cap.getBeyonderStats(), player);
+            cap.getBeyonderStats().applyStats(player, false);
+        }
     }
 
-    private void setAllAbilities(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    private void setAllAbilities(LivingEntityBeyonderCapability cap, LivingEntity target, boolean fromLoading) {
         int highestLevel = getSequenceLevel();
         List<Ability> allAbilities = new ArrayList<>();
         //get highest level for each pathway
         List<Integer> pathwayLevels = closestToLowerTens(lastConsumedCharacteristics);
         //get abilities for each pathway
         for(int sequence: pathwayLevels){
-            allAbilities.addAll(Pathways.getPathwayById(sequence).getAbilities(sequence%10));
+            allAbilities.addAll(Pathways.getPathwayBySequenceId(sequence).getAbilities(sequence%10));
         }
         //make sure every ability is the highest level
         for(Ability abl: allAbilities){
             abl.setSequenceLevelSilent(highestLevel);
         }
         //set
+        cap.getAbilitiesManager().clearAbilities(cap, target);
         for(Ability abl: allAbilities){
             cap.getAbilitiesManager().addAbility(PlayerAbilitiesManager.AbilityList.INTRINSIC.name(), abl, cap, target, false, false);
         }
+        if(lastConsumedCharacteristics.isEmpty()) return;
+        cap.getAbilitiesManager().replaceCogitation(getPathwaySequenceId(), cap, target, !fromLoading);
     }
 
     /**
@@ -382,7 +407,7 @@ public class PlayerCharacteristicManager {
         aptitudePathway = other.aptitudePathway;
     }
 
-    public void setAbilities(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    public List<Ability> getAbilitiesFromCharacteristics() {
         //get all abilities from characteristics
         //create cogitation ability based on last consumed characteristic
         //update the abilities manager
@@ -392,9 +417,9 @@ public class PlayerCharacteristicManager {
         int pathwaySequenceId = getPathwaySequenceId();
         List<Ability> newAbilities = new ArrayList<>();
         for(Integer characId: closestToLowerTens(lastConsumedCharacteristics)){
-            newAbilities.addAll(Pathways.getPathwayById(characId).getAbilities(characId%10, pathwaySequenceId%10));
+            newAbilities.addAll(Pathways.getPathwayBySequenceId(characId).getAbilities(characId%10, pathwaySequenceId%10));
         }
-        cap.getAbilitiesManager().grantAbilities(newAbilities, pathwaySequenceId, cap, target);
+        return newAbilities;
     }
 
     public void setAttributes(BeyonderStats beyonderStats, Player player) {
@@ -405,7 +430,7 @@ public class PlayerCharacteristicManager {
         float[] bestStats = new float[5];
         List<float[]> attributesList = new ArrayList<>();
         for(int charac: bestCharacts){
-            attributesList.add(Pathways.getPathwayById(charac).getStatsFor(charac%10));
+            attributesList.add(Pathways.getPathwayBySequenceId(charac).getStatsFor(charac%10));
         }
         for(int i = 0; i < 5; i++){
             float bestStat = 0;
@@ -428,7 +453,7 @@ public class PlayerCharacteristicManager {
     public int getMaxSpirituality() {
         int bestSpirituality = 0;
         for(int i: lastConsumedCharacteristics){
-            int testSpir = Pathways.getPathwayById(i).getMaxSpirituality(i%10);
+            int testSpir = Pathways.getPathwayBySequenceId(i).getMaxSpirituality(i%10);
             if(testSpir > bestSpirituality) bestSpirituality = testSpir;
         }
         return bestSpirituality;
@@ -436,5 +461,9 @@ public class PlayerCharacteristicManager {
 
     public ArrayList<Integer> getLastConsumedCharacteristics() {
         return lastConsumedCharacteristics;
+    }
+
+    public boolean hasMoreThanOneCharacteristic() {
+        return lastConsumedCharacteristics.size() > 1;
     }
 }

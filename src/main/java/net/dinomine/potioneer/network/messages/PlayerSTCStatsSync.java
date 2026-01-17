@@ -57,7 +57,9 @@ public class PlayerSTCStatsSync {
         NetworkEvent.Context context = contextSupplier.get();
 
         context.enqueueWork(() -> {
-            DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> ClientHudStatsSyncMessage.handlePacket(msg));
+            if(context.getDirection().getReceptionSide().isClient()){
+                DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> ClientHudStatsSyncMessage.handlePacket(msg));
+            }
         });
 
         context.setPacketHandled(true);

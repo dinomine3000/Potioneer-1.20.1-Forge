@@ -27,6 +27,10 @@ public class RedPriestPathway extends BeyonderPathway {
         return 83;
     }
 
+    public int getIconX() {
+        return 192;
+    }
+
     @Override
     public float[] getStatsFor(int sequence){
         return switch (sequence%10){

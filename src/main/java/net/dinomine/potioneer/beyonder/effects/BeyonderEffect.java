@@ -20,7 +20,7 @@ public abstract class BeyonderEffect {
     }
 
     public BeyonderEffect withParams(int sequence, int time, boolean active) {
-        this.sequenceLevel = sequence;
+        this.sequenceLevel = sequence%10;
         this.lifetime = time == -1 ? -2 : 0;
         this.maxLife = time;
         this.active = active;

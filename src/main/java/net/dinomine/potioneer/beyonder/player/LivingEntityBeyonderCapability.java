@@ -7,9 +7,11 @@ import net.dinomine.potioneer.config.PotioneerCommonConfig;
 import net.dinomine.potioneer.entities.custom.CharacteristicEntity;
 import net.dinomine.potioneer.network.PacketHandler;
 import net.dinomine.potioneer.network.messages.PlayerSTCStatsSync;
+import net.dinomine.potioneer.network.messages.abilityRelevant.AbilitySyncMessage;
+import net.dinomine.potioneer.network.messages.abilityRelevant.PlayerArtifactSyncSTC;
 import net.dinomine.potioneer.network.messages.abilityRelevant.PlayerSyncHotbarMessage;
 import net.dinomine.potioneer.network.messages.advancement.PlayerAdvanceMessage;
-import net.dinomine.potioneer.util.misc.ArtifactHelper;
+import net.dinomine.potioneer.util.misc.MysticalItemHelper;
 import net.dinomine.potioneer.util.misc.CharacteristicHelper;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
@@ -126,6 +128,10 @@ public class LivingEntityBeyonderCapability {
         } else this.sanity = san;
     }
 
+    public int getMaxSanity() {
+        return maxSanity.get();
+    }
+
     public void changeSanity(float val){
         setSanity(Mth.clamp(getSanity() + val, 0, maxSanity.get()));
     }
@@ -192,23 +198,7 @@ public class LivingEntityBeyonderCapability {
             characteristicManager.tick();
             if(entity.tickCount%40 == entity.getId()%40){
                 if(entity instanceof Player player){
-                    //characteristic xray timeout
-                    if(player.tickCount%120 == player.getId()%40){
-                        int radius = 16;
-                        ArrayList<Entity> characteristics = AbilityFunctionHelper.getEntitiesAroundPredicate(player, radius, ent -> ent instanceof CharacteristicEntity || ent instanceof ItemEntity);
-                        for(Entity ent: characteristics){
-                            if(ent instanceof CharacteristicEntity charact
-                                    && Math.floorDiv(charact.getSequenceId(), 10) == Math.floorDiv(getPathwaySequenceId(), 10)){
-                                characteristicXray(charact.position(), player);
-                                continue;
-                            }
-                            if(ent instanceof ItemEntity itemEnt && isItemOfSamePathway(itemEnt.getItem(), Math.floorDiv(getPathwaySequenceId(), 10))){
-                                characteristicXray(itemEnt.position(), player);
-                            }
-                        }
-                    }
-
-//                    abilitiesManager.updateArtifacts(this, player);
+                    abilitiesManager.updateArtifacts(this, player);
                     PacketHandler.sendMessageSTC(new PlayerSTCStatsSync(this.spirituality, this.maxSpirituality,
                             (int) this.sanity, (float) characteristicManager.getAdjustedActingPercent(getPathwaySequenceId()),
                             beyonderStats.getIntStats()), player);
@@ -216,6 +206,26 @@ public class LivingEntityBeyonderCapability {
                 applyCost();
                 lowStatEffects();
             }
+        }
+
+        if(entity instanceof Player player){
+            //characteristic xray timeout
+            if(player.tickCount%120 == player.getId()%40){
+                int radius = 16;
+                ArrayList<Entity> characteristics = AbilityFunctionHelper.getEntitiesAroundPredicate(player, radius, ent -> ent instanceof CharacteristicEntity || ent instanceof ItemEntity);
+                for(Entity ent: characteristics){
+                    if(ent instanceof CharacteristicEntity charact
+                            && Math.floorDiv(charact.getSequenceId(), 10) == Math.floorDiv(getPathwaySequenceId(), 10)){
+                        characteristicXray(charact.position(), player);
+                        continue;
+                    }
+                    if(ent instanceof ItemEntity itemEnt && isItemOfSamePathway(itemEnt.getItem(), Math.floorDiv(getPathwaySequenceId(), 10))){
+                        characteristicXray(itemEnt.position(), player);
+                    }
+                }
+//                System.out.println(abilitiesManager.toString());
+            }
+
         }
     }
 
@@ -242,8 +252,8 @@ public class LivingEntityBeyonderCapability {
     }
 
     private static boolean isItemOfSamePathway(ItemStack stack, int exactPathwayId){
-        return stack.hasTag() && stack.getTag().contains(ArtifactHelper.BEYONDER_TAG_ID)
-                && Math.floorDiv(stack.getTag().getCompound(ArtifactHelper.BEYONDER_TAG_ID).getInt("id"), 10) == exactPathwayId;
+        return stack.hasTag() && stack.getTag().contains(MysticalItemHelper.BEYONDER_TAG_ID)
+                && Math.floorDiv(stack.getTag().getCompound(MysticalItemHelper.BEYONDER_TAG_ID).getInt("id"), 10) == exactPathwayId;
     }
 
     private void characteristicXray(Vec3 position, Player player){
@@ -260,7 +270,7 @@ public class LivingEntityBeyonderCapability {
     }
 
     public boolean resetBeyonder(boolean definitive){
-        this.abilitiesManager.clear(this, entity);
+        this.abilitiesManager.clearAbilities(this, entity);
         characteristicManager.reset();
         if(definitive) entity.sendSystemMessage(Component.literal("Reset beyonder powers."));
         if(definitive && entity instanceof Player player) syncSequenceData(player);
@@ -270,7 +280,6 @@ public class LivingEntityBeyonderCapability {
     public void setBeyonderSequence(int id){
         resetBeyonder(false);
         advance(id, false);
-        if(entity instanceof Player player) syncSequenceData(player);
     }
 
     public void advance(int id, boolean fromLoading){
@@ -279,27 +288,21 @@ public class LivingEntityBeyonderCapability {
             //confetti here;
             entity.sendSystemMessage(Component.literal("You successfully advanced, hooray!"));
             spirituality = maxSpirituality;
+            if(entity instanceof Player player) syncSequenceData(player);
         }
     }
 
     private void consumeCharacteristic(int id){
-        System.out.println("Consuming characterstic " + id + " on side client? " + entity.level().isClientSide);
         getBeyonderStats().setAttributes(Pathways.BEYONDERLESS.get().getStatsFor(0));
-        System.out.println("Set 0 stats");
         characteristicManager.consumeCharacteristic(id);
-        System.out.println("Consumed characteristic");
-        characteristicManager.setAbilities(this, entity);
-        System.out.println("Set abilities");
+        abilitiesManager.grantAbilities(characteristicManager.getAbilitiesFromCharacteristics(), getPathwaySequenceId(), this, entity);
         if(entity instanceof Player player) characteristicManager.setAttributes(beyonderStats, player);
-        System.out.println("Set attriubutes");
         maxSpirituality = characteristicManager.getMaxSpirituality();
-        System.out.println("Set spirituality");
         if(entity instanceof Player player) getBeyonderStats().applyStats(player, true);
-        System.out.println("Applied stats");
     }
 
     public String getPathwayName(boolean capitalize){
-        return Pathways.getPathwayById(getPathwaySequenceId()).getPathwayName(capitalize);
+        return Pathways.getPathwayBySequenceId(getPathwaySequenceId()).getPathwayName(capitalize);
     }
 
     public int getPathwayColor(){
@@ -378,32 +381,30 @@ public class LivingEntityBeyonderCapability {
     }
 
     //server side to client. messages are sent when client joins world and when he advanced by means controlled by the server
+    //called on advance, reset beyonder and join world
     public void syncSequenceData(Player player){
         if(!player.level().isClientSide()){
-            System.out.println("Syncing sequence data...");
             PacketHandler.sendMessageSTC(new PlayerAdvanceMessage(getCharacteristicManager().getLastConsumedCharacteristics()), player);
-            System.out.println("Sent advance message");
-            getAbilitiesManager().updateClientAbilityInfo(player);
-            System.out.println("Sent ability message");
+            getAbilitiesManager().updateClientAbilityInfo(player, AbilitySyncMessage.SET);
+            getAbilitiesManager().updateClientArtifactInfo(player, PlayerArtifactSyncSTC.SET);
             PacketHandler.sendMessageSTC(new PlayerSyncHotbarMessage(getAbilitiesManager().clientHotbar, getAbilitiesManager().quickAbility), player);
-            System.out.println("Sent hotbar message");
             getEffectsManager().syncToClient(player);
-            System.out.println("Sent effect message");
         }
     }
 
     public void onPlayerDie(LivingDeathEvent event) {
+        if(!isBeyonder() || !(event.getEntity() instanceof Player player)) return;
         boolean dropForLowSanity = sanity < SANITY_FOR_DROP && PotioneerCommonConfig.CHARACTERISTIC_DROP_CRITERIA_ENUM_VALUE.get() == PotioneerCommonConfig.CharacteristicDropCriteria.LOW_SANITY;
-        boolean doDrop = PotioneerCommonConfig.CHARACTERISTIC_DROP_CRITERIA_ENUM_VALUE.get() == PotioneerCommonConfig.CharacteristicDropCriteria.ALWAYS;
-        boolean switchingPathwaysCheck = PotioneerCommonConfig.ALLOW_CHANGING_PATHWAYS.get() || (isBeyonder() && getSequenceLevel() < 9);
+        boolean doDropActingSafeguard = maxSanity.get() < 5;
+        boolean doDropAlways = PotioneerCommonConfig.CHARACTERISTIC_DROP_CRITERIA_ENUM_VALUE.get() == PotioneerCommonConfig.CharacteristicDropCriteria.ALWAYS;
+        boolean switchingPathwaysCheck = PotioneerCommonConfig.ALLOW_CHANGING_PATHWAYS.get() || characteristicManager.hasMoreThanOneCharacteristic();
         boolean dropEverything = PotioneerCommonConfig.DROP_ALL_CHARACTERISTICS.get();
-        if((doDrop || dropForLowSanity)
-                && (switchingPathwaysCheck || dropEverything)
-                && event.getEntity() instanceof Player player && isBeyonder()){
+        if((doDropAlways || doDropActingSafeguard || dropForLowSanity)
+                && (switchingPathwaysCheck || dropEverything)){
             if(dropEverything){
-                CharacteristicHelper.addCharacteristicToLevel(characteristicManager.dropAllCharacteristics(), player.level(), player, player.position(), player.getRandom());
+                CharacteristicHelper.addCharacteristicToLevel(characteristicManager.dropAllCharacteristics(this, entity), player.level(), player, player.position(), player.getRandom());
             } else {
-                CharacteristicHelper.addCharacteristicToLevel(characteristicManager.dropLevel(), player.level(), player, player.position(), player.getRandom());
+                CharacteristicHelper.addCharacteristicToLevel(characteristicManager.dropLevel(this, entity), player.level(), player, player.position(), player.getRandom());
             }
         }
     }

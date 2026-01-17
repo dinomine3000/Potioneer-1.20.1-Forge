@@ -8,6 +8,7 @@ import net.dinomine.potioneer.item.ModItems;
 import net.dinomine.potioneer.network.PacketHandler;
 import net.dinomine.potioneer.network.messages.SequenceSTCSyncRequest;
 import net.dinomine.potioneer.util.misc.DivinationResult;
+import net.dinomine.potioneer.util.misc.MysticalItemHelper;
 import net.dinomine.potioneer.util.misc.MysticismHelper;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -23,8 +24,11 @@ import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.ServerChatEvent;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.event.entity.EntityStruckByLightningEvent;
+import net.minecraftforge.event.entity.item.ItemExpireEvent;
+import net.minecraftforge.event.entity.item.ItemTossEvent;
 import net.minecraftforge.event.entity.living.*;
 import net.minecraftforge.event.entity.player.PlayerEvent;
+import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.entity.player.PlayerWakeUpEvent;
 import net.minecraftforge.event.entity.player.PlayerXpEvent;
 import net.minecraftforge.event.level.BlockEvent;
@@ -47,17 +51,23 @@ public class BeyonderEvents {
         }
     }
 
-//    @SubscribeEvent
-//    public static void onRightClickItem(PlayerInteractEvent.RightClickItem event){
-//        if(!event.getEntity().level().isClientSide()){
-//            if(ArtifactHelper.isValidArtifact(event.getItemStack())){
-//                event.getEntity().getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
-//                    //System.out.println(event.getItemStack().getTag());
-//                    cap.getAbilitiesManager().castArtifactAbilityAll(cap, event.getEntity(), );
-//                });
-//            }
-//        }
-//    }
+    @SubscribeEvent
+    public static void onRightClickItem(PlayerInteractEvent.RightClickItem event){
+        if(!event.getEntity().level().isClientSide()){
+            if(MysticalItemHelper.isWorkingArtifact(event.getItemStack())){
+                event.getEntity().getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
+                    cap.getAbilitiesManager().castArtifactAbility(MysticalItemHelper.getArtifactIdFromItem(event.getItemStack()), cap, event.getEntity());
+                });
+            }
+        }
+    }
+
+    @SubscribeEvent
+    public static void itemExpire(ItemTossEvent event){
+        if(MysticalItemHelper.isCharacteristic(event.getEntity().getItem())){
+            event.getEntity().setInvulnerable(true);
+        }
+    }
 
     @SubscribeEvent
     public static void onPlayerDie(LivingDeathEvent event){
@@ -77,15 +87,15 @@ public class BeyonderEvents {
 //        }
     }
 
-    @SubscribeEvent
-    public static void playerRespawn(PlayerEvent.PlayerRespawnEvent e) {
-        if(e.getEntity().level().isClientSide()) return;
-        //TODO: why?
-//        e.getEntity().getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
-//            PacketHandler.INSTANCE.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) e.getEntity()),
-//                    new PlayerAdvanceMessage(cap.getPathwaySequenceId()));
-//        });
-    }
+//    @SubscribeEvent
+//    public static void playerRespawn(PlayerEvent.PlayerRespawnEvent e) {
+//        if(e.getEntity().level().isClientSide()) return;
+//        //TODO: why?
+////        e.getEntity().getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
+////            PacketHandler.INSTANCE.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) e.getEntity()),
+////                    new PlayerAdvanceMessage(cap.getPathwaySequenceId()));
+////        });
+//    }
 
     @SubscribeEvent
     public static void onPlayerCloned(PlayerEvent.Clone event){
@@ -317,9 +327,9 @@ public class BeyonderEvents {
     }
 
     @SubscribeEvent
-    public static void mine(PlayerEvent.BreakSpeed breakSpeed){
-        breakSpeed.getEntity().getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(stats -> {
-            stats.getBeyonderStats().getMiningSpeed(breakSpeed);
+    public static void mine(PlayerEvent.BreakSpeed event){
+        event.getEntity().getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(stats -> {
+            stats.getBeyonderStats().getMiningSpeed(event);
         });
     }
 

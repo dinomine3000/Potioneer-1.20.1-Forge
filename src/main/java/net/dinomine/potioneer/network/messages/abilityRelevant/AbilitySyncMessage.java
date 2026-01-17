@@ -45,7 +45,8 @@ public class AbilitySyncMessage {
         int size = buffer.readInt();
         ArrayList<AbilityInfo> abilities = new ArrayList<>();
         for(int i = 0; i < size; i++){
-            abilities.add(AbilityInfo.decode(buffer));
+            AbilityInfo info = AbilityInfo.decode(buffer);
+            abilities.add(info);
         }
         return new AbilitySyncMessage(abilities, op);
     }
@@ -55,7 +56,9 @@ public class AbilitySyncMessage {
         NetworkEvent.Context context = contextSupplier.get();
 
         context.enqueueWork(() -> {
-            DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> ClientAbilityStateSTC.handlePacket(msg));
+            if(context.getDirection().getReceptionSide().isClient()){
+                context.enqueueWork(() -> DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> ClientAbilityStateSTC.handlePacket(msg)));
+            }
         });
 
         context.setPacketHandled(true);

@@ -23,10 +23,10 @@ public class ModEvents {
 
     @SubscribeEvent
     public static void commandsRegister(RegisterCommandsEvent event){
-        new ResetBeyonderCommand(event.getDispatcher());
+        new SetBeyonderCommand(event.getDispatcher());
         new ChangeSpiritualityCommand(event.getDispatcher());
         new ChangeSanityCommand(event.getDispatcher());
-        new ResetBeyonderEffectsCommand(event.getDispatcher());
+        new BeyonderEffectsCommand(event.getDispatcher());
         new RefreshFormulasCommand(event.getDispatcher());
         new GiveCharacteristicCommand(event.getDispatcher());
         new ChangeActingCommand(event.getDispatcher());

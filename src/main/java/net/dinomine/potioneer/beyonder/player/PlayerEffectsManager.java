@@ -150,9 +150,9 @@ public class PlayerEffectsManager {
         statsHolder = new BeyonderStats();
     }
 
-    public void clearEffects(LivingEntityBeyonderCapability cap, Player player){
+    public void clearEffects(LivingEntityBeyonderCapability cap, LivingEntity target){
         for(BeyonderEffect eff : passives){
-            eff.stopEffects(cap, player);
+            eff.stopEffects(cap, target);
         }
         this.passives = new ArrayList<>();
     }
@@ -173,6 +173,7 @@ public class PlayerEffectsManager {
     public boolean addOrReplaceEffect(BeyonderEffect effect, LivingEntityBeyonderCapability cap, LivingEntity target){
         if(target.level().isClientSide()) return false;
         if(!hasEffectOrBetter(effect)){
+            System.out.println("Adding effect " + effect.getId());
             removeEffect(effect.getId());
             addEffect(effect, cap, target, true);
             return true;
@@ -295,6 +296,16 @@ public class PlayerEffectsManager {
     }
 
     public void onTick(LivingEntityBeyonderCapability cap, LivingEntity target){
+        if(target.level().isClientSide()){
+            if(!passives.isEmpty()){
+                passives.forEach(effect -> {
+                    effect.effectTick(cap, target);
+                });
+            }
+            sweepEffects(cap, target);
+            statsHolder.resetStats();
+            return;
+        }
         statsHolder.resetStats();
         if(!passives.isEmpty()){
             passives.forEach(effect -> {

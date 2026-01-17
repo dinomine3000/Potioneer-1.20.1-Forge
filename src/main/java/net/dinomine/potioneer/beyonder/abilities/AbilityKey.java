@@ -1,20 +1,40 @@
 package net.dinomine.potioneer.beyonder.abilities;
 
+import net.dinomine.potioneer.beyonder.player.PlayerAbilitiesManager;
 import net.dinomine.potioneer.util.BufferUtils;
 import net.minecraft.network.FriendlyByteBuf;
 
 import java.util.Objects;
+import java.util.UUID;
 
 public class AbilityKey {
     private String abilityGroup;
     private String abilityId;
     private int sequenceLevel;
+    private UUID artifactId;
     private int hash;
+
+    public AbilityKey(String abilityId, int sequenceLevel) {
+        this("", abilityId, sequenceLevel);
+    }
+
+    public boolean isArtifactKey(){
+        return artifactId != null;
+    }
+
+    public UUID getArtifactId(){
+        return artifactId;
+    }
+
+    public AbilityKey(Ability abl, String abilityGroup){
+        this(abilityGroup, abl.getAbilityId(), abl.getSequenceLevel());
+    }
 
     public AbilityKey(){
         this.abilityGroup = "";
         this.abilityId= "";
         this.sequenceLevel = -1;
+        this.artifactId = null;
         doHash();
     }
 
@@ -22,20 +42,44 @@ public class AbilityKey {
         this.abilityGroup = abilityGroup;
         this.abilityId = abilityId;
         this.sequenceLevel = level;
+        this.artifactId = null;
         doHash();
+    }
+
+    public AbilityKey(String abilityGroup, String abilityId, int level, UUID artifactId){
+        this(abilityGroup, abilityId, level);
+        this.artifactId = artifactId;
+        doHash();
+    }
+
+    public AbilityKey(String abilityId, int level, UUID artifactId){
+        this(PlayerAbilitiesManager.AbilityList.ARTIFACT.name(), abilityId, level);
+        this.artifactId = artifactId;
+        doHash();
+    }
+
+    public AbilityKey onArtifact(UUID artifactId){
+        this.abilityGroup = PlayerAbilitiesManager.AbilityList.ARTIFACT.name();
+        this.artifactId = artifactId;
+        doHash();
+        return this;
     }
 
     public static AbilityKey fromString(String string) {
         if(string == null) return new AbilityKey();
         if(string.isEmpty()) return new AbilityKey();
         String[] id = string.split(":");
-        if(id.length != 3) return new AbilityKey();
-        return new AbilityKey(id[0], id[1], Integer.parseInt(id[2]));
+        if(id.length == 2) return new AbilityKey(id[0], Integer.parseInt(id[1]));
+        if(id.length == 3) return new AbilityKey(id[0], id[1], Integer.parseInt(id[2]));
+        if(id.length == 4) return new AbilityKey(id[0], id[1], Integer.parseInt(id[2]), UUID.fromString(id[3]));
+        return new AbilityKey();
     }
 
     @Override
     public String toString() {
-        if(isEmpty()) return "";
+        if(isEmpty()) return "Empty Key";
+        if(isArtifactKey())
+            return abilityGroup.concat(":" + abilityId).concat(":" + sequenceLevel).concat(":" + artifactId.toString());
         return abilityGroup.concat(":" + abilityId).concat(":" + sequenceLevel);
     }
 
@@ -89,11 +133,12 @@ public class AbilityKey {
             BufferUtils.writeStringToBuffer(this.abilityGroup, buffer);
             BufferUtils.writeStringToBuffer(this.abilityId, buffer);
             buffer.writeInt(sequenceLevel);
+            if(isArtifactKey()){
+                buffer.writeBoolean(true);
+                buffer.writeUUID(artifactId);
+            } else
+                buffer.writeBoolean(false);
         }
-    }
-
-    public boolean isEmpty(){
-        return abilityId.isEmpty();
     }
     
     public static AbilityKey readFromBuffer(FriendlyByteBuf buffer){
@@ -103,7 +148,15 @@ public class AbilityKey {
         String list = BufferUtils.readString(buffer);
         String abilityId = BufferUtils.readString(buffer);
         int level = buffer.readInt();
+        if(buffer.readBoolean()){
+            UUID artId = buffer.readUUID();
+            return new AbilityKey(list, abilityId, level, artId);
+        }
         return new AbilityKey(list, abilityId, level);
+    }
+
+    public boolean isEmpty(){
+        return abilityId.isEmpty();
     }
 
     public void setSequenceLevel(int sequenceLevel) {
@@ -112,6 +165,6 @@ public class AbilityKey {
     }
 
     private void doHash(){
-        this.hash = Objects.hash(abilityGroup, abilityId, sequenceLevel);
+        this.hash = Objects.hash(abilityGroup, abilityId, sequenceLevel, artifactId);
     }
 }

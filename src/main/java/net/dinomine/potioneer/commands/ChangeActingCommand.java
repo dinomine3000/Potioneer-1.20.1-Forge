@@ -3,44 +3,59 @@ package net.dinomine.potioneer.commands;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
 import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
 import net.dinomine.potioneer.beyonder.player.PlayerCharacteristicManager;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
+import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 
 public class ChangeActingCommand {
 
     public ChangeActingCommand(CommandDispatcher<CommandSourceStack> dispatcher){
         dispatcher.register(Commands.literal("acting").requires(stack -> stack.hasPermission(2))
                 .then(Commands.literal("set")
-                        .then(Commands.argument("percent", IntegerArgumentType.integer(0, 100))
-                            .then(Commands.argument("sequence", IntegerArgumentType.integer(0, 49))
-                        .executes(this::setValue))))
+                        .then(Commands.argument("target", EntityArgument.entity())
+                            .then(Commands.argument("percent", IntegerArgumentType.integer(0, 100))
+                                .then(Commands.argument("sequence", IntegerArgumentType.integer(0, 49))
+                        .executes(this::setValue)))))
                 .then(Commands.literal("print")
-                        .executes(this::printValue))
+                        .then(Commands.argument("target", EntityArgument.entity())
+                            .executes(this::printValue)))
         );
     }
 
     private int setValue(CommandContext<CommandSourceStack> cmd){
-        ServerPlayer player = cmd.getSource().getPlayer();
-        player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap ->{
-            cap.getCharacteristicManager().setActing(IntegerArgumentType.getInteger(cmd, "percent")/100d, IntegerArgumentType.getInteger(cmd, "sequence"));
-        });
-        return 1;
+        try {
+            Entity target = EntityArgument.getEntity(cmd, "target");
+            if(!(target instanceof LivingEntity lTarget)) return 0;
+            lTarget.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap ->{
+                cap.getCharacteristicManager().setActing(IntegerArgumentType.getInteger(cmd, "percent")/100d, IntegerArgumentType.getInteger(cmd, "sequence"));
+            });
+            return 1;
+        } catch (CommandSyntaxException e) {
+            return 0;
+        }
     }
 
     private int printValue(CommandContext<CommandSourceStack> cmd){
-        ServerPlayer player = cmd.getSource().getPlayer();
-        Component message;
-        if(player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).isPresent()){
-            LivingEntityBeyonderCapability cap = player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve().get();
-            PlayerCharacteristicManager mng = cap.getCharacteristicManager();
-            message = mng.getDescComponent();
-            player.sendSystemMessage(message);
+        try {
+            Entity target = EntityArgument.getEntity(cmd, "target");
+            if(!(target instanceof LivingEntity livingEntity)) return 0;
+            livingEntity.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap ->{
+                PlayerCharacteristicManager mng = cap.getCharacteristicManager();
+                Component message = mng.getDescComponent();
+                cmd.getSource().getPlayer().sendSystemMessage(message);
+            });
+            return 1;
+        } catch (CommandSyntaxException e) {
+            return 0;
         }
-        return 1;
     }
 }

@@ -123,7 +123,7 @@ public record PotionRecipeData(ArrayList<ItemStack> main, ArrayList<ItemStack> s
     public static String getName(PotionRecipeData data){
         if(data.id >= 0)
             return Component.translatable(
-                    "potioneer.beyonder.sequence." + Pathways.getPathwayById(data.id).getSequenceNameFromId(data.id, false)
+                    "potioneer.beyonder.sequence." + Pathways.getPathwayBySequenceId(data.id).getSequenceNameFromId(data.id, false)
             ).getString();
 
         String key = "item.potioneer." + data.name;

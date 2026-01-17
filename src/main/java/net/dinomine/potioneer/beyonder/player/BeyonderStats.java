@@ -56,7 +56,8 @@ public class BeyonderStats {
 
     public void multMiningSpeed(float mult){this.miningSpeedMult *= mult;}
 
-    public void updateClientIfMiningSpeedChanged(ServerPlayer player, float newSpeed){
+    private void updateClientIfMiningSpeedChanged(ServerPlayer player, float newSpeed){
+        if(player.level().isClientSide()) return;
         PacketHandler.sendMessageSTC(new PlayerMiningSpeedSync(newSpeed), player);
     }
 

@@ -47,6 +47,7 @@ class ClientStatsSyncMessage
 {
     public static void handlePacket(PlayerMiningSpeedSync msg, Supplier<NetworkEvent.Context> contextSupplier)
     {
+//        Player player = contextSupplier.get().getSender();
         Player player = Minecraft.getInstance().player;
         if(player != null){
             player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {

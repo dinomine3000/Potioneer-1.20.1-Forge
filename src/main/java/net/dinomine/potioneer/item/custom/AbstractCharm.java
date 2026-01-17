@@ -2,9 +2,10 @@ package net.dinomine.potioneer.item.custom;
 
 import net.dinomine.potioneer.beyonder.abilities.AbilityFunctionHelper;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffect;
+import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
 import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
 import net.dinomine.potioneer.entities.custom.CharmEntity;
-import net.dinomine.potioneer.util.misc.ArtifactHelper;
+import net.dinomine.potioneer.util.misc.MysticalItemHelper;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
@@ -29,7 +30,7 @@ public class AbstractCharm extends Item {
         if(pLevel.isClientSide())
             return InteractionResultHolder.success(stack);
         if(!isWorkingCharm(stack)){
-            ArtifactHelper.makeCharm(stack, 17, 40*5);
+            MysticalItemHelper.makeCharm(stack, BeyonderEffects.TYRANT_WATER_AFFINITY.getEffectId(), 17, 40*5);
             return InteractionResultHolder.success(stack);
         }
         throwCharm(pPlayer, stack, pUsedHand, !pPlayer.isCrouching());;
@@ -38,11 +39,11 @@ public class AbstractCharm extends Item {
     }
 
     private boolean isWorkingCharm(ItemStack stack){
-        return stack.hasTag() && stack.getTag().contains(ArtifactHelper.CHARM_TAG_ID);
+        return stack.hasTag() && stack.getTag().contains(MysticalItemHelper.CHARM_TAG_ID);
     }
 
     private void activateCharmOnSelf(Player player, ItemStack stack, InteractionHand usedHand){
-        BeyonderEffect eff = ArtifactHelper.getEffectFromCharm(stack);
+        BeyonderEffect eff = MysticalItemHelper.getEffectFromCharm(stack);
         player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
             if(cap.getEffectsManager().addOrReplaceEffect(eff, cap, player)){
                 player.setItemInHand(usedHand, ItemStack.EMPTY);
@@ -68,10 +69,10 @@ public class AbstractCharm extends Item {
             }
         }
 
-        int pathwayId = ArtifactHelper.getPathwayIdFromCharm(stack);
+        int pathwayId = MysticalItemHelper.getPathwayIdFromCharm(stack);
         player.level().playSound(null, player, SoundEvents.ALLAY_AMBIENT_WITHOUT_ITEM, SoundSource.PLAYERS, 1.4f, 1.3f - player.getRandom().nextFloat()*0.6f);
         player.setItemInHand(usedHand, ItemStack.EMPTY);
-        BeyonderEffect eff = ArtifactHelper.getEffectFromCharm(stack);
+        BeyonderEffect eff = MysticalItemHelper.getEffectFromCharm(stack);
         player.level().addFreshEntity(CharmEntity.createCharm(target.getUUID(), eff, player, pathwayId));
     }
 }

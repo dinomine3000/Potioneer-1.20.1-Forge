@@ -27,6 +27,10 @@ public class MysteryPathway extends BeyonderPathway {
         return 57;
     }
 
+    public int getIconX() {
+        return 128;
+    }
+
     @Override
     public int getSequenceColorFromLevel(int sequenceLevel) {
         return switch (sequenceLevel%10) {

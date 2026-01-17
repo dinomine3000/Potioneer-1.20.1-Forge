@@ -35,7 +35,6 @@ public class AirBulletAbility extends Ability {
     @Override
     protected boolean primary(LivingEntityBeyonderCapability cap, LivingEntity target) {
         if(cap.getSpirituality() < cost() || target == null){
-            System.out.println("Not enough spirituality to cast air bullet on client side: " + target.level().isClientSide());
             return false;
         }
         Level level = target.level();

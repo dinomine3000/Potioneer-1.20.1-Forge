@@ -1,6 +1,7 @@
 package net.dinomine.potioneer.beyonder.abilities;
 
 import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
+import net.dinomine.potioneer.beyonder.player.PlayerAbilitiesManager;
 import net.dinomine.potioneer.network.PacketHandler;
 import net.dinomine.potioneer.network.messages.abilityRelevant.AbilitySyncMessage;
 import net.minecraft.nbt.CompoundTag;
@@ -8,6 +9,7 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 
+import java.util.UUID;
 import java.util.function.Function;
 
 public abstract class Ability {
@@ -16,16 +18,43 @@ public abstract class Ability {
     private int maxCooldown = 1;
     protected int defaultMaxCooldown = 20;
     protected int sequenceLevel;
+    /**
+     * used when revoking the ability. this stores the previous state to be recovered.
+     */
+    private boolean previousState = true;
     protected String abilityId;
     protected AbilityKey key = new AbilityKey();
     private Function<Integer, Integer> costFunction;
+    private CompoundTag abilityData = new CompoundTag();
+
+    public void receiveUpdateOnClient(AbilityInfo info, LivingEntityBeyonderCapability cap, LivingEntity target){
+        if(!target.level().isClientSide()) return;
+        if(isEnabled() != info.isEnabled()){
+            setEnabled(cap, target, info.isEnabled());
+        }
+        putOnCooldown(info.getCooldown(), target);
+        setData(info.getData(), target);
+    }
+
+    public boolean isDownside(){
+        return false;
+    }
+
+    protected CompoundTag getData(){
+        return abilityData;
+    }
+
+    public void setData(CompoundTag tag, LivingEntity target){
+        this.abilityData = tag;
+        if(target instanceof Player player && !player.level().isClientSide())  sendUpdateMessageToClient(target);
+    }
 
     public AbilityInfo getAbilityInfo(){
         if(key == null){
             System.out.println("Warning: tried to get ability info with a null key");
-            return Abilities.getInfo(abilityId, cooldown, maxCooldown, state, getDescId(sequenceLevel), new AbilityKey());
+            return Abilities.getInfo(abilityId, cooldown, maxCooldown, state, getDescId(sequenceLevel), new AbilityKey()).withData(abilityData);
         }
-        return Abilities.getInfo(abilityId, cooldown, maxCooldown, state, getDescId(sequenceLevel), key);
+        return Abilities.getInfo(abilityId, cooldown, maxCooldown, state, getDescId(sequenceLevel), key).withData(abilityData);
     }
 
     protected abstract String getDescId(int sequenceLevel);
@@ -80,6 +109,11 @@ public abstract class Ability {
      */
     public AbilityKey setAbilityKey(String abilityList) {
         this.key = new AbilityKey(abilityList, abilityId, sequenceLevel);
+        return this.key;
+    }
+
+    public AbilityKey setArtifactAbilityKey(UUID artifactId){
+        this.key = new AbilityKey(PlayerAbilitiesManager.AbilityList.ARTIFACT.name(), abilityId, sequenceLevel, artifactId);
         return this.key;
     }
 
@@ -298,6 +332,7 @@ public abstract class Ability {
      * @param target
      */
     public void onRevoke(LivingEntityBeyonderCapability cap, LivingEntity target){
+        previousState = state;
         setEnabled(cap, target, false);
     }
 
@@ -308,13 +343,15 @@ public abstract class Ability {
      * @param target
      */
     public void onUndoRevoke(LivingEntityBeyonderCapability cap, LivingEntity target){
-        setEnabled(cap, target, true);
+        setEnabled(cap, target, previousState);
     }
 
     public Tag saveNbt() {
         CompoundTag tag = new CompoundTag();
         tag.putInt("cooldown", cooldown);
         tag.putBoolean("enabled", state);
+        tag.putBoolean("prevState", previousState);
+        tag.put("data", abilityData);
         return tag;
     }
 
@@ -322,14 +359,18 @@ public abstract class Ability {
      * function to load relevant NBT data.
      * generally not to be overwritten, except for abilities that add abilities like Recording or Replicating.
      * To do that, overwrite loadExtraNbtInfo(), and add abilities to a buffer list in AbilityManager
-     * @param tag - the complete nbt tag for the abilities manager. Check if your own cAblId is in here, and if so you can load it.
+     * @param tag - the complete nbt tag for the abilities manager. Check if your own ability key is in here, and if so you can load it.
      */
     public void loadNbt(CompoundTag tag){
         if(tag.contains(key.toString())){
             CompoundTag tag2 = tag.getCompound(key.toString());
             cooldown = tag2.getInt("cooldown");
-            maxCooldown = tag2.getInt("cooldown");
+            maxCooldown = Math.max(tag2.getInt("cooldown"), 1);
             state = tag2.getBoolean("enabled");
+            previousState = tag2.getBoolean("prevState");
+            Tag dataTag = tag2.get("data");
+            if(dataTag != null)
+                abilityData = (CompoundTag) dataTag;
             loadExtraNbtInfo(tag2);
         }
     }
@@ -350,7 +391,7 @@ public abstract class Ability {
 
     @Override
     public String toString() {
-        if(key == null) return abilityId.concat(":" + sequenceLevel);
+        if(key == null || key.isEmpty()) return getOuterId();
         return key.toString();
     }
 

@@ -27,6 +27,10 @@ public class TyrantPathway extends BeyonderPathway {
         return 31;
     }
 
+    public int getIconX() {
+        return 64;
+    }
+
     @Override
     public float[] getStatsFor(int sequenceLevel){
         return switch (sequenceLevel%10){
