@@ -40,7 +40,6 @@ public abstract class PlaceableItemEntity extends Entity {
     @Override
     public InteractionResult interact(Player pPlayer, InteractionHand pHand) {
         if(pPlayer.isCrouching()){
-            System.out.println("Interacting with placeable entity " + pPlayer.level().isClientSide());
             pPlayer.addItem(entityData.get(ITEM));
             this.kill();
             pPlayer.level().playSound(pPlayer, this.getOnPos(), SoundEvents.ITEM_PICKUP, SoundSource.PLAYERS);

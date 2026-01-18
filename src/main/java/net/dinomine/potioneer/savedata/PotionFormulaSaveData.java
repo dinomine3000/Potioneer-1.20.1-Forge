@@ -37,11 +37,9 @@ public class PotionFormulaSaveData extends SavedData {
         });
 
         //add new recipes in json
-        //TODO
         this.recipes.addAll(JSONParserHelper.loadNewFormulas());
 
         //modify existing recipes based on json
-        //TODO
         for (PotionRecipeData changedData : JSONParserHelper.loadChangedFormulas()) {
             int id = changedData.id();
             if(id < 0) continue;
@@ -323,9 +321,11 @@ public class PotionFormulaSaveData extends SavedData {
                 () -> new PotionFormulaSaveData(level), "potioneer_formulas");
     }
 
-    public PotionRecipeData getFormulaDataFromId(int id){
+    public PotionRecipeData getFormulaDataFromId(int pathwaySequenceId, ServerLevel level){
+        if(getFormulas().isEmpty()) refreshFormulas(level);
+        if(getFormulas().isEmpty()) return new PotionRecipeData(new ArrayList<>(), new ArrayList<>(), 0, false, -1, false, "invalid");
         for (PotionRecipeData data : getFormulas()){
-            if(data.id() == id) return data;
+            if(data.id() == pathwaySequenceId) return data;
         }
         return null;
     }

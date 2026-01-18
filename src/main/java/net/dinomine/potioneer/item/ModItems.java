@@ -5,6 +5,7 @@ import net.dinomine.potioneer.block.ModBlocks;
 import net.dinomine.potioneer.entities.ModEntities;
 import net.dinomine.potioneer.item.custom.*;
 import net.dinomine.potioneer.item.custom.BeyonderPotion.BeyonderPotionItem;
+import net.dinomine.potioneer.item.custom.BookItem;
 import net.dinomine.potioneer.item.custom.DeathKnell.DeathKnellItem;
 import net.dinomine.potioneer.item.custom.cane.CaneItem;
 import net.dinomine.potioneer.item.custom.coin.CoinItem;
@@ -35,6 +36,9 @@ public class ModItems {
 
     public static final RegistryObject<Item> SOLSEER = ITEMS.register("solseer",
             () -> new Item(new Item.Properties()));
+
+    public static final RegistryObject<Item> KNOWLEDGE_BOOK = ITEMS.register("knowledge_book",
+            () -> new BookItem(new Item.Properties().stacksTo(1)));
 
 //    public static final RegistryObject<Item> PARAGON_FUEL = ITEMS.register("paragon_cake",
 //            () -> new Item(new Item.Properties().stacksTo(1)));

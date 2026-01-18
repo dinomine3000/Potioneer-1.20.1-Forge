@@ -1,22 +1,30 @@
 package net.dinomine.potioneer.util;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.resources.ResourceLocation;
 
-import javax.annotation.Nullable;
-
 public class CustomImageButton extends ImageButton {
     private OnPress rClick;
-    public CustomImageButton(int pX, int pY, int pWidth, int pHeight, int pXTexStart, int pYTexStart, int diffText, ResourceLocation pResourceLocation, int pTextureWidth, int pTextureHeight, OnPress lClick, @Nullable OnPress rClick) {
+    protected int posX;
+    protected int posY;
+    public CustomImageButton(int pX, int pY, int pWidth, int pHeight, int pXTexStart, int pYTexStart, int diffText, ResourceLocation pResourceLocation, int pTextureWidth, int pTextureHeight, OnPress lClick) {
         super(pX, pY, pWidth, pHeight, pXTexStart, pYTexStart, diffText, pResourceLocation, pTextureWidth, pTextureHeight, lClick);
+        this.posX = pX;
+        this.posY = pY;
+    }
+
+    public CustomImageButton(int pX, int pY, int pWidth, int pHeight, int pXTexStart, int pYTexStart, int diffText, ResourceLocation pResourceLocation, int pTextureWidth, int pTextureHeight, OnPress lClick, OnPress rClick) {
+        this(pX, pY, pWidth, pHeight, pXTexStart, pYTexStart, diffText, pResourceLocation, pTextureWidth, pTextureHeight, lClick);
         this.rClick = rClick;
     }
 
-    public CustomImageButton(int pX, int pY, int pWidth, int pHeight, int pXTexStart, int pYTexStart, int diffText, ResourceLocation pResourceLocation, int pTextureWidth, int pTextureHeight, OnPress lClick) {
-        super(pX, pY, pWidth, pHeight, pXTexStart, pYTexStart, diffText, pResourceLocation, pTextureWidth, pTextureHeight, lClick);
-        this.rClick = null;
+    public CustomImageButton withRClick(OnPress rClick){
+        this.rClick = rClick;
+        return this;
     }
 
     @Override
@@ -26,7 +34,8 @@ public class CustomImageButton extends ImageButton {
                 boolean flag = this.clicked(pMouseX, pMouseY);
                 if (flag) {
                     this.playDownSound(Minecraft.getInstance().getSoundManager());
-                    this.onClick(pButton);
+                    if(pButton == InputConstants.MOUSE_BUTTON_LEFT) this.onPress();
+                    else if(pButton == InputConstants.MOUSE_BUTTON_RIGHT && this.rClick != null) this.rClick.onPress(this);
                     return true;
                 }
             }
@@ -35,11 +44,6 @@ public class CustomImageButton extends ImageButton {
         } else {
             return false;
         }
-    }
-
-    public void onClick(int pButton) {
-        if(pButton == InputConstants.MOUSE_BUTTON_LEFT) this.onPress();
-        else if(pButton == InputConstants.MOUSE_BUTTON_RIGHT) this.rClick.onPress(this);
     }
 
     @Override

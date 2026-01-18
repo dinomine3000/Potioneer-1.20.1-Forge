@@ -26,43 +26,35 @@ public class PotionCauldronRecipe implements Recipe<PotionCauldronContainer> {
     private final ResourceLocation id;
     private final PotionRecipeData recipeData;
     public PotionRecipeData getDefaultRecipeData(){return recipeData;}
-    public PotionRecipeData alternateRecipeData;
 
     @Override
     public String toString() {
         return recipeData.toString();
     }
 
-    public PotionCauldronRecipe(PotionContentData output, ResourceLocation id,
-                                PotionRecipeData recData) {
-        this(output, id, recData, recData.copy());
-    }
-
-    public PotionCauldronRecipe(PotionContentData output, ResourceLocation id,
-                                PotionRecipeData recData, PotionRecipeData alt){
+    public PotionCauldronRecipe(PotionContentData output, ResourceLocation id, PotionRecipeData recData) {
         this.output = output;
         this.id = id;
         this.recipeData = recData;
-        this.alternateRecipeData = alt;
     }
 
     @Override
     public boolean matches(@NotNull PotionCauldronContainer simpleContainer, Level level) {
         if(level.isClientSide()) return false;
-        if(this.alternateRecipeData.fire() && !simpleContainer.isOnFire()) return false;
-        if(this.alternateRecipeData.waterLevel() != simpleContainer.getWaterLevel()) return false;
+        if(this.recipeData.fire() && !simpleContainer.isOnFire()) return false;
+        if(this.recipeData.waterLevel() != simpleContainer.getWaterLevel()) return false;
 
         //will return true if it finds a valid characteristic-like item
         for(int i = 0; i < simpleContainer.getContainerSize(); i++){
             if(simpleContainer.getItem(i).hasTag()
                     && simpleContainer.getItem(i).getTag().contains("beyonder_info")){
                 CompoundTag beyonderTag = simpleContainer.getItem(i).getTag().getCompound("beyonder_info");
-                if(beyonderTag.getInt("id") == this.alternateRecipeData.id()) return true;
+                if(beyonderTag.getInt("id") == this.recipeData.id()) return true;
             }
         }
 
         //will return true if every item in the recipe is contained in the container
-        for(ItemStack recipeItem: alternateRecipeData.main()){
+        for(ItemStack recipeItem: recipeData.main()){
             if(!contains(simpleContainer, recipeItem)) {
                 return false;
             }
@@ -71,39 +63,28 @@ public class PotionCauldronRecipe implements Recipe<PotionCauldronContainer> {
     }
 
     public boolean canCraft(PotionCauldronContainer container, Level level){
-        if(this.alternateRecipeData.fire() && !container.isOnFire()) return false;
-        if(this.alternateRecipeData.waterLevel() != container.getWaterLevel()) return false;
+        if(this.recipeData.fire() && !container.isOnFire()) return false;
+        if(this.recipeData.waterLevel() != container.getWaterLevel()) return false;
 
         boolean charFlag = false;
         for(int i = 0; i < container.getContainerSize(); i++){
             if(container.getItem(i).hasTag()
                     && container.getItem(i).getTag().contains("beyonder_info")){
                 CompoundTag beyonderTag = container.getItem(i).getTag().getCompound("beyonder_info");
-                if(beyonderTag.getInt("id") == this.alternateRecipeData.id()) charFlag = true;
+                if(beyonderTag.getInt("id") == this.recipeData.id()) charFlag = true;
             }
         }
 
-        for(ItemStack recipeItem: alternateRecipeData.main()){
+        for(ItemStack recipeItem: recipeData.main()){
             if(charFlag) break;
             if(!contains(container, recipeItem)) return false;
         }
 
-        for(ItemStack recipeItem: alternateRecipeData.supplementary()){
+        for(ItemStack recipeItem: recipeData.supplementary()){
             if(!contains(container, recipeItem)) return false;
         }
         return true;
     }
-
-//    private PotionRecipeData checkWorldSavedData(Level level){
-//        if(recipeData.id() > -1) {
-//            PotionFormulaSaveData data = PotionFormulaSaveData.from((ServerLevel) level);
-//            //TODO remove this if check. supposedly, any recipe would already be in saved data, so it would never be null
-//            if(data.getDataFromId(recipeData.id()) != null){
-//                return data.getDataFromId(recipeData.id()).copy();
-//            }
-//        }
-//        return recipeData;
-//    }
 
     private boolean contains(PotionCauldronContainer container, ItemStack item){
         int hold = 0;
@@ -207,14 +188,6 @@ public class PotionCauldronRecipe implements Recipe<PotionCauldronContainer> {
 
                 return new PotionCauldronRecipe(output, pRecipeId,
                                 new PotionRecipeData(new ArrayList<>(mainIngredients), new ArrayList<>(suppIngredients),
-                                //TODO maybe fix this, idk.
-                                //rn, the potion recipe data wont include anything specific for name and translatable bc
-                                //when a formula generates randomly it only generates one with an id >= 0,
-                                //in which case, the formula name will be based on the beyonder sequence.
-                                //in other words, if you ever generate random formulas for these these non-beyonder recipes,
-                                //you will need to change this and either make EVERY recipe include a name
-                                //OR somehow make it optional here.
-                                //as is, non beyonder formulas have "" name strings
                                 waterLevel, needsFire, isNumeric(output.name) ? Integer.parseInt(output.name) : -1, true, output.name));
             }
         }
@@ -236,25 +209,6 @@ public class PotionCauldronRecipe implements Recipe<PotionCauldronContainer> {
             boolean canConflict = GsonHelper.getAsBoolean(obj, "can_conflict");
             return new PotionContentData(name, count, bottle, color, canConflict);
         }
-//
-//        private long convertToHex(String string){
-//            char[] list = string.toCharArray();
-//            long res = 0;
-//            if(list[1] != 'x' || list.length != 10) throw new IllegalArgumentException("String is not a valid hexadecimal. Size or x is wrong");
-//            for(int i = 0; i < list.length; i ++){
-//                if(i == 0 && list[i] != '0') throw new IllegalArgumentException("String is not a valid hexadecimal. First character must be a 0");
-//                if(i > 1){
-//                    if(!isHexadecimalValid(list[i])) throw new IllegalArgumentException("String is not a hexadecimal. At least 1 character failed conversion");
-//                    res += (long) (Character.getNumericValue(list[i]) * Math.pow(16, (9-i)));
-//                }
-//            }
-//            return res;
-//        }
-
-//        private boolean isHexadecimalValid(char obj){
-//            int code = obj;
-//            return (code > 64 && code < 71) || (code > 96 && code < 103) || (code > 47 && code < 58);
-//        }
 
         private int count(NonNullList<ItemStack> stacks){
             int hold = 0;
@@ -289,21 +243,10 @@ public class PotionCauldronRecipe implements Recipe<PotionCauldronContainer> {
 
             PotionContentData output = PotionContentData.readFromByteBuf(friendlyByteBuf);
 
-            NonNullList<ItemStack> altMainIngredients = NonNullList.withSize(friendlyByteBuf.readInt(), ItemStack.EMPTY);
-            altMainIngredients.replaceAll(ignored -> friendlyByteBuf.readItem());
-
-            NonNullList<ItemStack> altSuppIngredients = NonNullList.withSize(friendlyByteBuf.readInt(), ItemStack.EMPTY);
-            altSuppIngredients.replaceAll(ignored -> friendlyByteBuf.readItem());
-
-            int altWaterLevel = friendlyByteBuf.readInt();
-
-            boolean altNeedsFire = friendlyByteBuf.readBoolean();
-
             int id = isNumeric(output.name) ? Integer.parseInt(output.name) : -1;
 
             return new PotionCauldronRecipe(output, resourceLocation,
-                    new PotionRecipeData(new ArrayList<>(mainIngredients), new ArrayList<>(suppIngredients), waterLevel, needsFire, id, true, output.name),
-                    new PotionRecipeData(new ArrayList<>(altMainIngredients), new ArrayList<>(altSuppIngredients), altWaterLevel, altNeedsFire, id, true, output.name));
+                    new PotionRecipeData(new ArrayList<>(mainIngredients), new ArrayList<>(suppIngredients), waterLevel, needsFire, id, true, output.name));
         }
 
         @Override
@@ -322,21 +265,6 @@ public class PotionCauldronRecipe implements Recipe<PotionCauldronContainer> {
             friendlyByteBuf.writeBoolean(potionCauldronRecipe.needsFire());
 
             potionCauldronRecipe.output.writeIntoByteBuf(friendlyByteBuf);
-
-            friendlyByteBuf.writeInt(potionCauldronRecipe.alternateRecipeData.main().size());
-            for (ItemStack i: potionCauldronRecipe.alternateRecipeData.main()) {
-                friendlyByteBuf.writeItemStack(i, false);
-            }
-
-            friendlyByteBuf.writeInt(potionCauldronRecipe.alternateRecipeData.supplementary().size());
-            for (ItemStack i: potionCauldronRecipe.alternateRecipeData.supplementary()) {
-                friendlyByteBuf.writeItemStack(i, false);
-            }
-
-            friendlyByteBuf.writeInt(potionCauldronRecipe.alternateRecipeData.waterLevel());
-
-            friendlyByteBuf.writeBoolean(potionCauldronRecipe.alternateRecipeData.fire());
-
     }
     }
 }

@@ -167,7 +167,7 @@ public class PotionCauldronBlockEntity extends BlockEntity {
                 applyTags(res, output);
                 heldItemStack.shrink(1);
                 if(heldItemStack.isEmpty()){
-                    pPlayer.setItemInHand(pHand, item == Items.GLASS_BOTTLE ? addRandomNbtTags(res) : res);
+                    pPlayer.setItemInHand(pHand, res);
                 } else if(!pPlayer.getInventory().add(res)){
                     pPlayer.drop(res, false);
                 }

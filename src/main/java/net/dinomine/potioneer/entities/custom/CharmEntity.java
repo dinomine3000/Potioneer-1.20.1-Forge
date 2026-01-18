@@ -51,7 +51,7 @@ public class CharmEntity extends Entity implements GeoEntity {
         charmEnt.setTarget(targetId);
         charmEnt.setPos(player.position());
         charmEnt.setEffect(effect);
-        charmEnt.getEntityData().set(PATHWAY_ID, Math.floorDiv(pathwayId, 10));
+        charmEnt.getEntityData().set(PATHWAY_ID, pathwayId);
         return charmEnt;
     }
 

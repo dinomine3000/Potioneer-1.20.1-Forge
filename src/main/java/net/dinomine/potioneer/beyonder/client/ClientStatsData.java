@@ -8,6 +8,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -29,12 +30,11 @@ public class ClientStatsData {
         Optional<LivingEntityBeyonderCapability> capOpt = getCapability();
         if(capOpt.isEmpty()) return;
         LivingEntityBeyonderCapability cap = capOpt.get();
-        int pathwayId = cap.getPathwaySequenceId();
+        int pathwaySequenceId = cap.getPathwaySequenceId();
         int sanity = (int) cap.getSanity();
-        ClientAdvancementManager.setDifficulty(addedDifficulty + calculateDifficultyClient(pathwayId, newSeq, sanity, actingProgress));
+        ClientAdvancementManager.setDifficulty(addedDifficulty + calculateDifficultyClient(pathwaySequenceId, newSeq, sanity, actingProgress));
 //        ClientAdvancementManager.difficulty = 10;     //Debug
-        ClientAdvancementManager.targetSequence = Math.min(newSeq, pathwayId);
-        if(pathwayId == -1) ClientAdvancementManager.targetSequence = newSeq;
+        ClientAdvancementManager.targetSequence = newSeq;
         Minecraft.getInstance().setScreen(new AdvancementScreen());
     }
 
@@ -131,5 +131,9 @@ public class ClientStatsData {
 
     public static float getActing(){
         return actingProgress;
+    }
+
+    public static Level getLevel() {
+        return Minecraft.getInstance().level;
     }
 }

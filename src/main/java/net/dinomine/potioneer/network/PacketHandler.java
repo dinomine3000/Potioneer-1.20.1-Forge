@@ -6,9 +6,9 @@ import net.dinomine.potioneer.network.messages.AllySystem.AllyGroupSyncMessage;
 import net.dinomine.potioneer.network.messages.*;
 import net.dinomine.potioneer.network.messages.abilityRelevant.*;
 import net.dinomine.potioneer.network.messages.abilityRelevant.abilitySpecific.EvaporateEffect;
-import net.dinomine.potioneer.network.messages.abilityRelevant.abilitySpecific.OpenDivinationScreenSTC;
 import net.dinomine.potioneer.network.messages.abilityRelevant.abilitySpecific.WaterPrisonEffectSTC;
 import net.dinomine.potioneer.network.messages.advancement.AdvancementFailMessageCTS;
+import net.dinomine.potioneer.network.messages.advancement.BeginAdvancementMessage;
 import net.dinomine.potioneer.network.messages.advancement.PlayerAdvanceMessage;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
@@ -29,7 +29,6 @@ public class PacketHandler {
     public static void init() {
         int i = 0;
         //ability relevant
-        INSTANCE.registerMessage(i++, OpenDivinationScreenSTC.class, OpenDivinationScreenSTC::encode, OpenDivinationScreenSTC::decode, OpenDivinationScreenSTC::handle);
         INSTANCE.registerMessage(i++, WaterPrisonEffectSTC.class, WaterPrisonEffectSTC::encode, WaterPrisonEffectSTC::decode, WaterPrisonEffectSTC::handle);
         INSTANCE.registerMessage(i++, EvaporateEffect.class, EvaporateEffect::encode, EvaporateEffect::decode, EvaporateEffect::handle);
 
@@ -41,11 +40,12 @@ public class PacketHandler {
 
         INSTANCE.registerMessage(i++, AdvancementFailMessageCTS.class, AdvancementFailMessageCTS::encode, AdvancementFailMessageCTS::decode, AdvancementFailMessageCTS::handle);
         INSTANCE.registerMessage(i++, PlayerAdvanceMessage.class, PlayerAdvanceMessage::encode, PlayerAdvanceMessage::decode, PlayerAdvanceMessage::handle);
+        INSTANCE.registerMessage(i++, BeginAdvancementMessage.class, BeginAdvancementMessage::encode, BeginAdvancementMessage::decode, BeginAdvancementMessage::handle);
 
         INSTANCE.registerMessage(i++, AllyChangeMessageC2S.class, AllyChangeMessageC2S::encode, AllyChangeMessageC2S::decode, AllyChangeMessageC2S::handle);
         INSTANCE.registerMessage(i++, AllyGroupSyncMessage.class, AllyGroupSyncMessage::encode, AllyGroupSyncMessage::decode, AllyGroupSyncMessage::handle);
 
-        INSTANCE.registerMessage(i++, PlayerFormulaScreenSTCMessage.class, PlayerFormulaScreenSTCMessage::encode, PlayerFormulaScreenSTCMessage::decode, PlayerFormulaScreenSTCMessage::handle);
+        INSTANCE.registerMessage(i++, OpenScreenMessage.class, OpenScreenMessage::encode, OpenScreenMessage::decode, OpenScreenMessage::handle);
         INSTANCE.registerMessage(i++, PlayerMiningSpeedSync.class, PlayerMiningSpeedSync::encode, PlayerMiningSpeedSync::decode, PlayerMiningSpeedSync::handle);
         INSTANCE.registerMessage(i++, PlayerSTCStatsSync.class, PlayerSTCStatsSync::encode, PlayerSTCStatsSync::decode, PlayerSTCStatsSync::handle);
         INSTANCE.registerMessage(i++, RitualC2STextSync.class, RitualC2STextSync::encode, RitualC2STextSync::decode, RitualC2STextSync::handle);

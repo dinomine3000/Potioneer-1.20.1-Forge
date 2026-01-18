@@ -2,6 +2,7 @@ package net.dinomine.potioneer.beyonder.pathways;
 
 import net.dinomine.potioneer.Potioneer;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.RandomSource;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.IForgeRegistry;
@@ -35,7 +36,9 @@ public class Pathways {
     public static final RegistryObject<BeyonderPathway> PARAGON =
             registerPathway("4", ParagonPathway::new);
 
-
+    public static int getRandomPathwayId(RandomSource random){
+        return getPathwayIdFromPathway(PATHWAYS.getEntries().stream().toList().get(random.nextInt(PATHWAYS.getEntries().size())).get());
+    }
 
     public static <T extends BeyonderPathway> RegistryObject<T> registerPathway(String name, Supplier<T> abl){
         return PATHWAYS.register(name, abl);

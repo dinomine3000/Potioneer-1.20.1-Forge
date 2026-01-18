@@ -1,5 +1,6 @@
 package net.dinomine.potioneer.network.messages.advancement;
 
+import net.dinomine.potioneer.beyonder.pathways.Pathways;
 import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
@@ -53,6 +54,7 @@ public class PlayerAdvanceMessage {
                 player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
                     for(Integer charac: msg.characteristics){
                         cap.advance(charac, false);
+                        Pathways.getPathwayById(charac).applyRitualEffects(player, charac%10);
                     }
                 });
             }

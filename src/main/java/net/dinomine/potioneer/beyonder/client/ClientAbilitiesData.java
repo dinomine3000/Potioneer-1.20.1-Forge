@@ -142,8 +142,6 @@ public class ClientAbilitiesData {
     }
 
     private static void updateHotbarOnChange(){
-        //TODO make logic here to mantain abilities that just leveled up
-        //
         if(hotbar == null) hotbar = new ArrayList<>();
         for(AbilityKey key: hotbar){
             if (abilities.containsKey(key)) continue;

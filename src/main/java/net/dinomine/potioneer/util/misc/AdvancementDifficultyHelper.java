@@ -13,12 +13,12 @@ public class AdvancementDifficultyHelper {
         //difference between the new sequence and current sequence
         //plus one more difficulty for every 25% sanity lost
         //plus 1 for each group of 8-6, 5-3 and 2-1 sequence levels
-        //plus 1 or 2 for undigested potions (TODO)
+        //plus 2 for undigested potions
         int levelDifference;
-        if(pathwaySequenceId < -1){ //adds 5 points of difficulty for every level you skip
-            levelDifference = 5*Math.max(9 - newPathSeqId%10, 0);
+        if(pathwaySequenceId < -1){ //adds 2 points of difficulty for every level you skip
+            levelDifference = 4*Math.max(9 - newPathSeqId%10, 0);
         } else {
-            levelDifference = 5*Math.max(pathwaySequenceId%10 - 1 - newPathSeqId%10, 0);
+            levelDifference = 4*Math.max(pathwaySequenceId%10 - 1 - newPathSeqId%10, 0);
         }
         int sanityDiff = Math.round(8f-sanity/12.5f); //from 0 to 8 more points depending on your sanity
         int groupDiff = 3-Math.floorDiv(newPathSeqId%10, 3) + (newPathSeqId%10 == 0 ? 2 : 0); //plus 1 for each group
@@ -32,13 +32,13 @@ public class AdvancementDifficultyHelper {
         if(pathwaySequenceId > -1){
             int level = newPathSeqId%10;
             //if the target sequence is located between your current sequence and sequence 9,
-            //aka, a previous sequence to your current one
+            //aka, a lower sequence to your current one
             //add 4 points of difficulty
             //this is to prevent ppl from drinking previous potions without consequence
             if(level >= pathwaySequenceId%10) diff += 4;
         }
-        // more points for demigod levels
-        if(newPathSeqId%10 < 5) diff += (int) Math.max((6 - newPathSeqId%10)/1.5f, 0);
+        // more points for demigod levels. 1 extra for 4 and 3, and 2 extra for above 2
+        if(newPathSeqId%10 < 5) diff += newPathSeqId%10 > 2 ? 1 : 2;
         return diff;
     }
 }

@@ -1,6 +1,7 @@
 package net.dinomine.potioneer.beyonder.player;
 
 import net.dinomine.potioneer.beyonder.abilities.AbilityFunctionHelper;
+import net.dinomine.potioneer.beyonder.pages.PageRegistry;
 import net.dinomine.potioneer.beyonder.pathways.BeyonderPathway;
 import net.dinomine.potioneer.beyonder.pathways.Pathways;
 import net.dinomine.potioneer.config.PotioneerCommonConfig;
@@ -14,7 +15,7 @@ import net.dinomine.potioneer.network.messages.advancement.PlayerAdvanceMessage;
 import net.dinomine.potioneer.util.misc.MysticalItemHelper;
 import net.dinomine.potioneer.util.misc.CharacteristicHelper;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.*;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -29,6 +30,7 @@ import net.minecraftforge.common.capabilities.AutoRegisterCapability;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Supplier;
 
 @AutoRegisterCapability
@@ -55,6 +57,7 @@ public class LivingEntityBeyonderCapability {
         }
     };
 
+    private ArrayList<Integer> pageList = new ArrayList<>();
     private final BeyonderStats beyonderStats;
     private final PlayerAbilitiesManager abilitiesManager;
     private final PlayerEffectsManager effectsManager;
@@ -313,6 +316,31 @@ public class LivingEntityBeyonderCapability {
         return getPathway().getSequenceNameFromId(getSequenceLevel(), show);
     }
 
+    public void addPage(int pageNumber){
+        if(PageRegistry.pageExists(pageNumber) && !pageList.contains(pageNumber))
+            pageList.add(pageNumber);
+        if(entity instanceof Player player)
+            PacketHandler.sendMessageSTC(new PlayerSTCStatsSync(this.spirituality, this.maxSpirituality,
+                (int) this.sanity, (float) characteristicManager.getAdjustedActingPercent(getPathwaySequenceId()),
+                beyonderStats.getIntStats(), pageList), player);
+    }
+
+    public ArrayList<Integer> getPageList(){
+        return pageList;
+    }
+
+    public void setPageList(List<Integer> list2){
+        this.pageList = new ArrayList<>(list2);
+    }
+
+    public void clearPages() {
+        this.pageList = new ArrayList<>();
+        if(entity instanceof Player player)
+            PacketHandler.sendMessageSTC(new PlayerSTCStatsSync(this.spirituality, this.maxSpirituality,
+                    (int) this.sanity, (float) characteristicManager.getAdjustedActingPercent(getPathwaySequenceId()),
+                    beyonderStats.getIntStats(), pageList), player);
+    }
+
     public void copyFrom(LivingEntityBeyonderCapability source, Player player){
         //TODO have this account for everything
         this.spirituality = source.getSpirituality();
@@ -328,6 +356,7 @@ public class LivingEntityBeyonderCapability {
         this.characteristicManager.copyFrom(source.characteristicManager);
         maxSpirituality = characteristicManager.getMaxSpirituality();
         this.sanity = Math.min(Math.max(source.sanity, SANITY_MIN_RESPAWN), maxSanity.get());
+        pageList = new ArrayList<>(source.pageList);
         //this.abilitiesManager.onAcquireAbilities(this, player);
     }
 
@@ -341,6 +370,11 @@ public class LivingEntityBeyonderCapability {
             nbt.put("container_" + i, conjurerContainers.get(i).createTag());
             nbt.putInt("container_debt_" + i, conjurerContainers.get(i).getDebt());
         }
+        ListTag pages = new ListTag();
+        for(int page: pageList){
+            pages.add(IntTag.valueOf(page));
+        }
+        nbt.put("pages", pages);
 //        System.out.println("Saving pathway id: " + pathway.getId());
         //this.abilitiesManager.saveNBTData(nbt);
         this.effectsManager.saveNBTData(nbt);
@@ -369,6 +403,14 @@ public class LivingEntityBeyonderCapability {
             }
         }
 
+        ArrayList<Integer> loadedPages = new ArrayList<>();
+        ListTag pages = nbt.getList("pages", Tag.TAG_INT);
+        for (int i = 0; i < pages.size(); i++) {
+            int page = pages.getInt(i);
+            loadedPages.add(page);
+        }
+        this.pageList = new ArrayList<>(loadedPages.stream().filter(PageRegistry::pageExists).toList());
+
         this.luckManager.loadNBTData(nbt);
         this.effectsManager.loadNBTData(nbt, this, entity);
         //characteristics before ablities because characteristics give abilities.
@@ -389,6 +431,9 @@ public class LivingEntityBeyonderCapability {
             getAbilitiesManager().updateClientArtifactInfo(player, PlayerArtifactSyncSTC.SET);
             PacketHandler.sendMessageSTC(new PlayerSyncHotbarMessage(getAbilitiesManager().clientHotbar, getAbilitiesManager().quickAbility), player);
             getEffectsManager().syncToClient(player);
+            PacketHandler.sendMessageSTC(new PlayerSTCStatsSync(this.spirituality, this.maxSpirituality,
+                    (int) this.sanity, (float) characteristicManager.getAdjustedActingPercent(getPathwaySequenceId()),
+                    beyonderStats.getIntStats(), pageList), player);
         }
     }
 

@@ -35,7 +35,7 @@ public class RefreshFormulasCommand {
 
     private int create(CommandContext<CommandSourceStack> cmd){
         PotionFormulaSaveData data = PotionFormulaSaveData.from(cmd.getSource().getLevel());
-        PotionRecipeData result = data.getFormulaDataFromId(IntegerArgumentType.getInteger(cmd, "id"));
+        PotionRecipeData result = data.getFormulaDataFromId(IntegerArgumentType.getInteger(cmd, "id"), cmd.getSource().getLevel());
         if(result == null){
             cmd.getSource().getPlayer().sendSystemMessage(Component.literal("Could not find formula for the specified id"));
         } else {

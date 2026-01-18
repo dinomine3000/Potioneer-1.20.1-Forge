@@ -10,6 +10,9 @@ import net.dinomine.potioneer.beyonder.abilities.paragon.DurabilityRegenAbility;
 import net.dinomine.potioneer.beyonder.abilities.wheeloffortune.ConjurePickaxeAbility;
 import net.dinomine.potioneer.beyonder.abilities.wheeloffortune.MinerLightAbility;
 import net.dinomine.potioneer.beyonder.player.PlayerAbilitiesManager;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -94,6 +97,14 @@ public class DevPathway extends BeyonderPathway {
         return new float[0];
     }
 
+    @Override
+    public int isRitualComplete(int sequenceLevel, Player player, Level pLevel) {
+        return 0;
+    }
+
+    @Override
+    public void applyRitualEffects(Player player, int sequenceLevel) {}
+
     public static String getSequenceName(int seq, boolean show){
         return show ? getSequenceName(seq).replace("_", " ") : getSequenceName(seq).toLowerCase();
     }
@@ -102,4 +113,8 @@ public class DevPathway extends BeyonderPathway {
         return String.valueOf(seq);
     }
 
+    @Override
+    public Component getRitualDescriptionForSequence(int sequenceLevel) {
+        return Component.empty();
+    }
 }

@@ -1,6 +1,7 @@
 package net.dinomine.potioneer.beyonder.client.screen;
 
 import net.dinomine.potioneer.Potioneer;
+import net.dinomine.potioneer.beyonder.pathways.Pathways;
 import net.dinomine.potioneer.recipe.PotionRecipeData;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -72,8 +73,7 @@ public class FormulaScreen extends Screen {
         topOffset += 15;
 
         if(ritual){
-            Component comp = Component.literal("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.");
-
+            Component comp = Pathways.getPathwayById(Math.floorDiv(data.id(), 10)).getRitualDescriptionForSequence(data.id()%10);
             pGuiGraphics.drawWordWrap(this.font, comp,
                     this.leftPos + 20, this.topPos + topOffset, 160, 0);
             super.render(pGuiGraphics, pMouseX, pMouseY, pPartialTick);

@@ -35,7 +35,9 @@ public class MysticalItemHelper {
     static {
         //define minimum and maximum sequences here to define what levels can generate the ability
         //min sequence is inclusive, max sequence is exclusive
-        abilityMap.add(new MetaArtifactAbility(0, 10, Abilities.MINER_LIGHT.getAblId()));
+        abilityMap.add(new MetaArtifactAbility(8, 10, Abilities.MINER_LIGHT.getAblId()));
+        abilityMap.add(new MetaArtifactAbility(5, 10, Abilities.MINING_SPEED.getAblId()));
+        abilityMap.add(new MetaArtifactAbility(10, 20, Abilities.WATER_AFFINITY.getAblId()));
 //        abilityMap.put("water_affinity", new MetaAbilityEntry(10, 20, WaterAffinityAbility::new));
         abilityMap.add(new MetaArtifactAbility(20, 30, Abilities.AIR_BULLET.getAblId()));
         abilityMap.add(new MetaArtifactAbility(30, 40, Abilities.MELT_ABILITY.getAblId()));

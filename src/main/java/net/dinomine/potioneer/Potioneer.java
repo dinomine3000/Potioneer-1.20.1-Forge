@@ -194,7 +194,7 @@ public class Potioneer
                     new ResourceLocation(Potioneer.MOD_ID, "charm"),
                     ((itemStack, clientLevel, livingEntity, i) -> {
                         if(itemStack.hasTag() && itemStack.getTag().contains(MysticalItemHelper.CHARM_TAG_ID)){
-                            return Math.floorDiv(itemStack.getTag().getCompound(MysticalItemHelper.CHARM_TAG_ID).getInt("pathwayId"), 10);
+                            return Math.floorDiv(itemStack.getTag().getCompound(MysticalItemHelper.CHARM_TAG_ID).getInt("pathwaySequenceId"), 10);
                         }
                         return -1;
                     }));

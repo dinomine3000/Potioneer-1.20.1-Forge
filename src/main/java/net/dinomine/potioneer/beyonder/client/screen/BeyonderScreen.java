@@ -8,6 +8,7 @@ import net.dinomine.potioneer.beyonder.client.KeyBindings;
 import net.dinomine.potioneer.beyonder.pathways.BeyonderPathway;
 import net.dinomine.potioneer.beyonder.pathways.Pathways;
 import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
+import net.dinomine.potioneer.util.CustomImageButton;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -46,6 +47,8 @@ public class BeyonderScreen extends Screen {
 
     private Button goToAbilitiesMenu, goToOptionsMenu, goToAllyMenu;
 
+    private CustomImageButton knowledgeBookButton;
+
     public BeyonderScreen() {
         super(TITLE);
         this.imageWidth = 176;
@@ -75,24 +78,7 @@ public class BeyonderScreen extends Screen {
         this.PATHWAY_NAME = Component.translatable(Potioneer.MOD_ID + ".beyonder.pathway." + pathway.getPathwayName(false));
         this.SEQUENCE_NAME = Component.translatable(Potioneer.MOD_ID + ".beyonder.sequence." + pathway.getSequenceNameFromId(pathwaySequenceId %10, false));
         this.color = pathway.getColor();
-//        Minecraft.getInstance().player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
-////            this.PATHWAY = Component.translatable(Potioneer.MOD_ID + ".beyonder.pathway." + cap.getPathwayName(false));
-////            this.SEQUENCE = Component.translatable(Potioneer.MOD_ID + ".beyonder.sequence." + cap.getSequenceName(false));
-//            this.color = cap.getPathwayColor();
-//
-//
-//            //this.PATHWAY = Component.literal("Path");
-//            //this.SEQUENCE = Component.literal("sequence");
-//            //this.color = 0x404080;
-//            //this.SEQUENCE_LEVEL = Component.literal(String.valueOf(cap.getSequence()));
-//
-//        });
-        /*this.button = addRenderableWidget(
-                Button.builder(
-                    ABILITIES_BUTTON,
-                        btn ->
-                )
-        )*/
+
         goToAbilitiesMenu = new ImageButton(leftPos + 47, topPos + 165, 42, 18,
                 234, 219, 0, TEXTURE, TEXTURE_WIDTH, TEXTURE_HEIGHT, btn -> {goToAbilities();});
         addRenderableWidget(goToAbilitiesMenu);
@@ -102,6 +88,10 @@ public class BeyonderScreen extends Screen {
         goToAllyMenu = new ImageButton(leftPos + 131, topPos + 165, 42, 18,
                 234, 219, 0, TEXTURE, TEXTURE_WIDTH, TEXTURE_HEIGHT, btn -> {goToAllyMenu();});
         addRenderableWidget(goToAllyMenu);
+
+        knowledgeBookButton = new CustomImageButton(leftPos + 182, topPos + 60, 22, 22, 386, 183, 22, TEXTURE, TEXTURE_WIDTH, TEXTURE_HEIGHT,
+                btn -> {Minecraft.getInstance().setScreen(new KnowledgeBookScreen());});
+        addRenderableWidget(knowledgeBookButton);
     }
 
     public static void goToAbilities(){

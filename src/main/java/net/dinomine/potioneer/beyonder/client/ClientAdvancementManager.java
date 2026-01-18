@@ -16,6 +16,8 @@ import java.util.List;
 
 @OnlyIn(Dist.CLIENT)
 public class ClientAdvancementManager {
+    public static final int DIFF_CHANGE_INVALID_LEVEL = 5;
+    public static final int DIFF_CHANGE_INVALID_GROUP = 5;
     public static int count = 30;
     public static int maxCount = 30;
     public static int targetSequence = 9;
@@ -48,7 +50,7 @@ public class ClientAdvancementManager {
         start = true;
         x = screen.width/2 - 15;
         y = screen.height/2 + 5;
-        Minecraft.getInstance().player.sendSystemMessage(Component.literal("Difficulty: " + String.valueOf(difficulty)));
+        Minecraft.getInstance().player.sendSystemMessage(Component.literal("Difficulty: " + difficulty + "/10."));
     }
 
     public static void onButtonSucceed(Screen screen) {
@@ -71,13 +73,7 @@ public class ClientAdvancementManager {
             PacketHandler.sendMessageCTS(new PlayerAdvanceMessage(List.of(targetSequence)));
         } else {
             Player player = Minecraft.getInstance().player;
-            if(!player.isCreative()){
-//                Minecraft.getInstance().player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
-//                    cap.advance(targetSequence%10 == 9 ? -1 : ClientStatsData.getPathwayId() + 1, Minecraft.getInstance().player, true, true);
-//                });
-                PacketHandler.INSTANCE.sendToServer(new AdvancementFailMessageCTS(targetSequence));
-                //reduce sequence
-            }
+            PacketHandler.INSTANCE.sendToServer(new AdvancementFailMessageCTS(targetSequence));
             player.sendSystemMessage(Component.literal("Lost control on the spot. oh well."));
         }
     }

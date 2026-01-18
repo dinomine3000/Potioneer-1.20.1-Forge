@@ -1,9 +1,10 @@
 package net.dinomine.potioneer.item.custom;
 
+import net.dinomine.potioneer.beyonder.pathways.Pathways;
 import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
 import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
 import net.dinomine.potioneer.network.PacketHandler;
-import net.dinomine.potioneer.network.messages.PlayerFormulaScreenSTCMessage;
+import net.dinomine.potioneer.network.messages.OpenScreenMessage;
 import net.dinomine.potioneer.recipe.PotionRecipeData;
 import net.dinomine.potioneer.savedata.PotionFormulaSaveData;
 import net.minecraft.nbt.CompoundTag;
@@ -27,14 +28,14 @@ public class FormulaItem extends Item {
     @Override
     public InteractionResultHolder<ItemStack> use(Level pLevel, Player pPlayer, InteractionHand pUsedHand) {
         ItemStack heldItem = pPlayer.getItemInHand(pUsedHand);
-        if(pLevel.isClientSide()) return new InteractionResultHolder<ItemStack>(InteractionResult.SUCCESS, heldItem);
+        if(pLevel.isClientSide()) return new InteractionResultHolder<>(InteractionResult.SUCCESS, heldItem);
 
         pPlayer.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
-            PotionRecipeData result = applyOrReadFormulaNbt(heldItem, pLevel, cap.getPathwaySequenceId(), cap);
+            PotionRecipeData result = applyOrReadFormulaNbt(heldItem, (ServerLevel) pLevel, cap.getPathwaySequenceId(), cap);
             boolean error = heldItem.getTag().getBoolean("error");
 
             PacketHandler.INSTANCE.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) pPlayer),
-                    new PlayerFormulaScreenSTCMessage(result, error));
+                    new OpenScreenMessage(result, error));
         });
         return new InteractionResultHolder<>(InteractionResult.SUCCESS, heldItem);
     }
@@ -50,47 +51,45 @@ public class FormulaItem extends Item {
         return super.useOn(pContext);
     }
 
-    public static PotionRecipeData applyOrReadFormulaNbt(ItemStack stack, Level pLevel, int id, LivingEntityBeyonderCapability cap){
+    public static PotionRecipeData applyOrReadFormulaNbt(ItemStack stack, ServerLevel pLevel, int id, LivingEntityBeyonderCapability cap){
         PotionRecipeData result;
         if(stack.hasTag() && stack.getTag().get("recipe_data") != null){
             result = PotionRecipeData.load(stack.getTag().getCompound("recipe_data"));
+            return result;
+        }
+        PotionFormulaSaveData data = PotionFormulaSaveData.from((ServerLevel) pLevel);
+        if(id < 0){
+            result = data.getFormulaDataFromId(getRandomId(pLevel), pLevel);
         } else {
-            PotionFormulaSaveData data = PotionFormulaSaveData.from((ServerLevel) pLevel);
-            if(id < 0){
-                result = data.getFormulaDataFromId(getRandomId(pLevel));
-            } else {
-                int sequenceLevel = id % 10;
-                int pathwayId = Math.floorDiv(id, 10);
+            int sequenceLevel = id % 10;
+            int pathwayId = Math.floorDiv(id, 10);
 
-                double chanceOfNextFormula = sequenceLevelFunction(sequenceLevel) + 0.05;
-                double chanceOfSamePathwayFormula = 0.4;
-                if(sequenceLevel > 0 && cap.getLuckManager().passesLuckCheck((float)chanceOfNextFormula, 10, 0, pLevel.random)){
-                    System.out.println("Generating next formula...");
-                    result = data.getFormulaDataFromId(id-1);
+            double chanceOfNextFormula = sequenceLevelFunction(sequenceLevel) + 0.05;
+            double chanceOfSamePathwayFormula = 0.4;
+            if(sequenceLevel > 0 && cap.getLuckManager().passesLuckCheck((float)chanceOfNextFormula, 10, 0, pLevel.random)){
+                System.out.println("Generating next formula...");
+                result = data.getFormulaDataFromId(id-1, pLevel);
+            } else {
+                if(cap.getLuckManager().passesLuckCheck((float)chanceOfSamePathwayFormula, 0, 0, pLevel.random)){
+                    System.out.println("Generating pathway formula...");
+                    result = data.getFormulaDataFromId(10*pathwayId + getRandomSequenceLevel(9, pLevel.random.nextDouble()), pLevel);
                 } else {
-                    if(cap.getLuckManager().passesLuckCheck((float)chanceOfSamePathwayFormula, 0, 0, pLevel.random)){
-                        System.out.println("Generating pathway formula...");
-                        result = data.getFormulaDataFromId(10*pathwayId + getRandomSequenceLevel(9, pLevel.random.nextDouble()));
-                    } else {
-                        result = data.getFormulaDataFromId(getRandomId(pLevel));
-                    }
+                    result = data.getFormulaDataFromId(getRandomId(pLevel), pLevel);
                 }
             }
-
-            while(result == null){
-                System.out.println("Generated id is invalid. creating a new one...");
-                result = data.getFormulaDataFromId(getRandomId(pLevel));
-            }
-            writeToNbt(stack, result, false);
         }
+
+        while(result == null){
+            System.out.println("Generated id is invalid. creating a new one...");
+            result = data.getFormulaDataFromId(getRandomId(pLevel), pLevel);
+        }
+        writeToNbt(stack, result, false);
 
         return result;
     }
 
     private static int getRandomId(Level pLevel){
-        int id = pLevel.random.nextInt(5)*10 + getRandomSequenceLevel(9, pLevel.random.nextDouble());
-        //System.out.println(id);
-        return id;
+        return Pathways.getRandomPathwayId(pLevel.random)*10 + getRandomSequenceLevel(9, pLevel.random.nextDouble());
     }
 
     private static double sequenceLevelFunction(int sequenceLevel){

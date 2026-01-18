@@ -344,9 +344,12 @@ public class PlayerEffectsManager {
         int size = effectsTag.getInt("size");
         for(int i = 0; i < size; i++){
             CompoundTag iterator = effectsTag.getCompound(String.valueOf(i));
-            BeyonderEffect effect = BeyonderEffects.getEffect(
-                    iterator.getString("ID"))
-                    .createInstance(
+            BeyonderEffects.BeyonderEffectType type = BeyonderEffects.getEffect(iterator.getString("ID"));
+            if(type == null) {
+                System.out.println("Warning: read NBT data of a null effect: " + iterator);
+                continue;
+            }
+            BeyonderEffect effect = type.createInstance(
                         iterator.getInt("level"),
                         iterator.getInt("maxLife"),
                         iterator.getBoolean("active"));

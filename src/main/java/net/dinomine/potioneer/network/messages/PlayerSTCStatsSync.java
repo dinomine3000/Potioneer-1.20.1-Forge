@@ -2,6 +2,7 @@ package net.dinomine.potioneer.network.messages;
 
 import net.dinomine.potioneer.beyonder.client.ClientStatsData;
 import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
+import net.dinomine.potioneer.util.BufferUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.api.distmarker.Dist;
@@ -9,6 +10,8 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.network.NetworkEvent;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Supplier;
 
 //called frequently to update the client stats mainly for the hud display, but also for other stats
@@ -18,6 +21,17 @@ public class PlayerSTCStatsSync {
     public int sanity;
     public float actingProgress;
     public int[] stats;
+    public List<Integer> pages;
+
+    public PlayerSTCStatsSync(float spirituality, int maxSpirituality, int sanity, float actingProgress, int[] stats, List<Integer> pages) {
+        this.spirituality = spirituality;
+        this.maxSpirituality = maxSpirituality;
+        this.sanity = sanity;
+        this.actingProgress = actingProgress;
+        this.stats = stats;
+        if(pages.isEmpty()) pages.add(1);
+        this.pages = pages;
+    }
 
     public PlayerSTCStatsSync(float spirituality, int maxSpirituality, int sanity, float actingProgress, int[] stats) {
         this.spirituality = spirituality;
@@ -25,6 +39,7 @@ public class PlayerSTCStatsSync {
         this.sanity = sanity;
         this.actingProgress = actingProgress;
         this.stats = stats;
+        this.pages = new ArrayList<>();
     }
 
     public static void encode(PlayerSTCStatsSync msg, FriendlyByteBuf buffer){
@@ -37,6 +52,7 @@ public class PlayerSTCStatsSync {
         buffer.writeInt(msg.stats[2]);
         buffer.writeInt(msg.stats[3]);
         buffer.writeInt(msg.stats[4]);
+        BufferUtils.writeIntListToBuffer(msg.pages, buffer);
     }
 
     public static PlayerSTCStatsSync decode(FriendlyByteBuf buffer){
@@ -49,7 +65,9 @@ public class PlayerSTCStatsSync {
         int armor = buffer.readInt();
         int tough = buffer.readInt();
         int knockback = buffer.readInt();
-        return new PlayerSTCStatsSync(spir, max, san, acting, new int[]{hp, dmg, armor, tough, knockback});
+        List<Integer> pages = BufferUtils.readIntListFromBuffer(buffer);
+        if(pages.isEmpty()) return new PlayerSTCStatsSync(spir, max, san, acting, new int[]{hp, dmg, armor, tough, knockback});
+        return new PlayerSTCStatsSync(spir, max, san, acting, new int[]{hp, dmg, armor, tough, knockback}, pages);
     }
 
     public static void handle(PlayerSTCStatsSync msg, Supplier<NetworkEvent.Context> contextSupplier){
@@ -80,6 +98,7 @@ class ClientHudStatsSyncMessage
             cap.setMaxSpirituality(msg.maxSpirituality);
             cap.setSanity(msg.sanity);
             cap.getBeyonderStats().setAttributes(msg.stats);
+            if(!msg.pages.isEmpty()) cap.setPageList(msg.pages);
         });
     }
 }

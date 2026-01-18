@@ -2,6 +2,9 @@ package net.dinomine.potioneer.beyonder.pathways;
 
 import net.dinomine.potioneer.beyonder.abilities.Abilities;
 import net.dinomine.potioneer.beyonder.abilities.Ability;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,6 +32,20 @@ public class TyrantPathway extends BeyonderPathway {
 
     public int getIconX() {
         return 64;
+    }
+
+    @Override
+    public int isRitualComplete(int sequenceLevel, Player player, Level pLevel) {
+        if(sequenceLevel > 5) return 0;
+        return 0;
+    }
+
+    @Override
+    public void applyRitualEffects(Player player, int sequenceLevel) {}
+
+    @Override
+    public Component getRitualDescriptionForSequence(int sequenceLevel) {
+        return Component.empty();
     }
 
     @Override

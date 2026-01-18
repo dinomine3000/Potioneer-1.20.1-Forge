@@ -1,6 +1,9 @@
 package net.dinomine.potioneer.beyonder.pathways;
 
 import net.dinomine.potioneer.beyonder.abilities.Ability;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
 
 import java.util.List;
 
@@ -97,4 +100,22 @@ public abstract class BeyonderPathway {
     public int getIconY() {
         return 0;
     }
+
+    /**
+     * method to evaluate if the player completed the respective ritual
+     * @param sequenceLevel
+     * @param player
+     * @param pLevel
+     * @return the added difficulty. 0 if the ritual was a complete success. Should be at least 5 if it failed completely.
+     */
+    public abstract int isRitualComplete(int sequenceLevel, Player player, Level pLevel);
+
+    /**
+     * function to apply ritual effects to the player once they finish advancing.
+     * @param player
+     * @param sequenceLevel
+     */
+    public abstract void applyRitualEffects(Player player, int sequenceLevel);
+
+    public abstract Component getRitualDescriptionForSequence(int sequenceLevel);
 }

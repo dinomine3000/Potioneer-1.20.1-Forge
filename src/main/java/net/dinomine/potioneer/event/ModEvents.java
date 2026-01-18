@@ -31,6 +31,7 @@ public class ModEvents {
         new GiveCharacteristicCommand(event.getDispatcher());
         new ChangeActingCommand(event.getDispatcher());
         new SpiritDebugCommand(event.getDispatcher());
+        new PageManageCommand(event.getDispatcher());
 
         ConfigCommand.register(event.getDispatcher());
     }

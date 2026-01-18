@@ -5,11 +5,12 @@ import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
 import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
 import net.dinomine.potioneer.beyonder.player.PlayerLuckManager;
 import net.dinomine.potioneer.network.PacketHandler;
-import net.dinomine.potioneer.network.messages.abilityRelevant.abilitySpecific.OpenDivinationScreenSTC;
+import net.dinomine.potioneer.network.messages.OpenScreenMessage;
 import net.dinomine.potioneer.util.PotioneerMathHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.MapItem;
 import net.minecraft.world.level.Level;
@@ -53,8 +54,8 @@ public class DivinationAbility extends PassiveAbility {
         if(target.level().isClientSide()) return true;
 
 
-        PacketHandler.INSTANCE.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) target),
-                new OpenDivinationScreenSTC());
+        if(target instanceof Player player)
+            PacketHandler.sendMessageSTC(new OpenScreenMessage(OpenScreenMessage.Screen.Divination), player);
         return true;
     }
 

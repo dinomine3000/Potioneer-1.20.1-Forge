@@ -19,8 +19,8 @@ public class ModCreativeModTabs {
             () -> CreativeModeTab.builder().icon( () -> new ItemStack(ModItems.SAPPHIRE.get()))
                     .title(Component.translatable("creativetab.potioneer_tab"))
                     .displayItems((itemDisplayParameters, output) -> {
+                        output.accept(ModItems.KNOWLEDGE_BOOK.get());
                         output.accept(ModItems.SAPPHIRE.get());
-
                         output.accept(ModBlocks.SAPPHIRE_BLOCK.get());
                         output.accept(ModBlocks.RAW_SAPPHIRE_BLOCK.get());
                         output.accept(ModBlocks.SAPPHIRE_ORE.get());
