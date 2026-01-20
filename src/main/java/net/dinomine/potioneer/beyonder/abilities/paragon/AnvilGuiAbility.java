@@ -61,7 +61,6 @@ public class AnvilGuiAbility extends Ability {
                 RandomSource random = RandomSource.create();
                 random.setSeed(player.getEnchantmentSeed());
                 ItemStack fuel = player.getItemInHand(InteractionHand.OFF_HAND);
-                System.out.println(fuel);
 
                 int enchantmentLevel = ForgeEventFactory.onEnchantmentLevelSet(target.level(), target.getOnPos(), 2, fuel.getCount()*2, book, 3);
 

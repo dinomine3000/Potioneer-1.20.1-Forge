@@ -72,11 +72,11 @@ public class MysticismHelper {
                 //gives you a clue for your next ingredient, as well as their positions
                 //YesNo are become false
                 boolean yesNo = false;
-                ItemStack itemStack = savedData.getRandomItemFromFormulaFor(pathwaySequenceId - 1, random);
-                String clue = savedData.getClueForIngredient(itemStack);
-                List<BlockPos> positions = findItemInArea(seer, itemStack, position, radius, level);
+                ItemStack ingredient = savedData.getRandomItemFromFormulaFor(pathwaySequenceId - 1, random);
+                String clue = savedData.getClueForIngredient(ingredient);
+                List<BlockPos> positions = findItemInArea(seer, ingredient, position, radius, level);
                 int resSequence = pathwaySequenceId - 1;
-                return new DivinationResult(yesNo, positions, resSequence, 0f, clue, itemStack);
+                return new DivinationResult(yesNo, positions, resSequence, 0f, clue, ingredient);
             }
         }
 
@@ -171,9 +171,10 @@ public class MysticismHelper {
                     status = data.id() == pathwaySequenceId - 1 ? 1f : 0.7f;
                 }
                 ArrayList<BlockPos> positions = new ArrayList<>();
-                int i = 0;
+                int i;
                 for(i = 0; i < data.main().size(); i++){
-                    ItemStack stack = data.main().get(i);
+                    ItemStack stack = data.main().get(i).getStack();
+                    if(stack.isEmpty()) continue;
                     List<BlockPos> matches = findItemInArea(seer, stack, position, radius, level);
                     if(!matches.isEmpty()) {
                         positions = new ArrayList<>(matches);
@@ -183,9 +184,9 @@ public class MysticismHelper {
 
                 ItemStack stack;
                 if(i == data.main().size()){
-                    stack = data.main().get(random.nextInt(data.main().size()));
+                    stack = data.main().get(random.nextInt(data.main().size())).getStack();
                 } else {
-                    stack = data.main().get(i);
+                    stack = data.main().get(i).getStack();
                 }
 
                 return new DivinationResult(yesNo, positions, data.id(), status, savedData.getClueForIngredient(stack), stack);

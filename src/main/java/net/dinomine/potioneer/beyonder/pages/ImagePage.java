@@ -3,7 +3,6 @@ package net.dinomine.potioneer.beyonder.pages;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.level.Level;
 
 public class ImagePage extends SplitPage {
     private ResourceLocation resourceLocation;
@@ -35,6 +34,6 @@ public class ImagePage extends SplitPage {
     public void drawMiddle(GuiGraphics pGuiGraphics, ResourceLocation texture, int leftPos, int topPos, int imageWidth, int imageHeight, int textureWidth, int textureHeight) {
         int blitW = (int)(scale * width);
         int blitH = (int)(scale * height);
-        pGuiGraphics.blit(resourceLocation, leftPos + 161 + 55 - blitW/2, topPos + 63 + 25 - blitH/2, blitW, blitH, uPos, vPos, width, height, texX, texY);
+        pGuiGraphics.blit(resourceLocation, leftPos + 55 - blitW/2, topPos + 63 - blitH/2, blitW, blitH, uPos, vPos, width, height, texX, texY);
     }
 }

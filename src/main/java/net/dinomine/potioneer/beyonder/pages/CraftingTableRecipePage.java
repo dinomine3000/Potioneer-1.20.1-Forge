@@ -7,7 +7,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.world.level.Level;
 
 public class CraftingTableRecipePage extends RecipePage {
     public CraftingTableRecipePage(Chapter chapter, Component title, Component topText, Component bottomText, ResourceLocation craftingRecipeLocation) {
@@ -16,12 +15,12 @@ public class CraftingTableRecipePage extends RecipePage {
 
     @Override
     public void drawMiddle(GuiGraphics pGuiGraphics, ResourceLocation texture, int leftPos, int topPos, int imageWidth, int imageHeight, int textureWidth, int textureHeight) {
-        pGuiGraphics.blit(texture, leftPos + 190, topPos + 60, 173, 182, 50, 50, textureWidth, textureHeight);
+        pGuiGraphics.blit(texture, leftPos + 32, topPos + 46, 173, 182, 50, 50, textureWidth, textureHeight);
         NonNullList<Ingredient> ingredients = getIngredients(ClientStatsData.getLevel());
         for(int i = 0; i < ingredients.size(); i++){
             if(ingredients.get(i).getItems().length == 0) continue;
             ItemStack stack = ingredients.get(i).getItems()[0];
-            pGuiGraphics.renderFakeItem(stack, leftPos + 190 + (i%3)*17, topPos + 60 + Math.floorDiv(i, 3)*17);
+            pGuiGraphics.renderFakeItem(stack, leftPos + 32 + (i%3)*17, topPos + 46 + Math.floorDiv(i, 3)*17);
         }
     }
 }

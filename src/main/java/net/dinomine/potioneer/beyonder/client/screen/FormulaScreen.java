@@ -3,16 +3,23 @@ package net.dinomine.potioneer.beyonder.client.screen;
 import net.dinomine.potioneer.Potioneer;
 import net.dinomine.potioneer.beyonder.pathways.Pathways;
 import net.dinomine.potioneer.recipe.PotionRecipeData;
+import net.dinomine.potioneer.util.PotionIngredient;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.TagKey;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import org.joml.Matrix4f;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
 public class FormulaScreen extends Screen {
     private static final ResourceLocation TEXTURE = new ResourceLocation(Potioneer.MOD_ID, "textures/gui/formula_atlas.png");
@@ -141,21 +148,45 @@ public class FormulaScreen extends Screen {
                 15728880);
     }
 
-    private int drawIngredients(GuiGraphics pGuiGraphics, float scale, ArrayList<ItemStack> ingredients, int yOffset){
+    private int drawIngredients(GuiGraphics pGuiGraphics, float scale, ArrayList<PotionIngredient> ingredients, int yOffset){
         int res = 0;
         for(int i = 0; i < ingredients.size(); i++){
             res++;
             drawTextWithScale(pGuiGraphics,
                     Component.literal(String.valueOf(ingredients.get(i).getCount())), scale, this.leftPos + 15,
                     yOffset + i*10, 0, false);
-            drawTextWithScale(pGuiGraphics,
-                    ingredients.get(i).getItem().getName(ingredients.get(i)), scale, this.leftPos + 25,
-                    yOffset + i*10, 0, false);
+            if(ingredients.get(i).isTagIngredient()){
+                drawTextWithScale(pGuiGraphics,
+                        getTagNameOrFallback(ingredients.get(i).getItemTag()), scale, this.leftPos + 25,
+                        yOffset + i*10, 0, false);
+            } else {
+                ItemStack stack = ingredients.get(i).getStack();
+                drawTextWithScale(pGuiGraphics,
+                        stack.getItem().getName(stack), scale, this.leftPos + 25,
+                        yOffset + i*10, 0, false);
+            }
 //            pGuiGraphics.drawString(this.font, Component.literal(String.valueOf(ingredients.get(i).getCount())), this.leftPos + 15, yOffset + i*10, 0, false);
 //            pGuiGraphics.drawString(this.font, ingredients.get(i).getItem().getName(ingredients.get(i)), this.leftPos + 25, yOffset + i*10, 0, false);
         }
         return res;
     }
+
+    private static Component getTagNameOrFallback(TagKey<Item> tag) {
+        ResourceLocation id = tag.location();
+        String key = "tag.item." + id.getNamespace() + "." + id.getPath().replace('/', '.');
+        Component name = Component.translatable(key);
+        if (name.getString().startsWith("tag.item.")) {
+            // fallback: humanize the path
+            String path = tag.location().getPath();
+            String nice = Arrays.stream(path.split("/"))
+                    .map(s -> s.replace('_', ' '))
+                    .map(s -> Character.toUpperCase(s.charAt(0)) + s.substring(1))
+                    .collect(Collectors.joining(" "));
+            name = Component.literal(nice);
+        }
+        return name;
+    }
+
 
     private void drawFire(GuiGraphics pGuiGraphics, int pX, int pY, int pWidth, int pHeight, PotionRecipeData data, int mouseX, int mouseY){
         pGuiGraphics.blit(TEXTURE, pX, pY, pWidth, pHeight, 400 + (data.fire() ? 0 : 1)*32,

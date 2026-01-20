@@ -85,7 +85,7 @@ public class CharmEntity extends Entity implements GeoEntity {
             effect.loadNBTData(effTag);
             this.effect = effect;
         }
-        getEntityData().set(PATHWAY_ID, compoundTag.getInt("pathwayId"));
+        getEntityData().set(PATHWAY_ID, compoundTag.getInt("pathwaySequenceId"));
 
     }
 
@@ -99,7 +99,7 @@ public class CharmEntity extends Entity implements GeoEntity {
         CompoundTag effectTag = new CompoundTag();
         effect.toNbt(effectTag);
         compoundTag.put("associatedEffect", effectTag);
-        compoundTag.putInt("pathwayId", getEntityData().get(PATHWAY_ID));
+        compoundTag.putInt("pathwaySequenceId", getEntityData().get(PATHWAY_ID));
     }
 
     @Override

@@ -6,14 +6,16 @@ import net.dinomine.potioneer.beyonder.pages.Page;
 import net.dinomine.potioneer.beyonder.pages.PageRegistry;
 import net.dinomine.potioneer.util.CustomPlainTextButton;
 import net.dinomine.potioneer.util.CustomTextImageButton;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 public class KnowledgeBookScreen extends Screen {
     private static final Component TITLE = Component.translatable("gui." + Potioneer.MOD_ID + ".knowledge_book");
@@ -27,8 +29,8 @@ public class KnowledgeBookScreen extends Screen {
 
     private List<Page> pages = new ArrayList<>();
     private boolean onMainPage;
-    private Page currentPage;
     private Page.Chapter currentChapter;
+    private Page currentPage;
     private List<Page.Chapter> knownChapters;
 
     private static final int SCROLL_HEIGHT = 126;
@@ -36,7 +38,6 @@ public class KnowledgeBookScreen extends Screen {
     private Map<Page.Chapter, CustomTextImageButton> chapterButtons = new LinkedHashMap<>();
     private Map<Page, CustomPlainTextButton> pageButtons = new LinkedHashMap<>();
 
-    private CustomPlainTextButton testButton;
     private int minWindow, maxWindow;
 
     public KnowledgeBookScreen() {
@@ -46,7 +47,6 @@ public class KnowledgeBookScreen extends Screen {
         this.imageWidth = 292;
         this.imageHeight = 180;
         onMainPage = true;
-        currentPage = null;
         ClientStatsData.getCapability().ifPresent(cap -> {
            pages = new ArrayList<>(cap.getPageList().stream().map(PageRegistry::getPageById).toList());
         });
@@ -60,6 +60,12 @@ public class KnowledgeBookScreen extends Screen {
         if(PageRegistry.pageExists(pageId)){
             currentPage = PageRegistry.getPageById(pageId);
         }
+    }
+
+    @Override
+    public void onClose() {
+        super.onClose();
+        currentPage = null;
     }
 
     @Override
@@ -86,25 +92,21 @@ public class KnowledgeBookScreen extends Screen {
         for(int i = 0; i < knownChapters.size(); i++){
             Page.Chapter chapter = knownChapters.get(i);
             CustomTextImageButton btn = new CustomTextImageButton(leftPos + 20 + Math.floorDiv(i, 6)*150, topPos + 15 + 25*(i%6),
-//            CustomTextImageButton btn = new CustomTextImageButton(leftPos + 20, topPos + 15,
                     104, 19, 62, 183, 20, TEXTURE, TEXTURE_WIDTH, TEXTURE_HEIGHT, lamBtn -> openChapter(chapter))
                     .withText(Component.translatable("chapter.potioneer." + chapter.toString().toLowerCase()), this.font, 0, false);
             chapterButtons.put(chapter, btn);
             addRenderableWidget(btn);
         }
         if(currentPage != null){
-            openChapter(currentPage.chapter);
+            openChapter(currentPage.chapter, true);
         }
-
-
-
-//        this.testButton = new CustomPlainTextButton(leftPos + 19, topPos + 15, 110, 20,
-//                Component.translatable("chapter.potioneer.beyonder"), btn -> {openChapter(Page.Chapter.BEYONDER);}, this.font, 0xAAAAAA).withDropShadows(false);
-//        addRenderableWidget(this.testButton);
     }
 
     private void openChapter(Page.Chapter chapter){
-        onMainPage = !onMainPage;
+        openChapter(chapter, onMainPage);
+    }
+    private void openChapter(Page.Chapter chapter, boolean openChapter){
+        onMainPage = !openChapter;
         int i = -1;
         for(Page.Chapter iChapter: chapterButtons.keySet()){
             i++;
@@ -151,10 +153,12 @@ public class KnowledgeBookScreen extends Screen {
         pGuiGraphics.blit(TEXTURE, leftPos, topPos, imageWidth, imageHeight, 0,
                 0, imageWidth, imageHeight, TEXTURE_WIDTH, TEXTURE_HEIGHT);
         super.render(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
-        
-        if(!onMainPage && currentPage != null && currentChapter != null){
+
+        Page page = currentPage;
+        if(!onMainPage && page != null && currentChapter != null){
             renderPageButtons(pGuiGraphics);
-            currentPage.draw(pGuiGraphics, TEXTURE, leftPos, topPos, imageWidth, imageHeight, TEXTURE_WIDTH, TEXTURE_HEIGHT);
+            pGuiGraphics.drawString(this.font, page.getTitle(), leftPos + 221 - this.font.width(page.getTitle())/2, topPos + 13, 0, false);
+            page.draw(pGuiGraphics, TEXTURE, leftPos + 160, topPos + 25, imageWidth, imageHeight, TEXTURE_WIDTH, TEXTURE_HEIGHT);
         } else {
             pageButtons.values().forEach(btn -> {btn.visible = false; btn.active = false;});
         }

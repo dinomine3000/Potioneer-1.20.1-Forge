@@ -7,6 +7,17 @@ import java.util.List;
 
 public class PotioneerMathHelper {
 
+    public static boolean isInteger(String testString){
+        if(testString.isEmpty()) return false;
+        testString = testString.strip();
+        try {
+            Integer.parseInt(testString);
+            return true;
+        } catch (Exception e){
+            return false;
+        }
+    }
+
     public static class ProbabilityHelper{
         public static float bayes(float likelihood, float prior, float evidence){
             return likelihood * prior / evidence;

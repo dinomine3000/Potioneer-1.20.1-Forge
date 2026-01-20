@@ -18,7 +18,7 @@ public class PathwayCriteria extends ResponseCriteria implements RandomizableCri
 
     @Override
     public boolean checkCondition(RitualInputData input, Level level) {
-        return Math.floorDiv(input.pathwayId(), 10) == Math.floorDiv(pathwayId, 10);
+        return Math.floorDiv(input.pathwaySequenceId(), 10) == pathwayId;
     }
 
     @Override
@@ -37,6 +37,6 @@ public class PathwayCriteria extends ResponseCriteria implements RandomizableCri
     @Override
     public PathwayCriteria getRandom() {
         Random random = new Random();
-        return new PathwayCriteria(random.nextInt(5)*10);
+        return new PathwayCriteria(random.nextInt(5));
     }
 }

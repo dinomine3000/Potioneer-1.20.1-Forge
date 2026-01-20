@@ -337,7 +337,6 @@ public class BeyonderAbilitiesScreen extends Screen {
             float mousePercent = Mth.clamp((float) (pMouseY - topPos - 72) / 88f, 0, 1);
             int offset = Math.round(mousePercent / interval);
             if(offset > abilities.size() - 6){
-                System.out.println("Offset was overcome. normalizing it...");
                 offset = abilities.size() - 6;
             }
             buttonOffset = offset;

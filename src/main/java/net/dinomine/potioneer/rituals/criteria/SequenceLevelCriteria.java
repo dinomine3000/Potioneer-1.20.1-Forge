@@ -18,7 +18,7 @@ public class SequenceLevelCriteria extends ResponseCriteria implements Randomiza
 
     @Override
     public boolean checkCondition(RitualInputData input, Level level) {
-        return input.pathwayId() % 10 <= maxUnitsDigit;
+        return input.pathwaySequenceId() % 10 <= maxUnitsDigit;
     }
 
     @Override

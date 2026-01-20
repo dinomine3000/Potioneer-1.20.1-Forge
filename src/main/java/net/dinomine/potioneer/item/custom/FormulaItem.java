@@ -107,10 +107,12 @@ public class FormulaItem extends Item {
         if(sequenceLevel == 1) return 1;
         double chance = sequenceLevelFunction(sequenceLevel);
         if(rndNumber < chance) {
-            System.out.println("generated sequence level: " + sequenceLevel);
             return sequenceLevel;
         }
         return getRandomSequenceLevel(sequenceLevel - 1, Math.max(rndNumber - chance, 0));
+//        this was my attempt at making this more readeable, dont feel like doing. you can have this to see the chances to generate each sequence (from sequence level 9 to 1)
+//        ArrayList<Float> probabilities = new ArrayList<>(List.of(0.29494f, 0.22829f, 0.17095f, 0.12264f, 0.08311f, 0.05203f, 0.02904f, 0.01367f, 0.005322f));
+//        return 9 - PotioneerMathHelper.ProbabilityHelper.pickRandom(probabilities, (float) rndNumber);
     }
 
     public static void writeToNbt(ItemStack formulaItem, PotionRecipeData data, boolean error){

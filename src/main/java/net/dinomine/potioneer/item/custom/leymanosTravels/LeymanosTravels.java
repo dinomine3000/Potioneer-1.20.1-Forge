@@ -1,5 +1,6 @@
 package net.dinomine.potioneer.item.custom.leymanosTravels;
 
+import net.dinomine.potioneer.item.ModItems;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
@@ -9,13 +10,11 @@ import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.client.extensions.common.IClientItemExtensions;
 import software.bernie.geckolib.animatable.GeoItem;
 import software.bernie.geckolib.animatable.SingletonGeoAnimatable;
-import software.bernie.geckolib.constant.DataTickets;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.core.animation.*;
 import software.bernie.geckolib.core.object.PlayState;
@@ -53,23 +52,13 @@ public class LeymanosTravels extends Item implements GeoItem {
                 .triggerableAnim("open_book", OPEN)
                 .triggerableAnim("close_book", CLOSED)
                 .triggerableAnim("flip_right", FLIP_RIGHT)
-                .triggerableAnim("flip_left", FLIP_LEFT));
+                .triggerableAnim("flip_left", FLIP_LEFT)
+                .triggerableAnim("open_loop", OPEN_LOOP));
     }
 
     private PlayState predicate(AnimationState animationState) {
         AnimationController controller = animationState.getController();
-        ItemDisplayContext context = (ItemDisplayContext) animationState.getData(DataTickets.ITEM_RENDER_PERSPECTIVE);
         ItemStack stack = cachedStack.get();
-//
-//        if (context != ItemDisplayContext.FIRST_PERSON_LEFT_HAND &&
-//                context != ItemDisplayContext.FIRST_PERSON_RIGHT_HAND &&
-//                context != ItemDisplayContext.THIRD_PERSON_LEFT_HAND &&
-//                context != ItemDisplayContext.THIRD_PERSON_RIGHT_HAND) {
-//            controller.forceAnimationReset();
-//            controller.setAnimation(CLOSED_LOOP);
-//            return PlayState.STOP;
-//        }
-
         if(controller.hasAnimationFinished() && controller.getCurrentAnimation().animation().name().contains("flip")){
             controller.setAnimation(OPEN_LOOP);
             return PlayState.CONTINUE;
@@ -116,15 +105,10 @@ public class LeymanosTravels extends Item implements GeoItem {
         return InteractionResultHolder.pass(pPlayer.getItemInHand(pUsedHand));
     }
 
-//    @Override
-//    public InteractionResult useOn(UseOnContext pContext) {
-//        return useBook(pContext.getLevel(), pContext.getItemInHand(), pContext.getPlayer());
-//    }
-
-    private InteractionResult flipPage(Level level, ItemStack mainHandItem, Player player, boolean right){
+    public static InteractionResult flipPage(Level level, ItemStack mainHandItem, Player player, boolean right){
         if(level.isClientSide()) return InteractionResult.PASS;
         long id = GeoItem.getOrAssignId(mainHandItem, (ServerLevel) level);
-        triggerAnim(player, id, "book_controller", "flip_" + (right ? "right":"left"));
+        ((GeoItem) ModItems.LEYMANOS_TRAVELS.get()).triggerAnim(player, id, "book_controller", "flip_" + (right ? "right":"left"));
         return InteractionResult.FAIL;
     }
 
@@ -133,7 +117,7 @@ public class LeymanosTravels extends Item implements GeoItem {
         long id = GeoItem.getOrAssignId(mainHandItem, (ServerLevel) level);
 
         ItemStack pStack = mainHandItem;
-        if(!mainHandItem.is(this) || (mainHandItem.is(this) && player.getOffhandItem().is(this)))
+        if(!mainHandItem.is(this) || (mainHandItem.is(this) && player.getOffhandItem().is(this))) return InteractionResult.FAIL;
 
         if(!pStack.hasTag() || !pStack.getTag().contains("potioneer_open")){
             CompoundTag tag = pStack.getOrCreateTag();

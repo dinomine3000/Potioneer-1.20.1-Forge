@@ -41,13 +41,18 @@ public class WheelOfFortuneResponse extends Deity {
 
         setLogic(logic);
     }
-    
+
+    @Override
+    protected void aidTarget(RitualInputData inputData) {
+        super.aidTarget(inputData);
+    }
+
     private void punishmentLogic(RitualInputData inputData, Level level){
-        Player player = getPlayer(inputData, level, false);
+        Player player = getPlayer(inputData, level, true);
         if(player == null) return;
         player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
             cap.getEffectsManager().addOrReplaceEffect(BeyonderEffects.byId(BeyonderEffects.TYRANT_LIGHTNING_TARGET.getEffectId(), 5, 0, 20*5, true),
-                    cap, level.getPlayerByUUID(inputData.caster()));
+                    cap, player);
         });
     }
 

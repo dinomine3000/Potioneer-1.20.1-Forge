@@ -45,7 +45,7 @@ public class EvilSpirit extends RitualSpiritResponse{
     }
 
     public static EvilSpirit fromNBT(CompoundTag compoundTag){
-        if(compoundTag.contains("pathwayId")){
+        if(compoundTag.contains("pathwaySequenceId")){
             return Deity.getDeityFromNBT(compoundTag);
         } else {
             RitualResponseLogic logic = RitualResponseLogic.fromNBT(compoundTag.getCompound("logic"));

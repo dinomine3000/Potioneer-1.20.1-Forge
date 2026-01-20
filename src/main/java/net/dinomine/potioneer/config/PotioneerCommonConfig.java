@@ -19,6 +19,8 @@ public class PotioneerCommonConfig {
     public static final ForgeConfigSpec.BooleanValue PASSIVELY_DIGEST_ALL_CHARACTERISTICS;
     public static final ForgeConfigSpec.IntValue SECONDS_TO_MAX_SPIRITUALITY;
     public static final ForgeConfigSpec.IntValue MIN_SEQUENCE_TO_SWITCH_PATHWAYS;
+    public static final ForgeConfigSpec.IntValue ARTIFACT_CONVERSION_CHANCE;
+    public static final ForgeConfigSpec.IntValue ARTIFACT_CONVERSION_COOLDOWN;
     public static final ForgeConfigSpec.ConfigValue<List<String>> INTERCHANGEABLE_PATHWAYS;
     public static final ForgeConfigSpec.BooleanValue PUBLIC_GROUPS;
     public static final ForgeConfigSpec.BooleanValue ALLOW_CHANGING_PATHWAYS;
@@ -37,40 +39,42 @@ public class PotioneerCommonConfig {
         BUILDER.push("Configs for Potioneer");
 
         DO_APTITUDE_PATHWAYS = BUILDER.comment("Should players have a hidden pathway that is their aptitude?" +
-                "They get more lucky getting formulas for this pathway, and digest its characteristics faster")
+                "\nThey get more lucky getting formulas for this pathway, and digest its characteristics faster")
                 .define("intrinsic_aptitudes", true);
 
         APTITUDE_MULTIPLIER = BUILDER.comment("If the above is true, what should be the intrinsic acting multiplier a player gets?")
                 .defineInRange("aptitude_multiplier", 1.3d, 0, Integer.MAX_VALUE);
 
         PASSIVE_ACTING_LIMIT = BUILDER.comment("How much should a characteristic be digested by doing nothing?" +
-                        "0 will disable passive acting, 1 will have all players eventually digest their characteristics")
+                        "\n0 will disable passive acting, 1 will have all players eventually digest their characteristics")
                 .defineInRange("passive_acting_limit", 0.5d, 0, 1);
 
-        PASSIVE_ACTING_RATE = BUILDER.comment("How long should a characteristic take to passively digest up to its limit, in seconds? Default is 1 hour to reach the limit")
+        PASSIVE_ACTING_RATE = BUILDER.comment("How long should a characteristic take to passively digest up to its limit, in seconds?" +
+                        "\nDefault is 1 hour to reach the limit")
                 .defineInRange("passive_acting_period", 3600d, 1, Integer.MAX_VALUE);
 
         PASSIVELY_DIGEST_ALL_CHARACTERISTICS = BUILDER.comment("Should players passively digest all characteristics, as opposed to just their current one?" +
-                        "true will make them digest every characteristic up to their passive acting limit, false will make this only happen to their current characteristic" +
-                        "(this characteristic is their highest level characteristics, and if there are more than 1 such characteristics, this refers to their last consumed one.")
+                        "\ntrue will make them digest every characteristic up to their passive acting limit, false will make this only happen to their current characteristic" +
+                        "\n(this characteristic is their highest level characteristics, and if there are more than 1 such characteristics, this refers to their last consumed one.")
                 .define("passive_digest_all", false);
 
         UNIVERSAL_ACTING_MULTIPLIER = BUILDER.comment("This value will be multiplied by any amount of acting someone gets per action, " +
                         "\n0 will disable digestion gained through acting, and only affects active acting progress (so passive like described above will not be affected)")
                 .defineInRange("universal_acting_progress_modifier", 1d, 0, Integer.MAX_VALUE);
 
-        CHARACTERISTIC_DROP_CRITERIA_ENUM_VALUE = BUILDER.comment("What are the criteria for dropping a characteristic on death?")
+        CHARACTERISTIC_DROP_CRITERIA_ENUM_VALUE = BUILDER.comment("What are the criteria for dropping a characteristic on death?" +
+                        "\nOf note, if someone consumes a characteristic, but the result is that their maximum sanity is too low to live, they will always drop their latest characteristic, even if this is set to never.")
                 .defineEnum("char_drop_criteria", CharacteristicDropCriteria.LOW_SANITY);
 
         DROP_ALL_CHARACTERISTICS = BUILDER.comment("When someone drops a characteristics, should they drop all they have, or just their most recent highest level one?" +
-                        "\nThis will let them change pathways, regardless of the next config." +
                         "\nTrue will make them drop everything, false will make them drop their highest sequence characteristic only, and if there are more than one such characteristics, it will drop the most recent one.")
                 .define("drop_all_characteristics", false);
 
         ALLOW_CHANGING_PATHWAYS = BUILDER.comment("Should players be able to change pathways completely? This is not related to being a dual-pathway beyonder or switching at sequence level X." +
                 "\nSetting this to true means that people can drop a sequence level at level 9, becoming beyonderless and allowing them to drink any other pathway potion." +
                 "\nSetting this to false means that you can never drop the first characteristic you consumed, meaning you can never change pathways if you don't use commands" +
-                "\nIf \"min_level_to_switch\" is not -1, people can still switch pathways by consuming another potion, regardless of the value of this setting!")
+                "\nIf \"min_level_to_switch\" is not -1, people can still switch pathways by consuming another potion, regardless of the value of this setting!" +
+                "\nAnd of note, if you set \"drop_all_characteristics\" to drop all characteristics, this will prevent that. When attempting to drop all characteristics, if this value is true, the player will keep their oldest characteristic")
                 .define("can_change_pathways", false);
 
         SECONDS_TO_MAX_SPIRITUALITY = BUILDER.comment("How many seconds does it take for someone to regenerate their spirituality from 0 to full?" +
@@ -89,6 +93,14 @@ public class PotioneerCommonConfig {
                         "\nIf the option \"can_change_pathways\" is false, that only applies to switching pathways by becoming beyonderless, not to this case. so if you truly don't want people to switch pathways ever, set this to -1." +
                         "\n10 means anyone can switch to a neighboring pathway at any level, -1 means they never can.")
                 .defineInRange("min_level_to_switch", 4, -1, 10);
+
+        ARTIFACT_CONVERSION_CHANCE = BUILDER.comment("Every tick, each characteristic in the player's inventory has a 1 in N chance to try to generate an artifact based on the player's inventory." +
+                        "\nHere you define that N. For instance, if N = 200, it means that every tick, a characteristic has a 1/200 chance of creating an artifact. Setting N to a negative value makes these conversions not happen.")
+                .defineInRange("artifact_conversion_chance", 2000, -1, Integer.MAX_VALUE);
+
+        ARTIFACT_CONVERSION_COOLDOWN = BUILDER.comment("To prevent farming if \"artifact_conversion_chance\" is too high, you can set a cooldown here, in seconds, for artifact conversion." +
+                        "\nValues like 20 will be interpreted as 20 seconds, aka 400 ticks.")
+                .defineInRange("artifact_conversion_cooldown", 20*60, 0, Integer.MAX_VALUE);
 
         PUBLIC_GROUPS = BUILDER.comment("Should every player be able to see every group in the server or just admins?\n"
                         + "True means everyone can see every group and their players, false will mean they can only see groups they're in.\n"

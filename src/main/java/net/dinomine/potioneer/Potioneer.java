@@ -25,7 +25,6 @@ import net.dinomine.potioneer.network.PacketHandler;
 import net.dinomine.potioneer.particle.ModParticles;
 import net.dinomine.potioneer.recipe.ModRecipes;
 import net.dinomine.potioneer.sound.ModSounds;
-import net.dinomine.potioneer.util.JSONParserHelper;
 import net.dinomine.potioneer.util.misc.MysticalItemHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.MenuScreens;
@@ -95,8 +94,8 @@ public class Potioneer
 
 //        ModAttributes.REGISTRY.register(eventBus);
 
-        JSONParserHelper.loadChangedFormulas();
-        JSONParserHelper.loadNewFormulas();
+//        JSONParserHelper.loadChangedFormulas();
+//        JSONParserHelper.loadNewFormulas();
 
 
         // Register the commonSetup method for modloading

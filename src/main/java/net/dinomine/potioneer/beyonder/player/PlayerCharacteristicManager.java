@@ -236,8 +236,8 @@ public class PlayerCharacteristicManager {
 //        double aggregatePercent = 0d;
 //        int i = 0;
 //        for(Map.Entry<Integer, Double> charac: actingProgress.entrySet()){
-//            int pathwayId = charac.getKey();
-//            if(pathwayId%10 >= maxSequenceLevel){
+//            int pathwaySequenceId = charac.getKey();
+//            if(pathwaySequenceId%10 >= maxSequenceLevel){
 //                i++;
 //                aggregatePercent += charac.getValue();
 //            }
@@ -246,9 +246,9 @@ public class PlayerCharacteristicManager {
 //        return Mth.clamp(aggregatePercent, 0, 1);
 //    }
 
-//    public void resetPassiveActing(PlayerLuckManager luckMng, RandomSource random, int pathwayId){
-//        double[] list = getActingList(pathwayId);
-//        if(list != null && list.length > 0) list[pathwayId%10] = Mth.clamp(list[pathwayId%10] + passiveActing, 0, 1);
+//    public void resetPassiveActing(PlayerLuckManager luckMng, RandomSource random, int pathwaySequenceId){
+//        double[] list = getActingList(pathwaySequenceId);
+//        if(list != null && list.length > 0) list[pathwaySequenceId%10] = Mth.clamp(list[pathwaySequenceId%10] + passiveActing, 0, 1);
 //        passiveActingLimit = randomLimit.get();
 //        if(luckMng.passesLuckCheck(0.3f, 40, 0, random)) passiveActingLimit +=0.15f;
 //        passiveActing = 0;

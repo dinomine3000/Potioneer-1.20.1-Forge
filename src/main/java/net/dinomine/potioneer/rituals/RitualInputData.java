@@ -13,7 +13,7 @@ import java.util.UUID;
 
 public record RitualInputData(FIRST_VERSE firstVerse, SECOND_VERSE secondVerse,
                               UUID caster, UUID target,
-                              int pathwayId, BlockPos pos,
+                              int pathwaySequenceId, BlockPos pos,
                               List<ItemStack> offerings, String thirdVerse,
                               String incense) {
     public enum FIRST_VERSE{
@@ -62,7 +62,7 @@ public record RitualInputData(FIRST_VERSE firstVerse, SECOND_VERSE secondVerse,
         tag.putString("secondVerse", secondVerse.toString());
         tag.putString("thirdVerse", thirdVerse);
         tag.putString("incense", incense);
-        tag.putInt("pathwayId", pathwayId);
+        tag.putInt("pathwaySequenceId", pathwaySequenceId);
         tag.putInt("blockPosX", pos.getX());
         tag.putInt("blockPosY", pos.getY());
         tag.putInt("blockPosZ", pos.getZ());
@@ -87,7 +87,7 @@ public record RitualInputData(FIRST_VERSE firstVerse, SECOND_VERSE secondVerse,
         SECOND_VERSE secondVerse = SECOND_VERSE.valueOf(tag.getString("secondVerse"));
         String thirdVerse = tag.getString("thirdVerse");
         String incense = tag.getString("incense");
-        int pathwayId = tag.getInt("pathwayId");
+        int pathwayId = tag.getInt("pathwaySequenceId");
         UUID caster = null;
         if(tag.contains("casterId")) caster = tag.getUUID("casterId");
         UUID target = null;

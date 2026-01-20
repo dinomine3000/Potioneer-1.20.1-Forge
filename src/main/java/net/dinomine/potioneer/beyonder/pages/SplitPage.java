@@ -4,7 +4,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.level.Level;
 
 public abstract class SplitPage extends Page {
     private Component topText;
@@ -18,8 +17,8 @@ public abstract class SplitPage extends Page {
 
     @Override
     public void draw(GuiGraphics pGuiGraphics, ResourceLocation texture, int leftPos, int topPos, int imageWidth, int imageHeight, int textureWidth, int textureHeight) {
-        pGuiGraphics.drawWordWrap(Minecraft.getInstance().font, this.topText, leftPos + 165, topPos + 15, 110, 0);
-        pGuiGraphics.drawWordWrap(Minecraft.getInstance().font, this.bottomText, leftPos + 165, topPos + 110, 110, 0);
+        pGuiGraphics.drawWordWrap(Minecraft.getInstance().font, this.topText, leftPos, topPos, 110, 0);
+        pGuiGraphics.drawWordWrap(Minecraft.getInstance().font, this.bottomText, leftPos, topPos + 95, 110, 0);
         drawMiddle(pGuiGraphics, texture, leftPos, topPos, imageWidth, imageHeight, textureWidth, textureHeight);
     }
 

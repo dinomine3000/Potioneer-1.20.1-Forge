@@ -83,16 +83,16 @@ public class RitualAltarBlock extends BaseEntityBlock {
             if(entity instanceof RitualAltarBlockEntity be){
                 be.onTriggerRitual(pPlayer);
             }
-//            int pathwayId = -1;
+//            int pathwaySequenceId = -1;
 //            Optional<LivingEntityBeyonderCapability> cap = pPlayer.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve();
-//            if(cap.isPresent()) pathwayId = cap.get().getPathwayId();
-//            pathwayId = 48;
+//            if(cap.isPresent()) pathwaySequenceId = cap.get().getPathwayId();
+//            pathwaySequenceId = 48;
 //            ArrayList<ItemStack> items = new ArrayList<>();
 //            items.add(new ItemStack(Items.APPLE));
 //            items.add(new ItemStack(Items.BLAZE_POWDER));
 //            RitualSpiritsSaveData data = RitualSpiritsSaveData.from((ServerLevel) pLevel);
 //            RitualInputData inputData = new RitualInputData(RitualInputData.FIRST_VERSE.DEFERENT, RitualInputData.SECOND_VERSE.ARROGANT,
-//                    pPlayer, pPlayer, pathwayId, items, RitualInputData.ACTION.TRIGGER_LUCK_EVENT, "nop");
+//                    pPlayer, pPlayer, pathwaySequenceId, items, RitualInputData.ACTION.TRIGGER_LUCK_EVENT, "nop");
 //
 //            data.findSpiritForRitual(inputData);
         } else {

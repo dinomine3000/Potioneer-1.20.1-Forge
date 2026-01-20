@@ -3,7 +3,6 @@ package net.dinomine.potioneer.beyonder.pages;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.level.Level;
 
 public abstract class Page {
     public enum Chapter{

@@ -64,6 +64,7 @@ public class RitualAltarBlockEntity extends BlockEntity implements MenuProvider 
     private EvilSpirit spirit = null;
     private RitualInputData ritualInputData = null;
     private final int FLAT_COST = 40;
+    private final int OFFERING_COST = 5;
 
     public void writeStringsToBuffer(FriendlyByteBuf buf){
         buf.writeBlockPos(getBlockPos());
@@ -234,19 +235,20 @@ public class RitualAltarBlockEntity extends BlockEntity implements MenuProvider 
         List<ItemStack> offerings = getOfferingsIn(ritualArea);
         Player target = getPlayerTargetInRitual(caster, ritualArea, offerings, caster.getInventory());
         Optional<LivingEntityBeyonderCapability> cap = caster.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve();
-        int pathwayId = -1;
+        int cost = FLAT_COST + offerings.size()*OFFERING_COST;
+        int pathwaySequenceId = -1;
         if(cap.isPresent()){
-            if(cap.get().getSpirituality() < FLAT_COST){
+            if(cap.get().getSpirituality() < cost){
                 caster.level().playSound(null, caster, SoundEvents.SOUL_ESCAPE, SoundSource.BLOCKS, 1, 1);
                 return;
             } else {
-                cap.get().requestActiveSpiritualityCost(FLAT_COST);
+                cap.get().requestActiveSpiritualityCost(cost);
             }
-            pathwayId = cap.get().getPathwaySequenceId();
+            pathwaySequenceId = cap.get().getPathwaySequenceId();
         }
         String incense = getIncenseString();
 
-        ritualInputData = new RitualInputData(firstVerse, secondVerse, caster.getUUID(), target.getUUID(), pathwayId, getBlockPos(), offerings, thirdVerse, incense);
+        ritualInputData = new RitualInputData(firstVerse, secondVerse, caster.getUUID(), target.getUUID(), pathwaySequenceId, getBlockPos(), offerings, thirdVerse, incense);
 
         System.out.println(ritualInputData);
 

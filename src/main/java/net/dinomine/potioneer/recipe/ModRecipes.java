@@ -17,6 +17,12 @@ public class ModRecipes {
     public static final RegistryObject<RecipeSerializer<VialFlaskRecipe>> VIAL_FLASK_SERIALIZER =
             SERIALIZERS.register("vial_flask_craft", () -> VialFlaskRecipe.Serializer.INSTANCE);
 
+    public static final RegistryObject<RecipeSerializer<CharacteristicRecipe>> CHARACTERISTIC_SERIALIZER =
+            SERIALIZERS.register("characteristic_recipe", () -> CharacteristicRecipe.Serializer.INSTANCE);
+
+    public static final RegistryObject<RecipeSerializer<CharmRecipe>> CHARM_RECIPE_SERIALIZER =
+            SERIALIZERS.register("ritual_charm_crafting", () -> CharmRecipe.Serializer.INSTANCE);
+
     public static void register(IEventBus eventBus){
         SERIALIZERS.register(eventBus);
     }

@@ -19,6 +19,7 @@ public class OpenScreenMessage {
     public PotionRecipeData data;
     public boolean error;
     public Screen screenType;
+    public int pageId;
     public static enum Screen{
         Formula,
         Divination,
@@ -32,15 +33,21 @@ public class OpenScreenMessage {
     }
 
     public OpenScreenMessage(Screen screenType){
-        this.screenType = screenType;
+        this(screenType, -1);
     }
 
+    public OpenScreenMessage(Screen screenType, int pageId){
+        this.screenType = screenType;
+        this.pageId = pageId;
+    }
 
     public static void encode(OpenScreenMessage msg, FriendlyByteBuf buffer){
         BufferUtils.writeStringToBuffer(msg.screenType.name(), buffer);
         if(msg.screenType == Screen.Formula){
             buffer.writeBoolean(msg.error);
             msg.data.encode(buffer);
+        } else if(msg.screenType == Screen.Book){
+            buffer.writeInt(msg.pageId);
         }
     }
 
@@ -49,6 +56,10 @@ public class OpenScreenMessage {
         if(screenType == Screen.Formula){
             boolean error = buffer.readBoolean();
             return new OpenScreenMessage(PotionRecipeData.decode(buffer), error);
+        }
+        if(screenType == Screen.Book){
+            int pageId = buffer.readInt();
+            return new OpenScreenMessage(Screen.Book, pageId);
         }
         return new OpenScreenMessage(screenType);
     }
@@ -76,7 +87,7 @@ class ClientOpenScreenHandler
         switch (msg.screenType){
             case Formula -> Minecraft.getInstance().setScreen(new FormulaScreen(msg.data, msg.error));
             case Divination -> Minecraft.getInstance().setScreen(new DivinationScreen());
-            case Book -> Minecraft.getInstance().setScreen(new KnowledgeBookScreen());
+            case Book -> Minecraft.getInstance().setScreen(new KnowledgeBookScreen(msg.pageId));
         }
 
     }

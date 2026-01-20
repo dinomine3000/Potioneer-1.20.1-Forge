@@ -1,6 +1,9 @@
 package net.dinomine.potioneer.item.custom;
 
 import net.dinomine.potioneer.beyonder.pathways.Pathways;
+import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
+import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
+import net.dinomine.potioneer.config.PotioneerCommonConfig;
 import net.dinomine.potioneer.entities.ModEntities;
 import net.dinomine.potioneer.entities.custom.CharacteristicEntity;
 import net.dinomine.potioneer.item.ModItems;
@@ -27,6 +30,7 @@ import top.theillusivec4.curios.api.type.inventory.ICurioStacksHandler;
 
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.StreamSupport;
 
 public class CharacteristicItem extends Item {
@@ -70,8 +74,13 @@ public class CharacteristicItem extends Item {
     public void inventoryTick(ItemStack pStack, Level pLevel, Entity pEntity, int pSlotId, boolean pIsSelected) {
         super.inventoryTick(pStack, pLevel, pEntity, pSlotId, pIsSelected);
         if(pLevel.isClientSide()) return;
-        if(pStack.hasTag() && pStack.getTag().contains(MysticalItemHelper.BEYONDER_TAG_ID) && pLevel.random.nextInt(200) == 1){
+        if(pStack.hasTag() && pStack.getTag().contains(MysticalItemHelper.BEYONDER_TAG_ID)
+                && PotioneerCommonConfig.ARTIFACT_CONVERSION_CHANCE.get() > 0 && pLevel.random.nextInt(PotioneerCommonConfig.ARTIFACT_CONVERSION_CHANCE.get()) == 1){
             if(pEntity instanceof Player player){
+                Optional<LivingEntityBeyonderCapability> cap = player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve();
+                if(cap.isEmpty()) return;
+                if(cap.get().getArtifactCooldown() > 0) return;
+
                 ArrayList<ItemStack> items = new ArrayList(player.getInventory().items.stream().toList());
                 items.addAll(StreamSupport.stream(player.getArmorSlots().spliterator(), false).toList());
 
@@ -98,6 +107,7 @@ public class CharacteristicItem extends Item {
                         MysticalItemHelper.generateSealedArtifact(stack, pathwaySequenceId, pLevel.random);
                         pEntity.sendSystemMessage(Component.translatable("potioneer.characteristic.corrupt", stack.getDisplayName().getString()));
                         pStack.setCount(0);
+                        cap.get().putCharacteristicArtifactCooldown(PotioneerCommonConfig.ARTIFACT_CONVERSION_COOLDOWN.get());
                         break;
                     }
                 }

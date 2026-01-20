@@ -2,17 +2,17 @@ package net.dinomine.potioneer.recipe;
 
 import net.dinomine.potioneer.beyonder.pathways.Pathways;
 import net.dinomine.potioneer.savedata.PotionFormulaSaveData;
+import net.dinomine.potioneer.util.PotionIngredient;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.item.ItemStack;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
-public record PotionRecipeData(ArrayList<ItemStack> main, ArrayList<ItemStack> supplementary, int waterLevel, boolean fire, int id, boolean includeRitual, String name) {
+public record PotionRecipeData(ArrayList<PotionIngredient> main, ArrayList<PotionIngredient> supplementary, int waterLevel, boolean fire, int id, boolean includeRitual, String name) {
 
     public CompoundTag save(CompoundTag nbt){
         nbt.putInt("id", id);
@@ -21,14 +21,14 @@ public record PotionRecipeData(ArrayList<ItemStack> main, ArrayList<ItemStack> s
         nbt.putInt("size_main", main.size());
         for(int i = 0; i < main.size(); i++){
             CompoundTag temp = new CompoundTag();
-            main.get(i).save(temp);
+            main.get(i).toNbt(temp);
             nbt.put("main_" + i, temp);
         }
 
         nbt.putInt("size_supp", supplementary.size());
         for(int i = 0; i < supplementary.size(); i++){
             CompoundTag temp = new CompoundTag();
-            supplementary.get(i).save(temp);
+            supplementary.get(i).toNbt(temp);
             nbt.put("supp_" + i, temp);
         }
 
@@ -45,20 +45,20 @@ public record PotionRecipeData(ArrayList<ItemStack> main, ArrayList<ItemStack> s
         boolean fire = nbt.getBoolean("fire");
 
         int size = nbt.getInt("size_main");
-        ArrayList<ItemStack> main = new ArrayList<>();
+        ArrayList<PotionIngredient> main = new ArrayList<>();
         if(size != 0){
             for(int i = 0; i < size; i++){
                 CompoundTag temp = nbt.getCompound("main_" + i);
-                main.add(ItemStack.of(temp));
+                main.add(PotionIngredient.fromNbt(temp));
             }
         }
 
         int sizeSupp = nbt.getInt("size_supp");
-        ArrayList<ItemStack> supp = new ArrayList<>();
+        ArrayList<PotionIngredient> supp = new ArrayList<>();
         if(sizeSupp != 0){
             for(int i = 0; i < sizeSupp; i++){
                 CompoundTag temp = nbt.getCompound("supp_" + i);
-                supp.add(ItemStack.of(temp));
+                supp.add(PotionIngredient.fromNbt(temp));
             }
         }
         boolean ritual = nbt.getBoolean("includeRitual");
@@ -75,29 +75,6 @@ public record PotionRecipeData(ArrayList<ItemStack> main, ArrayList<ItemStack> s
         if(tag == null) return null;
         return load(tag);
     }
-
-//    public static PotionRecipeData convertFromJson(JsonObject obj){
-//        NonNullList<ItemStack> mainIngredients = itemsFromJson(GsonHelper.getAsJsonArray(obj, "main_ingredients"));
-//        NonNullList<ItemStack> suppIngredients = itemsFromJson(GsonHelper.getAsJsonArray(obj, "supplementary_ingredients"));
-//        ArrayList<ItemStack> main = new ArrayList<>(mainIngredients);
-//        ArrayList<ItemStack> supp = new ArrayList<>(suppIngredients);
-//        int waterLevel = GsonHelper.getAsInt(obj, "water_level");
-//        boolean needsFire = GsonHelper.getAsBoolean(obj, "needs_fire");
-//        JsonObject output = GsonHelper.getAsJsonObject(obj, "output");
-//        int id = Integer.parseInt(GsonHelper.getAsString(output, "name"));
-//        return new PotionRecipeData(main, supp, waterLevel, needsFire, id);
-//    }
-
-//    private static NonNullList<ItemStack> itemsFromJson(JsonArray pItemArray) {
-//        NonNullList<ItemStack> nonnulllist = NonNullList.create();
-//
-//        for(int i = 0; i < pItemArray.size(); ++i) {
-//            ItemStack ingredient = ShapedRecipe.itemStackFromJson(pItemArray.get(i).getAsJsonObject());
-//            nonnulllist.add(ingredient);
-//        }
-//
-//        return nonnulllist;
-//    }
 
     public PotionRecipeData copy(){
         return new PotionRecipeData(new ArrayList<>(main), new ArrayList<>(supplementary), waterLevel, fire, id, includeRitual, name);

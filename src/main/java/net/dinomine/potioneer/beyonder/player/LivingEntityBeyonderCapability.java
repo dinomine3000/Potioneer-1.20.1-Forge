@@ -12,10 +12,13 @@ import net.dinomine.potioneer.network.messages.abilityRelevant.AbilitySyncMessag
 import net.dinomine.potioneer.network.messages.abilityRelevant.PlayerArtifactSyncSTC;
 import net.dinomine.potioneer.network.messages.abilityRelevant.PlayerSyncHotbarMessage;
 import net.dinomine.potioneer.network.messages.advancement.PlayerAdvanceMessage;
-import net.dinomine.potioneer.util.misc.MysticalItemHelper;
 import net.dinomine.potioneer.util.misc.CharacteristicHelper;
+import net.dinomine.potioneer.util.misc.MysticalItemHelper;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.nbt.*;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.IntTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -56,6 +59,8 @@ public class LivingEntityBeyonderCapability {
             return (float) (Math.pow(getSequenceLevel(), 2.6)/90 + 2);
         }
     };
+
+    private int artifactCooldown = 0;
 
     private ArrayList<Integer> pageList = new ArrayList<>();
     private final BeyonderStats beyonderStats;
@@ -193,10 +198,19 @@ public class LivingEntityBeyonderCapability {
         }
     }
 
+    public void putCharacteristicArtifactCooldown(int cooldownSeconds){
+        artifactCooldown = cooldownSeconds*20;
+    }
+
+    public int getArtifactCooldown(){
+        return artifactCooldown;
+    }
+
     public void onTick(LivingEntity entity, boolean serverSide){
         abilitiesManager.onTick(this, entity);
         effectsManager.onTick(this, entity);
         if(serverSide){
+            if(artifactCooldown > 0) artifactCooldown--;
             luckManager.onTick(this, entity);
             characteristicManager.tick();
             if(entity.tickCount%40 == entity.getId()%40){
@@ -387,9 +401,9 @@ public class LivingEntityBeyonderCapability {
 //        System.out.println("-------------loading capability nbt-------------------");
 //        System.out.println("loading nbt data for beyonder capability...");
         this.spirituality = nbt.getFloat("spirituality");
-//        System.out.println("Loading pathway id: " + nbt.getInt("pathwayId"));
+//        System.out.println("Loading pathway id: " + nbt.getInt("pathwaySequenceId"));
         this.sanity = nbt.getFloat("sanity");
-//        setPathway(nbt.getInt("pathwayId"), false);
+//        setPathway(nbt.getInt("pathwaySequenceId"), false);
 
         if(entity instanceof Player player && nbt.contains("containers_amount")){
             int containersAmount = nbt.getInt("containers_amount");

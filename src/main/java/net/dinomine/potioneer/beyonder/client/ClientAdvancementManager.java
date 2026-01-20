@@ -16,8 +16,6 @@ import java.util.List;
 
 @OnlyIn(Dist.CLIENT)
 public class ClientAdvancementManager {
-    public static final int DIFF_CHANGE_INVALID_LEVEL = 5;
-    public static final int DIFF_CHANGE_INVALID_GROUP = 5;
     public static int count = 30;
     public static int maxCount = 30;
     public static int targetSequence = 9;

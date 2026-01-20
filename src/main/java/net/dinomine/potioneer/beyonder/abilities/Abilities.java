@@ -11,7 +11,6 @@ import net.dinomine.potioneer.beyonder.abilities.tyrant.*;
 import net.dinomine.potioneer.beyonder.abilities.wheeloffortune.*;
 import net.dinomine.potioneer.beyonder.downsides.DummyDownside;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
-import net.dinomine.potioneer.beyonder.player.ConjurerContainer;
 import net.minecraft.resources.ResourceLocation;
 
 import java.util.HashMap;
@@ -306,7 +305,7 @@ public class Abilities {
     }
 
     /**
-     * same as the other getInfo, but you can specify the pathwayId (as single digit).
+     * same as the other getInfo, but you can specify the pathwaySequenceId (as single digit).
      * mainly applies to abilities that dont change at all between pathways like Cogitation,
      * so the question of what pathway it belongs to depends on the ability instance itself, hence why you can pass it as argument here
      * @param abilityId

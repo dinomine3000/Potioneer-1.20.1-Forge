@@ -4,8 +4,8 @@ import net.dinomine.potioneer.Potioneer;
 import net.dinomine.potioneer.block.ModBlocks;
 import net.dinomine.potioneer.entities.ModEntities;
 import net.dinomine.potioneer.item.custom.*;
-import net.dinomine.potioneer.item.custom.BeyonderPotion.BeyonderPotionItem;
 import net.dinomine.potioneer.item.custom.BookItem;
+import net.dinomine.potioneer.item.custom.BeyonderPotion.BeyonderPotionItem;
 import net.dinomine.potioneer.item.custom.DeathKnell.DeathKnellItem;
 import net.dinomine.potioneer.item.custom.cane.CaneItem;
 import net.dinomine.potioneer.item.custom.coin.CoinItem;
@@ -40,6 +40,12 @@ public class ModItems {
     public static final RegistryObject<Item> KNOWLEDGE_BOOK = ITEMS.register("knowledge_book",
             () -> new BookItem(new Item.Properties().stacksTo(1)));
 
+    public static final RegistryObject<Item> BEYONDER_PAGE = ITEMS.register("beyonder_page",
+            () -> new BeyonderPageItem(new Item.Properties().stacksTo(1)));
+
+    public static final RegistryObject<Item> CAULDRON_ROD = ITEMS.register("cauldron_rod",
+            () -> new Item(new Item.Properties().stacksTo(1)));
+
 //    public static final RegistryObject<Item> PARAGON_FUEL = ITEMS.register("paragon_cake",
 //            () -> new Item(new Item.Properties().stacksTo(1)));
 
@@ -61,16 +67,12 @@ public class ModItems {
     public static final RegistryObject<Item> MINER_PICKAXE = ITEMS.register("conjured_pickaxe",
             () -> new ConjuredPickaxeItem(new Item.Properties().setNoRepair().durability(10)));
 
-//    public static final RegistryObject<Item> GHOST_FISHING_ROD = ITEMS.register("ghostly_fishing_rod",
-//            () -> new GhastlyFishingRod(new Item.Properties().rarity(Rarity.COMMON)));
-
-
     public static final RegistryObject<Item> VIAL = ITEMS.register("vial", () -> new Vial(new Item.Properties()));
     public static final RegistryObject<Item> FLASK = ITEMS.register("flask", () -> new Flask(new Item.Properties()));
     public static final RegistryObject<Item> FORMULA = ITEMS.register("formula", () -> new FormulaItem(new Item.Properties()));
 
     public static final RegistryObject<Item> BEYONDER_POTION = ITEMS.register("beyonder_potion",
-            () -> new BeyonderPotionItem(new Item.Properties().stacksTo(1).fireResistant().rarity(Rarity.UNCOMMON)));
+            () -> new BeyonderPotionItem(new Item.Properties().stacksTo(1).fireResistant().rarity(Rarity.UNCOMMON).craftRemainder(Items.GLASS_BOTTLE)));
 
     public static final RegistryObject<Item> COIN_ITEM = ITEMS.register("coin",
             () -> new CoinItem(new Item.Properties().stacksTo(1)));

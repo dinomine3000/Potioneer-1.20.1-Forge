@@ -15,29 +15,11 @@ public abstract class Deity extends EvilSpirit {
         super();
         setupLogic();
         this.pathwayId = pathwayId;
-        itemsId = validItems;
+        this.itemsId = validItems;
         this.incense = incense;
     }
 
     protected abstract void setupLogic();
-
-    @Override
-    protected void aidTarget(RitualInputData inputData) {
-        int id = pathwayId/10;
-        int level = inputData.pathwayId()%10;
-        switch (id){
-            case 0:
-                break;
-            case 1:
-                break;
-            case 2:
-                break;
-            case 3:
-                break;
-            case 4:
-                break;
-        }
-    }
 
     @Override
     protected void guideTarget(RitualInputData inputData) {
@@ -47,7 +29,7 @@ public abstract class Deity extends EvilSpirit {
 
     @Override
     protected void imbue(RitualInputData inputData) {
-
+        super.imbue(inputData);
     }
 
     @Override
@@ -64,7 +46,7 @@ public abstract class Deity extends EvilSpirit {
 
     public static Deity getDeityFromNBT(CompoundTag tag){
         int pathway = tag.getInt("pathwayId");
-        return switch (Math.floorDiv(pathway, 10)){
+        return switch (pathway){
             case 0 -> RitualSpiritsSaveData.WHEEL_OF_FORTUNE;
             default -> null;
         };

@@ -4,7 +4,7 @@ import net.dinomine.potioneer.recipe.PotionCauldronContainer;
 import net.dinomine.potioneer.recipe.PotionCauldronRecipe;
 import net.dinomine.potioneer.recipe.PotionRecipe;
 import net.dinomine.potioneer.recipe.PotionRecipeData;
-import net.dinomine.potioneer.util.JSONParserHelper;
+import net.dinomine.potioneer.util.PotionIngredient;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
@@ -17,7 +17,6 @@ import java.util.List;
 
 public class PotionFormulaSaveData extends SavedData {
     private ArrayList<PotionRecipe> recipes = new ArrayList<>();
-    private ArrayList<ItemStack> totalIngredients = new ArrayList<>();
 
     public List<PotionRecipeData> getFormulas(){
         return recipes.stream().map(PotionRecipe::input).toList();
@@ -36,21 +35,21 @@ public class PotionFormulaSaveData extends SavedData {
             this.recipes.add(new PotionRecipe(rec));
         });
 
-        //add new recipes in json
-        this.recipes.addAll(JSONParserHelper.loadNewFormulas());
-
-        //modify existing recipes based on json
-        for (PotionRecipeData changedData : JSONParserHelper.loadChangedFormulas()) {
-            int id = changedData.id();
-            if(id < 0) continue;
-            for (int i = 0; i < this.recipes.size(); i++) {
-                PotionRecipe recipe = this.recipes.get(i);
-                if (recipe.input().id() == id) {
-                    this.recipes.set(i, new PotionRecipe(changedData, recipe.output()));
-                    break; // Assuming IDs are unique, break to avoid unnecessary checks
-                }
-            }
-        }
+//        //add new recipes in json
+//        this.recipes.addAll(JSONParserHelper.loadNewFormulas());
+//
+//        //modify existing recipes based on json
+//        for (PotionRecipeData changedData : JSONParserHelper.loadChangedFormulas()) {
+//            int id = changedData.id();
+//            if(id < 0) continue;
+//            for (int i = 0; i < this.recipes.size(); i++) {
+//                PotionRecipe recipe = this.recipes.get(i);
+//                if (recipe.input().id() == id) {
+//                    this.recipes.set(i, new PotionRecipe(changedData, recipe.output()));
+//                    break; // Assuming IDs are unique, break to avoid unnecessary checks
+//                }
+//            }
+//        }
         setDirty();
     }
 
@@ -177,9 +176,10 @@ public class PotionFormulaSaveData extends SavedData {
     public ItemStack getRandomItemFromFormulaFor(int targetSequence, RandomSource random){
         for (PotionRecipeData formula : getFormulas()) {
             if (formula.id() == targetSequence) {
-                ArrayList<ItemStack> ingredients = new ArrayList<>(formula.supplementary());
+                ArrayList<PotionIngredient> ingredients = new ArrayList<>(formula.supplementary());
                 ingredients.addAll(new ArrayList<>(formula.main()));
-                return ingredients.get(random.nextInt(ingredients.size()));
+                List<PotionIngredient> testList = ingredients.stream().filter(PotionIngredient::isItemIngredient).toList();
+                return testList.isEmpty() ? ItemStack.EMPTY : testList.get(random.nextInt(testList.size())).getStack();
             }
         }
         return ItemStack.EMPTY;
@@ -215,7 +215,6 @@ public class PotionFormulaSaveData extends SavedData {
     }
 
     public String getClueForIngredient(ItemStack item){
-        if(!contains(totalIngredients, item)) return "a";
         return "Insert Ingredient Clue Logic Here";
     }
 
@@ -226,9 +225,9 @@ public class PotionFormulaSaveData extends SavedData {
 //        return -1;
 //    }
 
-    public static boolean contains(ArrayList<ItemStack> list, ItemStack item){
-        for (ItemStack stack : list){
-            if(stack.is(item.getItem())) return true;
+    public static boolean contains(ArrayList<PotionIngredient> list, ItemStack item){
+        for (PotionIngredient ingredient : list){
+            if(ingredient.is(item)) return true;
         }
         return false;
     }
@@ -239,11 +238,11 @@ public class PotionFormulaSaveData extends SavedData {
      * @param list
      * @return
      */
-    public static boolean isContainedIn(ArrayList<ItemStack> main, ArrayList<ItemStack> list){
-        for(ItemStack stack : main){
+    public static boolean isContainedIn(ArrayList<PotionIngredient> main, ArrayList<PotionIngredient> list){
+        for(PotionIngredient stack : main){
             int match = 0;
-            for(ItemStack ing : list){
-                if(ing.is(stack.getItem())) match += ing.getCount();
+            for(PotionIngredient ing : list){
+                if(ing.is(stack.getStack())) match += ing.getCount();
             }
             if(match < stack.getCount() || match == 0) return false;
         }

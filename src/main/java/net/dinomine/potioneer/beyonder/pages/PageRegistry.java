@@ -4,6 +4,7 @@ import net.dinomine.potioneer.Potioneer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.function.Supplier;
@@ -23,15 +24,20 @@ public class PageRegistry {
     public static Page ACTING_PAGE = register(i++, () -> new TextPage(Page.Chapter.BEYONDER, Component.translatable("page.potioneer.acting"), Component.translatable("contents.potioneer.acting")));
     public static Page CHARACTERISTIC_PAGE = register(i++, () -> new TextPage(Page.Chapter.CHARACTERISTICS, Component.translatable("page.potioneer.characteristic"), Component.translatable("contents.potioneer.characteristic")));
 
-    public static List<Page> addDefaultPages(List<Page> pages){
-        if(!pages.contains(PageRegistry.INTRO_PAGE)) pages.add(PageRegistry.INTRO_PAGE);
-        if(!pages.contains(PageRegistry.FORMULA_PAGE)) pages.add(PageRegistry.FORMULA_PAGE);
-        if(!pages.contains(PageRegistry.CAULDRON_PAGE)) pages.add(PageRegistry.CAULDRON_PAGE);
-        if(!pages.contains(PageRegistry.INGREDIENTS_PAGE)) pages.add(PageRegistry.INGREDIENTS_PAGE);
-        if(!pages.contains(PageRegistry.SPIRITUALITY_PAGE)) pages.add(PageRegistry.SPIRITUALITY_PAGE);
-        if(!pages.contains(PageRegistry.SANITY_PAGE)) pages.add(PageRegistry.SANITY_PAGE);
-        if(!pages.contains(PageRegistry.ADVANCING_PAGE)) pages.add(PageRegistry.ADVANCING_PAGE);
-        return pages;
+    public static ArrayList<Integer> DEFAULT_PAGES = new ArrayList<>();
+    static{
+        DEFAULT_PAGES.add(1);
+        DEFAULT_PAGES.add(2);
+        DEFAULT_PAGES.add(3);
+        DEFAULT_PAGES.add(4);
+        DEFAULT_PAGES.add(5);
+        DEFAULT_PAGES.add(6);
+        DEFAULT_PAGES.add(7);
+    }
+
+    public static List<Page> addDefaultPages(List<Page> pagesIn){
+        pagesIn.addAll(DEFAULT_PAGES.stream().map(PageRegistry::getPageById).filter(page -> !pagesIn.contains(page)).toList());
+        return pagesIn;
     }
 
     public static Page register(int numKey, Supplier<Page> constructor){
@@ -49,5 +55,13 @@ public class PageRegistry {
 
     public static List<Integer> getAllKeys(){
         return PAGES.keySet().stream().toList();
+    }
+
+    public static List<Integer> getAllNonDefaultKeys(){
+        return PAGES.keySet().stream().filter(pageId -> !DEFAULT_PAGES.contains(pageId)).toList();
+    }
+
+    public static List<Integer> getNewKeys(List<Integer> knownPages){
+        return PAGES.keySet().stream().filter(key -> !knownPages.contains(key) && !DEFAULT_PAGES.contains(key)).toList();
     }
 }

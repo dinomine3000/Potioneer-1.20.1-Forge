@@ -73,14 +73,14 @@ public class AidResponse extends SpiritResponse implements RandomizableResponse<
     @Override
     public CompoundTag saveToNBT() {
         CompoundTag tag = new CompoundTag();
-        tag.putInt("pathwayId", pathwayId);
+        tag.putInt("pathwaySequenceId", pathwayId);
         tag.putBoolean("targetCaster", targetCaster);
         return envelopTag(tag, "aid");
     }
 
     public static AidResponse getFromTag(Tag tag){
         if(!(tag instanceof CompoundTag compoundTag)) throw new IllegalArgumentException("Error: Tag given is not a compound tag");
-        int pathwayId = compoundTag.getInt("pathwayId");
+        int pathwayId = compoundTag.getInt("pathwaySequenceId");
         boolean targetCaster = compoundTag.getBoolean("targetCaster");
         return new AidResponse(pathwayId, targetCaster);
     }

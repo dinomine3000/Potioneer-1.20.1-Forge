@@ -15,14 +15,14 @@ public class AdvancementDifficultyHelper {
         //plus 1 for each group of 8-6, 5-3 and 2-1 sequence levels
         //plus 2 for undigested potions
         int levelDifference;
-        if(pathwaySequenceId < -1){ //adds 2 points of difficulty for every level you skip
+        if(pathwaySequenceId < 0){ //adds 2 points of difficulty for every level you skip
             levelDifference = 4*Math.max(9 - newPathSeqId%10, 0);
         } else {
             levelDifference = 4*Math.max(pathwaySequenceId%10 - 1 - newPathSeqId%10, 0);
         }
         int sanityDiff = Math.round(8f-sanity/12.5f); //from 0 to 8 more points depending on your sanity
         int groupDiff = 3-Math.floorDiv(newPathSeqId%10, 3) + (newPathSeqId%10 == 0 ? 2 : 0); //plus 1 for each group
-        int actingDiff = (int) (2*(1- Mth.floor(actingProgress + 0.05))); //adds 2 points of difficulty if acting progress isnt at 100%
+        int actingDiff = pathwaySequenceId < 0 ? 0 : (2*(1- Mth.floor(actingProgress + 0.05))); //adds 2 points of difficulty if acting progress isnt at 100%
         //adding 0.05 bc i consider 95% digestion to be complete - this makes the bar sort of "jump" when you "fully digest it",
         //which could make it more satisfying. the added 5% only happens on client side, the server would still tick upwards, and truth be told
         //the client maintains that 95% true amount, but for all intents and purposes 95% is the same as 100%, though its a manual check

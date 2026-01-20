@@ -1,6 +1,8 @@
-// 1.20.1	2026-01-17T22:45:49.9544647	Item Models: potioneer
+// 1.20.1	2026-01-19T19:09:06.6278696	Item Models: potioneer
 f3317f59efd1cc9f0857f61ad86bffa96cf159fc assets/potioneer/models/item/asteroid_debug.json
 f37020734dc8df0b9b8a5d30b73cab7f1acdd119 assets/potioneer/models/item/beyonder_characteristic.json
+4007d855a4c799c1014899023f976f8a6576df4f assets/potioneer/models/item/beyonder_page.json
+cb7c4bb2071d5f52b594da6420a52d86cea65b09 assets/potioneer/models/item/cauldron_rod.json
 9806426a0c70b255515853af75ca0e089c0f3f76 assets/potioneer/models/item/chryon_core.json
 d94ee449c29fd286360ca6d2905237318d6d9b68 assets/potioneer/models/item/chryon_flake.json
 63ec6c618a3a23eab4cab9c52d7d3250de9b516e assets/potioneer/models/item/chryon_spawn_egg.json

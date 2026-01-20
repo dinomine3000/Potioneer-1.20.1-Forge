@@ -48,8 +48,6 @@ public class PotionCauldronBlock extends BaseEntityBlock {
         pBuilder.add(new Property[]{RESULT, WATER_LEVEL, DIRECTION});
     }
 
-
-
     public PotionCauldronBlock(Properties pProperties) {
         super(pProperties);
         this.registerDefaultState(this.stateDefinition.any().setValue(WATER_LEVEL, 1)
@@ -85,52 +83,48 @@ public class PotionCauldronBlock extends BaseEntityBlock {
         int level = pState.getValue(WATER_LEVEL);
 
         BlockEntity be = pLevel.getBlockEntity(pPos);
-        if(be instanceof PotionCauldronBlockEntity cauldron){
-//            if(pLevel.isClientSide()) return InteractionResult.SUCCESS;
-            if(cauldron.state == PotionCauldronBlockEntity.State.STANDBY){
-                if(heldItemStack.isEmpty()){
-                    ItemStack rem = cauldron.removeItem();
-                    if(!pPlayer.getInventory().add(rem)){
-                        pPlayer.drop(rem, false);
-                    }
-                    return InteractionResult.SUCCESS;
-                }
-                if(item == Items.WATER_BUCKET){
-                    if(level < 3){
-                        if(!pPlayer.isCreative()){
-                            pPlayer.setItemInHand(pHand, new ItemStack(Items.BUCKET));
-                        }
-                        pPlayer.awardStat(Stats.FILL_CAULDRON);
-                        changeWaterLevel(pLevel, pPos, 1);
-                        pLevel.playSound(null, pPos, SoundEvents.BUCKET_EMPTY, SoundSource.BLOCKS, 1f, 1f);
-                    }
-                    cauldron.craft();
-                    return InteractionResult.SUCCESS;
-                }
-                if(item == Items.BUCKET){
-                    if(level > 1){
-                        if(!pPlayer.isCreative()){
-                            heldItemStack.shrink(1);
-                            if(heldItemStack.isEmpty()){
-                                pPlayer.setItemInHand(pHand, new ItemStack(Items.WATER_BUCKET));
-                            } else if(!pPlayer.getInventory().add(new ItemStack(Items.WATER_BUCKET))){
-                                pPlayer.drop(new ItemStack(Items.WATER_BUCKET), false);
-                            }
-                        }
+        if(!(be instanceof PotionCauldronBlockEntity cauldron)) return super.use(pState, pLevel, pPos, pPlayer, pHand, pHit);
 
-                        pPlayer.awardStat(Stats.USE_CAULDRON);
-                        changeWaterLevel(pLevel, pPos, -1);
-                        pLevel.playSound(null, pPos, SoundEvents.BUCKET_FILL, SoundSource.BLOCKS, 1f, 1f);
-                    }
-                    cauldron.craft();
-                    return InteractionResult.SUCCESS;
-                }
-            }
-
+        if(cauldron.state != PotionCauldronBlockEntity.State.STANDBY)
             return cauldron.onPlayerInteract(item, heldItemStack, this, pLevel, pPos, pPlayer, pHand);
+
+        if(heldItemStack.isEmpty()){
+            ItemStack rem = cauldron.removeItem();
+            if(!pPlayer.getInventory().add(rem)){
+                pPlayer.drop(rem, false);
+            }
+            return InteractionResult.SUCCESS;
+        }
+        if(item == Items.WATER_BUCKET){
+            if(level < 3){
+                if(!pPlayer.isCreative()){
+                    pPlayer.setItemInHand(pHand, new ItemStack(Items.BUCKET));
+                }
+                pPlayer.awardStat(Stats.FILL_CAULDRON);
+                changeWaterLevel(pLevel, pPos, 1);
+                pLevel.playSound(null, pPos, SoundEvents.BUCKET_EMPTY, SoundSource.BLOCKS, 1f, 1f);
+            }
+            return InteractionResult.SUCCESS;
+        }
+        if(item == Items.BUCKET){
+            if(level > 1){
+                if(!pPlayer.isCreative()){
+                    heldItemStack.shrink(1);
+                    if(heldItemStack.isEmpty()){
+                        pPlayer.setItemInHand(pHand, new ItemStack(Items.WATER_BUCKET));
+                    } else if(!pPlayer.getInventory().add(new ItemStack(Items.WATER_BUCKET))){
+                        pPlayer.drop(new ItemStack(Items.WATER_BUCKET), false);
+                    }
+                }
+
+                pPlayer.awardStat(Stats.USE_CAULDRON);
+                changeWaterLevel(pLevel, pPos, -1);
+                pLevel.playSound(null, pPos, SoundEvents.BUCKET_FILL, SoundSource.BLOCKS, 1f, 1f);
+            }
+            return InteractionResult.SUCCESS;
         }
 
-        return super.use(pState, pLevel, pPos, pPlayer, pHand, pHit);
+        return cauldron.onPlayerInteract(item, heldItemStack, this, pLevel, pPos, pPlayer, pHand);
     }
 
 
@@ -146,26 +140,21 @@ public class PotionCauldronBlock extends BaseEntityBlock {
     @Override
     public void onRemove(BlockState pState, Level pLevel, BlockPos pPos, BlockState pNewState, boolean pIsMoving) {
         if(pState.getBlock() != pNewState.getBlock() && !pLevel.isClientSide()){
-            PotionCauldronBlockEntity be = (PotionCauldronBlockEntity) pLevel.getBlockEntity(pPos);
-            if(be instanceof PotionCauldronBlockEntity){
+            PotionCauldronBlockEntity be = getBlockEntity(pLevel, pPos);
+            if(be != null){
                 be.dropIngredients(pLevel, pPos);
             }
         }
         super.onRemove(pState, pLevel, pPos, pNewState, pIsMoving);
     }
 
-
-//    @Override
-//    public boolean onDestroyedByPlayer(BlockState state, Level level, BlockPos pos, Player player, boolean willHarvest, FluidState fluid) {
-//        if(!level.isClientSide()){
-//            PotionCauldronBlockEntity be = (PotionCauldronBlockEntity) level.getBlockEntity(pos);
-//            assert be != null;
-//            be.dropIngredients(level, pos);
-//        }
-//
-//
-//        return super.onDestroyedByPlayer(state, level, pos, player, willHarvest, fluid);
-//    }
+    private static PotionCauldronBlockEntity getBlockEntity(Level level, BlockPos pos){
+        PotionCauldronBlockEntity be = (PotionCauldronBlockEntity) level.getBlockEntity(pos);
+        if(be instanceof PotionCauldronBlockEntity){
+            return be;
+        }
+        return null;
+    }
 
     @Override
     public @Nullable BlockEntity newBlockEntity(BlockPos blockPos, BlockState blockState) {

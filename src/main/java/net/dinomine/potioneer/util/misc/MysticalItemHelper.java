@@ -1,27 +1,19 @@
 package net.dinomine.potioneer.util.misc;
 
 import net.dinomine.potioneer.beyonder.abilities.Abilities;
-import net.dinomine.potioneer.beyonder.abilities.Ability;
 import net.dinomine.potioneer.beyonder.abilities.AbilityKey;
 import net.dinomine.potioneer.beyonder.abilities.ArtifactHolder;
-import net.dinomine.potioneer.beyonder.abilities.mystery.AirBulletAbility;
-import net.dinomine.potioneer.beyonder.abilities.paragon.CraftingGuiAbility;
-import net.dinomine.potioneer.beyonder.abilities.redpriest.MeltAbility;
-import net.dinomine.potioneer.beyonder.abilities.wheeloffortune.MinerLightAbility;
-import net.dinomine.potioneer.beyonder.downsides.Downside;
-import net.dinomine.potioneer.beyonder.downsides.DummyDownside;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffect;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
 import net.dinomine.potioneer.item.ModItems;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.common.Tags;
 
-import java.util.*;
-import java.util.function.Function;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 public class MysticalItemHelper {
     public static final String ARTIFACT_TAG_ID = "artifact_info";
@@ -67,26 +59,27 @@ public class MysticalItemHelper {
     }
 
     //artifact without beyonder info or downsides. single use
-    public static void makeCharm(ItemStack stack, String beyonderEffectId, int pathwaySequenceId, int duration){
+    public static ItemStack makeCharm(ItemStack stack, String beyonderEffectId, int pathwaySequenceId, int duration){
         CompoundTag tag = stack.getOrCreateTag();
-        if(tag.contains(CHARM_TAG_ID) || !stack.is(ModItems.CHARM.get()) || beyonderEffectId.isEmpty()) return;
+        if(tag.contains(CHARM_TAG_ID) || !stack.is(ModItems.CHARM.get()) || beyonderEffectId.isEmpty()) return stack;
 
         CompoundTag charmTag = new CompoundTag();
         charmTag.putString("effectId", beyonderEffectId);
         charmTag.putInt("duration", duration);
         charmTag.putInt("pathwaySequenceId", pathwaySequenceId);
         tag.put(CHARM_TAG_ID, charmTag);
+        return stack;
     }
 
 //    //artifact with only passive and free abilities and no downsides and no beyonder tag
-//    public static void makeAmuletGem(ItemStack gemStack, String ablId, int pathwayId, int color){
+//    public static void makeAmuletGem(ItemStack gemStack, String ablId, int pathwaySequenceId, int color){
 //        CompoundTag ogTag = gemStack.getOrCreateTag();
 //        if(ogTag.contains(ARTIFACT_TAG_ID) || ogTag.contains(GEM_TAG_ID)) return;
 //        if(!gemStack.is(ModItems.GEM.get())) return;
 //
 //        CompoundTag gemTag = new CompoundTag();
 //        ListTag abilitiesList = new ListTag();
-//        abilitiesList.add(makeAbilityTag(ablId, pathwayId));
+//        abilitiesList.add(makeAbilityTag(ablId, pathwaySequenceId));
 //        gemTag.put("abilities", abilitiesList);
 //        gemTag.putInt("color", color);
 //        ogTag.put(GEM_TAG_ID, gemTag);
