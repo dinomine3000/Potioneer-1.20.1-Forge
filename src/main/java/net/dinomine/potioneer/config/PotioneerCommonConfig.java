@@ -9,8 +9,6 @@ public class PotioneerCommonConfig {
     public static final ForgeConfigSpec.Builder BUILDER = new ForgeConfigSpec.Builder();
     public static final ForgeConfigSpec SPEC;
 
-//    public static final ForgeConfigSpec.ConfigValue<Boolean> RANDOM_FORMULAS;
-//    public static final ForgeConfigSpec.ConfigValue<List<? extends String>> INGREDIENTS;
     public static final ForgeConfigSpec.BooleanValue DO_APTITUDE_PATHWAYS;
     public static final ForgeConfigSpec.DoubleValue APTITUDE_MULTIPLIER;
     public static final ForgeConfigSpec.DoubleValue UNIVERSAL_ACTING_MULTIPLIER;
@@ -25,6 +23,7 @@ public class PotioneerCommonConfig {
     public static final ForgeConfigSpec.BooleanValue PUBLIC_GROUPS;
     public static final ForgeConfigSpec.BooleanValue ALLOW_CHANGING_PATHWAYS;
     public static final ForgeConfigSpec.DoubleValue CHANCE_TO_MAKE_ARTIFACT_ON_DEATH;
+    public static final ForgeConfigSpec.BooleanValue CONSUME_PAGE_ON_USE;
 
     public static final ForgeConfigSpec.EnumValue<CharacteristicDropCriteria> CHARACTERISTIC_DROP_CRITERIA_ENUM_VALUE;
     public static final ForgeConfigSpec.BooleanValue DROP_ALL_CHARACTERISTICS;
@@ -113,6 +112,10 @@ public class PotioneerCommonConfig {
                 "\nThe default format for a pathway group is just the pathway IDs separated by a hyphen (-)" +
                 "\nThe IDs for the 5 default pathways are: Miner - 0, Swimmer - 1, Trickster - 2, Warrior - 3, Crafter - 4")
                         .define("pathway_groups", new ArrayList<>(List.of("1-3", "2-4")));
+
+        CONSUME_PAGE_ON_USE = BUILDER.comment("When reading a knowledge page and adding it to the beyonder book, should the page be consumed?")
+                .define("consume_page_on_use", false);
+
 
         BUILDER.pop();
         SPEC = BUILDER.build();

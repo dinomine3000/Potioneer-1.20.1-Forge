@@ -24,6 +24,11 @@ import org.jetbrains.annotations.Nullable;
 public class CharmRecipe implements Recipe<RitualContainer> {
 
     private final NonNullList<PotionIngredient> ingredients;
+
+    public PotionIngredient getBaseMaterial() {
+        return baseMaterial;
+    }
+
     private final PotionIngredient baseMaterial;
     private final int pathwayId;
     private final String resultingEffectId;

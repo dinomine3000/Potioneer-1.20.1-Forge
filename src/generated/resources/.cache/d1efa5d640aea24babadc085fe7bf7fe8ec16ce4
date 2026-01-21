@@ -1,4 +1,4 @@
-// 1.20.1	2026-01-19T19:09:06.6278696	Item Models: potioneer
+// 1.20.1	2026-01-20T21:39:50.3832401	Item Models: potioneer
 f3317f59efd1cc9f0857f61ad86bffa96cf159fc assets/potioneer/models/item/asteroid_debug.json
 f37020734dc8df0b9b8a5d30b73cab7f1acdd119 assets/potioneer/models/item/beyonder_characteristic.json
 4007d855a4c799c1014899023f976f8a6576df4f assets/potioneer/models/item/beyonder_page.json
@@ -16,6 +16,7 @@ ae533f7b4b929aabce1c0c7d553e3d18fb0486b0 assets/potioneer/models/item/fire_sword
 498f6e07284651c2101fac042201226f408f30f6 assets/potioneer/models/item/golden_drop.json
 20c804bc53423c260e8b2365dce68dfb38e9bbfb assets/potioneer/models/item/ink_bottle.json
 f4bd3d2793e5b8f00176c69a8b65b7d516d9b833 assets/potioneer/models/item/knowledge_book.json
+ec487e7b6ad278a0851b0b8fe561f111b9b3d5b3 assets/potioneer/models/item/knowledge_skull.json
 4ac4c61b7fca8ba14962b896aa50e90e7dc5a1e9 assets/potioneer/models/item/mystical_gem.json
 eea990af99104af660a7e62611158f924b315428 assets/potioneer/models/item/nazar.json
 6f35a148a31ea1579b0fa28fbeeb943f332e05ae assets/potioneer/models/item/pecan_leaf.json

@@ -43,8 +43,8 @@ public class WheelOfFortuneResponse extends Deity {
     }
 
     @Override
-    protected void aidTarget(RitualInputData inputData) {
-        super.aidTarget(inputData);
+    protected void aidTarget(RitualInputData inputData, Level level) {
+        super.aidTarget(inputData, level);
     }
 
     private void punishmentLogic(RitualInputData inputData, Level level){
@@ -61,7 +61,7 @@ public class WheelOfFortuneResponse extends Deity {
         if(testString.contains("bless")) giveLuck(inputData, level);
         else if(testString.contains("unluck") || testString.contains("misfortune")) giveUnluck(inputData, level);
         else if(testString.contains("trigger")) triggerLuck(inputData, level);
-        else defaultNormalResponse(inputData);
+        else defaultNormalResponse(inputData, level);
     }
 
     private void giveLuck(RitualInputData inputData, Level level){
@@ -71,7 +71,7 @@ public class WheelOfFortuneResponse extends Deity {
             cap.getLuckManager().grantLuck(target.getRandom().nextInt(-10, 100));
             level.playSound( null, target, SoundEvents.BEACON_ACTIVATE, SoundSource.PLAYERS, 2, 1);
             System.out.println("Given luck!");
-            for(ItemStack stack: inputData.offerings()){
+            for(ItemStack stack: RitualInputData.getLiveItemStacks(inputData, level)){
                 if(stack.is(Items.DIAMOND))
                     stack.setCount(0);
                 //stack = ItemStack.EMPTY;

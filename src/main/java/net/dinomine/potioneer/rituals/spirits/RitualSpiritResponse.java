@@ -36,26 +36,26 @@ public abstract class RitualSpiritResponse {
         return isValidIncense(data.incense()) || isValidItems(data.offerings());
     }
 
-    protected void defaultNormalResponse(RitualInputData inputData){
+    protected void defaultNormalResponse(RitualInputData inputData, Level level){
         String testString = inputData.thirdVerse().toLowerCase();
         if(testString.contains("aid")
-                || testString.contains("help")) aidTarget(inputData);
+                || testString.contains("help")) aidTarget(inputData, level);
         else if(testString.contains("guide")
-                || testString.contains("guidance")) guideTarget(inputData);
+                || testString.contains("guidance")) guideTarget(inputData, level);
         else if(testString.contains("imbue")
-                || testString.contains("infuse")) imbue(inputData);
+                || testString.contains("infuse")) imbue(inputData, level);
     }
 
     protected void defaultMethod(RitualInputData inputData){
     }
 
-    protected void aidTarget(RitualInputData inputData){
+    protected void aidTarget(RitualInputData inputData, Level level){
     }
 
-    protected void guideTarget(RitualInputData inputData){
+    protected void guideTarget(RitualInputData inputData, Level level){
     }
 
-    protected void imbue(RitualInputData inputData){
+    protected void imbue(RitualInputData inputData, Level level){
     }
 
     public abstract boolean isValidIncense(String incenseId);

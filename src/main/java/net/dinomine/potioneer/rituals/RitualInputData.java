@@ -1,5 +1,10 @@
 package net.dinomine.potioneer.rituals;
 
+import net.dinomine.potioneer.block.ModBlocks;
+import net.dinomine.potioneer.block.custom.RitualPedestal;
+import net.dinomine.potioneer.block.entity.ModBlockEntities;
+import net.dinomine.potioneer.block.entity.RitualAltarBlockEntity;
+import net.dinomine.potioneer.block.entity.RitualPedestalBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -9,6 +14,7 @@ import net.minecraft.world.level.Level;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 public record RitualInputData(FIRST_VERSE firstVerse, SECOND_VERSE secondVerse,
@@ -110,4 +116,13 @@ public record RitualInputData(FIRST_VERSE firstVerse, SECOND_VERSE secondVerse,
         return items;
     }
 
+    public static List<ItemStack> getLiveItemStacks(RitualInputData data, Level level){
+        return getPedestalsOfRitual(data, level).stream().map(RitualPedestalBlockEntity::getRenderStack).toList();
+    }
+
+    public static List<RitualPedestalBlockEntity> getPedestalsOfRitual(RitualInputData data, Level level){
+        if(level.getBlockEntity(data.pos(), ModBlockEntities.RITUAL_ALTAR_BLOCK_ENTITY.get()).isEmpty()) return List.of();
+        RitualAltarBlockEntity altar = level.getBlockEntity(data.pos(), ModBlockEntities.RITUAL_ALTAR_BLOCK_ENTITY.get()).get();
+        return altar.getPedestals();
+    }
 }

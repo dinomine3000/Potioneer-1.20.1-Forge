@@ -67,7 +67,7 @@ public class RitualPedestalBlockEntity extends BlockEntity {
         Containers.dropContents(pLevel, pPos, items);
     }
 
-    public ItemStack addOrRemoveItem(ItemStack stack){
+    public ItemStack addOrRemoveItem(ItemStack stack) {
         ItemStack resultHandItem = stack.copy();
         if(processing) return resultHandItem;
         if(itemHandler.isItemValid(0, stack)){
@@ -78,6 +78,10 @@ public class RitualPedestalBlockEntity extends BlockEntity {
             setChanged();
         }
         return resultHandItem;
+    }
+
+    public void forcefullySetItem(ItemStack stack){
+        itemHandler.insertItem(0, stack, false);
     }
 
     public ItemStack getRenderStack(){

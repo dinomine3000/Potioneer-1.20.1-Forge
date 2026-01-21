@@ -469,6 +469,19 @@ public class RitualAltarBlockEntity extends BlockEntity implements MenuProvider 
         return visited;
     }
 
+    public List<RitualPedestalBlockEntity> getPedestals(){
+        Set<BlockPos> area = getOpenArea(level, getBlockPos(), MAXIMUM_RITUAL_RANGE);
+        ArrayList<RitualPedestalBlockEntity> pedestals = new ArrayList<>();
+        for(BlockPos pos: area){
+            if(level.getBlockState(pos).is(ModBlocks.RITUAL_PEDESTAL.get())){
+                if(level.getBlockEntity(pos) != null && level.getBlockEntity(pos) instanceof RitualPedestalBlockEntity be){
+                    pedestals.add(be);
+                }
+            }
+        }
+        return pedestals;
+    }
+
     private static Set<BlockPos> getOpenArea(Level level, BlockPos center, int maxRadius) {
         Set<BlockPos> visited = new HashSet<>();
         Queue<BlockPos> queue = new ArrayDeque<>();

@@ -4,6 +4,10 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.item.ItemStack;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Stream;
+
 public class RitualContainer extends SimpleContainer {
     public int getPathwayId() {
         return pathwayId;
@@ -20,13 +24,21 @@ public class RitualContainer extends SimpleContainer {
     private int pathwayId;
     private int reputationLevel;
 
-    public RitualContainer(int pathwayId, int reputationLevel, ItemStack... pItems){
-        super(pItems);
+    public RitualContainer(int pathwayId, int reputationLevel, ItemStack... items){
+        super(items);
         this.pathwayId = pathwayId;
         this.reputationLevel = reputationLevel;
     }
 
     public RitualContainer(int pathwayId, ItemStack... items){
+        this(pathwayId, 0, items);
+    }
+
+    public RitualContainer(int pathwayId, int reputationLevel, List<ItemStack> items){
+        this(pathwayId, reputationLevel, items.toArray(new ItemStack[0]));
+    }
+
+    public RitualContainer(int pathwayId, List<ItemStack> items){
         this(pathwayId, 0, items);
     }
 }

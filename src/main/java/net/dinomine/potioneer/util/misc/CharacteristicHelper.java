@@ -25,6 +25,7 @@ public class CharacteristicHelper {
                 if(MysticalItemHelper.isValidItemForArtifact(stack)){
                     ItemStack stackCopy = stack.copy();
                     MysticalItemHelper.generateSealedArtifact(stackCopy, pathwaySequenceId, random);
+                    MysticismHelper.updateOrApplyMysticismTag(stackCopy, 50, player);
                     stack.setCount(0);
 
                     Vec3 pos = position.offsetRandom(random, 1f).add(0, 1, 0);

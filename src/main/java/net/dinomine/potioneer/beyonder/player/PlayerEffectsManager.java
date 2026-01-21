@@ -173,7 +173,6 @@ public class PlayerEffectsManager {
     public boolean addOrReplaceEffect(BeyonderEffect effect, LivingEntityBeyonderCapability cap, LivingEntity target){
         if(target.level().isClientSide()) return false;
         if(!hasEffectOrBetter(effect)){
-            System.out.println("Adding effect " + effect.getId());
             removeEffect(effect.getId());
             addEffect(effect, cap, target, true);
             return true;
@@ -268,7 +267,7 @@ public class PlayerEffectsManager {
     }
 
     private void sendUpdateToClient(List<BeyonderEffect> effects, int operation, LivingEntity target){
-        if(target instanceof Player player && target.level().isClientSide())
+        if(target instanceof Player player && !target.level().isClientSide())
             PacketHandler.sendMessageSTC(new BeyonderEffectSyncMessage(effects, operation), player);
     }
 

@@ -64,7 +64,7 @@ public class BeyonderEffectSyncMessage {
         for(BeyonderEffect eff: effects){
             blr.append(eff.getId()).append(", ");
         }
-        blr.append("\n Operation: ").append(operation);
+        blr.append("\nOperation: ").append(operation);
         return blr.toString();
     }
 }

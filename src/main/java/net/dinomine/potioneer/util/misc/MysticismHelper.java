@@ -374,7 +374,7 @@ public class MysticismHelper {
             float oldSpirituality = spiritualityTag.getFloat("spirituality_" + i);
             if(oldSpirituality + spiritualityAmount <= 0){
                 spiritualityTag.remove("spirituality_" + i);
-                spiritualityTag.remove("player_" + i);
+                nameTag.remove("player_" + i);
             } else {
                 spiritualityTag.putFloat("spirituality_" + i, oldSpirituality + spiritualityAmount);
                 nameTag.putUUID("player_" + i, target.getUUID());
