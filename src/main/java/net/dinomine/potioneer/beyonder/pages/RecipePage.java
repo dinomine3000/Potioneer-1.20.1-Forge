@@ -1,5 +1,6 @@
 package net.dinomine.potioneer.beyonder.pages;
 
+import net.dinomine.potioneer.beyonder.client.ClientStatsData;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -11,18 +12,25 @@ import net.minecraftforge.fml.loading.FMLEnvironment;
 import java.util.Optional;
 
 public abstract class RecipePage extends SplitPage {
-    private final ResourceLocation craftingLocation;
+    protected final ResourceLocation craftingLocation;
     public RecipePage(Chapter chapter, Component title, Component topText, Component bottomText, ResourceLocation craftingRecipeLocation) {
         super(chapter, title, topText, bottomText);
         this.craftingLocation = craftingRecipeLocation;
     }
+    public RecipePage(Chapter chapter, String id, ResourceLocation craftingRecipeLocation) {
+        super(chapter, id);
+        this.craftingLocation = craftingRecipeLocation;
+    }
+    public RecipePage(Chapter chapter, Component title, String id, ResourceLocation craftingRecipeLocation){
+        super(chapter, title, id);
+        this.craftingLocation = craftingRecipeLocation;
+    }
 
-    protected NonNullList<Ingredient> getIngredients(Level level){
+    protected Optional<? extends Recipe<?>> getRecipe(){
         if (!FMLEnvironment.dist.isClient()) {
-            return NonNullList.create();
+            return Optional.empty();
         }
-        if(level == null) return NonNullList.create();
-        Optional<? extends Recipe<?>> optionalRecipe = level.getRecipeManager().byKey(craftingLocation);
-        return optionalRecipe.map(Recipe::getIngredients).orElseGet(NonNullList::create);
+        if(ClientStatsData.getLevel() == null) return Optional.empty();
+        return ClientStatsData.getLevel().getRecipeManager().byKey(craftingLocation);
     }
 }

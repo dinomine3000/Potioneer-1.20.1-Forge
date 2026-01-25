@@ -9,6 +9,7 @@ import net.minecraftforge.registries.IForgeRegistry;
 import net.minecraftforge.registries.RegistryBuilder;
 import net.minecraftforge.registries.RegistryObject;
 
+import java.util.List;
 import java.util.function.Supplier;
 
 public class Pathways {
@@ -50,6 +51,10 @@ public class Pathways {
 
     public static BeyonderPathway getPathwayById(int pathwayId){
         return getPathwayById(new ResourceLocation(Potioneer.MOD_ID, String.valueOf(pathwayId)));
+    }
+
+    public static List<BeyonderPathway> getAllPathways(){
+        return PATHWAYS.getEntries().stream().map(RegistryObject::get).toList();
     }
 
     public static BeyonderPathway getPathwayById(ResourceLocation id){

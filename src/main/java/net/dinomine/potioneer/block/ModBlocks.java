@@ -83,6 +83,9 @@ public class ModBlocks {
             () -> new RitualPedestal(BlockBehaviour.Properties.copy(Blocks.DIORITE)
                     .mapColor(MapColor.QUARTZ)));
 
+    public static final RegistryObject<Block> SCRIPTURE_STAND = registerBlock("scripture_stand",
+            () -> new ScriptureStandBlock(BlockBehaviour.Properties.copy(Blocks.OAK_PLANKS)
+                    .mapColor(MapColor.WOOD).noOcclusion()));
 
         public static final RegistryObject<Block> SPIRIT_FRUIT_CROP = BLOCKS.register("spirit_fruit",
             () -> new SpiritFruitCropBlock(BlockBehaviour.Properties.copy(Blocks.WHEAT).noOcclusion().noCollission()));

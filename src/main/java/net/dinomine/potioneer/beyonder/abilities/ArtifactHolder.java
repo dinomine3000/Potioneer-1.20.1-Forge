@@ -122,7 +122,7 @@ public class ArtifactHolder {
             if(stringKey.equals("artifactId")) continue;
             AbilityKey key = AbilityKey.fromString(stringKey);
             if(key.isEmpty()) continue;
-            Ability ability = Abilities.getAbilityByKey(key);
+            Ability ability = Abilities.getAbilityInstanceByKey(key);
             ability.loadNbt(artifactTag);
             abilities.add(ability);
         }

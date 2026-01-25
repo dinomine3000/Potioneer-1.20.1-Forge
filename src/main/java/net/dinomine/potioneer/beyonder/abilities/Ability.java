@@ -2,12 +2,14 @@ package net.dinomine.potioneer.beyonder.abilities;
 
 import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
 import net.dinomine.potioneer.beyonder.player.PlayerAbilitiesManager;
+import net.dinomine.potioneer.event.AbilityCastEvent;
 import net.dinomine.potioneer.network.PacketHandler;
 import net.dinomine.potioneer.network.messages.abilityRelevant.AbilitySyncMessage;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraftforge.common.MinecraftForge;
 
 import java.util.UUID;
 import java.util.function.Function;
@@ -26,6 +28,8 @@ public abstract class Ability {
     protected AbilityKey key = new AbilityKey();
     private Function<Integer, Integer> costFunction;
     private CompoundTag abilityData = new CompoundTag();
+    protected boolean isActive = true;
+    protected boolean isPassive = false;
 
     public void receiveUpdateOnClient(AbilityInfo info, LivingEntityBeyonderCapability cap, LivingEntity target){
         if(!target.level().isClientSide()) return;
@@ -49,10 +53,14 @@ public abstract class Ability {
         if(target instanceof Player player && !player.level().isClientSide())  sendUpdateMessageToClient(target);
     }
 
+    public void setDataSilent(CompoundTag tag){
+        this.abilityData = tag;
+    }
+
     public AbilityInfo getAbilityInfo(){
         if(key == null){
             System.out.println("Warning: tried to get ability info with a null key");
-            return Abilities.getInfo(abilityId, cooldown, maxCooldown, state, getDescId(sequenceLevel), new AbilityKey()).withData(abilityData);
+            return Abilities.getInfo(abilityId, cooldown, maxCooldown, state, getDescId(sequenceLevel), new AbilityKey(abilityId, sequenceLevel)).withData(abilityData);
         }
         return Abilities.getInfo(abilityId, cooldown, maxCooldown, state, getDescId(sequenceLevel), key).withData(abilityData);
     }
@@ -259,12 +267,17 @@ public abstract class Ability {
      */
     public void castAbility(LivingEntityBeyonderCapability cap, LivingEntity target, boolean primary){
         if(cooldown != 0) return;
+
+        boolean cancelledCheck = MinecraftForge.EVENT_BUS.post(new AbilityCastEvent.Pre(this, target, primary));
+        if(cancelledCheck) return;
         if(primary){
             if(primary(cap, target)){
+                MinecraftForge.EVENT_BUS.post(new AbilityCastEvent.Post(this, target, true));
                 putOnCooldown(target);
             }
         } else {
             if(secondary(cap, target)){
+                MinecraftForge.EVENT_BUS.post(new AbilityCastEvent.Post(this, target, false));
                 putOnCooldown(target);
             }
         }
@@ -290,17 +303,21 @@ public abstract class Ability {
 
     /**
      * function that runs whenever the player casts the main ability
+     * if it returns true, it means itll be posted on the CastAbilityEvent and will be put on a default cooldown.
+     * false means it wont.
      * @param cap
      * @param target
-     * @return true to be put on default cooldown, false to not be put on default cooldown
+     * @return true if successfuly cast, false otherwise
      */
     protected boolean primary(LivingEntityBeyonderCapability cap, LivingEntity target){return false;}
 
     /**
      * function that runs whenever the player casts the secondary ability
+     * if it returns true, it means itll be posted on the CastAbilityEvent and will be put on a default cooldown.
+     * false means it wont.
      * @param cap
      * @param target
-     * @return true to be put on default cooldown, false to not be put on default cooldown
+     * @return true if successfuly cast, false otherwise
      */
     protected boolean secondary(LivingEntityBeyonderCapability cap, LivingEntity target){return false;}
 

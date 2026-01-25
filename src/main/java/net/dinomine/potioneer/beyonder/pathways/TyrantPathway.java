@@ -2,6 +2,8 @@ package net.dinomine.potioneer.beyonder.pathways;
 
 import net.dinomine.potioneer.beyonder.abilities.Abilities;
 import net.dinomine.potioneer.beyonder.abilities.Ability;
+import net.dinomine.potioneer.rituals.spirits.Deity;
+import net.dinomine.potioneer.rituals.spirits.defaultGods.TyrantResponse;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
@@ -13,6 +15,11 @@ public class TyrantPathway extends BeyonderPathway {
 
     public TyrantPathway(){
         super("Tyrant", 0x404080, new int[]{3400, 2500, 1800, 1300, 1000, 700, 425, 300, 140, 100});
+    }
+
+    @Override
+    public Deity getDefaultDeity() {
+        return new TyrantResponse();
     }
 
     @Override

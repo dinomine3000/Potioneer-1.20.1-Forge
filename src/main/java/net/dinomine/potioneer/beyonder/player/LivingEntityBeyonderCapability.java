@@ -28,6 +28,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.capabilities.AutoRegisterCapability;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
@@ -42,6 +43,9 @@ public class LivingEntityBeyonderCapability {
     public static final int SANITY_FOR_DROP = 20;
     public static final int SANITY_MIN_RESPAWN = 40;
     private static int SECONDS_TO_MAX_SPIRITUALITY = PotioneerCommonConfig.SECONDS_TO_MAX_SPIRITUALITY.get();
+    public static int MAX_REP_DEFAULT = 3;
+    public static int MAX_REP = 10;
+    public static int PRAYING_COOLDOWN = 20*60*18;
 
     private float spirituality = 100;
     private float spiritualityCost = 0;
@@ -59,6 +63,51 @@ public class LivingEntityBeyonderCapability {
             return (float) (Math.pow(getSequenceLevel(), 2.6)/90 + 2);
         }
     };
+    private int[] reputation = {0, 0, 0, 0, 0};
+    private int religion = -1;
+    private long timePrayed = -1;
+
+    public void putPrayerCooldown(Level level) {
+        timePrayed = level.getGameTime();
+    }
+
+    public boolean canPray(Level level) {
+        long gameTime = level.getGameTime();
+        return timePrayed < 0 || level.getGameTime() - timePrayed > PRAYING_COOLDOWN;
+    }
+
+    public int getReligion(){
+        return religion;
+    }
+    public void setReligion(int religion){
+        if(religion >= 0 && religion < reputation.length){
+            if(this.religion > -1) reputation[this.religion] = Math.min(reputation[this.religion], MAX_REP_DEFAULT);
+            this.religion = religion;
+        }
+    }
+
+    public void setReputation(int pathwayId, int rep){
+        if(pathwayId >= 0 && pathwayId < reputation.length)
+            reputation[pathwayId] = Mth.clamp(rep, 0, 10);
+    }
+    public boolean changeReputation(int pathwayId, int rep, Level level){
+        if(level != null && timePrayed > 0 && level.getGameTime() - this.timePrayed < PRAYING_COOLDOWN) return false;
+        if(pathwayId < 0 || pathwayId >= reputation.length) return false;
+        if(getReputation(pathwayId) >= MAX_REP) return false;
+        if(getReputation(pathwayId) >= MAX_REP_DEFAULT && pathwayId != religion) return false;
+        reputation[pathwayId] += rep;
+        return true;
+    }
+
+    public boolean changeReputation(int pathwayId, int rep){
+        return changeReputation(pathwayId, rep, null);
+    }
+
+    public int getReputation(int pathwayId){
+        if(pathwayId >= 0 && pathwayId < reputation.length)
+            return reputation[pathwayId];
+        return 0;
+    }
 
     private int artifactCooldown = 0;
 
@@ -160,6 +209,10 @@ public class LivingEntityBeyonderCapability {
 
     public float getSpirituality(){
         return Math.max(this.spirituality, 0);
+    }
+
+    public float getSpiritualityPercent(){
+        return getSpirituality() / getMaxSpirituality();
     }
 
     public void changeSpirituality(float val){
@@ -330,6 +383,12 @@ public class LivingEntityBeyonderCapability {
         return getPathway().getSequenceNameFromId(getSequenceLevel(), show);
     }
 
+    public void addPages(List<Integer> pages){
+        for(int pageId: pages){
+            addPage(pageId);
+        }
+    }
+
     public void addPage(int pageNumber){
         if(PageRegistry.pageExists(pageNumber) && !pageList.contains(pageNumber))
             pageList.add(pageNumber);
@@ -389,12 +448,22 @@ public class LivingEntityBeyonderCapability {
             pages.add(IntTag.valueOf(page));
         }
         nbt.put("pages", pages);
+
+        ListTag rep = new ListTag();
+        for(int repVal: reputation){
+            rep.add(IntTag.valueOf(repVal));
+        }
+        nbt.put("reputation", rep);
+        nbt.putInt("religion", religion);
+        nbt.putLong("prayCd", timePrayed);
+
 //        System.out.println("Saving pathway id: " + pathway.getId());
         //this.abilitiesManager.saveNBTData(nbt);
         this.effectsManager.saveNBTData(nbt);
         this.abilitiesManager.saveNBTData(nbt);
         this.luckManager.saveNBTData(nbt);
         this.characteristicManager.saveNBTData(nbt);
+
     }
 
     public void loadNBTData(CompoundTag nbt){
@@ -424,6 +493,16 @@ public class LivingEntityBeyonderCapability {
             loadedPages.add(page);
         }
         this.pageList = new ArrayList<>(loadedPages.stream().filter(PageRegistry::pageExists).toList());
+
+        int[] reputation = new int[5];
+        ListTag reputationTag = nbt.getList("reputation", Tag.TAG_INT);
+        for (int i = 0; i < Math.min(reputationTag.size(), reputation.length); i++) {
+            int repVal = reputationTag.getInt(i);
+            reputation[i] = repVal;
+        }
+        this.reputation = reputation;
+        this.religion = nbt.contains("religion") ? nbt.getInt("religion") : -1;
+        this.timePrayed = nbt.contains("prayCd") ? nbt.getLong("prayCd") : -1;
 
         this.luckManager.loadNBTData(nbt);
         this.effectsManager.loadNBTData(nbt, this, entity);

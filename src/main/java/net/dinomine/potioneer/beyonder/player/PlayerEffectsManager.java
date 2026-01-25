@@ -172,6 +172,7 @@ public class PlayerEffectsManager {
      */
     public boolean addOrReplaceEffect(BeyonderEffect effect, LivingEntityBeyonderCapability cap, LivingEntity target){
         if(target.level().isClientSide()) return false;
+        if(effect == null) return false;
         if(!hasEffectOrBetter(effect)){
             removeEffect(effect.getId());
             addEffect(effect, cap, target, true);

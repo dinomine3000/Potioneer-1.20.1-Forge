@@ -1,9 +1,11 @@
 package net.dinomine.potioneer.beyonder.client.screen;
 
+import ca.weblite.objc.Client;
 import net.dinomine.potioneer.Potioneer;
 import net.dinomine.potioneer.beyonder.client.ClientStatsData;
 import net.dinomine.potioneer.beyonder.pages.Page;
 import net.dinomine.potioneer.beyonder.pages.PageRegistry;
+import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
 import net.dinomine.potioneer.recipe.PotionCauldronRecipe;
 import net.dinomine.potioneer.util.CustomPlainTextButton;
 import net.dinomine.potioneer.util.CustomTextImageButton;
@@ -52,7 +54,13 @@ public class KnowledgeBookScreen extends Screen {
         ClientStatsData.getCapability().ifPresent(cap -> {
            pages = new ArrayList<>(cap.getPageList().stream().map(PageRegistry::getPageById).toList());
         });
-        pages = PageRegistry.addDefaultPages(pages);
+        PageRegistry.addDefaultPages(pages);
+        if(ClientStatsData.getCapability().isPresent()){
+            LivingEntityBeyonderCapability cap = ClientStatsData.getCapability().get();
+            for(Page ablPage: cap.getAbilitiesManager().getPagesFromAbilities()){
+                if(!pages.contains(ablPage)) pages.add(ablPage);
+            }
+        }
         this.minWindow = 0;
         this.maxWindow = Math.min(MAX_PAGES, pages.size());
     }

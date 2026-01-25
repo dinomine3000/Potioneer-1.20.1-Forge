@@ -2,6 +2,9 @@ package net.dinomine.potioneer.beyonder.pathways;
 
 import net.dinomine.potioneer.beyonder.abilities.Abilities;
 import net.dinomine.potioneer.beyonder.abilities.Ability;
+import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
+import net.dinomine.potioneer.rituals.spirits.Deity;
+import net.dinomine.potioneer.rituals.spirits.defaultGods.WheelOfFortuneResponse;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
@@ -76,15 +79,18 @@ public class WheelOfFortunePathway extends BeyonderPathway {
                 abilities.add(Abilities.DODGE_DAMAGE.create(atSequenceLevel));
                 abilities.add(Abilities.CALAMITY_INCREASE.create(atSequenceLevel));
             case 8:
-                abilities.add(Abilities.BLOCK_SNIFF.create(atSequenceLevel));
-                abilities.add(Abilities.LUCK_BOOST.create(atSequenceLevel));
-                abilities.add(Abilities.CHECK_LUCK.create(atSequenceLevel));
-                abilities.add(Abilities.FORTUNE_ABILITY.create(atSequenceLevel));
-                abilities.add(Abilities.SILK_TOUCH_ABILITY.create(atSequenceLevel));
+//                abilities.add(Abilities.BLOCK_SNIFF.create(atSequenceLevel));
+//                abilities.add(Abilities.LUCK_BOOST.create(atSequenceLevel));
+//                abilities.add(Abilities.CHECK_LUCK.create(atSequenceLevel));
+//                abilities.add(Abilities.FORTUNE_ABILITY.create(atSequenceLevel));
+//                abilities.add(Abilities.SILK_TOUCH_ABILITY.create(atSequenceLevel));
+                abilities.add(Abilities.WHEEL_KNOWLEDGE.create(atSequenceLevel));
             case 9:
                 abilities.add(Abilities.MINER_LIGHT.create(atSequenceLevel));
+                abilities.add(Abilities.VOID_VISION.create(atSequenceLevel));
                 abilities.add(Abilities.CONJURE_PICKAXE.create(atSequenceLevel));
                 abilities.add(Abilities.MINING_SPEED.create(atSequenceLevel));
+                abilities.add(Abilities.ZERO_DAMAGE.create(atSequenceLevel));
         }
 
         return abilities;
@@ -123,4 +129,18 @@ public class WheelOfFortunePathway extends BeyonderPathway {
         return 0;
     }
 
+    @Override
+    public Deity getDefaultDeity() {
+        return new WheelOfFortuneResponse();
+    }
+
+    @Override
+    public List<String> canCraftEffectCharms(int sequenceLevel) {
+        List<String> res = new ArrayList<>();
+        switch(sequenceLevel){
+            case 8:
+                res.addAll(List.of(BeyonderEffects.WHEEL_TEMP_LUCK.getEffectId(), BeyonderEffects.WHEEL_INSTANT_LUCK.getEffectId()));
+        }
+        return res;
+    }
 }

@@ -81,7 +81,8 @@ public class RitualPedestalBlockEntity extends BlockEntity {
     }
 
     public void forcefullySetItem(ItemStack stack){
-        itemHandler.insertItem(0, stack, false);
+        itemHandler.setStackInSlot(0, stack);
+        updateClient();
     }
 
     public ItemStack getRenderStack(){

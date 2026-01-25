@@ -5,28 +5,22 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 
 public class AbilityInfo {
-    private int posY;
-    private int pathwayId;
-    private int cost;
-    private String descId;
+    private final int pathwayId;
+    private final String descId;
     private boolean enabled;
     private int cooldown;
     private int maxCd;
-    private String innerAbilityId;
+    private final String innerAbilityId;
     private AbilityKey key = new AbilityKey();
-    private boolean hasSecondaryFunction;
     private CompoundTag abilityData = new CompoundTag();
 
-    public AbilityInfo(int posY, int pathwayId, int cost, int cooldown, int maxCooldown, boolean enabled, String descId, String innerId, boolean hasSecondaryFunction) {
-        this.posY = posY;
+    public AbilityInfo(int pathwayId, int cooldown, int maxCooldown, boolean enabled, String descId, String innerId) {
         this.pathwayId = pathwayId;
-        this.cost = cost;
         this.cooldown = cooldown;
         this.maxCd = maxCooldown;
         this.descId = descId;
         this.enabled = enabled;
         this.innerAbilityId = innerId;
-        this.hasSecondaryFunction = hasSecondaryFunction;
     }
 
     public AbilityInfo withKey(AbilityKey key){
@@ -43,9 +37,7 @@ public class AbilityInfo {
 //    }
 
     public void encode(FriendlyByteBuf buffer){
-        buffer.writeInt(posY);
         buffer.writeInt(pathwayId);
-        buffer.writeInt(cost);
         buffer.writeInt(cooldown);
         buffer.writeInt(maxCd);
         buffer.writeBoolean(enabled);
@@ -53,13 +45,10 @@ public class AbilityInfo {
         BufferUtils.writeStringToBuffer(innerAbilityId, buffer);
         key.writeToBuffer(buffer);
         buffer.writeNbt(abilityData);
-        buffer.writeBoolean(hasSecondaryFunction);
     }
 
     public static AbilityInfo decode(FriendlyByteBuf buffer){
-        int y = buffer.readInt();
         int pathwayId = buffer.readInt();
-        int cost = buffer.readInt();
         int cooldown = buffer.readInt();
         int maxCd = buffer.readInt();
         boolean enabled = buffer.readBoolean();
@@ -67,8 +56,7 @@ public class AbilityInfo {
         String innerId = BufferUtils.readString(buffer);
         AbilityKey key = AbilityKey.readFromBuffer(buffer);
         CompoundTag tag = buffer.readAnySizeNbt();
-        boolean secondary = buffer.readBoolean();
-        return new AbilityInfo(y, pathwayId, cost, cooldown, maxCd, enabled, descId, innerId, secondary).withKey(key).withData(tag);
+        return new AbilityInfo(pathwayId, cooldown, maxCd, enabled, descId, innerId).withKey(key).withData(tag);
     }
 
     public String innerId(){
@@ -85,14 +73,6 @@ public class AbilityInfo {
 
     public int getPathwayId(){
         return pathwayId;
-    }
-
-    public int getPosY(){
-        return posY;
-    }
-
-    public boolean hasSecondaryFunction(){
-        return hasSecondaryFunction;
     }
 
     public void setEnabled(boolean state){

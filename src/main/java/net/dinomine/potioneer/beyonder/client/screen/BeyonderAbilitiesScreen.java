@@ -1,6 +1,8 @@
 package net.dinomine.potioneer.beyonder.client.screen;
 
 import net.dinomine.potioneer.Potioneer;
+import net.dinomine.potioneer.beyonder.abilities.Abilities;
+import net.dinomine.potioneer.beyonder.abilities.AbilityFactory;
 import net.dinomine.potioneer.beyonder.abilities.AbilityInfo;
 import net.dinomine.potioneer.beyonder.abilities.AbilityKey;
 import net.dinomine.potioneer.beyonder.client.ClientAbilitiesData;
@@ -252,6 +254,16 @@ public class BeyonderAbilitiesScreen extends Screen {
             pGuiGraphics.drawString(this.font, name, leftPos + 24 + imageWidth/2 - this.font.width(name)/2, topPos + 9, 0, false);
         }
 
+        //right click functionality
+        AbilityFactory abl = Abilities.getAbilityFactory(data.getKey());
+        if(main && abl.getHasSecondaryFunction()){
+            pGuiGraphics.blit(TEXTURE, leftPos + 165, topPos + 30, 7, 11, 178, 1, 7, 11, TEXTURE_WIDTH, TEXTURE_HEIGHT);
+            if(mouseX >= leftPos + 165 && mouseX <= leftPos + 173
+                    && mouseY >= topPos + 29 && mouseY <= topPos + 41){
+                pGuiGraphics.renderTooltip(this.font, Component.translatable("gui.potioneer.has_secondary_function"), mouseX, mouseY);
+            }
+        }
+
         //cooldown gradient
         if(main){
             float percent = Mth.clamp(1 - ((float) ClientAbilitiesData.getCooldown(key) / ClientAbilitiesData.getMaxCooldown(key)),
@@ -264,7 +276,7 @@ public class BeyonderAbilitiesScreen extends Screen {
         //icon itself
         int abilityX = Pathways.getPathwayById(data.getPathwayId()).getAbilityX();
         pGuiGraphics.blit(ABILITY_ICONS, posX, posY, (int) (scale * ICON_WIDTH), (int)(scale * ICON_HEIGHT),
-                abilityX, data.getPosY(), ICON_WIDTH, ICON_HEIGHT, ICONS_WIDTH, ICONS_HEIGHT);
+                abilityX, abl.getPosY(), ICON_WIDTH, ICON_HEIGHT, ICONS_WIDTH, ICONS_HEIGHT);
 
         if(!main && ClientAbilitiesData.getQuickAbility().equals(key)){
             pGuiGraphics.blit(TEXTURE, posX + 130, posY, 12, 12,

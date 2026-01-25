@@ -73,7 +73,12 @@ public abstract class BeyonderEffect {
     }
 
     public void refreshTime(BeyonderEffect effect){
-        this.maxLife += effect.maxLife;
+        if(maxLife < 0 && effect.maxLife >= 0){
+            maxLife = effect.maxLife;
+            this.lifetime = 0;
+        } else if(maxLife >= 0) {
+            this.maxLife += effect.maxLife;
+        }
     }
 
     public void setLifetime(int life){
@@ -153,6 +158,11 @@ public abstract class BeyonderEffect {
     }
 
     //nbt data is loaded in the effects manager
+
+    /**
+     * function that effects can utilize to load their custom effect information
+     * @param nbt
+     */
     public void loadNBTData(CompoundTag nbt){
     }
 

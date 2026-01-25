@@ -25,6 +25,7 @@ public abstract class SpiritResponse {
             case "consumeSpirituality" -> SpiritualityConsumeResponse.getFromTag(infoTag);
             case "nothing" -> new NothingResponse();
             case "player" -> new PlayerResponse();
+            case "summoning" -> SummonResponse.loadFromNbt(infoTag);
             // case "some_other" -> SomeOtherCriteria.loadFromNBT(tag);
             default -> throw new IllegalArgumentException("Unknown criteria type: " + type);
         };

@@ -59,11 +59,9 @@ public class StarFlowerBlock extends FlowerBlock {
         super.tick(pState, pLevel, pPos, pRandom);
         if(pLevel.isDay() && pState.getValue(OPEN)){
             pLevel.setBlockAndUpdate(pPos, defaultBlockState().setValue(OPEN, false));
-            System.out.println("Closing flower");
         }
         else if(!pLevel.isDay() && !pState.getValue(OPEN)){
             pLevel.setBlockAndUpdate(pPos, defaultBlockState().setValue(OPEN, true));
-            System.out.println("Opening flower");
         }
         pLevel.scheduleTick(pPos, this, 20);
     }

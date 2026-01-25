@@ -1,15 +1,15 @@
 package net.dinomine.potioneer.rituals.spirits.defaultGods;
 
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
+import net.dinomine.potioneer.beyonder.pages.PageRegistry;
 import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
 import net.dinomine.potioneer.config.PotioneerRitualsConfig;
 import net.dinomine.potioneer.rituals.RitualInputData;
 import net.dinomine.potioneer.rituals.RitualResponseLogic;
-import net.dinomine.potioneer.rituals.criteria.PathwayCriteria;
-import net.dinomine.potioneer.rituals.criteria.ResponseCriteria;
-import net.dinomine.potioneer.rituals.criteria.SequenceLevelCriteria;
+import net.dinomine.potioneer.rituals.criteria.*;
 import net.dinomine.potioneer.rituals.responses.DefaultResponse;
 import net.dinomine.potioneer.rituals.spirits.Deity;
+import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.player.Player;
@@ -21,8 +21,17 @@ import java.util.ArrayList;
 
 public class WheelOfFortuneResponse extends Deity {
 
+    public static final String PRAYER = "Perpetually spinning wheel of time, the horizon between zero and infinity, the Goddess who controls Fate and destiny.";
+
     public WheelOfFortuneResponse(){
-        super(0, PotioneerRitualsConfig.WOF_INGREDIENTS.get(), PotioneerRitualsConfig.WOF_INCENSE.get());
+        super(0, PotioneerRitualsConfig.WOF_INGREDIENTS.get(), PotioneerRitualsConfig.WOF_INCENSE.get(),
+                Component.translatable("deity.potioneer.lady_fate"), "Wiibal",
+                PRAYER, PageRegistry.LADY_FATE_1);
+    }
+
+    @Override
+    public Component getFieltyMessage() {
+        return Component.translatable("reputation.potioneer.lady_fate", title);
     }
 
     protected void setupLogic() {
@@ -30,7 +39,7 @@ public class WheelOfFortuneResponse extends Deity {
         responseCriteria.add(new SequenceLevelCriteria(8));
 
         ArrayList<ResponseCriteria> punishmentCriteria = new ArrayList<>();
-        punishmentCriteria.add(new PathwayCriteria(0));
+        punishmentCriteria.add(new PrayerCriteria(RitualInputData.FIRST_VERSE.INSULTING, RitualInputData.SECOND_VERSE.ARROGANT));
 
         RitualResponseLogic logic = new RitualResponseLogic(
                 punishmentCriteria,
@@ -48,12 +57,7 @@ public class WheelOfFortuneResponse extends Deity {
     }
 
     private void punishmentLogic(RitualInputData inputData, Level level){
-        Player player = getPlayer(inputData, level, true);
-        if(player == null) return;
-        player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
-            cap.getEffectsManager().addOrReplaceEffect(BeyonderEffects.byId(BeyonderEffects.TYRANT_LIGHTNING_TARGET.getEffectId(), 5, 0, 20*5, true),
-                    cap, player);
-        });
+        //TODO
     }
 
     private void responseLogic(RitualInputData inputData, Level level){

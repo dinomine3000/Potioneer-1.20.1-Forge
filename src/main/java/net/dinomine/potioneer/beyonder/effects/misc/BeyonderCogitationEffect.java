@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class BeyonderCogitationEffect extends BeyonderEffect {
-    private List<AbilityKey> deactivatedAbilities = new ArrayList<>();
     private boolean slownlessCheck = false;
     private boolean darknessCheck = false;
     private boolean weaknessCheck = false;

@@ -12,6 +12,7 @@ import net.dinomine.potioneer.config.PotioneerCommonConfig;
 import net.dinomine.potioneer.config.PotioneerRitualsConfig;
 import net.dinomine.potioneer.entities.ModEntities;
 import net.dinomine.potioneer.entities.client.*;
+import net.dinomine.potioneer.entities.custom.ChryonEntity;
 import net.dinomine.potioneer.item.ModCreativeModTabs;
 import net.dinomine.potioneer.item.ModItems;
 import net.dinomine.potioneer.item.custom.UnshadowedCrucifixItem;
@@ -51,6 +52,9 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.registries.NewRegistryEvent;
 import org.slf4j.Logger;
 import software.bernie.geckolib.GeckoLib;
+import software.bernie.geckolib.core.molang.LazyVariable;
+import software.bernie.geckolib.core.molang.MolangParser;
+import software.bernie.geckolib.core.molang.MolangQueries;
 
 // The value here should match an entry in the META-INF/mods.toml file
 @Mod(Potioneer.MOD_ID)
@@ -155,7 +159,7 @@ public class Potioneer
             EntityRenderers.register(ModEntities.ASTEROID.get(), AsteroidRenderer::new);
             EntityRenderers.register(ModEntities.CHARM_ENTITY.get(), CharmRenderer::new);
 
-
+            MolangParser.INSTANCE.register(new LazyVariable("query.target_x", 0.0F));
 
             BlockEntityRenderers.register(ModBlockEntities.MINER_LIGHT_BLOCK_ENTITY.get(), MinerBlockRenderer::new);
             BlockEntityRenderers.register(ModBlockEntities.PRIEST_LIGHT_BLOCK_ENTITY.get(), PriestBlockRenderer::new);
@@ -210,6 +214,16 @@ public class Potioneer
             ItemProperties.register(ModItems.LEYMANOS_TRAVELS.get(),
                     new ResourceLocation(Potioneer.MOD_ID, "entity"),
                     ((itemStack, clientLevel, livingEntity, i) -> livingEntity == null ? 1 : 0));
+
+
+            ItemProperties.register(ModBlocks.SCRIPTURE_STAND.get().asItem(),
+                    new ResourceLocation(Potioneer.MOD_ID, "pathway_id"),
+                    ((itemStack, clientLevel, livingEntity, i) -> {
+                        if(itemStack.hasTag() && itemStack.getTag().contains("stand_id")){
+                            return itemStack.getTag().getInt("stand_id");
+                        }
+                        return 0;
+                    }));
 
             event.enqueueWork(() -> {
                 MenuScreens.register(ModMenuTypes.CRAFTER_MENU.get(), CraftingScreen::new);

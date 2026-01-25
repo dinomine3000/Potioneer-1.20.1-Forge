@@ -1,6 +1,7 @@
 package net.dinomine.potioneer.beyonder.pathways;
 
 import net.dinomine.potioneer.beyonder.abilities.Ability;
+import net.dinomine.potioneer.rituals.spirits.Deity;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
@@ -43,6 +44,7 @@ public abstract class BeyonderPathway {
 
     public abstract int getAbilityX();
 
+    public Deity getDefaultDeity(){return null;}
 
     public abstract int getSequenceColorFromLevel(int sequenceLevel);
 //    {
@@ -118,4 +120,6 @@ public abstract class BeyonderPathway {
     public abstract void applyRitualEffects(Player player, int sequenceLevel);
 
     public abstract Component getRitualDescriptionForSequence(int sequenceLevel);
+
+    public List<String> canCraftEffectCharms(int sequenceLevel){return List.of();}
 }

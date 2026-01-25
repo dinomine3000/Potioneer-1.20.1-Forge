@@ -1,0 +1,15 @@
+{
+  "type": "moogs_structures:moogs_structures_generic_jigsaw_structure",
+  "start_pool": "potioneer:arch/start_pool",
+  "size": 1,
+  "start_height": { "absolute": -2 },
+  "biomes": ["minecraft:plains"],
+  "step": "surface_structures",
+  "spawn_overrides": {},
+  "project_start_to_heightmap": "WORLD_SURFACE_WG",
+  "cannot_spawn_in_liquid": true,
+  "terrain_height_radius_check": 1,
+  "allowed_terrain_height_range": 5,
+  "burying_type": "AVERAGE_LAND",
+  "terrain_adaptation": "encapsulate"
+}

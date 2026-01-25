@@ -3,15 +3,24 @@ package net.dinomine.potioneer.event;
 import net.dinomine.potioneer.Potioneer;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffect;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
+import net.dinomine.potioneer.beyonder.effects.wheeloffortune.BeyonderZeroDamageEffect;
+import net.dinomine.potioneer.beyonder.pathways.BeyonderPathway;
+import net.dinomine.potioneer.beyonder.pathways.Pathways;
 import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
 import net.dinomine.potioneer.item.ModItems;
 import net.dinomine.potioneer.network.PacketHandler;
 import net.dinomine.potioneer.network.messages.SequenceSTCSyncRequest;
+import net.dinomine.potioneer.rituals.spirits.Deity;
 import net.dinomine.potioneer.util.misc.DivinationResult;
 import net.dinomine.potioneer.util.misc.MysticalItemHelper;
 import net.dinomine.potioneer.util.misc.MysticismHelper;
+import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -37,6 +46,9 @@ import net.minecraftforge.fml.common.Mod;
 import java.nio.ByteBuffer;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Pattern;
 
 @Mod.EventBusSubscriber
 public class BeyonderEvents {
@@ -59,6 +71,26 @@ public class BeyonderEvents {
                 });
             }
         }
+    }
+
+    @SubscribeEvent
+    public static void abilityCastPre(AbilityCastEvent.Pre event){
+    }
+
+    @SubscribeEvent
+    public static void abilityCastPost(AbilityCastEvent.Post event){
+    }
+
+    @SubscribeEvent
+    public static void onItemHurt(DurabilityHurtEvent event){
+        event.getEntity().getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
+            if(ItemStack.matches(event.getEntity().getMainHandItem(), event.getStack()) && cap.getEffectsManager().hasEffect(BeyonderEffects.WHEEL_ZERO_DAMAGE.getEffectId())){
+                if(cap.getLuckManager().passesLuckCheck(0.35f, 0, 0, event.getEntity().getRandom())){
+                    ((BeyonderZeroDamageEffect) cap.getEffectsManager().getEffect(BeyonderEffects.WHEEL_ZERO_DAMAGE.getEffectId())).playSound(event.getEntity());
+                    event.setCanceled(true);
+                }
+            }
+        });
     }
 
     @SubscribeEvent
@@ -112,15 +144,77 @@ public class BeyonderEvents {
 
     @SubscribeEvent
     public static void onPlayerChat(ServerChatEvent event){
-        if(event.getPlayer() != null){
-            if(event.getRawText().toLowerCase().contains("leodero")){
-                event.getPlayer().getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
-                    cap.getEffectsManager().addOrReplaceEffect(BeyonderEffects.byId(BeyonderEffects.TYRANT_LIGHTNING_TARGET.getEffectId(), 1, 0, 20*10, true), cap, event.getPlayer());
-                    cap.requestActiveSpiritualityCost(1000);
-                    cap.changeSanity(-25);
-                });
+        if(event.getPlayer() != null && !event.getPlayer().level().isClientSide()){
+            List<String> matchedTrueNames = new ArrayList<>();
+            for(BeyonderPathway pathway: Pathways.getAllPathways()){
+                Deity deity = pathway.getDefaultDeity();
+                if(deity == null) continue;
+                String raw = event.getRawText();
+                if(raw.toLowerCase().contains(deity.getTrueName().toLowerCase())){
+                    event.getPlayer().getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
+                        deity.onTrueNameSpoken(event.getPlayer(), cap);
+                    });
+                    matchedTrueNames.add(deity.getTrueName());
+                } else if(deity.matchPrayer(event.getRawText())){
+                    event.getPlayer().getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
+                        if(cap.changeReputation(pathway.getId(), 1, event.getPlayer().level())){
+                           cap.putPrayerCooldown(event.getPlayer().level());
+                           event.getPlayer().sendSystemMessage(Component.translatableWithFallback("reputation.potioneer.prayer", "You feel a presence acknowledge your prayer..."));
+                        }
+                    });
+                }
             }
+            event.setMessage(obfuscateTrueNames(event.getMessage(), matchedTrueNames));
         }
+    }
+
+    private static Component obfuscateTrueNames(Component originalMessage, List<String> matchedNames) {
+        // if no names matched, return the original component
+        if (matchedNames == null || matchedNames.isEmpty()) {
+            return originalMessage;
+        }
+
+        String raw = originalMessage.getString(); // get plain text
+        String lowerRaw = raw.toLowerCase();
+
+        MutableComponent newMessage = Component.empty();
+        int index = 0;
+
+        while (index < raw.length()) {
+            int closestMatchIndex = -1;
+            String matchedTrueName = null;
+
+            // find the next nearest matched name
+            for (String trueName : matchedNames) {
+                int matchIndex = lowerRaw.indexOf(trueName.toLowerCase(), index);
+
+                if (matchIndex != -1 &&
+                        (closestMatchIndex == -1 || matchIndex < closestMatchIndex)) {
+                    closestMatchIndex = matchIndex;
+                    matchedTrueName = trueName;
+                }
+            }
+
+            // no more matches
+            if (closestMatchIndex == -1) {
+                newMessage.append(Component.literal(raw.substring(index)));
+                break;
+            }
+
+            // append text before the match
+            newMessage.append(Component.literal(raw.substring(index, closestMatchIndex)));
+
+            // append obfuscated match
+            newMessage.append(
+                    Component.literal(
+                            raw.substring(closestMatchIndex, closestMatchIndex + matchedTrueName.length())
+                    ).withStyle(ChatFormatting.OBFUSCATED)
+            );
+
+            index = closestMatchIndex + matchedTrueName.length();
+        }
+
+        return newMessage;
     }
 
     @SubscribeEvent

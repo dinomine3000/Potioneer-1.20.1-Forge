@@ -23,19 +23,16 @@ public class LuckBoostAbility extends Ability {
 
     @Override
     protected boolean primary(LivingEntityBeyonderCapability cap, LivingEntity target) {
-        if(target.level().isClientSide() && cap.getSpirituality() >= cost()) return true;
-
-        if(cap.getSpirituality() >= cost()){
-            if(cap.getEffectsManager().addEffectNoRefresh(BeyonderEffects.byId(BeyonderEffects.WHEEL_TEMP_LUCK.getEffectId(),
-                    getSequenceLevel(), cost(), defaultMaxCooldown, true), cap, target)){
-                cap.requestActiveSpiritualityCost(cost());
-                cap.getLuckManager().grantLuck(51);
-                target.sendSystemMessage(Component.translatable("message.potioneer.luck_boost_grant"));
-                target.playSound(SoundEvents.ENCHANTMENT_TABLE_USE, 1, 1);
-            } else {
-                target.sendSystemMessage(Component.translatable("message.potioneer.effect_already_exists"));
-            }
-        }
+//        if(target.level().isClientSide() && cap.getSpirituality() >= cost()) return true;
+//
+//        if(cap.getSpirituality() >= cost()){
+//            if(cap.getEffectsManager().addEffectNoRefresh(BeyonderEffects.byId(BeyonderEffects.WHEEL_TEMP_LUCK.getEffectId(),
+//                    getSequenceLevel(), cost(), defaultMaxCooldown, true), cap, target)){
+//                cap.requestActiveSpiritualityCost(cost());
+//            } else {
+//                target.sendSystemMessage(Component.translatable("message.potioneer.effect_already_exists"));
+//            }
+//        }
         return true;
     }
 }

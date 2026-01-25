@@ -1,0 +1,33 @@
+{
+  "variants": {
+    "book=0,facing=north": { "model": "potioneer:block/scripture_stand", "y": 0},
+    "book=0,facing=east":  { "model": "potioneer:block/scripture_stand", "y": 90},
+    "book=0,facing=south": { "model": "potioneer:block/scripture_stand", "y": 180},
+    "book=0,facing=west":  { "model": "potioneer:block/scripture_stand", "y": 270},
+
+    "book=1,facing=north": { "model": "potioneer:block/scripture_stand_wheel", "y": 0},
+    "book=1,facing=east":  { "model": "potioneer:block/scripture_stand_wheel", "y": 90},
+    "book=1,facing=south": { "model": "potioneer:block/scripture_stand_wheel", "y": 180},
+    "book=1,facing=west":  { "model": "potioneer:block/scripture_stand_wheel", "y": 270},
+
+    "book=2,facing=north": { "model": "potioneer:block/scripture_stand_tyrant", "y": 0},
+    "book=2,facing=east":  { "model": "potioneer:block/scripture_stand_tyrant", "y": 90},
+    "book=2,facing=south": { "model": "potioneer:block/scripture_stand_tyrant", "y": 180},
+    "book=2,facing=west":  { "model": "potioneer:block/scripture_stand_tyrant", "y": 270},
+
+    "book=3,facing=north": { "model": "potioneer:block/scripture_stand_mystery", "y": 0},
+    "book=3,facing=east":  { "model": "potioneer:block/scripture_stand_mystery", "y": 90},
+    "book=3,facing=south": { "model": "potioneer:block/scripture_stand_mystery", "y": 180},
+    "book=3,facing=west":  { "model": "potioneer:block/scripture_stand_mystery", "y": 270},
+
+    "book=4,facing=north": { "model": "potioneer:block/scripture_stand_red", "y": 0},
+    "book=4,facing=east":  { "model": "potioneer:block/scripture_stand_red", "y": 90},
+    "book=4,facing=south": { "model": "potioneer:block/scripture_stand_red", "y": 180},
+    "book=4,facing=west":  { "model": "potioneer:block/scripture_stand_red", "y": 270},
+
+    "book=5,facing=north": { "model": "potioneer:block/scripture_stand_paragon", "y": 0},
+    "book=5,facing=east":  { "model": "potioneer:block/scripture_stand_paragon", "y": 90},
+    "book=5,facing=south": { "model": "potioneer:block/scripture_stand_paragon", "y": 180},
+    "book=5,facing=west":  { "model": "potioneer:block/scripture_stand_paragon", "y": 270}
+  }
+}

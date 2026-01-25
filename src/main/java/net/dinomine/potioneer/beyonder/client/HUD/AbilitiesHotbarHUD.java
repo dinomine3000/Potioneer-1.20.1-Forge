@@ -3,6 +3,7 @@ package net.dinomine.potioneer.beyonder.client.HUD;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.dinomine.potioneer.Potioneer;
 import net.dinomine.potioneer.beyonder.abilities.Abilities;
+import net.dinomine.potioneer.beyonder.abilities.AbilityFactory;
 import net.dinomine.potioneer.beyonder.abilities.AbilityInfo;
 import net.dinomine.potioneer.beyonder.client.ClientAbilitiesData;
 import net.dinomine.potioneer.beyonder.client.ClientConfigData;
@@ -18,12 +19,14 @@ import net.minecraftforge.client.gui.overlay.IGuiOverlay;
 
 public class AbilitiesHotbarHUD {
     private static final ResourceLocation ICONS = new ResourceLocation(Potioneer.MOD_ID, "textures/gui/ability_icon_atlas.png");
-    public static int ICONS_WIDTH = 146;
+    public static int ICONS_WIDTH = 180;
     public static int ICONS_HEIGHT = 512;
     public static int ICON_WIDTH = 16;
     public static int ICON_HEIGHT = 24;
-    private static int CASE_WIDTH = 26;
-    private static int CASE_HEIGHT = 32;
+    private static final int CASE_WIDTH = 26;
+    private static final int CASE_HEIGHT = 32;
+    private static final int CAST_WIDTH = 13;
+    private static final int CAST_HEIGHT = 32;
 
     private static final Minecraft minecraft = Minecraft.getInstance();
 
@@ -166,18 +169,33 @@ public class AbilitiesHotbarHUD {
     }
 
     public static void drawAbility(GuiGraphics guiGraphics, AbilityInfo info, int caret, int xPos, int yPos, float scale){
-
-        //48 x 60 - case
         int abilityX = Pathways.getPathwayById(info.getPathwayId()).getAbilityX();
         int caseX = xPos - (int) (CASE_WIDTH * scale / 2);
+
+        //ability cast (primary vs secondary) shape
+        AbilityFactory abl = Abilities.getAbilityFactory(info.getKey());
+        if(abl.getHasSecondaryFunction()){
+            float pPercent = ClientAbilitiesData.getPercent(true);
+            float sPercent = ClientAbilitiesData.getPercent(false);
+            int pCastHeight = (int)(CAST_HEIGHT*(1-pPercent));
+            int sCastHeight = (int)(CAST_HEIGHT*(1-sPercent));
+            guiGraphics.blit(ICONS, caseX, yPos + (int)(scale * (CAST_HEIGHT - pCastHeight)),
+                    (int) (CAST_WIDTH*scale), (int) (pCastHeight*scale), 151, pPercent != 0 ? 73 - pCastHeight : 3,
+                    CAST_WIDTH, pCastHeight, ICONS_WIDTH, ICONS_HEIGHT);
+            guiGraphics.blit(ICONS, (caseX +  (int) (CASE_WIDTH*scale/2f)), yPos + (int)(scale * (CAST_HEIGHT - sCastHeight)),
+                    (int) (CAST_WIDTH*scale), (int) (sCastHeight*scale), 164, sPercent != 0 ? 73 - sCastHeight : 3,
+                    CAST_WIDTH, sCastHeight, ICONS_WIDTH, ICONS_HEIGHT);
+        }
+
+        //48 x 60 - case
         guiGraphics.blit(ICONS, caseX, yPos, (int) (CASE_WIDTH*scale), (int) (CASE_HEIGHT*scale), abilityX - 5, 0, CASE_WIDTH, CASE_HEIGHT, ICONS_WIDTH, ICONS_HEIGHT);
 
         //ability icon
         if(!ClientAbilitiesData.isEnabled(caret)){
             RenderSystem.setShaderColor(0.6F, 0.6F, 0.6F, 1.0F); // Greyscale tint
         }
-        ResourceLocation AbilityIcon = Abilities.getAbilityById(info.innerId()).getTextureLocation();
-        guiGraphics.blit(AbilityIcon, caseX + (int) (5*scale), yPos + (int)(4*scale), (int)(ICON_WIDTH*scale), (int)(ICON_HEIGHT*scale), abilityX, info.getPosY(), ICON_WIDTH, ICON_HEIGHT, ICONS_WIDTH, ICONS_HEIGHT);
+        ResourceLocation AbilityIcon = Abilities.getAbilityFactory(info.innerId()).getTextureLocation();
+        guiGraphics.blit(AbilityIcon, caseX + (int) (5*scale), yPos + (int)(4*scale), (int)(ICON_WIDTH*scale), (int)(ICON_HEIGHT*scale), abilityX, abl.getPosY(), ICON_WIDTH, ICON_HEIGHT, ICONS_WIDTH, ICONS_HEIGHT);
 
         RenderSystem.setShaderColor(1F, 1F, 1F, 1F); // Reset color
 
@@ -202,7 +220,7 @@ public class AbilitiesHotbarHUD {
 //            guiGraphics.blit(ICONS, caseX + (int) (5*scale), yPos + (int)(4*scale), (int)(ICON_WIDTH*scale), (int)(ICON_HEIGHT*scale), 130, 32, ICON_WIDTH, ICON_HEIGHT, ICONS_WIDTH, ICONS_HEIGHT);
 
             guiGraphics.fillGradient(caseX + (int) (5*scale), yPos + (int) (4*scale),
-                    (int) (caseX + (int) (5*scale) + ICON_WIDTH*scale), (int) (yPos  + (int) (4*scale) + ICON_HEIGHT*scale), 0x99707070, 0x99404040);
+                    (int) (caseX + 5*scale + ICON_WIDTH*scale), (int) (yPos  + 4*scale + ICON_HEIGHT*scale), 0x99707070, 0x99404040);
         }
 
 

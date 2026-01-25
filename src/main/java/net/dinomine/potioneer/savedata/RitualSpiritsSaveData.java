@@ -1,17 +1,18 @@
 package net.dinomine.potioneer.savedata;
 
+import net.dinomine.potioneer.beyonder.pathways.BeyonderPathway;
+import net.dinomine.potioneer.beyonder.pathways.Pathways;
+import net.dinomine.potioneer.config.PotioneerRitualsConfig;
 import net.dinomine.potioneer.rituals.RandomizableCriteria;
 import net.dinomine.potioneer.rituals.RandomizableResponse;
 import net.dinomine.potioneer.rituals.RitualInputData;
 import net.dinomine.potioneer.rituals.RitualResponseLogic;
-import net.dinomine.potioneer.rituals.criteria.OfferingsCriteria;
-import net.dinomine.potioneer.rituals.criteria.PathwayCriteria;
-import net.dinomine.potioneer.rituals.criteria.ResponseCriteria;
-import net.dinomine.potioneer.rituals.criteria.SequenceLevelCriteria;
+import net.dinomine.potioneer.rituals.criteria.*;
 import net.dinomine.potioneer.rituals.responses.AidResponse;
 import net.dinomine.potioneer.rituals.responses.HurtResponse;
 import net.dinomine.potioneer.rituals.responses.NegativeEffectResponse;
 import net.dinomine.potioneer.rituals.responses.SpiritResponse;
+import net.dinomine.potioneer.rituals.spirits.Deity;
 import net.dinomine.potioneer.rituals.spirits.EvilSpirit;
 import net.dinomine.potioneer.rituals.spirits.PlayerRitualSpirit;
 import net.dinomine.potioneer.rituals.spirits.defaultGods.WheelOfFortuneResponse;
@@ -31,19 +32,28 @@ import java.util.function.Supplier;
 public class RitualSpiritsSaveData extends SavedData {
     public static final PlayerRitualSpirit PLAYER_SPIRIT = new PlayerRitualSpirit();
 
-    public static final WheelOfFortuneResponse WHEEL_OF_FORTUNE = new WheelOfFortuneResponse();
-
     private List<EvilSpirit> worldSpirits;
+    private List<Deity> deities = new ArrayList<>();
 
     private RitualSpiritsSaveData(ServerLevel level){
 //        System.out.println("Creating new saved spirit data");
         this.worldSpirits = new ArrayList<>();
         this.worldSpirits.add(SpiritHelper.createRandomSpirit());
         setDirty();
+        loadDeities();
     }
 
     private RitualSpiritsSaveData(List<EvilSpirit> evilSpirits){
         this.worldSpirits = evilSpirits;
+        loadDeities();
+    }
+
+    private void loadDeities(){
+        for(BeyonderPathway pathway: Pathways.getAllPathways()){
+            if(pathway.getDefaultDeity() != null){
+                deities.add(pathway.getDefaultDeity());
+            }
+        }
     }
 
     @Override
@@ -77,8 +87,10 @@ public class RitualSpiritsSaveData extends SavedData {
     }
 
     private EvilSpirit checkIncense(RitualInputData inputData){
-        if(WHEEL_OF_FORTUNE.isValidIncense(inputData.incense())){
-            return WHEEL_OF_FORTUNE;
+        for(Deity deity: deities){
+            if(deity.isValidIncense(inputData.incense())){
+                return deity;
+            }
         }
         for(EvilSpirit spirit: worldSpirits){
             if(spirit.isValidIncense(inputData.incense())){
@@ -89,12 +101,14 @@ public class RitualSpiritsSaveData extends SavedData {
     }
 
     private EvilSpirit checkItems(RitualInputData inputData){
-        if(WHEEL_OF_FORTUNE.isValidItems(inputData.offerings())){
-            return WHEEL_OF_FORTUNE;
-        }
         for(EvilSpirit spirit: worldSpirits){
             if(spirit.identifiedBy(inputData)){
                 return spirit;
+            }
+        }
+        for(Deity deity: deities){
+            if(deity.isValidItems(inputData.offerings())){
+                return deity;
             }
         }
         return null;
@@ -105,23 +119,8 @@ public class RitualSpiritsSaveData extends SavedData {
         return worldSpirits.toString();
     }
 
-    private static ArrayList<String> possibleItems = new ArrayList<>();
-    static{
-        possibleItems.add(Items.BLAZE_POWDER.getDescriptionId());
-        possibleItems.add(Items.GLISTERING_MELON_SLICE.getDescriptionId());
-        possibleItems.add(Items.APPLE.getDescriptionId());
-        possibleItems.add(Items.IRON_NUGGET.getDescriptionId());
-        possibleItems.add(Items.GOLD_INGOT.getDescriptionId());
-        possibleItems.add(Items.RABBIT_FOOT.getDescriptionId());
-        possibleItems.add(Items.INK_SAC.getDescriptionId());
-        possibleItems.add(Items.AMETHYST_SHARD.getDescriptionId());
-        possibleItems.add(Items.EGG.getDescriptionId());
-        possibleItems.add(Items.DIAMOND.getDescriptionId());
-        possibleItems.add(Items.BONE.getDescriptionId());
-    }
-
     public static List<String> getRandomItems(int n){
-        return getRandomSample(possibleItems, n);
+        return getRandomSample(PotioneerRitualsConfig.RANDOM_INGREDIENTS.get(), n);
     }
 
     public static void saveStringList(CompoundTag tag, String key, List<String> strings) {
@@ -162,6 +161,7 @@ public class RitualSpiritsSaveData extends SavedData {
             randomCriteria.add(() -> new PathwayCriteria(0));
             randomCriteria.add(() -> new OfferingsCriteria(new ArrayList<>()));
             randomCriteria.add(() -> new SequenceLevelCriteria(0));
+            randomCriteria.add(() -> new PrayerCriteria(RitualInputData.FIRST_VERSE.INSULTING, RitualInputData.SECOND_VERSE.CURIOUS));
 
             randomResponses.add(() -> new HurtResponse(false, 1));
             randomResponses.add(() -> new AidResponse(0, false));

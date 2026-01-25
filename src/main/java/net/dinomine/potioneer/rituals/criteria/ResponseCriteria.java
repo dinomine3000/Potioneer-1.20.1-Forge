@@ -30,6 +30,8 @@ public abstract class ResponseCriteria {
             case "action" -> ActionCriteria.getFromTag(infoTag);
             case "never" -> new NeverCriteria();
             case "always" -> new AlwaysCriteria();
+            case "prayer" -> PrayerCriteria.getFromTag(infoTag);
+            case "not" -> NotCriteria.getFromTag(infoTag);
             // case "some_other" -> SomeOtherCriteria.loadFromNBT(tag);
             default -> throw new IllegalArgumentException("Unknown criteria type: " + type);
         };

@@ -29,45 +29,32 @@ public class AidResponse extends SpiritResponse implements RandomizableResponse<
         Player effectTarget = getPlayer(inputData, level, targetCaster);
         if(effectTarget == null) return;
         effectTarget.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
-            cap.getEffectsManager().addOrReplaceEffect(getRandomEffectByPathway(pathwayId), cap, level.getPlayerByUUID(inputData.caster()));
+            cap.getEffectsManager().addOrReplaceEffect(getRandomEffectByPathway(pathwayId), cap, effectTarget);
         });
     }
 
     private BeyonderEffect getRandomEffectByPathway(int pathwayId) {
-        BeyonderEffects.BeyonderEffectType effectId = null;
-        switch (pathwayId){
-            case 0:
-                effectId = getRandomEffectByPrefix("WHEEL");
-                break;
-            case 1:
-                effectId = getRandomEffectByPrefix("TYRANT");
-                break;
-            case 2:
-                effectId = getRandomEffectByPrefix("MYSTERY");
-                break;
-            case 3:
-                effectId = getRandomEffectByPrefix("RED");
-                break;
-            case 4:
-                effectId = getRandomEffectByPrefix("PARAGON");
-                break;
-            default:
-                effectId = getRandomEffectByPrefix("");
-                break;
-        }
+        BeyonderEffects.BeyonderEffectType effectId = switch (pathwayId) {
+            case 0 -> getRandomEffectByPrefix("WHEEL");
+            case 1 -> getRandomEffectByPrefix("TYRANT");
+            case 2 -> getRandomEffectByPrefix("MYSTERY");
+            case 3 -> getRandomEffectByPrefix("RED");
+            case 4 -> getRandomEffectByPrefix("PARAGON");
+            default -> getRandomEffectByPrefix("");
+        };
+        if(effectId == null) return null;
         return BeyonderEffects.byId(effectId.getEffectId(), pathwayId%10, 0, 20*60, true);
     }
 
 
     private static BeyonderEffects.BeyonderEffectType getRandomEffectByPrefix(String prefix) {
-        //TODO make this work
 //        List<BeyonderEffects.BeyonderEffectType> matching = Arrays.stream(BeyonderEffects.EFFECT.values())
 //                .filter(e -> e.name().startsWith(prefix))
 //                .collect(Collectors.toList());
 //
 //        if (matching.isEmpty()) return null; // Or throw an exception
 
-        return BeyonderEffects.PARAGON_REGEN;
+        return BeyonderEffects.getRandomEffect(prefix);
     }
 
     @Override

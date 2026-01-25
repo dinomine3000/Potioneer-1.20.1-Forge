@@ -18,7 +18,9 @@ import net.dinomine.potioneer.beyonder.effects.tyrant.BeyonderLightningTargetEff
 import net.dinomine.potioneer.beyonder.effects.tyrant.BeyonderWaterAffinityEffect;
 import net.dinomine.potioneer.beyonder.effects.wheeloffortune.*;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.function.Supplier;
 
 public class BeyonderEffects {
@@ -36,9 +38,11 @@ public class BeyonderEffects {
     public static final BeyonderEffectType WHEEL_FORTUNE = registerEffect("fortune", new BeyonderEffectType(BeyonderFortuneEffect::new));
     public static final BeyonderEffectType WHEEL_SILK = registerEffect("silk", new BeyonderEffectType(BeyonderSilkTouchEffect::new));
     public static final BeyonderEffectType WHEEL_PATIENCE = registerEffect("patience", new BeyonderEffectType(BeyonderPatienceEffect::new));
-    public static final BeyonderEffectType WHEEL_TEMP_LUCK = registerEffect("temp_luck", new BeyonderEffectType(BeyonderTempLuckEffect::new));
+    public static final BeyonderEffectType WHEEL_INSTANT_LUCK = registerEffect("instant_luck", new BeyonderEffectType(BeyonderInstantLuckEffect::new));
     public static final BeyonderEffectType WHEEL_LUCK_DODGE = registerEffect("luck_dodge", new BeyonderEffectType(BeyonderLuckDodgeEffect::new));
     public static final BeyonderEffectType WHEEL_LUCK_TREND = registerEffect("lucky_trend", new BeyonderEffectType(BeyonderLuckTrendEffect::new));
+    public static final BeyonderEffectType WHEEL_TEMP_LUCK = registerEffect("temp_luck", new BeyonderEffectType(BeyonderTempLuckEffect::new));
+    public static final BeyonderEffectType WHEEL_ZERO_DAMAGE = registerEffect("zero_damage", new BeyonderEffectType(BeyonderZeroDamageEffect::new));
     public static final BeyonderEffectType WHEEL_MINING = registerEffect("mining", new BeyonderEffectType(BeyonderMiningSpeedEffect::new));
     public static final BeyonderEffectType TYRANT_WATER_AFFINITY = registerEffect("water_affinity", new BeyonderEffectType(BeyonderWaterAffinityEffect::new));
     public static final BeyonderEffectType TYRANT_ELECTRIFICATION = registerEffect("electrification", new BeyonderEffectType(BeyonderElectrificationEffect::new));
@@ -104,6 +108,24 @@ public class BeyonderEffects {
         return EFFECTS.get(effectId).createInstance(sequence, cost, duration, active);
     }
 
+    public static BeyonderEffectType getRandomEffect(String prefix) {
+        List<BeyonderEffectType> typeList = new ArrayList<>();
+        switch (prefix.toLowerCase()){
+            case "wheel":
+                typeList = List.of(WHEEL_FORTUNE, WHEEL_SILK, WHEEL_MINING, WHEEL_LUCK_TREND);
+            case "tyrant":
+                typeList = List.of(TYRANT_LIGHTNING_TARGET, TYRANT_WATER_AFFINITY, TYRANT_ELECTRIFICATION);
+            case "mystery":
+                typeList = List.of(MYSTERY_INVISIBLE, MYSTERY_REACH, MYSTERY_STEP_UP, MYSTERY_FALL_NEGATE);
+            case "red":
+                typeList = List.of(RED_FIRE_BUFF, RED_LIGHT_BUFF, RED_PROFICIENCY, RED_PURIFICATION);
+            case "paragon":
+                typeList = List.of(PARAGON_CRAFTING, PARAGON_XP, PARAGON_REGEN);
+        }
+        return typeList.isEmpty() ? null : typeList.get((int)(Math.random()*typeList.size()));
+
+    }
+
     public static class BeyonderEffectType{
         private final Supplier<BeyonderEffect> factory;
         private String effectId;
@@ -127,6 +149,7 @@ public class BeyonderEffects {
         public BeyonderEffect createInstance(int sequence, int cost, int duration, boolean active) {
             return factory.get().withParams(sequence, duration, active, cost).setId(effectId);
         }
+
 
     }
 }

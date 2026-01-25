@@ -1,0 +1,12 @@
+{
+  "required": true,
+  "compatibilityLevel": "JAVA_17",
+  "package": "net.dinomine.potioneer.mixin",
+  "refmap": "potioneer.mixin-refmap.json",
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "mixins": [
+    "ItemStackMixin"
+  ]
+}

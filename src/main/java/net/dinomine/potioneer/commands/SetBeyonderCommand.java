@@ -32,8 +32,17 @@ public class SetBeyonderCommand {
         try {
             Entity target = EntityArgument.getEntity(cmd, "target");
             if(!(target instanceof LivingEntity lTarget)) return 0;
+            int pathSeqId = IntegerArgumentType.getInteger(cmd, "id");
+            int pathwayId = pathSeqId / 10;
+            int level = pathSeqId%10;
             lTarget.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap ->{
-                cap.setBeyonderSequence(IntegerArgumentType.getInteger(cmd, "id"));
+                cap.resetBeyonder(false);
+                for(int i = 9; i > level; i--){
+                    cap.advance(10*pathwayId + i, true);
+                    cap.getCharacteristicManager().setActing(1, 10*pathwayId + i);
+                }
+                cap.advance(pathSeqId, false);
+                //cap.getCharacteristicManager().setActing(1, pathSeqId);
             });
             return 1;
         } catch (CommandSyntaxException e) {

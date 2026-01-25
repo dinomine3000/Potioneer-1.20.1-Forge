@@ -1,7 +1,9 @@
 package net.dinomine.potioneer.beyonder.player;
 
 import net.dinomine.potioneer.beyonder.abilities.*;
+import net.dinomine.potioneer.beyonder.abilities.misc.MysticalKnowledgeAbility;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
+import net.dinomine.potioneer.beyonder.pages.Page;
 import net.dinomine.potioneer.network.PacketHandler;
 import net.dinomine.potioneer.network.messages.abilityRelevant.AbilitySyncMessage;
 import net.dinomine.potioneer.network.messages.abilityRelevant.PlayerArtifactSyncSTC;
@@ -53,6 +55,16 @@ public class PlayerAbilitiesManager {
     public Ability getAbility(AbilityKey key){
         if(key.isArtifactKey()) return artifacts.get(key.getArtifactId()).getAbility(key);
         return abilities.get(key);
+    }
+
+    public List<Page> getPagesFromAbilities(){
+        List<Page> result = new ArrayList<>();
+        for(Ability abl: abilities.values()){
+            if(abl instanceof MysticalKnowledgeAbility myst){
+                result.addAll(myst.getPages());
+            }
+        }
+        return result;
     }
 
     /**
@@ -369,7 +381,7 @@ public class PlayerAbilitiesManager {
                 System.out.println("Warning: Read an ability with a null key: " + abl.descId());
                 continue;
             }
-            Ability ability = Abilities.getAbilityByKey(key);
+            Ability ability = Abilities.getAbilityInstanceByKey(key);
             if(!addAbility(key, ability, cap, target, runOnAcquire, false)){
                 System.out.println("Warning: Tried to add an ability that already exists on client: " + abl.getKey());
             }

@@ -79,12 +79,13 @@ public class FormulaItem extends Item {
             }
         }
 
-        while(result == null){
+        int limit = 5;
+        while(result == null && limit-- >= 0){
             System.out.println("Generated id is invalid. creating a new one...");
             result = data.getFormulaDataFromId(getRandomId(pLevel), pLevel);
         }
-        writeToNbt(stack, result, false);
-
+        if(result != null) writeToNbt(stack, result, false);
+        else System.out.println("Warning: could not generate a proper formula.");
         return result;
     }
 

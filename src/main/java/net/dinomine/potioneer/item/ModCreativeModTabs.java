@@ -28,6 +28,7 @@ public class ModCreativeModTabs {
                         output.accept(ModBlocks.DEEPSLATE_SAPPHIRE_ORE.get());
                         output.accept(ModBlocks.POTION_CAULDRON.get());
                         output.accept(ModItems.CAULDRON_ROD.get());
+                        output.accept(ModBlocks.SCRIPTURE_STAND.get());
                         output.accept(ModBlocks.RITUAL_ALTAR.get());
                         output.accept(ModBlocks.RITUAL_PEDESTAL.get());
                         output.accept(ModItems.INK_BOTTLE.get());

@@ -20,7 +20,7 @@ public class AbilityFactory {
     public AbilityFactory(ResourceLocation textureLocation, int posY, int pathwayId, int costSpirituality, String ablId, Function<Integer, Ability> createFunction){
         this.costSpirituality = costSpirituality;
         this.textureLocation = textureLocation;
-        this.posY = posY;
+        this.posY = 32 + 24*posY;
         this.pathwayId = pathwayId;
         this.createFunction = createFunction;
         this.ablId = ablId;
@@ -38,6 +38,10 @@ public class AbilityFactory {
     public AbilityFactory hasSecondaryFunction(boolean secondary){
         this.hasSecondaryFunction = secondary;
         return this;
+    }
+
+    public boolean getHasSecondaryFunction(){
+        return this.hasSecondaryFunction;
     }
 
     public int getPosY() {
@@ -67,10 +71,10 @@ public class AbilityFactory {
     }
 
     public AbilityInfo getInfo(int cooldown, int maxCd, boolean enabled, String descId, String innerId) {
-        return new AbilityInfo(posY, pathwayId, costSpirituality, cooldown, maxCd, enabled, descId, innerId, hasSecondaryFunction);
+        return new AbilityInfo(pathwayId, cooldown, maxCd, enabled, descId, innerId);
     }
 
     public AbilityInfo getInfo(int cooldown, int maxCd, boolean enabled, String descId, String innerId, int pathwayId) {
-        return new AbilityInfo(posY, pathwayId, costSpirituality, cooldown, maxCd, enabled, descId, innerId, hasSecondaryFunction);
+        return new AbilityInfo(pathwayId, cooldown, maxCd, enabled, descId, innerId);
     }
 }

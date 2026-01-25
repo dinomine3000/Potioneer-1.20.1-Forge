@@ -34,9 +34,7 @@ public class PlayerLuckManager {
 
     private boolean eventGoingOn = false;
     private int luckEventCountdown;
-    private int tenSecondTick = 0;
     private int luck;
-    private int tick = 0;
     private LuckRange range;
 
     public void removeLuckEventModifier(UUID uuid){
@@ -57,10 +55,9 @@ public class PlayerLuckManager {
     public void onTick(LivingEntityBeyonderCapability cap, LivingEntity target){
         //ticks once every 2 seconds
         if(target.level().isClientSide()) return;
-        if(tick++ > 40){
+        if(target.tickCount%40 == 0){
 //            if(target instanceof Player player)
                 //System.out.println("Luck Manager ticking..." + luck);
-            tick = 0;
             if(eventGoingOn){
                 luckEventCountdown--;
 
@@ -76,8 +73,7 @@ public class PlayerLuckManager {
             }
             //random walk
             luck = range.changeLuck(luck, target.getRandom().nextBoolean() ? 1 : -1);
-            if(tenSecondTick++ >= 5){
-                tenSecondTick = 0;
+            if(target.tickCount%200 == 0){
                 range.tenSecondTick();
             }
 

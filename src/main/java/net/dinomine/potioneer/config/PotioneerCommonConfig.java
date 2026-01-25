@@ -24,6 +24,8 @@ public class PotioneerCommonConfig {
     public static final ForgeConfigSpec.BooleanValue ALLOW_CHANGING_PATHWAYS;
     public static final ForgeConfigSpec.DoubleValue CHANCE_TO_MAKE_ARTIFACT_ON_DEATH;
     public static final ForgeConfigSpec.BooleanValue CONSUME_PAGE_ON_USE;
+    public static final ForgeConfigSpec.IntValue PRAYER_COOLDOWN;
+    public static final ForgeConfigSpec.BooleanValue LOSE_PAGES_ON_DROP_SEQUENCE;
 
     public static final ForgeConfigSpec.EnumValue<CharacteristicDropCriteria> CHARACTERISTIC_DROP_CRITERIA_ENUM_VALUE;
     public static final ForgeConfigSpec.BooleanValue DROP_ALL_CHARACTERISTICS;
@@ -115,6 +117,17 @@ public class PotioneerCommonConfig {
 
         CONSUME_PAGE_ON_USE = BUILDER.comment("When reading a knowledge page and adding it to the beyonder book, should the page be consumed?")
                 .define("consume_page_on_use", false);
+
+        PRAYER_COOLDOWN = BUILDER.comment("How long, in minutes, must a player wait before being able to increase their reputation with a god again?" +
+                        "\nBy default its 18 minutes, which means if they pray to a god, then for the next 18 minutes praying wont increase the reputation with any god.")
+                .defineInRange("prayer_cooldown_minutes", 18, 1, Integer.MAX_VALUE);
+
+        LOSE_PAGES_ON_DROP_SEQUENCE = BUILDER.comment("Suppose someone advanced to Seer and gained mysticism knowledge. This knowledge was gained through their characteristic, of course." +
+                        "\nIn Lord of the Mysteries, this works nice and well, but here you can drop levels or even lose all your characteristics and still live." +
+                        "\nThe question is, then, should someone in this situation lose that knowledge? If someone gains knowledge (pages for their beyonder book) and then loses that characteristic,\n" +
+                        "should they keep those pages or lose them?" +
+                        "\nJust a warning, if someone gains pages while this is set to 'false', they wont lose them even if you later set this to 'true' unless you use a command to fully reset their pages.")
+                .define("lose_pages_on_drop_sequence", false);
 
 
         BUILDER.pop();

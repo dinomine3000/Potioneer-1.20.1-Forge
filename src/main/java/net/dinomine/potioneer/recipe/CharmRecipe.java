@@ -46,6 +46,18 @@ public class CharmRecipe implements Recipe<RitualContainer> {
         this.durationScaling = durationScaling;
     }
 
+    public String getEffectId(){
+        return resultingEffectId;
+    }
+
+    public int getPathwayId(){
+        return this.pathwayId;
+    }
+
+    public NonNullList<PotionIngredient> getRitualIngredients() {
+        return ingredients;
+    }
+
     @Override
     public String toString() {
         return this.resultingEffectId + baseMaterial.toString();
@@ -73,9 +85,9 @@ public class CharmRecipe implements Recipe<RitualContainer> {
                 baseCount += 1;
             }
         }
-        int sequenceLevel = (int) (9 - scaling*simpleContainer.getReputationPercent());
+        int sequenceLevel = Mth.clamp((int) (9 - scaling*simpleContainer.getReputationPercent()), 0, 9);
         return MysticalItemHelper.makeCharm(new ItemStack(ModItems.CHARM.get()), resultingEffectId,
-                simpleContainer.getPathwayId()*10 + sequenceLevel, durationScaling*baseCount);
+                simpleContainer.getPathwayId()*10 + sequenceLevel, durationScaling*baseCount*20);
     }
 
     @Override
@@ -116,7 +128,7 @@ public class CharmRecipe implements Recipe<RitualContainer> {
         public CharmRecipe fromJson(ResourceLocation pRecipeId, JsonObject pJson) {
             String effectId = GsonHelper.getAsString(pJson, "effectId");
             NonNullList<PotionIngredient> ingredients = itemsFromJson(GsonHelper.getAsJsonArray(pJson, "ingredients"));
-            PotionIngredient baseMaterial = PotionIngredient.fromJson(GsonHelper.getNonNull(pJson, "base"));
+            PotionIngredient baseMaterial = PotionIngredient.fromJson(GsonHelper.getNonNull(pJson, "base")).withCount(1);
             int pathwayId = GsonHelper.getAsInt(pJson, "pathwayId");
             int scaling = Mth.clamp(GsonHelper.getAsInt(pJson, "levelScaling"), 0, 8);
             int durScaling = Math.max(GsonHelper.getAsInt(pJson, "durationScaling"), 1);

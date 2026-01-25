@@ -1,0 +1,15 @@
+{
+  "structures": [
+    {
+      "structure": "potioneer:arch",
+      "weight": 1
+     }
+  ],
+  "placement": {
+    "type": "moogs_structures:advanced_random_spread",
+    "spacing": 20,
+    "separation": 15,
+    "salt": 19161324,
+    "spread_type": "LINEAR"
+  }
+}

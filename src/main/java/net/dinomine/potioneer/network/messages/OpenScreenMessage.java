@@ -1,8 +1,10 @@
 package net.dinomine.potioneer.network.messages;
 
+import com.eliotlash.mclib.math.functions.limit.Min;
 import net.dinomine.potioneer.beyonder.client.screen.DivinationScreen;
 import net.dinomine.potioneer.beyonder.client.screen.FormulaScreen;
 import net.dinomine.potioneer.beyonder.client.screen.KnowledgeBookScreen;
+import net.dinomine.potioneer.beyonder.client.screen.RepScreen;
 import net.dinomine.potioneer.recipe.PotionRecipeData;
 import net.dinomine.potioneer.util.BufferUtils;
 import net.minecraft.client.Minecraft;
@@ -19,11 +21,13 @@ public class OpenScreenMessage {
     public PotionRecipeData data;
     public boolean error;
     public Screen screenType;
-    public int pageId;
+    public int intId;
+    public int reputation;
     public static enum Screen{
         Formula,
         Divination,
-        Book
+        Book,
+        Reputation
     }
 
     public OpenScreenMessage(PotionRecipeData data, boolean error) {
@@ -36,30 +40,47 @@ public class OpenScreenMessage {
         this(screenType, -1);
     }
 
-    public OpenScreenMessage(Screen screenType, int pageId){
+    public OpenScreenMessage(Screen screenType, int intId){
         this.screenType = screenType;
-        this.pageId = pageId;
+        this.intId = intId;
+    }
+
+    public OpenScreenMessage(Screen screenType, int intId, int reputation){
+        this.screenType = screenType;
+        this.intId = intId;
+        this.reputation = reputation;
     }
 
     public static void encode(OpenScreenMessage msg, FriendlyByteBuf buffer){
         BufferUtils.writeStringToBuffer(msg.screenType.name(), buffer);
-        if(msg.screenType == Screen.Formula){
-            buffer.writeBoolean(msg.error);
-            msg.data.encode(buffer);
-        } else if(msg.screenType == Screen.Book){
-            buffer.writeInt(msg.pageId);
+        switch (msg.screenType){
+            case Formula:
+                buffer.writeBoolean(msg.error);
+                msg.data.encode(buffer);
+                break;
+            case Book:
+                buffer.writeInt(msg.intId);
+                break;
+            case Reputation:
+                buffer.writeInt(msg.intId);
+                buffer.writeInt(msg.reputation);
+                break;
         }
     }
 
     public static OpenScreenMessage decode(FriendlyByteBuf buffer){
         Screen screenType = Screen.valueOf(BufferUtils.readString(buffer));
-        if(screenType == Screen.Formula){
-            boolean error = buffer.readBoolean();
-            return new OpenScreenMessage(PotionRecipeData.decode(buffer), error);
-        }
-        if(screenType == Screen.Book){
-            int pageId = buffer.readInt();
-            return new OpenScreenMessage(Screen.Book, pageId);
+        switch (screenType){
+            case Formula:
+                boolean error = buffer.readBoolean();
+                return new OpenScreenMessage(PotionRecipeData.decode(buffer), error);
+            case Book:
+                int pageId = buffer.readInt();
+                return new OpenScreenMessage(Screen.Book, pageId);
+            case Reputation:
+                int pathway = buffer.readInt();
+                int rep = buffer.readInt();
+                return new OpenScreenMessage(Screen.Reputation, pathway, rep);
         }
         return new OpenScreenMessage(screenType);
     }
@@ -87,7 +108,8 @@ class ClientOpenScreenHandler
         switch (msg.screenType){
             case Formula -> Minecraft.getInstance().setScreen(new FormulaScreen(msg.data, msg.error));
             case Divination -> Minecraft.getInstance().setScreen(new DivinationScreen());
-            case Book -> Minecraft.getInstance().setScreen(new KnowledgeBookScreen(msg.pageId));
+            case Book -> Minecraft.getInstance().setScreen(new KnowledgeBookScreen(msg.intId));
+            case Reputation -> Minecraft.getInstance().setScreen(new RepScreen(msg.intId, msg.reputation));
         }
 
     }

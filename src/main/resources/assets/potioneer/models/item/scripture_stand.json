@@ -1,0 +1,10 @@
+{
+  "parent": "potioneer:block/scripture_stand",
+  "overrides": [
+    { "predicate": { "potioneer:pathway_id": 1 }, "model": "potioneer:block/scripture_stand_wheel" },
+    { "predicate": { "potioneer:pathway_id": 2 }, "model": "potioneer:block/scripture_stand_tyrant" },
+    { "predicate": { "potioneer:pathway_id": 3 }, "model": "potioneer:block/scripture_stand_mystery" },
+    { "predicate": { "potioneer:pathway_id": 4 }, "model": "potioneer:block/scripture_stand_red" },
+    { "predicate": { "potioneer:pathway_id": 5 }, "model": "potioneer:block/scripture_stand_paragon" }
+  ]
+}

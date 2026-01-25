@@ -3,6 +3,8 @@ package net.dinomine.potioneer.util;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
+import net.minecraft.core.Holder;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtUtils;
@@ -14,6 +16,8 @@ import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.ShapedRecipe;
+
+import java.util.Optional;
 
 public class PotionIngredient {
     public static final PotionIngredient EMPTY = new PotionIngredient();
@@ -43,6 +47,11 @@ public class PotionIngredient {
         this.tagCount = count;
     }
 
+
+    public boolean isEmpty() {
+        return item == null && tag == null;
+    }
+
     public void writeToBuffer(FriendlyByteBuf buf){
         buf.writeBoolean(item == null && tag == null);
         if(item != null){
@@ -66,6 +75,16 @@ public class PotionIngredient {
             int tagCount = buf.readInt();
             return new PotionIngredient(tag, tagCount);
         }
+    }
+
+    public PotionIngredient withCount(int count){
+        if(isTagIngredient()){
+            return new PotionIngredient(tag, count);
+        }
+        if(isItemIngredient()){
+            return new PotionIngredient(item.copyWithCount(count));
+        }
+        return EMPTY;
     }
 
     public static PotionIngredient fromJson(JsonElement jsonElement) {
@@ -140,6 +159,18 @@ public class PotionIngredient {
 //                    .flatMap(set -> set.stream().findFirst());
 //
 //            return first.map(ItemStack::new).orElse(ItemStack.EMPTY);
+        }
+        return ItemStack.EMPTY;
+    }
+
+    public ItemStack getRepresentativeStack(){
+        if(item != null) return item.copy();
+        if(tag != null){
+            Optional<Holder<Item>> first = BuiltInRegistries.ITEM
+                    .getTag(tag)
+                    .flatMap(set -> set.stream().findFirst());
+
+            return first.map(ItemStack::new).orElse(ItemStack.EMPTY);
         }
         return ItemStack.EMPTY;
     }

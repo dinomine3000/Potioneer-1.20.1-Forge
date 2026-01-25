@@ -7,6 +7,7 @@ import net.minecraft.util.Mth;
 import software.bernie.geckolib.constant.DataTickets;
 import software.bernie.geckolib.core.animatable.model.CoreGeoBone;
 import software.bernie.geckolib.core.animation.AnimationState;
+import software.bernie.geckolib.core.molang.MolangParser;
 import software.bernie.geckolib.model.GeoModel;
 import software.bernie.geckolib.model.data.EntityModelData;
 
@@ -39,5 +40,11 @@ public class ChryonModel extends GeoModel<ChryonEntity> {
             head.setRotX(entityData.headPitch() * Mth.DEG_TO_RAD);
             head.setRotY(entityData.netHeadYaw() * Mth.DEG_TO_RAD);
         }
+    }
+
+    @Override
+    public void applyMolangQueries(ChryonEntity animatable, double animTime) {
+//        MolangParser.INSTANCE.setValue("test", () -> animatable.pierceCooldown);
+        super.applyMolangQueries(animatable, animTime);
     }
 }

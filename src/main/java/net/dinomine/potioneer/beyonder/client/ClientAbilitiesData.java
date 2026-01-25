@@ -1,5 +1,6 @@
 package net.dinomine.potioneer.beyonder.client;
 
+import net.dinomine.potioneer.beyonder.abilities.Abilities;
 import net.dinomine.potioneer.beyonder.abilities.AbilityInfo;
 import net.dinomine.potioneer.beyonder.abilities.AbilityKey;
 import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
@@ -232,6 +233,20 @@ public class ClientAbilitiesData {
 //        });
     }
 
+    private static float castPrimary = 0f;
+    private static float castSecondary = 0f;
+    private static final float maxPrimaryCooldown = 15f;
+
+    public static float getPercent(boolean primary){
+        return (primary ? castPrimary : castSecondary) / maxPrimaryCooldown;
+    }
+
+    private static void beginCastAnimation(boolean primary){
+        if(primary) castPrimary = maxPrimaryCooldown;
+        else castSecondary = maxPrimaryCooldown;
+    }
+
+
     public static void animationTick(float dt){
         if(animationTime > 0) animationTime = Math.max(animationTime - dt, 0);
         if(animationTime < 0) animationTime = Math.min(animationTime + dt, 0);
@@ -240,6 +255,8 @@ public class ClientAbilitiesData {
         if(openingAnimationPercent <= 0){
             showHotbar = false;
         }
+        if(castPrimary > 0f) castPrimary = Math.max(castPrimary - dt, 0);
+        if(castSecondary > 0f) castSecondary = Math.max(castSecondary - dt, 0);
     }
 
     public static boolean openAnimation = false;
@@ -302,6 +319,14 @@ public class ClientAbilitiesData {
 
     public static boolean useAbility(Player player, AbilityKey key, boolean primary){
         if(abilities.isEmpty() || key == null || abilities.get(key) == null ) return false;
+        if(Abilities.getAbilityFactory(key).getHasSecondaryFunction())
+            beginCastAnimation(primary);
+        int cost = Abilities.getAbilityFactory(key).getCostSpirituality();
+        float spir = ClientStatsData.getPlayerSpirituality();
+        if(spir < cost){
+            player.sendSystemMessage(Component.literal("You are too drained to cast " + key.getAbilityId()));
+            return false;
+        }
         if(abilities.get(key).getCooldown() < 0) return false;
         player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
 //                    System.out.println(caret);

@@ -1,9 +1,6 @@
 package net.dinomine.potioneer.beyonder.abilities;
 
-import net.dinomine.potioneer.beyonder.abilities.misc.BoneMealAbility;
-import net.dinomine.potioneer.beyonder.abilities.misc.CogitationAbility;
-import net.dinomine.potioneer.beyonder.abilities.misc.PassiveAbility;
-import net.dinomine.potioneer.beyonder.abilities.misc.TimedPassiveAbility;
+import net.dinomine.potioneer.beyonder.abilities.misc.*;
 import net.dinomine.potioneer.beyonder.abilities.mystery.*;
 import net.dinomine.potioneer.beyonder.abilities.paragon.*;
 import net.dinomine.potioneer.beyonder.abilities.redpriest.*;
@@ -12,6 +9,7 @@ import net.dinomine.potioneer.beyonder.abilities.wheeloffortune.*;
 import net.dinomine.potioneer.beyonder.downsides.DummyDownside;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.effect.MobEffects;
 
 import java.util.HashMap;
 import java.util.function.Function;
@@ -21,7 +19,7 @@ public class Abilities {
 
     public static final AbilityFactory COGITATION = registerAbility("cogitation",
             (Integer pathwayId) -> (new CogitationAbility(pathwayId)).canFlip(),
-            320, 0, 0);
+            12, 0, 0);
 
     public static final AbilityFactory DUMMY_DOWNSIDE = registerAbility("d_dummy",
             DummyDownside::new, 0, 0, 0);
@@ -32,62 +30,80 @@ public class Abilities {
             (Integer sequenceLevel) -> PassiveAbility.createAbility(sequenceLevel, BeyonderEffects.WHEEL_CALAMITY,
                             (ignored) -> "calamity")
                     .enabledOnAcquire(),
-            272, 0, 0);
+            10, 0, 0);
 
     public static final AbilityFactory CHECK_LUCK = registerAbility("check_luck",
             CheckLuckAbility::new,
-            104, 0, 0);
+            3, 0, 0);
 
     public static final AbilityFactory CONJURE_PICKAXE = registerAbility("pick",
             ConjurePickaxeAbility::new,
-            80, 0, 10);
+            2, 0, 10).hasSecondaryFunction();
 
     public static final AbilityFactory FORTUNE_ABILITY = registerAbility("fortune",
             (Integer sequenceLevel) -> PassiveAbility.createAbility(sequenceLevel, BeyonderEffects.WHEEL_FORTUNE,
                             (ignored) -> "fortune")
                     .canFlip().withThreshold(0.1f).withCost(level -> 5),
-            176, 0, 0);
+            6, 0, 0);
 
     public static final AbilityFactory SILK_TOUCH_ABILITY = registerAbility("silk",
             (Integer sequenceLevel) -> PassiveAbility.createAbility(sequenceLevel, BeyonderEffects.WHEEL_SILK,
                             (ignored) -> "silk")
                     .canFlip().withThreshold(0.1f).withCost(level -> 5),
-            152, 0, 0);
+            5, 0, 0);
 
     public static final AbilityFactory PATIENCE = registerAbility("patience",
             PatienceAbility::new,
-            296, 0, 0).hasSecondaryFunction(false);
+            11, 0, 0).hasSecondaryFunction(false);
     //add a secondary function, maybe, that tells you how much luck you will get.
 
     public static final AbilityFactory BLOCK_SNIFF = registerAbility("xray",
             BlockSniffAbility::new,
-            56, 0, 15);
+            1, 0, 15);
 
     public static final AbilityFactory LUCK_BOOST = registerAbility("luck_boost",
             LuckBoostAbility::new,
-            128, 0, 30);
+            4, 0, 30);
 
     public static final AbilityFactory DODGE_DAMAGE = registerAbility("luck_dodge",
             (Integer sequenceLevel) -> PassiveAbility.createAbility(sequenceLevel, BeyonderEffects.WHEEL_LUCK_DODGE,
                             (ignored) -> "luck_dodge")
                     .canFlip().enabledOnAcquire(),
-            248, 0, 0);
+            8, 0, 0);
 
     public static final AbilityFactory LUCK_TREND = registerAbility("lucky_trend",
             (Integer sequenceLevel) -> PassiveAbility.createAbility(sequenceLevel, BeyonderEffects.WHEEL_LUCK_TREND,
                             (ignored) -> "lucky_trend")
                     .enabledOnAcquire(),
-            32, 0, 0);
+            10, 0, 0);
 
-    public static final AbilityFactory MINER_LIGHT = registerAbility("miner_light",
-            MinerLightAbility::new, 56, 0, 5);
-
+    //retweaked
     public static final AbilityFactory MINING_SPEED = registerAbility("mining",
             sequenceLevel -> (new MiningSpeedAbility(sequenceLevel)).canFlip().enabledOnAcquire(),
-            32, 0, 0).hasSecondaryFunction();
+            0, 0, 0).hasSecondaryFunction();
+
+    //retweaked
+    public static final AbilityFactory ZERO_DAMAGE = registerAbility("zero_damage",
+            (Integer sequenceLevel) -> PassiveAbility.createAbility(sequenceLevel, BeyonderEffects.WHEEL_ZERO_DAMAGE,
+                            (ignored) -> "zero_damage")
+                    .enabledOnAcquire(),
+            3, 0, 0);
+
+    //retweaked
+    public static final AbilityFactory VOID_VISION = registerAbility("void_vision",
+            (Integer sequenceLevel) -> MobEffectPassiveAbility.createAbility(sequenceLevel, MobEffects.NIGHT_VISION, ignored -> "void_vision")
+                    .withAmplifier(1).withPassiveCost(2).withThreshold(5), 1, 0, 0);
+
+    //retweaked
+    public static final AbilityFactory WHEEL_KNOWLEDGE = registerAbility("wheel_knowledge",
+            WheelKnowledgeAbility::new, 3, 0, 0);
+
+    //retweaked
+    public static final AbilityFactory MINER_LIGHT = registerAbility("miner_light",
+            MinerLightAbility::new, 1, 0, 5);
 
     public static final AbilityFactory MINER_BONE_MEAL = registerAbility("w_bone_meal",
-            BoneMealAbility::new, 200, 0, 10);
+            BoneMealAbility::new, 7, 0, 10);
 
     // -------------------------- TYRANT ---------------------------------------------------
     public static final AbilityFactory WATER_AFFINITY = registerAbility("water_affinity",
@@ -288,16 +304,19 @@ public class Abilities {
         return factory;
     }
 
-    public static AbilityFactory getAbilityById(String abl_id){
+    public static AbilityFactory getAbilityFactory(String abl_id){
         return ABILITIES.get(abl_id);
     }
+    public static AbilityFactory getAbilityFactory(AbilityKey key){
+        return getAbilityFactory(key.getAbilityId());
+    }
 
-    public static Ability getAbilityById(String abl_id, int sequenceLevel){
+    public static Ability getAbilityInstance(String abl_id, int sequenceLevel){
         return ABILITIES.get(abl_id).create(sequenceLevel);
     }
 
-    public static Ability getAbilityByKey(AbilityKey key){
-        return getAbilityById(key.getAbilityId(), key.getSequenceLevel());
+    public static Ability getAbilityInstanceByKey(AbilityKey key){
+        return getAbilityInstance(key.getAbilityId(), key.getSequenceLevel());
     }
 
     public static AbilityInfo getInfo(String abilityId, int cooldown, int maxCd, boolean enabled, String descId, AbilityKey key){

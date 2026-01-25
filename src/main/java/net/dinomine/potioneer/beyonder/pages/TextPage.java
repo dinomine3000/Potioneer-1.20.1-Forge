@@ -13,6 +13,11 @@ public class TextPage extends Page{
         this.text = translatableText;
     }
 
+    public TextPage(Chapter chapter, String id){
+        super(chapter, id);
+        this.text = Component.translatable("contents.potioneer." + id);
+    }
+
     @Override
     public void draw(GuiGraphics pGuiGraphics, ResourceLocation texture, int leftPos, int topPos, int imageWidth, int imageHeight, int textureWidth, int textureHeight) {
         pGuiGraphics.drawWordWrap(Minecraft.getInstance().font, text, leftPos, topPos, 120, 0);

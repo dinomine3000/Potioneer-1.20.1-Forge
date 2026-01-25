@@ -1,6 +1,7 @@
 package net.dinomine.potioneer.beyonder.abilities.misc;
 
 import net.dinomine.potioneer.beyonder.abilities.Ability;
+import net.dinomine.potioneer.beyonder.effects.BeyonderEffect;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
 import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
 import net.minecraft.world.entity.LivingEntity;
@@ -27,6 +28,8 @@ public class PassiveAbility extends Ability {
         super(sequenceLevel);
         this.effect = effect;
         this.descId = descId;
+        this.isPassive = true;
+        this.isActive = false;
 
     }
 
@@ -99,11 +102,15 @@ public class PassiveAbility extends Ability {
 
     @Override
     public void passive(LivingEntityBeyonderCapability cap, LivingEntity target) {
-        if(isEnabled()){
-            cap.getEffectsManager().addOrReplaceEffect(effect.createInstance(sequenceLevel, cost(), -1, true), cap, target);
+        if(isEnabled() && !cap.getEffectsManager().hasEffectOrBetter(effect.createInstance(sequenceLevel, -1, true))){
+            cap.getEffectsManager().addOrReplaceEffect(createEffectInstance(cap, target), cap, target);
             if(cap.getSpirituality() < cap.getMaxSpirituality()*minimumSpiritualityThreshold
                 || cap.getSpirituality() < minSpiritualityAbsolute) setEnabled(cap, target, false);
         }
+    }
+
+    protected BeyonderEffect createEffectInstance(LivingEntityBeyonderCapability cap, LivingEntity target){
+        return effect.createInstance(sequenceLevel, cost(), -1, true);
     }
 
     @Override

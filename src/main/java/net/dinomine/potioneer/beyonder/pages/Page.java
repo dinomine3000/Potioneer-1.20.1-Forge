@@ -15,7 +15,7 @@ public abstract class Page {
         LORE
     }
     public Chapter chapter;
-    private Component title;
+    private final Component title;
 
     public Component getTitle() {
         return this.title;
@@ -31,6 +31,11 @@ public abstract class Page {
     public Page(Chapter chapter, Component title){
         this.chapter = chapter;
         this.title = title;
+    }
+
+    public Page(Chapter chapter, String titleId){
+        this.chapter = chapter;
+        this.title = Component.translatable("page.potioneer." + titleId);
     }
 
     public abstract void draw(GuiGraphics pGuiGraphics, ResourceLocation texture, int leftPos, int topPos, int imageWidth, int imageHeight, int textureWidth, int textureHeight);

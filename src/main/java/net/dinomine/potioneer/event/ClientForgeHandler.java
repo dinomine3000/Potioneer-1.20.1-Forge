@@ -84,23 +84,20 @@ public class ClientForgeHandler {
     }
 
     @SubscribeEvent
-    public static void onItemLeftClick(InputEvent.MouseButton event){
-        if(Minecraft.getInstance().player != null && Minecraft.getInstance().player.getMainHandItem().is(ModItems.LEYMANOS_TRAVELS.get())){
-            if(!Minecraft.getInstance().isPaused() && event.getButton() == 0 && event.getAction() == 1 && Minecraft.getInstance().screen == null){
-                event.setCanceled(true);
-            }
-        }
-    }
-
-    @SubscribeEvent
-    public static void onLeftClick(InputEvent.MouseButton event){
+    public static void onLeftClick(InputEvent.MouseButton.Pre event){
+//        if(Minecraft.getInstance().player != null && Minecraft.getInstance().player.getMainHandItem().is(ModItems.LEYMANOS_TRAVELS.get())){
+//            if(!Minecraft.getInstance().isPaused() && event.getButton() == 0 && event.getAction() == 1 && Minecraft.getInstance().screen == null){
+//                event.setCanceled(true);
+//            }
+//        }
         if(!ClientAbilitiesData.showHotbar) return;
         Minecraft minecraft = Minecraft.getInstance();
         boolean success = false;
         if(minecraft.player != null && event.getAction() == InputConstants.PRESS){
+            System.out.println("left clicked");
             if(event.getButton() == InputConstants.MOUSE_BUTTON_LEFT)
                 success = ClientAbilitiesData.useAbility(minecraft.player, true);
-            if(event.getButton() == InputConstants.MOUSE_BUTTON_RIGHT)
+            else if(event.getButton() == InputConstants.MOUSE_BUTTON_RIGHT)
                 success = ClientAbilitiesData.useAbility(minecraft.player, false);
         }
         if(success){
