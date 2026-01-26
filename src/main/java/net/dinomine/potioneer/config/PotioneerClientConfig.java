@@ -11,6 +11,8 @@ public class PotioneerClientConfig {
     public static final ForgeConfigSpec.ConfigValue<Integer> ORB_SCALE;
     public static final ForgeConfigSpec.DoubleValue HOTBAR_SCALE;
     public static final ForgeConfigSpec.ConfigValue<Boolean> POTION_DIGESTED_MESSAGE;
+    public static final ForgeConfigSpec.ConfigValue<Boolean> HOTBAR_ABILITY_CASES_WITH_OUTLINE;
+    public static final ForgeConfigSpec.ConfigValue<Boolean> ALTERNATIVE_DISABLED_SYMBOL;
 
     public enum HOTBAR_POS{
         LEFT,
@@ -42,6 +44,14 @@ public class PotioneerClientConfig {
         POTION_DIGESTED_MESSAGE = BUILDER.comment("Should you get a message of fully digested potion every time you log in?" +
                 "\nTrue will send you a message everytime you join if you've completely digested it, false will only send it when you actually digest it for the first time")
                         .define("Potion Digested Message on Join", false);
+
+        HOTBAR_ABILITY_CASES_WITH_OUTLINE = BUILDER.comment("When using the hotbar, should every ability have a white outline, or only those that have secondary abilities?" +
+                        "\nSetting this to true will mean every ability on the hotbar has the outline, false means only the ones that have 2 casts (primary vs secondary) will." +
+                        "\nRegardless, ablities with secondary abilities will alwas have it cut down the middle")
+                .define("Hotbar Outlines", false);
+
+        ALTERNATIVE_DISABLED_SYMBOL = BUILDER.comment("Whether or not to use the experimental and highly confidential alternative disabled symbol")
+                .define("Alternative Disabled Symbol", false);
 
         BUILDER.pop();
         SPEC = BUILDER.build();

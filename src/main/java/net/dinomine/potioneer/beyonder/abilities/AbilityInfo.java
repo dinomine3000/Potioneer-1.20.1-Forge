@@ -4,6 +4,7 @@ import net.dinomine.potioneer.util.BufferUtils;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import org.apache.commons.lang3.StringUtils;
 
 public class AbilityInfo {
@@ -90,6 +91,10 @@ public class AbilityInfo {
     }
 
     public Component getNameComponent(){
+        return Component.translatableWithFallback("potioneer.ability_name." + descId(), StringUtils.capitalize(descId.replace("_", " ")));
+    }
+
+    public MutableComponent getMutableNameComponent(){
         return Component.translatableWithFallback("potioneer.ability_name." + descId(), StringUtils.capitalize(descId.replace("_", " ")));
     }
 

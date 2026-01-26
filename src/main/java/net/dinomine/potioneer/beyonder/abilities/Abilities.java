@@ -26,9 +26,6 @@ public class Abilities {
 
     // -------------------------- WHEEL OF FORTUNE ---------------------------------------------------
 
-    public static final AbilityFactory CONJURE_PICKAXE = registerAbility("pick",
-            ConjurePickaxeAbility::new,
-            2, 0, 10).hasSecondaryFunction();
 
     public static final AbilityFactory PATIENCE = registerAbility("patience",
             PatienceAbility::new,
@@ -55,6 +52,11 @@ public class Abilities {
             BoneMealAbility::new, 7, 0, 10);
 
     //retweaked
+    public static final AbilityFactory CONJURE_PICKAXE = registerAbility("pick",
+            ConjurePickaxeAbility::new,
+            2, 0, 10).hasSecondaryFunction();
+
+    //retweaked
     public static final AbilityFactory MINING_SPEED = registerAbility("mining",
             sequenceLevel -> (new MiningSpeedAbility(sequenceLevel)).canFlip().enabledOnAcquire(),
             0, 0, 0).hasSecondaryFunction();
@@ -64,16 +66,16 @@ public class Abilities {
             (Integer sequenceLevel) -> PassiveAbility.createAbility(sequenceLevel, BeyonderEffects.WHEEL_ZERO_DAMAGE,
                             (ignored) -> "zero_damage")
                     .enabledOnAcquire(),
-            3, 0, 0);
+            8, 0, 0);
 
     //retweaked
     public static final AbilityFactory VOID_VISION = registerAbility("void_vision",
             (Integer sequenceLevel) -> MobEffectPassiveAbility.createAbility(sequenceLevel, MobEffects.NIGHT_VISION, ignored -> "void_vision")
-                    .withAmplifier(1).withPassiveCost(2).withThreshold(5), 1, 0, 5);
+                    .withAmplifier(1).withPassiveCost(2).withThreshold(5), 9, 0, 5);
 
     //retweaked
     public static final AbilityFactory WHEEL_KNOWLEDGE = registerAbility("wheel_knowledge",
-            WheelKnowledgeAbility::new, 3, 0, 0);
+            WheelKnowledgeAbility::new, 13, 0, 0);
 
     //retweaked
     public static final AbilityFactory APPRAISAL = registerAbility("appraisal",
@@ -102,7 +104,7 @@ public class Abilities {
             (Integer sequenceLevel) -> PassiveAbility.createAbility(sequenceLevel, BeyonderEffects.WHEEL_CALAMITY,
                             (level) -> level < 8 ? "calamity_2" : "calamity")
                     .enabledOnAcquire(),
-            10, 0, 0);
+            4, 0, 0);
 
     //retweaked
     public static final AbilityFactory TARGET_APPRAISAL = registerAbility("target_appraisal",

@@ -95,9 +95,10 @@ public class BeyonderEvents {
     }
 
     @SubscribeEvent
-    public static void itemExpire(ItemTossEvent event){
+    public static void itemDroppedEvent(ItemTossEvent event){
         if(MysticalItemHelper.isCharacteristic(event.getEntity().getItem())){
             event.getEntity().setInvulnerable(true);
+            event.getEntity().setUnlimitedLifetime();
         }
     }
 

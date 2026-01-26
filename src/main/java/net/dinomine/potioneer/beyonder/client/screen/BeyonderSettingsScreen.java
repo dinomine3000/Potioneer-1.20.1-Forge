@@ -14,7 +14,7 @@ import net.minecraft.util.Mth;
 
 import static net.dinomine.potioneer.beyonder.client.ClientAbilitiesData.showHotbarOnConfigScreen;
 
-public class BeyonderSettingsScreen extends Screen {
+public class  BeyonderSettingsScreen extends Screen {
     private static final Component TITLE = Component.translatable("gui." + Potioneer.MOD_ID + ".options_menu");
     private static final ResourceLocation TEXTURE = new ResourceLocation(Potioneer.MOD_ID, "textures/gui/client_config_menu.png");
 
@@ -42,6 +42,7 @@ public class BeyonderSettingsScreen extends Screen {
     private Button hotbarPositionLeft;
     private Button hotbarPositionRight;
     private Button hotbarPositionTop;
+    private Button hotbarOutlineOn, hotbarOutlineOff;
 
     private Button goToMainMenu, goToAbilitiesMenu, goToAllyMenu;
 
@@ -126,6 +127,13 @@ public class BeyonderSettingsScreen extends Screen {
                 53, 217, 13, TEXTURE, TEXTURE_WIDTH, TEXTURE_HEIGHT, btn -> setHotbarPosition(PotioneerClientConfig.HOTBAR_POS.RIGHT));
         addRenderableWidget(hotbarPositionRight);
 
+        hotbarOutlineOn = new ImageButton(leftPos + 8, topPos + 130, 33, 13,
+                92, 217, 13, TEXTURE, TEXTURE_WIDTH, TEXTURE_HEIGHT, btn -> setHotbarOutlines(true));
+        addRenderableWidget(hotbarOutlineOn);
+        hotbarOutlineOff = new ImageButton(leftPos + 45, topPos + 130, 33, 13,
+                92, 243, -13, TEXTURE, TEXTURE_WIDTH, TEXTURE_HEIGHT, btn -> setHotbarOutlines(false));
+        addRenderableWidget(hotbarOutlineOff);
+
     }
 
     @Override
@@ -174,6 +182,7 @@ public class BeyonderSettingsScreen extends Screen {
         pGuiGraphics.blit(TEXTURE, leftPos, topPos, 0, 0,
                 imageWidth, imageHeight,
                 TEXTURE_WIDTH, TEXTURE_HEIGHT);
+        super.render(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
 
         //title
         pGuiGraphics.drawString(this.font, Component.translatable("gui.potioneer.options_menu"),
@@ -194,19 +203,11 @@ public class BeyonderSettingsScreen extends Screen {
         pGuiGraphics.drawString(this.font, Component.translatable("gui.potioneer.options_orb"),
                 leftPos + 8,
                 topPos + 50, 0x555555, false);
-        saveButton.render(pGuiGraphics, pMouseX, pMouseY, 0);
-        orbRightButton.render(pGuiGraphics, pMouseX, pMouseY, 0);
-        orbLeftButton.render(pGuiGraphics, pMouseX, pMouseY, 0);
-        orbSizeIncreaseButton.render(pGuiGraphics, pMouseX, pMouseY, 0);
-        orbSizeDecreaseButton.render(pGuiGraphics, pMouseX, pMouseY, 0);
 
         //hotbar buttons
         pGuiGraphics.drawString(this.font, Component.translatable("gui.potioneer.options_hotbar"),
                 leftPos + 8,
                 topPos + 65, 0x555555, false);
-        hotbarPositionLeft.render(pGuiGraphics, pMouseX, pMouseY, 0);
-        hotbarPositionRight.render(pGuiGraphics, pMouseX, pMouseY, 0);
-        hotbarPositionTop.render(pGuiGraphics, pMouseX, pMouseY, 0);
 
         //hotbar slider
         pGuiGraphics.drawString(this.font, Component.translatable("gui.potioneer.options_hotbar_slider"),
@@ -217,6 +218,12 @@ public class BeyonderSettingsScreen extends Screen {
                 TEXTURE_WIDTH, TEXTURE_HEIGHT);
         pGuiGraphics.blit(TEXTURE, currentHotbarSliderX, topPos + 100, 0, 217,
                 8, 13);
+
+        //hotbar outlines buttons
+        Component component = Component.translatableWithFallback("gui.potioneer.options_hotbar_outline", "Universal Hotbar Case Outlines");
+        pGuiGraphics.drawString(this.font, component,
+                leftPos + imageWidth/2 - this.font.width(component)/2,
+                topPos + 120, 0x555555, false);
     }
 
     private void saveData(){
@@ -234,6 +241,10 @@ public class BeyonderSettingsScreen extends Screen {
 
     private void setHotbarPosition(PotioneerClientConfig.HOTBAR_POS pos){
         ClientConfigData.setHotbarPosition(pos);
+    }
+
+    private void setHotbarOutlines(boolean state){
+        ClientConfigData.setHotbarOutline(state);
     }
 
     @Override

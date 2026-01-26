@@ -1,5 +1,6 @@
 package net.dinomine.potioneer.beyonder.client.screen;
 
+import ca.weblite.objc.Client;
 import net.dinomine.potioneer.Potioneer;
 import net.dinomine.potioneer.beyonder.abilities.Abilities;
 import net.dinomine.potioneer.beyonder.abilities.AbilityFactory;
@@ -174,6 +175,10 @@ public class BeyonderAbilitiesScreen extends Screen {
     private void addAbilityToQuickSelect(){
         int caretToAdd = selectedCaret;
         AbilityKey key = abilities.get(caretToAdd).getKey();
+        if(!ClientAbilitiesData.hasAbility(key)){
+            refreshScreen();
+            return;
+        }
         if(ClientAbilitiesData.getQuickAbility().equals(key)){
             ClientAbilitiesData.setQuickAbility(new AbilityKey());
         } else {
@@ -186,6 +191,10 @@ public class BeyonderAbilitiesScreen extends Screen {
     private void addAbilityToHotbar(){
         int caretToAdd = selectedCaret;
         AbilityKey key = abilities.get(caretToAdd).getKey();
+        if(!ClientAbilitiesData.hasAbility(key)){
+            refreshScreen();
+            return;
+        }
         if(!ClientAbilitiesData.getHotbar().contains(key)){
             ClientAbilitiesData.getHotbar().add(key);
         } else {
@@ -225,6 +234,10 @@ public class BeyonderAbilitiesScreen extends Screen {
     }
 
     private void castAbilityAt(boolean primary){
+        if(!ClientAbilitiesData.hasAbility(abilities.get(selectedCaret).getKey())){
+            refreshScreen();
+            return;
+        }
         ClientAbilitiesData.useAbility(Minecraft.getInstance().player, abilities.get(selectedCaret).getKey(), primary);
     }
 
@@ -246,6 +259,10 @@ public class BeyonderAbilitiesScreen extends Screen {
     private void drawAbilityIcon(GuiGraphics pGuiGraphics, int posX, int posY, float scale, int abilityIndex, boolean main, int mouseX, int mouseY){
         AbilityInfo data = abilities.get(abilityIndex);
         AbilityKey key = data.getKey();
+        if(!ClientAbilitiesData.hasAbility(key)){
+            refreshScreen();
+            return;
+        }
         Component name = data.getNameComponent();
         //int caret = abilities.size() - 1 - abilityIndex;
 
@@ -363,7 +380,6 @@ public class BeyonderAbilitiesScreen extends Screen {
             float mousePercent = Mth.clamp((float) (pMouseY - topPos - 72) / 88f, 0, 1);
             int offset = Math.round(mousePercent / interval);
             if(offset > abilities.size() - 6){
-                System.out.println("Offset was overcome. normalizing it...");
                 offset = abilities.size() - 6;
             }
             buttonOffset = offset;
@@ -377,5 +393,9 @@ public class BeyonderAbilitiesScreen extends Screen {
             buttonOffset = Mth.clamp(buttonOffset + (int)(-pDelta), 0, abilities.size() - 6);
         }
         return super.mouseScrolled(pMouseX, pMouseY, pDelta);
+    }
+
+    private void refreshScreen(){
+        Minecraft.getInstance().setScreen(new BeyonderAbilitiesScreen());
     }
 }

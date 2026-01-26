@@ -3,6 +3,7 @@ package net.dinomine.potioneer.event;
 import com.mojang.authlib.GameProfile;
 import com.mojang.blaze3d.platform.InputConstants;
 import net.dinomine.potioneer.Potioneer;
+import net.dinomine.potioneer.beyonder.abilities.AbilityInfo;
 import net.dinomine.potioneer.beyonder.client.ClientAbilitiesData;
 import net.dinomine.potioneer.beyonder.client.ClientStatsData;
 import net.dinomine.potioneer.beyonder.client.KeyBindings;
@@ -18,6 +19,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -64,11 +66,16 @@ public class ClientForgeHandler {
             if(stack.hasTag() && stack.getTag().contains("recipe_data")){
                 tooltip.add(Component.literal(PotionRecipeData.getName(stack.getTag().getCompound("recipe_data"))));
             }
+            if(appraiser && MysticalItemHelper.isWorkingArtifact(stack)){
+                for(AbilityInfo info: MysticalItemHelper.getArtifactFromitem(stack).getAbilitiesInfo(true)){
+                    tooltip.add(info.getMutableNameComponent().withStyle(ChatFormatting.ITALIC));
+                }
+            }
             if(stack.hasTag() && stack.getTag().contains("potion_info") && appraiser){
                 CompoundTag tag = stack.getOrCreateTag().getCompound("potion_info");
                 boolean conflict = tag.getString("name").equals("conflict");
-                boolean incomplete = tag.getBoolean("isComplete");
-                tooltip.add(Component.translatable("tooltip.potioneer." + (conflict ? "conflicting_potion" : (incomplete ? "incomplete_potion" : "valid_potion"))));
+                boolean isComplete = tag.getBoolean("isComplete");
+                tooltip.add(Component.translatable("tooltip.potioneer." + (conflict ? "conflicting_potion" : (isComplete ? "valid_potion" : "incomplete_potion"))));
             }
             if(stack.is(ModItems.CHARM.get())){
                 if(stack.hasTag() && stack.getTag().contains(MysticalItemHelper.CHARM_TAG_ID)){
@@ -117,7 +124,7 @@ public class ClientForgeHandler {
 //                event.setCanceled(true);
 //            }
 //        }
-        if(!ClientAbilitiesData.showHotbar) return;
+        if(!ClientAbilitiesData.showHotbar || ClientAbilitiesData.getHotbar().isEmpty()) return;
         Minecraft minecraft = Minecraft.getInstance();
         boolean success = false;
         if(minecraft.player != null && event.getAction() == InputConstants.PRESS){

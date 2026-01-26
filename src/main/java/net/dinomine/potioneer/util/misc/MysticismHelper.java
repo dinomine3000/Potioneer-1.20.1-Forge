@@ -150,7 +150,7 @@ public class MysticismHelper {
                     status = 0.0f;
                     clue = "Death";
                 } else {
-                    yesNo = !complete;
+                    yesNo = complete;
                     try{
                         potionSequence = Integer.parseInt(name);
                         clue = "potioneer.beyonder.sequence." + Pathways.getPathwayBySequenceId(potionSequence).getSequenceNameFromId(potionSequence, false);

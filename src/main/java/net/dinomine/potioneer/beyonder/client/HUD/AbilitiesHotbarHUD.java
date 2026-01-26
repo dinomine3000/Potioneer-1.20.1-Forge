@@ -13,9 +13,13 @@ import net.dinomine.potioneer.beyonder.pathways.Pathways;
 import net.dinomine.potioneer.config.PotioneerClientConfig;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
+import net.minecraft.util.RandomSource;
 import net.minecraftforge.client.gui.overlay.IGuiOverlay;
+
+import java.util.logging.Level;
 
 public class AbilitiesHotbarHUD {
     private static final ResourceLocation ICONS = new ResourceLocation(Potioneer.MOD_ID, "textures/gui/ability_icon_atlas.png");
@@ -25,7 +29,7 @@ public class AbilitiesHotbarHUD {
     public static int ICON_HEIGHT = 24;
     private static final int CASE_WIDTH = 26;
     private static final int CASE_HEIGHT = 32;
-    private static final int CAST_WIDTH = 13;
+    private static final int CAST_WIDTH = 12;
     private static final int CAST_HEIGHT = 32;
 
     private static final Minecraft minecraft = Minecraft.getInstance();
@@ -73,6 +77,10 @@ public class AbilitiesHotbarHUD {
     });
 
     private static void drawCases(GuiGraphics guiGraphics, PotioneerClientConfig.HOTBAR_POS hotbarPos, float animPercent, int caret, int xOffset, int yOffset, AbilityInfo infoL, AbilityInfo infoC, AbilityInfo infoR, float scale){
+        if(ClientAbilitiesData.getHotbar().isEmpty()){
+            ClientAbilitiesData.showHotbar = false;
+            return;
+        }
         if(hotbarPos == PotioneerClientConfig.HOTBAR_POS.LEFT){
             xOffset += (int) (10*scale);
             if(animPercent < 0){
@@ -172,6 +180,10 @@ public class AbilitiesHotbarHUD {
         int abilityX = Pathways.getPathwayById(info.getPathwayId()).getAbilityX();
         int caseX = xPos - (int) (CASE_WIDTH * scale / 2);
 
+
+        //48 x 60 - case
+        guiGraphics.blit(ICONS, caseX, yPos, (int) (CASE_WIDTH*scale), (int) (CASE_HEIGHT*scale), abilityX - 5, 0, CASE_WIDTH, CASE_HEIGHT, ICONS_WIDTH, ICONS_HEIGHT);
+
         //ability cast (primary vs secondary) shape
         AbilityFactory abl = Abilities.getAbilityFactory(info.getKey());
         if(abl.getHasSecondaryFunction()){
@@ -180,15 +192,19 @@ public class AbilitiesHotbarHUD {
             int pCastHeight = (int)(CAST_HEIGHT*(1-pPercent));
             int sCastHeight = (int)(CAST_HEIGHT*(1-sPercent));
             guiGraphics.blit(ICONS, caseX, yPos + (int)(scale * (CAST_HEIGHT - pCastHeight)),
-                    (int) (CAST_WIDTH*scale), (int) (pCastHeight*scale), 151, pPercent != 0 ? 73 - pCastHeight : 3,
+                    (int) (CAST_WIDTH*scale), (int) (pCastHeight*scale), 151, 3 + CAST_HEIGHT - pCastHeight,
                     CAST_WIDTH, pCastHeight, ICONS_WIDTH, ICONS_HEIGHT);
-            guiGraphics.blit(ICONS, (caseX +  (int) (CASE_WIDTH*scale/2f)), yPos + (int)(scale * (CAST_HEIGHT - sCastHeight)),
-                    (int) (CAST_WIDTH*scale), (int) (sCastHeight*scale), 164, sPercent != 0 ? 73 - sCastHeight : 3,
+            guiGraphics.blit(ICONS, (caseX +  (int) (CASE_WIDTH*scale/2f + scale)), yPos + (int)(scale * (CAST_HEIGHT - sCastHeight)),
+                    (int) (CAST_WIDTH*scale), (int) (sCastHeight*scale), 165, 3 + CAST_HEIGHT - sCastHeight,
                     CAST_WIDTH, sCastHeight, ICONS_WIDTH, ICONS_HEIGHT);
+        } else if (ClientConfigData.getHotbarOutlines()){
+            float pPercent = ClientAbilitiesData.getPercent(true);
+            int pCastHeight = (int)(CAST_HEIGHT*(1-pPercent));
+            int width = 2*CAST_WIDTH + 2;
+            guiGraphics.blit(ICONS, caseX, yPos + (int)(scale * (CAST_HEIGHT - pCastHeight)),
+                    (int) (width*scale), (int) (pCastHeight*scale), 151, 3 + CAST_HEIGHT - pCastHeight,
+                    width, pCastHeight, ICONS_WIDTH, ICONS_HEIGHT);
         }
-
-        //48 x 60 - case
-        guiGraphics.blit(ICONS, caseX, yPos, (int) (CASE_WIDTH*scale), (int) (CASE_HEIGHT*scale), abilityX - 5, 0, CASE_WIDTH, CASE_HEIGHT, ICONS_WIDTH, ICONS_HEIGHT);
 
         //ability icon
         if(!ClientAbilitiesData.isEnabled(caret)){
@@ -233,8 +249,13 @@ public class AbilitiesHotbarHUD {
 
         //barrier symbol if ability is disabled
         if(ClientAbilitiesData.getCooldown(caret) < 0){
-            //Copied from the icons part
-            guiGraphics.blit(ICONS, caseX + (int) (5*scale), yPos + (int)(4*scale), (int)(ICON_WIDTH*scale), (int)(ICON_HEIGHT*scale), 130, 4, ICON_WIDTH, ICON_HEIGHT, ICONS_WIDTH, ICONS_HEIGHT);
+            if(!ClientConfigData.getAlternativeBlocking()){
+                //Copied from the icons part
+                guiGraphics.blit(ICONS, caseX + (int) (5*scale), yPos + (int)(4*scale), (int)(ICON_WIDTH*scale), (int)(ICON_HEIGHT*scale), 130, 4, ICON_WIDTH, ICON_HEIGHT, ICONS_WIDTH, ICONS_HEIGHT);
+                return;
+            }
+            guiGraphics.blit(ICONS, caseX + (int) (5*scale), yPos + (int)(4*scale), (int)(ICON_WIDTH*scale), (int)(ICON_HEIGHT*scale), 130, 32 + ICON_HEIGHT*ClientAbilitiesData.getDisabledPosition(), ICON_WIDTH, ICON_HEIGHT, ICONS_WIDTH, ICONS_HEIGHT);
+
         }
     }
 }

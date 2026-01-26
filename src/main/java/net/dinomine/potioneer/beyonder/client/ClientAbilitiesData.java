@@ -1,14 +1,17 @@
 package net.dinomine.potioneer.beyonder.client;
 
+import com.eliotlash.mclib.math.functions.limit.Min;
 import net.dinomine.potioneer.beyonder.abilities.Abilities;
 import net.dinomine.potioneer.beyonder.abilities.AbilityInfo;
 import net.dinomine.potioneer.beyonder.abilities.AbilityKey;
 import net.dinomine.potioneer.beyonder.abilities.ArtifactHolder;
 import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
 import net.dinomine.potioneer.beyonder.player.PlayerAbilitiesManager;
+import net.dinomine.potioneer.config.PotioneerClientConfig;
 import net.dinomine.potioneer.network.PacketHandler;
 import net.dinomine.potioneer.network.messages.abilityRelevant.PlayerSyncHotbarMessage;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
@@ -16,6 +19,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 import java.util.*;
+import java.util.logging.Level;
 import java.util.stream.Collectors;
 
 @OnlyIn(Dist.CLIENT)
@@ -295,6 +299,13 @@ public class ClientAbilitiesData {
         }
         if(castPrimary > 0f) castPrimary = Math.max(castPrimary - dt, 0);
         if(castSecondary > 0f) castSecondary = Math.max(castSecondary - dt, 0);
+        ClientLevel level = Minecraft.getInstance().level;
+        if(level == null) return;
+        disabledCountdown -= dt*disableFps/60f;
+        if(disabledCountdown < 0){
+            disabledCountdown = 1;
+            disabledPosition = level.random.nextInt(12);
+        }
     }
 
     public static boolean openAnimation = false;
@@ -313,6 +324,14 @@ public class ClientAbilitiesData {
      */
     private static int caret = 0;
     public static boolean showHotbar = false;
+
+    public static int getDisabledPosition() {
+        return disabledPosition;
+    }
+
+    private static int disabledPosition = 0;
+    private static float disabledCountdown = 0;
+    private static final int disableFps = 24;
 
     public static void changeCaret(int diff){
         if(animationTime != 0 || hotbar.isEmpty()) return;
@@ -352,6 +371,7 @@ public class ClientAbilitiesData {
     }
 
     public static boolean useAbility(Player player, boolean primary){
+        if(hotbar.isEmpty()) return false;
         return useAbility(player, hotbar.get(Math.floorMod(caret, hotbar.size())), primary);
     }
 
@@ -370,6 +390,7 @@ public class ClientAbilitiesData {
         }
         if(Abilities.getAbilityFactory(key).getHasSecondaryFunction())
             beginCastAnimation(primary);
+        else if(ClientConfigData.getHotbarOutlines() && primary) beginCastAnimation(true);
         player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
 //                    System.out.println(caret);
 //                    ClientStatsData.setSpirituality(ClientStatsData.getPlayerSpirituality() - abilities.get(caret).cost());
@@ -390,5 +411,9 @@ public class ClientAbilitiesData {
         for(AbilityKey key: keysToRemove){
             abilities.remove(key);
         }
+    }
+
+    public static boolean hasAbility(AbilityKey key) {
+        return abilities.containsKey(key);
     }
 }

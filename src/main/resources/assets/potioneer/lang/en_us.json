@@ -373,6 +373,8 @@
   "potioneer.short_desc.appraisal": "Your skills let you find ores around you with ease, as if magic.",
   "potioneer.long_desc.appraisal": "L-Click to to find ores in your hand, R-Click count ores around you",
 
+  "potioneer.ability_name.d_dummy": "Hurt",
+
   "potioneer.short_desc.air_bullet": "Surprise your enemies with a well timed gun shot",
   "potioneer.long_desc.air_bullet": "Shoot an air bullet from your mouth. It pierces targets. Damage scales with sequence.",
   "potioneer.ability_name.air_bullet": "Air Bullet",

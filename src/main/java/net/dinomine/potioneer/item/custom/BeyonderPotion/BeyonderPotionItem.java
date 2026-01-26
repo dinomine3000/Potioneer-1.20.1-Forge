@@ -124,7 +124,8 @@ public class BeyonderPotionItem extends PotionItem implements GeoItem, GeoTintab
             int pathwaySequenceId = Integer.parseInt(name);
             BeyonderPathway newPathway = Pathways.getPathwayById(Math.floorDiv(pathwaySequenceId, 10));
             int addedDifficulty = newPathway.isRitualComplete(pathwaySequenceId%10, player, pLevel);
-            addedDifficulty += info.getBoolean("isComplete") ? 0 : DIFF_FOR_INCOMPLETE_POTION;
+            boolean isComplete = info.getBoolean("isComplete");
+            addedDifficulty +=  isComplete ? 0 : DIFF_FOR_INCOMPLETE_POTION;
 
             int originalPathSeqId = cap.getPathwaySequenceId();
             BeyonderPathway ogPathway = Pathways.getPathwayById(Math.floorDiv(originalPathSeqId, 10));

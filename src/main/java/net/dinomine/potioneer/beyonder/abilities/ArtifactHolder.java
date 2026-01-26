@@ -33,7 +33,11 @@ public class ArtifactHolder {
     }
 
     public List<AbilityInfo> getAbilitiesInfo(boolean includeDownsides){
-        return new ArrayList<>(abilities.values().stream().map(Ability::getAbilityInfo).filter(info -> includeDownsides || !info.isDownside()).toList());
+        ArrayList<Ability> result = new ArrayList<>(abilities.values());
+        if(includeDownsides){
+            result.addAll(downsides.values());
+        }
+        return result.stream().map(Ability::getAbilityInfo).toList();
     }
 
     /**

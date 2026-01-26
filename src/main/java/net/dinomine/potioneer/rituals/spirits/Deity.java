@@ -45,7 +45,7 @@ public abstract class Deity extends EvilSpirit {
     public Page getInfoPage(){ return this.page;}
 
     public boolean matchPrayer(String message){
-        return RoughStringMatcher.roughlyMatches(this.prayer, message, 0.7d, 0.7d, 10);
+        return RoughStringMatcher.roughlyMatches(this.prayer, message, 0.8d, 0.8d, 10);
     }
 
     public Component getFieltyMessage(){
