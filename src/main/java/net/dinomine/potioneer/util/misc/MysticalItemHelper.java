@@ -104,6 +104,7 @@ public class MysticalItemHelper {
         CompoundTag artifactInfo = new CompoundTag();
         artifactInfo.putUUID("artifactId", UUID.randomUUID());
         generateAbilityTags(artifactInfo, pathwaySequenceId, random, quantity);
+        artifactInfo.put("itemStack", stack.save(new CompoundTag()));
         root.put(ARTIFACT_TAG_ID, artifactInfo);
         stack.setTag(root);
     }
@@ -167,7 +168,7 @@ public class MysticalItemHelper {
     public static ArtifactHolder getArtifactFromitem(ItemStack itemStack) {
         if(!isWorkingArtifact(itemStack)) return null;
         CompoundTag artifactTag = itemStack.getTag().getCompound(ARTIFACT_TAG_ID);
-        return ArtifactHolder.loadFromTag(artifactTag);
+        return ArtifactHolder.loadFromTag(artifactTag).withStack(itemStack);
     }
 
     public static UUID getArtifactIdFromItem(ItemStack itemStack){
@@ -180,9 +181,17 @@ public class MysticalItemHelper {
         if(!isWorkingArtifact(itemStack)) return;
         CompoundTag root = itemStack.getOrCreateTag();
         if(!root.getCompound(ARTIFACT_TAG_ID).getUUID("artifactId").equals(artifactHolder.getArtifactId())) return;
-        CompoundTag artifactTag = artifactHolder.saveToTag(new CompoundTag());
+        CompoundTag artifactTag = artifactHolder.withStack(itemStack).saveToTag(new CompoundTag());
         root.put(ARTIFACT_TAG_ID, artifactTag);
         itemStack.setTag(root);
+    }
+
+    /**
+     * should be called only if the itemstack in the artifact holder is a reference to the actual item stack instance
+     * @param artifactHolder
+     */
+    public static void updateArtifactTagOnItem(ArtifactHolder artifactHolder) {
+        updateArtifactTagOnItem(artifactHolder, artifactHolder.getStack());
     }
 
     public static boolean isCharacteristic(ItemStack item) {

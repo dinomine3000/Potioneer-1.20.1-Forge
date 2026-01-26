@@ -23,7 +23,6 @@ public class AirBulletAbility extends Ability {
 
     public AirBulletAbility(int sequence){
         super(sequence);
-        setCost(i -> 60 + 10*(9-i));
     }
 
 //    @Override
@@ -48,6 +47,7 @@ public class AirBulletAbility extends Ability {
                 level.addParticle(ParticleTypes.POOF, itVector.x, itVector.y, itVector.z,0, -0.02f, 0);
                 temp += 0.4f;
             }
+            cap.requestActiveSpiritualityCost(cost());
         }
         else {
             cap.requestActiveSpiritualityCost(cost());

@@ -3,6 +3,7 @@ package net.dinomine.potioneer.beyonder.client;
 import net.dinomine.potioneer.beyonder.abilities.Abilities;
 import net.dinomine.potioneer.beyonder.abilities.AbilityInfo;
 import net.dinomine.potioneer.beyonder.abilities.AbilityKey;
+import net.dinomine.potioneer.beyonder.abilities.ArtifactHolder;
 import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
 import net.dinomine.potioneer.beyonder.player.PlayerAbilitiesManager;
 import net.dinomine.potioneer.network.PacketHandler;
@@ -15,6 +16,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @OnlyIn(Dist.CLIENT)
 public class ClientAbilitiesData {
@@ -57,24 +59,8 @@ public class ClientAbilitiesData {
         caret = Mth.clamp(caret, 0, hotbar.size() - 1);
     }
 
-//    public static void setEnabled(String cAblId, boolean enabled){
-//        if(abilities.containsKey(cAblId)){
-//            abilities.get(cAblId).setEnabled(enabled);
-//            return;
-//        }
-//        System.out.println("Warning: Couldn't find enabled ability: " + cAblId);
-//    }
-//
-//    public static void setCooldown(String cAblId, int cd, int maxCd){
-//        if(abilities.containsKey(cAblId)){
-//            abilities.get(cAblId).withCooldown(cd, maxCd);
-//            return;
-//        }
-//        System.out.println("Warning: Couldn't find cooldown ability: " + cAblId);
-//    }
-
     public static void setAbilities(List<AbilityInfo> abilities2) {
-        abilities = new LinkedHashMap<>();
+        clearAbilitiesOf(false);
         for (AbilityInfo abl : abilities2) {
             abilities.put(abl.getKey(), abl);
         }
@@ -130,7 +116,8 @@ public class ClientAbilitiesData {
                 System.out.println("Warning: tried to update an ability with a null id: " + abl.descId());
                 continue;
             }
-            if(key.isArtifactKey()) continue;
+            if(!abilities.containsKey(key)) continue;
+//            if(key.isArtifactKey()) continue;
             abilities.put(key, abl);
         }
 
@@ -160,6 +147,57 @@ public class ClientAbilitiesData {
             hotbar.removeIf(key -> !abilities.containsKey(key));
         }
         setHotbarChanged();
+    }
+
+    public static void setArtifacts(List<ArtifactHolder> artifacts){
+        clearAbilitiesOf(true);
+        for(ArtifactHolder artifact: artifacts){
+            for (AbilityInfo abl : artifact.getAbilitiesInfo(false)) {
+                abilities.put(abl.getKey(), abl);
+            }
+        }
+        updateHotbarOnChange();
+//        if(changingPath) hotbar = new ArrayList<>();
+//        if(changingPath) quickSelect = "";
+        if(!hasQuickSelect() && !abilities.containsKey(quickSelect)) quickSelect = new AbilityKey();
+        ClientStatsData.getCapability().ifPresent(cap -> {
+            if(Minecraft.getInstance().player != null)
+                cap.getAbilitiesManager().setArtifactsOnClient(artifacts, cap, Minecraft.getInstance().player);
+            else
+                System.out.println("Player is null while trying to set artifacts on client side.");
+        });
+    }
+
+    public static void removeArtifacts(List<ArtifactHolder> artifacts) {
+        for(ArtifactHolder artifact: artifacts){
+            for(AbilityInfo info: artifact.getAbilitiesInfo(false)){
+                if(!abilities.containsKey(info.getKey())) continue;
+                abilities.remove(info.getKey());
+            }
+        }
+
+        ClientStatsData.getCapability().ifPresent(cap -> {
+            if(Minecraft.getInstance().player != null)
+                cap.getAbilitiesManager().removeArtifactsOnClient(artifacts, cap, Minecraft.getInstance().player);
+            else
+                System.out.println("Player is null while trying to remove artifacts on client side.");
+        });
+        updateHotbarOnChange();
+    }
+
+    public static void addArtifacts(List<ArtifactHolder> artifacts) {
+        for(ArtifactHolder artifact: artifacts){
+            for(AbilityInfo info: artifact.getAbilitiesInfo(false)){
+                if(abilities.containsKey(info.getKey())) continue;
+                abilities.put(info.getKey(), info);
+            }
+        }
+        ClientStatsData.getCapability().ifPresent(cap -> {
+            if(Minecraft.getInstance().player != null)
+                cap.getAbilitiesManager().addArtifactsOnClient(artifacts, cap, Minecraft.getInstance().player, true);
+            else
+                System.out.println("Player is null while trying to add artifacts on client side.");
+        });
     }
 
     public static AbilityKey getQuickAbility(){
@@ -319,15 +357,19 @@ public class ClientAbilitiesData {
 
     public static boolean useAbility(Player player, AbilityKey key, boolean primary){
         if(abilities.isEmpty() || key == null || abilities.get(key) == null ) return false;
-        if(Abilities.getAbilityFactory(key).getHasSecondaryFunction())
-            beginCastAnimation(primary);
-        int cost = Abilities.getAbilityFactory(key).getCostSpirituality();
-        float spir = ClientStatsData.getPlayerSpirituality();
-        if(spir < cost){
-            player.sendSystemMessage(Component.literal("You are too drained to cast " + key.getAbilityId()));
+        Component abilityName = abilities.get(key).getNameComponent();
+        if(abilities.get(key).getCooldown() < 0){
+            player.sendSystemMessage(Component.translatableWithFallback("message.potioneer.blocked_ability", "%s has been disabled.", abilityName));
             return false;
         }
-        if(abilities.get(key).getCooldown() < 0) return false;
+        int cost = Abilities.getAbilityFactory(key).getCostFunction().apply(key.getSequenceLevel());
+        float spir = ClientStatsData.getPlayerSpirituality();
+        if(spir < cost){
+            player.sendSystemMessage(Component.translatable("message.potioneer.insufficient_spirituality", abilityName));
+            return false;
+        }
+        if(Abilities.getAbilityFactory(key).getHasSecondaryFunction())
+            beginCastAnimation(primary);
         player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
 //                    System.out.println(caret);
 //                    ClientStatsData.setSpirituality(ClientStatsData.getPlayerSpirituality() - abilities.get(caret).cost());
@@ -343,4 +385,10 @@ public class ClientAbilitiesData {
         return true;
     }
 
+    private static void clearAbilitiesOf(boolean clearArtifactsNotAbilities){
+        Set<AbilityKey> keysToRemove = abilities.keySet().stream().filter(key -> clearArtifactsNotAbilities == key.isArtifactKey()).collect(Collectors.toSet());
+        for(AbilityKey key: keysToRemove){
+            abilities.remove(key);
+        }
+    }
 }

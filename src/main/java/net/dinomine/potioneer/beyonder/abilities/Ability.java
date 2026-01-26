@@ -1,5 +1,7 @@
 package net.dinomine.potioneer.beyonder.abilities;
 
+import com.mojang.datafixers.types.Func;
+import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
 import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
 import net.dinomine.potioneer.beyonder.player.PlayerAbilitiesManager;
 import net.dinomine.potioneer.event.AbilityCastEvent;
@@ -37,7 +39,7 @@ public abstract class Ability {
             setEnabled(cap, target, info.isEnabled());
         }
         putOnCooldown(info.getCooldown(), target);
-        setData(info.getData(), target);
+        setDataSilent(info.getData());
     }
 
     public boolean isDownside(){
@@ -216,7 +218,7 @@ public abstract class Ability {
      */
     public boolean putOnCooldown(int cooldownTicks, LivingEntity target){
         if(cooldownTicks < 0) return false;
-        if(maxCooldown < cooldownTicks) maxCooldown = cooldownTicks;
+        if(maxCooldown < cooldownTicks) maxCooldown = Math.max(cooldownTicks, 1);
         cooldown = cooldownTicks;
         if(target instanceof Player player) updateCooldownClient(player);
         return true;
@@ -241,7 +243,9 @@ public abstract class Ability {
     }
 
     private void sendUpdateMessageToClient(LivingEntity ent){
-        if(ent instanceof Player player && !player.level().isClientSide()) PacketHandler.sendMessageSTC(new AbilitySyncMessage(getAbilityInfo(), AbilitySyncMessage.UPDATE), player);
+        ent.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
+            cap.getAbilitiesManager().onAbilityUpdateData(this.getAbilityInfo(), cap, ent);
+        });
     }
 
     public void setSequenceLevelSilent(int level){
@@ -265,22 +269,25 @@ public abstract class Ability {
      * @param target
      * @param primary
      */
-    public void castAbility(LivingEntityBeyonderCapability cap, LivingEntity target, boolean primary){
-        if(cooldown != 0) return;
+    public boolean castAbility(LivingEntityBeyonderCapability cap, LivingEntity target, boolean primary){
+        if(cooldown != 0) return false;
 
         boolean cancelledCheck = MinecraftForge.EVENT_BUS.post(new AbilityCastEvent.Pre(this, target, primary));
-        if(cancelledCheck) return;
+        if(cancelledCheck) return false;
         if(primary){
             if(primary(cap, target)){
                 MinecraftForge.EVENT_BUS.post(new AbilityCastEvent.Post(this, target, true));
                 putOnCooldown(target);
+                return true;
             }
         } else {
             if(secondary(cap, target)){
                 MinecraftForge.EVENT_BUS.post(new AbilityCastEvent.Post(this, target, false));
                 putOnCooldown(target);
+                return true;
             }
         }
+        return false;
     }
 
     /**
@@ -403,6 +410,11 @@ public abstract class Ability {
 
     public Ability withAbilityId(String ablId) {
         this.abilityId = ablId;
+        return this;
+    }
+
+    public Ability withCost(Function<Integer, Integer> costFunction){
+        this.costFunction = costFunction;
         return this;
     }
 

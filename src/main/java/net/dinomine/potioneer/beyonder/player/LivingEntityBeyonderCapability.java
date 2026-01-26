@@ -430,6 +430,7 @@ public class LivingEntityBeyonderCapability {
         maxSpirituality = characteristicManager.getMaxSpirituality();
         this.sanity = Math.min(Math.max(source.sanity, SANITY_MIN_RESPAWN), maxSanity.get());
         pageList = new ArrayList<>(source.pageList);
+        syncSequenceData(player);
         //this.abilitiesManager.onAcquireAbilities(this, player);
     }
 

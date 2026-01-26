@@ -77,8 +77,9 @@ public class BeyonderScreen extends Screen {
 
         this.pathwaySequenceId = ClientStatsData.getPathwaySequenceId();
         this.pathway = Pathways.getPathwayBySequenceId(pathwaySequenceId);
-        this.PATHWAY_NAME = Component.translatable(Potioneer.MOD_ID + ".beyonder.pathway." + pathway.getPathwayName(false));
-        this.SEQUENCE_NAME = Component.translatable(Potioneer.MOD_ID + ".beyonder.sequence." + pathway.getSequenceNameFromId(pathwaySequenceId %10, false));
+        this.PATHWAY_NAME = Component.translatableWithFallback(Potioneer.MOD_ID + ".beyonder.pathway." + pathway.getPathwayName(false), pathway.getPathwayName(true).replace("_", " "));
+        this.SEQUENCE_NAME = Component.translatableWithFallback(Potioneer.MOD_ID + ".beyonder.sequence." + pathway.getSequenceNameFromId(pathwaySequenceId %10, false),
+                "Sequence " + String.valueOf(pathwaySequenceId%10) + " " + pathway.getSequenceNameFromId(pathwaySequenceId%10, true));
         this.color = pathway.getColor();
 
         goToAbilitiesMenu = new ImageButton(leftPos + 47, topPos + 165, 42, 18,

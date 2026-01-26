@@ -216,7 +216,9 @@ public class AbilitiesHotbarHUD {
 //        guiGraphics.drawString(minecraft.font, name, offset, yPos + (24*scale), 0, false);
 
         //disabled gradient
-        if(!ClientAbilitiesData.isEnabled(caret)){
+        float spir = ClientStatsData.getPlayerSpirituality();
+        int cost = abl.getCostFunction().apply(info.getSequenceLevel());
+        if(!ClientAbilitiesData.isEnabled(caret) || spir < cost){
 //            guiGraphics.blit(ICONS, caseX + (int) (5*scale), yPos + (int)(4*scale), (int)(ICON_WIDTH*scale), (int)(ICON_HEIGHT*scale), 130, 32, ICON_WIDTH, ICON_HEIGHT, ICONS_WIDTH, ICONS_HEIGHT);
 
             guiGraphics.fillGradient(caseX + (int) (5*scale), yPos + (int) (4*scale),

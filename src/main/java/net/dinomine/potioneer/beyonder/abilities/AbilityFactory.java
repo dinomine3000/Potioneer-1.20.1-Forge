@@ -12,13 +12,13 @@ public class AbilityFactory {
     /**
      * base cost in spirituality for client checking. if the client has less than this spirituality, the ability wont trigger
      */
-    private int costSpirituality;
+    private Function<Integer, Integer> costFunction;
     private int pathwayId;
     private boolean hasSecondaryFunction;
     private Function<Integer, Ability> createFunction;
 
-    public AbilityFactory(ResourceLocation textureLocation, int posY, int pathwayId, int costSpirituality, String ablId, Function<Integer, Ability> createFunction){
-        this.costSpirituality = costSpirituality;
+    public AbilityFactory(ResourceLocation textureLocation, int posY, int pathwayId, Function<Integer, Integer> costFunction, String ablId, Function<Integer, Ability> createFunction){
+        this.costFunction = costFunction;
         this.textureLocation = textureLocation;
         this.posY = 32 + 24*posY;
         this.pathwayId = pathwayId;
@@ -27,8 +27,8 @@ public class AbilityFactory {
         this.hasSecondaryFunction = false;
     }
 
-    public AbilityFactory(int posY, int pathwayId, int costSpirituality, String ablId, Function<Integer, Ability> createFunction){
-        this(new ResourceLocation(Potioneer.MOD_ID, "textures/gui/ability_icon_atlas.png"), posY, pathwayId, costSpirituality, ablId, createFunction);
+    public AbilityFactory(int posY, int pathwayId, Function<Integer, Integer> costFunction, String ablId, Function<Integer, Ability> createFunction){
+        this(new ResourceLocation(Potioneer.MOD_ID, "textures/gui/ability_icon_atlas.png"), posY, pathwayId, costFunction, ablId, createFunction);
     }
 
     public AbilityFactory hasSecondaryFunction(){
@@ -56,8 +56,8 @@ public class AbilityFactory {
         return getAblId().concat(":" + sequenceLevel);
     }
 
-    public int getCostSpirituality() {
-        return costSpirituality;
+    public Function<Integer, Integer> getCostFunction() {
+        return costFunction;
     }
 
     public ResourceLocation getTextureLocation(){
@@ -67,7 +67,7 @@ public class AbilityFactory {
     public int getPathwayId(){return pathwayId;}
 
     public Ability create(int pathwaySequenceId){
-        return createFunction.apply(pathwaySequenceId).withAbilityId(ablId);
+        return createFunction.apply(pathwaySequenceId).withAbilityId(ablId).withCost(costFunction);
     }
 
     public AbilityInfo getInfo(int cooldown, int maxCd, boolean enabled, String descId, String innerId) {

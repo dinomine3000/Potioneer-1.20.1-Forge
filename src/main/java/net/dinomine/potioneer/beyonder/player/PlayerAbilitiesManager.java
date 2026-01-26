@@ -99,10 +99,10 @@ public class PlayerAbilitiesManager {
         }
 
         //3 - update artifact data into the item tags.
-        iterateThroughInventory(player, itemStack -> {
-            UUID id = MysticalItemHelper.getArtifactIdFromItem(itemStack);
-            if(id != null) MysticalItemHelper.updateArtifactTagOnItem(artifacts.get(id), itemStack);
-        });
+//        iterateThroughInventory(player, itemStack -> {
+//            UUID id = MysticalItemHelper.getArtifactIdFromItem(itemStack);
+//            if(id != null) MysticalItemHelper.updateArtifactTagOnItem(artifacts.get(id), itemStack);
+//        });
     }
 
     /**
@@ -449,6 +449,16 @@ public class PlayerAbilitiesManager {
 
             Ability abl = this.abilities.get(key);
             abl.receiveUpdateOnClient(info, cap, target);
+        }
+    }
+
+    public void onAbilityUpdateData(AbilityInfo abilityInfo, LivingEntityBeyonderCapability cap, LivingEntity target) {
+        if(target instanceof Player player && !player.level().isClientSide()) PacketHandler.sendMessageSTC(new AbilitySyncMessage(abilityInfo, AbilitySyncMessage.UPDATE), player);
+        if(abilityInfo.getKey().isArtifactKey()){
+            System.out.println("Updating artifact info to item...");
+            UUID artifactID = abilityInfo.getKey().getArtifactId();
+            if(!artifacts.containsKey(artifactID)) return;
+            MysticalItemHelper.updateArtifactTagOnItem(artifacts.get(artifactID));
         }
     }
 

@@ -92,7 +92,7 @@ public class Abilities {
     //retweaked
     public static final AbilityFactory VOID_VISION = registerAbility("void_vision",
             (Integer sequenceLevel) -> MobEffectPassiveAbility.createAbility(sequenceLevel, MobEffects.NIGHT_VISION, ignored -> "void_vision")
-                    .withAmplifier(1).withPassiveCost(2).withThreshold(5), 1, 0, 0);
+                    .withAmplifier(1).withPassiveCost(2).withThreshold(5), 1, 0, 5);
 
     //retweaked
     public static final AbilityFactory WHEEL_KNOWLEDGE = registerAbility("wheel_knowledge",
@@ -100,7 +100,7 @@ public class Abilities {
 
     //retweaked
     public static final AbilityFactory MINER_LIGHT = registerAbility("miner_light",
-            MinerLightAbility::new, 1, 0, 5);
+            MinerLightAbility::new, 1, 0, level -> 5 + 2*(9-level));
 
     public static final AbilityFactory MINER_BONE_MEAL = registerAbility("w_bone_meal",
             BoneMealAbility::new, 7, 0, 10);
@@ -148,7 +148,7 @@ public class Abilities {
 
     // -------------------------- MYSTERY ---------------------------------------------------
     public static final AbilityFactory AIR_BULLET = registerAbility("air_bullet",
-            AirBulletAbility::new, 56, 2, 10);
+            AirBulletAbility::new, 1, 2, i -> 60 + 10*(9-i));
 
     public static final AbilityFactory DOOR_OPENING = registerAbility("door_opening",
             DoorOpeningAbility::new, 80, 2, 20);
@@ -290,7 +290,15 @@ public class Abilities {
         if(ABILITIES.containsKey(ablId)){
             throw new RuntimeException("Error: Tried to register an ability with an already existing ID");
         }
-        AbilityFactory factory = new AbilityFactory(posY, pathwayId, minSpirToActivate, ablId, constructor);
+        AbilityFactory factory = new AbilityFactory(posY, pathwayId, ignored -> minSpirToActivate, ablId, constructor);
+        ABILITIES.put(ablId, factory);
+        return factory;
+    }
+    private static AbilityFactory registerAbility(String ablId, Function<Integer, Ability> constructor, int posY, int pathwayId, Function<Integer, Integer> costFunction){
+        if(ABILITIES.containsKey(ablId)){
+            throw new RuntimeException("Error: Tried to register an ability with an already existing ID");
+        }
+        AbilityFactory factory = new AbilityFactory(posY, pathwayId, costFunction, ablId, constructor);
         ABILITIES.put(ablId, factory);
         return factory;
     }
@@ -299,7 +307,7 @@ public class Abilities {
         if(ABILITIES.containsKey(ablId)){
             throw new RuntimeException("Error: Tried to register an ability with an already existing ID");
         }
-        AbilityFactory factory = new AbilityFactory(iconLocation, posY, pathwayId, minSpirToActivate, ablId, constructor);
+        AbilityFactory factory = new AbilityFactory(iconLocation, posY, pathwayId, ignored -> minSpirToActivate, ablId, constructor);
         ABILITIES.put(ablId, factory);
         return factory;
     }

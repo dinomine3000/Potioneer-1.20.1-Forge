@@ -115,17 +115,17 @@ public class BeyonderAbilitiesScreen extends Screen {
 
             addToHotbarButton = new ImageButton(hotbarButtonRight - hotbarButtonSide, hotbarButtonBottom - hotbarButtonSide, hotbarButtonSide, hotbarButtonSide,
                     176, 105, hotbarButtonSide, TEXTURE, TEXTURE_WIDTH, TEXTURE_HEIGHT, btn -> {addAbilityToHotbar();});
-            addToHotbarButton.setTooltip(Tooltip.create(Component.literal("Add to hotbar")));
+            addToHotbarButton.setTooltip(Tooltip.create(Component.translatable("gui.potioneer.add_to_hotbar")));
             removeFromHotbarButton = new ImageButton(hotbarButtonRight - hotbarButtonSide, hotbarButtonBottom - hotbarButtonSide, hotbarButtonSide, hotbarButtonSide,
                     176 + hotbarButtonSide, 105, hotbarButtonSide, TEXTURE, TEXTURE_WIDTH, TEXTURE_HEIGHT, btn -> {addAbilityToHotbar();});
-            removeFromHotbarButton.setTooltip(Tooltip.create(Component.literal("Remove from hotbar")));
+            removeFromHotbarButton.setTooltip(Tooltip.create(Component.translatable("gui.potioneer.remove_from_hotbar")));
 
             addToQuickSelectButton = new ImageButton(leftPos + 176, topPos + 26, 11, 13,
                     176, 123, 13, TEXTURE, TEXTURE_WIDTH, TEXTURE_HEIGHT, btn -> {addAbilityToQuickSelect();});
-            addToQuickSelectButton.setTooltip(Tooltip.create(Component.literal("Set ability as quick select")));
+            addToQuickSelectButton.setTooltip(Tooltip.create(Component.translatable("gui.potioneer.add_to_quick")));
             removeFromQuickSelectButton = new ImageButton(leftPos + 176, topPos + 26, 11, 13,
                     187, 123, 13, TEXTURE, TEXTURE_WIDTH, TEXTURE_HEIGHT, btn -> {addAbilityToQuickSelect();});
-            removeFromQuickSelectButton.setTooltip(Tooltip.create(Component.literal("Remove ability from quick select")));
+            removeFromQuickSelectButton.setTooltip(Tooltip.create(Component.translatable("gui.potioneer.remove_from_quick")));
 
             goToMainMenuButton = new ImageButton(leftPos + 4, topPos + 165, 43, 18,
                     163, 208, 0, TEXTURE, TEXTURE_WIDTH, TEXTURE_HEIGHT, btn -> {BeyonderScreen.goToMainMenu();});
@@ -246,11 +246,11 @@ public class BeyonderAbilitiesScreen extends Screen {
     private void drawAbilityIcon(GuiGraphics pGuiGraphics, int posX, int posY, float scale, int abilityIndex, boolean main, int mouseX, int mouseY){
         AbilityInfo data = abilities.get(abilityIndex);
         AbilityKey key = data.getKey();
+        Component name = data.getNameComponent();
         //int caret = abilities.size() - 1 - abilityIndex;
 
         //name title
         if(main){
-            Component name = Component.translatable("potioneer.ability_name." + data.descId());
             pGuiGraphics.drawString(this.font, name, leftPos + 24 + imageWidth/2 - this.font.width(name)/2, topPos + 9, 0, false);
         }
 
@@ -323,7 +323,7 @@ public class BeyonderAbilitiesScreen extends Screen {
                     0x22000000, 0x11000000);
 
             drawAbilityIcon(pGuiGraphics, leftPos + 10, topPos + 75 + i*14, 0.5f, i + buttonOffset, false);
-            pGuiGraphics.drawString(this.font, Component.translatable("potioneer.ability_name." + abilities.get(i + buttonOffset).descId()),
+            pGuiGraphics.drawString(this.font, abilities.get(i + buttonOffset).getNameComponent(),
                     leftPos + 22, topPos + 77 + i*14, 0, false);
         }
     }

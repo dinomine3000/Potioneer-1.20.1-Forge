@@ -94,7 +94,6 @@ public class ClientForgeHandler {
         Minecraft minecraft = Minecraft.getInstance();
         boolean success = false;
         if(minecraft.player != null && event.getAction() == InputConstants.PRESS){
-            System.out.println("left clicked");
             if(event.getButton() == InputConstants.MOUSE_BUTTON_LEFT)
                 success = ClientAbilitiesData.useAbility(minecraft.player, true);
             else if(event.getButton() == InputConstants.MOUSE_BUTTON_RIGHT)

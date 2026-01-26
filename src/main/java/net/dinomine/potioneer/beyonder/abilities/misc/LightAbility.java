@@ -17,13 +17,16 @@ import java.util.function.Function;
 import static net.dinomine.potioneer.block.custom.MinerLightSourceBlock.WATERLOGGED;
 
 public abstract class LightAbility extends Ability {
-    private BlockState lightBlockState;
+    private final BlockState lightBlockState;
     public LightAbility(int sequence, BlockState lightBlock, Function<Integer, Integer> cost){
 //        this.info = new AbilityInfo(5, 56, "Light", sequence, 0, this.getMaxCooldown(), "");
         super(sequence);
         lightBlockState = lightBlock;
-        setCost(cost);
+        if(cost != null) setCost(cost);
         this.defaultMaxCooldown = 20;
+    }
+    public LightAbility(int sequence, BlockState lightBlock){
+        this(sequence, lightBlock, null);
     }
 
     @Override

@@ -7,7 +7,7 @@ public class DummyDownside extends Downside{
 
     @Override
     protected String getDescId(int sequenceLevel) {
-        return "dummy";
+        return "d_dummy";
     }
 
     public DummyDownside(int sequenceLevel){

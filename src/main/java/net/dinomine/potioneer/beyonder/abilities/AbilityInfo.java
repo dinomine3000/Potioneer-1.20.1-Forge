@@ -3,6 +3,8 @@ package net.dinomine.potioneer.beyonder.abilities;
 import net.dinomine.potioneer.util.BufferUtils;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.chat.Component;
+import org.apache.commons.lang3.StringUtils;
 
 public class AbilityInfo {
     private final int pathwayId;
@@ -13,6 +15,7 @@ public class AbilityInfo {
     private final String innerAbilityId;
     private AbilityKey key = new AbilityKey();
     private CompoundTag abilityData = new CompoundTag();
+    private boolean isDownside = false;
 
     public AbilityInfo(int pathwayId, int cooldown, int maxCooldown, boolean enabled, String descId, String innerId) {
         this.pathwayId = pathwayId;
@@ -23,6 +26,19 @@ public class AbilityInfo {
         this.innerAbilityId = innerId;
     }
 
+    public AbilityInfo markDownside(){
+        return this.markDownside(true);
+    }
+
+    protected AbilityInfo markDownside(boolean isDownside){
+        this.isDownside = isDownside;
+        return this;
+    }
+
+    public boolean isDownside(){
+        return isDownside;
+    }
+
     public AbilityInfo withKey(AbilityKey key){
         this.key = key;
         return this;
@@ -30,6 +46,10 @@ public class AbilityInfo {
 
     public AbilityKey getKey(){
         return this.key;
+    }
+
+    public int getSequenceLevel(){
+        return this.key.getSequenceLevel();
     }
 
 //    public AbilityInfo(int posX, int posY, String name, int sequenceId, int cost, int maxCooldown, String descId){
@@ -45,6 +65,7 @@ public class AbilityInfo {
         BufferUtils.writeStringToBuffer(innerAbilityId, buffer);
         key.writeToBuffer(buffer);
         buffer.writeNbt(abilityData);
+        buffer.writeBoolean(isDownside);
     }
 
     public static AbilityInfo decode(FriendlyByteBuf buffer){
@@ -56,7 +77,8 @@ public class AbilityInfo {
         String innerId = BufferUtils.readString(buffer);
         AbilityKey key = AbilityKey.readFromBuffer(buffer);
         CompoundTag tag = buffer.readAnySizeNbt();
-        return new AbilityInfo(pathwayId, cooldown, maxCd, enabled, descId, innerId).withKey(key).withData(tag);
+        boolean downside = buffer.readBoolean();
+        return new AbilityInfo(pathwayId, cooldown, maxCd, enabled, descId, innerId).withKey(key).withData(tag).markDownside(downside);
     }
 
     public String innerId(){
@@ -65,6 +87,10 @@ public class AbilityInfo {
 
     public String descId(){
         return descId;
+    }
+
+    public Component getNameComponent(){
+        return Component.translatableWithFallback("potioneer.ability_name." + descId(), StringUtils.capitalize(descId.replace("_", " ")));
     }
 
     public int maxCooldown() {

@@ -3,6 +3,7 @@ package net.dinomine.potioneer.beyonder.abilities.wheeloffortune;
 import net.dinomine.potioneer.beyonder.abilities.Ability;
 import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
 import net.dinomine.potioneer.item.ModItems;
+import net.dinomine.potioneer.util.misc.MysticalItemHelper;
 import net.dinomine.potioneer.util.misc.MysticismHelper;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -47,7 +48,7 @@ public class ConjurePickaxeAbility extends Ability {
             cap.requestActiveSpiritualityCost(cost);
             return true;
         } else {
-            target.sendSystemMessage(Component.translatableWithFallback("message.potioneer.insufficient_spirituality", "Not enough spirituality to cast ability."));
+            target.sendSystemMessage(Component.translatableWithFallback("message.potioneer.insufficient_spirituality", "Not enough spirituality to cast ability.", getDescId(sequenceLevel)));
         }
         return false;
     }
@@ -58,7 +59,12 @@ public class ConjurePickaxeAbility extends Ability {
         ItemStack stack = target.getMainHandItem();
         if(stack.isEmpty() || !stack.is(ItemTags.PICKAXES)) return false;
         CompoundTag tag = getData();
-        tag.put("pickaxe", stack.save(new CompoundTag()));
+        ItemStack pickaxe = stack.copy();
+        if(sequenceLevel > 3){
+            pickaxe.removeTagKey(MysticalItemHelper.ARTIFACT_TAG_ID);
+            pickaxe.removeTagKey(MysticalItemHelper.BEYONDER_TAG_ID);
+        }
+        tag.put("pickaxe", pickaxe.save(new CompoundTag()));
         setData(tag, target);
         target.sendSystemMessage(Component.translatableWithFallback("message.potioneer.saved_pickaxe", "Saved pickaxe - " + stack.getDisplayName().getString(), stack.getDisplayName().getString()));
         return false;

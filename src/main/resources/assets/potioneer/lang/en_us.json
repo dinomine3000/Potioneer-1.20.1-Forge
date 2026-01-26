@@ -268,6 +268,8 @@
   "gui.potioneer.no_fire": "Don't heat it.",
   "gui.potioneer.water_level": "Needs %s water bucket(s).",
   "gui.potioneer.ritual_button": "Ritual.",
+  "gui.potioneer.add_to_hotbar": "Add to hotbar",
+  "gui.potioneer.remove_from_hotbar": "Remove from hotbar",
 
   "potioneer.pathway.trap_effect_0": "Trap effect set to Slowness",
   "potioneer.pathway.trap_effect_1": "Trap effect set to Water Prison",
@@ -295,7 +297,7 @@
   "message.potioneer.dream_clue": "You hear a message in your dreams: %s",
   "message.potioneer.invalid_ink_area": "Invalid ink boundary. The maximum radius is %s",
   "message.potioneer.invalid_prayer": "No prayer defined.",
-  "message.potioneer.insufficient_spirituality": "Not enough spirituality to cast ability.",
+  "message.potioneer.insufficient_spirituality": "You are too drained to cast %s.",
   "ability.potioneer.mining_speed_set": "Set mining speed to %s times",
   "ability.potioneer.saved_pickaxe": "Saved pickaxe - %s",
   "ability.potioneer.no_pick_saved": "You have no pickaxe to recall",
