@@ -38,7 +38,7 @@ public class WaterPrisonAbility extends Ability {
         if(target.level().isClientSide()) return true;
         if(cap.getSpirituality() > cost()){
             double radius = target.getAttributeBaseValue(ForgeMod.ENTITY_REACH.get()) + (10 - getSequenceLevel());
-            ArrayList<Entity> hits = AbilityFunctionHelper.getLivingEntitiesAround(target, radius);
+            ArrayList<LivingEntity> hits = AbilityFunctionHelper.getLivingEntitiesAround(target, radius);
             for(Entity ent: hits){
                 LivingEntity entity = (LivingEntity) ent;
                 if(entity != target) entity.addEffect(new MobEffectInstance(ModEffects.WATER_PRISON.get(), 20*30, Math.floorDiv(10 - getSequenceLevel(), 2), false, false));

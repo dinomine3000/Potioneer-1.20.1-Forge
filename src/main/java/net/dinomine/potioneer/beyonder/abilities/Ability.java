@@ -218,7 +218,7 @@ public abstract class Ability {
      */
     public boolean putOnCooldown(int cooldownTicks, LivingEntity target){
         if(cooldownTicks < 0) return false;
-        if(maxCooldown < cooldownTicks) maxCooldown = Math.max(cooldownTicks, 1);
+        maxCooldown = Math.max(cooldownTicks, 1);
         cooldown = cooldownTicks;
         if(target instanceof Player player) updateCooldownClient(player);
         return true;

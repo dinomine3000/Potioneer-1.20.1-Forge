@@ -9,6 +9,7 @@ import net.dinomine.potioneer.beyonder.pathways.Pathways;
 import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
 import net.dinomine.potioneer.item.ModItems;
 import net.dinomine.potioneer.network.PacketHandler;
+import net.dinomine.potioneer.network.messages.PlayerNameSyncMessage;
 import net.dinomine.potioneer.network.messages.SequenceSTCSyncRequest;
 import net.dinomine.potioneer.rituals.spirits.Deity;
 import net.dinomine.potioneer.util.misc.DivinationResult;
@@ -19,6 +20,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.players.GameProfileCache;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
@@ -46,8 +48,7 @@ import net.minecraftforge.fml.common.Mod;
 import java.nio.ByteBuffer;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.regex.Pattern;
 
 @Mod.EventBusSubscriber
@@ -105,28 +106,7 @@ public class BeyonderEvents {
         event.getEntity().getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
             cap.onPlayerDie(event);
         });
-//        if(event.getEntity() instanceof Player player){
-//            Inventory inv = player.getInventory();
-//            int size = inv.getContainerSize();
-//            for (int i = 0; i < size; i++) {
-//                if(inv.getItem(i).is(ModItems.MINER_PICKAXE.get())){
-//                    inv.getItem(i).setCount(0);
-//                } else {
-//                    MysticismHelper.updateOrApplyMysticismTag(inv.getItem(i), 10, player);
-//                }
-//            }
-//        }
     }
-
-//    @SubscribeEvent
-//    public static void playerRespawn(PlayerEvent.PlayerRespawnEvent e) {
-//        if(e.getEntity().level().isClientSide()) return;
-//        //TODO: why?
-////        e.getEntity().getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
-////            PacketHandler.INSTANCE.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) e.getEntity()),
-////                    new PlayerAdvanceMessage(cap.getPathwaySequenceId()));
-////        });
-//    }
 
     @SubscribeEvent
     public static void onPlayerCloned(PlayerEvent.Clone event){
@@ -290,6 +270,16 @@ public class BeyonderEvents {
                 player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(stats -> {
                     PacketHandler.sendMessageCTS(new SequenceSTCSyncRequest());
                 });
+            } else {
+                Map<UUID, GameProfileCache.GameProfileInfo> profileMap = player.level().getServer().getProfileCache().profilesByUUID;
+                Map<UUID, String> nameMap = new HashMap<>();
+                for(UUID id: profileMap.keySet()){
+                    nameMap.put(id, profileMap.get(id).getProfile().getName());
+                }
+                for(Player player1: event.getLevel().players()){
+                    if(player1.is(player)) continue;
+                    PacketHandler.sendMessageSTC(new PlayerNameSyncMessage(nameMap), player1);
+                }
             }
         }
     }

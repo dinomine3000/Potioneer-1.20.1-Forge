@@ -36,9 +36,9 @@ public class ThunderStrikeAbility extends Ability {
         ServerLevel level = (ServerLevel) target.level();
         boolean thundering = level.isThundering();
         int radius = thundering ? 128 : 32;
-        ArrayList<Entity> hits = AbilityFunctionHelper.getLivingEntitiesLooking(target, radius);
-        for(Entity ent: hits){
-            if(ent instanceof LivingEntity entity && entity != target){
+        ArrayList<LivingEntity> hits = AbilityFunctionHelper.getLivingEntitiesLooking(target, radius);
+        for(LivingEntity entity: hits){
+            if(entity != target){
                 summonLightning(cap, entity.position(), level, thundering);
                 return true;
             }

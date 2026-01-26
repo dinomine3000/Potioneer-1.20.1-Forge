@@ -27,6 +27,7 @@ public class PageRegistry {
     public static Page SANITY_PAGE = register(i++, () -> new TextPage(Page.Chapter.BEYONDER, "sanity"));
     public static Page ADVANCING_PAGE = register(i++, () -> new TextPage(Page.Chapter.BEYONDER, "advancing"));
     public static Page ACTING_PAGE = register(i++, () -> new TextPage(Page.Chapter.BEYONDER, "acting"));
+    public static Page APPRAISAL_PAGE = register(i++, () -> new TextPage(Page.Chapter.ABILITIES, "appraisal"));
     public static Page SWITCHING_PAGE = register(i++, () -> new TextPage(Page.Chapter.BEYONDER, "mistakes"));
     public static Page CHARACTERISTIC_PAGE = register(i++, () -> new TextPage(Page.Chapter.CHARACTERISTICS, "characteristic"));
     public static Page LADY_FATE_1 = register(i++, () -> new TextPage(Page.Chapter.KNOWN_DEITIES, Component.translatable("page.potioneer.lady_fate"), Component.translatable("contents.potioneer.lady_fate", WheelOfFortuneResponse.PRAYER)));

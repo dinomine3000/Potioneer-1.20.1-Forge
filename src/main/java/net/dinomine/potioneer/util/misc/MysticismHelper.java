@@ -138,10 +138,11 @@ public class MysticismHelper {
             if(item.hasTag() && item.getTag().contains("potion_info")){
                 CompoundTag potionTag = item.getTag().getCompound("potion_info");
                 String name = potionTag.getString("name");
+                boolean complete = potionTag.getBoolean("isComplete");
 
                 boolean yesNo;
                 int potionSequence = -1;
-                String clue = "";
+                String clue;
                 float status = 0.5f;
 
                 if(name.equalsIgnoreCase("conflict")){
@@ -149,7 +150,7 @@ public class MysticismHelper {
                     status = 0.0f;
                     clue = "Death";
                 } else {
-                    yesNo = true;
+                    yesNo = !complete;
                     try{
                         potionSequence = Integer.parseInt(name);
                         clue = "potioneer.beyonder.sequence." + Pathways.getPathwayBySequenceId(potionSequence).getSequenceNameFromId(potionSequence, false);
@@ -253,14 +254,14 @@ public class MysticismHelper {
         return entities.stream().map(Entity::getOnPos).toList();
     }
 
-    public static Player getPlayerFromMysticalItem(ItemStack stack, ServerLevel level, int toConsume){
+    public static UUID getPlayerIdFromMysticalItem(ItemStack stack, int toConsume){
         if(stack.hasTag() && stack.getTag().contains(mysticismTagId)){
-            return getPlayerFromMysticismTag(stack.getTag().getCompound(mysticismTagId), level, toConsume);
+            return getPlayerIdFromMysticalItem(stack.getTag().getCompound(mysticismTagId), null, toConsume);
         }
         return null;
     }
 
-    private static Player getPlayerFromMysticismTag(CompoundTag mysticalTag, ServerLevel level, int toConsume) {
+    private static UUID getPlayerIdFromMysticalItem(CompoundTag mysticalTag, Level level, int toConsume){
         CompoundTag spirituality = mysticalTag.getCompound(spiritualityTagId);
         CompoundTag names = mysticalTag.getCompound(playerNameTagId);
         float originalTotalSpirituality = mysticalTag.getFloat(totalSpiritualityId);
@@ -272,7 +273,7 @@ public class MysticismHelper {
             float testSpirituality = spirituality.getFloat("spirituality_" + i);
             if(testSpirituality > bestSpirituality){
                 UUID name = names.getUUID("player_" + i);
-                if(level.getPlayerByUUID(name) != null){
+                if(level == null || level.getPlayerByUUID(name) != null){
                     bestIndex = i;
                     bestSpirituality = testSpirituality;
                     bestName = name;
@@ -289,10 +290,23 @@ public class MysticismHelper {
                 spirituality.putFloat("spirituality_" + bestIndex, bestSpirituality - toConsume);
                 mysticalTag.putFloat(totalSpiritualityId, originalTotalSpirituality - toConsume);
             }
-            return level.getPlayerByUUID(bestName);
+            return bestName;
         }
         mysticalTag.putFloat(totalSpiritualityId, 0f);
         return null;
+    }
+
+    public static Player getPlayerFromMysticalItem(ItemStack stack, Level level, int toConsume){
+        if(stack.hasTag() && stack.getTag().contains(mysticismTagId)){
+            return getPlayerFromMysticismTag(stack.getTag().getCompound(mysticismTagId), level, toConsume);
+        }
+        return null;
+    }
+
+    private static Player getPlayerFromMysticismTag(CompoundTag mysticalTag, Level level, int toConsume) {
+        UUID id = getPlayerIdFromMysticalItem(mysticalTag, level, toConsume);
+        if(id == null) return null;
+        return level.getPlayerByUUID(id);
     }
 
     public static DivinationResult doDivination(ItemStack item, Player seer, int sequenceId, RandomSource random){

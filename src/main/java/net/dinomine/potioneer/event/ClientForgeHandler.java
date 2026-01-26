@@ -1,18 +1,24 @@
 package net.dinomine.potioneer.event;
 
+import com.mojang.authlib.GameProfile;
 import com.mojang.blaze3d.platform.InputConstants;
 import net.dinomine.potioneer.Potioneer;
 import net.dinomine.potioneer.beyonder.client.ClientAbilitiesData;
 import net.dinomine.potioneer.beyonder.client.ClientStatsData;
 import net.dinomine.potioneer.beyonder.client.KeyBindings;
 import net.dinomine.potioneer.beyonder.client.screen.BeyonderScreen;
+import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
+import net.dinomine.potioneer.beyonder.pathways.BeyonderPathway;
+import net.dinomine.potioneer.beyonder.pathways.Pathways;
 import net.dinomine.potioneer.item.ModItems;
 import net.dinomine.potioneer.recipe.PotionRecipeData;
 import net.dinomine.potioneer.util.misc.MysticalItemHelper;
 import net.dinomine.potioneer.util.misc.MysticismHelper;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
@@ -31,17 +37,38 @@ public class ClientForgeHandler {
         ItemStack stack = event.getItemStack();
         List<Component> tooltip = event.getToolTip();
         Level level = event.getEntity() != null ? event.getEntity().level() : null;
+        boolean appraiser = ClientStatsData.hasEffect(BeyonderEffects.WHEEL_APPRAISAL);
         // Only run client-side
         if (level != null) {
             if(ClientStatsData.getPathwaySequenceId() > -1){
                 int spirituality = (int) MysticismHelper.getSpiritualityOfItem(stack);
-                if (spirituality > 0) tooltip.add(Component.literal("Spirituality: " + spirituality).withStyle(ChatFormatting.GRAY));
+                if (spirituality > 0){
+                    tooltip.add(Component.translatable("tooltip.potioneer.spirituality", spirituality).withStyle(ChatFormatting.GRAY));
+                    if(appraiser){
+                        String name = ClientStatsData.getPlayerNameFromId(MysticismHelper.getPlayerIdFromMysticalItem(stack, 0));
+                        tooltip.add(Component.translatable("tooltip.potioneer.spirituality_player", name));
+                    }
+                }
             }
             if(stack.hasTag() && stack.getTag().contains(MysticalItemHelper.BEYONDER_TAG_ID)){
-                tooltip.add(Component.literal("Sequence Level " + stack.getTag().getCompound("beyonder_info").getInt("id")%10));
+                int pathSeq = stack.getTag().getCompound("beyonder_info").getInt("id");
+                if(appraiser){
+                    BeyonderPathway pathway = Pathways.getPathwayById(Math.floorDiv(pathSeq, 10));
+                    tooltip.add(Component.empty()
+                            .append(pathway.getPathwayName()).append(" ")
+                                .append(pathway.getSequenceComponentFromId(pathSeq%10)));
+                }
+                else
+                    tooltip.add(Component.translatable("potioneer.generic_beyonder.sequence", pathSeq%10));
             }
             if(stack.hasTag() && stack.getTag().contains("recipe_data")){
                 tooltip.add(Component.literal(PotionRecipeData.getName(stack.getTag().getCompound("recipe_data"))));
+            }
+            if(stack.hasTag() && stack.getTag().contains("potion_info") && appraiser){
+                CompoundTag tag = stack.getOrCreateTag().getCompound("potion_info");
+                boolean conflict = tag.getString("name").equals("conflict");
+                boolean incomplete = tag.getBoolean("isComplete");
+                tooltip.add(Component.translatable("tooltip.potioneer." + (conflict ? "conflicting_potion" : (incomplete ? "incomplete_potion" : "valid_potion"))));
             }
             if(stack.is(ModItems.CHARM.get())){
                 if(stack.hasTag() && stack.getTag().contains(MysticalItemHelper.CHARM_TAG_ID)){

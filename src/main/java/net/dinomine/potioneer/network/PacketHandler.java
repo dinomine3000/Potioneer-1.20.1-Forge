@@ -12,6 +12,7 @@ import net.dinomine.potioneer.network.messages.advancement.BeginAdvancementMessa
 import net.dinomine.potioneer.network.messages.advancement.PlayerAdvanceMessage;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.network.NetworkRegistry;
 import net.minecraftforge.network.PacketDistributor;
@@ -50,9 +51,12 @@ public class PacketHandler {
         INSTANCE.registerMessage(i++, PlayerSTCStatsSync.class, PlayerSTCStatsSync::encode, PlayerSTCStatsSync::decode, PlayerSTCStatsSync::handle);
         INSTANCE.registerMessage(i++, RitualC2STextSync.class, RitualC2STextSync::encode, RitualC2STextSync::decode, RitualC2STextSync::handle);
         INSTANCE.registerMessage(i++, SequenceSTCSyncRequest.class, SequenceSTCSyncRequest::encode, SequenceSTCSyncRequest::decode, SequenceSTCSyncRequest::handle);
+
+        INSTANCE.registerMessage(i++, PlayerNameSyncMessage.class, PlayerNameSyncMessage::encode, PlayerNameSyncMessage::decode, PlayerNameSyncMessage::handle);
     }
 
-    public static <T> void sendMessageSTC(T message, Player player){
+    public static <T> void sendMessageSTC(T message, LivingEntity player){
+        if(!(player instanceof Player)) return;
         if(player.level().isClientSide) return;
         INSTANCE.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) player), message);
     }

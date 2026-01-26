@@ -7,6 +7,8 @@ import net.minecraft.resources.ResourceLocation;
 public abstract class Page {
     public enum Chapter{
         BEYONDER,
+        ABILITIES,
+        DIVINATION,
         RITUALS,
         GODS,
         KNOWN_DEITIES,

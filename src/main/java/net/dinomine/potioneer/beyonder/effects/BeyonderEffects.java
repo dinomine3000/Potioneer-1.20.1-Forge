@@ -44,6 +44,7 @@ public class BeyonderEffects {
     public static final BeyonderEffectType WHEEL_TEMP_LUCK = registerEffect("temp_luck", new BeyonderEffectType(BeyonderTempLuckEffect::new));
     public static final BeyonderEffectType WHEEL_ZERO_DAMAGE = registerEffect("zero_damage", new BeyonderEffectType(BeyonderZeroDamageEffect::new));
     public static final BeyonderEffectType WHEEL_MINING = registerEffect("mining", new BeyonderEffectType(BeyonderMiningSpeedEffect::new));
+    public static final BeyonderEffectType WHEEL_APPRAISAL = registerEffect("appraisal", new BeyonderEffectType(BeyonderAppraisalEffect::new));
     public static final BeyonderEffectType TYRANT_WATER_AFFINITY = registerEffect("water_affinity", new BeyonderEffectType(BeyonderWaterAffinityEffect::new));
     public static final BeyonderEffectType TYRANT_ELECTRIFICATION = registerEffect("electrification", new BeyonderEffectType(BeyonderElectrificationEffect::new));
     public static final BeyonderEffectType TYRANT_LIGHTNING_TARGET = registerEffect("lightning_target", new BeyonderEffectType(BeyonderLightningTargetEffect::new));

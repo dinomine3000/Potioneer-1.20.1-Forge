@@ -56,11 +56,10 @@ public class AbstractCharm extends Item {
         if(!targetAnother){
             target = player;
         } else {
-            List<Entity> targets = AbilityFunctionHelper.getLivingEntitiesLooking(player, 32);
+            List<LivingEntity> targets = AbilityFunctionHelper.getLivingEntitiesLooking(player, 32);
             if(targets.isEmpty()) target = player;
             else {
-                for(Entity ent: targets){
-                    if(!(ent instanceof LivingEntity livingEntity)) continue;
+                for(LivingEntity livingEntity: targets){
                     if(livingEntity.getUUID().compareTo(player.getUUID()) == 0) continue;
                     target = livingEntity;
                     break;

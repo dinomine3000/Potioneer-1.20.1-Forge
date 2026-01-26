@@ -31,10 +31,10 @@ public class HealAbility extends Ability {
 
     @Override
     protected boolean primary(LivingEntityBeyonderCapability cap, LivingEntity target) {
-        ArrayList<Entity> hits = AbilityFunctionHelper.getLivingEntitiesLooking(target, target.getAttributeValue(ForgeMod.ENTITY_REACH.get()) + 0.5f);
+        ArrayList<LivingEntity> hits = AbilityFunctionHelper.getLivingEntitiesLooking(target, target.getAttributeValue(ForgeMod.ENTITY_REACH.get()) + 0.5f);
         hits.sort((a, b) -> (int) (a.position().distanceTo(target.position()) - b.position().distanceTo(target.position())));
         boolean flag = false;
-        for(Entity ent: hits){
+        for(LivingEntity ent: hits){
             Vec3 pos = ent.position();
             if(ent instanceof ZombieVillager zombie){
                 flag = true;
@@ -45,15 +45,13 @@ public class HealAbility extends Ability {
                             (0.5f-target.getRandom().nextFloat())/2f, 0.2f, (0.5f-target.getRandom().nextFloat())/2f);
                 }
             }
-            else if(ent instanceof LivingEntity livingEntity){
-                flag = true;
-                livingEntity.addEffect(new MobEffectInstance(MobEffects.REGENERATION, 5*20, 2, true, true));
+            flag = true;
+            ent.addEffect(new MobEffectInstance(MobEffects.REGENERATION, 5*20, 2, true, true));
 
-                for(int i = 0; i < 5; i++){
-                    target.level().addParticle(ParticleTypes.HEART,
-                            pos.x + 0.5f - target.getRandom().nextFloat(), pos.y + target.getRandom().nextFloat(), pos.z + 0.5 - target.getRandom().nextFloat(),
-                            0, 0.2f, 0);
-                }
+            for(int i = 0; i < 5; i++){
+                target.level().addParticle(ParticleTypes.HEART,
+                        pos.x + 0.5f - target.getRandom().nextFloat(), pos.y + target.getRandom().nextFloat(), pos.z + 0.5 - target.getRandom().nextFloat(),
+                        0, 0.2f, 0);
             }
         }
         if(flag){

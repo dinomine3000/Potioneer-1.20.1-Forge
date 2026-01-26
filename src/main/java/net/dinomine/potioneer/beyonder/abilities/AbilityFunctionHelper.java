@@ -8,12 +8,20 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 import java.util.function.Predicate;
 
 public class AbilityFunctionHelper {
 
-    public static ArrayList<Entity> getLivingEntitiesAround(LivingEntity target, double radius){
-        return getEntitiesAroundPredicate(target, radius, entity -> entity instanceof LivingEntity);
+    public static ArrayList<LivingEntity> getLivingEntitiesAround(LivingEntity target, double radius){
+        return getLivingEntitiesAround(target, radius, ignored -> true);
+    }
+
+    public static ArrayList<LivingEntity> getLivingEntitiesAround(LivingEntity target, double radius, Predicate<? super LivingEntity> pred){
+        List<Entity> test = getEntitiesAroundPredicate(target, radius,
+                entity -> entity instanceof LivingEntity);
+        return new ArrayList<>(test.stream().map(ent -> (LivingEntity) ent).filter(pred).toList());
     }
 
     public static ArrayList<Entity> getEntitiesAroundPredicate(LivingEntity target, double radius, Predicate<? super Entity> pred){
@@ -26,19 +34,34 @@ public class AbilityFunctionHelper {
                 pos.x-radius, pos.y-radius, pos.z-radius,
                 pos.x+radius, pos.y+radius, pos.z+radius
         );
-        ArrayList<Entity> hits = new ArrayList<>(level.getEntities((Entity) null, box, pred));
-        return hits;
+        ArrayList<Entity> res = new ArrayList<>(level.getEntities((Entity) null, box, pred));
+        return res;
     }
 
-    public static ArrayList<Entity> getLivingEntitiesLooking(LivingEntity target, double radius){
-        Vec3 lookAngle = target.getLookAngle();
-        return getEntitiesAroundPredicate(target, radius, entity -> {
-            if(entity instanceof LivingEntity living){
-                double dist = living.position().subtract(target.position()).length();
-                return living.getBoundingBoxForCulling().intersects(target.getEyePosition(),
-                        target.getEyePosition().add(lookAngle.scale(dist+1)));
+    public static Optional<LivingEntity> getTargetEntity(LivingEntity looker, double radius){
+        ArrayList<LivingEntity> targets = getLivingEntitiesLooking(looker, radius);
+        Optional<LivingEntity> result = Optional.empty();
+        double smallestDist = Integer.MAX_VALUE;
+        for(LivingEntity entity: targets){
+            double testDist = looker.position().distanceTo(entity.position());
+            if(testDist < smallestDist){
+                smallestDist = testDist;
+                result = Optional.of(entity);
             }
-            return false;
-        });
+        }
+        return result;
+    }
+
+    private static boolean isTargetInSightsOf(LivingEntity target, LivingEntity looker){
+        if(looker.is(target)) return false;
+        Vec3 lookAngle = looker.getLookAngle();
+        double dist = target.position().subtract(looker.getEyePosition()).length();
+        Vec3 eye = looker.getEyePosition();
+        Vec3 end = looker.getEyePosition().add(lookAngle.scale(dist+1));
+        return target.getBoundingBoxForCulling().intersects(eye, end);
+    }
+
+    public static ArrayList<LivingEntity> getLivingEntitiesLooking(LivingEntity looker, double radius){
+        return getLivingEntitiesAround(looker, radius, ent -> isTargetInSightsOf(ent, looker));
     }
 }

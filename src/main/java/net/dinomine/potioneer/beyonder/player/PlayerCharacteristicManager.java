@@ -346,12 +346,12 @@ public class PlayerCharacteristicManager {
         List<Integer> pathwayLevels = closestToLowerTens(lastConsumedCharacteristics);
         //get abilities for each pathway
         for(int sequence: pathwayLevels){
-            allAbilities.addAll(Pathways.getPathwayBySequenceId(sequence).getAbilities(sequence%10));
+            allAbilities.addAll(Pathways.getPathwayBySequenceId(sequence).getAbilities(sequence%10, highestLevel));
         }
         //make sure every ability is the highest level
-        for(Ability abl: allAbilities){
-            abl.setSequenceLevelSilent(highestLevel);
-        }
+//        for(Ability abl: allAbilities){
+//            abl.setSequenceLevelSilent(highestLevel);
+//        }
         //set
         cap.getAbilitiesManager().clearAbilities(cap, target);
         for(Ability abl: allAbilities){

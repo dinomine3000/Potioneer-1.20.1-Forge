@@ -18,7 +18,7 @@ public class MiningSpeedAbility extends PassiveAbility {
 
     public MiningSpeedAbility(int sequence){
 //        this.info = new AbilityInfo(5, 32, "Mining Speed", sequence, 0, this.getMaxCooldown(), "mining");
-        super(sequence, BeyonderEffects.WHEEL_MINING, level -> "mining");
+        super(sequence, BeyonderEffects.WHEEL_MINING, level -> "mining_" + (level < 8 ? "2" : "1"));
         CompoundTag tag = new CompoundTag();
         tag.putFloat("speed", levelToMaxSpeed.apply(sequence%10));
         setDataSilent(tag);

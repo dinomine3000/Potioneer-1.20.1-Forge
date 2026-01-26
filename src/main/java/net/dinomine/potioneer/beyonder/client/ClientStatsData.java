@@ -1,6 +1,7 @@
 package net.dinomine.potioneer.beyonder.client;
 
 import net.dinomine.potioneer.beyonder.client.screen.AdvancementScreen;
+import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
 import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
 import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
 import net.dinomine.potioneer.config.PotioneerClientConfig;
@@ -12,7 +13,10 @@ import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 
 import static net.dinomine.potioneer.util.misc.AdvancementDifficultyHelper.calculateDifficultyClient;
 
@@ -25,6 +29,15 @@ public class ClientStatsData {
     private static int luck = 0;
     private static int minLuck = 0;
     private static int maxLuck = 0;
+    private static Map<UUID, String> serverPlayerList = new HashMap<>();
+
+    public static void setServerPlayerList(Map<UUID, String> playerList){
+        serverPlayerList = playerList;
+    }
+
+    public static String getPlayerNameFromId(UUID uuid){
+        return serverPlayerList.getOrDefault(uuid, "Unknown");
+    }
 
     public static void attemptAdvancement(int newSeq, int addedDifficulty){
         Optional<LivingEntityBeyonderCapability> capOpt = getCapability();
@@ -66,6 +79,13 @@ public class ClientStatsData {
         }
         System.out.println("Tried to get spirituality but none was there to be read.");
         return 100f;
+    }
+
+    public static boolean hasEffect(BeyonderEffects.BeyonderEffectType effectType){
+        if(getCapability().isPresent()){
+            return getCapability().get().getEffectsManager().hasEffect(effectType.getEffectId());
+        }
+        return false;
     }
 
     public static int getPathwaySequenceId(){

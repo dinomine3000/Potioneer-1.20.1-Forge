@@ -46,7 +46,7 @@ public class PushAbility extends Ability {
             cap.requestActiveSpiritualityCost(cost());
             Vec3 lookAngle = target.getLookAngle();
             int radius = (9 - getSequenceLevel())*3 + 2;
-            ArrayList<Entity> hits = AbilityFunctionHelper.getLivingEntitiesLooking(target, radius);
+            ArrayList<LivingEntity> hits = AbilityFunctionHelper.getLivingEntitiesLooking(target, radius);
             float mult = 3;
             hits.forEach(ent -> {
                 if(ent instanceof Player player){

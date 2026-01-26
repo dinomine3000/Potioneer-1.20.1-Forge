@@ -304,7 +304,7 @@ public class ClientAbilitiesData {
     public static float animationTime = 0;
     private static float time = 0;
     public static float scaleAnimationTime = 0;
-    private static HashMap<AbilityKey, AbilityInfo> abilities = new HashMap<>();
+    private static HashMap<AbilityKey, AbilityInfo> abilities = new LinkedHashMap<>();
     //private static ArrayList<String> abilitiesByIndex;
     private static ArrayList<AbilityKey> hotbar = new ArrayList<>();
     private static AbilityKey quickSelect = new AbilityKey();

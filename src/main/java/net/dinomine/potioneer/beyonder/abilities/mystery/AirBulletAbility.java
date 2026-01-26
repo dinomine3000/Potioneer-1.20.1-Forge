@@ -52,13 +52,14 @@ public class AirBulletAbility extends Ability {
         else {
             cap.requestActiveSpiritualityCost(cost());
             HitResult hit = target.pick(dist, 0, false);
-            ArrayList<Entity> hits = AbilityFunctionHelper.getLivingEntitiesLooking(target,
+            ArrayList<LivingEntity> hits = AbilityFunctionHelper.getLivingEntitiesLooking(target,
                     Math.min(dist, hit.distanceTo(target))
             );
+            double baseDmg = target.getAttribute(Attributes.ATTACK_DAMAGE) == null ? 1 : target.getAttribute(Attributes.ATTACK_DAMAGE).getBaseValue();
             hits.forEach(ent -> {
                 int pow = (9-getSequenceLevel());
                 if(ent != target) ent.hurt(level.damageSources().indirectMagic(target, null),
-                        (float) (0.384f*Math.pow(target.getAttribute(Attributes.ATTACK_DAMAGE).getBaseValue()*pow, 2) + 2.461f*pow + 3.938f));
+                        (float) (0.384f*Math.pow(baseDmg*pow, 2) + 2.461f*pow + 3.938f));
             });
             level.playSound(null, target.getOnPos().above(), SoundEvents.GENERIC_EXTINGUISH_FIRE, SoundSource.PLAYERS, 1, 1);
         }

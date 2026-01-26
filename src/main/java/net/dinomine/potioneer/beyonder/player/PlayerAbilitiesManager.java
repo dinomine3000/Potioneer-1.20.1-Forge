@@ -462,6 +462,10 @@ public class PlayerAbilitiesManager {
         }
     }
 
+    public int getNumArtifacts() {
+        return artifacts.size();
+    }
+
 //    public void updateArtifactsOnClient(List<ArtifactHolder> artifacts,  @NotNull LivingEntityBeyonderCapability cap, Player player) {
 //        if(!player.level().isClientSide()) return;
 //        for(ArtifactHolder artifact: artifacts){
@@ -587,8 +591,8 @@ public class PlayerAbilitiesManager {
 
     private List<AbilityInfo> getAbilityInfos() {
         List<AbilityInfo> res = new ArrayList<>();
-        for(AbilityKey key: abilities.keySet()){
-            res.add(abilities.get(key).getAbilityInfo());
+        for(Map.Entry<AbilityKey, Ability> entry : abilities.entrySet()){
+            res.add(entry.getValue().getAbilityInfo());
         }
         return res;
     }

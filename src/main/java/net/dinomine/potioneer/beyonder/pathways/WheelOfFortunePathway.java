@@ -74,17 +74,18 @@ public class WheelOfFortunePathway extends BeyonderPathway {
             case 5:
             case 6:
             case 7:
-                abilities.add(Abilities.MINER_BONE_MEAL.create(atSequenceLevel));
-                abilities.add(Abilities.PATIENCE.create(atSequenceLevel));
-                abilities.add(Abilities.DODGE_DAMAGE.create(atSequenceLevel));
-                abilities.add(Abilities.CALAMITY_INCREASE.create(atSequenceLevel));
+//                abilities.add(Abilities.MINER_BONE_MEAL.create(atSequenceLevel));
+//                abilities.add(Abilities.PATIENCE.create(atSequenceLevel));
+//                abilities.add(Abilities.DODGE_DAMAGE.create(atSequenceLevel));
+//                abilities.add(Abilities.CALAMITY_INCREASE.create(atSequenceLevel));
             case 8:
-//                abilities.add(Abilities.BLOCK_SNIFF.create(atSequenceLevel));
-//                abilities.add(Abilities.LUCK_BOOST.create(atSequenceLevel));
-//                abilities.add(Abilities.CHECK_LUCK.create(atSequenceLevel));
-//                abilities.add(Abilities.FORTUNE_ABILITY.create(atSequenceLevel));
-//                abilities.add(Abilities.SILK_TOUCH_ABILITY.create(atSequenceLevel));
                 abilities.add(Abilities.WHEEL_KNOWLEDGE.create(atSequenceLevel));
+                abilities.add(Abilities.TARGET_APPRAISAL.create(atSequenceLevel));
+                abilities.add(Abilities.BLOCK_APPRAISAL.create(atSequenceLevel));
+                abilities.add(Abilities.APPRAISAL.create(atSequenceLevel));
+                abilities.add(Abilities.FORTUNE_ABILITY.create(atSequenceLevel));
+                abilities.add(Abilities.SILK_TOUCH_ABILITY.create(atSequenceLevel));
+                abilities.add(Abilities.CALAMITY_INCREASE.create(atSequenceLevel));
             case 9:
                 abilities.add(Abilities.MINER_LIGHT.create(atSequenceLevel));
                 abilities.add(Abilities.VOID_VISION.create(atSequenceLevel));

@@ -151,19 +151,21 @@ public class CoinItem extends Item implements GeoItem {
 
         int sequence = -1;
         boolean seer = false;
+        boolean appraiser = false;
         if(player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).isPresent()){
             Optional<LivingEntityBeyonderCapability> cap = player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve();
             sequence = cap.get().getPathwaySequenceId();
             seer = cap.get().getEffectsManager().hasEffect(BeyonderEffects.MISC_DIVINATION.getEffectId());
+            appraiser = cap.get().getEffectsManager().hasEffect(BeyonderEffects.WHEEL_APPRAISAL.getEffectId());
         }
 
         DivinationResult result = MysticismHelper.doDivination(divinationTarget, player, sequence, player.getRandom());
         if(seer){
             MysticismHelper.updateOrApplyMysticismTag(player.getMainHandItem(), 0.2f, player);
             return result.yesNo();
-        } else if(divinationTarget.is(ModItems.BEYONDER_POTION.get()) && Math.random() < 0.8f){
-          return result.yesNo();
-        } else{
+        } else if(appraiser){
+            return result.yesNo();
+        } else {
             if(player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).isPresent()){
                 Optional<LivingEntityBeyonderCapability> cap = player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve();
                 float luck = cap.get().getLuckManager().checkLuck(0.5f);

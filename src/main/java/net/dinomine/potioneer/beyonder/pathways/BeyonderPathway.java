@@ -34,6 +34,10 @@ public abstract class BeyonderPathway {
         return this.color;
     }
 
+    public Component getPathwayName(){
+        return Component.translatable("potioneer.beyonder.pathway." + getPathwayName(false));
+    }
+
     public String getPathwayName(boolean capitalize){
         return capitalize ? this.name : this.name.toLowerCase();
     }
@@ -78,6 +82,9 @@ public abstract class BeyonderPathway {
      */
     public abstract List<Ability> getAbilities(int sequenceLevel, int atSequenceLevel);
 
+    public Component getSequenceComponentFromId(int sequenceLevel){
+        return Component.translatable("potioneer.beyonder.sequence." + getSequenceNameFromId(sequenceLevel, false));
+    }
 
     public abstract String getSequenceNameFromId(int sequenceLevel, boolean show);
 //    {

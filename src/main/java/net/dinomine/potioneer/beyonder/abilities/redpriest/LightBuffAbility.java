@@ -28,18 +28,16 @@ public class LightBuffAbility extends Ability {
     protected boolean primary(LivingEntityBeyonderCapability cap, LivingEntity target) {
         if(target.level().isClientSide()) return cap.getSpirituality() >= cost();
 
-        ArrayList<Entity> hits = AbilityFunctionHelper.getLivingEntitiesLooking(target, target.getAttributeValue(ForgeMod.ENTITY_REACH.get()) + 0.5f);
+        ArrayList<LivingEntity> hits = AbilityFunctionHelper.getLivingEntitiesLooking(target, target.getAttributeValue(ForgeMod.ENTITY_REACH.get()) + 0.5f);
         hits.sort((a, b) -> (int) (a.position().distanceTo(target.position()) - b.position().distanceTo(target.position())));
-        for(Entity ent: hits){
-            if(ent instanceof LivingEntity livingEntity){
-                Optional<LivingEntityBeyonderCapability> otherCap = livingEntity.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve();
-                if(otherCap.isPresent()){
-                    otherCap.get().getEffectsManager().addOrReplaceEffect(BeyonderEffects.byId(BeyonderEffects.RED_LIGHT_BUFF.getEffectId(), getSequenceLevel(), 0, livingEntity != target ? 2*20*60*5 : 2*20*60, true)
-                            , otherCap.get(), livingEntity);
-                    cap.requestActiveSpiritualityCost(cost());
-                    System.out.println("Applied strength buff to " + livingEntity.getName());
-                    return true;
-                }
+        for(LivingEntity livingEntity: hits){
+            Optional<LivingEntityBeyonderCapability> otherCap = livingEntity.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve();
+            if(otherCap.isPresent()){
+                otherCap.get().getEffectsManager().addOrReplaceEffect(BeyonderEffects.byId(BeyonderEffects.RED_LIGHT_BUFF.getEffectId(), getSequenceLevel(), 0, livingEntity != target ? 2*20*60*5 : 2*20*60, true)
+                        , otherCap.get(), livingEntity);
+                cap.requestActiveSpiritualityCost(cost());
+                System.out.println("Applied strength buff to " + livingEntity.getName());
+                return true;
             }
         }
         return false;
