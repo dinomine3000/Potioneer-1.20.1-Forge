@@ -68,6 +68,13 @@ public class PassiveAbility extends Ability {
     }
 
     @Override
+    public Ability withActives(boolean isActive, boolean isPassive) {
+        this.isActive = isActive;
+        this.isPassive = true;
+        return this;
+    }
+
+    @Override
     protected String getDescId(int sequenceLevel) {
         return descId.apply(sequenceLevel);
     }

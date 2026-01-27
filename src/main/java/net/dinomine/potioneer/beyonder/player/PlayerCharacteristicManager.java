@@ -342,12 +342,15 @@ public class PlayerCharacteristicManager {
     private void setAllAbilities(LivingEntityBeyonderCapability cap, LivingEntity target, boolean fromLoading) {
         int highestLevel = getSequenceLevel();
         List<Ability> allAbilities = new ArrayList<>();
-        //get highest level for each pathway
-        List<Integer> pathwayLevels = closestToLowerTens(lastConsumedCharacteristics);
-        //get abilities for each pathway
-        for(int sequence: pathwayLevels){
-            allAbilities.addAll(Pathways.getPathwayBySequenceId(sequence).getAbilities(sequence%10, highestLevel));
+        for(int characId: lastConsumedCharacteristics){
+            allAbilities.addAll(Pathways.getPathwayBySequenceId(characId).getAbilities(characId, highestLevel));
         }
+//        //get highest level for each pathway
+//        List<Integer> pathwayLevels = closestToLowerTens(lastConsumedCharacteristics);
+//        //get abilities for each pathway
+//        for(int sequence: pathwayLevels){
+//            allAbilities.addAll(Pathways.getPathwayBySequenceId(sequence).getAbilities(sequence%10, highestLevel));
+//        }
         //make sure every ability is the highest level
 //        for(Ability abl: allAbilities){
 //            abl.setSequenceLevelSilent(highestLevel);
@@ -456,7 +459,7 @@ public class PlayerCharacteristicManager {
             int testSpir = Pathways.getPathwayBySequenceId(i).getMaxSpirituality(i%10);
             if(testSpir > bestSpirituality) bestSpirituality = testSpir;
         }
-        return bestSpirituality;
+        return (int) (bestSpirituality*PotioneerCommonConfig.UNIVERSAL_MAX_SPIRITUALITY_MULTIPLIER.get());
     }
 
     public ArrayList<Integer> getLastConsumedCharacteristics() {

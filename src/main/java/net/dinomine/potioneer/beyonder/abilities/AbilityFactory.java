@@ -16,6 +16,8 @@ public class AbilityFactory {
     private int pathwayId;
     private boolean hasSecondaryFunction;
     private Function<Integer, Ability> createFunction;
+    private boolean passive = false;
+    private boolean active = true;
 
     public AbilityFactory(ResourceLocation textureLocation, int posY, int pathwayId, Function<Integer, Integer> costFunction, String ablId, Function<Integer, Ability> createFunction){
         this.costFunction = costFunction;
@@ -33,6 +35,17 @@ public class AbilityFactory {
 
     public AbilityFactory hasSecondaryFunction(){
         return this.hasSecondaryFunction(true);
+    }
+
+    public AbilityFactory passive(){
+        this.active = false;
+        this.passive = true;
+        return this;
+    }
+
+    public AbilityFactory active(){
+        this.active = true;
+        return this;
     }
 
     public AbilityFactory hasSecondaryFunction(boolean secondary){

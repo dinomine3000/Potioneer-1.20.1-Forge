@@ -5,7 +5,11 @@ import net.dinomine.potioneer.beyonder.abilities.Ability;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
 import net.dinomine.potioneer.rituals.spirits.Deity;
 import net.dinomine.potioneer.rituals.spirits.defaultGods.WheelOfFortuneResponse;
+import net.dinomine.potioneer.sound.ModSounds;
+import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 
@@ -75,9 +79,14 @@ public class WheelOfFortunePathway extends BeyonderPathway {
             case 6:
             case 7:
 //                abilities.add(Abilities.MINER_BONE_MEAL.create(atSequenceLevel));
-//                abilities.add(Abilities.PATIENCE.create(atSequenceLevel));
 //                abilities.add(Abilities.DODGE_DAMAGE.create(atSequenceLevel));
 //                abilities.add(Abilities.CALAMITY_INCREASE.create(atSequenceLevel));
+                abilities.add(Abilities.PATIENCE.create(atSequenceLevel));
+                abilities.add(Abilities.VELOCITY.create(atSequenceLevel));
+                abilities.add(Abilities.MINER_BONE_MEAL.create(atSequenceLevel));
+                abilities.add(Abilities.FORCE_COOLDOWN_ABILITY.create(atSequenceLevel));
+                abilities.add(Abilities.DODGE_DAMAGE.create(atSequenceLevel));
+//                abilities.add(Abilities.GAMBLING.create(atSequenceLevel));
             case 8:
                 abilities.add(Abilities.WHEEL_KNOWLEDGE.create(atSequenceLevel));
                 abilities.add(Abilities.TARGET_APPRAISAL.create(atSequenceLevel));
@@ -96,6 +105,13 @@ public class WheelOfFortunePathway extends BeyonderPathway {
 
         return abilities;
 
+    }
+    public static final int UNLUCK = 0;
+
+    public static void playSound(Level level, BlockPos pos, int sound){
+        switch (sound){
+            case 0 -> level.playSound(null, pos, ModSounds.UNLUCK.get(), SoundSource.PLAYERS, 0.8f, (float) level.getRandom().triangle(1f, 0.2f));
+        }
     }
 
     @Override

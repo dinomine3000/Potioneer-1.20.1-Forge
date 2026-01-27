@@ -2,6 +2,7 @@ package net.dinomine.potioneer.beyonder.abilities;
 
 import net.dinomine.potioneer.beyonder.downsides.Downside;
 import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
+import net.dinomine.potioneer.util.misc.MysticalItemHelper;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
@@ -120,17 +121,19 @@ public class ArtifactHolder {
     /**
      * saves the artifact to a compound tag
      * @param artifactTag the tag created for this artifact to use as it pleases.
+     * @param saveItem true if it should save the item. set this to false whenever able to not inflate the tag with recursion
      * @return artifactTag with the data written on it.
      */
-    public CompoundTag saveToTag(CompoundTag artifactTag){
+    public CompoundTag saveToTag(CompoundTag artifactTag, boolean saveItem){
         artifactTag.putUUID("artifactId", artifactId);
         for(Ability abl: abilities.values()){
-            artifactTag.put(abl.getKey().toString(), abl.saveNbt());
+            artifactTag.put(abl.getKey().withoutArtifactId().toString(), abl.saveNbt());
         }
         for(Ability abl: downsides.values()){
-            artifactTag.put(abl.getKey().toString(), abl.saveNbt());
+            artifactTag.put(abl.getKey().withoutArtifactId().toString(), abl.saveNbt());
         }
-        artifactTag.put("itemStack", item.save(new CompoundTag()));
+        if(saveItem)
+            artifactTag.put("itemStack", item.save(new CompoundTag()));
         return artifactTag;
     }
 
@@ -143,9 +146,11 @@ public class ArtifactHolder {
             if(key.isEmpty()) continue;
             Ability ability = Abilities.getAbilityInstanceByKey(key);
             ability.loadNbt(artifactTag);
+            ability.setArtifactAbilityKey(artifactId);
             abilities.add(ability);
         }
-        ItemStack stack = ItemStack.of(artifactTag.getCompound("itemStack"));
+        ItemStack stack = ItemStack.EMPTY;
+        if(artifactTag.contains("itemStack")) stack = ItemStack.of(artifactTag.getCompound("itemStack"));
         return new ArtifactHolder(abilities, artifactId, stack);
     }
 
@@ -164,10 +169,16 @@ public class ArtifactHolder {
 
     @Override
     public String toString() {
-        return saveToTag(new CompoundTag()).toString();
+        return saveToTag(new CompoundTag(), true).toString();
     }
 
     public ItemStack getStack() {
         return item;
+    }
+
+    public ArtifactHolder updateItemTags() {
+        ItemStack returnItem = item.copy();
+        MysticalItemHelper.updateArtifactTagOnItem(this, returnItem);
+        return MysticalItemHelper.getArtifactFromitem(returnItem);
     }
 }

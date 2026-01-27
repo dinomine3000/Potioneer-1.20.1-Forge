@@ -2,10 +2,7 @@ package net.dinomine.potioneer.beyonder.client.screen;
 
 import ca.weblite.objc.Client;
 import net.dinomine.potioneer.Potioneer;
-import net.dinomine.potioneer.beyonder.abilities.Abilities;
-import net.dinomine.potioneer.beyonder.abilities.AbilityFactory;
-import net.dinomine.potioneer.beyonder.abilities.AbilityInfo;
-import net.dinomine.potioneer.beyonder.abilities.AbilityKey;
+import net.dinomine.potioneer.beyonder.abilities.*;
 import net.dinomine.potioneer.beyonder.client.ClientAbilitiesData;
 import net.dinomine.potioneer.beyonder.client.KeyBindings;
 import net.dinomine.potioneer.beyonder.pathways.Pathways;
@@ -69,8 +66,8 @@ public class BeyonderAbilitiesScreen extends Screen {
         super(TITLE);
         this.imageWidth = 176;
         this.imageHeight = 183;
-        this.TEXTURE_WIDTH = 214;
-        this.TEXTURE_HEIGHT = 226;
+        this.TEXTURE_WIDTH = 215;
+        this.TEXTURE_HEIGHT = 295;
         selectedCaret = 0;
         buttonOffset = 0;
         dragging = false;
@@ -108,8 +105,8 @@ public class BeyonderAbilitiesScreen extends Screen {
             for(int i = 0; i < Math.min(6, abilities.size()); i++){
                 createButtons(i);
             }
-            ImageButton castAbilityButton = new CustomImageButton(leftPos + 12, topPos + 13, 38, 46, 176, 13,
-                    46, TEXTURE, TEXTURE_WIDTH, TEXTURE_HEIGHT, hbut -> {
+            ImageButton castAbilityButton = new CustomImageButton(leftPos + 11, topPos + 8, 39, 60, 176, 175,
+                    60, TEXTURE, TEXTURE_WIDTH, TEXTURE_HEIGHT, hbut -> {
                 castAbilityAt(true);
             }, button -> castAbilityAt(false));
             addRenderableWidget(castAbilityButton);
@@ -129,13 +126,13 @@ public class BeyonderAbilitiesScreen extends Screen {
             removeFromQuickSelectButton.setTooltip(Tooltip.create(Component.translatable("gui.potioneer.remove_from_quick")));
 
             goToMainMenuButton = new ImageButton(leftPos + 4, topPos + 165, 43, 18,
-                    163, 208, 0, TEXTURE, TEXTURE_WIDTH, TEXTURE_HEIGHT, btn -> {BeyonderScreen.goToMainMenu();});
+                    132, 277, 0, TEXTURE, TEXTURE_WIDTH, TEXTURE_HEIGHT, btn -> {BeyonderScreen.goToMainMenu();});
             addRenderableWidget(goToMainMenuButton);
             goToOptionsMenu = new ImageButton(leftPos + 89, topPos + 165, 43, 18,
-                    163, 208, 0, TEXTURE, TEXTURE_WIDTH, TEXTURE_HEIGHT, btn -> {BeyonderScreen.goToOptionsMenu();});
+                    132, 277, 0, TEXTURE, TEXTURE_WIDTH, TEXTURE_HEIGHT, btn -> {BeyonderScreen.goToOptionsMenu();});
             addRenderableWidget(goToOptionsMenu);
             goToAllyMenu = new ImageButton(leftPos + 131, topPos + 165, 43, 18,
-                    163, 208, 0, TEXTURE, TEXTURE_WIDTH, TEXTURE_HEIGHT, btn -> {BeyonderScreen.goToAllyMenu();});
+                    132, 277, 0, TEXTURE, TEXTURE_WIDTH, TEXTURE_HEIGHT, btn -> {BeyonderScreen.goToAllyMenu();});
             addRenderableWidget(goToAllyMenu);
 
             addRenderableWidget(addToHotbarButton);
@@ -247,6 +244,9 @@ public class BeyonderAbilitiesScreen extends Screen {
             castAbilityAt(true);
             dClickCountdown = 0;
         } else {
+            for(ImageButton btn: buttons){
+                btn.setFocused(false);
+            }
             this.selectedCaret = buttonIdx + buttonOffset;
             dClickCountdown = 7;
         }
@@ -281,13 +281,21 @@ public class BeyonderAbilitiesScreen extends Screen {
             }
         }
 
+        //artifact page BG
+        if(main && key.isArtifactKey()){
+            pGuiGraphics.blit(TEXTURE, leftPos + 3, topPos + 3, 55, 69, 0, 226,
+                    55, 69, TEXTURE_WIDTH, TEXTURE_HEIGHT);
+        }
+
         //cooldown gradient
         if(main){
             float percent = Mth.clamp(1 - ((float) ClientAbilitiesData.getCooldown(key) / ClientAbilitiesData.getMaxCooldown(key)),
                     0, 1);
-
-            pGuiGraphics.fillGradient(posX - 7, (int) (posY - 5 + percent*46),
-                    (int) (posX + 7 + scale*ICON_WIDTH), (int) (posY + 5 + ICON_HEIGHT*scale), 0xDD696969, 0xDD424242);
+            pGuiGraphics.fillGradient(posX - 7, (int) (posY - 9 + percent*58),
+                    (int) (posX + 6 + scale*ICON_WIDTH), (int) (posY - 9 + 58), 0xDD696969, 0xDD424242);
+//            if(!ClientAbilitiesData.isEnabled(key)){
+//                pGuiGraphics.fillGradient(posX - 7, posY-9,
+//                        (int) (posX + 6 + scale*ICON_WIDTH), (int) (posY - 9 + 58), 0xDD999999, 0xDD666666);
 
         }
         //icon itself
@@ -295,17 +303,26 @@ public class BeyonderAbilitiesScreen extends Screen {
         pGuiGraphics.blit(ABILITY_ICONS, posX, posY, (int) (scale * ICON_WIDTH), (int)(scale * ICON_HEIGHT),
                 abilityX, abl.getPosY(), ICON_WIDTH, ICON_HEIGHT, ICONS_WIDTH, ICONS_HEIGHT);
 
-        if(!main && ClientAbilitiesData.getQuickAbility().equals(key)){
-            pGuiGraphics.blit(TEXTURE, posX + 130, posY, 12, 12,
-                    176, 149, 16, 16, TEXTURE_WIDTH, TEXTURE_HEIGHT);
+        //quick and hotbar symbols
+        if(!main){
+            boolean hotbarFlag = false;
+            if(ClientAbilitiesData.getHotbar().contains(key)){
+                pGuiGraphics.blit(TEXTURE, posX + 134, posY + 2, 8, 8,
+                        193, 152, 7, 7, TEXTURE_WIDTH, TEXTURE_HEIGHT);
+                hotbarFlag = true;
+            }
+            if(ClientAbilitiesData.getQuickAbility().equals(key)){
+                pGuiGraphics.blit(TEXTURE, posX + (hotbarFlag ? 120: 130), posY, 12, 12,
+                        176, 149, 16, 16, TEXTURE_WIDTH, TEXTURE_HEIGHT);
+            }
         }
 
         //enabled gradient
         if(main){
             //enabled gradient
             if(!ClientAbilitiesData.isEnabled(key)){
-                pGuiGraphics.fillGradient(posX - 7, posY -5,
-                        (int) (posX + 7 + scale*ICON_WIDTH), (int) (posY + 5 + ICON_HEIGHT*scale), 0xDD999999, 0xDD666666);
+                pGuiGraphics.fillGradient(posX - 7, posY-9,
+                        (int) (posX + 6 + scale*ICON_WIDTH), (int) (posY - 9 + 58), 0xDD999999, 0xDD666666);
             }
             //barrier symbol if ability is disabled
             if(ClientAbilitiesData.getCooldown(key) < 0){
@@ -329,6 +346,18 @@ public class BeyonderAbilitiesScreen extends Screen {
                     && mouseY >= hotbarButtonBottom - hotbarButtonSide && mouseY < hotbarButtonBottom)
             ){
                 pGuiGraphics.renderTooltip(this.font, Component.translatable("potioneer.long_desc." + data.descId()), mouseX, mouseY);
+            }
+        }
+
+        //itemstack for artifact
+        if(main && key.isArtifactKey()){
+            ArtifactHolder artifact = ClientAbilitiesData.getArtifact(key);
+            pGuiGraphics.blit(TEXTURE, leftPos + 36, topPos + 49, 22, 23, 55, 226,
+                    22, 23, TEXTURE_WIDTH, TEXTURE_HEIGHT);
+            pGuiGraphics.renderFakeItem(artifact.getStack(), leftPos + 39, topPos + 52);
+            if(mouseX > leftPos + 36 && mouseX < leftPos + 36 + 22
+                    && mouseY > topPos + 49 && mouseY < topPos + 49 + 23){
+                pGuiGraphics.renderTooltip(this.font, artifact.getStack().getDisplayName(), mouseX, mouseY);
             }
         }
 
@@ -369,6 +398,9 @@ public class BeyonderAbilitiesScreen extends Screen {
                 offset = abilities.size() - 6;
             }
             buttonOffset = offset;
+            for(ImageButton btn: buttons){
+                btn.setFocused(false);
+            }
         }
         return super.mouseClicked(pMouseX, pMouseY, pButton);
     }
@@ -383,6 +415,9 @@ public class BeyonderAbilitiesScreen extends Screen {
                 offset = abilities.size() - 6;
             }
             buttonOffset = offset;
+            for(ImageButton btn: buttons){
+                btn.setFocused(false);
+            }
         }
         return super.mouseDragged(pMouseX, pMouseY, pButton, pDragX, pDragY);
     }
@@ -390,7 +425,29 @@ public class BeyonderAbilitiesScreen extends Screen {
     @Override
     public boolean mouseScrolled(double pMouseX, double pMouseY, double pDelta) {
         if(abilities.size() > 6){
+            int oldOffset = buttonOffset;
             buttonOffset = Mth.clamp(buttonOffset + (int)(-pDelta), 0, abilities.size() - 6);
+            if(buttonOffset == oldOffset) return false;
+            boolean focusedFlag = false;
+            if(pDelta < 0){
+                for(int i = buttons.size() - 1; i >= 0; i--){
+                    ImageButton btn = buttons.get(i);
+                    if(btn.isFocused()) focusedFlag = true;
+                    if(focusedFlag && !btn.isFocused()){
+                        focusedFlag = false;
+                        btn.setFocused(true);
+                    } else btn.setFocused(false);
+                }
+            } else {
+                for(int i = 0; i < buttons.size(); i++){
+                    ImageButton btn = buttons.get(i);
+                    if(btn.isFocused()) focusedFlag = true;
+                    if(focusedFlag && !btn.isFocused()){
+                        focusedFlag = false;
+                        btn.setFocused(true);
+                    } else btn.setFocused(false);
+                }
+            }
         }
         return super.mouseScrolled(pMouseX, pMouseY, pDelta);
     }

@@ -418,6 +418,12 @@ public abstract class Ability {
         return this;
     }
 
+    public Ability withActives(boolean isActive, boolean isPassive){
+        this.isActive = isActive;
+        this.isPassive = isPassive;
+        return this;
+    }
+
     @Override
     public String toString() {
         if(key == null || key.isEmpty()) return getOuterId();

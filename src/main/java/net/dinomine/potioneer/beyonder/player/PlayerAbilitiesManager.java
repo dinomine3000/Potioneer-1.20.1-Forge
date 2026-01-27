@@ -1,5 +1,6 @@
 package net.dinomine.potioneer.beyonder.player;
 
+import net.dinomine.potioneer.Potioneer;
 import net.dinomine.potioneer.beyonder.abilities.*;
 import net.dinomine.potioneer.beyonder.abilities.misc.MysticalKnowledgeAbility;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
@@ -177,38 +178,38 @@ public class PlayerAbilitiesManager {
         return true;
     }
 
-    /**
-     * method that saves the artifact ability data to its respective item
-     * @param artifactId
-     * @param player
-     */
-    public void updateDataOnArtifact(UUID artifactId, Player player){
-        if(artifactId == null || player.level().isClientSide()) return;
-        for(ItemStack itemStack: player.getInventory().items){
-            if(Objects.equals(MysticalItemHelper.getArtifactIdFromItem(itemStack), artifactId)){
-                MysticalItemHelper.updateArtifactTagOnItem(artifacts.get(artifactId), itemStack);
-                return;
-            }
-        }
-        if(ModList.get().isLoaded("curios")){
-            if(CuriosApi.getCuriosInventory(player).resolve().isPresent()){
-                ICuriosItemHandler curiosInventory = CuriosApi.getCuriosInventory(player).resolve().get();
-                Map<String, ICurioStacksHandler> curios = curiosInventory.getCurios();
-                for(ICurioStacksHandler handler: curios.values()){
-                    int slots = handler.getSlots();
-                    for(int i = 0; i < slots; i++){
-                        ItemStack itemStack = handler.getStacks().getStackInSlot(i);
-                        if(Objects.equals(MysticalItemHelper.getArtifactIdFromItem(itemStack), artifactId)){
-                            MysticalItemHelper.updateArtifactTagOnItem(artifacts.get(artifactId), itemStack);
-                            return;
-                        }
-                    }
-                }
-            }
-        }
-    }
+//    /**
+//     * method that saves the artifact ability data to its respective item
+//     * @param artifactId
+//     * @param player
+//     */
+//    public void updateDataOnArtifact(UUID artifactId, Player player){
+//        if(artifactId == null || player.level().isClientSide()) return;
+//        for(ItemStack itemStack: player.getInventory().items){
+//            if(Objects.equals(MysticalItemHelper.getArtifactIdFromItem(itemStack), artifactId)){
+//                MysticalItemHelper.updateArtifactTagOnItem(artifacts.get(artifactId), itemStack);
+//                return;
+//            }
+//        }
+//        if(ModList.get().isLoaded("curios")){
+//            if(CuriosApi.getCuriosInventory(player).resolve().isPresent()){
+//                ICuriosItemHandler curiosInventory = CuriosApi.getCuriosInventory(player).resolve().get();
+//                Map<String, ICurioStacksHandler> curios = curiosInventory.getCurios();
+//                for(ICurioStacksHandler handler: curios.values()){
+//                    int slots = handler.getSlots();
+//                    for(int i = 0; i < slots; i++){
+//                        ItemStack itemStack = handler.getStacks().getStackInSlot(i);
+//                        if(Objects.equals(MysticalItemHelper.getArtifactIdFromItem(itemStack), artifactId)){
+//                            MysticalItemHelper.updateArtifactTagOnItem(artifacts.get(artifactId), itemStack);
+//                            return;
+//                        }
+//                    }
+//                }
+//            }
+//        }
+//    }
 
-    private void iterateThroughInventory(Player player, Consumer<ItemStack> consumer){
+    private static void iterateThroughInventory(Player player, Consumer<ItemStack> consumer){
         for(ItemStack itemStack: player.getInventory().items){
             consumer.accept(itemStack);
         }
@@ -336,6 +337,10 @@ public class PlayerAbilitiesManager {
         }
     }
 
+    public void putAbilityOnCooldown(AbilityKey key, int cooldownTicks, LivingEntity target){
+        putAbilityOnCooldown(key.getAbilityId(), key.getSequenceLevel(), cooldownTicks, target);
+    }
+
     public boolean isEnabledExactLevel(String abilityId, int sequenceLevel){
         for(Map.Entry<AbilityKey, Ability> abilityEntry: abilities.entrySet()){
             AbilityKey iKey = abilityEntry.getKey();
@@ -453,17 +458,56 @@ public class PlayerAbilitiesManager {
     }
 
     public void onAbilityUpdateData(AbilityInfo abilityInfo, LivingEntityBeyonderCapability cap, LivingEntity target) {
-        if(target instanceof Player player && !player.level().isClientSide()) PacketHandler.sendMessageSTC(new AbilitySyncMessage(abilityInfo, AbilitySyncMessage.UPDATE), player);
+        if(!(target instanceof Player player)) return;
+        if(player.level().isClientSide()) return;
+        PacketHandler.sendMessageSTC(new AbilitySyncMessage(abilityInfo, AbilitySyncMessage.UPDATE), player);
         if(abilityInfo.getKey().isArtifactKey()){
-            System.out.println("Updating artifact info to item...");
             UUID artifactID = abilityInfo.getKey().getArtifactId();
             if(!artifacts.containsKey(artifactID)) return;
-            MysticalItemHelper.updateArtifactTagOnItem(artifacts.get(artifactID));
+            List<ItemStack> items = getItemsInInventory(player);
+            for(ItemStack item: items){
+                UUID itemId = MysticalItemHelper.getArtifactIdFromItem(item);
+                if(itemId == null) continue;
+                if(itemId.compareTo(artifactID) == 0){
+                    MysticalItemHelper.updateArtifactTagOnItem(artifacts.get(artifactID), item);
+                    return;
+                }
+            }
+            String message = "[Potioneer] Error: Tried to update artifact data into item but no matching item was found: " + abilityInfo.getKey();
+            System.err.println(message);
+            Potioneer.LOGGER.error(message);
         }
+    }
+
+    public static List<ItemStack> getItemsInInventory(Player player){
+        List<ItemStack> result = new ArrayList<>(player.getInventory().items);
+        if(ModList.get().isLoaded("curios")){
+            if(CuriosApi.getCuriosInventory(player).resolve().isPresent()){
+                ICuriosItemHandler curiosInventory = CuriosApi.getCuriosInventory(player).resolve().get();
+                Map<String, ICurioStacksHandler> curios = curiosInventory.getCurios();
+                for(ICurioStacksHandler handler: curios.values()){
+                    int slots = handler.getSlots();
+                    for(int i = 0; i < slots; i++){
+                        ItemStack itemStack = handler.getStacks().getStackInSlot(i);
+                        result.add(itemStack);
+                    }
+                }
+            }
+        }
+        return result;
     }
 
     public int getNumArtifacts() {
         return artifacts.size();
+    }
+
+    public List<AbilityKey> getAbilityKeys() {
+        return abilities.keySet().stream().toList();
+    }
+
+    public ArtifactHolder getArtifact(AbilityKey key) {
+        if(key.isEmpty() || !key.isArtifactKey() || !artifacts.containsKey(key.getArtifactId())) return null;
+        return artifacts.get(key.getArtifactId()).updateItemTags();
     }
 
 //    public void updateArtifactsOnClient(List<ArtifactHolder> artifacts,  @NotNull LivingEntityBeyonderCapability cap, Player player) {
@@ -610,7 +654,7 @@ public class PlayerAbilitiesManager {
         }
         ListTag artifactsTag = new ListTag();
         for(ArtifactHolder artifact: artifacts.values()){
-            artifactsTag.add(artifact.saveToTag(new CompoundTag()));
+            artifactsTag.add(artifact.saveToTag(new CompoundTag(), true));
         }
         nbt.put("artifacts", artifactsTag);
     }

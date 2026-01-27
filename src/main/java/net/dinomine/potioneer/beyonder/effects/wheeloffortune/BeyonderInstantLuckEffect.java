@@ -26,9 +26,9 @@ public class BeyonderInstantLuckEffect extends BeyonderEffect {
     public void stopEffects(LivingEntityBeyonderCapability cap, LivingEntity target) {
         if(target.level().isClientSide()) return;
         cap.getLuckManager().consumeLuck(50 + 25*(8-sequenceLevel) + 10);
-        target.sendSystemMessage(Component.literal("All is not without its price. Your luck has been taken back."));
+        target.sendSystemMessage(Component.translatableWithFallback("message.potioneer.luck_boost_revoke", "All is not without its price. Your luck has been taken back."));
         if (cap.getLuckManager().getLuck() < 0){
-            target.sendSystemMessage(Component.literal("Unlucky..."));
+            target.sendSystemMessage(Component.translatableWithFallback("message.potioneer.luck_boost_unlucky", "Unlucky..."));
             cap.getLuckManager().instantlyCastEvent(target);
         }
     }

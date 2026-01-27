@@ -52,6 +52,10 @@ public class PlayerLuckManager {
         luckEventCountdown = 1;
     }
 
+    public PlayerLuckManager(int luck){
+        this.luck = luck;
+    }
+
     public void onTick(LivingEntityBeyonderCapability cap, LivingEntity target){
         //ticks once every 2 seconds
         if(target.level().isClientSide()) return;
@@ -302,6 +306,7 @@ public class PlayerLuckManager {
     }
 
     public float checkLuck(float chance){
+        if(chance == 1) return 1;
         float newChance;
         float b = 3.6f;
         float d = 20f;
@@ -324,6 +329,24 @@ public class PlayerLuckManager {
         }
         grantLuck(luckGainIfFailure);
         return false;
+    }
+
+    public float nextFloat(RandomSource random){
+        return checkLuck(random.nextFloat());
+    }
+
+    /**
+     * gets a random integer based on the targets luck
+     * @param min minimum value, inclusive
+     * @param max maximum value, exclusive
+     * @param bigger_is_better whether bigger is better. if true, lucky people will get bigger number and vice versa
+     * @param random the random source
+     * @return an int between [min, max[
+     */
+    public int getRandomNumber(int min, int max, boolean bigger_is_better, RandomSource random) {
+        float rnd = nextFloat(random);
+        if(!bigger_is_better) rnd = 1 - rnd;
+        return (int) (Math.floor(min + (max - min)*rnd));
     }
 
     public void consumeLuck(int consume){

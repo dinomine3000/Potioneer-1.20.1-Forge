@@ -18,6 +18,9 @@ public class ModSounds {
     public static final RegistryObject<SoundEvent> GUN_SHOOT = registerSoundEvents("gun_shoot");
     public static final RegistryObject<SoundEvent> GUN_RELOAD = registerSoundEvents("gun_reload");
     public static final RegistryObject<SoundEvent> GUN_CLOTH = registerSoundEvents("gun_cloth");
+    public static final RegistryObject<SoundEvent> UNLUCK = registerSoundEvents("unluck_effect");
+    public static final RegistryObject<SoundEvent> LUCK = registerSoundEvents("luck_effect");
+    public static final RegistryObject<SoundEvent> WHOOOOSH = registerSoundEvents("whoooosh");
 
 
 

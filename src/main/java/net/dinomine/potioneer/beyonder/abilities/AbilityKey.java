@@ -3,6 +3,8 @@ package net.dinomine.potioneer.beyonder.abilities;
 import net.dinomine.potioneer.beyonder.player.PlayerAbilitiesManager;
 import net.dinomine.potioneer.util.BufferUtils;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.chat.Component;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.Objects;
 import java.util.UUID;
@@ -75,6 +77,10 @@ public class AbilityKey {
         return new AbilityKey();
     }
 
+    public AbilityKey withArtifactInfo(UUID artifactId){
+        return new AbilityKey(abilityId, sequenceLevel, artifactId);
+    }
+
     @Override
     public String toString() {
         if(isEmpty()) return "Empty Key";
@@ -100,6 +106,10 @@ public class AbilityKey {
     
     public String getAbilityId(){
         return this.abilityId;
+    }
+
+    public Component getNameComponent(){
+        return Abilities.getAbilityInstance(abilityId, sequenceLevel).getAbilityInfo().getNameComponent();
     }
     
     public int getSequenceLevel(){
@@ -166,5 +176,9 @@ public class AbilityKey {
 
     private void doHash(){
         this.hash = Objects.hash(abilityGroup, abilityId, sequenceLevel, artifactId);
+    }
+
+    public AbilityKey withoutArtifactId() {
+        return new AbilityKey(abilityId, sequenceLevel);
     }
 }

@@ -8,6 +8,7 @@ import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
 import net.dinomine.potioneer.item.ModItems;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.common.Tags;
 
@@ -104,7 +105,6 @@ public class MysticalItemHelper {
         CompoundTag artifactInfo = new CompoundTag();
         artifactInfo.putUUID("artifactId", UUID.randomUUID());
         generateAbilityTags(artifactInfo, pathwaySequenceId, random, quantity);
-        artifactInfo.put("itemStack", stack.save(new CompoundTag()));
         root.put(ARTIFACT_TAG_ID, artifactInfo);
         stack.setTag(root);
     }
@@ -159,6 +159,7 @@ public class MysticalItemHelper {
         CompoundTag artifactTag = stack.getTag().getCompound(ARTIFACT_TAG_ID);
         for(String key: artifactTag.getAllKeys()){
             if(key.equals("artifactId")) continue;
+            if(key.contains(":d_")) continue;
             if(!artifactTag.getCompound(key).getBoolean("enabled")) continue;
             return true;
         }
@@ -181,18 +182,18 @@ public class MysticalItemHelper {
         if(!isWorkingArtifact(itemStack)) return;
         CompoundTag root = itemStack.getOrCreateTag();
         if(!root.getCompound(ARTIFACT_TAG_ID).getUUID("artifactId").equals(artifactHolder.getArtifactId())) return;
-        CompoundTag artifactTag = artifactHolder.withStack(itemStack).saveToTag(new CompoundTag());
+        CompoundTag artifactTag = artifactHolder.withStack(itemStack).saveToTag(new CompoundTag(), false);
         root.put(ARTIFACT_TAG_ID, artifactTag);
         itemStack.setTag(root);
     }
 
-    /**
-     * should be called only if the itemstack in the artifact holder is a reference to the actual item stack instance
-     * @param artifactHolder
-     */
-    public static void updateArtifactTagOnItem(ArtifactHolder artifactHolder) {
-        updateArtifactTagOnItem(artifactHolder, artifactHolder.getStack());
-    }
+//    /**
+//     * should be called only if the itemstack in the artifact holder is a reference to the actual item stack instance
+//     * @param artifactHolder
+//     */
+//    public static void updateArtifactTagOnItem(ArtifactHolder artifactHolder) {
+//        updateArtifactTagOnItem(artifactHolder, artifactHolder.getStack());
+//    }
 
     public static boolean isCharacteristic(ItemStack item) {
         return item.hasTag() && item.getTag().contains(BEYONDER_TAG_ID);

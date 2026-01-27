@@ -67,6 +67,15 @@ public class BeyonderEffectSyncMessage {
         blr.append("\nOperation: ").append(operation);
         return blr.toString();
     }
+
+    private static String operationFromOrdinal(int operation){
+        return switch (operation){
+            case 0 -> "ADD";
+            case 1 -> "REMOVE";
+            case 2 -> "SET";
+            default -> "UNKNOWN";
+        };
+    }
 }
 
 @OnlyIn(Dist.CLIENT)

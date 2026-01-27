@@ -3,7 +3,9 @@ package net.dinomine.potioneer.beyonder.effects.wheeloffortune;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffect;
 import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraftforge.event.entity.living.LivingDamageEvent;
 
+import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Function;
 
@@ -31,5 +33,17 @@ public class BeyonderCalamityEffect extends BeyonderEffect {
     public void stopEffects(LivingEntityBeyonderCapability cap, LivingEntity target) {
         cap.getLuckManager().removeModifier(luckAttributeUUID);
         cap.getLuckManager().removeLuckEventModifier(luckAttributeUUID);
+    }
+
+    @Override
+    public boolean onTakeDamage(LivingDamageEvent event, LivingEntity victim, LivingEntity attacker, LivingEntityBeyonderCapability victimCap, Optional<LivingEntityBeyonderCapability> optAttackerCap) {
+        if(attacker == null || optAttackerCap.isEmpty()) return false;
+        LivingEntityBeyonderCapability attackerCap = optAttackerCap.get();
+        if(sequenceLevel <= 7){
+            if(!attackerCap.getLuckManager().passesLuckCheck(9/10f, (int) (event.getAmount()*5), 0, attacker.getRandom())){
+                attackerCap.getLuckManager().castEvent(attacker);
+            }
+        }
+        return false;
     }
 }

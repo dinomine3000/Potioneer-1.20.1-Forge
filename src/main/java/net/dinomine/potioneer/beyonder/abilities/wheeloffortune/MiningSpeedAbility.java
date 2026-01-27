@@ -1,5 +1,6 @@
 package net.dinomine.potioneer.beyonder.abilities.wheeloffortune;
 
+import net.dinomine.potioneer.beyonder.abilities.AbilityFunctionHelper;
 import net.dinomine.potioneer.beyonder.abilities.misc.PassiveAbility;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffect;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
@@ -55,12 +56,7 @@ public class MiningSpeedAbility extends PassiveAbility {
         if(target.level().isClientSide()) return false;
         CompoundTag data = getData();
         float currentSpeed = data.getFloat("speed");
-        float max = levelToMaxSpeed.apply(getSequenceLevel());
-        float range = max - 1;
-        if(max - currentSpeed < 0.2){
-            currentSpeed = -10;
-        }
-        float newSpeed = Mth.clamp(currentSpeed + range/5, 1, max);
+        float newSpeed = AbilityFunctionHelper.incrementThroughRange(1, levelToMaxSpeed.apply(getSequenceLevel()), 5, currentSpeed);
         if(cap.getEffectsManager().hasEffect(BeyonderEffects.WHEEL_MINING.getEffectId(), getSequenceLevel())){
             BeyonderEffect eff = cap.getEffectsManager().getEffect(BeyonderEffects.WHEEL_MINING.getEffectId(), getSequenceLevel());
             if(eff instanceof BeyonderMiningSpeedEffect miningSpeedEffect){

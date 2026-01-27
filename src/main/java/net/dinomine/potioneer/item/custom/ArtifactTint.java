@@ -22,7 +22,18 @@ public class ArtifactTint implements ItemColor {
             if(itemStack.getTag().contains(MysticalItemHelper.ARTIFACT_TAG_ID)){
                 boolean enabled = MysticalItemHelper.isArtifactEnabled(itemStack);
                 //TODO adjust this once artifacts are done
-                color = enabled ? color : (int)(color*0.3);
+                if(enabled) return color;
+                float factor = 0.3f; // 10% brightness
+
+                int r = (color >> 16) & 0xFF;
+                int g = (color >> 8)  & 0xFF;
+                int b = color & 0xFF;
+
+                r = Math.max(0, (int)(r * factor));
+                g = Math.max(0, (int)(g * factor));
+                b = Math.max(0, (int)(b * factor));
+
+                return (r << 16) | (g << 8) | b;
             }
         }
         return color;

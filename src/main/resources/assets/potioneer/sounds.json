@@ -29,5 +29,25 @@
     "sounds": [
       "potioneer:gun_cloth"
     ]
+  },
+  "luck_effect": {
+    "sounds": [
+      "potioneer:luck_effect"
+    ]
+  },
+  "unluck_effect": {
+    "sounds": [
+      "potioneer:unluck_effect"
+    ]
+  },
+  "whoooosh": {
+    "sounds": [
+      "potioneer:whoooosh_1",
+      "potioneer:whoooosh_2",
+      "potioneer:whoooosh_3",
+      "potioneer:whoooosh_4",
+      "potioneer:whoooosh_5",
+      "potioneer:whoooosh_6"
+    ]
   }
 }

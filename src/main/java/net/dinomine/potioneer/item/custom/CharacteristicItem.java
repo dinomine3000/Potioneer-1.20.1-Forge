@@ -8,6 +8,7 @@ import net.dinomine.potioneer.entities.ModEntities;
 import net.dinomine.potioneer.entities.custom.CharacteristicEntity;
 import net.dinomine.potioneer.item.ModItems;
 import net.dinomine.potioneer.util.misc.MysticalItemHelper;
+import net.dinomine.potioneer.util.misc.MysticismHelper;
 import net.minecraft.client.color.item.ItemColor;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -71,10 +72,10 @@ public class CharacteristicItem extends Item {
     }
 
     @Override
-    public void inventoryTick(ItemStack pStack, Level pLevel, Entity pEntity, int pSlotId, boolean pIsSelected) {
-        super.inventoryTick(pStack, pLevel, pEntity, pSlotId, pIsSelected);
+    public void inventoryTick(ItemStack characteristicStack, Level pLevel, Entity pEntity, int pSlotId, boolean pIsSelected) {
+        super.inventoryTick(characteristicStack, pLevel, pEntity, pSlotId, pIsSelected);
         if(pLevel.isClientSide()) return;
-        if(pStack.hasTag() && pStack.getTag().contains(MysticalItemHelper.BEYONDER_TAG_ID)
+        if(characteristicStack.hasTag() && characteristicStack.getTag().contains(MysticalItemHelper.BEYONDER_TAG_ID)
                 && PotioneerCommonConfig.ARTIFACT_CONVERSION_CHANCE.get() > 0 && pLevel.random.nextInt(PotioneerCommonConfig.ARTIFACT_CONVERSION_CHANCE.get()) == 1){
             if(pEntity instanceof Player player){
                 Optional<LivingEntityBeyonderCapability> cap = player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve();
@@ -100,19 +101,27 @@ public class CharacteristicItem extends Item {
                 }
                 items.add(player.getOffhandItem());
 
-                for(ItemStack stack: items){
-                    if(MysticalItemHelper.isValidItemForArtifact(stack)){
+                for(ItemStack iStack: items){
+                    if(MysticalItemHelper.isValidItemForArtifact(iStack)){
                         pLevel.playSound(null, pEntity.getOnPos(), SoundEvents.ENCHANTMENT_TABLE_USE, SoundSource.PLAYERS, 1, 1);
-                        int pathwaySequenceId = pStack.getTag().getCompound(MysticalItemHelper.BEYONDER_TAG_ID).getInt("id");
-                        MysticalItemHelper.generateSealedArtifact(stack, pathwaySequenceId, pLevel.random);
-                        pEntity.sendSystemMessage(Component.translatable("potioneer.characteristic.corrupt", stack.getDisplayName().getString()));
-                        pStack.setCount(0);
+                        int pathwaySequenceId = characteristicStack.getTag().getCompound(MysticalItemHelper.BEYONDER_TAG_ID).getInt("id");
+                        MysticalItemHelper.generateSealedArtifact(iStack, pathwaySequenceId, pLevel.random);
+                        copyMysticismTag(iStack, characteristicStack);
+                        pEntity.sendSystemMessage(Component.translatable("potioneer.characteristic.corrupt", iStack.getDisplayName().getString()));
+                        characteristicStack.setCount(0);
                         cap.get().putCharacteristicArtifactCooldown(PotioneerCommonConfig.ARTIFACT_CONVERSION_COOLDOWN.get());
                         break;
                     }
                 }
             }
         }
+    }
+
+    private static void copyMysticismTag(ItemStack target, ItemStack characteristic){
+        if(!characteristic.getOrCreateTag().contains(MysticismHelper.mysticismTagId)) return;
+        CompoundTag root = target.getOrCreateTag();
+        root.put(MysticismHelper.mysticismTagId, characteristic.getTag().getCompound(MysticismHelper.mysticismTagId));
+        target.setTag(root);
     }
 
     @OnlyIn(Dist.CLIENT)

@@ -416,4 +416,8 @@ public class ClientAbilitiesData {
     public static boolean hasAbility(AbilityKey key) {
         return abilities.containsKey(key);
     }
+
+    public static ArtifactHolder getArtifact(AbilityKey key) {
+        return ClientStatsData.getCapability().get().getAbilitiesManager().getArtifact(key);
+    }
 }

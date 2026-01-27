@@ -434,6 +434,11 @@ public class LivingEntityBeyonderCapability {
         //this.abilitiesManager.onAcquireAbilities(this, player);
     }
 
+    public void onRespawn() {
+        this.sanity = Math.max(this.sanity, SANITY_FOR_DAMAGE);
+        this.spirituality = (float) Math.max(this.spirituality, 0.1*maxSpirituality);
+    }
+
     public void saveNBTData(CompoundTag nbt){
 //        System.out.println("saving nbt data for beyonder capability...");
         nbt.putFloat("spirituality", spirituality);

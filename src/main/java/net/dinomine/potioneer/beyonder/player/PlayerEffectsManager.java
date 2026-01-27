@@ -5,9 +5,9 @@ import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
 import net.dinomine.potioneer.network.PacketHandler;
 import net.dinomine.potioneer.network.messages.abilityRelevant.BeyonderEffectSyncMessage;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingDamageEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
@@ -16,16 +16,61 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class PlayerEffectsManager {
     private ArrayList<BeyonderEffect> passives = new ArrayList<>();
     public BeyonderStats statsHolder;
 
+    public void onAttackProposal(LivingAttackEvent event, LivingEntityBeyonderCapability cap){
+        LivingEntity attacker;
+        if(event.getSource().getEntity() instanceof LivingEntity){
+            attacker = (LivingEntity) event.getSource().getEntity();
+        } else if (event.getSource().getDirectEntity() instanceof LivingEntity){
+            attacker = (LivingEntity) event.getSource().getDirectEntity();
+        } else attacker = null;
+        LivingEntity victim = event.getEntity();
+        LivingEntityBeyonderCapability victimCap = victim.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve().get();
+
+        for(BeyonderEffect effect: passives){
+            if(effect.onDamageProposal(event, victim, attacker, victimCap, cap, false)){
+                if(event.isCancelable()) event.setCanceled(true);
+                return;
+            }
+        }
+        for(BeyonderEffect effect: victimCap.getEffectsManager().passives){
+            if(effect.onDamageProposal(event, victim, attacker, victimCap, cap, true)){
+                if(event.isCancelable()) event.setCanceled(true);
+                return;
+            }
+        }
+    }
+
     public void onAttackDamageCalculation(LivingHurtEvent event, LivingEntityBeyonderCapability cap){
-        Entity attacker = event.getSource().getEntity();
-        float dmg = event.getAmount();
-        //TODO change this to account for multiple instances of similar effects
-        if(attacker instanceof Player player){
+        LivingEntity attacker;
+        if(event.getSource().getEntity() instanceof LivingEntity){
+            attacker = (LivingEntity) event.getSource().getEntity();
+        } else if (event.getSource().getDirectEntity() instanceof LivingEntity){
+            attacker = (LivingEntity) event.getSource().getDirectEntity();
+        } else attacker = null;
+        LivingEntity victim = event.getEntity();
+        LivingEntityBeyonderCapability victimCap = victim.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve().get();
+
+        for(BeyonderEffect effect: passives){
+            if(effect.onDamageCalculation(event, victim, attacker, victimCap, cap, false)){
+                if(event.isCancelable()) event.setCanceled(true);
+                else event.setAmount(0);
+                return;
+            }
+        }
+        for(BeyonderEffect effect: victimCap.getEffectsManager().passives){
+            if(effect.onDamageCalculation(event, victim, attacker, victimCap, cap, true)){
+                if(event.isCancelable()) event.setCanceled(true);
+                else event.setAmount(0);
+                return;
+            }
+        }
+//        if(attacker instanceof Player player){
             //additions
 //            if(hasEffect(BeyonderEffects.TYRANT_ELECTRIFICATION) && player.getMainHandItem().is(ModTags.Items.ELECTRIFICATION_WEAPONS)){
 //                player.level().playSound(null, player, SoundEvents.LIGHTNING_BOLT_IMPACT, SoundSource.PLAYERS, 1, 0.5f);
@@ -77,12 +122,24 @@ public class PlayerEffectsManager {
 //                BeyonderEffect effe = getEffect(BeyonderEffects.EFFECT.RED_PURIFICATION);
 //                dmg *= 1.2f + 0.1f*(8 - effe.getSequenceLevel());
 //            }
-        }
-        event.setAmount(dmg);
+//        }
     }
 
     public void onTakeDamage(LivingDamageEvent event, LivingEntityBeyonderCapability cap){
-        LivingEntity entity = event.getEntity();
+        LivingEntity victim = event.getEntity();
+        LivingEntity attacker;
+        if(event.getSource().getEntity() instanceof LivingEntity){
+            attacker = (LivingEntity) event.getSource().getEntity();
+        } else if (event.getSource().getDirectEntity() instanceof LivingEntity){
+            attacker = (LivingEntity) event.getSource().getDirectEntity();
+        } else attacker = null;
+        for(BeyonderEffect effect: passives){
+            if(effect.onTakeDamage(event, victim, attacker, cap, attacker == null ? Optional.empty() : attacker.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve())){
+                if(event.isCancelable()) event.setCanceled(true);
+                else event.setAmount(0);
+                return;
+            }
+        }
 //        if(hasEffect(BeyonderEffects.EFFECT.TYRANT_ELECTRIFICATION)){
 //            if(event.getSource().is(DamageTypeTags.IS_LIGHTNING)){
 //                event.setAmount(0);
@@ -240,11 +297,15 @@ public class PlayerEffectsManager {
     }
 
     public BeyonderEffect getEffect(String effect){
-        return passives.get(indexOf(effect));
+        int idx = indexOf(effect);
+        if(idx < 0) return null;
+        return passives.get(idx);
     }
 
     public BeyonderEffect getEffect(String effect, int seq){
-        return passives.get(indexOf(effect, seq));
+        int idx = indexOf(effect, seq);
+        if(idx < 0) return null;
+        return passives.get(idx);
     }
 
     public boolean removeEffect(String effect){
@@ -352,6 +413,7 @@ public class PlayerEffectsManager {
             BeyonderEffect effect = type.createInstance(
                         iterator.getInt("level"),
                         iterator.getInt("maxLife"),
+                        iterator.getInt("cost"),
                         iterator.getBoolean("active"));
             effect.setLifetime(iterator.getInt("lifetime"));
             effect.loadNBTData(iterator);

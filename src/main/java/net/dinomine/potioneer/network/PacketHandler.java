@@ -1,12 +1,14 @@
 package net.dinomine.potioneer.network;
 
 import net.dinomine.potioneer.Potioneer;
+import net.dinomine.potioneer.beyonder.abilities.AbilityFunctionHelper;
 import net.dinomine.potioneer.network.messages.AllySystem.AllyChangeMessageC2S;
 import net.dinomine.potioneer.network.messages.AllySystem.AllyGroupSyncMessage;
 import net.dinomine.potioneer.network.messages.*;
 import net.dinomine.potioneer.network.messages.abilityRelevant.*;
-import net.dinomine.potioneer.network.messages.abilityRelevant.abilitySpecific.EvaporateEffect;
-import net.dinomine.potioneer.network.messages.abilityRelevant.abilitySpecific.WaterPrisonEffectSTC;
+import net.dinomine.potioneer.network.messages.effects.EvaporateEffect;
+import net.dinomine.potioneer.network.messages.effects.GeneralAreaEffectMessage;
+import net.dinomine.potioneer.network.messages.effects.WaterPrisonEffectSTC;
 import net.dinomine.potioneer.network.messages.advancement.AdvancementFailMessageCTS;
 import net.dinomine.potioneer.network.messages.advancement.BeginAdvancementMessage;
 import net.dinomine.potioneer.network.messages.advancement.PlayerAdvanceMessage;
@@ -17,6 +19,8 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.network.NetworkRegistry;
 import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.network.simple.SimpleChannel;
+
+import java.util.List;
 
 public class PacketHandler {
     private static final String PROTOCOL_VERSION = "1";
@@ -32,6 +36,7 @@ public class PacketHandler {
         //ability relevant
         INSTANCE.registerMessage(i++, WaterPrisonEffectSTC.class, WaterPrisonEffectSTC::encode, WaterPrisonEffectSTC::decode, WaterPrisonEffectSTC::handle);
         INSTANCE.registerMessage(i++, EvaporateEffect.class, EvaporateEffect::encode, EvaporateEffect::decode, EvaporateEffect::handle);
+        INSTANCE.registerMessage(i++, GeneralAreaEffectMessage.class, GeneralAreaEffectMessage::encode, GeneralAreaEffectMessage::decode, GeneralAreaEffectMessage::handle);
 
         INSTANCE.registerMessage(i++, AbilitySyncMessage.class, AbilitySyncMessage::encode, AbilitySyncMessage::decode, AbilitySyncMessage::handle);
         INSTANCE.registerMessage(i++, BeyonderEffectSyncMessage.class, BeyonderEffectSyncMessage::encode, BeyonderEffectSyncMessage::decode, BeyonderEffectSyncMessage::handle);
@@ -63,5 +68,12 @@ public class PacketHandler {
 
     public static <T> void sendMessageCTS(T message){
         INSTANCE.sendToServer(message);
+    }
+
+    public static <T> void sendMessageToClientsAround(LivingEntity caster, int radius, T message) {
+        List<LivingEntity> entities = AbilityFunctionHelper.getLivingEntitiesAround(caster, radius);
+        for(LivingEntity ent: entities){
+            sendMessageSTC(message, ent);
+        }
     }
 }

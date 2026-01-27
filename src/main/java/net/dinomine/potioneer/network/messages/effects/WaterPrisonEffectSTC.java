@@ -1,9 +1,8 @@
-package net.dinomine.potioneer.network.messages.abilityRelevant.abilitySpecific;
+package net.dinomine.potioneer.network.messages.effects;
 
 import net.dinomine.potioneer.util.ParticleMaker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;

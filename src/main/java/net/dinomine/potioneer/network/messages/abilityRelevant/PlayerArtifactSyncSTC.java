@@ -34,7 +34,7 @@ public class PlayerArtifactSyncSTC {
         buffer.writeInt(msg.messageOp);
         buffer.writeInt(artifacts.size());
         for(int i = 0; i < artifacts.size(); i++){
-            buffer.writeNbt(artifacts.get(i).saveToTag(new CompoundTag()));
+            buffer.writeNbt(artifacts.get(i).saveToTag(new CompoundTag(), true));
         }
     }
 

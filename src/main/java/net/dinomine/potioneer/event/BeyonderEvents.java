@@ -27,6 +27,7 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.projectile.Arrow;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.Enchantments;
@@ -85,10 +86,14 @@ public class BeyonderEvents {
     @SubscribeEvent
     public static void onItemHurt(DurabilityHurtEvent event){
         event.getEntity().getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
-            if(ItemStack.matches(event.getEntity().getMainHandItem(), event.getStack()) && cap.getEffectsManager().hasEffect(BeyonderEffects.WHEEL_ZERO_DAMAGE.getEffectId())){
-                if(cap.getLuckManager().passesLuckCheck(0.35f, 0, 0, event.getEntity().getRandom())){
-                    ((BeyonderZeroDamageEffect) cap.getEffectsManager().getEffect(BeyonderEffects.WHEEL_ZERO_DAMAGE.getEffectId())).playSound(event.getEntity());
-                    event.setCanceled(true);
+            BeyonderEffect zeroEffect = cap.getEffectsManager().getEffect(BeyonderEffects.WHEEL_ZERO_DAMAGE.getEffectId());
+            if(zeroEffect != null){
+                int level = zeroEffect.getSequenceLevel();
+                if(level < 7 || ItemStack.matches(event.getEntity().getMainHandItem(), event.getStack())){
+                    if(level < 8 || cap.getLuckManager().passesLuckCheck(0.35f, 0, 0, event.getEntity().getRandom())){
+                        ((BeyonderZeroDamageEffect) cap.getEffectsManager().getEffect(BeyonderEffects.WHEEL_ZERO_DAMAGE.getEffectId())).playSound(event.getEntity());
+                        event.setCanceled(true);
+                    }
                 }
             }
         });
@@ -304,6 +309,14 @@ public class BeyonderEvents {
         });
     }
 
+
+    @SubscribeEvent
+    public static void onPlayerRespawn(PlayerEvent.PlayerRespawnEvent event){
+        event.getEntity().getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
+            cap.onRespawn();
+        });
+    }
+
     //this one still plays the hurt animation even if you cancel the event = takes place when an entity truly is receiving damage
     //deals with the true damage that is applied
     @SubscribeEvent
@@ -317,9 +330,20 @@ public class BeyonderEvents {
         }
     }
 
+    //called to confirm the hit.
+    @SubscribeEvent
+    public static void onDamageProposed(LivingAttackEvent event){
+        if(event.getSource().getEntity() != null){
+            //FOR THE ATTACKER
+            //runs this code in the context of an entity attacking another
+            if(event.getSource().getEntity().level().isClientSide()) return;
+            event.getSource().getEntity().getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
+                cap.getEffectsManager().onAttackProposal(event, cap);
+            });
+        }
+    }
 
-
-    //called before damage is calculated -> deals with raw damage before reduction
+    //called before damage is calculated but after hit is confirmed -> deals with raw damage before reduction
     @SubscribeEvent
     public static void onEntityHurt(LivingHurtEvent event) {
         if(event.getSource().getEntity() != null){

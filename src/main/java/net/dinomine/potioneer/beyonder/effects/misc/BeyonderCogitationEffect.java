@@ -3,6 +3,7 @@ package net.dinomine.potioneer.beyonder.effects.misc;
 import net.dinomine.potioneer.beyonder.abilities.AbilityKey;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffect;
 import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
@@ -58,27 +59,22 @@ public class BeyonderCogitationEffect extends BeyonderEffect {
         cap.getAbilitiesManager().unrevokeAll(cap, target);
     }
 //
-//    @Override
-//    public void toNbt(CompoundTag nbt) {
-//        super.toNbt(nbt);
-//        ListTag deactivated = new ListTag();
-//        for(String ablID: deactivatedAbilities){
-//            deactivated.add(StringTag.valueOf(ablID));
-//        }
-//        nbt.put("deactivated", deactivated);
-//    }
-//
-//    @Override
-//    public void loadNBTData(CompoundTag nbt) {
-//        super.loadNBTData(nbt);
-//
-//        deactivatedAbilities = new ArrayList<>();
-//        ListTag deactivated = nbt.getList("deactivated", ListTag.TAG_STRING);
-//        for(Tag tag: deactivated){
-//            if(tag instanceof StringTag ablTag){
-//                String ablId = ablTag.getAsString();
-//                deactivatedAbilities.add(ablId);
-//            }
-//        }
-//    }
+    @Override
+    public void toNbt(CompoundTag nbt) {
+        super.toNbt(nbt);
+        nbt.putBoolean("slowlness", slownlessCheck);
+        nbt.putBoolean("darkness", darknessCheck);
+        nbt.putBoolean("weakness", weaknessCheck);
+        nbt.putBoolean("glowing", glowingCheck);
+    }
+
+    @Override
+    public void loadNBTData(CompoundTag nbt) {
+        super.loadNBTData(nbt);
+
+        darknessCheck = nbt.getBoolean("darkness");
+        slownlessCheck = nbt.getBoolean("slowlness");
+        weaknessCheck = nbt.getBoolean("weakness");
+        glowingCheck = nbt.getBoolean("glowing");
+    }
 }

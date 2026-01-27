@@ -5,6 +5,11 @@ import net.dinomine.potioneer.util.BufferUtils;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraftforge.event.entity.living.LivingAttackEvent;
+import net.minecraftforge.event.entity.living.LivingDamageEvent;
+import net.minecraftforge.event.entity.living.LivingHurtEvent;
+
+import java.util.Optional;
 
 public abstract class BeyonderEffect {
     protected int sequenceLevel;
@@ -20,11 +25,7 @@ public abstract class BeyonderEffect {
     }
 
     public BeyonderEffect withParams(int sequence, int time, boolean active) {
-        this.sequenceLevel = sequence%10;
-        this.lifetime = time == -1 ? -2 : 0;
-        this.maxLife = time;
-        this.active = active;
-        return this;
+        return withParams(sequence, time, active, 0);
     }
 
     public BeyonderEffect withParams(int sequence, int time, boolean active, int cost) {
@@ -94,7 +95,16 @@ public abstract class BeyonderEffect {
         lifetime = 2;
     }
 
-
+    /**
+     * runs when the victim takes damage from the attacker
+     * @param event
+     * @param victim
+     * @param attacker
+     * @return whether it should cancel the event or not
+     */
+    public boolean onTakeDamage(LivingDamageEvent event, LivingEntity victim, LivingEntity attacker, LivingEntityBeyonderCapability victimCap, Optional<LivingEntityBeyonderCapability> optAttackerCap){return false;}
+    public boolean onDamageCalculation(LivingHurtEvent event, LivingEntity victim, LivingEntity attacker, LivingEntityBeyonderCapability victimCap, LivingEntityBeyonderCapability attackerCap, boolean calledOnVictim){return false;}
+    public boolean onDamageProposal(LivingAttackEvent event, LivingEntity victim, LivingEntity attacker, LivingEntityBeyonderCapability victimCap, LivingEntityBeyonderCapability attackerCap, boolean calledOnVictim) {return false;}
     /**
      * used for replacement purposes. will return true if theyre the same effect but the argument is of a higher sequence
      * aka, will return true if the argument should replace this
@@ -122,13 +132,6 @@ public abstract class BeyonderEffect {
 
     public void effectTick(LivingEntityBeyonderCapability cap, LivingEntity target){
         if(active){
-            if(this.maxLife < 1){
-                doTick(cap, target);
-                return;
-            } else if(lifetime > maxLife){
-                stopEffects(cap, target);
-                return;
-            }
             doTick(cap, target);
         }
         if(maxLife > 0){
@@ -192,3 +195,4 @@ public abstract class BeyonderEffect {
         return this;
     }
 }
+

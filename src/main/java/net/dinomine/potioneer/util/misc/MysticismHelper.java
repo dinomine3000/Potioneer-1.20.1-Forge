@@ -384,13 +384,14 @@ public class MysticismHelper {
                     i++;
                 }
             }
+            String tagKey = "spirituality_" + i;
 
-            float oldSpirituality = spiritualityTag.getFloat("spirituality_" + i);
+            float oldSpirituality = spiritualityTag.getFloat(tagKey);
             if(oldSpirituality + spiritualityAmount <= 0){
-                spiritualityTag.remove("spirituality_" + i);
+                spiritualityTag.remove(tagKey);
                 nameTag.remove("player_" + i);
             } else {
-                spiritualityTag.putFloat("spirituality_" + i, oldSpirituality + spiritualityAmount);
+                spiritualityTag.putFloat(tagKey, oldSpirituality + spiritualityAmount);
                 nameTag.putUUID("player_" + i, target.getUUID());
             }
 

@@ -23,9 +23,12 @@ public class PotioneerCommonConfig {
     public static final ForgeConfigSpec.BooleanValue PUBLIC_GROUPS;
     public static final ForgeConfigSpec.BooleanValue ALLOW_CHANGING_PATHWAYS;
     public static final ForgeConfigSpec.DoubleValue CHANCE_TO_MAKE_ARTIFACT_ON_DEATH;
+    public static final ForgeConfigSpec.DoubleValue UNIVERSAL_MAX_SPIRITUALITY_MULTIPLIER;
     public static final ForgeConfigSpec.BooleanValue CONSUME_PAGE_ON_USE;
     public static final ForgeConfigSpec.IntValue PRAYER_COOLDOWN;
     public static final ForgeConfigSpec.BooleanValue LOSE_PAGES_ON_DROP_SEQUENCE;
+    public static final ForgeConfigSpec.DoubleValue PATIENCE_TIME_LIMIT;
+    public static final ForgeConfigSpec.BooleanValue COOLDOWN_TARGET_ALLIES;
 
     public static final ForgeConfigSpec.EnumValue<CharacteristicDropCriteria> CHARACTERISTIC_DROP_CRITERIA_ENUM_VALUE;
     public static final ForgeConfigSpec.BooleanValue DROP_ALL_CHARACTERISTICS;
@@ -38,6 +41,10 @@ public class PotioneerCommonConfig {
 
     static{
         BUILDER.push("Configs for Potioneer");
+
+        UNIVERSAL_MAX_SPIRITUALITY_MULTIPLIER = BUILDER.comment("Here you can customize the maximum spirituality that anyone has." +
+                        "\nIn effect, this serves to adjust the cost of abilities. If you set this to 2, everyone will have double the spirituality, making abilities half the cost.")
+                .defineInRange("universal_max_spirituality_multiplier", 1, 0.2, Integer.MAX_VALUE);
 
         DO_APTITUDE_PATHWAYS = BUILDER.comment("Should players have a hidden pathway that is their aptitude?" +
                 "\nThey get more lucky getting formulas for this pathway, and digest its characteristics faster")
@@ -128,6 +135,22 @@ public class PotioneerCommonConfig {
                         "should they keep those pages or lose them?" +
                         "\nJust a warning, if someone gains pages while this is set to 'false', they wont lose them even if you later set this to 'true' unless you use a command to fully reset their pages.")
                 .define("lose_pages_on_drop_sequence", false);
+
+        PATIENCE_TIME_LIMIT = BUILDER.comment("\n\n------Ability Configs-----\n" +
+                        "The Patience ability of the Wheel of Fortune pathway will aim to grant you luck up to N luck if you have less than that. " +
+                        "\nThe growth rate is balanced such that, starting with 0 luck, after a certain amount of time, you reach a luck limit for your sequence, after which it takes much longer to get luck." +
+                        "\nBy default, this value is 1, which corresponds to 20 minutes, or 1 minecraft day, to go from 0 luck to (at sequence level 7) 250 luck. at sequence level 6, itll take 20 minutes to go from 0 to 325 luck." +
+                        "\nThey can still get luck after this limit, but it'll grow much slower." +
+                        "\nThis value here will multiply by that time limit - values bigger than 1 will increase the time it takes to get luck, while values between 0 and 1 will decrease it." +
+                        "\nSetting this to 2 means it'll take 2 minecraft days to reach that limit." +
+                        "\nFor more details on how the actual patience effect calculates luck, and how this value affects it, check out this desmos graph: https://www.desmos.com/calculator/3uoitj78qi")
+                .defineInRange("patience_time_multiplier", 1d, 0.05d, 30d);
+
+        COOLDOWN_TARGET_ALLIES = BUILDER.comment("The Cooldown ability of the wheel of fortune. Should it target allies?" +
+                        "\nIf set to True, whether or not an ally has an ability put on cooldown depends on their luck." +
+                        "\nIf set to False, allies are completely exempt from being put on cooldown." +
+                        "\nNote: The caster always runs that chance.")
+                .define("cooldown_targets_allies", false);
 
 
         BUILDER.pop();
