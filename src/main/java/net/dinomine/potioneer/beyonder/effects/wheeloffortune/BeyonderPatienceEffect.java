@@ -6,6 +6,8 @@ import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
 import net.dinomine.potioneer.config.PotioneerCommonConfig;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.LivingEntity;
 
 import java.util.UUID;
@@ -16,12 +18,17 @@ public class BeyonderPatienceEffect extends BeyonderEffect {
     private static final float a = 2;
     private int time;
     private static final UUID uuid = UUID.fromString("1323c552-fe64-45b6-b6a2-8cc0fbf152ac");
+    private boolean acquired = false;
 
     @Override
     public void onAcquire(LivingEntityBeyonderCapability cap, LivingEntity target) {
         if(target.level().isClientSide) return;
         cap.getLuckManager().getRange().setSuppress(true);
         cap.getLuckManager().chanceLuckEventChange(uuid, 9-sequenceLevel);
+        if(acquired) return;
+        setLuckQuantity(cap.getLuckManager().getLuck());
+        target.level().playSound(null, target.getOnPos(), SoundEvents.BOTTLE_FILL_DRAGONBREATH, SoundSource.PLAYERS, 1, (float)target.getRandom().triangle(1, 0.2));
+        acquired = true;
     }
 
     @Override
@@ -57,6 +64,7 @@ public class BeyonderPatienceEffect extends BeyonderEffect {
         cap.getLuckManager().grantLuck(amm);
         cap.getCharacteristicManager().progressActing(0.2f*Math.pow(amm/(float)luck_limit, 2.6f), 7);
         cap.getLuckManager().chanceLuckEventChange(uuid, -9+sequenceLevel);
+        target.level().playSound(null, target.getOnPos(), SoundEvents.BOTTLE_EMPTY, SoundSource.PLAYERS, 1, (float)target.getRandom().triangle(1, 0.2));
         target.sendSystemMessage(Component.translatableWithFallback("ability.potioneer.patience_release", "You have been granted %s luck", amm));
     }
 
@@ -91,11 +99,13 @@ public class BeyonderPatienceEffect extends BeyonderEffect {
     public void toNbt(CompoundTag nbt) {
         super.toNbt(nbt);
         nbt.putInt("quantity", this.quantity);
+        nbt.putBoolean("acquired", this.acquired);
     }
 
     @Override
     public void loadNBTData(CompoundTag nbt) {
         super.loadNBTData(nbt);
         this.quantity = nbt.getInt("quantity");
+        this.acquired = nbt.getBoolean("acquired");
     }
 }

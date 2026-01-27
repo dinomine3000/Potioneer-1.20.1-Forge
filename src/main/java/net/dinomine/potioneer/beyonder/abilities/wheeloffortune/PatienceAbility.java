@@ -22,10 +22,7 @@ public class PatienceAbility extends PassiveAbility {
     public boolean flipEnable(LivingEntityBeyonderCapability cap, LivingEntity target) {
         boolean enabled = super.flipEnable(cap, target);
         if(enabled){
-            target.level().playSound(null, target.getOnPos(), SoundEvents.BOTTLE_FILL_DRAGONBREATH, SoundSource.PLAYERS, 1, (float)target.getRandom().triangle(1, 0.2));
             putOnCooldown(20*60, target);
-        } else {
-            target.level().playSound(null, target.getOnPos(), SoundEvents.BOTTLE_EMPTY, SoundSource.PLAYERS, 1, (float)target.getRandom().triangle(1, 0.2));
         }
         return enabled;
     }
@@ -38,12 +35,5 @@ public class PatienceAbility extends PassiveAbility {
         int luckToGain = effect.getProjectedLuck(cap);
         target.sendSystemMessage(Component.translatableWithFallback("ability.potioneer.patience_test", "You are set to receive %s luck.", luckToGain));
         return true;
-    }
-
-    @Override
-    protected BeyonderEffect createEffectInstance(LivingEntityBeyonderCapability cap, LivingEntity target) {
-        BeyonderPatienceEffect effect = (BeyonderPatienceEffect) BeyonderEffects.WHEEL_PATIENCE.createInstance(getSequenceLevel(), cost(), -1, true);
-        effect.setLuckQuantity(cap.getLuckManager().getLuck());
-        return effect;
     }
 }

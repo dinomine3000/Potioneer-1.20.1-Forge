@@ -74,7 +74,7 @@ public class EntityAppraisalAbility extends Ability {
                         stats.get().getLuckManager().getMinPassiveLuck(),
                         stats.get().getLuckManager().getLuck(),
                         stats.get().getLuckManager().getMaxPassiveLuck()));
-                System.out.println(stats.get().getLuckManager().getRange());
+//                System.out.println(stats.get().getLuckManager().getRange());
                 return true;
             }
         }
