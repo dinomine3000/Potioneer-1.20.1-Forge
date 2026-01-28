@@ -28,7 +28,9 @@ public abstract class MysticalKnowledgeAbility extends Ability {
 
     @Override
     public void onUpgrade(int oldLevel, int newLevel, LivingEntityBeyonderCapability cap, LivingEntity target) {
-        cap.addPages(getPageIds());
+        if(!PotioneerCommonConfig.LOSE_PAGES_ON_DROP_SEQUENCE.get()){
+            cap.addPages(getPageIds());
+        }
     }
 
     protected abstract List<Page> getPages(int sequenceLevel);
@@ -40,7 +42,7 @@ public abstract class MysticalKnowledgeAbility extends Ability {
     }
 
     protected List<Integer> getPageIds(){
-        return PageRegistry.getIdOfPages(getPages());
+        return PageRegistry.getIdOfPages(getPages(getSequenceLevel()));
     }
 
     @Override

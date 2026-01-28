@@ -54,7 +54,9 @@ public class KnowledgeBookScreen extends Screen {
         ClientStatsData.getCapability().ifPresent(cap -> {
            pages = new ArrayList<>(cap.getPageList().stream().map(PageRegistry::getPageById).toList());
         });
+        System.out.println(pages.stream().map(page -> page.getTitle().getString()).toList());
         PageRegistry.addDefaultPages(pages);
+
         if(ClientStatsData.getCapability().isPresent()){
             LivingEntityBeyonderCapability cap = ClientStatsData.getCapability().get();
             for(Page ablPage: cap.getAbilitiesManager().getPagesFromAbilities()){

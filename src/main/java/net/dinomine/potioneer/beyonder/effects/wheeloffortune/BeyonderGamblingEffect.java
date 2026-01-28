@@ -17,6 +17,7 @@ public class BeyonderGamblingEffect extends BeyonderEffect {
     private static final List<MobEffect> NEGATIVE_EFFECTS = List.of(MobEffects.DIG_SLOWDOWN, MobEffects.WEAKNESS, MobEffects.POISON, MobEffects.DARKNESS);
     @Override
     public void onAcquire(LivingEntityBeyonderCapability cap, LivingEntity target) {
+        if(target.level().isClientSide()) return;
         int minDuration = 60*20;
         int maxDuration = 4*60*20;
         PlayerLuckManager luck = cap.getLuckManager();

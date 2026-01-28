@@ -183,7 +183,7 @@ public class CharmEntity extends Entity implements GeoEntity {
             if(cap.getEffectsManager().addOrReplaceEffect(this.effect, cap, target))
                 level().playSound(null, target, SoundEvents.BEACON_POWER_SELECT, SoundSource.PLAYERS, 2, 1);
             else
-                level().playSound(null, target, SoundEvents.ITEM_BREAK, SoundSource.PLAYERS, 2, 1);
+                level().playSound(null, target, SoundEvents.GLASS_BREAK, SoundSource.PLAYERS, 2, 1);
         });
     }
 

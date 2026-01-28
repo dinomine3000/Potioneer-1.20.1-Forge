@@ -40,7 +40,7 @@ public class BeyonderCalamityEffect extends BeyonderEffect {
         if(attacker == null || optAttackerCap.isEmpty()) return false;
         LivingEntityBeyonderCapability attackerCap = optAttackerCap.get();
         if(sequenceLevel <= 7){
-            if(!attackerCap.getLuckManager().passesLuckCheck(9/10f, (int) (event.getAmount()*5), 0, attacker.getRandom())){
+            if(!attackerCap.getLuckManager().passesLuckCheck(9/10f, (int) (event.getAmount()*10), 0, attacker.getRandom())){
                 attackerCap.getLuckManager().castEvent(attacker);
             }
         }

@@ -4,12 +4,16 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import net.dinomine.potioneer.beyonder.pages.Page;
+import net.dinomine.potioneer.beyonder.pages.PageRegistry;
 import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+
+import java.util.ArrayList;
 
 public class SetBeyonderCommand {
 
@@ -42,6 +46,9 @@ public class SetBeyonderCommand {
                     cap.getCharacteristicManager().setActing(1, 10*pathwayId + i);
                 }
                 cap.advance(pathSeqId, false);
+                System.out.println(cap.getPageList().stream().map(page -> PageRegistry.getPageById(page).getTitle().getString()));
+
+                System.out.println("Pages: " + cap.getPageList());
                 //cap.getCharacteristicManager().setActing(1, pathSeqId);
             });
             return 1;
