@@ -19,6 +19,12 @@ public abstract class BeyonderEffect {
     protected String effectId;
     protected int cost = 0;
 
+    public boolean canAdd(LivingEntityBeyonderCapability cap, LivingEntity target){return true;}
+
+    public int getMaxLife(){
+        return maxLife;
+    }
+
     protected boolean active;
 
     public BeyonderEffect() {
@@ -69,11 +75,7 @@ public abstract class BeyonderEffect {
         return this.maxLife - this.lifetime < time;
     }
 
-    public void refreshTime(){
-        this.lifetime = 0;
-    }
-
-    public void refreshTime(BeyonderEffect effect){
+    public void refreshTime(LivingEntityBeyonderCapability cap, LivingEntity target, BeyonderEffect effect){
         if(maxLife < 0 && effect.maxLife >= 0){
             maxLife = effect.maxLife;
             this.lifetime = 0;

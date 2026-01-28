@@ -37,14 +37,15 @@ public class AbilityFactory {
         return this.hasSecondaryFunction(true);
     }
 
-    public AbilityFactory passive(){
-        this.active = false;
+    public AbilityFactory passiveAndActive(){
+        this.active = true;
         this.passive = true;
         return this;
     }
 
-    public AbilityFactory active(){
-        this.active = true;
+    public AbilityFactory passive(){
+        this.active = false;
+        this.passive = true;
         return this;
     }
 

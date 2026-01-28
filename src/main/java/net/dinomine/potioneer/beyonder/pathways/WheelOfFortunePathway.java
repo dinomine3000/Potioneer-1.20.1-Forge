@@ -85,7 +85,7 @@ public class WheelOfFortunePathway extends BeyonderPathway {
                 abilities.add(Abilities.VELOCITY.create(atSequenceLevel));
                 abilities.add(Abilities.MINER_BONE_MEAL.create(atSequenceLevel));
                 abilities.add(Abilities.FORCE_COOLDOWN_ABILITY.create(atSequenceLevel));
-                abilities.add(Abilities.DODGE_DAMAGE.create(atSequenceLevel));
+                abilities.add(Abilities.GAMBLING.create(atSequenceLevel));
 //                abilities.add(Abilities.GAMBLING.create(atSequenceLevel));
             case 8:
                 abilities.add(Abilities.WHEEL_KNOWLEDGE.create(atSequenceLevel));
@@ -155,6 +155,8 @@ public class WheelOfFortunePathway extends BeyonderPathway {
     public List<String> canCraftEffectCharms(int sequenceLevel) {
         List<String> res = new ArrayList<>();
         switch(sequenceLevel){
+            case 7:
+                res.addAll(List.of(BeyonderEffects.WHEEL_COOLDOWN.getEffectId(), BeyonderEffects.WHEEL_PATIENCE.getEffectId(), BeyonderEffects.WHEEL_GAMBLING.getEffectId(), BeyonderEffects.WHEEL_VELOCITY.getEffectId()));
             case 8:
                 res.addAll(List.of(BeyonderEffects.WHEEL_TEMP_LUCK.getEffectId(), BeyonderEffects.WHEEL_INSTANT_LUCK.getEffectId()));
         }

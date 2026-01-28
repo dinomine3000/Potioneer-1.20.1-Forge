@@ -1,0 +1,24 @@
+{
+  "type": "potioneer:ritual_charm_crafting",
+  "effectId": "patience",
+  "ingredients": [
+    {
+      "item": "minecraft:rotten_flesh",
+      "count": 2
+    },
+    {
+      "item": "minecraft:sand",
+      "count": 4
+    },
+    {
+      "item": "minecraft:iron_ingot",
+      "count": 1
+    }
+  ],
+  "base": {
+    "item": "potioneer:sapphire"
+  },
+  "pathwayId": 0,
+  "levelScaling": 8,
+  "durationScaling": 10
+}

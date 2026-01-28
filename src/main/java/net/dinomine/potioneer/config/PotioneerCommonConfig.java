@@ -29,6 +29,8 @@ public class PotioneerCommonConfig {
     public static final ForgeConfigSpec.BooleanValue LOSE_PAGES_ON_DROP_SEQUENCE;
     public static final ForgeConfigSpec.DoubleValue PATIENCE_TIME_LIMIT;
     public static final ForgeConfigSpec.BooleanValue COOLDOWN_TARGET_ALLIES;
+    public static final ForgeConfigSpec.BooleanValue COOLDOWN_EFFECT_STACKS;
+    public static final ForgeConfigSpec.BooleanValue COOLDOWN_ABILITY_CAST_COOLDOWN;
 
     public static final ForgeConfigSpec.EnumValue<CharacteristicDropCriteria> CHARACTERISTIC_DROP_CRITERIA_ENUM_VALUE;
     public static final ForgeConfigSpec.BooleanValue DROP_ALL_CHARACTERISTICS;
@@ -151,6 +153,22 @@ public class PotioneerCommonConfig {
                         "\nIf set to False, allies are completely exempt from being put on cooldown." +
                         "\nNote: The caster always runs that chance.")
                 .define("cooldown_targets_allies", false);
+
+        COOLDOWN_EFFECT_STACKS = BUILDER.comment("The Cooldown ability of the Wheel of Fortune Pathway, should it stack?" +
+                        "\nIf set to false, then for a time after someone has their abilities put on cooldown, they can't have abilities put on cooldown again (cooldown for cooldowns lol)" +
+                        "\nIf set to true, it'll happen as many times as the ability/effect is cast (includes charms)" +
+                        "\nThere are exceptions - if person A puts person B on cooldown, and person B was already put on cooldown by someone of a lower level, person A will override that and put more abilities on cooldown." +
+                        "\nAnd vice-versa, if person A were of a lower level than whoever put person B's abilities on cooldown, their attack will never succeed." +
+                        "\nThis setting applies more if person A is the same sequence level as whoever put person B's abilities on cooldown." +
+                        "\nAlso, this only applies to 'defensive cooldowns'. To have the ability cast apply a cooldown, check the next setting.")
+                .define("cooldown_ability_stacks", true);
+
+        COOLDOWN_ABILITY_CAST_COOLDOWN = BUILDER.comment("The Cooldown ability of the Wheel of Fortune pathway, should its cast have a cooldown on its targets?" +
+                        "\nIf set to false, the ability will always disable abilities of everyone hit." +
+                        "\nIf set to true, the cast will share a per-victim cooldown like described above - neither defensive/payback nor cast will put abilities on cooldown unless its of a higher level than the original cast." +
+                        "\nI know this is hard to understand, I can't explain it well either. There's also the part where the caster is just immune to casts of this ability from beyonders of a lower level." +
+                        "\nBasically, imagine the caster could cast the ability multiple times a second. Should each of those casts put abilities on cooldown or just the first one?")
+                .define("cooldown_ability_cooldowns", false);
 
 
         BUILDER.pop();

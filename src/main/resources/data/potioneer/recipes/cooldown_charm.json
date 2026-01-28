@@ -1,0 +1,20 @@
+{
+  "type": "potioneer:ritual_charm_crafting",
+  "effectId": "cooldown",
+  "ingredients": [
+    {
+      "item": "minecraft:clock",
+      "count": 1
+    },
+    {
+      "item": "potioneer:star_flower_block",
+      "count": 1
+    }
+  ],
+  "base": {
+    "item": "potioneer:sapphire"
+  },
+  "pathwayId": 0,
+  "levelScaling": 8,
+  "durationScaling": 10
+}

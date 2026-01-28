@@ -230,13 +230,14 @@ public class PlayerEffectsManager {
     public boolean addOrReplaceEffect(BeyonderEffect effect, LivingEntityBeyonderCapability cap, LivingEntity target){
         if(target.level().isClientSide()) return false;
         if(effect == null) return false;
+        if(!effect.canAdd(cap, target)) return false;
         if(!hasEffectOrBetter(effect)){
             removeEffect(effect.getId());
             addEffect(effect, cap, target, true);
             return true;
         } else if(hasEffect(effect.getId(), effect.getSequenceLevel())){
             BeyonderEffect oldEffect = getEffect(effect.getId(), effect.getSequenceLevel());
-            oldEffect.refreshTime(effect);
+            oldEffect.refreshTime(cap, target, effect);
             return true;
         }
         return false;

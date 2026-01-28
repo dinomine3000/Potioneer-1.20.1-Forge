@@ -92,10 +92,15 @@ public class ScriptureStandBlock extends Block {
                 if(cap.canPray(pLevel) && cap.getReligion() == pathwayId){
                     pPlayer.sendSystemMessage(Component.translatable("reputation.potioneer.prayer_available", deity.getTitle()));
                 }
-            } else if(cap.getReligion() != pathwayId){
-                pPlayer.sendSystemMessage(deity.getFieltyMessage());
-                pLevel.playSound(null, pPos, SoundEvents.BEACON_POWER_SELECT, SoundSource.PLAYERS);
-                cap.setReligion(pathwayId);
+                int pageId = PageRegistry.getIdOfPage(deity.getInfoPage());
+                if(cap.addPage(pageId))
+                    PacketHandler.sendMessageSTC(new OpenScreenMessage(OpenScreenMessage.Screen.Book, pageId), pPlayer);
+            } else {
+                if(cap.getReligion() != pathwayId){
+                    pPlayer.sendSystemMessage(deity.getFieltyMessage());
+                    pLevel.playSound(null, pPos, SoundEvents.BEACON_POWER_SELECT, SoundSource.PLAYERS);
+                    cap.setReligion(pathwayId);
+                }
                 int pageId = PageRegistry.getIdOfPage(deity.getInfoPage());
                 cap.addPage(pageId);
                 PacketHandler.sendMessageSTC(new OpenScreenMessage(OpenScreenMessage.Screen.Book, pageId), pPlayer);

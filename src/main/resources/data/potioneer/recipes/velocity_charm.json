@@ -1,0 +1,20 @@
+{
+  "type": "potioneer:ritual_charm_crafting",
+  "effectId": "velocity",
+  "ingredients": [
+    {
+      "item": "minecraft:carrot",
+      "count": 3
+    },
+    {
+      "item": "minecraft:granite",
+      "count": 2
+    }
+  ],
+  "base": {
+    "item": "potioneer:sapphire"
+  },
+  "pathwayId": 0,
+  "levelScaling": 8,
+  "durationScaling": 10
+}

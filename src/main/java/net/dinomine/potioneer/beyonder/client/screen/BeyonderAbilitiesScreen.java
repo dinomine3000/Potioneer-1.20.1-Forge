@@ -1,6 +1,5 @@
 package net.dinomine.potioneer.beyonder.client.screen;
 
-import ca.weblite.objc.Client;
 import net.dinomine.potioneer.Potioneer;
 import net.dinomine.potioneer.beyonder.abilities.*;
 import net.dinomine.potioneer.beyonder.client.ClientAbilitiesData;
@@ -71,6 +70,7 @@ public class BeyonderAbilitiesScreen extends Screen {
         selectedCaret = 0;
         buttonOffset = 0;
         dragging = false;
+        focusedOffset = -1;
     }
 
     @Override
@@ -173,7 +173,7 @@ public class BeyonderAbilitiesScreen extends Screen {
         int caretToAdd = selectedCaret;
         AbilityKey key = abilities.get(caretToAdd).getKey();
         if(!ClientAbilitiesData.hasAbility(key)){
-            refreshScreen();
+            refreshAbilitiesScreen();
             return;
         }
         if(ClientAbilitiesData.getQuickAbility().equals(key)){
@@ -189,7 +189,7 @@ public class BeyonderAbilitiesScreen extends Screen {
         int caretToAdd = selectedCaret;
         AbilityKey key = abilities.get(caretToAdd).getKey();
         if(!ClientAbilitiesData.hasAbility(key)){
-            refreshScreen();
+            refreshAbilitiesScreen();
             return;
         }
         if(!ClientAbilitiesData.getHotbar().contains(key)){
@@ -232,7 +232,7 @@ public class BeyonderAbilitiesScreen extends Screen {
 
     private void castAbilityAt(boolean primary){
         if(!ClientAbilitiesData.hasAbility(abilities.get(selectedCaret).getKey())){
-            refreshScreen();
+            refreshAbilitiesScreen();
             return;
         }
         ClientAbilitiesData.useAbility(Minecraft.getInstance().player, abilities.get(selectedCaret).getKey(), primary);
@@ -247,6 +247,7 @@ public class BeyonderAbilitiesScreen extends Screen {
             for(ImageButton btn: buttons){
                 btn.setFocused(false);
             }
+            focusedOffset = buttonIdx + buttonOffset;
             this.selectedCaret = buttonIdx + buttonOffset;
             dClickCountdown = 7;
         }
@@ -260,7 +261,7 @@ public class BeyonderAbilitiesScreen extends Screen {
         AbilityInfo data = abilities.get(abilityIndex);
         AbilityKey key = data.getKey();
         if(!ClientAbilitiesData.hasAbility(key)){
-            refreshScreen();
+            refreshAbilitiesScreen();
             return;
         }
         Component name = data.getNameComponent();
@@ -398,8 +399,9 @@ public class BeyonderAbilitiesScreen extends Screen {
                 offset = abilities.size() - 6;
             }
             buttonOffset = offset;
-            for(ImageButton btn: buttons){
-                btn.setFocused(false);
+            for(int i = 0; i < buttons.size(); i++){
+                ImageButton btn = buttons.get(i);
+                btn.setFocused(buttonOffset + i == focusedOffset);
             }
         }
         return super.mouseClicked(pMouseX, pMouseY, pButton);
@@ -415,44 +417,38 @@ public class BeyonderAbilitiesScreen extends Screen {
                 offset = abilities.size() - 6;
             }
             buttonOffset = offset;
-            for(ImageButton btn: buttons){
-                btn.setFocused(false);
+            for(int i = 0; i < buttons.size(); i++){
+                ImageButton btn = buttons.get(i);
+                btn.setFocused(buttonOffset + i == focusedOffset);
             }
         }
         return super.mouseDragged(pMouseX, pMouseY, pButton, pDragX, pDragY);
     }
 
+    int focusedOffset = 0;
     @Override
     public boolean mouseScrolled(double pMouseX, double pMouseY, double pDelta) {
         if(abilities.size() > 6){
             int oldOffset = buttonOffset;
             buttonOffset = Mth.clamp(buttonOffset + (int)(-pDelta), 0, abilities.size() - 6);
             if(buttonOffset == oldOffset) return false;
-            boolean focusedFlag = false;
             if(pDelta < 0){
                 for(int i = buttons.size() - 1; i >= 0; i--){
                     ImageButton btn = buttons.get(i);
-                    if(btn.isFocused()) focusedFlag = true;
-                    if(focusedFlag && !btn.isFocused()){
-                        focusedFlag = false;
-                        btn.setFocused(true);
-                    } else btn.setFocused(false);
+                    btn.setFocused(buttonOffset + i == focusedOffset);
                 }
             } else {
                 for(int i = 0; i < buttons.size(); i++){
                     ImageButton btn = buttons.get(i);
-                    if(btn.isFocused()) focusedFlag = true;
-                    if(focusedFlag && !btn.isFocused()){
-                        focusedFlag = false;
-                        btn.setFocused(true);
-                    } else btn.setFocused(false);
+                    btn.setFocused(buttonOffset + i == focusedOffset);
                 }
             }
         }
         return super.mouseScrolled(pMouseX, pMouseY, pDelta);
     }
 
-    private void refreshScreen(){
-        Minecraft.getInstance().setScreen(new BeyonderAbilitiesScreen());
+    public static void refreshAbilitiesScreen(){
+        if(Minecraft.getInstance().screen instanceof BeyonderAbilitiesScreen)
+            Minecraft.getInstance().setScreen(new BeyonderAbilitiesScreen());
     }
 }

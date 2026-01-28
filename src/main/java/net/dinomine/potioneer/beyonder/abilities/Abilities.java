@@ -40,7 +40,7 @@ public class Abilities {
     //retweaked
     public static final AbilityFactory CONJURE_PICKAXE = registerAbility("pick",
             ConjurePickaxeAbility::new,
-            2, 0, 10).hasSecondaryFunction().active();
+            2, 0, 10).hasSecondaryFunction();
 
     //retweaked
     public static final AbilityFactory MINING_SPEED = registerAbility("mining",
@@ -57,7 +57,7 @@ public class Abilities {
     //retweaked
     public static final AbilityFactory VOID_VISION = registerAbility("void_vision",
             (Integer sequenceLevel) -> MobEffectPassiveAbility.createAbility(sequenceLevel, MobEffects.NIGHT_VISION, ignored -> "void_vision")
-                    .withAmplifier(1).withPassiveCost(2).withThreshold(5), 9, 0, 5).passive().active();
+                    .withAmplifier(1).withPassiveCost(2).withThreshold(5), 9, 0, 5).passiveAndActive();
 
     //retweaked
     public static final AbilityFactory WHEEL_KNOWLEDGE = registerAbility("wheel_knowledge",
@@ -65,7 +65,7 @@ public class Abilities {
 
     //retweaked
     public static final AbilityFactory MINER_LIGHT = registerAbility("miner_light",
-            MinerLightAbility::new, 1, 0, level -> 5 + 2*(9-level)).active();
+            MinerLightAbility::new, 1, 0, level -> 5 + 2*(9-level));
 
     //retweaked
     public static final AbilityFactory FORTUNE_ABILITY = registerAbility("fortune",
@@ -105,7 +105,7 @@ public class Abilities {
     //retweaked
     public static final AbilityFactory PATIENCE = registerAbility("patience",
             (PatienceAbility::new),
-            11, 0, 0).hasSecondaryFunction(true).passive().active();
+            11, 0, 0).hasSecondaryFunction(true).passiveAndActive();
 
     //retweaked
     public static final AbilityFactory VELOCITY = registerAbility("velocity",
@@ -114,22 +114,21 @@ public class Abilities {
 
     //retweaked
     public static final AbilityFactory MINER_BONE_MEAL = registerAbility("w_bone_meal",
-            BoneMealAbility::new, 7, 0, level-> 2*(10-level)).active();
+            BoneMealAbility::new, 7, 0, level-> 2*(10-level));
 
     //retweaked
     public static final AbilityFactory FORCE_COOLDOWN_ABILITY = registerAbility("aoe_cooldown",
-            CooldownAbility::new, 11, 0, level-> 10 + 10*(9-level)).passive().active().hasSecondaryFunction();
+            CooldownAbility::new, 11, 0, level-> 10 + 10*(9-level)).passiveAndActive().hasSecondaryFunction();
 
     //retweaked
     public static final AbilityFactory GAMBLING = registerAbility("gambling",
-            (Integer sequenceLevel) -> PassiveAbility.createAbility(sequenceLevel, BeyonderEffects.WHEEL_GAMBLING, ignored -> "gambling").canFlip().enabledOnAcquire(),
-            1, 0, 0);
+            GamblingAbility::new,4, 0, 30);
 
-    public static final AbilityFactory DODGE_DAMAGE = registerAbility("luck_dodge",
-            (Integer sequenceLevel) -> PassiveAbility.createAbility(sequenceLevel, BeyonderEffects.WHEEL_LUCK_DODGE,
-                            (ignored) -> "luck_dodge")
-                    .canFlip().enabledOnAcquire(),
-            8, 0, 0);
+//    public static final AbilityFactory DODGE_DAMAGE = registerAbility("luck_dodge",
+//            (Integer sequenceLevel) -> PassiveAbility.createAbility(sequenceLevel, BeyonderEffects.WHEEL_LUCK_DODGE,
+//                            (ignored) -> "luck_dodge")
+//                    .canFlip().enabledOnAcquire(),
+//            8, 0, 0);
 
     // -------------------------- TYRANT ---------------------------------------------------
     public static final AbilityFactory WATER_AFFINITY = registerAbility("water_affinity",

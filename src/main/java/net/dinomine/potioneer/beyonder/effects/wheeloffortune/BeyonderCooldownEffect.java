@@ -3,42 +3,60 @@ package net.dinomine.potioneer.beyonder.effects.wheeloffortune;
 import net.dinomine.potioneer.beyonder.abilities.AbilityKey;
 import net.dinomine.potioneer.beyonder.abilities.wheeloffortune.CooldownAbility;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffect;
+import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
+import net.dinomine.potioneer.beyonder.pathways.WheelOfFortunePathway;
 import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
+import net.dinomine.potioneer.beyonder.player.PlayerLuckManager;
+import net.dinomine.potioneer.config.PotioneerCommonConfig;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.entity.Entity;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraftforge.event.entity.living.LivingDamageEvent;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 public class BeyonderCooldownEffect extends BeyonderEffect {
 
-    private boolean isDefensive;
     public boolean disabledFlag = false;
-    private int minCooldown, maxCooldown;
+    private int minCooldown = 20*20, maxCooldown = 20*60;
 
-    public BeyonderCooldownEffect withValues(boolean isDefensive, int minCooldown, int maxCooldown){
-        this.isDefensive = isDefensive;
+    public void withValues(int minCooldown, int maxCooldown){
         this.minCooldown = minCooldown;
         this.maxCooldown = maxCooldown;
-        return this;
     }
 
-    public BeyonderCooldownEffect withValues(boolean isDefensive){
-        return withValues(isDefensive, 0, 1);
-    }
-
-    public boolean isDefensive(){
-        return this.isDefensive;
+    @Override
+    public boolean canAdd(LivingEntityBeyonderCapability cap, LivingEntity target) {
+        if(cap.getEffectsManager().hasEffect(BeyonderEffects.WHEEL_COOLDOWN_DEFENCE.getEffectId())){
+            if(cap.getEffectsManager().getEffect(BeyonderEffects.WHEEL_COOLDOWN_DEFENCE.getEffectId()).getSequenceLevel() < getSequenceLevel()){
+                endEffectWhenPossible();
+                return false;
+            }
+        }
+        return super.canAdd(cap, target);
     }
 
     @Override
     public void onAcquire(LivingEntityBeyonderCapability cap, LivingEntity target) {
         if(target.level().isClientSide()) return;
-        if(!isDefensive)
-            disableAbilities(cap, target, maxLife, minCooldown, maxCooldown);
+//        if(cap.getEffectsManager().hasEffect(BeyonderEffects.WHEEL_COOLDOWN_DEFENCE.getEffectId())){
+//            if(cap.getEffectsManager().getEffect(BeyonderEffects.WHEEL_COOLDOWN_DEFENCE.getEffectId()).getSequenceLevel() < getSequenceLevel()){
+//                endEffectWhenPossible();
+//                return;
+//            }
+//        }
+        disableAbilities(cap, target, maxLife, minCooldown, maxCooldown);
+        if(PotioneerCommonConfig.COOLDOWN_EFFECT_STACKS.get()){
+           endEffectWhenPossible();
+        }
+    }
+
+    @Override
+    public void refreshTime(LivingEntityBeyonderCapability cap, LivingEntity target, BeyonderEffect effect) {
+        if(!(effect instanceof BeyonderCooldownEffect cdEffect))
+            super.refreshTime(cap, target, effect);
+        else
+            disableAbilities(cap, target, cdEffect.maxLife, cdEffect.minCooldown, cdEffect.maxCooldown);
     }
 
     /**
@@ -48,37 +66,28 @@ public class BeyonderCooldownEffect extends BeyonderEffect {
      * @param effectCooldown - the cooldown for applying this effect again, in ticks.
      *                       for this time after the method is called, no one of the same level as this effect can put abilities on cooldown.
      */
-    public void disableAbilities(LivingEntityBeyonderCapability cap, LivingEntity target, int effectCooldown, int minCooldown, int maxCooldown){
-        if(disabledFlag) return;
-        CooldownAbility.disableRandomAbilities(cap, cap.getLuckManager(), target, false, minCooldown, maxCooldown);
+    private void disableAbilities(LivingEntityBeyonderCapability cap, LivingEntity target, int effectCooldown, int minCooldown, int maxCooldown){
+        if(!PotioneerCommonConfig.COOLDOWN_EFFECT_STACKS.get() && disabledFlag) return;
+        disableRandomAbilities(cap, cap.getLuckManager(), target, false, minCooldown, maxCooldown);
         disabledFlag = true;
         this.lifetime = 0;
         this.maxLife = effectCooldown;
     }
 
-    @Override
-    public boolean onTakeDamage(LivingDamageEvent event, LivingEntity victim, LivingEntity attacker,
-                                LivingEntityBeyonderCapability victimCap, Optional<LivingEntityBeyonderCapability> optAttackerCap) {
-        if(attacker == null || optAttackerCap.isEmpty()) return false;
-        if(victim.level().isClientSide()) return false;
-
-        LivingEntityBeyonderCapability attackerCap = optAttackerCap.get();
-
-        if(isDefensive()){
-            if(!attackerCap.getLuckManager().passesLuckCheck(1/2f, 0, 0, attacker.getRandom())){
-                if(attackerCap.getEffectsManager().hasEffectOrBetter(this)){
-                    BeyonderCooldownEffect eff = (BeyonderCooldownEffect) attackerCap.getEffectsManager().getEffect(effectId);
-                    if(eff == null) return false;
-                    eff.disableAbilities(attackerCap, attacker, 20*5, CooldownAbility.minDefensiveCooldown, CooldownAbility.maxDefensiveCooldown);
-                } else {
-                    attackerCap.getEffectsManager().addEffectNoRefresh(CooldownAbility.createEffectInstance(
-                                    getSequenceLevel(), false, CooldownAbility.minDefensiveCooldown, CooldownAbility.maxDefensiveCooldown,20*5),
-                            attackerCap, attacker);
-                }
-            }
+    public static void disableRandomAbilities(LivingEntityBeyonderCapability victimCapability, PlayerLuckManager luck, LivingEntity victim, boolean casterPespective, int minCooldown, int maxCooldown){
+        int numToDisable = luck.getRandomNumber(0, 4, casterPespective, victim.getRandom());
+        List<AbilityKey> keys = new ArrayList<>(victimCapability.getAbilitiesManager().getAbilityKeys());
+        if(keys.isEmpty()) return;
+        if(numToDisable > 0) WheelOfFortunePathway.playSound(victim.level(), victim.getOnPos(), WheelOfFortunePathway.UNLUCK);
+        for(int i = 0; i < numToDisable; i++){
+            if(keys.isEmpty()) break;
+            victimCapability.getLuckManager().grantLuck(10);
+            //bigger is better here because, generally, the last abilities in the list are the higher level sequence ones.
+            AbilityKey key = keys.get(luck.getRandomNumber(0, keys.size(), casterPespective, victim.getRandom()));
+            victim.sendSystemMessage(Component.translatableWithFallback("ability.potioneer.cooldown_put", "%s has been put on cooldown.", key.getNameComponent()));
+            victimCapability.getAbilitiesManager().putAbilityOnCooldown(key, luck.getRandomNumber(minCooldown, maxCooldown, casterPespective, victim.getRandom()), victim);
+            keys.remove(key);
         }
-
-        return false;
     }
 
     @Override
@@ -93,7 +102,6 @@ public class BeyonderCooldownEffect extends BeyonderEffect {
     public void toNbt(CompoundTag nbt) {
         super.toNbt(nbt);
         nbt.putBoolean("flag", disabledFlag);
-        nbt.putBoolean("defensive", isDefensive);
         nbt.putInt("minCooldown", minCooldown);
         nbt.putInt("maxCooldown", maxCooldown);
     }
@@ -101,7 +109,6 @@ public class BeyonderCooldownEffect extends BeyonderEffect {
     @Override
     public void loadNBTData(CompoundTag nbt) {
         super.loadNBTData(nbt);
-        this.isDefensive = nbt.getBoolean("defensive");
         this.disabledFlag = nbt.getBoolean("flag");
         this.minCooldown = nbt.getInt("minCooldown");
         this.maxCooldown = nbt.getInt("maxCooldown");

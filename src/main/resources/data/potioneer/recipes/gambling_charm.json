@@ -1,0 +1,24 @@
+{
+  "type": "potioneer:ritual_charm_crafting",
+  "effectId": "gambling",
+  "ingredients": [
+    {
+      "item": "minecraft:deepslate",
+      "count": 2
+    },
+    {
+      "item": "minecraft:stick",
+      "count": 4
+    },
+    {
+      "tag": "forge:seeds",
+      "count": 1
+    }
+  ],
+  "base": {
+    "item": "potioneer:sapphire"
+  },
+  "pathwayId": 0,
+  "levelScaling": 8,
+  "durationScaling": 10
+}

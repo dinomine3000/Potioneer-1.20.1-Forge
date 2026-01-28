@@ -389,13 +389,14 @@ public class LivingEntityBeyonderCapability {
         }
     }
 
-    public void addPage(int pageNumber){
-        if(PageRegistry.pageExists(pageNumber) && !pageList.contains(pageNumber))
-            pageList.add(pageNumber);
+    public boolean addPage(int pageNumber){
+        if(!PageRegistry.pageExists(pageNumber) || pageList.contains(pageNumber)) return false;
+        pageList.add(pageNumber);
         if(entity instanceof Player player)
             PacketHandler.sendMessageSTC(new PlayerSTCStatsSync(this.spirituality, this.maxSpirituality,
                 (int) this.sanity, (float) characteristicManager.getAdjustedActingPercent(getPathwaySequenceId()),
                 beyonderStats.getIntStats(), pageList), player);
+        return true;
     }
 
     public ArrayList<Integer> getPageList(){

@@ -86,7 +86,7 @@ public class ArtifactHolder {
     }
 
     public void onAcquire(LivingEntityBeyonderCapability cap, LivingEntity target){
-        abilities.values().forEach(abl -> abl.onAcquire(cap, target));
+        abilities.values().stream().filter(abl -> !abl.isPassive || abl.isEnabled()).forEach(abl -> abl.onAcquire(cap, target));
         downsides.values().forEach(downside -> downside.onAcquire(cap, target));
     }
 
@@ -145,6 +145,7 @@ public class ArtifactHolder {
             AbilityKey key = AbilityKey.fromString(stringKey);
             if(key.isEmpty()) continue;
             Ability ability = Abilities.getAbilityInstanceByKey(key);
+            ability.setAbilityKey("");
             ability.loadNbt(artifactTag);
             ability.setArtifactAbilityKey(artifactId);
             abilities.add(ability);

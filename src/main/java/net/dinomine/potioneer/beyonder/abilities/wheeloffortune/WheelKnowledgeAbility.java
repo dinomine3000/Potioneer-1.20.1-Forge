@@ -23,8 +23,11 @@ public class WheelKnowledgeAbility extends MysticalKnowledgeAbility {
     protected List<Page> getPages(int sequenceLevel) {
         List<Page> result = new ArrayList<>();
         switch(sequenceLevel){
+            case 7:
+                result.addAll(List.of(PageRegistry.CHARM_PATIENCE, PageRegistry.CHARM_GAMBLE, PageRegistry.CHARM_SPEED, PageRegistry.CHARM_COOLDOWN));
             case 8:
                 result.addAll(List.of(PageRegistry.CHARM_INSTANT_LUCK, PageRegistry.CHARM_TEMP_LUCK, PageRegistry.RITUALS_CANDLES, PageRegistry.RITUALS_INK, PageRegistry.RITUALS_DAGGER, PageRegistry.RITUALS_OFFERINGS, PageRegistry.CHARMS_CRAFTING));
+            case 9:
                 break;
         }
         return result;

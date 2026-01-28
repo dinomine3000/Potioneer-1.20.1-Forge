@@ -22,7 +22,8 @@ public class PassiveAbility extends Ability {
      */
     protected float minimumSpiritualityThreshold = 0f;
     protected int minSpiritualityAbsolute = 0;
-    private Function<Integer, String> descId;
+    private final Function<Integer, String> descId;
+    private int duration = -1;
 
     protected PassiveAbility(int sequenceLevel, BeyonderEffects.BeyonderEffectType effect, Function<Integer, String> descId){
         super(sequenceLevel);
@@ -30,7 +31,11 @@ public class PassiveAbility extends Ability {
         this.descId = descId;
         this.isPassive = true;
         this.isActive = false;
+    }
 
+    public PassiveAbility withDuration(int duration){
+        this.duration = duration;
+        return this;
     }
 
     public static PassiveAbility createAbility(int level, BeyonderEffects.BeyonderEffectType effect, Function<Integer, String> descId){
@@ -98,7 +103,7 @@ public class PassiveAbility extends Ability {
 
     @Override
     public void passive(LivingEntityBeyonderCapability cap, LivingEntity target) {
-        if(isEnabled() && !cap.getEffectsManager().hasEffectOrBetter(effect.createInstance(sequenceLevel, -1, true))){
+        if(isEnabled() && !cap.getEffectsManager().hasEffectOrBetter(effect.createInstance(sequenceLevel, duration, true))){
             cap.getEffectsManager().addOrReplaceEffect(createEffectInstance(cap, target), cap, target);
             if(cap.getSpirituality() < cap.getMaxSpirituality()*minimumSpiritualityThreshold
                 || cap.getSpirituality() < minSpiritualityAbsolute) setEnabled(cap, target, false);

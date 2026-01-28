@@ -5,6 +5,7 @@ import net.dinomine.potioneer.beyonder.abilities.Abilities;
 import net.dinomine.potioneer.beyonder.abilities.AbilityInfo;
 import net.dinomine.potioneer.beyonder.abilities.AbilityKey;
 import net.dinomine.potioneer.beyonder.abilities.ArtifactHolder;
+import net.dinomine.potioneer.beyonder.client.screen.BeyonderAbilitiesScreen;
 import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
 import net.dinomine.potioneer.beyonder.player.PlayerAbilitiesManager;
 import net.dinomine.potioneer.config.PotioneerClientConfig;
@@ -78,6 +79,7 @@ public class ClientAbilitiesData {
             else
                 System.out.println("Player is null while trying to set abilities on client side.");
         });
+        BeyonderAbilitiesScreen.refreshAbilitiesScreen();
     }
 
     public static boolean hasQuickSelect(){
@@ -95,7 +97,7 @@ public class ClientAbilitiesData {
             else
                 System.out.println("Player is null while trying to add abilities on client side.");
         });
-
+        BeyonderAbilitiesScreen.refreshAbilitiesScreen();
     }
 
     public static void removeAbilities(List<AbilityInfo> abilities2){
@@ -111,6 +113,7 @@ public class ClientAbilitiesData {
                 System.out.println("Player is null while trying to remove abilities on client side.");
         });
         updateHotbarOnChange();
+        BeyonderAbilitiesScreen.refreshAbilitiesScreen();
     }
 
     public static void updateAbilities(List<AbilityInfo> abilities2){
@@ -170,6 +173,7 @@ public class ClientAbilitiesData {
             else
                 System.out.println("Player is null while trying to set artifacts on client side.");
         });
+        BeyonderAbilitiesScreen.refreshAbilitiesScreen();
     }
 
     public static void removeArtifacts(List<ArtifactHolder> artifacts) {
@@ -187,6 +191,7 @@ public class ClientAbilitiesData {
                 System.out.println("Player is null while trying to remove artifacts on client side.");
         });
         updateHotbarOnChange();
+        BeyonderAbilitiesScreen.refreshAbilitiesScreen();
     }
 
     public static void addArtifacts(List<ArtifactHolder> artifacts) {
@@ -202,6 +207,7 @@ public class ClientAbilitiesData {
             else
                 System.out.println("Player is null while trying to add artifacts on client side.");
         });
+        BeyonderAbilitiesScreen.refreshAbilitiesScreen();
     }
 
     public static AbilityKey getQuickAbility(){

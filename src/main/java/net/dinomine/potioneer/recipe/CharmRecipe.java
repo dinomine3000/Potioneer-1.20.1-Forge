@@ -2,6 +2,7 @@ package net.dinomine.potioneer.recipe;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
 import net.dinomine.potioneer.Potioneer;
 import net.dinomine.potioneer.item.ModItems;
 import net.dinomine.potioneer.util.BufferUtils;
@@ -128,6 +129,8 @@ public class CharmRecipe implements Recipe<RitualContainer> {
         public CharmRecipe fromJson(ResourceLocation pRecipeId, JsonObject pJson) {
             String effectId = GsonHelper.getAsString(pJson, "effectId");
             NonNullList<PotionIngredient> ingredients = itemsFromJson(GsonHelper.getAsJsonArray(pJson, "ingredients"));
+            if (ingredients.size() > 6)
+                throw new JsonParseException("Too many ingredients for charm crafting recipe. The maximum is 6");
             PotionIngredient baseMaterial = PotionIngredient.fromJson(GsonHelper.getNonNull(pJson, "base")).withCount(1);
             int pathwayId = GsonHelper.getAsInt(pJson, "pathwayId");
             int scaling = Mth.clamp(GsonHelper.getAsInt(pJson, "levelScaling"), 0, 8);

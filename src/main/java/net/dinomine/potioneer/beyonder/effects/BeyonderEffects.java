@@ -47,6 +47,7 @@ public class BeyonderEffects {
     public static final BeyonderEffectType WHEEL_APPRAISAL = registerEffect("appraisal", new BeyonderEffectType(BeyonderAppraisalEffect::new));
     public static final BeyonderEffectType WHEEL_VELOCITY = registerEffect("velocity", new BeyonderEffectType(BeyonderVelocityEffect::new));
     public static final BeyonderEffectType WHEEL_COOLDOWN = registerEffect("cooldown", new BeyonderEffectType(BeyonderCooldownEffect::new));
+    public static final BeyonderEffectType WHEEL_COOLDOWN_DEFENCE = registerEffect("defensive_cooldown", new BeyonderEffectType(BeyonderDefensiveCooldownEffect::new));
     public static final BeyonderEffectType WHEEL_GAMBLING = registerEffect("gambling", new BeyonderEffectType(BeyonderGamblingEffect::new));
     public static final BeyonderEffectType TYRANT_WATER_AFFINITY = registerEffect("water_affinity", new BeyonderEffectType(BeyonderWaterAffinityEffect::new));
     public static final BeyonderEffectType TYRANT_ELECTRIFICATION = registerEffect("electrification", new BeyonderEffectType(BeyonderElectrificationEffect::new));

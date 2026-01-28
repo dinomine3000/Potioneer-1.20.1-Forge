@@ -118,46 +118,6 @@ public class PlayerAbilitiesManager {
             if(artifact != null)
                 resMap.put(artifact.getArtifactId(), artifact);
         });
-////        for(ItemStack itemStack: player.getInventory().items){
-////            if(itemStack.is(ModItems.AMULET.get()) && MysticalItemHelper.isValidArtifact(itemStack)){
-////                if(validAmuletEnabled.isEmpty()){
-////                    validAmuletEnabled = itemStack;
-////                } else {
-////                    tooManyAmulets = true;
-////                    NecklaceItem.enableAmulet(validAmuletEnabled, false);
-////                    NecklaceItem.enableAmulet(itemStack, false);
-////                }
-////            }
-////            ArtifactHolder artifact = MysticalItemHelper.getArtifactFromitem(itemStack);
-////            resMap.put(artifact.getArtifactId(), artifact);
-////           //addArtifact(artifact, cap, player, true);
-////        }
-////        if(ModList.get().isLoaded("curios")){
-////            if(CuriosApi.getCuriosInventory(player).resolve().isPresent()){
-////                ICuriosItemHandler curiosInventory = CuriosApi.getCuriosInventory(player).resolve().get();
-////                Map<String, ICurioStacksHandler> curios = curiosInventory.getCurios();
-////                for(ICurioStacksHandler handler: curios.values()){
-////                    int slots = handler.getSlots();
-////                    for(int i = 0; i < slots; i++){
-////                        ItemStack itemStack = handler.getStacks().getStackInSlot(i);
-////                        if(itemStack.is(ModItems.AMULET.get()) && ArtifactHelper.isValidArtifact(itemStack)){
-////                            if(validAmuletEnabled.isEmpty()){
-////                                validAmuletEnabled = itemStack;
-////                            } else {
-////                                tooManyAmulets = true;
-////                                NecklaceItem.enableAmulet(validAmuletEnabled, false);
-////                                NecklaceItem.enableAmulet(itemStack, false);
-////                            }
-////                        }
-////                        ArtifactHolder artifact = MysticalItemHelper.getArtifactFromitem(itemStack);
-////                        resMap.put(artifact.getArtifactId(), artifact);
-////                    }
-////                }
-////            }
-////        }
-////        if(!validAmuletEnabled.isEmpty() && !tooManyAmulets){
-////            NecklaceItem.enableAmulet(validAmuletEnabled, true);
-////        }
         return resMap;
     }
 
@@ -508,6 +468,18 @@ public class PlayerAbilitiesManager {
     public ArtifactHolder getArtifact(AbilityKey key) {
         if(key.isEmpty() || !key.isArtifactKey() || !artifacts.containsKey(key.getArtifactId())) return null;
         return artifacts.get(key.getArtifactId()).updateItemTags();
+    }
+
+    public boolean hasAbility(String ablId) {
+        for(AbilityKey key: abilities.keySet()){
+            if(key.isSameAbility(ablId)) return true;
+        }
+        for(ArtifactHolder artifact: artifacts.values()){
+            for(AbilityKey key: artifact.getAbilityKeys()){
+                if(key.isSameAbility(ablId)) return true;
+            }
+        }
+        return false;
     }
 
 //    public void updateArtifactsOnClient(List<ArtifactHolder> artifacts,  @NotNull LivingEntityBeyonderCapability cap, Player player) {

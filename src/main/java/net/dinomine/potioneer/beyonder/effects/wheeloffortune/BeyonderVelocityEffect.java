@@ -23,9 +23,9 @@ public class BeyonderVelocityEffect extends BeyonderEffect {
     @Override
     public void onAcquire(LivingEntityBeyonderCapability cap, LivingEntity target) {
         if(movementSpeed == -1)
-            movementSpeed = 1;
+            movementSpeed = VelocityAbility.levelToMaxMovement.apply(getSequenceLevel());
         if(attackSpeed == -1)
-            attackSpeed = 1;
+            attackSpeed = VelocityAbility.levelToMaxAttack.apply(getSequenceLevel());
     }
 
     @Override

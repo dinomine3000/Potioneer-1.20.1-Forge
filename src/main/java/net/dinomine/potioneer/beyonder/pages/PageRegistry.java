@@ -36,6 +36,10 @@ public class PageRegistry {
     public static Page KING_OF_HEROES_2 = register(i++, () -> new TextPage(Page.Chapter.KNOWN_DEITIES, "king_of_heroes_2"));
     public static Page CHARM_TEMP_LUCK = register(i++, () -> new RitualRecipePage(Page.Chapter.CHARMS, Component.translatable("beyondereffect.potioneer.temp_luck"), "temp_luck_charm"));
     public static Page CHARM_INSTANT_LUCK = register(i++, () -> new RitualRecipePage(Page.Chapter.CHARMS, Component.translatable("beyondereffect.potioneer.instant_luck"), "instant_luck_charm"));
+    public static Page CHARM_COOLDOWN = register(i++, () -> new RitualRecipePage(Page.Chapter.CHARMS, Component.translatable("beyondereffect.potioneer.cooldown"), "cooldown_charm"));
+    public static Page CHARM_SPEED = register(i++, () -> new RitualRecipePage(Page.Chapter.CHARMS, Component.translatable("beyondereffect.potioneer.velocity"), "velocity_charm"));
+    public static Page CHARM_PATIENCE = register(i++, () -> new RitualRecipePage(Page.Chapter.CHARMS, Component.translatable("beyondereffect.potioneer.patience"), "patience_charm"));
+    public static Page CHARM_GAMBLE = register(i++, () -> new RitualRecipePage(Page.Chapter.CHARMS, Component.translatable("beyondereffect.potioneer.gambling"), "gambling_charm"));
     public static Page RITUALS_CANDLES = register(i++, () -> new ItemPage(Page.Chapter.RITUALS, "rituals_candles", Items.CANDLE).withOffset(10));
     public static Page RITUALS_INK = register(i++, () -> new ItemPage(Page.Chapter.RITUALS, "rituals_ink", ModItems.INK_BOTTLE.get()).withOffset(10));
     public static Page RITUALS_DAGGER = register(i++, () -> new CraftingTableRecipePage(Page.Chapter.RITUALS, "rituals_dagger", new ResourceLocation(Potioneer.MOD_ID, "ritualistic_dagger")));
