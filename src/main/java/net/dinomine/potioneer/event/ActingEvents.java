@@ -6,6 +6,7 @@ import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
 import net.dinomine.potioneer.beyonder.effects.wheeloffortune.BeyonderZeroDamageEffect;
 import net.dinomine.potioneer.beyonder.pathways.BeyonderPathway;
 import net.dinomine.potioneer.beyonder.pathways.Pathways;
+import net.dinomine.potioneer.beyonder.pathways.WheelOfFortunePathway;
 import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
 import net.dinomine.potioneer.item.ModItems;
 import net.dinomine.potioneer.network.PacketHandler;
@@ -48,7 +49,10 @@ public class ActingEvents {
      @SubscribeEvent
     public static void onBlockMined(BlockEvent.BreakEvent event){
          event.getPlayer().getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
-             cap.getCharacteristicManager().progressActing(1/(64*3f), 9);
+             cap.getCharacteristicManager().progressActing(WheelOfFortunePathway.MINER_ACTING_INC, 9);
+             if(cap.getEffectsManager().hasEffect(BeyonderEffects.WHEEL_SILK.getEffectId()) || cap.getEffectsManager().hasEffect(BeyonderEffects.WHEEL_FORTUNE.getEffectId())){
+                 cap.getCharacteristicManager().progressActing(WheelOfFortunePathway.APPRAISER_ACTING_MINING, 8);
+             }
          });
      }
 }

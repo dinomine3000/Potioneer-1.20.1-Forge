@@ -1,5 +1,6 @@
 package net.dinomine.potioneer.recipe;
 
+import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
 import net.minecraft.util.Mth;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.item.ItemStack;
@@ -18,7 +19,7 @@ public class RitualContainer extends SimpleContainer {
     }
 
     public float getReputationPercent(){
-        return Mth.clamp(reputationLevel/10f, 0, 1);
+        return Mth.clamp(reputationLevel/ LivingEntityBeyonderCapability.MAX_REP, 0, 1);
     }
 
     private int pathwayId;

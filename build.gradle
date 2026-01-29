@@ -96,7 +96,7 @@ minecraft {
             // Comma-separated list of namespaces to load gametests from. Empty = all namespaces.
             property 'forge.enabledGameTestNamespaces', mod_id
             property 'forge.logging.console.level', 'debug'
-            args '--username=Klein', '--uuid=ad6bdbc4-eb2d-40ca-a815-edfb00f36d78', '--skin ./skins/dev1.png'
+            args '--username=Klein', '--uuid=ad6bdbc4-eb2d-40ca-a815-edfb00f36d78', '--skin=./skins/dev1.png'
 
 //            property 'mixin.env.remapRefMap', 'true'
 //            property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"

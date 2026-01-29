@@ -1,11 +1,36 @@
 package net.dinomine.potioneer.util;
 
+import net.dinomine.potioneer.network.PacketHandler;
+import net.dinomine.potioneer.network.messages.effects.GeneralAreaEffectMessage;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
 
 public class ParticleMaker {
+
+    public enum Preset{
+        AOE_END_ROD,
+        AOE_GRAVITY
+    }
+
+    public static void summonAOEParticles(Level level, Vec3 center, int messageRadius, double effectRadius, Preset preset){
+        switch (preset){
+            case AOE_END_ROD -> PacketHandler.sendMessageToClientsAround(BlockPos.containing(center), level, messageRadius, new GeneralAreaEffectMessage(Preset.AOE_END_ROD, center.toVector3f(), effectRadius));
+            case AOE_GRAVITY -> PacketHandler.sendMessageToClientsAround(BlockPos.containing(center), level, messageRadius, new GeneralAreaEffectMessage(Preset.AOE_GRAVITY, center.toVector3f(), effectRadius));
+        }
+    }
+
+    public static void fallingGlow(Level level, Vec3 eyePos, double radius){
+        RandomSource randomSource = level.random;
+        for(int i = 0; i < randomSource.nextInt(15, 30); i++){
+            Vec3 diff = new Vec3(randomSource.triangle(0, 1), 0, randomSource.triangle(0, 1));
+            Vec3 pPos = eyePos.add(diff.normalize().scale(radius));
+            level.addParticle(ParticleTypes.FIREWORK, pPos.x, pPos.y, pPos.z, 0, -0.2, 0);
+        }
+    }
 
     public static void particleExplosionRandom(Level level, double radius, double x, double y, double z){
         particleExplosionRandom(ParticleTypes.END_ROD, 9/100f, level, radius, x, y, z);

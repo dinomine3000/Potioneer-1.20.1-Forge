@@ -1,14 +1,25 @@
 package net.dinomine.potioneer.beyonder.pages;
 
+import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.FormattedText;
 import net.minecraft.resources.ResourceLocation;
 
 public abstract class SplitPage extends Page {
     private final Component topText;
     private final Component bottomText;
     private int yOffset = 0;
+    private boolean drawTop = true, drawBottom = true;
+
+    protected void setDrawTop(boolean drawTop){
+        drawTop = drawTop;
+    }
+
+    protected void setDrawBottom(boolean drawBottom){
+        drawBottom = drawBottom;
+    }
 
     public SplitPage withOffset(int yOffset){
         this.yOffset = yOffset;
@@ -35,9 +46,9 @@ public abstract class SplitPage extends Page {
 
     @Override
     public void draw(GuiGraphics pGuiGraphics, ResourceLocation texture, int leftPos, int topPos, int imageWidth, int imageHeight, int textureWidth, int textureHeight) {
-        pGuiGraphics.drawWordWrap(Minecraft.getInstance().font, this.topText, leftPos, topPos, 110, 0);
-        drawMiddle(pGuiGraphics, texture, leftPos, topPos, imageWidth, imageHeight, textureWidth, textureHeight);
-        pGuiGraphics.drawWordWrap(Minecraft.getInstance().font, this.bottomText, leftPos, topPos + 95 - yOffset, 110, 0);
+        if(drawTop) drawScaledText(pGuiGraphics, this.topText, leftPos + 5, topPos, 0, 110);
+//        drawScaledText(pGuiGraphics, this.bottomText, leftPos + 5, topPos + 100 - yOffset, 0, 110);
+        if(drawBottom) drawMiddle(pGuiGraphics, texture, leftPos, topPos, imageWidth, imageHeight, textureWidth, textureHeight);
     }
 
     public abstract void drawMiddle(GuiGraphics pGuiGraphics, ResourceLocation texture, int leftPos, int topPos, int imageWidth, int imageHeight, int textureWidth, int textureHeight);

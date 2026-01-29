@@ -1,7 +1,10 @@
 package net.dinomine.potioneer.beyonder.pages;
 
+import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.FormattedText;
 import net.minecraft.resources.ResourceLocation;
 
 public abstract class Page {
@@ -18,6 +21,22 @@ public abstract class Page {
     }
     public Chapter chapter;
     private final Component title;
+    protected float scale = 0.8f;
+
+    public Page withScale(float scale){
+        this.scale = scale;
+        return this;
+    }
+
+
+    public void drawScaledText(GuiGraphics pGuiGraphics, FormattedText text, int leftPos, int topPos, int color, int wordWrapWidth){
+        PoseStack pose = pGuiGraphics.pose();
+        pose.pushPose();
+        float textScale = scale;
+        pose.scale(textScale, textScale, textScale);
+        pGuiGraphics.drawWordWrap(Minecraft.getInstance().font, text, (int) (leftPos/textScale), (int)(topPos/textScale), (int)(wordWrapWidth/textScale), color);
+        pose.popPose();
+    }
 
     public Component getTitle() {
         return this.title;

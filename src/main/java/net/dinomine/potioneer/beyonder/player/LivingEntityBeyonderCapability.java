@@ -1,6 +1,7 @@
 package net.dinomine.potioneer.beyonder.player;
 
 import net.dinomine.potioneer.beyonder.abilities.AbilityFunctionHelper;
+import net.dinomine.potioneer.beyonder.damages.PotioneerDamage;
 import net.dinomine.potioneer.beyonder.pages.PageRegistry;
 import net.dinomine.potioneer.beyonder.pathways.BeyonderPathway;
 import net.dinomine.potioneer.beyonder.pathways.Pathways;
@@ -20,6 +21,7 @@ import net.minecraft.nbt.IntTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
@@ -43,8 +45,8 @@ public class LivingEntityBeyonderCapability {
     public static final int SANITY_FOR_DROP = 20;
     public static final int SANITY_MIN_RESPAWN = 40;
     private static int SECONDS_TO_MAX_SPIRITUALITY = PotioneerCommonConfig.SECONDS_TO_MAX_SPIRITUALITY.get();
-    public static int MAX_REP_DEFAULT = 3;
-    public static int MAX_REP = 10;
+    public static int MAX_REP_DEFAULT = 2;
+    public static int MAX_REP = 9;
     public static int PRAYING_COOLDOWN = 20*60*18;
 
     private float spirituality = 100;
@@ -198,7 +200,6 @@ public class LivingEntityBeyonderCapability {
     }
 
     public void onPlayerSleep(){
-        System.out.println("Player sleep method");
         changeSpirituality(this.maxSpirituality/5f);
     }
 
@@ -307,16 +308,16 @@ public class LivingEntityBeyonderCapability {
                 entity.addEffect(new MobEffectInstance(MobEffects.HUNGER, 200, 1, true, true));
                 changeSanity(-1);
                 if(entity.getHealth() > 3){
-                    entity.hurt(entity.damageSources().generic(), entity.getMaxHealth()*0.1f);
+                    entity.hurt(PotioneerDamage.low_spirituality((ServerLevel) entity.level()), entity.getMaxHealth()*0.1f);
                 }
             }
         }
         if(sanity < SANITY_FOR_DAMAGE){
             entity.addEffect(new MobEffectInstance(MobEffects.DARKNESS, 100, 0, true, true));
             if(sanity < 1){
-                entity.hurt(entity.damageSources().genericKill(), 100000);
+                entity.hurt(PotioneerDamage.low_sanity_kill((ServerLevel) entity.level()), 100000);
             } else {
-                entity.hurt(entity.damageSources().generic(), entity.getMaxHealth()*0.1f);
+                entity.hurt(PotioneerDamage.low_sanity((ServerLevel) entity.level()), entity.getMaxHealth()*0.1f);
             }
         }
     }
@@ -432,6 +433,8 @@ public class LivingEntityBeyonderCapability {
         this.sanity = Math.min(Math.max(source.sanity, SANITY_MIN_RESPAWN), maxSanity.get());
         pageList = new ArrayList<>(source.pageList);
         syncSequenceData(player);
+        this.reputation = source.reputation;
+        this.religion = source.religion;
         //this.abilitiesManager.onAcquireAbilities(this, player);
     }
 

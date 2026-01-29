@@ -39,7 +39,7 @@ public class BeyonderEffects {
     public static final BeyonderEffectType WHEEL_SILK = registerEffect("silk", new BeyonderEffectType(BeyonderSilkTouchEffect::new));
     public static final BeyonderEffectType WHEEL_PATIENCE = registerEffect("patience", new BeyonderEffectType(BeyonderPatienceEffect::new));
     public static final BeyonderEffectType WHEEL_INSTANT_LUCK = registerEffect("instant_luck", new BeyonderEffectType(BeyonderInstantLuckEffect::new));
-    public static final BeyonderEffectType WHEEL_LUCK_DODGE = registerEffect("luck_dodge", new BeyonderEffectType(BeyonderLuckDodgeEffect::new));
+    public static final BeyonderEffectType WHEEL_LUCK = registerEffect("luck", new BeyonderEffectType(BeyonderLuckEffect::new));
     public static final BeyonderEffectType WHEEL_LUCK_TREND = registerEffect("lucky_trend", new BeyonderEffectType(BeyonderLuckTrendEffect::new));
     public static final BeyonderEffectType WHEEL_TEMP_LUCK = registerEffect("temp_luck", new BeyonderEffectType(BeyonderTempLuckEffect::new));
     public static final BeyonderEffectType WHEEL_ZERO_DAMAGE = registerEffect("zero_damage", new BeyonderEffectType(BeyonderZeroDamageEffect::new));
@@ -49,6 +49,7 @@ public class BeyonderEffects {
     public static final BeyonderEffectType WHEEL_COOLDOWN = registerEffect("cooldown", new BeyonderEffectType(BeyonderCooldownEffect::new));
     public static final BeyonderEffectType WHEEL_COOLDOWN_DEFENCE = registerEffect("defensive_cooldown", new BeyonderEffectType(BeyonderDefensiveCooldownEffect::new));
     public static final BeyonderEffectType WHEEL_GAMBLING = registerEffect("gambling", new BeyonderEffectType(BeyonderGamblingEffect::new));
+    public static final BeyonderEffectType WHEEL_CRIT = registerEffect("critical", new BeyonderEffectType(BeyonderCritEffect::new));
     public static final BeyonderEffectType TYRANT_WATER_AFFINITY = registerEffect("water_affinity", new BeyonderEffectType(BeyonderWaterAffinityEffect::new));
     public static final BeyonderEffectType TYRANT_ELECTRIFICATION = registerEffect("electrification", new BeyonderEffectType(BeyonderElectrificationEffect::new));
     public static final BeyonderEffectType TYRANT_LIGHTNING_TARGET = registerEffect("lightning_target", new BeyonderEffectType(BeyonderLightningTargetEffect::new));

@@ -8,7 +8,7 @@ import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.eventbus.api.Cancelable;
 import net.minecraftforge.eventbus.api.Event;
 
-public class AbilityCastEvent extends LivingEvent {
+public abstract class AbilityCastEvent extends LivingEvent {
     private final Ability ability;
     private final boolean primary;
 

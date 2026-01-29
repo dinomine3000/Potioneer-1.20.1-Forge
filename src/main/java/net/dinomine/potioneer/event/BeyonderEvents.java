@@ -1,6 +1,7 @@
 package net.dinomine.potioneer.event;
 
 import net.dinomine.potioneer.Potioneer;
+import net.dinomine.potioneer.beyonder.abilities.Abilities;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffect;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
 import net.dinomine.potioneer.beyonder.effects.wheeloffortune.BeyonderZeroDamageEffect;
@@ -38,10 +39,7 @@ import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.event.entity.EntityStruckByLightningEvent;
 import net.minecraftforge.event.entity.item.ItemTossEvent;
 import net.minecraftforge.event.entity.living.*;
-import net.minecraftforge.event.entity.player.PlayerEvent;
-import net.minecraftforge.event.entity.player.PlayerInteractEvent;
-import net.minecraftforge.event.entity.player.PlayerWakeUpEvent;
-import net.minecraftforge.event.entity.player.PlayerXpEvent;
+import net.minecraftforge.event.entity.player.*;
 import net.minecraftforge.event.level.BlockEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -317,20 +315,8 @@ public class BeyonderEvents {
         });
     }
 
-    //this one still plays the hurt animation even if you cancel the event = takes place when an entity truly is receiving damage
-    //deals with the true damage that is applied
-    @SubscribeEvent
-    public static void onEntityTakeDamage(LivingDamageEvent event){
-        if(event.getEntity() != null && event.getEntity() instanceof Player player){
-            //if(player.level().isClientSide()) return;
-            LivingEntity entity = event.getEntity();
-            player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
-                cap.getEffectsManager().onTakeDamage(event, cap);
-            });
-        }
-    }
-
     //called to confirm the hit.
+    //of the 3, its the first to be called, and the one that can be used to negate damage
     @SubscribeEvent
     public static void onDamageProposed(LivingAttackEvent event){
         if(event.getSource().getEntity() != null){
@@ -343,7 +329,7 @@ public class BeyonderEvents {
         }
     }
 
-    //called before damage is calculated but after hit is confirmed -> deals with raw damage before reduction
+    //called inbetween the other two, its used to calculate the damage dealt
     @SubscribeEvent
     public static void onEntityHurt(LivingHurtEvent event) {
         if(event.getSource().getEntity() != null){
@@ -356,6 +342,38 @@ public class BeyonderEvents {
         }
     }
 
+
+    //the last one to be called, once the hit has been confirmed and adjusted for. damage should not change in this event.
+    @SubscribeEvent
+    public static void onEntityTakeDamage(LivingDamageEvent event){
+        if(event.getEntity() != null){
+            //if(player.level().isClientSide()) return;
+            LivingEntity entity = event.getEntity();
+            entity.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
+                cap.getEffectsManager().onTakeDamage(event, cap);
+            });
+        }
+    }
+
+    @SubscribeEvent
+    public static void onLuckEventCastConfirmed(LuckEventCastEvent.Post event){
+        LivingEntity target = event.getEntity();
+        target.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
+            if(cap.getAbilitiesManager().hasAbility(Abilities.FATE.getAblId())){
+                target.sendSystemMessage(cap.getLuckManager().getCurrentEvent().getForecast());
+            }
+        });
+    }
+
+    @SubscribeEvent
+    public static void onArrowLoose(ArrowLooseEvent event){
+        if(event.getEntity().level().isClientSide) return;
+        System.out.println("Arrow Loosed " + event.hasAmmo() + event.getCharge());
+    }
+
+    @SubscribeEvent
+    public static void onArrowNock(ArrowNockEvent event){
+    }
 
     @SubscribeEvent
     public static void onEntityStruckByLightning(EntityStruckByLightningEvent event){

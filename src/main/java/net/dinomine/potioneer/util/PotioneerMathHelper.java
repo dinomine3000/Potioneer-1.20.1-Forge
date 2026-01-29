@@ -18,6 +18,13 @@ public class PotioneerMathHelper {
         }
     }
 
+    public static Vec3 getRandomOrthogonalConstantY(Vec3 reference, boolean side, double magnitude){
+        int b1 = side ? 1 : -1;
+        Vec3 dodgeDir = new Vec3(b1, 0, -1*b1*reference.x/reference.z).normalize().scale(magnitude);
+        double test = reference.x*dodgeDir.x + reference.z*dodgeDir.z;
+        return dodgeDir;
+    }
+
     public static class ProbabilityHelper{
         public static float bayes(float likelihood, float prior, float evidence){
             return likelihood * prior / evidence;

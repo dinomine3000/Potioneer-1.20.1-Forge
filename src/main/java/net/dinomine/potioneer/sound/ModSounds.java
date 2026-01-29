@@ -21,6 +21,7 @@ public class ModSounds {
     public static final RegistryObject<SoundEvent> UNLUCK = registerSoundEvents("unluck_effect");
     public static final RegistryObject<SoundEvent> LUCK = registerSoundEvents("luck_effect");
     public static final RegistryObject<SoundEvent> WHOOOOSH = registerSoundEvents("whoooosh");
+    public static final RegistryObject<SoundEvent> ARROW_MISS = registerSoundEvents("arrow_miss");
 
 
 

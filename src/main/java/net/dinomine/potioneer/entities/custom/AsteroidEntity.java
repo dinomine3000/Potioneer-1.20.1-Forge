@@ -1,5 +1,7 @@
 package net.dinomine.potioneer.entities.custom;
 
+import net.dinomine.potioneer.beyonder.abilities.AbilityFunctionHelper;
+import net.dinomine.potioneer.beyonder.damages.PotioneerDamage;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
@@ -7,6 +9,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -76,7 +79,7 @@ public class AsteroidEntity extends Entity implements GeoEntity {
         super.tick();
 
         if(onGround()){
-            level().explode(this, getX(), getY(), getZ(), 5, true, Level.ExplosionInteraction.TNT);
+            level().explode(this, PotioneerDamage.asteroid((ServerLevel) level()), null, position(), 5, true, Level.ExplosionInteraction.BLOCK);
             kill();
         } else {
             Vec3 motion = rotateImpactVector(entityData.get(DIRECTION)).scale(SPEED);

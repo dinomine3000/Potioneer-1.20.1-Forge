@@ -27,8 +27,8 @@ public class BeyonderDefensiveCooldownEffect extends BeyonderEffect {
 
     @Override
     public boolean onTakeDamage(LivingDamageEvent event, LivingEntity victim, LivingEntity attacker,
-                                LivingEntityBeyonderCapability victimCap, Optional<LivingEntityBeyonderCapability> optAttackerCap) {
-        if(attacker == null || optAttackerCap.isEmpty()) return false;
+                                LivingEntityBeyonderCapability victimCap, Optional<LivingEntityBeyonderCapability> optAttackerCap, boolean calledOnVictim) {
+        if(attacker == null || optAttackerCap.isEmpty() || !calledOnVictim) return false;
         if(victim.level().isClientSide()) return false;
 
         LivingEntityBeyonderCapability attackerCap = optAttackerCap.get();

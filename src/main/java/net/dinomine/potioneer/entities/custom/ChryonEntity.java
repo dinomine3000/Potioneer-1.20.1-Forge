@@ -1,11 +1,13 @@
 package net.dinomine.potioneer.entities.custom;
 
+import net.dinomine.potioneer.beyonder.damages.PotioneerDamage;
 import net.dinomine.potioneer.entities.goals.ChryonPierceGoal;
 import net.dinomine.potioneer.entities.goals.ChryonSwingGoal;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -135,7 +137,8 @@ public class ChryonEntity extends Monster implements GeoEntity {
                         //TODO
                         //make custom damage source
                         //DamageSource dmg = new DamageSource(this.level().registryAccess().registryOrThrow(Registries.DAMAGE_TYPE).getHolderOrThrow(DamageTypesRegistry.CHRYON_PIERCE));
-                        this.getTarget().hurt(this.damageSources().mobAttack(this), 12);
+//                        this.getTarget().hurt(this.damageSources().mobAttack(this), 12);
+                        this.getTarget().hurt(PotioneerDamage.chryon_pierce((ServerLevel) level(), this), 12);
                     }
                     this.pierceCooldown = 200;
                 } if (this.pierceTime > 50) {

@@ -1,6 +1,5 @@
 package net.dinomine.potioneer.rituals.spirits.defaultGods;
 
-import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
 import net.dinomine.potioneer.beyonder.pages.PageRegistry;
 import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
 import net.dinomine.potioneer.config.PotioneerRitualsConfig;
@@ -95,7 +94,7 @@ public class WheelOfFortuneResponse extends Deity {
         Player target = getPlayer(inputData, level, false);
         if(target == null) return;
         target.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
-            cap.getLuckManager().castEvent(target);
+            cap.getLuckManager().castOrHurryEvent(target, cap);
             level.playSound( null, target, SoundEvents.BEACON_ACTIVATE, SoundSource.PLAYERS, 2, 1);
             System.out.println("Cast Event!");
         });

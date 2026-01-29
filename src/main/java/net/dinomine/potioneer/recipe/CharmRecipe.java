@@ -86,7 +86,7 @@ public class CharmRecipe implements Recipe<RitualContainer> {
                 baseCount += 1;
             }
         }
-        int sequenceLevel = Mth.clamp((int) (10 - simpleContainer.getReputationLevel()), 0, 9);
+        int sequenceLevel = Mth.clamp((int)(9 - scaling*simpleContainer.getReputationPercent()), 0, 9);
         return MysticalItemHelper.makeCharm(new ItemStack(ModItems.CHARM.get()), resultingEffectId,
                 simpleContainer.getPathwayId()*10 + sequenceLevel, durationScaling*baseCount*20);
     }

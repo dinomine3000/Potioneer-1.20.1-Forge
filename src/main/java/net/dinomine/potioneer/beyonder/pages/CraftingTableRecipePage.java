@@ -37,7 +37,7 @@ public class CraftingTableRecipePage extends RecipePage {
     @Override
     public void drawMiddle(GuiGraphics pGuiGraphics, ResourceLocation texture, int leftPos, int topPos, int imageWidth, int imageHeight, int textureWidth, int textureHeight) {
         int xOffset = 10;
-        pGuiGraphics.blit(texture, leftPos + xOffset, topPos + 45, 173, 182, 50, 50, textureWidth, textureHeight);
+        pGuiGraphics.blit(texture, leftPos + xOffset, topPos + 45, 156, 182, 50, 50, textureWidth, textureHeight);
         NonNullList<Ingredient> ingredients = getIngredients(getRecipe());
         for(int i = 0; i < ingredients.size(); i++){
             if(ingredients.get(i).getItems().length == 0) continue;

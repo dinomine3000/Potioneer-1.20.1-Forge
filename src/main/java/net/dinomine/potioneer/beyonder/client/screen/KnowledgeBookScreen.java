@@ -54,7 +54,7 @@ public class KnowledgeBookScreen extends Screen {
         ClientStatsData.getCapability().ifPresent(cap -> {
            pages = new ArrayList<>(cap.getPageList().stream().map(PageRegistry::getPageById).toList());
         });
-        System.out.println(pages.stream().map(page -> page.getTitle().getString()).toList());
+//        System.out.println(pages.stream().map(page -> page.getTitle().getString()).toList());
         PageRegistry.addDefaultPages(pages);
 
         if(ClientStatsData.getCapability().isPresent()){
@@ -104,7 +104,7 @@ public class KnowledgeBookScreen extends Screen {
         for(int i = 0; i < knownChapters.size(); i++){
             Page.Chapter chapter = knownChapters.get(i);
             CustomTextImageButton btn = new CustomTextImageButton(leftPos + 20 + Math.floorDiv(i, 6)*150, topPos + 15 + 25*(i%6),
-                    104, 19, 62, 183, 20, TEXTURE, TEXTURE_WIDTH, TEXTURE_HEIGHT, lamBtn -> openChapter(chapter))
+                    104, 19, 45, 183, 20, TEXTURE, TEXTURE_WIDTH, TEXTURE_HEIGHT, lamBtn -> openChapter(chapter))
                     .withText(Component.translatable("chapter.potioneer." + chapter.toString().toLowerCase()), this.font, 0, false);
             chapterButtons.put(chapter, btn);
             addRenderableWidget(btn);

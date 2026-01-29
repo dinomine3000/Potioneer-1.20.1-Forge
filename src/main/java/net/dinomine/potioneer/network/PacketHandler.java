@@ -12,10 +12,12 @@ import net.dinomine.potioneer.network.messages.effects.WaterPrisonEffectSTC;
 import net.dinomine.potioneer.network.messages.advancement.AdvancementFailMessageCTS;
 import net.dinomine.potioneer.network.messages.advancement.BeginAdvancementMessage;
 import net.dinomine.potioneer.network.messages.advancement.PlayerAdvanceMessage;
+import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.network.NetworkRegistry;
 import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.network.simple.SimpleChannel;
@@ -70,8 +72,14 @@ public class PacketHandler {
         INSTANCE.sendToServer(message);
     }
 
-    public static <T> void sendMessageToClientsAround(LivingEntity caster, int radius, T message) {
-        List<LivingEntity> entities = AbilityFunctionHelper.getLivingEntitiesAround(caster, radius);
+    public static <T> void sendMessageToClientsAround(BlockPos pos, Level level, int radius, T message) {
+        List<LivingEntity> entities = AbilityFunctionHelper.getLivingEntitiesAround(pos, level, radius);
+        for(LivingEntity ent: entities){
+            sendMessageSTC(message, ent);
+        }
+    }
+    public static <T> void sendMessageToClientsAround(LivingEntity target, int radius, T message) {
+        List<LivingEntity> entities = AbilityFunctionHelper.getLivingEntitiesAround(target, radius);
         for(LivingEntity ent: entities){
             sendMessageSTC(message, ent);
         }

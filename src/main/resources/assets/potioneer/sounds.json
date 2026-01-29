@@ -47,7 +47,13 @@
       "potioneer:whoooosh_3",
       "potioneer:whoooosh_4",
       "potioneer:whoooosh_5",
-      "potioneer:whoooosh_6"
+      "potioneer:whoooosh_6",
+      "potioneer:whoooosh_7"
+    ]
+  },
+  "arrow_miss": {
+    "sounds": [
+      "potioneer:projectile_dodge"
     ]
   }
 }

@@ -3,8 +3,11 @@ package net.dinomine.potioneer.beyonder.abilities;
 import com.google.common.base.Suppliers;
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
+import net.dinomine.potioneer.entities.ModEntities;
+import net.dinomine.potioneer.entities.custom.AsteroidEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.Mth;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attribute;
@@ -23,6 +26,19 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 public class AbilityFunctionHelper {
+
+    public static void summonAsteroid(BlockPos pos, Level level){
+        AsteroidEntity ent = new AsteroidEntity(ModEntities.ASTEROID.get(), level);
+        ent.setToHit(pos, level.random);
+        level.addFreshEntity(ent);
+    }
+
+    public static BlockPos getRandomNearbyBlockPos(BlockPos center, int horizontalRadius, int verticalRadius, RandomSource random) {
+        int dx = random.nextInt(-horizontalRadius, horizontalRadius + 1);
+        int dy = random.nextInt(-verticalRadius, verticalRadius + 1);
+        int dz = random.nextInt(-horizontalRadius, horizontalRadius + 1);
+        return center.offset(dx, dy, dz);
+    }
 
     /**
      * increments is how many jumps it can do between min and max. so youll have "increments + 1" levels of values.
@@ -64,8 +80,18 @@ public class AbilityFunctionHelper {
         return getLivingEntitiesAround(target, radius, ignored -> true);
     }
 
+    public static ArrayList<LivingEntity> getLivingEntitiesAround(BlockPos blockPos, Level level, double radius){
+        return getLivingEntitiesAround(blockPos, level, radius, ignored -> true);
+    }
+
     public static ArrayList<LivingEntity> getLivingEntitiesAround(LivingEntity target, double radius, Predicate<? super LivingEntity> pred){
         List<Entity> test = getEntitiesAroundPredicate(target, radius,
+                entity -> entity instanceof LivingEntity);
+        return new ArrayList<>(test.stream().map(ent -> (LivingEntity) ent).filter(pred).toList());
+    }
+
+    public static ArrayList<LivingEntity> getLivingEntitiesAround(BlockPos blockPos, Level level, double radius, Predicate<? super LivingEntity> pred){
+        List<Entity> test = getEntitiesAroundPredicate(blockPos, level, radius,
                 entity -> entity instanceof LivingEntity);
         return new ArrayList<>(test.stream().map(ent -> (LivingEntity) ent).filter(pred).toList());
     }

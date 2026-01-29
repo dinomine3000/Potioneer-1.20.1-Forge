@@ -47,7 +47,7 @@ public class PlayerResponse extends SpiritResponse {
             sequenceLevel = cap.getSequenceLevel();
         }
         //TODO maybe they can make charms if they have a characteristic in the offerings
-        RitualContainer container = new RitualContainer(inputPathway, 10 - sequenceLevel, inputData.offerings());
+        RitualContainer container = new RitualContainer(inputPathway, 9 - sequenceLevel, inputData.offerings());
         List<CharmRecipe> recipeMatches = level.getRecipeManager().getRecipesFor(CharmRecipe.Type.INSTANCE, container, level);
         BeyonderPathway pathway = Pathways.getPathwayById(inputPathway);
         List<String> availableCharms = pathway.canCraftEffectCharms(sequenceLevel);

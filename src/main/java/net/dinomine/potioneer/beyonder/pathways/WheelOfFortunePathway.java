@@ -8,7 +8,6 @@ import net.dinomine.potioneer.rituals.spirits.defaultGods.WheelOfFortuneResponse
 import net.dinomine.potioneer.sound.ModSounds;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
-import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
@@ -17,6 +16,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class WheelOfFortunePathway extends BeyonderPathway {
+    public static final double MINER_ACTING_INC = 1/(64*3f);
+    public static final double APPRAISER_ACTING_APPRAISE = 1/128d;
+    public static final double APPRAISER_ACTING_MINING = 1/128d;
+    public static final double GAMBLER_ACTING_SUC = 1/20d;
+    public static final double GAMBLER_ACTING_FAIL = 1/50d;
+    public static final double GAMBLER_ACTING_COOLDOWN = 1/256d;
 
     public WheelOfFortunePathway() {
         super("Wheel_of_Fortune", 0x808080, new int[]{2500, 1500, 1200, 900, 600, 450, 375, 250, 200, 100});
@@ -39,9 +44,9 @@ public class WheelOfFortunePathway extends BeyonderPathway {
     public float[] getStatsFor(int sequence){
         return switch (sequence%10){
             case 9 -> new float[]{0, 0, 2, 0, 0};
-            case 8 -> new float[]{0, 0, 4, 0, 2};
-            case 7 -> new float[]{4, 0, 6, 2, 2};
-            case 6 -> new float[]{5, 0, 8, 2, 4};
+            case 8 -> new float[]{2, 0, 2, 0, 2};
+            case 7 -> new float[]{4, 1, 4, 2, 2};
+            case 6 -> new float[]{5, 0, 4, 2, 4};
             case 5 -> new float[]{6, 0, 8, 2, 4};
             default -> new float[]{0, 0, 0, 0, 0};
         };
@@ -77,16 +82,13 @@ public class WheelOfFortunePathway extends BeyonderPathway {
             case 4:
             case 5:
             case 6:
+                abilities.add(Abilities.LUCK.create(atSequenceLevel));
             case 7:
-//                abilities.add(Abilities.MINER_BONE_MEAL.create(atSequenceLevel));
-//                abilities.add(Abilities.DODGE_DAMAGE.create(atSequenceLevel));
-//                abilities.add(Abilities.CALAMITY_INCREASE.create(atSequenceLevel));
                 abilities.add(Abilities.PATIENCE.create(atSequenceLevel));
                 abilities.add(Abilities.VELOCITY.create(atSequenceLevel));
                 abilities.add(Abilities.MINER_BONE_MEAL.create(atSequenceLevel));
                 abilities.add(Abilities.FORCE_COOLDOWN_ABILITY.create(atSequenceLevel));
                 abilities.add(Abilities.GAMBLING.create(atSequenceLevel));
-//                abilities.add(Abilities.GAMBLING.create(atSequenceLevel));
             case 8:
                 abilities.add(Abilities.WHEEL_KNOWLEDGE.create(atSequenceLevel));
                 abilities.add(Abilities.TARGET_APPRAISAL.create(atSequenceLevel));

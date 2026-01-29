@@ -23,9 +23,9 @@ public class BeyonderVelocityEffect extends BeyonderEffect {
     @Override
     public void onAcquire(LivingEntityBeyonderCapability cap, LivingEntity target) {
         if(movementSpeed == -1)
-            movementSpeed = VelocityAbility.levelToMaxMovement.apply(getSequenceLevel());
+            movementSpeed = cap.getLuckManager().getRandomNumber(1, VelocityAbility.levelToMaxMovement.apply(getSequenceLevel()), true, target.getRandom());
         if(attackSpeed == -1)
-            attackSpeed = VelocityAbility.levelToMaxAttack.apply(getSequenceLevel());
+            attackSpeed = cap.getLuckManager().getRandomNumber(1, VelocityAbility.levelToMaxAttack.apply(getSequenceLevel()), true, target.getRandom());
     }
 
     @Override

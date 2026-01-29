@@ -20,6 +20,7 @@ public class TextPage extends Page{
 
     @Override
     public void draw(GuiGraphics pGuiGraphics, ResourceLocation texture, int leftPos, int topPos, int imageWidth, int imageHeight, int textureWidth, int textureHeight) {
-        pGuiGraphics.drawWordWrap(Minecraft.getInstance().font, text, leftPos, topPos, 120, 0);
+        drawScaledText(pGuiGraphics, text, leftPos, topPos, 0, 120);
+        //pGuiGraphics.drawWordWrap(Minecraft.getInstance().font, text, leftPos, topPos, 120, 0);
     }
 }

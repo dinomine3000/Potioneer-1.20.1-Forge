@@ -36,5 +36,7 @@ public class DataGenerators {
 
         generator.addProvider(event.includeServer(), new ModGlobalLootModifiersProvider(packOutput));
 
+        generator.addProvider(event.includeServer(), new DamageTypeGenerator(generator.getPackOutput(), event.getLookupProvider(), Potioneer.MOD_ID, event.getExistingFileHelper()));
+
     }
 }

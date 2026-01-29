@@ -134,10 +134,21 @@ public class PlayerEffectsManager {
             attacker = (LivingEntity) event.getSource().getDirectEntity();
         } else attacker = null;
         for(BeyonderEffect effect: passives){
-            if(effect.onTakeDamage(event, victim, attacker, cap, attacker == null ? Optional.empty() : attacker.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve())){
+            if(effect.onTakeDamage(event, victim, attacker, cap, attacker == null ? Optional.empty() : attacker.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve(), true)){
                 if(event.isCancelable()) event.setCanceled(true);
                 else event.setAmount(0);
                 return;
+            }
+        }
+        if(attacker == null) return;
+        if(attacker.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve().isPresent()){
+            LivingEntityBeyonderCapability attackerCap = attacker.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve().get();
+            for(BeyonderEffect effect: attackerCap.getEffectsManager().passives){
+                if(effect.onTakeDamage(event, victim, attacker, cap, Optional.of(attackerCap), false)){
+                    if(event.isCancelable()) event.setCanceled(true);
+                    else event.setAmount(0);
+                    return;
+                }
             }
         }
 //        if(hasEffect(BeyonderEffects.EFFECT.TYRANT_ELECTRIFICATION)){

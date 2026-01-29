@@ -31,6 +31,11 @@ public class PotioneerCommonConfig {
     public static final ForgeConfigSpec.BooleanValue COOLDOWN_TARGET_ALLIES;
     public static final ForgeConfigSpec.BooleanValue COOLDOWN_EFFECT_STACKS;
     public static final ForgeConfigSpec.BooleanValue COOLDOWN_ABILITY_CAST_COOLDOWN;
+    public static final ForgeConfigSpec.BooleanValue USE_ALTERNATE_LUCK_FUNCTION;
+    public static final ForgeConfigSpec.IntValue LUCK_LV2_THRESHOLD;
+    public static final ForgeConfigSpec.IntValue LUCK_LV3_THRESHOLD;
+    public static final ForgeConfigSpec.IntValue MINIMUM_LUCK_EVENT_TIMER;
+    public static final ForgeConfigSpec.IntValue MAXIMUM_LUCK_EVENT_TIMER;
 
     public static final ForgeConfigSpec.EnumValue<CharacteristicDropCriteria> CHARACTERISTIC_DROP_CRITERIA_ENUM_VALUE;
     public static final ForgeConfigSpec.BooleanValue DROP_ALL_CHARACTERISTICS;
@@ -138,6 +143,25 @@ public class PotioneerCommonConfig {
                         "\nJust a warning, if someone gains pages while this is set to 'false', they wont lose them even if you later set this to 'true' unless you use a command to fully reset their pages.")
                 .define("lose_pages_on_drop_sequence", false);
 
+        LUCK_LV3_THRESHOLD = BUILDER.comment("What should be the luck threshold for very (un)lucky events?" +
+                        "\nIf the entities absolute luck is bigger than this value, they'll receive a very luck/unluck event." +
+                        "\nSetting this to 0 means that the only luck events that are cast are the very extreme ones.")
+                .defineInRange("very_lucky_threshold", 600, 0, 1000);
+
+        LUCK_LV2_THRESHOLD = BUILDER.comment("What should be the luck threshold for mildly (un)lucky events?" +
+                        "\nIf the entities absolute luck is bigger than this value (but lower than the one above) they'll receive a very luck/unluck event." +
+                        "\nNote: If this value is bigger than or equal to very_lucky_threshold, then these mid-level events will never trigger." +
+                        "\nThe weakest events, where neither of these 2 thresholds trigger, can't be disabled")
+                .defineInRange("mildly_lucky_threshold", 300, 0, 1000);
+
+        MINIMUM_LUCK_EVENT_TIMER = BUILDER.comment("What is the minimum time, in seconds, that an event should take to trigger once its cast?" +
+                        "\nSetting this to zero means luck events can be triggered immediately.")
+                .defineInRange("minimum_luck_event_countdown", 5, 0, Integer.MAX_VALUE);
+
+        MAXIMUM_LUCK_EVENT_TIMER = BUILDER.comment("What is the maximum time, in seconds, that an event should take to trigger once its cast?" +
+                        "\nSetting this to zero means luck events will always trigger immediately.")
+                .defineInRange("maximum_luck_event_countdown", 60, 0, Integer.MAX_VALUE);
+
         PATIENCE_TIME_LIMIT = BUILDER.comment("\n\n------Ability Configs-----\n" +
                         "The Patience ability of the Wheel of Fortune pathway will aim to grant you luck up to N luck if you have less than that. " +
                         "\nThe growth rate is balanced such that, starting with 0 luck, after a certain amount of time, you reach a luck limit for your sequence, after which it takes much longer to get luck." +
@@ -169,6 +193,13 @@ public class PotioneerCommonConfig {
                         "\nI know this is hard to understand, I can't explain it well either. There's also the part where the caster is just immune to casts of this ability from beyonders of a lower level." +
                         "\nBasically, imagine the caster could cast the ability multiple times a second. Should each of those casts put abilities on cooldown or just the first one?")
                 .define("cooldown_ability_cooldowns", false);
+
+        USE_ALTERNATE_LUCK_FUNCTION = BUILDER.comment("Should the luck manager of everyone be based on the original function or on the alternate one?" +
+                        "\nYou can see how these functions transform chances (20% -> 50% if you're luck, for example) in this desmos link: https://www.desmos.com/calculator/91a36c649f" +
+                        "\nIn short, the original function plateaus at relatively low values (around 300 luck, positive or negative) growing much slower past this point." +
+                        "\nThe alternate function keeps changing consistently at every luck value, so it could be considered fairer but values like -200 luck don't have much of a negative impact on gameplay." +
+                        "\nThe way luck itself is gained and lost, however, is not controlled by this config. This just controls how, based on that luck value, the player can have their probabilities changed from 50% to either 20% if they're unlucky or 80% if they are lucky.")
+                .define("use_alternate_luck_function", false);
 
 
         BUILDER.pop();

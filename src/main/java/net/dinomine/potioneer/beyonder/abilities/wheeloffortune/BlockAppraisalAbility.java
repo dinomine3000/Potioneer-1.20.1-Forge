@@ -1,6 +1,7 @@
 package net.dinomine.potioneer.beyonder.abilities.wheeloffortune;
 
 import net.dinomine.potioneer.beyonder.abilities.Ability;
+import net.dinomine.potioneer.beyonder.pathways.WheelOfFortunePathway;
 import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
 import net.dinomine.potioneer.util.ParticleMaker;
 import net.minecraft.core.BlockPos;
@@ -64,7 +65,7 @@ public class BlockAppraisalAbility extends Ability {
                     }
                 });
             } else {
-                cap.getCharacteristicManager().progressActing(1/128d, 8);
+                cap.getCharacteristicManager().progressActing(WheelOfFortunePathway.APPRAISER_ACTING_APPRAISE, 8);
                 cap.requestActiveSpiritualityCost(cost());
             }
             //the early return above guarantees that the ability only returns true if it found anything.
@@ -102,6 +103,7 @@ public class BlockAppraisalAbility extends Ability {
             component.append(entry.getKey().getName()).append(Component.literal(": " + entry.getValue() + "\n"));
         }
         target.sendSystemMessage(Component.translatable("ability.potioneer.ores_found", component));
+        cap.getCharacteristicManager().progressActing(WheelOfFortunePathway.APPRAISER_ACTING_APPRAISE, 8);
         return true;
     }
 

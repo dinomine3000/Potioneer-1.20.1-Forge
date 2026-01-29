@@ -16,6 +16,7 @@ import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.fml.loading.FMLEnvironment;
 
+import java.util.Map;
 import java.util.Optional;
 
 public class RitualRecipePage extends RecipePage {
@@ -25,6 +26,7 @@ public class RitualRecipePage extends RecipePage {
 
     public RitualRecipePage(Chapter chapter, Component title, String id, ResourceLocation craftingRecipeLocation){
         super(chapter, title, id, craftingRecipeLocation);
+        setDrawBottom(false);
     }
 
     public RitualRecipePage(Chapter chapter, Component title, String id){
@@ -51,23 +53,69 @@ public class RitualRecipePage extends RecipePage {
     @Override
     public void drawMiddle(GuiGraphics pGuiGraphics, ResourceLocation texture, int leftPos, int topPos, int imageWidth, int imageHeight, int textureWidth, int textureHeight) {
         validateRecipe();
-        pGuiGraphics.blit(texture, leftPos + 32, topPos + 45, 173, 182, 50, 50, textureWidth, textureHeight);
+
+        pGuiGraphics.blit(texture, leftPos + 20, topPos + 65, 206, 182, 76, 72, textureWidth, textureHeight);
         NonNullList<PotionIngredient> ingredients = getIngredients();
         PotionIngredient base = getBaseMaterial();
-        for(int i = 0; i < Math.min(ingredients.size() + 3, 9); i++){
-            int px = leftPos + 32 + (i%3)*17;
-            int py = topPos + 45 + Math.floorDiv(i, 3)*17;
-            if(i < 3){
-                if(i == 1)
-                    pGuiGraphics.renderFakeItem(base.getRepresentativeStack(), px, py);
-                continue;
+        pGuiGraphics.renderFakeItem(base.getRepresentativeStack(), leftPos + 50, topPos + 93);
+        for(int i = 0; i < ingredients.size(); i++) {
+            PotionIngredient ingredient = ingredients.get(i);
+            int px = leftPos, py = topPos;
+            switch (i) {
+                case 0:
+                    px += 50;
+                    py += 72;
+                    break;
+                case 1:
+                    px += 72;
+                    py += 82;
+                    break;
+                case 2:
+                    px += 72;
+                    py += 104;
+                    break;
+                case 3:
+                    px += 50;
+                    py += 114;
+                    break;
+                case 4:
+                    px += 28;
+                    py += 104;
+                    break;
+                case 5:
+                    px += 28;
+                    py += 82;
+                    break;
+                default:
+                    px += 50;
+                    py += 93;
             }
-            PotionIngredient ingredient = ingredients.get(i - 3);
-            if(ingredient.isEmpty()) continue;
-            ItemStack stack = ingredient.getRepresentativeStack();
-            pGuiGraphics.renderFakeItem(stack, px, py);
+            pGuiGraphics.renderFakeItem(ingredient.getRepresentativeStack(), px, py);
             if(ingredient.getCount() > 1)
-                pGuiGraphics.drawString(Minecraft.getInstance().font, String.valueOf(ingredient.getCount()), px + 12, py + 12, 0xFFFFFF, true);
+                pGuiGraphics.drawString(Minecraft.getInstance().font, String.valueOf(ingredient.getCount()), px + 13, py + 13, 0xFFFFFF, true);
         }
+//            int px = leftPos + 32 + (i%3)*17;
+//            int py = topPos + 45 + Math.floorDiv(i, 3)*17;
+//            if(i < 3){
+//                if(i == 1)
+//                continue;
+//            }
+//            PotionIngredient ingredient = ingredients.get(i - 3);
+//            if(ingredient.isEmpty()) continue;
+//            ItemStack stack = ingredient.getRepresentativeStack();
+//            pGuiGraphics.renderFakeItem(stack, px, py);
+//            if(ingredient.getCount() > 1)
+//                pGuiGraphics.drawString(Minecraft.getInstance().font, String.valueOf(ingredient.getCount()), px + 12, py + 12, 0xFFFFFF, true);
+//        }
+//        for(int i = 0; i < ingredients.size(); i++){
+//            if(ingredients.get(i).getCount() == 0) continue;
+//            ItemStack stack = ingredients.get(i).getRepresentativeStack();
+//            pGuiGraphics.renderFakeItem(stack, leftPos + 20 + (i%3)*17, topPos + 45 + Math.floorDiv(i, 3)*17);
+//        }
+//        ItemStack result = getResult(getRecipe());
+//
+//        pGuiGraphics.renderFakeItem(result, leftPos + xOffset + 75, topPos + 45 + 17);
+
+//        pGuiGraphics.blit(texture, leftPos + 32, topPos + 45, 173, 182, 50, 50, textureWidth, textureHeight);
     }
 }

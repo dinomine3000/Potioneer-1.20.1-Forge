@@ -26,21 +26,10 @@ public class Abilities {
 
     // -------------------------- WHEEL OF FORTUNE ---------------------------------------------------
 
-
-    public static final AbilityFactory LUCK_BOOST = registerAbility("luck_boost",
-            LuckBoostAbility::new,
-            4, 0, 30);
-
-    public static final AbilityFactory LUCK_TREND = registerAbility("lucky_trend",
-            (Integer sequenceLevel) -> PassiveAbility.createAbility(sequenceLevel, BeyonderEffects.WHEEL_LUCK_TREND,
-                            (ignored) -> "lucky_trend")
-                    .enabledOnAcquire(),
-            10, 0, 0);
-
     //retweaked
     public static final AbilityFactory CONJURE_PICKAXE = registerAbility("pick",
             ConjurePickaxeAbility::new,
-            2, 0, 10).hasSecondaryFunction();
+            2, 0, level -> 40 + 20*(10-level)).hasSecondaryFunction();
 
     //retweaked
     public static final AbilityFactory MINING_SPEED = registerAbility("mining",
@@ -118,11 +107,20 @@ public class Abilities {
 
     //retweaked
     public static final AbilityFactory FORCE_COOLDOWN_ABILITY = registerAbility("aoe_cooldown",
-            CooldownAbility::new, 11, 0, level-> 10 + 10*(9-level)).passiveAndActive().hasSecondaryFunction();
+            CooldownAbility::new, 18, 0, level-> 10 + 10*(9-level)).passiveAndActive().hasSecondaryFunction();
 
     //retweaked
     public static final AbilityFactory GAMBLING = registerAbility("gambling",
-            GamblingAbility::new,4, 0, 30);
+            GamblingAbility::new,17, 0, 30).hasSecondaryFunction();
+
+    //retweaked
+    public static final AbilityFactory LUCK = registerAbility("luck",
+            (Integer level) -> PassiveAbility.createAbility(level, BeyonderEffects.WHEEL_LUCK, ignored -> "luck").enabledOnAcquire(),
+            0, 0, 0).passive();
+    //retweaked
+    public static final AbilityFactory FATE = registerAbility("fate",
+            (Integer level) -> PassiveAbility.createAbility(level, BeyonderEffects.WHEEL_LUCK, ignored -> "luck").enabledOnAcquire(),
+            0, 0, 0).passiveAndActive();
 
 //    public static final AbilityFactory DODGE_DAMAGE = registerAbility("luck_dodge",
 //            (Integer sequenceLevel) -> PassiveAbility.createAbility(sequenceLevel, BeyonderEffects.WHEEL_LUCK_DODGE,

@@ -100,6 +100,11 @@ public abstract class BeyonderPathway {
 //        };
 //    }
 
+    /**
+     * gets the stats for the specific sequence level
+     * @param sequence
+     * @return {hp, dmg, armor, toughness, knocknack resistance}
+     */
     public abstract float[] getStatsFor(int sequence);
 
     public int getIconX() {

@@ -1,36 +1,42 @@
 package net.dinomine.potioneer.network.messages.effects;
 
+import net.dinomine.potioneer.util.BufferUtils;
 import net.dinomine.potioneer.util.ParticleMaker;
 import net.minecraft.client.Minecraft;
-import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.network.NetworkEvent;
+import org.joml.Vector3f;
 
 import java.util.function.Supplier;
 
 public class GeneralAreaEffectMessage {
-    public BlockPos blockPos;
+    ParticleMaker.Preset preset;
+    public Vector3f centerPos;
     public double radius;
 
-    public GeneralAreaEffectMessage(BlockPos pos, double radius){
-        this.blockPos = pos;
+    public GeneralAreaEffectMessage(ParticleMaker.Preset preset, Vector3f pos, double radius){
+        this.preset = preset;
+        this.centerPos = pos;
         this.radius = radius;
     }
 
     public static void encode(GeneralAreaEffectMessage msg, FriendlyByteBuf buffer){
+        BufferUtils.writeStringToBuffer(msg.preset.name(), buffer);
         buffer.writeDouble(msg.radius);
-        buffer.writeBlockPos(msg.blockPos);
+        buffer.writeVector3f(msg.centerPos);
     }
 
     public static GeneralAreaEffectMessage decode(FriendlyByteBuf buffer){
+        ParticleMaker.Preset preset = ParticleMaker.Preset.valueOf(BufferUtils.readString(buffer));
         double radius = buffer.readDouble();
-        BlockPos pos = buffer.readBlockPos();
-        return new GeneralAreaEffectMessage(pos, radius);
+        Vector3f pos = buffer.readVector3f();
+        return new GeneralAreaEffectMessage(preset, pos, radius);
     }
 
 
@@ -55,7 +61,14 @@ class GeneralAreaEffectClient
         if (player != null)
         {
             Level level = player.level();
-            ParticleMaker.particleExplosionRandom(level, msg.radius, msg.blockPos.getX(), msg.blockPos.getY(), msg.blockPos.getZ());
+            switch (msg.preset){
+                case AOE_GRAVITY:
+                    ParticleMaker.fallingGlow(level, new Vec3(msg.centerPos), msg.radius);
+                    break;
+                case AOE_END_ROD:
+                    ParticleMaker.particleExplosionRandom(level, msg.radius, msg.centerPos.x, msg.centerPos.y, msg.centerPos.z);
+                    break;
+            }
         }
     }
 }

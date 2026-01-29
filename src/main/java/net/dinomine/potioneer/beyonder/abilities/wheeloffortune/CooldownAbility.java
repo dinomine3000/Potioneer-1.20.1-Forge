@@ -1,7 +1,6 @@
 package net.dinomine.potioneer.beyonder.abilities.wheeloffortune;
 
 import net.dinomine.potioneer.beyonder.abilities.AbilityFunctionHelper;
-import net.dinomine.potioneer.beyonder.abilities.AbilityKey;
 import net.dinomine.potioneer.beyonder.abilities.misc.PassiveAbility;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffect;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
@@ -11,8 +10,6 @@ import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
 import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
 import net.dinomine.potioneer.beyonder.player.PlayerLuckManager;
 import net.dinomine.potioneer.config.PotioneerCommonConfig;
-import net.dinomine.potioneer.network.PacketHandler;
-import net.dinomine.potioneer.network.messages.effects.GeneralAreaEffectMessage;
 import net.dinomine.potioneer.savedata.AllySystemSaveData;
 import net.dinomine.potioneer.util.ParticleMaker;
 import net.minecraft.network.chat.Component;
@@ -20,7 +17,6 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class CooldownAbility extends PassiveAbility {
@@ -52,20 +48,21 @@ public class CooldownAbility extends PassiveAbility {
             ParticleMaker.particleExplosionGrid(target.level(), effectRadius, target.position().x, target.position().y, target.position().z);
             return true;
         }
-        PacketHandler.sendMessageToClientsAround(target, effectRadius*2, new GeneralAreaEffectMessage(target.getOnPos(), effectRadius));
+        ParticleMaker.summonAOEParticles(target.level(), target.position(), 2*effectRadius, effectRadius, ParticleMaker.Preset.AOE_END_ROD);
         List<LivingEntity> victims = AbilityFunctionHelper.getLivingEntitiesAround(target, effectRadius);
         for(LivingEntity ent: victims){
             if(!PotioneerCommonConfig.COOLDOWN_TARGET_ALLIES.get() && ent instanceof Player playerVictim && target instanceof Player playerCaster && playerVictim != playerCaster){
                 if(AllySystemSaveData.from((ServerLevel) target.level()).isPlayerAllyOf(playerVictim.getUUID(), playerCaster.getUUID())) continue;
             }
             ent.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(victimCap -> {
+                PlayerLuckManager proxyManager = new PlayerLuckManager(cap.getLuckManager().getLuck() - victimCap.getLuckManager().getLuck());
+                if(ent.getId() == target.getId()) proxyManager = cap.getLuckManager();
+                else cap.getCharacteristicManager().progressActing(WheelOfFortunePathway.GAMBLER_ACTING_COOLDOWN, 7);
                 if(PotioneerCommonConfig.COOLDOWN_ABILITY_CAST_COOLDOWN.get()){
                     victimCap.getEffectsManager().addOrReplaceEffect(createCooldownEffectInstance(getSequenceLevel(), minCooldown, maxCooldown, 20*20),
                             victimCap, ent);
                 } else {
-                    PlayerLuckManager proxyManager = new PlayerLuckManager(cap.getLuckManager().getLuck() - victimCap.getLuckManager().getLuck());
-                    if(ent.getId() == target.getId()) proxyManager = cap.getLuckManager();
-                    BeyonderCooldownEffect.disableRandomAbilities(victimCap, proxyManager, ent, true, minCooldown, maxCooldown);
+                    BeyonderCooldownEffect.disableRandomAbilities(victimCap, proxyManager, ent, ent.getId() != target.getId(), minCooldown, maxCooldown);
                 }
 //                if(!victimCap.getEffectsManager().hasEffectOrBetter(effect.getEffectId(), getSequenceLevel())){
 //                    //if the victim doesnt have an effect of this level or lower -> just apply the effect

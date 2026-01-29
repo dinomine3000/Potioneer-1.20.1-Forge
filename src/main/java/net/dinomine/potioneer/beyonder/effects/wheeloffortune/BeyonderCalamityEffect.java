@@ -36,12 +36,12 @@ public class BeyonderCalamityEffect extends BeyonderEffect {
     }
 
     @Override
-    public boolean onTakeDamage(LivingDamageEvent event, LivingEntity victim, LivingEntity attacker, LivingEntityBeyonderCapability victimCap, Optional<LivingEntityBeyonderCapability> optAttackerCap) {
-        if(attacker == null || optAttackerCap.isEmpty()) return false;
+    public boolean onTakeDamage(LivingDamageEvent event, LivingEntity victim, LivingEntity attacker, LivingEntityBeyonderCapability victimCap, Optional<LivingEntityBeyonderCapability> optAttackerCap, boolean calledOnVictim) {
+        if(attacker == null || optAttackerCap.isEmpty() || !calledOnVictim) return false;
         LivingEntityBeyonderCapability attackerCap = optAttackerCap.get();
         if(sequenceLevel <= 7){
-            if(!attackerCap.getLuckManager().passesLuckCheck(9/10f, (int) (event.getAmount()*10), 0, attacker.getRandom())){
-                attackerCap.getLuckManager().castEvent(attacker);
+            if(!attackerCap.getLuckManager().passesLuckCheck(9/10f, (int) (event.getAmount()*5), 0, attacker.getRandom())){
+                attackerCap.getLuckManager().castEventNoRefresh(attacker);
             }
         }
         return false;

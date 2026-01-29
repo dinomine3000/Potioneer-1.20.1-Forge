@@ -23,6 +23,12 @@ public class WheelKnowledgeAbility extends MysticalKnowledgeAbility {
     protected List<Page> getPages(int sequenceLevel) {
         List<Page> result = new ArrayList<>();
         switch(sequenceLevel){
+            case 1:
+            case 2:
+            case 3:
+            case 4:
+            case 5:
+            case 6:
             case 7:
                 result.addAll(List.of(PageRegistry.CHARM_PATIENCE, PageRegistry.CHARM_GAMBLE, PageRegistry.CHARM_SPEED, PageRegistry.CHARM_COOLDOWN));
             case 8:
