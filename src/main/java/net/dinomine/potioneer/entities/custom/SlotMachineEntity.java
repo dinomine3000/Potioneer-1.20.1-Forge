@@ -7,6 +7,7 @@ import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
+import org.joml.Vector3f;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.core.animation.AnimatableManager;
@@ -21,7 +22,7 @@ public class SlotMachineEntity extends AbstractEffectEntity implements GeoEntity
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
     public SlotMachineEntity(EntityType<?> pEntityType, Level pLevel) {
         super(pEntityType, pLevel);
-        setOffset(2.5f);
+        setOffset(new Vector3f(0, 2.5f, -1));
     }
 
     @Override

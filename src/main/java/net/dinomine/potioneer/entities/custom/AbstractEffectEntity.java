@@ -18,7 +18,7 @@ import java.util.UUID;
 public class AbstractEffectEntity extends Entity {
     public static final EntityDataAccessor<Vector3f> TARGET_POS = SynchedEntityData.defineId(AbstractEffectEntity.class, EntityDataSerializers.VECTOR3);
     public static final EntityDataAccessor<Float> ROTATION = SynchedEntityData.defineId(AbstractEffectEntity.class, EntityDataSerializers.FLOAT);
-    public static final EntityDataAccessor<Float> OFFSET = SynchedEntityData.defineId(AbstractEffectEntity.class, EntityDataSerializers.FLOAT);
+    public static final EntityDataAccessor<Vector3f> OFFSET = SynchedEntityData.defineId(AbstractEffectEntity.class, EntityDataSerializers.VECTOR3);
     private UUID targetId = null;
     private LivingEntity targetEntity = null;
 
@@ -34,7 +34,7 @@ public class AbstractEffectEntity extends Entity {
         }
     }
 
-    protected void setOffset(float offset){
+    protected void setOffset(Vector3f offset){
         getEntityData().set(OFFSET, offset);
     }
 
@@ -54,8 +54,16 @@ public class AbstractEffectEntity extends Entity {
                 targetEntity = (LivingEntity) ((ServerLevel) level()).getEntity(targetId);
                 if(targetEntity == null) kill();
             }
-            if(targetEntity != null)
-                getEntityData().set(TARGET_POS, targetEntity.position().with(Direction.Axis.Y, targetEntity.position().y + getEntityData().get(OFFSET)).toVector3f());
+            if(targetEntity != null){
+                Vector3f offset = new Vector3f(getEntityData().get(OFFSET));
+
+                float yawRad = (float) Math.toRadians(-getYRot());
+                offset.rotateY(yawRad);
+
+                Vector3f targetPos = targetEntity.position().toVector3f();
+
+                getEntityData().set(TARGET_POS, targetPos.add(offset));
+            }
             if(targetEntity != null)
                 getEntityData().set(ROTATION, targetEntity.getYRot());
         }
@@ -68,7 +76,7 @@ public class AbstractEffectEntity extends Entity {
     protected void defineSynchedData() {
         this.entityData.define(TARGET_POS, new Vector3f());
         this.entityData.define(ROTATION, 0f);
-        this.entityData.define(OFFSET, 0f);
+        this.entityData.define(OFFSET, new Vector3f());
     }
 
     @Override
@@ -78,6 +86,12 @@ public class AbstractEffectEntity extends Entity {
             float y = compoundTag.getFloat("tarY");
             float z = compoundTag.getFloat("tarZ");
             getEntityData().set(TARGET_POS, new Vector3f(x, y, z));
+        }
+        if(compoundTag.contains("offsetX")){
+            float x = compoundTag.getFloat("offsetX");
+            float y = compoundTag.getFloat("offsetY");
+            float z = compoundTag.getFloat("offsetZ");
+            getEntityData().set(OFFSET, new Vector3f(x, y, z));
         }
         if(compoundTag.contains("targetId"))
             targetId = compoundTag.getUUID("targetId");
@@ -89,6 +103,9 @@ public class AbstractEffectEntity extends Entity {
         compoundTag.putFloat("tarX", getEntityData().get(TARGET_POS).x());
         compoundTag.putFloat("tarY", getEntityData().get(TARGET_POS).y());
         compoundTag.putFloat("tarZ", getEntityData().get(TARGET_POS).z());
+        compoundTag.putFloat("offsetX", getEntityData().get(OFFSET).x());
+        compoundTag.putFloat("offsetY", getEntityData().get(OFFSET).y());
+        compoundTag.putFloat("offsetZ", getEntityData().get(OFFSET).z());
         compoundTag.putUUID("targetId", targetId);
     }
 }
