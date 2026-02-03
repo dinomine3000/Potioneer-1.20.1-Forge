@@ -423,6 +423,13 @@ public class ClientAbilitiesData {
         return abilities.containsKey(key);
     }
 
+    public static boolean hasAbility(String ablId){
+        for(AbilityKey key: abilities.keySet()){
+            if(key.isSameAbility(ablId)) return true;
+        }
+        return false;
+    }
+
     public static ArtifactHolder getArtifact(AbilityKey key) {
         return ClientStatsData.getCapability().get().getAbilitiesManager().getArtifact(key);
     }

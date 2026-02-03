@@ -143,7 +143,7 @@ public class CharmEntity extends Entity implements GeoEntity {
             }
             if(targetEntity == null){
                 targetEntity = (LivingEntity) ((ServerLevel) level()).getEntity(targetId);
-                if(targetId == null) kill();
+                if(targetEntity == null) kill();
             }
             if(targetEntity != null)
                 getEntityData().set(TARGET_POS, targetEntity.position().toVector3f());

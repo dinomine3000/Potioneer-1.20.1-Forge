@@ -39,17 +39,23 @@ public class BeyonderEffects {
     public static final BeyonderEffectType WHEEL_SILK = registerEffect("silk", new BeyonderEffectType(BeyonderSilkTouchEffect::new));
     public static final BeyonderEffectType WHEEL_PATIENCE = registerEffect("patience", new BeyonderEffectType(BeyonderPatienceEffect::new));
     public static final BeyonderEffectType WHEEL_INSTANT_LUCK = registerEffect("instant_luck", new BeyonderEffectType(BeyonderInstantLuckEffect::new));
-    public static final BeyonderEffectType WHEEL_LUCK = registerEffect("luck", new BeyonderEffectType(BeyonderLuckEffect::new));
-    public static final BeyonderEffectType WHEEL_LUCK_TREND = registerEffect("lucky_trend", new BeyonderEffectType(BeyonderLuckTrendEffect::new));
-    public static final BeyonderEffectType WHEEL_TEMP_LUCK = registerEffect("temp_luck", new BeyonderEffectType(BeyonderTempLuckEffect::new));
+    public static final BeyonderEffectType WHEEL_LUCK_EFFECT = registerEffect("luck_effect", new BeyonderEffectType(BeyonderLuckEffect::new));
+    public static final BeyonderEffectType WHEEL_LUCK = registerEffect("luck", new BeyonderEffectType(BeyonderTempLuckEffect::new));
     public static final BeyonderEffectType WHEEL_ZERO_DAMAGE = registerEffect("zero_damage", new BeyonderEffectType(BeyonderZeroDamageEffect::new));
     public static final BeyonderEffectType WHEEL_MINING = registerEffect("mining", new BeyonderEffectType(BeyonderMiningSpeedEffect::new));
-    public static final BeyonderEffectType WHEEL_APPRAISAL = registerEffect("appraisal", new BeyonderEffectType(BeyonderAppraisalEffect::new));
     public static final BeyonderEffectType WHEEL_VELOCITY = registerEffect("velocity", new BeyonderEffectType(BeyonderVelocityEffect::new));
     public static final BeyonderEffectType WHEEL_COOLDOWN = registerEffect("cooldown", new BeyonderEffectType(BeyonderCooldownEffect::new));
     public static final BeyonderEffectType WHEEL_COOLDOWN_DEFENCE = registerEffect("defensive_cooldown", new BeyonderEffectType(BeyonderDefensiveCooldownEffect::new));
     public static final BeyonderEffectType WHEEL_GAMBLING = registerEffect("gambling", new BeyonderEffectType(BeyonderGamblingEffect::new));
     public static final BeyonderEffectType WHEEL_CRIT = registerEffect("critical", new BeyonderEffectType(BeyonderCritEffect::new));
+    public static final BeyonderEffectType WHEEL_ARROW = registerEffect("arrow_gravitate", new BeyonderEffectType(BeyonderArrowGravitateEffect::new));
+    public static final BeyonderEffectType WHEEL_ZERO_BLOCK = registerEffect("zero_block", new BeyonderEffectType(BeyonderZeroDamageBlockEffect::new));
+    public static final BeyonderEffectType WHEEL_FATE = registerEffect("fate", new BeyonderEffectType(BeyonderFateEffect::new));
+    public static final BeyonderEffectType WHEEL_PHASING = registerEffect("phasing", new BeyonderEffectType(BeyonderPhasingEffect::new));
+    public static final BeyonderEffectType WHEEL_INSTANT_BAD_LUCK = registerEffect("instant_bad_luck", new BeyonderEffectType(BeyonderInstantUnluckEffect::new));
+    public static final BeyonderEffectType WHEEL_DAMAGE_RECORDING = registerEffect("damage_recording", new BeyonderEffectType(BeyonderDamageRecordingEffect::new));
+    public static final BeyonderEffectType WHEEL_BAD_LUCK = registerEffect("bad_luck", new BeyonderEffectType(BeyonderTempBadLuckEffect::new));
+    public static final BeyonderEffectType WHEEL_CHAOTIC_LUCK = registerEffect("chaotic_luck", new BeyonderEffectType(BeyonderChaoticLuckEffect::new));
     public static final BeyonderEffectType TYRANT_WATER_AFFINITY = registerEffect("water_affinity", new BeyonderEffectType(BeyonderWaterAffinityEffect::new));
     public static final BeyonderEffectType TYRANT_ELECTRIFICATION = registerEffect("electrification", new BeyonderEffectType(BeyonderElectrificationEffect::new));
     public static final BeyonderEffectType TYRANT_LIGHTNING_TARGET = registerEffect("lightning_target", new BeyonderEffectType(BeyonderLightningTargetEffect::new));
@@ -118,7 +124,7 @@ public class BeyonderEffects {
         List<BeyonderEffectType> typeList = new ArrayList<>();
         switch (prefix.toLowerCase()){
             case "wheel":
-                typeList = List.of(WHEEL_FORTUNE, WHEEL_SILK, WHEEL_MINING, WHEEL_LUCK_TREND);
+                typeList = List.of(WHEEL_FORTUNE, WHEEL_SILK, WHEEL_MINING);
             case "tyrant":
                 typeList = List.of(TYRANT_LIGHTNING_TARGET, TYRANT_WATER_AFFINITY, TYRANT_ELECTRIFICATION);
             case "mystery":

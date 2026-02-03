@@ -55,5 +55,12 @@
     "sounds": [
       "potioneer:projectile_dodge"
     ]
+  },
+  "crit": {
+    "sounds": [
+      "potioneer:punch_1",
+      "potioneer:punch_2",
+      "potioneer:punch_3"
+    ]
   }
 }

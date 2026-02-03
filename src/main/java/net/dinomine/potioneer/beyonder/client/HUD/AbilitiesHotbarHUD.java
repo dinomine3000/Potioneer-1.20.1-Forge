@@ -17,6 +17,7 @@ import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraftforge.client.gui.overlay.IGuiOverlay;
 
 import java.util.logging.Level;
@@ -24,7 +25,7 @@ import java.util.logging.Level;
 public class AbilitiesHotbarHUD {
     private static final ResourceLocation ICONS = new ResourceLocation(Potioneer.MOD_ID, "textures/gui/ability_icon_atlas.png");
     public static int ICONS_WIDTH = 180;
-    public static int ICONS_HEIGHT = 512;
+    public static int ICONS_HEIGHT = 632;
     public static int ICON_WIDTH = 16;
     public static int ICON_HEIGHT = 24;
     private static final int CASE_WIDTH = 26;
@@ -60,7 +61,7 @@ public class AbilitiesHotbarHUD {
         PotioneerClientConfig.HOTBAR_POS hotbarPos = ClientConfigData.getHotbarPosition();
 
         int yOffset = (int) ((-70*scale + scale*(90*ClientAbilitiesData.openingAnimationPercent)));
-        int xOffset = minecraft.getWindow().getGuiScaledWidth()/2;
+        int xOffset = width/2;
 
         if(hotbarPos == PotioneerClientConfig.HOTBAR_POS.LEFT){
             //TODO maybe deal with integer/float division here?

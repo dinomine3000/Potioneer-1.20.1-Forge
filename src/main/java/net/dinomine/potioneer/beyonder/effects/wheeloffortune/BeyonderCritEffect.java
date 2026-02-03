@@ -3,10 +3,14 @@ package net.dinomine.potioneer.beyonder.effects.wheeloffortune;
 import net.dinomine.potioneer.beyonder.damages.PotioneerDamage;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffect;
 import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
+import net.dinomine.potioneer.particle.ModParticles;
+import net.dinomine.potioneer.sound.ModSounds;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.phys.Vec3;
 
 public class BeyonderCritEffect extends BeyonderEffect {
     private int casterId = -1;
@@ -20,10 +24,13 @@ public class BeyonderCritEffect extends BeyonderEffect {
     @Override
     public void refreshTime(LivingEntityBeyonderCapability cap, LivingEntity target, BeyonderEffect effect) {
         if(!(effect instanceof BeyonderCritEffect critEffect)) return;
-        if(critEffect.amount > this.amount)
+        if(critEffect.amount > this.amount){
             setValues(critEffect.casterId, critEffect.amount);
-        lifetime = 0;
-        maxLife = Math.max(critEffect.maxLife, 21);
+        }
+        if(lifetime == 10){
+            lifetime = 0;
+            maxLife = Math.max(critEffect.maxLife, 11);
+        }
     }
 
     @Override
@@ -33,8 +40,11 @@ public class BeyonderCritEffect extends BeyonderEffect {
     @Override
     protected void doTick(LivingEntityBeyonderCapability cap, LivingEntity target) {
         if(target.level().isClientSide()) return;
-        if(lifetime == 20){
+        if(lifetime == 10){
             LivingEntity caster = (LivingEntity) target.level().getEntity(casterId);
+            Vec3 eyePos = target.getEyePosition();
+            ((ServerLevel) target.level()).sendParticles(ModParticles.CRIT_PARTICLES.get(), eyePos.x, eyePos.y, eyePos.z, 1, 0, 0, 0, 0);
+            target.level().playSound(null, target.getOnPos(), ModSounds.CRIT.get(), SoundSource.NEUTRAL);
             if(caster == null)
                 target.hurt(PotioneerDamage.crit((ServerLevel) target.level()), amount);
             else

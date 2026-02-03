@@ -10,7 +10,7 @@ public class BeyonderTempLuckEffect extends BeyonderEffect {
     private static final UUID modifierId = UUID.fromString("6616419c-777b-438e-96e7-ffaf33555acb");
     @Override
     public void onAcquire(LivingEntityBeyonderCapability cap, LivingEntity target) {
-        cap.getLuckManager().changeLuckRange(modifierId, -15, -15, 30 + 10*(9-sequenceLevel));
+        cap.getLuckManager().changeLuckRange(modifierId, 0, 0, 30 + 20*(9-sequenceLevel));
     }
 
     @Override

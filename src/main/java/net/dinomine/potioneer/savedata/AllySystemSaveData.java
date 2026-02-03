@@ -5,6 +5,8 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.nbt.Tag;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.saveddata.SavedData;
 
@@ -110,6 +112,11 @@ public class AllySystemSaveData extends SavedData {
 
     public List<String> getGroups() {
         return groups.keySet().stream().toList();
+    }
+
+    public boolean areEntitiesAllies(LivingEntity target, LivingEntity ent) {
+        if(!(target instanceof Player playerTarget) || !(ent instanceof Player playerEntity)) return false;
+        return isPlayerAllyOf(playerEntity.getUUID(), playerEntity.getUUID());
     }
 
     public static class AllyGroup{

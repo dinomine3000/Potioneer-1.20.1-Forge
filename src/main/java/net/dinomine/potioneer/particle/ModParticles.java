@@ -1,10 +1,7 @@
 package net.dinomine.potioneer.particle;
 
 import net.dinomine.potioneer.Potioneer;
-import net.dinomine.potioneer.particle.custom.IncenseSmokeParticle;
-import net.dinomine.potioneer.particle.custom.IncenseSmokeParticleOptions;
-import net.dinomine.potioneer.particle.custom.IncenseSmokeParticleType;
-import net.dinomine.potioneer.particle.custom.PotionCauldronParticles;
+import net.dinomine.potioneer.particle.custom.*;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.particles.ParticleType;
 import net.minecraft.core.particles.SimpleParticleType;
@@ -29,6 +26,9 @@ public class ModParticles {
     public static final RegistryObject<ParticleType<IncenseSmokeParticleOptions>> INCENSE_PARTICLES =
             PARTICLE_TYPES.register("incense_smoke", IncenseSmokeParticleType::new);
 
+    public static final RegistryObject<SimpleParticleType> CRIT_PARTICLES =
+            PARTICLE_TYPES.register("critical_strike", () -> new SimpleParticleType(true));
+
     public static void register(IEventBus eventBus){
         PARTICLE_TYPES.register(eventBus);
     }
@@ -41,6 +41,10 @@ public class ModParticles {
         Minecraft.getInstance().particleEngine.register(
                 ModParticles.INCENSE_PARTICLES.get(),
                 IncenseSmokeParticle.IncenseSmokeParticleProvider::new
+        );
+        Minecraft.getInstance().particleEngine.register(
+                ModParticles.CRIT_PARTICLES.get(),
+                CriticalStrikeParticle.Provider::new
         );
         //Minecraft.getInstance().particleEngine.register(POTION_CAULDRON_PARTICLES.get(), PotionCauldronParticles.Provider::new);
     }

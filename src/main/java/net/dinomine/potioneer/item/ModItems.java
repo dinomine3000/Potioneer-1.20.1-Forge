@@ -11,6 +11,7 @@ import net.dinomine.potioneer.item.custom.cane.CaneItem;
 import net.dinomine.potioneer.item.custom.coin.CoinItem;
 import net.dinomine.potioneer.item.custom.leymanosTravels.LeymanosTravels;
 import net.dinomine.potioneer.item.custom.scepter.cane.ScepterItem;
+import net.minecraft.core.Direction;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.food.FoodProperties;
@@ -20,6 +21,9 @@ import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
+
+import static net.dinomine.potioneer.block.ModBlocks.SOLSEER_TORCH;
+import static net.dinomine.potioneer.block.ModBlocks.SOLSEER_WALL_TORCH;
 
 public class ModItems {
     public static final DeferredRegister<Item> ITEMS =
@@ -169,6 +173,14 @@ public class ModItems {
             () -> new SpiritFruitItem(new Item.Properties().food(new FoodProperties.Builder().fast().nutrition(0).alwaysEat()
                     .build())));
 
+    public static final RegistryObject<Item> SOLSEER_TORCH_ITEM =
+            ITEMS.register("solseer_torch",
+                    () -> new StandingAndWallBlockItem(
+                            SOLSEER_TORCH.get(),
+                            SOLSEER_WALL_TORCH.get(),
+                            new Item.Properties(),
+                            Direction.DOWN
+                    ));
 
     /*ublic static final RegistryObject<Item> METAL_ROD = ITEMS.register("metal_detector",
             () -> new MetalDetectorItem(new Item.Properties().stacksTo(1).durability(20)));*/

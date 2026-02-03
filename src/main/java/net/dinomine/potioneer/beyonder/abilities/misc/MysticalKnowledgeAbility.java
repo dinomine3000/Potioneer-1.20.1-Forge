@@ -5,6 +5,8 @@ import net.dinomine.potioneer.beyonder.pages.Page;
 import net.dinomine.potioneer.beyonder.pages.PageRegistry;
 import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
 import net.dinomine.potioneer.config.PotioneerCommonConfig;
+import net.dinomine.potioneer.network.PacketHandler;
+import net.dinomine.potioneer.network.messages.OpenScreenMessage;
 import net.minecraft.world.entity.LivingEntity;
 
 import java.util.ArrayList;
@@ -25,6 +27,14 @@ public abstract class MysticalKnowledgeAbility extends Ability {
         this.isActive = false;
     }
 
+    @Override
+    protected boolean primary(LivingEntityBeyonderCapability cap, LivingEntity target) {
+        if(target.level().isClientSide()) return false;
+        List<Page> pages = getPages();
+        if(pages.isEmpty()) return false;
+        PacketHandler.sendMessageSTC(new OpenScreenMessage(OpenScreenMessage.Screen.Book, PageRegistry.getIdOfPage(pages.get(0))), target);
+        return true;
+    }
 
     @Override
     public void onUpgrade(int oldLevel, int newLevel, LivingEntityBeyonderCapability cap, LivingEntity target) {

@@ -10,6 +10,7 @@ import net.dinomine.potioneer.beyonder.player.PlayerLuckManager;
 import net.dinomine.potioneer.config.PotioneerCommonConfig;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 
 import java.util.ArrayList;
@@ -39,12 +40,7 @@ public class BeyonderCooldownEffect extends BeyonderEffect {
     @Override
     public void onAcquire(LivingEntityBeyonderCapability cap, LivingEntity target) {
         if(target.level().isClientSide()) return;
-//        if(cap.getEffectsManager().hasEffect(BeyonderEffects.WHEEL_COOLDOWN_DEFENCE.getEffectId())){
-//            if(cap.getEffectsManager().getEffect(BeyonderEffects.WHEEL_COOLDOWN_DEFENCE.getEffectId()).getSequenceLevel() < getSequenceLevel()){
-//                endEffectWhenPossible();
-//                return;
-//            }
-//        }
+        if(target instanceof ServerPlayer player && player.connection == null) return;
         disableAbilities(cap, target, maxLife, minCooldown, maxCooldown);
         if(PotioneerCommonConfig.COOLDOWN_EFFECT_STACKS.get()){
            endEffectWhenPossible();

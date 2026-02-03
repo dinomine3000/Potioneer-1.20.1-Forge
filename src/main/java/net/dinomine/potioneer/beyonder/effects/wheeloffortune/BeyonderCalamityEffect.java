@@ -1,7 +1,12 @@
 package net.dinomine.potioneer.beyonder.effects.wheeloffortune;
 
+import net.dinomine.potioneer.beyonder.damages.PotioneerDamage;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffect;
+import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
 import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
+import net.dinomine.potioneer.sound.ModSounds;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraftforge.event.entity.living.LivingDamageEvent;
 
@@ -15,14 +20,13 @@ public class BeyonderCalamityEffect extends BeyonderEffect {
 
     @Override
     public void onAcquire(LivingEntityBeyonderCapability cap, LivingEntity target) {
-        if(sequenceLevel <= 7)
-            cap.getLuckManager().chanceLuckEventChange(luckAttributeUUID, addedChance.apply(getSequenceLevel()));
     }
 
     @Override
     protected void doTick(LivingEntityBeyonderCapability cap, LivingEntity target) {
         int numArtifacts = cap.getAbilitiesManager().getNumArtifacts();
         if(sequenceLevel <= 7){
+            cap.getLuckManager().chanceLuckEventChange(luckAttributeUUID, addedChance.apply(getSequenceLevel()));
             cap.getLuckManager().changeLuckRange(luckAttributeUUID, 100, 100, -numArtifacts*25);
             return;
         }
@@ -37,11 +41,22 @@ public class BeyonderCalamityEffect extends BeyonderEffect {
 
     @Override
     public boolean onTakeDamage(LivingDamageEvent event, LivingEntity victim, LivingEntity attacker, LivingEntityBeyonderCapability victimCap, Optional<LivingEntityBeyonderCapability> optAttackerCap, boolean calledOnVictim) {
-        if(attacker == null || optAttackerCap.isEmpty() || !calledOnVictim) return false;
+        if(attacker == null || victim.level().isClientSide() || optAttackerCap.isEmpty() || !calledOnVictim) return false;
         LivingEntityBeyonderCapability attackerCap = optAttackerCap.get();
-        if(sequenceLevel <= 7){
+
+        if(sequenceLevel < 6){
             if(!attackerCap.getLuckManager().passesLuckCheck(9/10f, (int) (event.getAmount()*5), 0, attacker.getRandom())){
-                attackerCap.getLuckManager().castEventNoRefresh(attacker);
+                attackerCap.getLuckManager().castOrHurryEvent(attacker, attackerCap);
+            }
+            BeyonderDamageRecordingEffect eff = (BeyonderDamageRecordingEffect) victimCap.getEffectsManager().getEffect(BeyonderEffects.WHEEL_DAMAGE_RECORDING.getEffectId());
+            if(eff == null) return false;
+            float amount = eff.getRecordedDamage(false);
+            attacker.hurt(PotioneerDamage.crit((ServerLevel) victim.level(), victim), amount/3f);
+            attacker.level().playSound(null, attacker.getOnPos(), ModSounds.CRIT.get(), SoundSource.PLAYERS, 1, 1);
+        } else if(sequenceLevel < 8){
+            if(!attackerCap.getLuckManager().passesLuckCheck(9/10f, (int) (event.getAmount()*5), 0, attacker.getRandom())){
+                if(sequenceLevel > 5)
+                    attackerCap.getLuckManager().castEventNoRefresh(attacker);
             }
         }
         return false;

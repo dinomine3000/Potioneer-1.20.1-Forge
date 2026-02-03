@@ -1,7 +1,9 @@
 package net.dinomine.potioneer.entities.custom;
 
+import net.dinomine.potioneer.beyonder.abilities.Abilities;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
 import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
+import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
 import net.dinomine.potioneer.util.misc.DivinationResult;
 import net.dinomine.potioneer.util.misc.MysticismHelper;
 import net.minecraft.core.BlockPos;
@@ -92,10 +94,13 @@ public class DivinationRodEntity extends PlaceableItemEntity implements GeoEntit
 //        System.out.println("Divining item: " + target);
         int sequenceId = -1;
         boolean seer = false;
-        if(pPlayer.getCapability(BeyonderStatsProvider.BEYONDER_STATS).isPresent()){
-            sequenceId = pPlayer.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve().get().getPathwaySequenceId();
-            seer = pPlayer.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve().get().getEffectsManager().hasEffect(BeyonderEffects.MISC_DIVINATION.getEffectId());
-        }
+        boolean lucky = false;
+        LivingEntityBeyonderCapability cap = pPlayer.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve().get();
+
+        sequenceId = cap.getPathwaySequenceId();
+        seer = cap.getEffectsManager().hasEffect(BeyonderEffects.MISC_DIVINATION.getEffectId());
+        lucky = cap.getAbilitiesManager().hasAbility(Abilities.WHEEL_DIVINATION.getAblId()) && cap.getLuckManager().passesLuckCheck(1/4f, 0, 0, pPlayer.getRandom());
+
 
         DivinationResult result = MysticismHelper.doDivination(target, pPlayer, 128, this.getOnPos(), sequenceId, pPlayer.getRandom());
         if(result.positions().isEmpty()){
@@ -111,10 +116,11 @@ public class DivinationRodEntity extends PlaceableItemEntity implements GeoEntit
             positions = new ArrayList<>(positions.stream().filter(pos -> pPlayer.getOnPos().distManhattan(pos) > 1).toList());
             if(positions.isEmpty()) positions = new ArrayList<>(result.positions());
 //            System.out.println("Found positions: " + positions);
-            if(seer){
+            if(seer || lucky){
                 this.entityData.set(INTENDED_YAW, getYawFromPosToPos(this.getOnPos(), positions.get(0)));
 //                System.out.println("Telling you the way");
-            } else {
+            }
+            else {
                 this.entityData.set(INTENDED_YAW, pPlayer.getRandom().nextFloat()*360);
 //                System.out.println("Not a seer, i dont car");
             }
@@ -123,9 +129,7 @@ public class DivinationRodEntity extends PlaceableItemEntity implements GeoEntit
         }
 
         if(seer){
-            pPlayer.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
-                cap.requestActiveSpiritualityCost(MysticismHelper.divinationCost);
-            });
+            cap.requestActiveSpiritualityCost(MysticismHelper.divinationCost);
         }
 
         return InteractionResult.SUCCESS;

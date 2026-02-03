@@ -4,11 +4,13 @@ import net.dinomine.potioneer.beyonder.abilities.AbilityFunctionHelper;
 import net.dinomine.potioneer.beyonder.damages.PotioneerDamage;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffect;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
+import net.dinomine.potioneer.beyonder.pathways.WheelOfFortunePathway;
 import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
-import net.dinomine.potioneer.util.DodgeableProjectile;
+import net.dinomine.potioneer.util.MarkedProjectile;
 import net.dinomine.potioneer.sound.ModSounds;
 import net.dinomine.potioneer.util.PotioneerMathHelper;
 import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
@@ -32,6 +34,13 @@ public class BeyonderLuckEffect extends BeyonderEffect {
     public static final double dodgeMag = 1d;
     public static final int critLuckCost = 5;
 
+    private boolean crit = false;
+
+    public BeyonderLuckEffect withCrit(){
+        this.crit = true;
+        return this;
+    }
+
     @Override
     public void onAcquire(LivingEntityBeyonderCapability cap, LivingEntity target) {
     }
@@ -48,7 +57,7 @@ public class BeyonderLuckEffect extends BeyonderEffect {
 //                    if(ent instanceof AbstractArrow absArrow)
 //                        System.out.println(absArrow.inGround);
                     if(ent instanceof AbstractArrow absArrow && absArrow.inGround) continue;
-                    if(projectile instanceof DodgeableProjectile dProjectile){
+                    if(projectile instanceof MarkedProjectile dProjectile){
                         Vec3 arrowMovement = projectile.getDeltaMovement().scale(15);
                         Vec3 arrowEndpoint = projectile.position().add(arrowMovement);
                         if(target.getBoundingBox().inflate(0.5).intersects(projectile.position(), arrowEndpoint)){
@@ -74,11 +83,12 @@ public class BeyonderLuckEffect extends BeyonderEffect {
     @Override
     public boolean onTakeDamage(LivingDamageEvent event, LivingEntity victim, LivingEntity attacker, LivingEntityBeyonderCapability victimCap, Optional<LivingEntityBeyonderCapability> optAttackerCap, boolean calledOnVictim) {
         //Crit Damage dealt
-        if(optAttackerCap.isEmpty() || event.getAmount() == 0 || calledOnVictim) return false;
+        if(optAttackerCap.isEmpty() || event.getAmount() == 0 || calledOnVictim || !crit) return false;
         LivingEntityBeyonderCapability attackerCap = optAttackerCap.get();
         if(attackerCap.getLuckManager().passesLuckCheck(critBaseChance, critLuckCost, 0, attacker.getRandom())){
+            attackerCap.getCharacteristicManager().progressActing(WheelOfFortunePathway.LUCK_ACTING_INC, 6);
 //            victimCap.getEffectsManager().removeEffect(BeyonderEffects.WHEEL_CRIT.getEffectId(), getSequenceLevel());
-            BeyonderCritEffect eff = (BeyonderCritEffect) BeyonderEffects.WHEEL_CRIT.createInstance(getSequenceLevel(), 0, 25, true);
+            BeyonderCritEffect eff = (BeyonderCritEffect) BeyonderEffects.WHEEL_CRIT.createInstance(getSequenceLevel(), 0, 15, true);
             eff.setValues(attacker.getId(), event.getAmount());
             victimCap.getEffectsManager().addOrReplaceEffect(eff, victimCap, victim);
         }
@@ -89,7 +99,8 @@ public class BeyonderLuckEffect extends BeyonderEffect {
     public boolean onDamageProposal(LivingAttackEvent event, LivingEntity victim, LivingEntity attacker, LivingEntityBeyonderCapability victimCap, LivingEntityBeyonderCapability attackerCap, boolean calledOnVictim) {
         //Dodge Damage received
         if(!calledOnVictim || event.getSource().is(PotioneerDamage.Tags.ABSOLUTE)) return false;
-        if(victimCap.getLuckManager().passesLuckCheck(dodgeChance, dodgeLuckCost, dodgeLuckGain, victim.getRandom())){
+        if(victimCap.getLuckManager().passesLuckCheck(sequenceLevel < 5 ? 0.4f : dodgeChance, dodgeLuckCost, dodgeLuckGain, victim.getRandom())){
+            victimCap.getCharacteristicManager().progressActing(WheelOfFortunePathway.LUCK_ACTING_INC, 6);
             RandomSource random = victim.getRandom();
             victim.level().playSound(null, victim.getOnPos(), ModSounds.WHOOOOSH.get(), SoundSource.PLAYERS, 0.6f, (float) random.triangle(1, 0.2));
 
@@ -110,5 +121,17 @@ public class BeyonderLuckEffect extends BeyonderEffect {
             return true;
         }
         return false;
+    }
+
+    @Override
+    public void toNbt(CompoundTag nbt) {
+        super.toNbt(nbt);
+        nbt.putBoolean("crit", crit);
+    }
+
+    @Override
+    public void loadNBTData(CompoundTag nbt) {
+        super.loadNBTData(nbt);
+        this.crit = nbt.getBoolean("crit");
     }
 }

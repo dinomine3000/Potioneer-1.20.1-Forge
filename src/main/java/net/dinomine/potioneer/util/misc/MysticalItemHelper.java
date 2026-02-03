@@ -29,7 +29,14 @@ public class MysticalItemHelper {
         //define minimum and maximum sequences here to define what levels can generate the ability
         //min sequence is inclusive, max sequence is exclusive
         abilityMap.add(new MetaArtifactAbility(8, 10, Abilities.MINER_LIGHT.getAblId()));
-        abilityMap.add(new MetaArtifactAbility(5, 10, Abilities.MINING_SPEED.getAblId()));
+        abilityMap.add(new MetaArtifactAbility(0, 7, Abilities.HALF_COOLDOWN.getAblId()));
+        abilityMap.add(new MetaArtifactAbility(0, 7, Abilities.FATE.getAblId()));
+        abilityMap.add(new MetaArtifactAbility(0, 9, Abilities.APPRAISAL.getAblId()));
+        abilityMap.add(new MetaArtifactAbility(0, 9, Abilities.TARGET_APPRAISAL.getAblId()));
+        abilityMap.add(new MetaArtifactAbility(0, 8, Abilities.GAMBLING.getAblId()));
+        abilityMap.add(new MetaArtifactAbility(0, 9, Abilities.BLOCK_APPRAISAL.getAblId()));
+        abilityMap.add(new MetaArtifactAbility(0, 10, Abilities.MINING_SPEED.getAblId()));
+        abilityMap.add(new MetaArtifactAbility(0, 10, Abilities.VOID_VISION.getAblId()));
         abilityMap.add(new MetaArtifactAbility(10, 20, Abilities.WATER_AFFINITY.getAblId()));
 //        abilityMap.put("water_affinity", new MetaAbilityEntry(10, 20, WaterAffinityAbility::new));
         abilityMap.add(new MetaArtifactAbility(20, 30, Abilities.AIR_BULLET.getAblId()));
@@ -40,6 +47,13 @@ public class MysticalItemHelper {
 //        abilityMap.put("lucky_trend", new MetaArtifactAbility(-1, -1, level -> Abilities.LUCK_TREND.create(level%10)));
 
         downsideMap.add(new MetaArtifactAbility(0, 50, Abilities.DUMMY_DOWNSIDE.getAblId()));
+        downsideMap.add(new MetaArtifactAbility(7, 10, Abilities.CHAOS_LUCK_DOWNSIDE.getAblId()));
+        downsideMap.add(new MetaArtifactAbility(0, 8, Abilities.COOLDOWN_DOWNSIDE.getAblId()));
+        downsideMap.add(new MetaArtifactAbility(0, 8, Abilities.FAKE_LAG_DOWNSIDE.getAblId()));
+        downsideMap.add(new MetaArtifactAbility(0, 7, Abilities.FATE_CAST_DOWNSIDE.getAblId()));
+        downsideMap.add(new MetaArtifactAbility(0, 8, Abilities.LUCK_CONSUME_DOWNSIDE.getAblId()));
+        downsideMap.add(new MetaArtifactAbility(0, 10, Abilities.LUCK_TREND_DOWNWARDS_DOWNSIDE.getAblId()));
+        downsideMap.add(new MetaArtifactAbility(0, 7, Abilities.RANDOM_VELOCITY_DOWNSIDE.getAblId()));
 
 //        effectMap.put("silk", new MetaEffectEntry(0, 8, dur -> BeyonderEffects.byId(BeyonderEffects.EFFECT.WHEEL_SILK_TOUCH, 8, 0, dur, true)));
 //        effectMap.put("water_affinity", new MetaEffectEntry(10, 9, dur -> BeyonderEffects.byId(BeyonderEffects.EFFECT.TYRANT_WATER_AFFINITY, 9, 5, dur, true)));
@@ -96,6 +110,7 @@ public class MysticalItemHelper {
         // quantity is 1 for sequence levels 9-7, its 2 for levels 6-4, 3 for 3 and 2, and 4 for 1 and 0
         // commented out bc we dont have enough abilities to avoid the issue of not having enough. if it asks for 4 but theres only 2 availabe, thats a problem
         //int quantity = (int) Math.floor(-0.375f * sequenceLevel + 4.375f);
+        //TODO: once you have all downsides, uncomment this
         int quantity = 1;
 
         CompoundTag beyonderInfo = new CompoundTag();

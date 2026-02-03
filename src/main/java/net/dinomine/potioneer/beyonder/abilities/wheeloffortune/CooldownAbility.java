@@ -44,10 +44,6 @@ public class CooldownAbility extends PassiveAbility {
     @Override
     protected boolean primary(LivingEntityBeyonderCapability cap, LivingEntity target) {
         cap.requestActiveSpiritualityCost(cost());
-        if(target.level().isClientSide()){
-            ParticleMaker.particleExplosionGrid(target.level(), effectRadius, target.position().x, target.position().y, target.position().z);
-            return true;
-        }
         ParticleMaker.summonAOEParticles(target.level(), target.position(), 2*effectRadius, effectRadius, ParticleMaker.Preset.AOE_END_ROD);
         List<LivingEntity> victims = AbilityFunctionHelper.getLivingEntitiesAround(target, effectRadius);
         for(LivingEntity ent: victims){
@@ -64,16 +60,6 @@ public class CooldownAbility extends PassiveAbility {
                 } else {
                     BeyonderCooldownEffect.disableRandomAbilities(victimCap, proxyManager, ent, ent.getId() != target.getId(), minCooldown, maxCooldown);
                 }
-//                if(!victimCap.getEffectsManager().hasEffectOrBetter(effect.getEffectId(), getSequenceLevel())){
-//                    //if the victim doesnt have an effect of this level or lower -> just apply the effect
-//                    victimCap.getEffectsManager().addEffectNoRefresh(createEffectInstance(false, minCooldown, maxCooldown, effectLifetime), victimCap, ent);
-//                } else {
-//                    //the target has the effect -> get it and just disable abilities.
-//                    BeyonderCooldownEffect cdEffect = (BeyonderCooldownEffect) victimCap.getEffectsManager().getEffect(effect.getEffectId(), getSequenceLevel());
-//                    if(cdEffect == null) return; // effect found is null -> means they have this effect but its of a higher level, so we dont do anything.
-//                    //this could be because its a WoF beyonder of a higher level, in which case they resist it, or someone on the WoF pathway already applied a similar effect
-//                    cdEffect.disableAbilities(victimCap, ent, effectLifetime, minCooldown, maxCooldown);
-//                }
             });
         }
         return true;

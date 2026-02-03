@@ -4,6 +4,7 @@ import net.dinomine.potioneer.Potioneer;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffect;
 import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
 import net.dinomine.potioneer.config.PotioneerCommonConfig;
+import net.dinomine.potioneer.sound.ModSounds;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
@@ -22,11 +23,15 @@ public class BeyonderPatienceEffect extends BeyonderEffect {
 
     @Override
     public void onAcquire(LivingEntityBeyonderCapability cap, LivingEntity target) {
-        if(target.level().isClientSide) return;
+        if (target.level().isClientSide) return;
         cap.getLuckManager().getRange().setSuppress(true);
-        cap.getLuckManager().chanceLuckEventChange(uuid, 9-sequenceLevel);
-        if(acquired) return;
+        cap.getLuckManager().chanceLuckEventChange(uuid, 9 - sequenceLevel);
+        if (acquired) return;
         setLuckQuantity(cap.getLuckManager().getLuck());
+        if (sequenceLevel > 6){
+            cap.getLuckManager().setLuck(Math.min(cap.getLuckManager().getLuck(), 0));
+            target.level().playSound(null, target.getOnPos(), ModSounds.UNLUCK.get(), SoundSource.PLAYERS, 1, (float) target.getRandom().triangle(1, 0.2));
+        }
         target.level().playSound(null, target.getOnPos(), SoundEvents.BOTTLE_FILL_DRAGONBREATH, SoundSource.PLAYERS, 1, (float)target.getRandom().triangle(1, 0.2));
         acquired = true;
     }
@@ -36,7 +41,7 @@ public class BeyonderPatienceEffect extends BeyonderEffect {
         super.withParams(sequence, time, active, cost);
         //limit for the maximum luck you can get to by using the effect. changes with sequence
         //This is calculated such that it reaches this maximum after, at most, 20 minutes
-        this.luck_limit = 775 - 75 * sequenceLevel;
+        this.luck_limit = 1000 - 110 * sequenceLevel;
         //change this with sequence too. time in seconds to reach the maximum
         this.time = (int) ((300 + sequenceLevel * 130) * PotioneerCommonConfig.PATIENCE_TIME_LIMIT.get());
         return this;
@@ -63,7 +68,7 @@ public class BeyonderPatienceEffect extends BeyonderEffect {
         int amm = Math.max(quantityToLuck(quantity), currentLuck) - currentLuck;
         cap.getLuckManager().grantLuck(amm);
         cap.getCharacteristicManager().progressActing(0.2f*Math.pow(amm/(float)luck_limit, 2.6f), 7);
-        cap.getLuckManager().chanceLuckEventChange(uuid, -9+sequenceLevel);
+        cap.getLuckManager().removeLuckEventModifier(uuid);
         target.level().playSound(null, target.getOnPos(), SoundEvents.BOTTLE_EMPTY, SoundSource.PLAYERS, 1, (float)target.getRandom().triangle(1, 0.2));
         target.sendSystemMessage(Component.translatableWithFallback("ability.potioneer.patience_release", "You have been granted %s luck", amm));
     }

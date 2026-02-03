@@ -5,7 +5,9 @@ import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
 import net.dinomine.potioneer.entities.ModEntities;
 import net.dinomine.potioneer.entities.custom.AsteroidEntity;
+import net.dinomine.potioneer.savedata.AllySystemSaveData;
 import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
@@ -111,10 +113,22 @@ public class AbilityFunctionHelper {
     }
 
     public static Optional<LivingEntity> getTargetEntity(LivingEntity looker, double radius){
-        ArrayList<LivingEntity> targets = getLivingEntitiesLooking(looker, radius);
+        return getTargetEntity(looker, radius, 0, false);
+    }
+
+    public static Optional<LivingEntity> getTargetEntity(LivingEntity looker, double radius, boolean includeAllies){
+        return getTargetEntity(looker, radius, 0, includeAllies);
+    }
+
+    public static Optional<LivingEntity> getTargetEntity(LivingEntity looker, double radius, float inflate, boolean includeAllies){
+        ArrayList<LivingEntity> targets = getLivingEntitiesLooking(looker, radius, inflate);
         Optional<LivingEntity> result = Optional.empty();
         double smallestDist = Integer.MAX_VALUE;
         for(LivingEntity entity: targets){
+            if(!looker.level().isClientSide() && !includeAllies && looker instanceof Player lookerPlayer && entity instanceof Player entityPlayer){
+                AllySystemSaveData allies = AllySystemSaveData.from((ServerLevel) looker.level());
+                if(allies.isPlayerAllyOf(lookerPlayer.getUUID(), entityPlayer.getUUID())) continue;
+            }
             double testDist = looker.position().distanceTo(entity.position());
             if(testDist < smallestDist){
                 smallestDist = testDist;
@@ -125,16 +139,24 @@ public class AbilityFunctionHelper {
     }
 
     private static boolean isTargetInSightsOf(LivingEntity target, LivingEntity looker){
+        return isTargetInSightsOf(target, looker, 0);
+    }
+
+    private static boolean isTargetInSightsOf(LivingEntity target, LivingEntity looker, float inflate){
         if(looker.is(target)) return false;
         Vec3 lookAngle = looker.getLookAngle();
         double dist = target.position().subtract(looker.getEyePosition()).length();
         Vec3 eye = looker.getEyePosition();
         Vec3 end = looker.getEyePosition().add(lookAngle.scale(dist+1));
-        return target.getBoundingBoxForCulling().intersects(eye, end);
+        return target.getBoundingBoxForCulling().inflate(inflate).intersects(eye, end);
     }
 
     public static ArrayList<LivingEntity> getLivingEntitiesLooking(LivingEntity looker, double radius){
-        return getLivingEntitiesAround(looker, radius, ent -> isTargetInSightsOf(ent, looker));
+        return getLivingEntitiesLooking(looker, radius, 0);
+    }
+
+    public static ArrayList<LivingEntity> getLivingEntitiesLooking(LivingEntity looker, double radius, float inflate){
+        return getLivingEntitiesAround(looker, radius, ent -> isTargetInSightsOf(ent, looker, inflate));
     }
 
     public static void pushEntity(LivingEntity target, Vec3 pushAngle) {

@@ -1,0 +1,32 @@
+{
+  "type": "potioneer:potion_cauldron_brew",
+  "main_ingredients": [
+    {
+      "item": "potioneer:solseer",
+      "count": 2
+    },
+    {
+      "item": "minecraft:wither_skeleton_skull",
+      "count": 1
+    }
+  ],
+  "supplementary_ingredients": [
+    {
+      "item": "minecraft:cooked_beef",
+      "count": 2
+    },
+    {
+      "item": "minecraft:nether_wart",
+      "count": 3
+    }
+  ],
+  "water_level": 2,
+  "needs_fire": false,
+  "output": {
+    "name": "6",
+    "amount": 2,
+    "bottle": true,
+    "color": 14134338,
+    "can_conflict": true
+  }
+}

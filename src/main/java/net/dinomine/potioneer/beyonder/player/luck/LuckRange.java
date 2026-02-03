@@ -244,4 +244,21 @@ public class LuckRange {
         maxAttributeMap.clear();
         return this;
     }
+
+    public float[] getDataForHud() {
+        float[] res = new float[10];
+        res[0] = getMinAttribute();
+        res[1] = getPosAttribute();
+        res[2] = getMaxAttribute();
+
+        res[3] = minDecay;
+        res[4] = posDecay;
+        res[5] = maxDecay;
+
+        res[6] = minBase;
+        res[7] = positionBase;
+        res[8] = maxBase;
+
+        return res;
+    }
 }

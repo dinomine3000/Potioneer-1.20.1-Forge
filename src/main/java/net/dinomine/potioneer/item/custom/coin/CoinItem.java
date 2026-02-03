@@ -1,6 +1,7 @@
 package net.dinomine.potioneer.item.custom.coin;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import net.dinomine.potioneer.beyonder.abilities.Abilities;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
 import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
 import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
@@ -152,18 +153,20 @@ public class CoinItem extends Item implements GeoItem {
         int sequence = -1;
         boolean seer = false;
         boolean appraiser = false;
+        boolean lucky = false;
         if(player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).isPresent()){
             Optional<LivingEntityBeyonderCapability> cap = player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve();
             sequence = cap.get().getPathwaySequenceId();
             seer = cap.get().getEffectsManager().hasEffect(BeyonderEffects.MISC_DIVINATION.getEffectId());
-            appraiser = cap.get().getEffectsManager().hasEffect(BeyonderEffects.WHEEL_APPRAISAL.getEffectId());
+            appraiser = cap.get().getAbilitiesManager().hasAbility(Abilities.APPRAISAL.getAblId());
+            lucky = cap.get().getAbilitiesManager().hasAbility(Abilities.WHEEL_DIVINATION.getAblId()) && cap.get().getLuckManager().passesLuckCheck(0.7f, 0, 0, player.getRandom());
         }
 
         DivinationResult result = MysticismHelper.doDivination(divinationTarget, player, sequence, player.getRandom());
         if(seer){
             MysticismHelper.updateOrApplyMysticismTag(player.getMainHandItem(), 0.2f, player);
             return result.yesNo();
-        } else if(appraiser){
+        } else if(lucky || (appraiser && divinationTarget.is(ModItems.BEYONDER_POTION.get()))){
             return result.yesNo();
         } else {
             if(player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).isPresent()){

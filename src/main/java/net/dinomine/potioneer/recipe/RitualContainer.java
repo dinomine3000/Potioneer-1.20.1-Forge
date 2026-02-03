@@ -22,13 +22,21 @@ public class RitualContainer extends SimpleContainer {
         return Mth.clamp(reputationLevel/ LivingEntityBeyonderCapability.MAX_REP, 0, 1);
     }
 
-    private int pathwayId;
-    private int reputationLevel;
+    public int getDesiredLevel(){return desiredLevel;}
+
+    private int desiredLevel = 0;
+    private final int pathwayId;
+    private final int reputationLevel;
 
     public RitualContainer(int pathwayId, int reputationLevel, ItemStack... items){
         super(items);
         this.pathwayId = pathwayId;
         this.reputationLevel = reputationLevel;
+    }
+
+    public RitualContainer withDesiredLevel(int level){
+        this.desiredLevel = level;
+        return this;
     }
 
     public RitualContainer(int pathwayId, ItemStack... items){

@@ -46,6 +46,19 @@ public abstract class RitualSpiritResponse {
                 || testString.contains("infuse")) imbue(inputData, level);
     }
 
+    public static int getDesiredLevel(String verse){
+        if (verse == null) return 0;
+
+        for (int i = 0; i < verse.length(); i++) {
+            char c = verse.charAt(i);
+            if (Character.isDigit(c)) {
+                return Character.getNumericValue(c);
+            }
+        }
+
+        return 0;
+    }
+
     protected void defaultMethod(RitualInputData inputData){
     }
 

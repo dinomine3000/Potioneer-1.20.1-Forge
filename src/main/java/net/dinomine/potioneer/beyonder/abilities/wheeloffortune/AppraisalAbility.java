@@ -1,5 +1,6 @@
 package net.dinomine.potioneer.beyonder.abilities.wheeloffortune;
 
+import net.dinomine.potioneer.beyonder.abilities.Ability;
 import net.dinomine.potioneer.beyonder.abilities.misc.PassiveAbility;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
 import net.dinomine.potioneer.beyonder.pages.PageRegistry;
@@ -8,11 +9,10 @@ import net.dinomine.potioneer.network.PacketHandler;
 import net.dinomine.potioneer.network.messages.OpenScreenMessage;
 import net.minecraft.world.entity.LivingEntity;
 
-public class AppraisalAbility extends PassiveAbility {
+public class AppraisalAbility extends Ability {
 
     public AppraisalAbility(int sequence){
-        super(sequence, BeyonderEffects.WHEEL_APPRAISAL, ignored -> "appraisal");
-        enabledOnAcquire();
+        super(sequence);
     }
 
     @Override

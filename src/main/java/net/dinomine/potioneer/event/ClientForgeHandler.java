@@ -3,6 +3,7 @@ package net.dinomine.potioneer.event;
 import com.mojang.authlib.GameProfile;
 import com.mojang.blaze3d.platform.InputConstants;
 import net.dinomine.potioneer.Potioneer;
+import net.dinomine.potioneer.beyonder.abilities.Abilities;
 import net.dinomine.potioneer.beyonder.abilities.AbilityInfo;
 import net.dinomine.potioneer.beyonder.client.ClientAbilitiesData;
 import net.dinomine.potioneer.beyonder.client.ClientStatsData;
@@ -13,6 +14,7 @@ import net.dinomine.potioneer.beyonder.pathways.BeyonderPathway;
 import net.dinomine.potioneer.beyonder.pathways.Pathways;
 import net.dinomine.potioneer.item.ModItems;
 import net.dinomine.potioneer.recipe.PotionRecipeData;
+import net.dinomine.potioneer.util.PotioneerMathHelper;
 import net.dinomine.potioneer.util.misc.MysticalItemHelper;
 import net.dinomine.potioneer.util.misc.MysticismHelper;
 import net.minecraft.ChatFormatting;
@@ -20,6 +22,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.Style;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -39,7 +42,7 @@ public class ClientForgeHandler {
         ItemStack stack = event.getItemStack();
         List<Component> tooltip = event.getToolTip();
         Level level = event.getEntity() != null ? event.getEntity().level() : null;
-        boolean appraiser = ClientStatsData.hasEffect(BeyonderEffects.WHEEL_APPRAISAL);
+        boolean appraiser = ClientAbilitiesData.hasAbility(Abilities.APPRAISAL.getAblId());
         // Only run client-side
         if (level != null) {
             if(ClientStatsData.getPathwaySequenceId() > -1){
@@ -71,11 +74,22 @@ public class ClientForgeHandler {
                     tooltip.add(info.getMutableNameComponent().withStyle(ChatFormatting.ITALIC));
                 }
             }
-            if(stack.hasTag() && stack.getTag().contains("potion_info") && appraiser){
+            if(appraiser && stack.hasTag() && stack.getTag().contains("potion_info")){
                 CompoundTag tag = stack.getOrCreateTag().getCompound("potion_info");
-                boolean conflict = tag.getString("name").equals("conflict");
-                boolean isComplete = tag.getBoolean("isComplete");
-                tooltip.add(Component.translatable("tooltip.potioneer." + (conflict ? "conflicting_potion" : (isComplete ? "valid_potion" : "incomplete_potion"))));
+                String name = tag.getString("name");
+                boolean conflict = name.equals("conflict");
+                if(conflict){
+                    tooltip.add(Component.translatable("tooltip.potioneer.conflicting_potion").withStyle(ChatFormatting.RED));
+                } else if(PotioneerMathHelper.isInteger(name)){
+                    boolean isComplete = tag.getBoolean("isComplete");
+                    int pathwaySequenceId = Integer.parseInt(name);
+                    tooltip.add(Component.translatable("tooltip.potioneer." + (isComplete ? "valid_potion" : "incomplete_potion")).withStyle(ChatFormatting.AQUA));
+
+                    BeyonderPathway pathway = Pathways.getPathwayBySequenceId(pathwaySequenceId);
+                    tooltip.add(Component.empty()
+                            .append(pathway.getPathwayName()).append(" - ")
+                            .append(pathway.getSequenceComponentFromId(pathwaySequenceId%10)));
+                }
             }
             if(stack.is(ModItems.CHARM.get())){
                 if(stack.hasTag() && stack.getTag().contains(MysticalItemHelper.CHARM_TAG_ID)){

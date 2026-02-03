@@ -34,7 +34,8 @@ public class BeyonderVelocityEffect extends BeyonderEffect {
         if(!(target instanceof Player player)) return;
         AbilityFunctionHelper.addAttributeTo(player, movementId, "velocity movement speed modifier", movementSpeed-1, AttributeModifier.Operation.MULTIPLY_BASE, Attributes.MOVEMENT_SPEED);
         AbilityFunctionHelper.addAttributeTo(player, attackId, "velocity attack speed modifier", attackSpeed-1, AttributeModifier.Operation.MULTIPLY_BASE, Attributes.ATTACK_SPEED);
-        cap.requestPassiveSpiritualityCost(getCost()*(Math.max(movementSpeed, attackSpeed)-1));
+        float cost = Math.max(0, getCost()*(Math.max(movementSpeed, attackSpeed) - (sequenceLevel < 6 ? 2 : 1)));
+        cap.requestPassiveSpiritualityCost(cost);
     }
 
     @Override

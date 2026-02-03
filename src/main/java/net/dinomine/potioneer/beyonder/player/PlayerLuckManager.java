@@ -5,11 +5,13 @@ import net.dinomine.potioneer.beyonder.player.luck.luckevents.LuckEvent;
 import net.dinomine.potioneer.beyonder.player.luck.luckevents.LuckEvents;
 import net.dinomine.potioneer.config.PotioneerCommonConfig;
 import net.dinomine.potioneer.event.LuckEventCastEvent;
+import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.common.MinecraftForge;
 
 import java.util.Random;
@@ -54,8 +56,12 @@ public class PlayerLuckManager {
 //            if(target instanceof Player player)
                 //System.out.println("Luck Manager ticking..." + luck);
             if(currentEvent == null) {
-                if(target.getRandom().nextInt(10000) <= range.getChance()){
-                    castEventNoRefresh(target);
+                if(target instanceof Player){
+                    int chance = PotioneerCommonConfig.LUCK_EVENT_CAST_CHANCE.get();
+                    int rangeChance = range.getChance();
+                    if(target.getRandom().nextInt(chance) <= rangeChance){
+                        castEventNoRefresh(target);
+                    }
                 }
             }
             //random walk
@@ -85,16 +91,24 @@ public class PlayerLuckManager {
 
     private LuckEvent castEvent(LivingEntity target){
         LuckEvent proposedEvent = LuckEvents.getRandomEventFromLuck(luck, target.getRandom())
-                .createInstance(getRandomNumber(PotioneerCommonConfig.MINIMUM_LUCK_EVENT_TIMER.get(), PotioneerCommonConfig.MAXIMUM_LUCK_EVENT_TIMER.get(), luck < 0, target.getRandom()));
+                .createInstance(getRandomNumber(PotioneerCommonConfig.MINIMUM_LUCK_EVENT_TIMER.get()*20, PotioneerCommonConfig.MAXIMUM_LUCK_EVENT_TIMER.get()*20, luck < 0, target.getRandom()));
         boolean cancelledCheck = MinecraftForge.EVENT_BUS.post(new LuckEventCastEvent.Pre(target, luck, proposedEvent));
         if(cancelledCheck){
             return null;
         }
         else{
-            MinecraftForge.EVENT_BUS.post(new LuckEventCastEvent.Post(target, luck, proposedEvent));
             target.sendSystemMessage(Component.translatable("potioneer.luck.event_cast_" + target.getRandom().nextInt(4)));
+            MinecraftForge.EVENT_BUS.post(new LuckEventCastEvent.Post(target, luck, proposedEvent));
             return proposedEvent;
         }
+    }
+
+    public void forceCastEvent(LivingEntity target, LivingEntityBeyonderCapability cap, boolean instantCast){
+        LuckEvent proposedEvent = LuckEvents.getRandomEventFromLuck(luck, target.getRandom())
+                .createInstance(getRandomNumber(PotioneerCommonConfig.MINIMUM_LUCK_EVENT_TIMER.get()*20, PotioneerCommonConfig.MAXIMUM_LUCK_EVENT_TIMER.get()*20, luck < 0, target.getRandom()));
+        target.sendSystemMessage(Component.translatable("potioneer.luck.event_cast_" + target.getRandom().nextInt(4)));
+        MinecraftForge.EVENT_BUS.post(new LuckEventCastEvent.Post(target, luck, proposedEvent));
+        if(instantCast) proposedEvent.triggerEvent(cap, this, target);
     }
 
     /**
@@ -155,136 +169,6 @@ public class PlayerLuckManager {
         return this.luck;
     }
 
-//
-//    private void triggerVeryUnluckyEvent(LivingEntityBeyonderCapability cap, LivingEntity target, int event){
-//        switch(event){
-//            case 0:
-//                target.getMainHandItem().shrink(target.getRandom().nextInt(target.getMainHandItem().getMaxStackSize()) + 1);
-//                break;
-//            case 1:
-//                target.addEffect(new MobEffectInstance(ModEffects.PLAGUE_EFFECT.get(), 600, 1));
-//                target.addEffect(new MobEffectInstance(ModEffects.WATER_PRISON.get(), 600, 5));
-//                target.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 600, 5));
-//                target.addEffect(new MobEffectInstance(MobEffects.GLOWING, 600, 5));
-//                target.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, 600, 5));
-//                target.addEffect(new MobEffectInstance(MobEffects.CONFUSION, 600, 5));
-//                break;
-//            case 2:
-//                break;
-//        }
-//    }
-//
-//    private void triggerMildlyUnluckyEvent(LivingEntityBeyonderCapability cap, LivingEntity target, int event){
-//        switch(event){
-//            case 0:
-//                if(target instanceof Player player){
-//                    player.getArmorSlots().forEach(armorPiece -> {
-//                        if(armorPiece != null && !armorPiece.isEmpty()
-//                                && !passesLuckCheck(0.5f, 20, 10, target.getRandom()))
-//                            armorPiece.enchant(Enchantments.BINDING_CURSE, 1);
-//                    });
-//                }
-//            case 1:
-//                target.addEffect(new MobEffectInstance(MobEffects.WITHER, 240,
-//                        passesLuckCheck(0.4f, 20, 20, target.getRandom()) ? 1 : 5,
-//                        true, true));
-//                break;
-//            case 2:
-//                cap.getEffectsManager().addEffectNoCheck(
-//                        BeyonderEffects.byId(BeyonderEffects.TYRANT_LIGHTNING_TARGET.getEffectId(), 5, 0, 10*20, true),
-//                        cap, target);
-//        }
-//    }
-//
-//    private void triggerMehUnluckyEvent(LivingEntityBeyonderCapability cap, LivingEntity target, int event){
-//        switch(event){
-//            case 0:
-//                if(target instanceof Player player){
-//                    for(int i = target.getRandom().nextInt(5); i > 0; i--){
-//                        if(!passesLuckCheck(0.3f, 10, 10, target.getRandom()))
-//                            player.drop(player.getInventory().getItem(player.getRandom().nextInt(27)), true, true);
-//                    }
-//                    break;
-//                }
-//            case 1:
-//                target.getArmorSlots().forEach(armorPiece -> {
-//                    if(armorPiece.isDamageableItem() && !passesLuckCheck(0.4f, 20, 10, target.getRandom())){
-//                        armorPiece.setDamageValue(Mth.clamp(armorPiece.getDamageValue() + target.getRandom().nextInt(armorPiece.getMaxDamage() - armorPiece.getDamageValue()), 0, armorPiece.getMaxDamage()));
-//                    }
-//                });
-//                break;
-//            case 2:
-//                //TODO: EMPTY
-//        }
-//    }
-//
-//    private void triggerVeryLuckyEvent(LivingEntityBeyonderCapability cap, LivingEntity target, int event){
-//        switch(event){
-//            case 0:
-//                target.addEffect(new MobEffectInstance(MobEffects.DAMAGE_BOOST, 600,
-//                        passesLuckCheck(0.4f, 20, 20, target.getRandom()) ? 5 : 2,
-//                        true, true));
-//                target.addEffect(new MobEffectInstance(MobEffects.REGENERATION, 600,
-//                        passesLuckCheck(0.4f, 20, 20, target.getRandom()) ? 5 : 2,
-//                        true, true));
-//                target.addEffect(new MobEffectInstance(MobEffects.FIRE_RESISTANCE, 600,
-//                        passesLuckCheck(0.4f, 20, 20, target.getRandom()) ? 5 : 2,
-//                        true, true));
-//                target.addEffect(new MobEffectInstance(MobEffects.NIGHT_VISION, 600,
-//                        passesLuckCheck(0.4f, 20, 20, target.getRandom()) ? 5 : 2,
-//                        true, true));
-//                break;
-//            case 1:
-//                //digest potion
-//            case 2:
-//
-//                break;
-//        }
-//    }
-//
-//    private void triggerMildlyLuckyEvent(LivingEntityBeyonderCapability cap, LivingEntity target, int event){
-//        switch(event){
-//            case 0:
-//                if(target instanceof Player player){
-//                    ItemStack res = new ItemStack(ModItems.RING.get());
-//                    MysticalItemHelper.generateSealedArtifact(res,
-//                            target.getRandom().nextInt(4)*10 + 10 + target.getRandom().nextInt(3) + 6,
-//                            target.getRandom());
-//                    if(!player.addItem(res)){
-//                        player.drop(res, false);
-//                    }
-//                    break;
-//                }
-//            case 1:
-//                cap.getEffectsManager().addOrReplaceEffect(BeyonderEffects.byId(BeyonderEffects.WHEEL_FORTUNE.getEffectId(), 0, 0, 240, true), cap, target);
-//                cap.getEffectsManager().addOrReplaceEffect(BeyonderEffects.byId(BeyonderEffects.WHEEL_MINING.getEffectId(), 5, 0, 240, true), cap, target);
-//                target.sendSystemMessage(Component.translatable("potioneer.luck.fortune_event"));
-//                break;
-//            case 2:
-//
-//        }
-//    }
-//
-//    private void triggerMehLuckyEvent(LivingEntityBeyonderCapability cap, LivingEntity target, int event){
-//        switch(event){
-//            case 0:
-//                if(target instanceof Player player){
-//                    player.addItem(
-//                            new ItemStack(Items.DIAMOND).copyWithCount(target.getRandom().nextInt(5))
-//                    );
-//                }
-//                break;
-//            case 1:
-//                if(target instanceof Player){
-//                    cap.getEffectsManager().addEffectNoCheck(BeyonderEffects.byId(BeyonderEffects.HUNGER_REGEN.getEffectId(),
-//                            0, 0, target.getRandom().nextInt(5)*20, true), cap, target);
-//                    break;
-//                }
-//            case 2:
-//                target.addEffect(new MobEffectInstance(MobEffects.HEAL, 100, 0, false, false));
-//                break;
-//        }
-//    }
 
     public float checkLuck(float change){
         return checkLuck(luck, change);
@@ -351,6 +235,16 @@ public class PlayerLuckManager {
         return (int) (Math.floor(min + (max - min)*rnd));
     }
 
+    public BlockPos getRandomBlockPos(BlockPos center, int maxDist, boolean incrementY, boolean closer_is_better, RandomSource random){
+        int px = getRandomNumber(center.getX() - maxDist, center.getX(), closer_is_better, random);
+        if(random.nextBoolean()) px = 2*center.getX() - px;
+        int py = getRandomNumber(center.getY() - maxDist, center.getY(), closer_is_better, random);
+        if(random.nextBoolean()) py = 2*center.getY() - py;
+        int pz = getRandomNumber(center.getZ() - maxDist, center.getZ(), closer_is_better, random);
+        if(random.nextBoolean()) pz = 2*center.getZ() - pz;
+        return new BlockPos(px, incrementY ? py : center.getY(), pz);
+    }
+
     public void consumeLuck(int consume){
         luck = Mth.clamp(luck - consume, MINIMUM_LUCK, MAXIMUM_LUCK);
     }
@@ -380,5 +274,15 @@ public class PlayerLuckManager {
     public void copyFrom(PlayerLuckManager luckManager) {
         this.range = luckManager.range.copyOnDeath();
         this.luck = luckManager.luck;
+    }
+
+    public void setLuck(int luck) {
+        this.luck = luck;
+    }
+
+    public float[] getDataForHud() {
+        float[] res = range.getDataForHud();
+        res[9] = luck;
+        return res;
     }
 }

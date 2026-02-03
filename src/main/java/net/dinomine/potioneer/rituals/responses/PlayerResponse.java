@@ -8,6 +8,7 @@ import net.dinomine.potioneer.block.entity.RitualPedestalBlockEntity;
 import net.dinomine.potioneer.recipe.CharmRecipe;
 import net.dinomine.potioneer.recipe.RitualContainer;
 import net.dinomine.potioneer.rituals.RitualInputData;
+import net.dinomine.potioneer.rituals.spirits.RitualSpiritResponse;
 import net.dinomine.potioneer.util.PotionIngredient;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.player.Player;
@@ -38,6 +39,7 @@ public class PlayerResponse extends SpiritResponse {
 
     private void imbue(RitualInputData inputData, Level level) {
         Player player = level.getPlayerByUUID(inputData.caster());
+        if(player == null) return;
         int inputPathway = inputData.pathwaySequenceId()%10;
         int sequenceLevel = 9;
         //if targeting someone else in the ritual, make a charm based on their level
@@ -47,7 +49,7 @@ public class PlayerResponse extends SpiritResponse {
             sequenceLevel = cap.getSequenceLevel();
         }
         //TODO maybe they can make charms if they have a characteristic in the offerings
-        RitualContainer container = new RitualContainer(inputPathway, 9 - sequenceLevel, inputData.offerings());
+        RitualContainer container = new RitualContainer(inputPathway, 9 - sequenceLevel, inputData.offerings()).withDesiredLevel(RitualSpiritResponse.getDesiredLevel(inputData.thirdVerse()));
         List<CharmRecipe> recipeMatches = level.getRecipeManager().getRecipesFor(CharmRecipe.Type.INSTANCE, container, level);
         BeyonderPathway pathway = Pathways.getPathwayById(inputPathway);
         List<String> availableCharms = pathway.canCraftEffectCharms(sequenceLevel);

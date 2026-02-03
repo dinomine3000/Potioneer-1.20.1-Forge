@@ -28,9 +28,11 @@ public class WheelKnowledgeAbility extends MysticalKnowledgeAbility {
             case 3:
             case 4:
             case 5:
+                result.addAll(List.of(PageRegistry.CHARM_INSTANT_BAD_LUCK, PageRegistry.CHARM_TEMP_BAD_LUCK, PageRegistry.CHARM_CHAOTIC_LUCK));
             case 6:
+                result.addAll(List.of(PageRegistry.CHARM_LUCK, PageRegistry.CHARM_FATE));
             case 7:
-                result.addAll(List.of(PageRegistry.CHARM_PATIENCE, PageRegistry.CHARM_GAMBLE, PageRegistry.CHARM_SPEED, PageRegistry.CHARM_COOLDOWN));
+                result.addAll(List.of(PageRegistry.CHARM_PATIENCE, PageRegistry.CHARM_GAMBLE, PageRegistry.CHARM_SPEED, PageRegistry.CHARM_COOLDOWN, PageRegistry.LUCK_1));
             case 8:
                 result.addAll(List.of(PageRegistry.CHARM_INSTANT_LUCK, PageRegistry.CHARM_TEMP_LUCK, PageRegistry.RITUALS_CANDLES, PageRegistry.RITUALS_INK, PageRegistry.RITUALS_DAGGER, PageRegistry.RITUALS_OFFERINGS, PageRegistry.CHARMS_CRAFTING));
             case 9:

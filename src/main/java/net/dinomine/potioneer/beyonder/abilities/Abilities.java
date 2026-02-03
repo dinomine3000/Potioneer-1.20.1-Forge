@@ -7,6 +7,7 @@ import net.dinomine.potioneer.beyonder.abilities.redpriest.*;
 import net.dinomine.potioneer.beyonder.abilities.tyrant.*;
 import net.dinomine.potioneer.beyonder.abilities.wheeloffortune.*;
 import net.dinomine.potioneer.beyonder.downsides.DummyDownside;
+import net.dinomine.potioneer.beyonder.downsides.wheeloffortune.*;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.effect.MobEffects;
@@ -24,24 +25,37 @@ public class Abilities {
     public static final AbilityFactory DUMMY_DOWNSIDE = registerAbility("d_dummy",
             DummyDownside::new, 0, 0, 0);
 
+    public static final AbilityFactory CHAOS_LUCK_DOWNSIDE = registerAbility("d_chaos",
+            ChaosLuckDownside::new, 0, 0, 0);
+    public static final AbilityFactory COOLDOWN_DOWNSIDE = registerAbility("d_cooldown",
+            CooldownDownside::new, 0, 0, 0);
+    public static final AbilityFactory FAKE_LAG_DOWNSIDE = registerAbility("d_lag",
+            FakeLagDownside::new, 0, 0, 0);
+    public static final AbilityFactory LUCK_CONSUME_DOWNSIDE = registerAbility("d_luck",
+            LuckConsumeDownside::new, 0, 0, 0);
+    public static final AbilityFactory LUCK_TREND_DOWNWARDS_DOWNSIDE = registerAbility("d_luck_trend",
+            LuckTrendDownwardsDownside::new, 0, 0, 0);
+    public static final AbilityFactory RANDOM_VELOCITY_DOWNSIDE = registerAbility("d_velocit",
+            RandomVelocityDownside::new, 0, 0, 0);
+    public static final AbilityFactory FATE_CAST_DOWNSIDE = registerAbility("d_fate",
+            FateCastDownside::new, 0, 0, 0);
+
     // -------------------------- WHEEL OF FORTUNE ---------------------------------------------------
 
     //retweaked
     public static final AbilityFactory CONJURE_PICKAXE = registerAbility("pick",
             ConjurePickaxeAbility::new,
-            2, 0, level -> 40 + 20*(10-level)).hasSecondaryFunction();
+            2, 0, level -> 45 + 15*(10-level)).hasSecondaryFunction();
 
     //retweaked
     public static final AbilityFactory MINING_SPEED = registerAbility("mining",
             sequenceLevel -> (new MiningSpeedAbility(sequenceLevel)).canFlip().enabledOnAcquire(),
-            0, 0, 0).hasSecondaryFunction();
+            0, 0, 0).hasSecondaryFunction().passive();
 
     //retweaked
     public static final AbilityFactory ZERO_DAMAGE = registerAbility("zero_damage",
-            (Integer sequenceLevel) -> PassiveAbility.createAbility(sequenceLevel, BeyonderEffects.WHEEL_ZERO_DAMAGE,
-                            (level) -> "zero_damage_" + (level > 7 ? "1" : (level > 6 ? "2" : "3")))
-                    .enabledOnAcquire(),
-            8, 0, 0);
+            ZeroDamageAbility::new,
+            8, 0, 0).hasSecondaryFunction().passive();
 
     //retweaked
     public static final AbilityFactory VOID_VISION = registerAbility("void_vision",
@@ -54,37 +68,37 @@ public class Abilities {
 
     //retweaked
     public static final AbilityFactory MINER_LIGHT = registerAbility("miner_light",
-            MinerLightAbility::new, 1, 0, level -> 5 + 2*(9-level));
+            MinerLightAbility::new, 1, 0, 5);
 
     //retweaked
     public static final AbilityFactory FORTUNE_ABILITY = registerAbility("fortune",
             (Integer sequenceLevel) -> PassiveAbility.createAbility(sequenceLevel, BeyonderEffects.WHEEL_FORTUNE,
                             (ignored) -> "fortune")
                     .canFlip().withThreshold(0.1f),
-            6, 0, level -> 5);
+            6, 0, level -> 5).passive();
 
     //retweaked
     public static final AbilityFactory SILK_TOUCH_ABILITY = registerAbility("silk",
             (Integer sequenceLevel) -> PassiveAbility.createAbility(sequenceLevel, BeyonderEffects.WHEEL_SILK,
                             (ignored) -> "silk")
                     .canFlip().withThreshold(0.1f),
-            5, 0, 5);
+            5, 0, 5).passive();
 
     //retweaked
     public static final AbilityFactory CALAMITY_INCREASE = registerAbility("calamity",
             (Integer sequenceLevel) -> PassiveAbility.createAbility(sequenceLevel, BeyonderEffects.WHEEL_CALAMITY,
-                            (level) -> level < 8 ? "calamity_2" : "calamity")
+                            (level) -> level < 8 ? (level < 6 ? "calamity_3" : "calamity_2" ): "calamity")
                     .enabledOnAcquire(),
-            4, 0, 0);
+            4, 0, 0).passive();
 
     //retweaked
     public static final AbilityFactory BLOCK_APPRAISAL = registerAbility("block_appraisal",
             BlockAppraisalAbility::new,
-            15, 0, level -> 10 + 10*(9-level)).hasSecondaryFunction();
+            15, 0, level -> 15 + 5*(9-level)).hasSecondaryFunction();
 
     //retweaked
     public static final AbilityFactory APPRAISAL = registerAbility("appraisal",
-            AppraisalAbility::new, 14, 0, 0);
+            AppraisalAbility::new, 14, 0, 0).passive();
 
     //retweaked
     public static final AbilityFactory TARGET_APPRAISAL = registerAbility("target_appraisal",
@@ -99,7 +113,7 @@ public class Abilities {
     //retweaked
     public static final AbilityFactory VELOCITY = registerAbility("velocity",
             sequenceLevel -> (new VelocityAbility(sequenceLevel)).enabledOnAcquire().withThreshold(0.1f),
-            10, 0, 3).hasSecondaryFunction();
+            10, 0, 3).hasSecondaryFunction().passiveAndActive();
 
     //retweaked
     public static final AbilityFactory MINER_BONE_MEAL = registerAbility("w_bone_meal",
@@ -111,22 +125,42 @@ public class Abilities {
 
     //retweaked
     public static final AbilityFactory GAMBLING = registerAbility("gambling",
-            GamblingAbility::new,17, 0, 30).hasSecondaryFunction();
+            GamblingAbility::new,17, 0, 40).hasSecondaryFunction();
 
     //retweaked
     public static final AbilityFactory LUCK = registerAbility("luck",
-            (Integer level) -> PassiveAbility.createAbility(level, BeyonderEffects.WHEEL_LUCK, ignored -> "luck").enabledOnAcquire(),
-            0, 0, 0).passive();
-    //retweaked
-    public static final AbilityFactory FATE = registerAbility("fate",
-            (Integer level) -> PassiveAbility.createAbility(level, BeyonderEffects.WHEEL_LUCK, ignored -> "luck").enabledOnAcquire(),
-            0, 0, 0).passiveAndActive();
+            LuckAbility::new,
+            3, 0, 150).passiveAndActive();
 
-//    public static final AbilityFactory DODGE_DAMAGE = registerAbility("luck_dodge",
-//            (Integer sequenceLevel) -> PassiveAbility.createAbility(sequenceLevel, BeyonderEffects.WHEEL_LUCK_DODGE,
-//                            (ignored) -> "luck_dodge")
-//                    .canFlip().enabledOnAcquire(),
-//            8, 0, 0);
+    //retweaked
+    public static final AbilityFactory FATE = registerAbility("fate", FateAbility::new,
+            20, 0, level -> 50 + 20*Math.max(0, 6 - level)).passiveAndActive().hasSecondaryFunction();
+
+    //retweaked
+    public static final AbilityFactory WHEEL_DIVINATION = registerAbility("wheel_divination", WheelDivination::new,
+            19, 0, 0).passive();
+
+    //retweaked
+    public static final AbilityFactory HALF_COOLDOWN = registerAbility("half_cooldown", HalfCooldownAbility::new,
+            0, 0, level -> 50+20*Math.max(0, 6 - level));
+
+    //retweaked
+    public static final AbilityFactory PHASING = registerAbility("phasing",
+            (Integer sequenceLevel) -> PassiveAbility.createAbility(sequenceLevel, BeyonderEffects.WHEEL_PHASING,
+                            ignored -> "phasing").canFlip(),
+            21, 0, 20).passive();
+
+    //retweaked
+    public static final AbilityFactory MISFORTUNE = registerAbility("misfortune", MisfortuneAbility::new,
+            23, 0, 40).hasSecondaryFunction();
+
+    //retweaked
+    public static final AbilityFactory BET = registerAbility("bet", BetAbility::new,
+            22, 0, 0);
+
+    //retweaked
+    public static final AbilityFactory RECORD_DAMAGE = registerAbility("damage_recording", DamageRecordingAbility::new,
+            4, 0, 0).hasSecondaryFunction().passiveAndActive();
 
     // -------------------------- TYRANT ---------------------------------------------------
     public static final AbilityFactory WATER_AFFINITY = registerAbility("water_affinity",

@@ -51,6 +51,7 @@ public class LivingEntityBeyonderCapability {
 
     private float spirituality = 100;
     private float spiritualityCost = 0;
+    private int unlimitedSpiritualityTimer = 0;
     private int maxSpirituality = 100;
     private float sanity = 100;
     private final Supplier<Integer> maxSanity;
@@ -208,7 +209,16 @@ public class LivingEntityBeyonderCapability {
         changeSpirituality(item.getFoodProperties(target).getNutrition() * getMaxSpirituality()/160f);
     }
 
+    public void setUnlimitedSpirituality(int duration){
+        unlimitedSpiritualityTimer = Math.max(duration, unlimitedSpiritualityTimer);
+    }
+
+    private boolean hasUnlimitedSpirituality(){
+        return unlimitedSpiritualityTimer > 0;
+    }
+
     public float getSpirituality(){
+        if(hasUnlimitedSpirituality()) return Integer.MAX_VALUE;
         return Math.max(this.spirituality, 0);
     }
 
@@ -217,7 +227,8 @@ public class LivingEntityBeyonderCapability {
     }
 
     public void changeSpirituality(float val){
-//        System.out.println(getSpirituality());
+//        System.out.println(getSpirituality());+
+        if(hasUnlimitedSpirituality()) return;
         setSpirituality(Mth.clamp(getSpirituality()+val, 0, maxSpirituality));
     }
 
@@ -226,23 +237,26 @@ public class LivingEntityBeyonderCapability {
     }
 
     public void setSpirituality(float spirituality){
+        if(hasUnlimitedSpirituality()) return;
         if(spirituality < 0){
             this.spirituality = this.maxSpirituality;
         } else this.spirituality = spirituality;
     }
 
     public void requestActiveSpiritualityCost(float cost){
+        if(hasUnlimitedSpirituality()) return;
         this.spiritualityCost += 20*cost;
     }
 
     public void requestPassiveSpiritualityCost(float cost){
+        if(hasUnlimitedSpirituality()) return;
         this.spiritualityCost += cost;
     }
 
     private void applyCost(){
         if(maxSpirituality <= 0) return;
         float amount = Math.round((1000*( - spiritualityCost/20f + (float) maxSpirituality /SECONDS_TO_MAX_SPIRITUALITY))) / 1000f;
-        changeSpirituality(amount);
+        if(!hasUnlimitedSpirituality()) changeSpirituality(amount);
         this.spiritualityCost = 0;
 
         if(amount < 0){
@@ -263,6 +277,7 @@ public class LivingEntityBeyonderCapability {
     public void onTick(LivingEntity entity, boolean serverSide){
         abilitiesManager.onTick(this, entity);
         effectsManager.onTick(this, entity);
+        if(unlimitedSpiritualityTimer > 0) unlimitedSpiritualityTimer--;
         if(serverSide){
             if(artifactCooldown > 0) artifactCooldown--;
             luckManager.onTick(this, entity);

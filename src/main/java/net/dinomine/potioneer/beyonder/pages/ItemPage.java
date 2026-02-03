@@ -9,13 +9,20 @@ import net.minecraft.world.item.ItemStack;
 public class ItemPage extends SplitPage{
     private final Item renderItem;
     private float scale = 2;
+    private int yOffset = 0;
     public ItemPage(Chapter chapter, Component title, Component topText, Component bottomText, Item stack) {
         super(chapter, title, topText, bottomText);
         this.renderItem = stack;
     }
+
     public ItemPage(Chapter chapter, String id, Item stack) {
         super(chapter, id);
         this.renderItem = stack;
+    }
+
+    public ItemPage withItemOffset(int offset){
+        this.yOffset = offset;
+        return this;
     }
 
     public ItemPage withScale(float scale){
@@ -29,7 +36,7 @@ public class ItemPage extends SplitPage{
         pGuiGraphics.pose().translate(-leftPos - 8, -topPos - 8, 0);
         pGuiGraphics.pose().scale(scale, scale, scale);
         pGuiGraphics.pose().translate(leftPos + 8, topPos + 8, 0);
-        pGuiGraphics.renderItem(new ItemStack(renderItem), 16, 17);
+        pGuiGraphics.renderItem(new ItemStack(renderItem), 16, 17 + yOffset);
         pGuiGraphics.pose().popPose();
     }
 }

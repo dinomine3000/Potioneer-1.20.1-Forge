@@ -1,0 +1,31 @@
+{
+  "type": "potioneer:potion_cauldron_brew",
+  "main_ingredients": [
+    {
+      "item": "minecraft:nether_star",
+      "count": 1
+    },
+    {
+      "item": "minecraft:ancient_debris",
+      "count": 3
+    }
+  ],
+  "supplementary_ingredients": [
+    {
+      "item": "minecraft:golden_apple"
+    },
+    {
+      "item": "minecraft:poisonous_potato",
+      "count": 1
+    }
+  ],
+  "water_level": 1,
+  "needs_fire": false,
+  "output": {
+    "name": "5",
+    "amount": 2,
+    "bottle": true,
+    "color": 3948098,
+    "can_conflict": true
+  }
+}

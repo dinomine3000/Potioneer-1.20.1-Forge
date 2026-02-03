@@ -83,6 +83,18 @@ public class ModEntities {
                             .sized(0.4f, 0.1f)
                             .build(new ResourceLocation(Potioneer.MOD_ID, "charm_entity").toString()));
 
+    public static final RegistryObject<EntityType<DiceEffectEntity>> DICE_EFFECT_ENTITY =
+            ENTITY_TYPES.register("dice_effect_entity",
+                    () -> EntityType.Builder.of(DiceEffectEntity::new, MobCategory.MISC)
+                            .sized(0.4f, 0.1f)
+                            .build(new ResourceLocation(Potioneer.MOD_ID, "dice_effect_entity").toString()));
+
+    public static final RegistryObject<EntityType<SlotMachineEntity>> SLOT_MACHINE_ENTITY =
+            ENTITY_TYPES.register("slot_machine_entity",
+                    () -> EntityType.Builder.of(SlotMachineEntity::new, MobCategory.MISC)
+                            .sized(0.4f, 0.1f)
+                            .build(new ResourceLocation(Potioneer.MOD_ID, "slot_machine_entity").toString()));
+
     public static void register(IEventBus eventBus){
         ENTITY_TYPES.register(eventBus);
     }

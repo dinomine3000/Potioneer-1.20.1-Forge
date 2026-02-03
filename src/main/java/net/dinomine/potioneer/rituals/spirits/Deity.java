@@ -74,7 +74,7 @@ public abstract class Deity extends EvilSpirit {
     protected void imbue(RitualInputData inputData, Level level) {
         Player targetPlayer = getPlayer(inputData, level, false);
         int inputPathway = pathwayId;
-        int reputation = 0; // stand in for the actual reputation calculation TODO
+        int reputation = 0; // stand in for the actual reputation calculation
         if(targetPlayer.getCapability(BeyonderStatsProvider.BEYONDER_STATS).isPresent() && targetPlayer.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve().isPresent()){
             reputation = targetPlayer.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve().get().getReputation(inputPathway);
         }
@@ -85,7 +85,7 @@ public abstract class Deity extends EvilSpirit {
                 reputation = (int) ((9 - targetPlayer.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve().get().getSequenceLevel())/2f);
             }
         }
-        RitualContainer container = new RitualContainer(inputPathway, reputation, inputData.offerings());
+        RitualContainer container = new RitualContainer(inputPathway, reputation, inputData.offerings()).withDesiredLevel(getDesiredLevel(inputData.thirdVerse()));
         Optional<CharmRecipe> recipeOptional = level.getRecipeManager().getRecipeFor(CharmRecipe.Type.INSTANCE, container, level);
         if(recipeOptional.isPresent()){
             CharmRecipe rec = recipeOptional.get();

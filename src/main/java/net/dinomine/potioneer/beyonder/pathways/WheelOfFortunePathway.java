@@ -2,13 +2,20 @@ package net.dinomine.potioneer.beyonder.pathways;
 
 import net.dinomine.potioneer.beyonder.abilities.Abilities;
 import net.dinomine.potioneer.beyonder.abilities.Ability;
+import net.dinomine.potioneer.beyonder.abilities.AbilityFunctionHelper;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
+import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
+import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
+import net.dinomine.potioneer.network.PacketHandler;
+import net.dinomine.potioneer.network.messages.effects.GeneralAreaEffectMessage;
 import net.dinomine.potioneer.rituals.spirits.Deity;
 import net.dinomine.potioneer.rituals.spirits.defaultGods.WheelOfFortuneResponse;
 import net.dinomine.potioneer.sound.ModSounds;
+import net.dinomine.potioneer.util.ParticleMaker;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 
@@ -22,9 +29,12 @@ public class WheelOfFortunePathway extends BeyonderPathway {
     public static final double GAMBLER_ACTING_SUC = 1/20d;
     public static final double GAMBLER_ACTING_FAIL = 1/50d;
     public static final double GAMBLER_ACTING_COOLDOWN = 1/256d;
+    public static final double LUCK_ACTING_INC = 1/256d;
+    public static final double LUCK_ACTING_EVENT = 1/128d;
+        public static final double MISFORTUNE_ACTING_INC = 1/100d;
 
     public WheelOfFortunePathway() {
-        super("Wheel_of_Fortune", 0x808080, new int[]{2500, 1500, 1200, 900, 600, 450, 375, 250, 200, 100});
+        super("Wheel_of_Fortune", 0x808080, new int[]{2500, 1500, 1200, 900, 600, 500, 400, 250, 200, 100});
     }
 
     @Override
@@ -46,8 +56,8 @@ public class WheelOfFortunePathway extends BeyonderPathway {
             case 9 -> new float[]{0, 0, 2, 0, 0};
             case 8 -> new float[]{2, 0, 2, 0, 2};
             case 7 -> new float[]{4, 1, 4, 2, 2};
-            case 6 -> new float[]{5, 0, 4, 2, 4};
-            case 5 -> new float[]{6, 0, 8, 2, 4};
+            case 6 -> new float[]{6, 1, 4, 2, 4};
+            case 5 -> new float[]{10, 3, 8, 3, 6};
             default -> new float[]{0, 0, 0, 0, 0};
         };
     }
@@ -55,15 +65,45 @@ public class WheelOfFortunePathway extends BeyonderPathway {
     @Override
     public int isRitualComplete(int sequenceLevel, Player player, Level pLevel) {
         if(sequenceLevel > 5) return 0;
+        int diff = 0;
+        LivingEntityBeyonderCapability cap = player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve().get();
+        switch (sequenceLevel){
+            case 5:
+                int luck = cap.getLuckManager().getLuck();
+                if(luck > -50) return 5;
+                if(luck > -100) return 4;
+                if(luck > -200) return 3;
+                return 0;
+        }
         return 0;
     }
 
     @Override
-    public void applyRitualEffects(Player player, int sequenceLevel) {}
+    public void applyRitualEffects(Player player, int sequenceLevel) {
+        switch (sequenceLevel){
+            case 5:
+                List<LivingEntity> entitiesAround = AbilityFunctionHelper.getLivingEntitiesAround(player, 16);
+                for(LivingEntity ent: entitiesAround){
+                    ent.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
+                        if(ent.is(player) && cap.getLuckManager().getLuck() < -50) cap.getLuckManager().setLuck(-cap.getLuckManager().getLuck());
+                        else cap.getLuckManager().setLuck(cap.getLuckManager().getLuck() * 10);
+                        cap.getLuckManager().instantlyCastEvent(ent);
+                    });
+                }
+                PacketHandler.sendMessageToClientsAround(player, 32, new GeneralAreaEffectMessage(ParticleMaker.Preset.AOE_END_ROD, player.getEyePosition().toVector3f(), 16));
+//                ParticleMaker.particleExplosionRandom(player.level(), 16, player.getX(), player.getY(), player.getZ());
+                player.level().playSound(null, player.getOnPos(), ModSounds.LUCK.get(), SoundSource.PLAYERS, 1, 1);
+                break;
+        }
+    }
 
     @Override
     public Component getRitualDescriptionForSequence(int sequenceLevel) {
-        return Component.empty();
+        if(sequenceLevel > 5) return Component.empty();
+        return switch (sequenceLevel){
+            case 5 -> Component.translatable("ritual.potioneer.source_of_misfortune");
+            default -> Component.translatable("ritual.potioneer.source_of_misfortune");
+        };
     }
 
     @Override
@@ -81,8 +121,15 @@ public class WheelOfFortunePathway extends BeyonderPathway {
             case 3:
             case 4:
             case 5:
+                abilities.add(Abilities.PHASING.create(atSequenceLevel));
+                abilities.add(Abilities.BET.create(atSequenceLevel));
+                abilities.add(Abilities.RECORD_DAMAGE.create(atSequenceLevel));
+                abilities.add(Abilities.MISFORTUNE.create(atSequenceLevel));
             case 6:
+                abilities.add(Abilities.FATE.create(atSequenceLevel));
                 abilities.add(Abilities.LUCK.create(atSequenceLevel));
+                abilities.add(Abilities.HALF_COOLDOWN.create(atSequenceLevel));
+                abilities.add(Abilities.WHEEL_DIVINATION.create(atSequenceLevel));
             case 7:
                 abilities.add(Abilities.PATIENCE.create(atSequenceLevel));
                 abilities.add(Abilities.VELOCITY.create(atSequenceLevel));
@@ -157,10 +204,18 @@ public class WheelOfFortunePathway extends BeyonderPathway {
     public List<String> canCraftEffectCharms(int sequenceLevel) {
         List<String> res = new ArrayList<>();
         switch(sequenceLevel){
+            case 1:
+            case 2:
+            case 3:
+            case 4:
+            case 5:
+                res.addAll(List.of(BeyonderEffects.WHEEL_BAD_LUCK.getEffectId(), BeyonderEffects.WHEEL_INSTANT_BAD_LUCK.getEffectId(), BeyonderEffects.WHEEL_CHAOTIC_LUCK.getEffectId()));
+            case 6:
+                res.addAll(List.of(BeyonderEffects.WHEEL_LUCK_EFFECT.getEffectId(), BeyonderEffects.WHEEL_FATE.getEffectId()));
             case 7:
                 res.addAll(List.of(BeyonderEffects.WHEEL_COOLDOWN.getEffectId(), BeyonderEffects.WHEEL_PATIENCE.getEffectId(), BeyonderEffects.WHEEL_GAMBLING.getEffectId(), BeyonderEffects.WHEEL_VELOCITY.getEffectId()));
             case 8:
-                res.addAll(List.of(BeyonderEffects.WHEEL_TEMP_LUCK.getEffectId(), BeyonderEffects.WHEEL_INSTANT_LUCK.getEffectId()));
+                res.addAll(List.of(BeyonderEffects.WHEEL_LUCK.getEffectId(), BeyonderEffects.WHEEL_INSTANT_LUCK.getEffectId()));
         }
         return res;
     }

@@ -157,6 +157,8 @@ public class Potioneer
             EntityRenderers.register(ModEntities.SEA_GOD_SCEPTER.get(), SeaGodRenderer::new);
             EntityRenderers.register(ModEntities.CHARACTERISTIC.get(), CharRenderer::new);
             EntityRenderers.register(ModEntities.ASTEROID.get(), AsteroidRenderer::new);
+            EntityRenderers.register(ModEntities.DICE_EFFECT_ENTITY.get(), DiceEffectRenderer::new);
+            EntityRenderers.register(ModEntities.SLOT_MACHINE_ENTITY.get(), SlotMachineRenderer::new);
             EntityRenderers.register(ModEntities.CHARM_ENTITY.get(), CharmRenderer::new);
 
             MolangParser.INSTANCE.register(new LazyVariable("query.target_x", 0.0F));
@@ -233,6 +235,8 @@ public class Potioneer
                 ItemBlockRenderTypes.setRenderLayer(ModBlocks.STAR_FLOWER_BLOCK.get(), RenderType.cutout());
                 ItemBlockRenderTypes.setRenderLayer(ModBlocks.RITUAL_ALTAR.get(), RenderType.cutout());
                 ItemBlockRenderTypes.setRenderLayer(ModBlocks.RITUAL_INK.get(), RenderType.cutout());
+                ItemBlockRenderTypes.setRenderLayer(ModBlocks.SOLSEER_TORCH.get(), RenderType.cutout());
+                ItemBlockRenderTypes.setRenderLayer(ModBlocks.SOLSEER_WALL_TORCH.get(), RenderType.cutout());
             });
 
 

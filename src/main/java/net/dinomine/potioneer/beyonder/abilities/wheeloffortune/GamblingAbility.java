@@ -10,7 +10,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.LivingEntity;
 
 public class GamblingAbility extends Ability {
-    private static final int cd = 60*20 + 30*20;
+    public static final int cd = 60*20 + 30*20;
     /**
      * pass the sequence level or pathway-sequence id to define the abilities sequence level
      * abilities that depend on changing pathways like Cogitation, that exists for every pathway, need to process their own pathway-sequence id here.
@@ -27,7 +27,7 @@ public class GamblingAbility extends Ability {
 
     @Override
     protected String getDescId(int sequenceLevel) {
-        return "gambling";
+        return sequenceLevel < 6 ? "gambling_2" : "gambling";
     }
 
     @Override

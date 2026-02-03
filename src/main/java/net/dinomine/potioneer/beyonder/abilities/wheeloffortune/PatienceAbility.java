@@ -14,7 +14,7 @@ public class PatienceAbility extends PassiveAbility {
 
     public PatienceAbility(int sequence){
 //        this.info = new AbilityInfo(5, 296, "Patience", sequence, 0, getMaxCooldown(), "gambling");
-        super(sequence, BeyonderEffects.WHEEL_PATIENCE, level -> "patience");
+        super(sequence, BeyonderEffects.WHEEL_PATIENCE, level -> level < 7 ? "patience_2" : "patience");
         canFlip();
     }
 

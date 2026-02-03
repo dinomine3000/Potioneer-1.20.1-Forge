@@ -3,14 +3,13 @@ package net.dinomine.potioneer.block;
 import net.dinomine.potioneer.Potioneer;
 import net.dinomine.potioneer.block.custom.*;
 import net.dinomine.potioneer.item.ModItems;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.util.valueproviders.UniformInt;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.DropExperienceBlock;
-import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.item.StandingAndWallBlockItem;
+import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.material.PushReaction;
@@ -30,6 +29,15 @@ public class ModBlocks {
             registerBlock("sapphire_block",
                     () -> new Block(BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK).sound(SoundType.AMETHYST).requiresCorrectToolForDrops()
                             .strength(2.0F)));
+
+
+    public static final RegistryObject<Block> SOLSEER_TORCH =
+            registerOnlyBlock("solseer_torch",
+                    () -> new TorchBlock(BlockBehaviour.Properties.copy(Blocks.TORCH), ParticleTypes.SMALL_FLAME));
+
+    public static final RegistryObject<Block> SOLSEER_WALL_TORCH =
+            registerOnlyBlock("solseer_wall_torch",
+                    () -> new WallTorchBlock(BlockBehaviour.Properties.copy(Blocks.WALL_TORCH), ParticleTypes.SMALL_FLAME));
 
     public static final RegistryObject<Block> RAW_SAPPHIRE_BLOCK =
             registerBlock("raw_sapphire_block",
@@ -89,6 +97,10 @@ public class ModBlocks {
 
         public static final RegistryObject<Block> SPIRIT_FRUIT_CROP = BLOCKS.register("spirit_fruit",
             () -> new SpiritFruitCropBlock(BlockBehaviour.Properties.copy(Blocks.WHEAT).noOcclusion().noCollission()));
+
+    private static <T extends Block> RegistryObject<T> registerOnlyBlock(String name, Supplier<T> block){
+        return BLOCKS.register(name, block);
+    }
 
 
     private static <T extends Block> RegistryObject<T> registerBlock(String name, Supplier<T> block){

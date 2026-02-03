@@ -8,6 +8,6 @@
   },
   "mixins": [
     "ItemStackMixin",
-    "ProjectileMixin"
+    "AbstractArrowMixin"
   ]
 }

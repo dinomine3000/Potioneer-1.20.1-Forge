@@ -8,11 +8,13 @@ import net.dinomine.potioneer.util.PotionIngredient;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.saveddata.SavedData;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 public class PotionFormulaSaveData extends SavedData {
@@ -200,5 +202,15 @@ public class PotionFormulaSaveData extends SavedData {
 
     public List<PotionRecipe> getRecipesFor(PotionCauldronContainer container) {
         return recipes.stream().filter(recipe -> recipe.matches(container)).toList();
+    }
+
+    public Collection<? extends Item> getAllItems() {
+        List<Item> resItems = new ArrayList<>();
+        for(PotionRecipe formula: recipes){
+            PotionRecipeData recipeData = formula.input();
+            resItems.addAll(recipeData.main().stream().map(ingredient -> ingredient.getRepresentativeStack().getItem()).toList());
+            resItems.addAll(recipeData.supplementary().stream().map(ingredient -> ingredient.getRepresentativeStack().getItem()).toList());
+        }
+        return resItems;
     }
 }

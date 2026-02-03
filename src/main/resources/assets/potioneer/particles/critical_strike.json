@@ -1,0 +1,10 @@
+{
+  "textures": [
+    "potioneer:crit_hit_1",
+    "potioneer:crit_hit_2",
+    "potioneer:crit_hit_3",
+    "potioneer:crit_hit_4",
+    "potioneer:crit_hit_5",
+    "potioneer:crit_hit_6"
+  ]
+}

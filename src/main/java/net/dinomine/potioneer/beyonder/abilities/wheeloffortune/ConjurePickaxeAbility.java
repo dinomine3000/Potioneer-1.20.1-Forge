@@ -23,9 +23,7 @@ public class ConjurePickaxeAbility extends Ability {
     }
 
     public ConjurePickaxeAbility(int sequence){
-//        this.info = new AbilityInfo(5, 80, "Conjure Pickaxe", sequence, 10 + 10*(9-sequence), 20*5, "pick");
         super(sequence);
-        setCost(level -> 10 + 10*(9-level));
         defaultMaxCooldown = 20*30;
     }
 

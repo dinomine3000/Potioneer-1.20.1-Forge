@@ -32,6 +32,7 @@ public class ModEvents {
         new ChangeActingCommand(event.getDispatcher());
         new SpiritDebugCommand(event.getDispatcher());
         new PageManageCommand(event.getDispatcher());
+        new LuckCommand(event.getDispatcher());
 
         ConfigCommand.register(event.getDispatcher());
     }

@@ -69,6 +69,7 @@ public class ModCreativeModTabs {
                         output.accept(ModItems.PECAN_LEAF.get());
                         output.accept(ModItems.PECAN_SHELL.get());
                         output.accept(ModItems.SOLSEER.get());
+                        output.accept(ModItems.SOLSEER_TORCH_ITEM.get());
                         output.accept(ModItems.WANDERING_CACTUS_PRICK.get());
 
                         //cactus sap item

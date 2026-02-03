@@ -1,11 +1,16 @@
 package net.dinomine.potioneer.util;
 
+import net.dinomine.potioneer.entities.ModEntities;
+import net.dinomine.potioneer.entities.custom.DiceEffectEntity;
+import net.dinomine.potioneer.entities.custom.SlotMachineEntity;
 import net.dinomine.potioneer.network.PacketHandler;
 import net.dinomine.potioneer.network.messages.effects.GeneralAreaEffectMessage;
+import net.dinomine.potioneer.particle.ModParticles;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 
@@ -14,6 +19,21 @@ public class ParticleMaker {
     public enum Preset{
         AOE_END_ROD,
         AOE_GRAVITY
+    }
+
+    public static void createSlotMachineForEntity(Level level, LivingEntity target, boolean success){
+        SlotMachineEntity slotMachine = new SlotMachineEntity(ModEntities.SLOT_MACHINE_ENTITY.get(), level);
+        slotMachine.setInvulnerable(true);
+        slotMachine.setTarget(target.getUUID());
+        slotMachine.setSuccess(success);
+        level.addFreshEntity(slotMachine);
+    }
+
+    public static void createDiceEffectForEntity(Level level, LivingEntity target){
+        DiceEffectEntity dice = new DiceEffectEntity(ModEntities.DICE_EFFECT_ENTITY.get(), level);
+        dice.setInvulnerable(true);
+        dice.setTarget(target.getUUID());
+        level.addFreshEntity(dice);
     }
 
     public static void summonAOEParticles(Level level, Vec3 center, int messageRadius, double effectRadius, Preset preset){

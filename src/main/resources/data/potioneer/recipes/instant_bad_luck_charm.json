@@ -1,0 +1,24 @@
+{
+  "type": "potioneer:ritual_charm_crafting",
+  "effectId": "instant_bad_luck",
+  "ingredients": [
+    {
+      "item": "minecraft:iron_ingot",
+      "count": 2
+    },
+    {
+      "item": "potioneer:solseer",
+      "count": 1
+    },
+    {
+      "item": "minecraft:emerald",
+      "count": 1
+    }
+  ],
+  "base": {
+    "item": "potioneer:sapphire"
+  },
+  "pathwayId": 0,
+  "levelScaling": 9,
+  "durationScaling": 10
+}

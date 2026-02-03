@@ -28,8 +28,6 @@ public class BlockAppraisalAbility extends Ability {
 
     public BlockAppraisalAbility(int sequence){
         super(sequence);
-//        this.info = new AbilityInfo(5, 56, "Block Finder", sequence, 10 + 5*(9-sequence), 30*20, "xray");
-//        this.isActive = true;
         defaultMaxCooldown = 15*20;
     }
 

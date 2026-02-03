@@ -6,6 +6,8 @@ import net.dinomine.potioneer.beyonder.pathways.WheelOfFortunePathway;
 import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
 import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
 import net.dinomine.potioneer.beyonder.player.PlayerLuckManager;
+import net.dinomine.potioneer.network.PacketHandler;
+import net.dinomine.potioneer.network.messages.abilityRelevant.abilitySpecific.AppraisalDataMessage;
 import net.dinomine.potioneer.util.ParticleMaker;
 import net.dinomine.potioneer.util.misc.MysticismHelper;
 import net.minecraft.network.chat.Component;
@@ -50,9 +52,13 @@ public class EntityAppraisalAbility extends Ability {
         if(statAppraisalTarget.getId() != target.getId())
             cap.getCharacteristicManager().progressActing(WheelOfFortunePathway.APPRAISER_ACTING_APPRAISE, 8);
         statAppraisalTarget.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(targetCap -> {
-            target.sendSystemMessage(Component.translatable("ability.potioneer.target_appraisal",
-                    statAppraisalTarget.getDisplayName(), Math.ceil(statAppraisalTarget.getHealth()), Math.ceil(statAppraisalTarget.getMaxHealth()),
-                    Math.round(targetCap.getSpirituality()), Math.max(targetCap.getMaxSpirituality(), 100), Math.round(targetCap.getSanity())));
+            if(sequenceLevel > 6){
+                target.sendSystemMessage(Component.translatable("ability.potioneer.target_appraisal",
+                        statAppraisalTarget.getDisplayName(), Math.ceil(statAppraisalTarget.getHealth()), Math.ceil(statAppraisalTarget.getMaxHealth()),
+                        Math.round(targetCap.getSpirituality()), Math.max(targetCap.getMaxSpirituality(), 100), Math.round(targetCap.getSanity()), targetCap.getMaxSanity()));
+            } else {
+                PacketHandler.sendMessageSTC(new AppraisalDataMessage(statAppraisalTarget, false), target);
+            }
         });
         ParticleMaker.summonAOEParticles(target.level(), statAppraisalTarget.getEyePosition(), 8, statAppraisalTarget.getBbWidth(), ParticleMaker.Preset.AOE_GRAVITY);
         return true;
@@ -63,24 +69,27 @@ public class EntityAppraisalAbility extends Ability {
         if(cap.getSpirituality() < cost()) return false;
         cap.requestActiveSpiritualityCost(cost());
         if(target.level().isClientSide()) return true;
+
         LivingEntity luckAppraisalTarget = getTarget(target);
         if(luckAppraisalTarget.getId() != target.getId())
             cap.getCharacteristicManager().progressActing(WheelOfFortunePathway.APPRAISER_ACTING_APPRAISE, 8);
+        Optional<LivingEntityBeyonderCapability> optCap = luckAppraisalTarget.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve();
+        if(optCap.isEmpty()) return false;
+        LivingEntityBeyonderCapability targetCap = optCap.get();
+        PlayerLuckManager luckMng = targetCap.getLuckManager();
+
         if(getSequenceLevel() > 7){
-            luckAppraisalTarget.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(targetCap -> {
-                PlayerLuckManager luckMng = targetCap.getLuckManager();
-                target.sendSystemMessage(Component.translatable("ability.potioneer.luck_appraisal", luckAppraisalTarget.getDisplayName(), luckMng.getLuck()));
-            });
-            return true;
+            target.sendSystemMessage(Component.translatable("ability.potioneer.luck_appraisal", luckAppraisalTarget.getDisplayName(), luckMng.getLuck()));
+        } else if(getSequenceLevel() == 7){
+            target.sendSystemMessage(Component.translatable("ability.potioneer.luck_appraisal_2", luckAppraisalTarget.getDisplayName(),
+                    luckMng.getMinPassiveLuck(),
+                    luckMng.getLuck(),
+                    luckMng.getMaxPassiveLuck()));
         } else {
-            Optional<LivingEntityBeyonderCapability> stats = luckAppraisalTarget.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve();
-            if(stats.isPresent()) {
-                target.sendSystemMessage(Component.translatable("ability.potioneer.luck_appraisal_2", luckAppraisalTarget.getDisplayName(),
-                        stats.get().getLuckManager().getMinPassiveLuck(),
-                        stats.get().getLuckManager().getLuck(),
-                        stats.get().getLuckManager().getMaxPassiveLuck()));
-//                System.out.println(stats.get().getLuckManager().getRange());
-                return true;
+            PacketHandler.sendMessageSTC(new AppraisalDataMessage(luckAppraisalTarget, true), target);
+            if(luckMng.getCurrentEvent() != null){
+                target.sendSystemMessage(Component.translatableWithFallback("ability.potioneer.luck_event_appraisal", "%s has a luck event coming: %s",
+                        luckAppraisalTarget.getDisplayName(), luckMng.getCurrentEvent().getForecast()));
             }
         }
         return true;

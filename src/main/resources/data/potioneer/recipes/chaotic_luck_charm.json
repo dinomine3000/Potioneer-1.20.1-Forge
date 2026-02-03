@@ -1,0 +1,20 @@
+{
+  "type": "potioneer:ritual_charm_crafting",
+  "effectId": "chaotic_luck",
+  "ingredients": [
+    {
+      "item": "minecraft:nether_wart",
+      "count": 2
+    },
+    {
+      "item": "minecraft:white_wool",
+      "count": 1
+    }
+  ],
+  "base": {
+    "item": "potioneer:sapphire"
+  },
+  "pathwayId": 0,
+  "levelScaling": 9,
+  "durationScaling": 30
+}

@@ -2,12 +2,17 @@ package net.dinomine.potioneer.event;
 
 import net.dinomine.potioneer.Potioneer;
 import net.dinomine.potioneer.beyonder.abilities.Abilities;
+import net.dinomine.potioneer.beyonder.abilities.AbilityFunctionHelper;
+import net.dinomine.potioneer.beyonder.damages.PotioneerDamage;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffect;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
+import net.dinomine.potioneer.beyonder.effects.wheeloffortune.BeyonderArrowGravitateEffect;
+import net.dinomine.potioneer.beyonder.effects.wheeloffortune.BeyonderZeroDamageBlockEffect;
 import net.dinomine.potioneer.beyonder.effects.wheeloffortune.BeyonderZeroDamageEffect;
 import net.dinomine.potioneer.beyonder.pathways.BeyonderPathway;
 import net.dinomine.potioneer.beyonder.pathways.Pathways;
 import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
+import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
 import net.dinomine.potioneer.item.ModItems;
 import net.dinomine.potioneer.network.PacketHandler;
 import net.dinomine.potioneer.network.messages.PlayerNameSyncMessage;
@@ -19,16 +24,14 @@ import net.dinomine.potioneer.util.misc.MysticismHelper;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.players.GameProfileCache;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.projectile.Arrow;
+import net.minecraft.world.item.BowItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.Enchantments;
@@ -48,7 +51,6 @@ import java.nio.ByteBuffer;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;
-import java.util.regex.Pattern;
 
 @Mod.EventBusSubscriber
 public class BeyonderEvents {
@@ -350,6 +352,9 @@ public class BeyonderEvents {
             //if(player.level().isClientSide()) return;
             LivingEntity entity = event.getEntity();
             entity.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
+                if(event.getSource().is(PotioneerDamage.Tags.MENTAL)){
+                    cap.changeSanity(-event.getAmount()/2f);
+                }
                 cap.getEffectsManager().onTakeDamage(event, cap);
             });
         }
@@ -360,7 +365,7 @@ public class BeyonderEvents {
         LivingEntity target = event.getEntity();
         target.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
             if(cap.getAbilitiesManager().hasAbility(Abilities.FATE.getAblId())){
-                target.sendSystemMessage(cap.getLuckManager().getCurrentEvent().getForecast());
+                target.sendSystemMessage(event.getLuckEvent().getForecast());
             }
         });
     }
@@ -368,11 +373,20 @@ public class BeyonderEvents {
     @SubscribeEvent
     public static void onArrowLoose(ArrowLooseEvent event){
         if(event.getEntity().level().isClientSide) return;
-        System.out.println("Arrow Loosed " + event.hasAmmo() + event.getCharge());
-    }
-
-    @SubscribeEvent
-    public static void onArrowNock(ArrowNockEvent event){
+        Player player = event.getEntity();
+        player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
+            if(event.getCharge() < 5) return;
+            Optional<LivingEntity> optional = AbilityFunctionHelper.getTargetEntity(player, 32, 3, false);
+            if(optional.isEmpty()) return;
+            LivingEntity target = optional.get();
+            if(target.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve().isPresent()){
+                LivingEntityBeyonderCapability tarCap = target.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve().get();
+                if(tarCap.getEffectsManager().hasEffect(BeyonderEffects.WHEEL_LUCK_EFFECT.getEffectId())) return;
+            }
+            BeyonderArrowGravitateEffect eff = (BeyonderArrowGravitateEffect) BeyonderEffects.WHEEL_ARROW.createInstance(9, 0, 10, true);
+            eff.setValues(target, BowItem.getPowerForTime(event.getCharge()) * 3);
+            cap.getEffectsManager().addEffectNoCheck(eff, cap, player);
+        });
     }
 
     @SubscribeEvent
@@ -402,6 +416,25 @@ public class BeyonderEvents {
         });
     }
 
+    @SubscribeEvent
+    public static void onBlockPlaced(BlockEvent.EntityPlaceEvent event){
+        if (event.getEntity().level() != null && event.getEntity().level().isClientSide()) return;
+        if (!(event.getEntity() instanceof ServerPlayer player)) return;
+        if(player.isCreative() || player.isSpectator()) return;
+
+        player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent( cap -> {
+            BeyonderZeroDamageEffect zeroEff = (BeyonderZeroDamageEffect) cap.getEffectsManager().getEffect(BeyonderEffects.WHEEL_ZERO_DAMAGE.getEffectId());
+            if(zeroEff == null || zeroEff.getSequenceLevel() > 6 || !zeroEff.doBlocks()) return;
+            int level = zeroEff.getSequenceLevel();
+            //TODO make the chance dependent on level maybe?
+            if(!cap.getLuckManager().passesLuckCheck(0.00005f, 50, 0, player.getRandom())) return;
+            ItemStack blockStack = new ItemStack(event.getPlacedBlock().getBlock());
+            BeyonderZeroDamageBlockEffect eff = (BeyonderZeroDamageBlockEffect) BeyonderEffects.WHEEL_ZERO_BLOCK.createInstance(9, 0, 1, true);
+            eff.withItem(blockStack.copyWithCount(1));
+            cap.getEffectsManager().addEffectNoCheck(eff, cap, player);
+        });
+    }
+
 
     @SubscribeEvent
     public static void onFall(LivingFallEvent event){
@@ -415,22 +448,27 @@ public class BeyonderEvents {
 
     @SubscribeEvent
     public static void onBlockBroken(BlockEvent.BreakEvent event){
-        if(event.getPlayer().isCreative() || event.getPlayer().isSpectator()) return;
-        if(event.getPlayer().level().isClientSide()) return;
-        event.getPlayer().getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
+        Player player = event.getPlayer();
+        if(player.isCreative() || player.isSpectator()) return;
+        if(player.level().isClientSide()) return;
+        player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
             int i = 1;
-            ItemStack pick = event.getPlayer().getMainHandItem().copy();
+            ItemStack pick = player.getMainHandItem().copy();
             if(pick.isEmpty()) pick = new ItemStack(Items.COMPASS);
-            boolean fortune = cap.getEffectsManager().hasEffect(BeyonderEffects.WHEEL_FORTUNE.getEffectId());
+            BeyonderEffect fortuneEff = cap.getEffectsManager().getEffect(BeyonderEffects.WHEEL_FORTUNE.getEffectId());
+            boolean fortune = fortuneEff != null;
             boolean silk = cap.getEffectsManager().hasEffect(BeyonderEffects.WHEEL_SILK.getEffectId());
 
             if(fortune && event.getState().is(Tags.Blocks.ORES)){
-                float lvl = 1 + (10 - cap.getEffectsManager().getEffect(BeyonderEffects.WHEEL_FORTUNE.getEffectId()).getSequenceLevel())/2f;
+                float lvl = 1 + (10 - fortuneEff.getSequenceLevel())/2f;
+                if(fortuneEff.getSequenceLevel() < 7){
+                    lvl += cap.getLuckManager().getRandomNumber(0, 3, true, player.getRandom());
+                }
                 while(lvl >= 1){
                     lvl--;
                     i++;
                 }
-                if(event.getLevel().getRandom().nextFloat() < lvl){
+                if(cap.getLuckManager().passesLuckCheck(lvl, 0, 0, player.getRandom())){
                     i++;
                 }
             }
@@ -443,9 +481,9 @@ public class BeyonderEvents {
 //                System.out.println("Applied at least one of the effects");
                 event.setCanceled(true);
                 event.getLevel().removeBlock(event.getPos(), false);
-//                event.getLevel().destroyBlock(event.getPos(), false, event.getPlayer());
+//                event.getLevel().destroyBlock(event.getPos(), false, player);
                 while (i-- > 0) {
-                    event.getState().getBlock().playerDestroy(event.getPlayer().level(), event.getPlayer(), event.getPos(),
+                    event.getState().getBlock().playerDestroy(player.level(), player, event.getPos(),
                             event.getState(), event.getLevel().getBlockEntity(event.getPos()), pick);
                 }
             }

@@ -1,5 +1,6 @@
 package net.dinomine.potioneer.beyonder.pages;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.dinomine.potioneer.Potioneer;
 import net.dinomine.potioneer.beyonder.client.ClientStatsData;
 import net.dinomine.potioneer.recipe.CharmRecipe;
@@ -33,6 +34,10 @@ public class RitualRecipePage extends RecipePage {
         this(chapter, title, id, new ResourceLocation(Potioneer.MOD_ID, id));
     }
 
+    public RitualRecipePage(Chapter chapter, String id){
+        this(chapter, Component.translatable("beyondereffect.potioneer." + id), id + "_charm");
+    }
+
     protected PotionIngredient getBaseMaterial(){
         Optional<? extends Recipe<?>> optionalRecipe = getRecipe();
         return optionalRecipe.map(rec -> ((CharmRecipe) rec).getBaseMaterial()).orElse(PotionIngredient.EMPTY);
@@ -53,8 +58,10 @@ public class RitualRecipePage extends RecipePage {
     @Override
     public void drawMiddle(GuiGraphics pGuiGraphics, ResourceLocation texture, int leftPos, int topPos, int imageWidth, int imageHeight, int textureWidth, int textureHeight) {
         validateRecipe();
-
+        RenderSystem.enableBlend();
+        RenderSystem.defaultBlendFunc();
         pGuiGraphics.blit(texture, leftPos + 20, topPos + 65, 206, 182, 76, 72, textureWidth, textureHeight);
+        RenderSystem.disableBlend();
         NonNullList<PotionIngredient> ingredients = getIngredients();
         PotionIngredient base = getBaseMaterial();
         pGuiGraphics.renderFakeItem(base.getRepresentativeStack(), leftPos + 50, topPos + 93);

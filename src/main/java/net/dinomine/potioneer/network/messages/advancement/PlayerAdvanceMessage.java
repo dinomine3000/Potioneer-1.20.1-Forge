@@ -54,7 +54,7 @@ public class PlayerAdvanceMessage {
                 player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
                     for(Integer charac: msg.characteristics){
                         cap.advance(charac, false);
-                        Pathways.getPathwayById(charac).applyRitualEffects(player, charac%10);
+                        Pathways.getPathwayBySequenceId(charac).applyRitualEffects(player, charac%10);
                     }
                 });
             }

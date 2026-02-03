@@ -2,6 +2,7 @@ package net.dinomine.potioneer.entities.custom;
 
 import net.dinomine.potioneer.beyonder.abilities.AbilityFunctionHelper;
 import net.dinomine.potioneer.beyonder.damages.PotioneerDamage;
+import net.dinomine.potioneer.config.PotioneerCommonConfig;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
@@ -41,17 +42,14 @@ public class AsteroidEntity extends Entity implements GeoEntity {
         Direction cardinalDir = Direction.getRandom(random);
         entityData.set(DIRECTION, cardinalDir);
         Vec3 direction = rotateImpactVector(cardinalDir);
-        System.out.println("Direction: " + cardinalDir);
 
         //scales the base vector by the distance to calculate the difference
         //between the target position and the summon position
         int diffY = SUMMON_HEIGHT - pos.getY();
         Vec3 diffVector = direction.scale(diffY/3f);
-        System.out.println("Diff vector: " + diffVector);
 
         //updates the entity position and stuff
         setPos(pos.getCenter().subtract(diffVector));
-        System.out.println("Summoning at: " + pos.getCenter().subtract(diffVector));
         setDeltaMovement(direction.scale(SPEED));
         setYRot(cardinalDir.toYRot());
     }
@@ -79,7 +77,9 @@ public class AsteroidEntity extends Entity implements GeoEntity {
         super.tick();
 
         if(onGround()){
-            level().explode(this, PotioneerDamage.asteroid((ServerLevel) level()), null, position(), 5, true, Level.ExplosionInteraction.BLOCK);
+            if(!level().isClientSide())
+                level().explode(this, PotioneerDamage.asteroid((ServerLevel) level()), null, position(), 5, true,
+                        PotioneerCommonConfig.DESTRUCTION_LEVEL_ENUM_VALUE.get() != PotioneerCommonConfig.DestructionLevel.NEVER ? Level.ExplosionInteraction.BLOCK : Level.ExplosionInteraction.NONE);
             kill();
         } else {
             Vec3 motion = rotateImpactVector(entityData.get(DIRECTION)).scale(SPEED);

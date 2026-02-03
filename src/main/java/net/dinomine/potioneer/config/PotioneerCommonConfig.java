@@ -9,6 +9,11 @@ public class PotioneerCommonConfig {
     public static final ForgeConfigSpec.Builder BUILDER = new ForgeConfigSpec.Builder();
     public static final ForgeConfigSpec SPEC;
 
+    public enum DestructionLevel {
+        ALWAYS,
+        NEVER
+    }
+
     public static final ForgeConfigSpec.BooleanValue DO_APTITUDE_PATHWAYS;
     public static final ForgeConfigSpec.DoubleValue APTITUDE_MULTIPLIER;
     public static final ForgeConfigSpec.DoubleValue UNIVERSAL_ACTING_MULTIPLIER;
@@ -20,6 +25,7 @@ public class PotioneerCommonConfig {
     public static final ForgeConfigSpec.IntValue ARTIFACT_CONVERSION_CHANCE;
     public static final ForgeConfigSpec.IntValue ARTIFACT_CONVERSION_COOLDOWN;
     public static final ForgeConfigSpec.ConfigValue<List<String>> INTERCHANGEABLE_PATHWAYS;
+    public static final ForgeConfigSpec.ConfigValue<List<String>> ITEM_GEN_LUCK_EVENT_ITEMS;
     public static final ForgeConfigSpec.BooleanValue PUBLIC_GROUPS;
     public static final ForgeConfigSpec.BooleanValue ALLOW_CHANGING_PATHWAYS;
     public static final ForgeConfigSpec.DoubleValue CHANCE_TO_MAKE_ARTIFACT_ON_DEATH;
@@ -36,6 +42,9 @@ public class PotioneerCommonConfig {
     public static final ForgeConfigSpec.IntValue LUCK_LV3_THRESHOLD;
     public static final ForgeConfigSpec.IntValue MINIMUM_LUCK_EVENT_TIMER;
     public static final ForgeConfigSpec.IntValue MAXIMUM_LUCK_EVENT_TIMER;
+    public static final ForgeConfigSpec.IntValue LUCK_EVENT_CAST_CHANCE;
+    public static final ForgeConfigSpec.EnumValue<DestructionLevel> DESTRUCTION_LEVEL_ENUM_VALUE;
+    public static final ForgeConfigSpec.EnumValue<ITEM_GEN_EVENT> ITEM_GEN_LUCK_EVENT_INCLUDE_ALL_FORMULA;
 
     public static final ForgeConfigSpec.EnumValue<CharacteristicDropCriteria> CHARACTERISTIC_DROP_CRITERIA_ENUM_VALUE;
     public static final ForgeConfigSpec.BooleanValue DROP_ALL_CHARACTERISTICS;
@@ -44,6 +53,11 @@ public class PotioneerCommonConfig {
         ALWAYS,
         LOW_SANITY,
         NEVER
+    }
+    public enum ITEM_GEN_EVENT{
+        ALL,
+        ONE,
+        NONE
     }
 
     static{
@@ -161,6 +175,24 @@ public class PotioneerCommonConfig {
         MAXIMUM_LUCK_EVENT_TIMER = BUILDER.comment("What is the maximum time, in seconds, that an event should take to trigger once its cast?" +
                         "\nSetting this to zero means luck events will always trigger immediately.")
                 .defineInRange("maximum_luck_event_countdown", 60, 0, Integer.MAX_VALUE);
+
+        DESTRUCTION_LEVEL_ENUM_VALUE = BUILDER.comment("What level of destruction is allowed from beyonder effects? This includes effect, abilities, luck events...")
+                .defineEnum("destruction_level", DestructionLevel.ALWAYS, DestructionLevel.NEVER, DestructionLevel.ALWAYS);
+
+        LUCK_EVENT_CAST_CHANCE = BUILDER.comment("The game checks, every 2 seconds, for every entity, if it should cast upon them a luck event." +
+                        "\nThis check is just a \"Pick a random number from 0 to N. If it's smaller than their luck event chance, cast an event.\"" +
+                        "\nHere, you can define N. A person's luck event chance can depend on effect and abilities. For example, a sequence 6 of the Wheel of Fortune pathway has a luck event chance of 4 (7 if they also have patience enabled)," +
+                        "\nbut most people sit at 1. It's impossible to have it at less than 1" +
+                        "\nYou can customize the value here. Something like 1000 will cause normal people to have a 84% chance of triggering an event within an hour. Something like 10000 will have a 17% chance of doing that.")
+                .defineInRange("luck_event_cast_scaling", 7500, 1, Integer.MAX_VALUE);
+
+        ITEM_GEN_LUCK_EVENT_ITEMS = BUILDER.comment("When casting the random item generation luck event, what items should be chosen?\nPotion formula items are automatically added to the pool.")
+                .define("luck_event_random_items", new ArrayList<>(List.of("minecraft:diamond", "minecraft:totem_of_undying", "minecraft:iron_pickaxe")));
+
+        ITEM_GEN_LUCK_EVENT_INCLUDE_ALL_FORMULA = BUILDER.comment("When casting the random item generation luck event, how many formula ingredients should be included in the pool to choose from?" +
+                        "\nThe item selection here will be tacked onto the list defined in 'luck_event_random_items'." +
+                        "\nSetting this to NONE will make it only generate based on your list defined above, ONE will pick a random formula ingredient and add it to the list, and ALL will add all ingredients to the list.")
+                .defineEnum("luck_event_gen_formula_ingredients", ITEM_GEN_EVENT.ALL, List.of(ITEM_GEN_EVENT.ALL, ITEM_GEN_EVENT.ONE, ITEM_GEN_EVENT.NONE));
 
         PATIENCE_TIME_LIMIT = BUILDER.comment("\n\n------Ability Configs-----\n" +
                         "The Patience ability of the Wheel of Fortune pathway will aim to grant you luck up to N luck if you have less than that. " +

@@ -33,8 +33,8 @@ public class AdvancementFailMessageCTS {
             int sequence = msg.sequence;
             if(!player.isCreative()){
                 player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> cap.setSanity(0));
+                CharacteristicHelper.addCharacteristicToLevel(sequence, player.level(), player, player.position(), player.getRandom());
             }
-            CharacteristicHelper.addCharacteristicToLevel(sequence, player.level(), player, player.position(), player.getRandom());
         });
 
         context.setPacketHandled(true);
