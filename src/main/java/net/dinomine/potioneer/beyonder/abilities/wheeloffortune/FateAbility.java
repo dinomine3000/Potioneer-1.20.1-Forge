@@ -44,7 +44,9 @@ public class FateAbility extends Ability {
         }
         Optional<LivingEntity> eventTarget = AbilityFunctionHelper.getTargetEntity(target, target.getAttributeBaseValue(ForgeMod.ENTITY_REACH.get()) + 1, true);
         if(eventTarget.isPresent()){
-            LivingEntityBeyonderCapability fateCap = eventTarget.get().getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve().get();
+            Optional<LivingEntityBeyonderCapability> optCap = eventTarget.get().getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve();
+            if(optCap.isEmpty()) return false;
+            LivingEntityBeyonderCapability fateCap = optCap.get();
             fateCap.getEffectsManager().addEffectNoCheck(BeyonderEffects.WHEEL_FATE.createInstance(getSequenceLevel(), 0, 2, true), fateCap, eventTarget.get());
             cap.getLuckManager().consumeLuck(50);
             cap.getCharacteristicManager().progressActing(WheelOfFortunePathway.MISFORTUNE_ACTING_INC, 5);

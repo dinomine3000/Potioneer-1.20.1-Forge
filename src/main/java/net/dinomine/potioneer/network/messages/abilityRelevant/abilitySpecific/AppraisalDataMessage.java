@@ -14,6 +14,7 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.network.NetworkEvent;
 
+import java.util.Optional;
 import java.util.function.Supplier;
 
 public class AppraisalDataMessage {
@@ -36,11 +37,17 @@ public class AppraisalDataMessage {
     public AppraisalDataMessage(LivingEntity entity, boolean luck){
         this.entityId = entity.getId();
         this.luck = luck;
-        LivingEntityBeyonderCapability cap = entity.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve().get();
-        if(luck){
-            this.data = cap.getLuckManager().getDataForHud();
+
+        Optional<LivingEntityBeyonderCapability> optCap = entity.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve();
+        if(optCap.isPresent()){
+            LivingEntityBeyonderCapability cap = optCap.get();
+            if(luck){
+                this.data = cap.getLuckManager().getDataForHud();
+            } else {
+                this.data = new float[]{entity.getHealth(), entity.getMaxHealth(), cap.getSpirituality(), cap.getMaxSpirituality(), cap.getSanity(), cap.getMaxSanity()};
+            }
         } else {
-            this.data = new float[]{entity.getHealth(), entity.getMaxHealth(), cap.getSpirituality(), cap.getMaxSpirituality(), cap.getSanity(), cap.getMaxSanity()};
+            this.data = new float[0];
         }
     }
 

@@ -39,6 +39,10 @@ public class ModBlocks {
             registerOnlyBlock("solseer_wall_torch",
                     () -> new WallTorchBlock(BlockBehaviour.Properties.copy(Blocks.WALL_TORCH), ParticleTypes.SMALL_FLAME));
 
+    public static final RegistryObject<Block> FAKE_WATER =
+            registerOnlyBlock("fake_water",
+                    () -> new FakeWaterBlock(BlockBehaviour.Properties.of()));
+
     public static final RegistryObject<Block> RAW_SAPPHIRE_BLOCK =
             registerBlock("raw_sapphire_block",
                     () -> new Block(BlockBehaviour.Properties.copy(Blocks.RAW_IRON_BLOCK).sound(SoundType.AMETHYST)));

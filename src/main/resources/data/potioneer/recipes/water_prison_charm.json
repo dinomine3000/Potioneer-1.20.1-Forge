@@ -1,0 +1,20 @@
+{
+  "type": "potioneer:ritual_charm_crafting",
+  "effectId": "water_prison",
+  "ingredients": [
+    {
+      "item": "minecraft:pufferfish",
+      "count": 2
+    },
+    {
+      "item": "minecraft:glass_bottle",
+      "count": 1
+    }
+  ],
+  "base": {
+    "item": "minecraft:prismarine_shard"
+  },
+  "pathwayId": 1,
+  "levelScaling": 9,
+  "durationScaling": 10
+}

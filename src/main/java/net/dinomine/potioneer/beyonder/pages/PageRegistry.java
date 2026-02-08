@@ -45,6 +45,8 @@ public class PageRegistry {
     public static Page CHARM_PATIENCE = register(i++, () -> new RitualRecipePage(Page.Chapter.CHARMS,  "patience"));
     public static Page CHARM_GAMBLE = register(i++, () -> new RitualRecipePage(Page.Chapter.CHARMS, "gambling"));
     public static Page CHARM_FATE = register(i++, () -> new RitualRecipePage(Page.Chapter.CHARMS, "fate"));
+    public static Page CHARM_WATER_AFFINITY = register(i++, () -> new RitualRecipePage(Page.Chapter.CHARMS, "water_affinity"));
+    public static Page CHARM_WATER_PRISON = register(i++, () -> new RitualRecipePage(Page.Chapter.CHARMS, "water_prison"));
     public static Page RITUALS_CANDLES = register(i++, () -> new ItemPage(Page.Chapter.RITUALS, "rituals_candles", Items.CANDLE).withOffset(10));
     public static Page RITUALS_INK = register(i++, () -> new ItemPage(Page.Chapter.RITUALS, "rituals_ink", ModItems.INK_BOTTLE.get()).withOffset(10));
     public static Page RITUALS_DAGGER = register(i++, () -> new CraftingTableRecipePage(Page.Chapter.RITUALS, "rituals_dagger", new ResourceLocation(Potioneer.MOD_ID, "ritualistic_dagger")));
@@ -52,6 +54,8 @@ public class PageRegistry {
     public static Page CHARMS_CRAFTING = register(i++, () -> new TextPage(Page.Chapter.CHARMS, "charm_101"));
     public static Page COIN_DIVINATION = register(i++, () -> new ItemPage(Page.Chapter.DIVINATION, "coin_divination", ModItems.COIN_ITEM.get()));
     public static Page ROD_DIVINATION = register(i++, () -> new ItemPage(Page.Chapter.DIVINATION, "rod_divination", ModItems.DIVINATION_ROD.get()).withItemOffset(10));
+    public static Page MAP_DIVINATION = register(i++, () -> new ItemPage(Page.Chapter.DIVINATION, "map_divination", Items.MAP).withItemOffset(5).withOffset(5));
+    public static Page DREAM_DIVINATION = register(i++, () -> new ItemPage(Page.Chapter.DIVINATION, "dream_divination", Items.RED_BED).withOffset(20));
     public static Page LUCK_1 = register(i++, () -> new TextPage(Page.Chapter.ABILITIES, "luck"));
     public static Page LUCK_2 = register(i++, () -> new TextPage(Page.Chapter.ABILITIES, "luck_range"));
 //    public static Page LUCK_2 = register(i++, () -> new ItemPage(Page.Chapter.DIVINATION, "rod_divination", ModItems.DIVINATION_ROD.get()));

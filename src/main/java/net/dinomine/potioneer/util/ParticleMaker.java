@@ -1,24 +1,94 @@
 package net.dinomine.potioneer.util;
 
+import com.lowdragmc.photon.Photon;
+import net.dinomine.potioneer.beyonder.abilities.tyrant.AreaOfJurisdictionAbility;
 import net.dinomine.potioneer.entities.ModEntities;
-import net.dinomine.potioneer.entities.custom.DiceEffectEntity;
-import net.dinomine.potioneer.entities.custom.SlotMachineEntity;
+import net.dinomine.potioneer.entities.custom.effects.DiceEffectEntity;
+import net.dinomine.potioneer.entities.custom.effects.SlotMachineEntity;
+import net.dinomine.potioneer.entities.custom.effects.WaterBlockEffectEntity;
 import net.dinomine.potioneer.network.PacketHandler;
+import net.dinomine.potioneer.network.messages.abilityRelevant.abilitySpecific.AuraEffectMessage;
 import net.dinomine.potioneer.network.messages.effects.GeneralAreaEffectMessage;
-import net.dinomine.potioneer.particle.ModParticles;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+import org.joml.Vector3f;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public class ParticleMaker {
+
+    /**
+     * function that gets the perimeter blocks of all of your areas of jurisdiction and draws particles in the perimeter.
+     * it doesnt draw particles if a perimeter block is contained in another area of jurisdiction
+     * @param level
+     * @param playerYLevel
+     * @param areaCenters
+     * @param aojRadius
+     */
+    public static void createAreaOfJurisdiction(Level level, int playerYLevel, List<BlockPos> areaCenters, List<Integer> aojRadius) {
+        int defaultRadius = 16;
+        Set<BlockPos> entirePerimeter = new HashSet<>();
+        for(int i = 0; i < areaCenters.size(); i++){
+            BlockPos center = areaCenters.get(i);
+            int radius = aojRadius.size() > i ? aojRadius.get(i) : defaultRadius;
+            entirePerimeter.addAll(getPerimeter(center, radius));
+        }
+        entirePerimeter.removeIf(perimeterPos -> AreaOfJurisdictionAbility.isPosInAOJ(perimeterPos, areaCenters, aojRadius, 1));
+        for(BlockPos perimeterPos: entirePerimeter){
+            Vec3 center = perimeterPos.getCenter();
+            level.addParticle(ParticleTypes.END_ROD, true, center.x, playerYLevel, center.z, 0, 0.3, 0);
+        }
+
+    }
+
+    public static List<BlockPos> getPerimeter(BlockPos center, int radius){
+        List<BlockPos> res = new ArrayList<>(List.of(center.atY(0).offset(radius, 0, radius), center.atY(0).offset(-radius, 0, radius), center.atY(0).offset(-radius, 0, -radius), center.atY(0).offset(radius, 0, -radius)));
+        for(int i = 0; i < 4; i++){
+            int east = i%2 == 0 ? (i == 0 ? -1 : 1) : 0;
+            int north = i%2 == 1 ? (i == 1 ? -1 : 1) : 0;
+            for(int j = 1; j < 2*radius + 1; j++){
+                BlockPos perimeterTest = res.get(i).offset(east*j, 0, north*j);
+                if(res.contains(perimeterTest)) break;
+                res.add(perimeterTest.atY(0));
+            }
+        }
+        return res;
+    }
+
+    public static void createAuraParticles(Player enforcer, LivingEntity victim) {
+        if(!(victim instanceof Player player)) return;
+        if(!victim.level().isClientSide()) PacketHandler.sendMessageSTC(new AuraEffectMessage(enforcer.getUUID()), player);
+        Level level = victim.level();
+        RandomSource random = victim.getRandom();
+        Vec3 position = enforcer.position();
+        float speedScale = 0.1f;
+        int particles = victim.getRandom().nextInt(1, 4);
+        for(int i = 0; i < particles; i++){
+            level.addParticle(ParticleTypes.POOF, position.x, position.y, position.z,
+                    speedScale*(1 - 2*random.nextFloat()), speedScale*(1 - 2*random.nextFloat()), speedScale*(1 - 2*random.nextFloat()));
+        }
+    }
 
     public enum Preset{
         AOE_END_ROD,
         AOE_GRAVITY
+    }
+
+    public static void createWaterBlockEffectForPlayer(Player player, Level level){
+        WaterBlockEffectEntity effect = new WaterBlockEffectEntity(ModEntities.WATER_BLOCK_EFFECT_ENTITY.get(), level);
+        effect.setOffset(new Vector3f(0f, 1f, 0f));
+        effect.setTarget(player.getUUID());
+        level.addFreshEntity(effect);
     }
 
     public static void createSlotMachineForEntity(Level level, LivingEntity target, boolean success){

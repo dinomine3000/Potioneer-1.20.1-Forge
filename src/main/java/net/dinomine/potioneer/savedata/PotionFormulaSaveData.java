@@ -50,7 +50,18 @@ public class PotionFormulaSaveData extends SavedData {
                 ArrayList<PotionIngredient> ingredients = new ArrayList<>(formula.supplementary());
                 ingredients.addAll(new ArrayList<>(formula.main()));
                 List<PotionIngredient> testList = ingredients.stream().filter(PotionIngredient::isItemIngredient).toList();
-                return testList.isEmpty() ? ItemStack.EMPTY : testList.get(random.nextInt(testList.size())).getStack();
+                return testList.isEmpty() ? ItemStack.EMPTY : testList.get(random.nextInt(testList.size())).getRepresentativeStack();
+            }
+        }
+        return ItemStack.EMPTY;
+    }
+
+    public ItemStack getRandomMainIngredientFor(int targetSequence, RandomSource random){
+        for (PotionRecipeData formula : getFormulas()) {
+            if (formula.id() == targetSequence) {
+                ArrayList<PotionIngredient> ingredients = new ArrayList<>(formula.main());
+                List<PotionIngredient> testList = ingredients.stream().filter(PotionIngredient::isItemIngredient).toList();
+                return testList.isEmpty() ? ItemStack.EMPTY : testList.get(random.nextInt(testList.size())).getRepresentativeStack();
             }
         }
         return ItemStack.EMPTY;
@@ -122,18 +133,6 @@ public class PotionFormulaSaveData extends SavedData {
 
     public PotionFormulaSaveData(Boolean readFiles){
     }
-//
-//    private static JsonObject readJsonObject(ResourceLocation path) throws IOException {
-//        ResourceLocation newPath = path.withPrefix("../../data/" + Potioneer.MOD_ID + "/recipes/");
-//        InputStream in = Minecraft.getInstance().getResourceManager().open(newPath);
-//        BufferedReader reader = new BufferedReader(new InputStreamReader(in));
-//        Gson gson = new Gson();
-//        JsonElement je = gson.fromJson(reader, JsonElement.class);
-//        JsonObject json = je.getAsJsonObject();
-//        in.close();
-//        return json;
-//    }
-
     @Override
     public CompoundTag save(CompoundTag compoundTag) {
         System.out.println("[PotionFormulaSaveData] saving to nbt");
@@ -158,33 +157,14 @@ public class PotionFormulaSaveData extends SavedData {
                 found.add(PotionRecipe.load(nbt.getCompound("formula_" + i)));
             }
         } else {
-//            System.out.println("initiating WSD with standard values");
             return null;
         }
 
         PotionFormulaSaveData res = new PotionFormulaSaveData(false);
         res.setRecipes(found);
-//        updateEveryRecipe(res, level);
         return res;
     }
 
-//    private static void updateEveryRecipe(PotionFormulaSaveData data, Level level){
-//
-//        ArrayList<PotionCauldronRecipe> recipes = new ArrayList<>(level.getRecipeManager().getAllRecipesFor(PotionCauldronRecipe.Type.INSTANCE));
-//        recipes.forEach(rec -> {
-//            if(rec.getDefaultRecipeData().id() > -1){
-//                PotionRecipeData result = data.getDataFromId(rec.getDefaultRecipeData().id());
-//                if(result != null){
-//                    rec.alternateRecipeData = result.copy();
-//                } else {
-//                    level.players().forEach(player -> {
-//                        player.sendSystemMessage(Component.literal("Recipe wasn't found in old data. Will refresh on next NBT data save"));
-//                    });
-//                    System.out.println("ERROR: Could not update potion recipe. Recipe was not found. Data read was null.");
-//                }
-//            }
-//        });
-//    }
 
     public static PotionFormulaSaveData from(ServerLevel level){
         return level.getServer().overworld().getDataStorage().computeIfAbsent((tag) -> load(tag, level),

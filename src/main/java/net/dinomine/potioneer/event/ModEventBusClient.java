@@ -6,6 +6,7 @@ import net.dinomine.potioneer.beyonder.client.HUD.LuckAppraisalHUD;
 import net.dinomine.potioneer.beyonder.client.HUD.MagicOrbOverlay;
 import net.dinomine.potioneer.beyonder.client.KeyBindings;
 import net.dinomine.potioneer.block.ModBlocks;
+import net.dinomine.potioneer.block.custom.FakeWaterBlock;
 import net.dinomine.potioneer.block.custom.PotionCauldronBlock;
 import net.dinomine.potioneer.block.entity.ModBlockEntities;
 import net.dinomine.potioneer.block.entity.renderer.PotionCauldronBlockEntityRenderer;

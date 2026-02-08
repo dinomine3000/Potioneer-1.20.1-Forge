@@ -1,0 +1,28 @@
+{
+  "type": "moogs_structures:moogs_structures_generic_jigsaw_structure",
+  "start_pool": "potioneer:churches/mystery_church_pool",
+  "size": 1,
+  "start_height": { "absolute": 0 },
+  "biomes": "#forge:is_dense",
+  "step": "surface_structures",
+  "spawn_overrides": {
+    "monster": {
+      "bounding_box": "full",
+      "spawns": [
+        {
+          "type": "potioneer:pecan",
+          "weight": 1,
+          "minCount": 1,
+          "maxCount": 3
+        }
+      ]
+    }
+  },
+  "project_start_to_heightmap": "WORLD_SURFACE_WG",
+  "cannot_spawn_in_liquid": true,
+  "terrain_height_radius_check": 1,
+  "allowed_terrain_height_range": 15,
+  "burying_type": "LOWEST_CORNER",
+  "terrain_adaptation": "beard_box",
+  "dimension_padding": 5
+}

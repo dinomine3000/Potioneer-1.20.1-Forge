@@ -69,11 +69,12 @@ public class RitualPedestalBlockEntity extends BlockEntity {
 
     public ItemStack addOrRemoveItem(ItemStack stack) {
         ItemStack resultHandItem = stack.copy();
-        if(processing) return resultHandItem;
+        if(processing) return ItemStack.EMPTY;
         if(itemHandler.isItemValid(0, stack)){
             resultHandItem = itemHandler.extractItem(0, 1, false);
             if(!stack.isEmpty()){
                 itemHandler.insertItem(0, stack.copyWithCount(1), false);
+                stack.shrink(1);
             }
             setChanged();
         }

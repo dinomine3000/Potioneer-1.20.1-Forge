@@ -21,6 +21,7 @@ import net.minecraft.world.level.Level;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class WheelOfFortunePathway extends BeyonderPathway {
     public static final double MINER_ACTING_INC = 1/(64*3f);
@@ -66,7 +67,10 @@ public class WheelOfFortunePathway extends BeyonderPathway {
     public int isRitualComplete(int sequenceLevel, Player player, Level pLevel) {
         if(sequenceLevel > 5) return 0;
         int diff = 0;
-        LivingEntityBeyonderCapability cap = player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve().get();
+
+        Optional<LivingEntityBeyonderCapability> optCap = player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve();
+        if(optCap.isEmpty()) return 0;
+        LivingEntityBeyonderCapability cap = optCap.get();
         switch (sequenceLevel){
             case 5:
                 int luck = cap.getLuckManager().getLuck();

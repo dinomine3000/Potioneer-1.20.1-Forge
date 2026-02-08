@@ -173,6 +173,9 @@ public class PlayerAbilitiesManager {
         for(ItemStack itemStack: player.getInventory().items){
             consumer.accept(itemStack);
         }
+        for(ItemStack itemStack: player.getArmorSlots()){
+            consumer.accept(itemStack);
+        }
         if(ModList.get().isLoaded("curios")){
             if(CuriosApi.getCuriosInventory(player).resolve().isPresent()){
                 ICuriosItemHandler curiosInventory = CuriosApi.getCuriosInventory(player).resolve().get();
@@ -470,6 +473,16 @@ public class PlayerAbilitiesManager {
         return artifacts.get(key.getArtifactId()).updateItemTags();
     }
 
+    public int getSequenceLevelOfAbility(String ablId){
+        int highest = 10;
+        for(Ability abl: abilities.values()){
+            if(abl.is(ablId) && abl.getSequenceLevel() < highest){
+                highest = abl.getSequenceLevel();
+            }
+        }
+        return highest;
+    }
+
     public boolean hasAbility(String ablId) {
         for(AbilityKey key: abilities.keySet()){
             if(key.isSameAbility(ablId)) return true;
@@ -480,6 +493,10 @@ public class PlayerAbilitiesManager {
             }
         }
         return false;
+    }
+
+    public List<Ability> getAbilities() {
+        return new ArrayList<>(abilities.values());
     }
 
 //    public void updateArtifactsOnClient(List<ArtifactHolder> artifacts,  @NotNull LivingEntityBeyonderCapability cap, Player player) {

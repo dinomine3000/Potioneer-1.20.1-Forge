@@ -163,15 +163,51 @@ public class Abilities {
             4, 0, 0).hasSecondaryFunction().passiveAndActive();
 
     // -------------------------- TYRANT ---------------------------------------------------
+
+    //retweaked
     public static final AbilityFactory WATER_AFFINITY = registerAbility("water_affinity",
             (Integer sequenceLevel) -> PassiveAbility.createAbility(sequenceLevel, BeyonderEffects.TYRANT_WATER_AFFINITY,
                             (ignored) -> "water_affinity")
-                    .canFlip().withThreshold(0.15f).enabledOnAcquire().withCost(level -> sequenceLevel < 8 ? 15 : 5),
-            0, 1, 10);
+                    .canFlip().enabledOnAcquire(),
+            0, 1, 0);
 
-    public static final AbilityFactory TYRANT_DIVINATION = registerAbility("divination",
-            (Integer level) -> (new DivinationAbility(level)).enabledOnAcquire(),
-            56, 1, 0).hasSecondaryFunction();
+    //retweaked
+    public static final AbilityFactory WATER_SCALES = registerAbility("scales",
+            (Integer level) -> PassiveAbility.createAbility(level, BeyonderEffects.TYRANT_SCALES, ignored -> "scales").canFlip().withThreshold(0.1f),
+            0, 1, 5);
+
+    //retweaked
+    public static final AbilityFactory OCEAN_ORDER = registerAbility("ocean_order",
+            (Integer level) -> new BlankAbility(level, ignored -> "ocean_order"), 0, 1, 0);
+
+    //retweaked
+    public static final AbilityFactory TYRANT_DIVINATION = registerAbility("tyrant_divination",
+            DivinationAbility::new,
+            1, 1, 0).hasSecondaryFunction();
+
+    //retweaked
+    public static final AbilityFactory TYRANT_WATER_PRISON = registerAbility("water_prison",
+            WaterPrisonAbility::new, 5, 1, 40);
+
+    //retweaked
+    public static final AbilityFactory TYRANT_WATER_TRAP = registerAbility("water_trap",
+            WaterTrapAbility::new, 2, 1, level -> 40);
+
+    //retweaked
+    public static final AbilityFactory TYRANT_CREATE_WATER = registerAbility("water_create",
+            WaterCreateAbility::new, 3, 1, 1).hasSecondaryFunction();
+
+    //retweaked
+    public static final AbilityFactory TYRANT_DROWNING = registerAbility("drowning",
+            DrowningAbility::new, 5, 1, 30);
+
+    public static final AbilityFactory AOJ = registerAbility("area_of_jurisdiction",
+            AreaOfJurisdictionAbility::new, 6, 1, 75).hasSecondaryFunction();
+
+    //retweaked
+    public static final AbilityFactory TYRANT_AURA = registerAbility("aoj_aura",
+            (Integer level) -> PassiveAbility.createAbility(level, BeyonderEffects.TYRANT_AURA, ignored -> "aoj_aura").enabledOnAcquire().canFlip(),
+            0, 1, 1);
 
     public static final AbilityFactory TYRANT_ELECTRIFICATION = registerAbility("electrification",
             (Integer sequenceLevel) -> (PassiveAbility.createAbility(sequenceLevel, BeyonderEffects.TYRANT_ELECTRIFICATION,
@@ -191,17 +227,9 @@ public class Abilities {
     public static final AbilityFactory TYRANT_LIGHTNING_STRIKE = registerAbility("thunder_strike",
             ThunderStrikeAbility::new, 248, 1, 50);
 
-    public static final AbilityFactory TYRANT_CREATE_WATER = registerAbility("water_create",
-            WaterCreateAbility::new, 104, 1, 1).hasSecondaryFunction();
-
-    public static final AbilityFactory TYRANT_WATER_PRISON = registerAbility("water_prison",
-            WaterPrisonAbility::new, 152, 1, 40);
-
     public static final AbilityFactory TYRANT_REMOVE_WATER = registerAbility("water_sponge",
             WaterRemoveAbility::new, 128, 1, 5);
 
-    public static final AbilityFactory TYRANT_WATER_TRAP = registerAbility("water_trap",
-            WaterTrapAbility::new, 80, 1, 80);
 
     // -------------------------- MYSTERY ---------------------------------------------------
     public static final AbilityFactory AIR_BULLET = registerAbility("air_bullet",

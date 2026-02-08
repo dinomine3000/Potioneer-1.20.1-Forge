@@ -1,8 +1,15 @@
 package net.dinomine.potioneer.util;
 
+import net.dinomine.potioneer.beyonder.pathways.Pathways;
+import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
+import net.dinomine.potioneer.beyonder.player.PlayerLuckManager;
+import net.dinomine.potioneer.config.PotioneerCommonConfig;
 import net.minecraft.util.Mth;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class PotioneerMathHelper {
@@ -26,6 +33,75 @@ public class PotioneerMathHelper {
     }
 
     public static class ProbabilityHelper{
+
+        /**
+         * returns a truly random pathway sequenc eid
+         * @param random
+         * @return
+         */
+        public static int getRandomId(RandomSource random){
+            return Pathways.getRandomPathwayId(random)*10 + getRandomSequenceLevel(random.nextDouble());
+        }
+
+        /**
+         * function that takes a sequence level and returns the base chance of generating such a sequence level
+         * follows this desmos graph: <a href="https://www.desmos.com/calculator/ff70da0c33">...</a>
+         * @param sequenceLevel
+         * @return
+         */
+        private static double sequenceLevelFunction(int sequenceLevel){
+            return 0.00232250*Math.pow(sequenceLevel, 2.2) + 0.003;
+        }
+
+        /**
+         * function that will check if the formula for the given sequence should be generated, based on a random number from 0 to 1
+         * @param rndNumber - random number from 0 to 1. the bigger it is, the higher the sequence level (closer to 0)
+         * @return the random sequence level
+         */
+        private static int getRandomSequenceLevel(double rndNumber){
+//             if(sequenceLevel == 5) return 5;
+//            double chance = sequenceLevelFunction(sequenceLevel);
+//            if(rndNumber < chance) {
+//                return sequenceLevel;
+//            }
+//            return getRandomSequenceLevel(sequenceLevel - 1, Math.max(rndNumber - chance, 0));
+//        this was my attempt at making this more readeable, dont feel like doing. you can have this to see the chances to generate each sequence (from sequence level 9 to 1)
+//            ArrayList<Float> probabilities = new ArrayList<>(List.of(0.3f, 0.2f, 0.17f, 0.13f, 0.1f, 0.05203f, 0.02904f, 0.01367f, 0.005322f));
+            ArrayList<Float> probabilities = new ArrayList<>(List.of(0.3f, 0.2f, 0.25f, 0.15f, 0.1f));
+        return 9 - pickRandom(probabilities, (float) rndNumber);
+        }
+
+        /**
+         * function that returns the appropriate pathway sequence id for whatever item might be desired by the player, taking into account their sequence level.
+         * @param playerPathSeqId
+         * @param luckManager
+         * @param random
+         * @param aptitudePathwayId
+         * @return
+         */
+        public static int getRandomPathwaySequenceId(int playerPathSeqId, PlayerLuckManager luckManager, RandomSource random, int aptitudePathwayId){
+            double nextSequenceChance = playerPathSeqId%10 == 0 || playerPathSeqId < 0 ? 0 : sequenceLevelFunction((playerPathSeqId-1)%10);
+            double samePathwayChance = PotioneerCommonConfig.SAME_PATHWAY_CHANCE.get();
+            if(luckManager.passesLuckCheck((float) nextSequenceChance, 0, 0, random)){
+                if(playerPathSeqId < 0){
+                    if(PotioneerCommonConfig.DO_APTITUDE_PATHWAYS.get()) return 10*aptitudePathwayId + 9;
+                    else return 10*Pathways.getRandomPathwayId(random) + 9;
+                }
+                return playerPathSeqId - 1;
+            }
+            if(playerPathSeqId >= 0 && luckManager.passesLuckCheck((float) samePathwayChance, 0, 0, random)){
+                if(PotioneerCommonConfig.DO_APTITUDE_PATHWAYS.get()) return 10*aptitudePathwayId + getRandomSequenceLevel(luckManager.nextFloat(random));
+                else return 10*(Math.floorDiv(playerPathSeqId, 10)) + getRandomSequenceLevel(luckManager.nextFloat(random));
+            }
+            int pathwayId = Pathways.getRandomPathwayId(random);
+            int sequenceLevel = getRandomSequenceLevel(luckManager.nextFloat(random));
+            return 10*pathwayId + sequenceLevel;
+        }
+
+        public static int getRandomPathwaySequenceId(LivingEntityBeyonderCapability cap, RandomSource random){
+            return getRandomPathwaySequenceId(cap.getPathwaySequenceId(), cap.getLuckManager(), random, cap.getCharacteristicManager().getAptitudePathway());
+        }
+
         public static float bayes(float likelihood, float prior, float evidence){
             return likelihood * prior / evidence;
         }

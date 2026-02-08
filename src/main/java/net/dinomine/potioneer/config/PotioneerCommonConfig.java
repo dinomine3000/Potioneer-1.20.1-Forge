@@ -1,5 +1,10 @@
 package net.dinomine.potioneer.config;
 
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraftforge.common.ForgeConfigSpec;
 
 import java.util.ArrayList;
@@ -26,6 +31,7 @@ public class PotioneerCommonConfig {
     public static final ForgeConfigSpec.IntValue ARTIFACT_CONVERSION_COOLDOWN;
     public static final ForgeConfigSpec.ConfigValue<List<String>> INTERCHANGEABLE_PATHWAYS;
     public static final ForgeConfigSpec.ConfigValue<List<String>> ITEM_GEN_LUCK_EVENT_ITEMS;
+    private static final ForgeConfigSpec.ConfigValue<List<String>> RANDOM_ARTIFACT_ITEM_LIST;
     public static final ForgeConfigSpec.BooleanValue PUBLIC_GROUPS;
     public static final ForgeConfigSpec.BooleanValue ALLOW_CHANGING_PATHWAYS;
     public static final ForgeConfigSpec.DoubleValue CHANCE_TO_MAKE_ARTIFACT_ON_DEATH;
@@ -34,6 +40,11 @@ public class PotioneerCommonConfig {
     public static final ForgeConfigSpec.IntValue PRAYER_COOLDOWN;
     public static final ForgeConfigSpec.BooleanValue LOSE_PAGES_ON_DROP_SEQUENCE;
     public static final ForgeConfigSpec.DoubleValue PATIENCE_TIME_LIMIT;
+    public static final ForgeConfigSpec.DoubleValue SAME_PATHWAY_CHANCE;
+    public static final ForgeConfigSpec.DoubleValue SEALED_BUNDLE_CHARACTERISTIC_CHANCE;
+    public static final ForgeConfigSpec.DoubleValue SEALED_BUNDLE_ARTIFACT_CHANCE;
+    public static final ForgeConfigSpec.DoubleValue SEALED_BUNDLE_FORMULA_CHANCE;
+    public static final ForgeConfigSpec.DoubleValue SEALED_BUNDLE_MAIN_INGREDIENT_CHANCE;
     public static final ForgeConfigSpec.BooleanValue COOLDOWN_TARGET_ALLIES;
     public static final ForgeConfigSpec.BooleanValue COOLDOWN_EFFECT_STACKS;
     public static final ForgeConfigSpec.BooleanValue COOLDOWN_ABILITY_CAST_COOLDOWN;
@@ -45,9 +56,21 @@ public class PotioneerCommonConfig {
     public static final ForgeConfigSpec.IntValue LUCK_EVENT_CAST_CHANCE;
     public static final ForgeConfigSpec.EnumValue<DestructionLevel> DESTRUCTION_LEVEL_ENUM_VALUE;
     public static final ForgeConfigSpec.EnumValue<ITEM_GEN_EVENT> ITEM_GEN_LUCK_EVENT_INCLUDE_ALL_FORMULA;
+    public static final ForgeConfigSpec.BooleanValue UNIVERSAL_OCEAN_ORDER;
 
     public static final ForgeConfigSpec.EnumValue<CharacteristicDropCriteria> CHARACTERISTIC_DROP_CRITERIA_ENUM_VALUE;
     public static final ForgeConfigSpec.BooleanValue DROP_ALL_CHARACTERISTICS;
+
+    public static List<Item> getRandomArtifactItems(){
+        List<String> items = RANDOM_ARTIFACT_ITEM_LIST.get();
+        return items.stream()
+                .filter(id -> {
+                    Item item = BuiltInRegistries.ITEM.get(new ResourceLocation(id));
+                    return item != Items.AIR && item.getMaxStackSize(new ItemStack(item)) == 1;
+                })
+                .map(id -> BuiltInRegistries.ITEM.get(new ResourceLocation(id)))
+                .toList();
+    }
 
     public enum CharacteristicDropCriteria{
         ALWAYS,
@@ -70,6 +93,44 @@ public class PotioneerCommonConfig {
         DO_APTITUDE_PATHWAYS = BUILDER.comment("Should players have a hidden pathway that is their aptitude?" +
                 "\nThey get more lucky getting formulas for this pathway, and digest its characteristics faster")
                 .define("intrinsic_aptitudes", true);
+
+        ARTIFACT_CONVERSION_CHANCE = BUILDER.comment("Every tick, each characteristic in the player's inventory has a 1 in N chance to try to generate an artifact based on the player's inventory." +
+                        "\nHere you define that N. For instance, if N = 200, it means that every tick, a characteristic has a 1/200 chance of creating an artifact. Setting N to a negative value makes these conversions not happen.")
+                .defineInRange("artifact_conversion_chance", 2000, -1, Integer.MAX_VALUE);
+
+        ARTIFACT_CONVERSION_COOLDOWN = BUILDER.comment("To prevent farming if \"artifact_conversion_chance\" is too high, you can set a cooldown here, in seconds, for artifact conversion." +
+                        "\nValues like 20 will be interpreted as 20 seconds, aka 400 ticks.")
+                .defineInRange("artifact_conversion_cooldown", 20*60, 0, Integer.MAX_VALUE);
+
+        SAME_PATHWAY_CHANCE = BUILDER.comment("When randomly generating a beyonder item (formula, characteristic or formula), what is the chance that, " +
+                        "\nif it doesnt match the players next sequence, itll instead match their pathway?" +
+                        "\nNote, if 'intrinsic_aptitudes' is set to true, this chance will refer to the player's aptitude pathway.." +
+                        "\nThis chance is affected by the players luck. By default its 40% (0.4)")
+                .defineInRange("same_pathway_chance", 0.4d, 0, 1);
+
+        SEALED_BUNDLE_CHARACTERISTIC_CHANCE = BUILDER.comment("When generating the sealed bundles random items, what is the chance that the generated item is a characteristic-like item?" +
+                        "\nThis chance is the chance of generating a characteristic OR artifact, since they're interchangeable." +
+                        "\nWhat pathway they are depends on 'same_pathway_chance', while their sequence level and luck determines the chance of getting a characteristic-like item for their next level.")
+                .defineInRange("sealed_bundle_characteristic_chance", 0.3d, 0, 1);
+
+        SEALED_BUNDLE_ARTIFACT_CHANCE = BUILDER.comment("When a sealed bundle generates a characteristic-like item, what is the chance for it to generate as an artifact instead of just a characteristic?" +
+                        "\nOf note, see 'artifact_conversion_chance', for balancing. If that's too frequent, this barely matters cuz the characteristic will just corrupt the players items." +
+                        "\nOn the other end of the spectrum, if this is too low, you might want to consider bumping that other one up.")
+                .defineInRange("sealed_bundle_artifact_chance", 0.1d, 0, 1);
+
+        SEALED_BUNDLE_MAIN_INGREDIENT_CHANCE = BUILDER.comment("If the bundle doesn't generate a characteristic-like item, what is the chance that it'll then generate a random main ingredient?" +
+                        "\nThe formula chosen to pick a random item from will depend on their sequence level and on 'same_pathway_chance'.")
+                .defineInRange("sealed_bundle_main_ingredient_chance", 0.5d, 0, 1);
+
+        SEALED_BUNDLE_FORMULA_CHANCE = BUILDER.comment("Assuming the bundle didn't generate a characteristic-like item nor a main ingredient, what are the chance it'll generate a formula rather than just a page?" +
+                        "\nBy default it's 50/50. The higher the person's luck, the higher this chance is to get a formula, while the lower their luck is, the higher the chance of getting a page.")
+                .defineInRange("sealed_bundle_formula_chance", 0.5d, 0, 1);
+
+        RANDOM_ARTIFACT_ITEM_LIST = BUILDER.comment("What items will be chosen to generate random artifacts for a sealed bundle?" +
+                        "\nNo items are especially associated with any pathways. A pickaxe is just as likely to be a Wheel of Fortune pathway artifact as it is a Tyrant's." +
+                        "\nIf an invalid item is included, it will be ignored. Valid items are the special artifact items from the mod or any item that stacks to 1." +
+                        "\nSide note: The only items that can be naturally corrupted by a characteristic by chance are further narrowed down to tools only, not just stacking to 1. This isn't relevant for this setting, but worth mentioning.")
+                .define("random_items_for_artifact_generation", new ArrayList<>(List.of("minecraft:iron_pickaxe", "minecraft:iron_sword", "minecraft:iron_axe", "minecraft:iron_shovel", "minecraft:iron_hoe", "potioneer:ring", "potioneer:crown", "minecraft:totem_of_undying")));
 
         APTITUDE_MULTIPLIER = BUILDER.comment("If the above is true, what should be the intrinsic acting multiplier a player gets?")
                 .defineInRange("aptitude_multiplier", 1.3d, 0, Integer.MAX_VALUE);
@@ -122,14 +183,6 @@ public class PotioneerCommonConfig {
                         "\nIf the option \"can_change_pathways\" is false, that only applies to switching pathways by becoming beyonderless, not to this case. so if you truly don't want people to switch pathways ever, set this to -1." +
                         "\n10 means anyone can switch to a neighboring pathway at any level, -1 means they never can.")
                 .defineInRange("min_level_to_switch", 4, -1, 10);
-
-        ARTIFACT_CONVERSION_CHANCE = BUILDER.comment("Every tick, each characteristic in the player's inventory has a 1 in N chance to try to generate an artifact based on the player's inventory." +
-                        "\nHere you define that N. For instance, if N = 200, it means that every tick, a characteristic has a 1/200 chance of creating an artifact. Setting N to a negative value makes these conversions not happen.")
-                .defineInRange("artifact_conversion_chance", 2000, -1, Integer.MAX_VALUE);
-
-        ARTIFACT_CONVERSION_COOLDOWN = BUILDER.comment("To prevent farming if \"artifact_conversion_chance\" is too high, you can set a cooldown here, in seconds, for artifact conversion." +
-                        "\nValues like 20 will be interpreted as 20 seconds, aka 400 ticks.")
-                .defineInRange("artifact_conversion_cooldown", 20*60, 0, Integer.MAX_VALUE);
 
         PUBLIC_GROUPS = BUILDER.comment("Should every player be able to see every group in the server or just admins?\n"
                         + "True means everyone can see every group and their players, false will mean they can only see groups they're in.\n"
@@ -233,6 +286,9 @@ public class PotioneerCommonConfig {
                         "\nThe way luck itself is gained and lost, however, is not controlled by this config. This just controls how, based on that luck value, the player can have their probabilities changed from 50% to either 20% if they're unlucky or 80% if they are lucky.")
                 .define("use_alternate_luck_function", false);
 
+        UNIVERSAL_OCEAN_ORDER = BUILDER.comment("Should the Ocean Order ability work on any aggressive entity or only underwater ones?" +
+                "\nSetting this to true will make Swimmers not aggro any mobs by default, False will only work with mobs that are considered 'aquatic' (see 'underwater_mobs' below).")
+                .define("universal_ocean_order", false);
 
         BUILDER.pop();
         SPEC = BUILDER.build();

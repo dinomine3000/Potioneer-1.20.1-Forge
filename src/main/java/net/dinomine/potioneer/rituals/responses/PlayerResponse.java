@@ -43,7 +43,7 @@ public class PlayerResponse extends SpiritResponse {
         int inputPathway = inputData.pathwaySequenceId()%10;
         int sequenceLevel = 9;
         //if targeting someone else in the ritual, make a charm based on their level
-        if(player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).isPresent() && player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve().isPresent()){
+        if(player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve().isPresent()){
             LivingEntityBeyonderCapability cap = player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve().get();
             inputPathway = cap.getCharacteristicManager().getPathwayId();
             sequenceLevel = cap.getSequenceLevel();

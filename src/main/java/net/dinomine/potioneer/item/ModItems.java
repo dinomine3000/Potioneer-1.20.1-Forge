@@ -182,6 +182,9 @@ public class ModItems {
                             Direction.DOWN
                     ));
 
+    public static final RegistryObject<Item> SEALED_BUNDLE = ITEMS.register("sealed_bundle",
+            () -> new SealedBundleItem(new Item.Properties().stacksTo(1)));
+
     /*ublic static final RegistryObject<Item> METAL_ROD = ITEMS.register("metal_detector",
             () -> new MetalDetectorItem(new Item.Properties().stacksTo(1).durability(20)));*/
 

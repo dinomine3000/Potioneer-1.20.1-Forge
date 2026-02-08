@@ -20,7 +20,7 @@ public class ReputationCriteria extends ResponseCriteria{
     @Override
     public boolean checkCondition(RitualInputData input, Level level) {
         Player player = level.getPlayerByUUID(input.caster());
-        if(player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).isPresent() && player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve().isPresent()){
+        if(player != null && player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve().isPresent()){
             return player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve().get().getReputation(pathwayId) >= minimumReputation;
         }
         return false;

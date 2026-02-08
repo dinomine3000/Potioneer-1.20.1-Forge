@@ -28,6 +28,7 @@ import software.bernie.geckolib.core.object.PlayState;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.ArrayList;
+import java.util.Optional;
 
 
 public class DivinationRodEntity extends PlaceableItemEntity implements GeoEntity {
@@ -95,10 +96,13 @@ public class DivinationRodEntity extends PlaceableItemEntity implements GeoEntit
         int sequenceId = -1;
         boolean seer = false;
         boolean lucky = false;
+
+        Optional<LivingEntityBeyonderCapability> optCap = pPlayer.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve();
+        if(optCap.isEmpty()) return InteractionResult.SUCCESS;
         LivingEntityBeyonderCapability cap = pPlayer.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve().get();
 
         sequenceId = cap.getPathwaySequenceId();
-        seer = cap.getEffectsManager().hasEffect(BeyonderEffects.MISC_DIVINATION.getEffectId());
+        seer = cap.getAbilitiesManager().hasAbility(Abilities.TYRANT_DIVINATION.getAblId());
         lucky = cap.getAbilitiesManager().hasAbility(Abilities.WHEEL_DIVINATION.getAblId()) && cap.getLuckManager().passesLuckCheck(1/4f, 0, 0, pPlayer.getRandom());
 
 

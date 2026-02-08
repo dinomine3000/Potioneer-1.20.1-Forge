@@ -3,6 +3,8 @@ package net.dinomine.potioneer.event;
 import net.dinomine.potioneer.Potioneer;
 import net.dinomine.potioneer.beyonder.abilities.Abilities;
 import net.dinomine.potioneer.beyonder.abilities.AbilityFunctionHelper;
+import net.dinomine.potioneer.beyonder.abilities.tyrant.AreaOfJurisdictionAbility;
+import net.dinomine.potioneer.beyonder.client.ClientAbilitiesData;
 import net.dinomine.potioneer.beyonder.damages.PotioneerDamage;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffect;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
@@ -13,11 +15,14 @@ import net.dinomine.potioneer.beyonder.pathways.BeyonderPathway;
 import net.dinomine.potioneer.beyonder.pathways.Pathways;
 import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
 import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
+import net.dinomine.potioneer.config.PotioneerCommonConfig;
 import net.dinomine.potioneer.item.ModItems;
 import net.dinomine.potioneer.network.PacketHandler;
 import net.dinomine.potioneer.network.messages.PlayerNameSyncMessage;
 import net.dinomine.potioneer.network.messages.SequenceSTCSyncRequest;
 import net.dinomine.potioneer.rituals.spirits.Deity;
+import net.dinomine.potioneer.util.ModTags;
+import net.dinomine.potioneer.util.ParticleMaker;
 import net.dinomine.potioneer.util.misc.DivinationResult;
 import net.dinomine.potioneer.util.misc.MysticalItemHelper;
 import net.dinomine.potioneer.util.misc.MysticismHelper;
@@ -29,7 +34,9 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.players.GameProfileCache;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.monster.Zombie;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BowItem;
 import net.minecraft.world.item.ItemStack;
@@ -95,6 +102,19 @@ public class BeyonderEvents {
                         event.setCanceled(true);
                     }
                 }
+            }
+        });
+    }
+
+    @SubscribeEvent
+    public static void livingBreathEvent(LivingBreatheEvent event){
+        LivingEntity entity = event.getEntity();
+        entity.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
+            if(cap.getEffectsManager().hasEffect(BeyonderEffects.TYRANT_DROWNING.getEffectId())){
+                int sequenceLevel = cap.getEffectsManager().getEffect(BeyonderEffects.TYRANT_DROWNING.getEffectId()).getSequenceLevel();
+                int multiplier = 1 + (int)((9-sequenceLevel)/2f);
+                event.setCanBreathe(false);
+                event.setConsumeAirAmount(event.getConsumeAirAmount()*multiplier);
             }
         });
     }
@@ -214,8 +234,8 @@ public class BeyonderEvents {
             long seed = stringToLong(String.valueOf(id));
             RandomSource random = RandomSource.create(seed);
             float chance = 0.1f;
-            if(cap.getEffectsManager().hasEffect(BeyonderEffects.MISC_DIVINATION.getEffectId())){
-                chance += (10 - cap.getEffectsManager().getEffect(BeyonderEffects.MISC_DIVINATION.getEffectId()).getSequenceLevel())/10f;
+            if(cap.getAbilitiesManager().hasAbility(Abilities.TYRANT_DIVINATION.getAblId())){
+                chance += (10 - cap.getAbilitiesManager().getSequenceLevelOfAbility(Abilities.TYRANT_DIVINATION.getAblId()))/10f;
             }
             if(random.nextFloat() <= chance){
                 ItemStack stack = ItemStack.EMPTY;
@@ -239,6 +259,11 @@ public class BeyonderEvents {
             event.getEntity().sendSystemMessage(Component.translatable("message.potioneer.dream_clue", Component.translatable(result.clue())));
         });
 
+    }
+
+    @SubscribeEvent
+    public static void livingVisibilityEvent(LivingEvent.LivingVisibilityEvent event){
+        if(event.getEntity() instanceof Zombie) event.modifyVisibility(0.2);
     }
 
     private static long stringToLong(String input) {
@@ -296,6 +321,16 @@ public class BeyonderEvents {
             player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
                 if(cap.getEffectsManager().hasEffect(BeyonderEffects.MYSTERY_INVISIBLE.getEffectId())){
                     event.setCanceled(true);
+                }
+                if(event.getEntity().getLastAttacker() == null || !event.getEntity().getLastAttacker().is(player)){
+                    if(cap.getAbilitiesManager().hasAbility(Abilities.OCEAN_ORDER.getAblId()) && event.getEntity().getType().is(ModTags.Entities.OCEAN_ORDER_MOBS)){
+                        event.setCanceled(true);
+                        return;
+                    }
+                    if(cap.getEffectsManager().hasEffect(BeyonderEffects.TYRANT_AURA.getEffectId()) && event.getEntity().getMaxHealth() < player.getHealth() && AreaOfJurisdictionAbility.isTargetUnderInfluenceOfEnforcer(event.getEntity(), player)){
+                        event.setCanceled(true);
+                        return;
+                    }
                 }
             });
         }

@@ -1,4 +1,4 @@
-package net.dinomine.potioneer.entities.custom;
+package net.dinomine.potioneer.entities.custom.effects;
 
 import net.dinomine.potioneer.sound.ModSounds;
 import net.minecraft.world.entity.EntityType;

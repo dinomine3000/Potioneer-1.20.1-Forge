@@ -170,8 +170,8 @@ public class PlayerLuckManager {
     }
 
 
-    public float checkLuck(float change){
-        return checkLuck(luck, change);
+    public float checkLuck(float chance){
+        return checkLuck(luck, chance);
     }
 
     /**
@@ -204,6 +204,7 @@ public class PlayerLuckManager {
     }
 
     public static boolean passesLuckCheck(int luck, float chance, RandomSource random){
+        if(chance == 0) return false;
         float newChance = checkLuck(luck, chance);
         return random.nextFloat() < newChance;
     }

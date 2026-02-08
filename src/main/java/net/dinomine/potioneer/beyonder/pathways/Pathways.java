@@ -38,7 +38,11 @@ public class Pathways {
             registerPathway("4", ParagonPathway::new);
 
     public static int getRandomPathwayId(RandomSource random){
-        return getPathwayIdFromPathway(PATHWAYS.getEntries().stream().toList().get(random.nextInt(PATHWAYS.getEntries().size())).get());
+        int res = -1;
+        while(res < 0){
+            res = getPathwayIdFromPathway(PATHWAYS.getEntries().stream().toList().get(random.nextInt(PATHWAYS.getEntries().size())).get());
+        }
+        return res;
     }
 
     public static <T extends BeyonderPathway> RegistryObject<T> registerPathway(String name, Supplier<T> abl){

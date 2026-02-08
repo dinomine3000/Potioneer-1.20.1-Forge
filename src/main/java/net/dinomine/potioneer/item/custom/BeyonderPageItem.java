@@ -22,7 +22,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 
 public class BeyonderPageItem extends Item {
-    private static final float NEW_PAGE_CHANCE = 0.5f;
+    private static final float NEW_PAGE_CHANCE = 0.35f;
     public BeyonderPageItem(Properties pProperties) {
         super(pProperties);
     }

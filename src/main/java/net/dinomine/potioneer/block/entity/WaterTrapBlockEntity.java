@@ -1,6 +1,7 @@
 package net.dinomine.potioneer.block.entity;
 
 import net.dinomine.potioneer.Potioneer;
+import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
 import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
 import net.dinomine.potioneer.mob_effects.ModEffects;
 import net.dinomine.potioneer.savedata.AllySystemSaveData;
@@ -84,11 +85,6 @@ public class WaterTrapBlockEntity extends BlockEntity implements GeoBlockEntity 
                 if(!(ent instanceof LivingEntity living)) return;
                 if(isEntityAllyOfOwner(living)) return;
                 setChanged();
-                if(caster != null){
-                    caster.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
-                        cap.getCharacteristicManager().progressActing(1f, 18);
-                    });
-                }
                 applyEffectsToEntity(pLevel, pPos, (LivingEntity) ent);
             }
             if(caster != null){
@@ -113,7 +109,9 @@ public class WaterTrapBlockEntity extends BlockEntity implements GeoBlockEntity 
                 entity.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 30*20, 10 - sequenceLevel));
                 break;
             case 1:
-                entity.addEffect(new MobEffectInstance(ModEffects.WATER_PRISON.get(), 30*20, 10 - sequenceLevel));
+                entity.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
+                    cap.getEffectsManager().addOrReplaceEffect(BeyonderEffects.TYRANT_WATER_PRISON.createInstance(sequenceLevel, 0, 20*30, true), cap, entity);
+                });
                 break;
             case 2:
                 if(
@@ -130,7 +128,7 @@ public class WaterTrapBlockEntity extends BlockEntity implements GeoBlockEntity 
                 if(player == null){
                     entity.hurt(level.damageSources().magic(), -1 + (10 - sequenceLevel)*3);
                 } else {
-                    entity.hurt(level.damageSources().indirectMagic(player, null), 5);
+                    entity.hurt(level.damageSources().indirectMagic(player, null), -1 + (10 - sequenceLevel)*3);
                 }
                 break;
 

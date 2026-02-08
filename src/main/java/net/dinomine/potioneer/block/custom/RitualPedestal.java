@@ -55,10 +55,9 @@ public class RitualPedestal extends BaseEntityBlock {
         BlockEntity be = pLevel.getBlockEntity(pPos);
         if(be instanceof RitualPedestalBlockEntity pedestalBe){
             ItemStack itemInHand = pPlayer.getItemInHand(pHand);
-            ItemStack res = pedestalBe.addOrRemoveItem(itemInHand.copy());
+            ItemStack res = pedestalBe.addOrRemoveItem(itemInHand);
             if(!itemInHand.isEmpty() || !res.isEmpty())
                 pLevel.playSound(pPlayer, pPos, SoundEvents.ITEM_PICKUP, SoundSource.PLAYERS, 1, 1.16f - pPlayer.getRandom().nextFloat()/3f);
-            itemInHand.shrink(1);
             if(!pPlayer.addItem(res))
                 pPlayer.drop(res, true);
             return InteractionResult.SUCCESS;

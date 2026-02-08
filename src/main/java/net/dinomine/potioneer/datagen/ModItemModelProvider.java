@@ -67,6 +67,7 @@ public class ModItemModelProvider extends ItemModelProvider {
         simpleItem(ModItems.BEYONDER_PAGE);
         simpleItem(ModItems.CAULDRON_ROD);
         simpleItem(ModItems.CURSED_SKULL);
+        simpleItem(ModItems.SEALED_BUNDLE);
         handheldItem(ModItems.MINER_PICKAXE);
         handheldItem(ModItems.FIRE_SWORD);
         handheldItem(ModItems.FROZEN_SWORD);

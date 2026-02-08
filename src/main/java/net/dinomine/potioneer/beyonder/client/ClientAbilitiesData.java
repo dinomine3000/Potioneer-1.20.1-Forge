@@ -13,6 +13,7 @@ import net.dinomine.potioneer.network.PacketHandler;
 import net.dinomine.potioneer.network.messages.abilityRelevant.PlayerSyncHotbarMessage;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
@@ -432,5 +433,18 @@ public class ClientAbilitiesData {
 
     public static ArtifactHolder getArtifact(AbilityKey key) {
         return ClientStatsData.getCapability().get().getAbilitiesManager().getArtifact(key);
+    }
+
+    public static class AbilitySpecific{
+        private static final HashMap<UUID, Integer> enforcerAuraMap = new HashMap<>();
+        public static void addEnforcerAura(UUID id){
+            enforcerAuraMap.put(id, 40);
+        }
+
+        public static Set<UUID> getEnforcers(){
+            enforcerAuraMap.replaceAll((uuid, integer) -> integer-1);
+            enforcerAuraMap.entrySet().removeIf((uuidIntegerEntry -> uuidIntegerEntry.getValue() < 0));
+            return enforcerAuraMap.keySet();
+        }
     }
 }

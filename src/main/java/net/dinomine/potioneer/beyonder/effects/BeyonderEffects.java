@@ -3,7 +3,6 @@ package net.dinomine.potioneer.beyonder.effects;
 
 import net.dinomine.potioneer.beyonder.effects.misc.BeyonderCogitationEffect;
 import net.dinomine.potioneer.beyonder.effects.misc.BeyonderHungerRegenEffect;
-import net.dinomine.potioneer.beyonder.effects.misc.BeyonderMysticismEffect;
 import net.dinomine.potioneer.beyonder.effects.misc.BlankEffect;
 import net.dinomine.potioneer.beyonder.effects.mystery.BeyonderExtendedReachEffect;
 import net.dinomine.potioneer.beyonder.effects.mystery.BeyonderFallDmgCancelEffect;
@@ -13,9 +12,7 @@ import net.dinomine.potioneer.beyonder.effects.paragon.BeyonderCraftingSpiritual
 import net.dinomine.potioneer.beyonder.effects.paragon.BeyonderDurabilityEffect;
 import net.dinomine.potioneer.beyonder.effects.paragon.BeyonderXpReduceEffect;
 import net.dinomine.potioneer.beyonder.effects.redpriest.*;
-import net.dinomine.potioneer.beyonder.effects.tyrant.BeyonderElectrificationEffect;
-import net.dinomine.potioneer.beyonder.effects.tyrant.BeyonderLightningTargetEffect;
-import net.dinomine.potioneer.beyonder.effects.tyrant.BeyonderWaterAffinityEffect;
+import net.dinomine.potioneer.beyonder.effects.tyrant.*;
 import net.dinomine.potioneer.beyonder.effects.wheeloffortune.*;
 
 import java.util.ArrayList;
@@ -27,7 +24,6 @@ public class BeyonderEffects {
     private static final HashMap<String, BeyonderEffectType> EFFECTS = new HashMap<>();
 
     public static final BeyonderEffectType COGITATION = registerEffect("cogitation", new BeyonderEffectType(BeyonderCogitationEffect::new));
-    public static final BeyonderEffectType MISC_DIVINATION = registerEffect("divination", new BeyonderEffectType(BeyonderMysticismEffect::new));
     public static final BeyonderEffectType MYSTERY_FALL_NEGATE = registerEffect("negate_fall", new BeyonderEffectType(BeyonderFallDmgCancelEffect::new));
     public static final BeyonderEffectType MYSTERY_FIGURINE = registerEffect("figurine_substitute", new BeyonderEffectType(BlankEffect::new));
     public static final BeyonderEffectType MYSTERY_INVISIBLE = registerEffect("invisibility", new BeyonderEffectType(BlankEffect::new));
@@ -59,6 +55,12 @@ public class BeyonderEffects {
     public static final BeyonderEffectType TYRANT_WATER_AFFINITY = registerEffect("water_affinity", new BeyonderEffectType(BeyonderWaterAffinityEffect::new));
     public static final BeyonderEffectType TYRANT_ELECTRIFICATION = registerEffect("electrification", new BeyonderEffectType(BeyonderElectrificationEffect::new));
     public static final BeyonderEffectType TYRANT_LIGHTNING_TARGET = registerEffect("lightning_target", new BeyonderEffectType(BeyonderLightningTargetEffect::new));
+    public static final BeyonderEffectType TYRANT_WATER_PRISON = registerEffect("water_prison", new BeyonderEffectType(BeyonderWaterPrisonEffect::new));
+    public static final BeyonderEffectType TYRANT_SCALES = registerEffect("scales", new BeyonderEffectType(BeyonderScalesEffect::new));
+    public static final BeyonderEffectType TYRANT_DROWNING = registerEffect("drowning", new BeyonderEffectType(BeyonderDrowningEffect::new));
+    public static final BeyonderEffectType TYRANT_AOJ_VISUALIZER = registerEffect("aoj_viewer", new BeyonderEffectType(BeyonderAoJEffect::new));
+    public static final BeyonderEffectType TYRANT_AOJ_INFLUENCE = registerEffect("aoj_influence", new BeyonderEffectType(BeyonderAoJInfluenceEffect::new));
+    public static final BeyonderEffectType TYRANT_AURA = registerEffect("aoj_aura", new BeyonderEffectType(BeyonderAojAuraEffect::new));
     public static final BeyonderEffectType RED_FIRE_AURA = registerEffect("fire_aura", new BeyonderEffectType(BeyonderFireAuraEffect::new));
     public static final BeyonderEffectType RED_FIRE_BUFF = registerEffect("fire_buff", new BeyonderEffectType(BeyonderFireBuffEffect::new));
     public static final BeyonderEffectType RED_LIGHT_BUFF = registerEffect("light_buff", new BeyonderEffectType(BeyonderLightBuffEffect::new));

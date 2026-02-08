@@ -57,6 +57,7 @@ public class ModCreativeModTabs {
                         output.accept(ModItems.KALVETUA_SCEPTER.get());
                         output.accept(ModItems.DEATH_KNELL.get());
                         output.accept(ModItems.CURSED_SKULL.get());
+                        output.accept(ModItems.SEALED_BUNDLE.get());
                     })
                     .build());
 

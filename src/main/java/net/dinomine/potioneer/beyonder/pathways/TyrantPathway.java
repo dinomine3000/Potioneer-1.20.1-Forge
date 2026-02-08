@@ -2,6 +2,7 @@ package net.dinomine.potioneer.beyonder.pathways;
 
 import net.dinomine.potioneer.beyonder.abilities.Abilities;
 import net.dinomine.potioneer.beyonder.abilities.Ability;
+import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
 import net.dinomine.potioneer.rituals.spirits.Deity;
 import net.dinomine.potioneer.rituals.spirits.defaultGods.TyrantResponse;
 import net.minecraft.network.chat.Component;
@@ -58,8 +59,8 @@ public class TyrantPathway extends BeyonderPathway {
     @Override
     public float[] getStatsFor(int sequenceLevel){
         return switch (sequenceLevel%10){
-            case 9 -> new float[]{8, 1, 0, 0, 1};
-            case 8 -> new float[]{8, 1, 0, 0, 2};
+            case 9 -> new float[]{8, 0, 0, 0, 1};
+            case 8 -> new float[]{8, 0, 0, 0, 2};
             case 7 -> new float[]{12, 2, 0, 0, 5};
             case 6 -> new float[]{15, 2, 0, 0, 5};
             case 5 -> new float[]{20, 3, 0, 0, 7};
@@ -84,19 +85,22 @@ public class TyrantPathway extends BeyonderPathway {
             case 5:
             case 6:
             case 7:
-                abilities.add(Abilities.TYRANT_LIGHTNING_STRIKE.create(atSequenceLevel));
-                abilities.add(Abilities.TYRANT_THUNDER.create(atSequenceLevel));
-                abilities.add(Abilities.TYRANT_RAIN.create(atSequenceLevel));
-                abilities.add(Abilities.TYRANT_LEAP.create(atSequenceLevel));
-                abilities.add(Abilities.TYRANT_ELECTRIFICATION.create(atSequenceLevel));
+//                abilities.add(Abilities.TYRANT_LIGHTNING_STRIKE.create(atSequenceLevel));
+//                abilities.add(Abilities.TYRANT_THUNDER.create(atSequenceLevel));
+//                abilities.add(Abilities.TYRANT_RAIN.create(atSequenceLevel));
+//                abilities.add(Abilities.TYRANT_LEAP.create(atSequenceLevel));
+                abilities.add(Abilities.AOJ.create(atSequenceLevel));
+                abilities.add(Abilities.TYRANT_AURA.create(atSequenceLevel));
             case 8:
-                abilities.add(Abilities.TYRANT_WATER_PRISON.create(atSequenceLevel));
-                abilities.add(Abilities.TYRANT_CREATE_WATER.create(atSequenceLevel));
-                abilities.add(Abilities.TYRANT_REMOVE_WATER.create(atSequenceLevel));
-                abilities.add(Abilities.TYRANT_WATER_TRAP.create(atSequenceLevel));
                 abilities.add(Abilities.TYRANT_DIVINATION.create(atSequenceLevel));
+                abilities.add(Abilities.TYRANT_CREATE_WATER.create(atSequenceLevel));
+                abilities.add(Abilities.TYRANT_WATER_TRAP.create(atSequenceLevel));
+                abilities.add(Abilities.TYRANT_WATER_PRISON.create(atSequenceLevel));
+                abilities.add(Abilities.TYRANT_DROWNING.create(atSequenceLevel));
             case 9:
                 abilities.add(Abilities.WATER_AFFINITY.create(atSequenceLevel));
+                abilities.add(Abilities.WATER_SCALES.create(atSequenceLevel));
+                abilities.add(Abilities.OCEAN_ORDER.create(atSequenceLevel));
         }
 
         return abilities;
@@ -132,5 +136,20 @@ public class TyrantPathway extends BeyonderPathway {
             case 7 -> 8167853;
             default -> 0;
         };
+    }
+
+    @Override
+    public List<String> canCraftEffectCharms(int sequenceLevel) {
+        List<String> res = new ArrayList<>();
+        switch(sequenceLevel){
+            case 1:
+            case 2:
+            case 3:
+            case 4:
+            case 5:
+            case 8:
+                res.addAll(List.of(BeyonderEffects.TYRANT_WATER_AFFINITY.getEffectId(), BeyonderEffects.TYRANT_WATER_PRISON.getEffectId()));
+        }
+        return res;
     }
 }

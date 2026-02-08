@@ -18,6 +18,7 @@ public class AllySystemSaveData extends SavedData {
 
     public boolean isPlayerAllyOf(UUID testPlayer, UUID playerTarget){
         if(testPlayer == null || playerTarget == null) return false;
+        if(testPlayer.equals(playerTarget)) return true;
         for (AllyGroup group: groups.values()){
             if(group.isPlayerInGroup(testPlayer) && group.isPlayerInGroup(playerTarget)) return true;
         }
@@ -116,7 +117,7 @@ public class AllySystemSaveData extends SavedData {
 
     public boolean areEntitiesAllies(LivingEntity target, LivingEntity ent) {
         if(!(target instanceof Player playerTarget) || !(ent instanceof Player playerEntity)) return false;
-        return isPlayerAllyOf(playerEntity.getUUID(), playerEntity.getUUID());
+        return isPlayerAllyOf(playerTarget.getUUID(), playerEntity.getUUID());
     }
 
     public static class AllyGroup{

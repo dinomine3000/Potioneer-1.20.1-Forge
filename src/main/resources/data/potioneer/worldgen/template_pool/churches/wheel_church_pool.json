@@ -1,0 +1,13 @@
+{
+  "name": "potioneer:churches/wheel_church_pool",
+  "fallback":"minecraft:empty",
+  "elements":[{
+    "weight":1,
+    "element":{
+      "location":"potioneer:churches/wheel_church",
+      "processors":"potioneer:church_terrain_processor",
+      "projection":"rigid",
+      "element_type":"minecraft:single_pool_element"
+    }
+  }]
+}

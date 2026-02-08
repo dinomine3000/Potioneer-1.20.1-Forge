@@ -105,9 +105,9 @@ public class PassiveAbility extends Ability {
     public void passive(LivingEntityBeyonderCapability cap, LivingEntity target) {
         if(isEnabled() && !cap.getEffectsManager().hasEffectOrBetter(effect.createInstance(sequenceLevel, duration, true))){
             cap.getEffectsManager().addOrReplaceEffect(createEffectInstance(cap, target), cap, target);
-            if(cap.getSpirituality() < cap.getMaxSpirituality()*minimumSpiritualityThreshold
-                || cap.getSpirituality() < minSpiritualityAbsolute) setEnabled(cap, target, false);
         }
+        if(cap.getSpirituality() < cap.getMaxSpirituality()*minimumSpiritualityThreshold
+                || cap.getSpirituality() < minSpiritualityAbsolute) setEnabled(cap, target, false);
     }
 
     protected BeyonderEffect createEffectInstance(LivingEntityBeyonderCapability cap, LivingEntity target){

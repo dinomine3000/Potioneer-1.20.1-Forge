@@ -2,7 +2,7 @@ package net.dinomine.potioneer.entities.client;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
-import net.dinomine.potioneer.entities.custom.SlotMachineEntity;
+import net.dinomine.potioneer.entities.custom.effects.SlotMachineEntity;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import software.bernie.geckolib.renderer.GeoEntityRenderer;
 

@@ -4,6 +4,7 @@ import net.dinomine.potioneer.Potioneer;
 import net.dinomine.potioneer.beyonder.pathways.Pathways;
 import net.dinomine.potioneer.recipe.PotionRecipeData;
 import net.dinomine.potioneer.util.PotionIngredient;
+import net.dinomine.potioneer.util.PotioneerMathHelper;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
@@ -57,7 +58,7 @@ public class FormulaScreen extends Screen {
         this.leftPos = (this.width - 180) / 2;
         this.topPos = (this.height - 200) / 2;
 
-        if(data.includeRitual()){
+        if(data.includeRitual() && PotioneerMathHelper.isInteger(data.name())){
             ritualButton = Button.builder(Component.translatable("gui.potioneer.ritual_button"), btn -> flipRitual()).bounds(leftPos + 75, topPos + 170, 50, 20).build();
             addRenderableWidget(ritualButton);
         }

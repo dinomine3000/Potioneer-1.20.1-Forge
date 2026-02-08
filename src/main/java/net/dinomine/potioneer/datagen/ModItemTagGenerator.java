@@ -22,7 +22,8 @@ public class ModItemTagGenerator extends ItemTagsProvider {
 
     @Override
     protected void addTags(HolderLookup.Provider provider) {
-        this.tag(ModTags.Items.ELECTRIFICATION_WEAPONS).add(Items.GOLDEN_SHOVEL)
+        this.tag(ModTags.Items.ENFORCER_ARREST_TOOLS)
+                 .add(Items.GOLDEN_SHOVEL)
                 .add(Items.GOLDEN_SWORD)
                 .add(Items.GOLDEN_PICKAXE)
                 .add(Items.GOLDEN_AXE)

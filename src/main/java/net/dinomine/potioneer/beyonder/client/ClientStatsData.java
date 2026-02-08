@@ -95,9 +95,9 @@ public class ClientStatsData {
             return -1;
         }
 
-        if(player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).isPresent()){
-            if(player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve().isEmpty()) return -1;
-            LivingEntityBeyonderCapability cap = player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve().get();
+        Optional<LivingEntityBeyonderCapability> optCap = getCapability();
+        if(optCap.isPresent()){
+            LivingEntityBeyonderCapability cap = optCap.get();
             return cap.getPathwaySequenceId();
         }
         return -1;

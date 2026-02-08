@@ -30,7 +30,9 @@ public class PlayerEffectsManager {
             attacker = (LivingEntity) event.getSource().getDirectEntity();
         } else attacker = null;
         LivingEntity victim = event.getEntity();
-        LivingEntityBeyonderCapability victimCap = victim.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve().get();
+        Optional<LivingEntityBeyonderCapability> optCap = victim.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve();
+        if(!optCap.isPresent()) return;
+        LivingEntityBeyonderCapability victimCap = optCap.get();
 
         for(BeyonderEffect effect: passives){
             if(effect.onDamageProposal(event, victim, attacker, victimCap, cap, false)){
@@ -46,6 +48,11 @@ public class PlayerEffectsManager {
         }
     }
 
+    /**
+     * called from the attackers perspective -> cap is the attackers capability
+     * @param event
+     * @param cap
+     */
     public void onAttackDamageCalculation(LivingHurtEvent event, LivingEntityBeyonderCapability cap){
         LivingEntity attacker;
         if(event.getSource().getEntity() instanceof LivingEntity){
@@ -54,7 +61,10 @@ public class PlayerEffectsManager {
             attacker = (LivingEntity) event.getSource().getDirectEntity();
         } else attacker = null;
         LivingEntity victim = event.getEntity();
-        LivingEntityBeyonderCapability victimCap = victim.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve().get();
+
+        Optional<LivingEntityBeyonderCapability> optCap = victim.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve();
+        if(optCap.isEmpty()) return;
+        LivingEntityBeyonderCapability victimCap = optCap.get();
 
         for(BeyonderEffect effect: passives){
             if(effect.onDamageCalculation(event, victim, attacker, victimCap, cap, false)){

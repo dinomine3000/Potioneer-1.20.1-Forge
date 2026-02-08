@@ -7,6 +7,7 @@ import net.dinomine.potioneer.network.messages.AllySystem.AllyGroupSyncMessage;
 import net.dinomine.potioneer.network.messages.*;
 import net.dinomine.potioneer.network.messages.abilityRelevant.*;
 import net.dinomine.potioneer.network.messages.abilityRelevant.abilitySpecific.AppraisalDataMessage;
+import net.dinomine.potioneer.network.messages.abilityRelevant.abilitySpecific.AuraEffectMessage;
 import net.dinomine.potioneer.network.messages.effects.EvaporateEffect;
 import net.dinomine.potioneer.network.messages.effects.GeneralAreaEffectMessage;
 import net.dinomine.potioneer.network.messages.effects.WaterPrisonEffectSTC;
@@ -41,6 +42,7 @@ public class PacketHandler {
         INSTANCE.registerMessage(i++, EvaporateEffect.class, EvaporateEffect::encode, EvaporateEffect::decode, EvaporateEffect::handle);
         INSTANCE.registerMessage(i++, GeneralAreaEffectMessage.class, GeneralAreaEffectMessage::encode, GeneralAreaEffectMessage::decode, GeneralAreaEffectMessage::handle);
         INSTANCE.registerMessage(i++, AppraisalDataMessage.class, AppraisalDataMessage::encode, AppraisalDataMessage::decode, AppraisalDataMessage::handle);
+        INSTANCE.registerMessage(i++, AuraEffectMessage.class, AuraEffectMessage::encode, AuraEffectMessage::decode, AuraEffectMessage::handle);
 
         INSTANCE.registerMessage(i++, AbilitySyncMessage.class, AbilitySyncMessage::encode, AbilitySyncMessage::decode, AbilitySyncMessage::handle);
         INSTANCE.registerMessage(i++, BeyonderEffectSyncMessage.class, BeyonderEffectSyncMessage::encode, BeyonderEffectSyncMessage::decode, BeyonderEffectSyncMessage::handle);

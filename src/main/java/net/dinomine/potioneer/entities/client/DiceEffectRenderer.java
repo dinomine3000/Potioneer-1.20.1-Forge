@@ -1,6 +1,6 @@
 package net.dinomine.potioneer.entities.client;
 
-import net.dinomine.potioneer.entities.custom.DiceEffectEntity;
+import net.dinomine.potioneer.entities.custom.effects.DiceEffectEntity;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import software.bernie.geckolib.renderer.GeoEntityRenderer;
 

@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "potioneer:block/fake_water"
+    }
+  }
+}

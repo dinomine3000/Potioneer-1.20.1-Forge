@@ -2,6 +2,9 @@ package net.dinomine.potioneer.entities;
 
 import net.dinomine.potioneer.Potioneer;
 import net.dinomine.potioneer.entities.custom.*;
+import net.dinomine.potioneer.entities.custom.effects.DiceEffectEntity;
+import net.dinomine.potioneer.entities.custom.effects.SlotMachineEntity;
+import net.dinomine.potioneer.entities.custom.effects.WaterBlockEffectEntity;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
@@ -94,6 +97,12 @@ public class ModEntities {
                     () -> EntityType.Builder.of(SlotMachineEntity::new, MobCategory.MISC)
                             .sized(0.4f, 0.1f)
                             .build(new ResourceLocation(Potioneer.MOD_ID, "slot_machine_entity").toString()));
+
+    public static final RegistryObject<EntityType<WaterBlockEffectEntity>> WATER_BLOCK_EFFECT_ENTITY =
+            ENTITY_TYPES.register("water_block_effect_entity",
+                    () -> EntityType.Builder.of(WaterBlockEffectEntity::new, MobCategory.MISC)
+                            .sized(1f, 1f)
+                            .build(new ResourceLocation(Potioneer.MOD_ID, "water_block_effect_entity").toString()));
 
     public static void register(IEventBus eventBus){
         ENTITY_TYPES.register(eventBus);

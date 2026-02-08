@@ -160,6 +160,7 @@ public class Potioneer
             EntityRenderers.register(ModEntities.DICE_EFFECT_ENTITY.get(), DiceEffectRenderer::new);
             EntityRenderers.register(ModEntities.SLOT_MACHINE_ENTITY.get(), SlotMachineRenderer::new);
             EntityRenderers.register(ModEntities.CHARM_ENTITY.get(), CharmRenderer::new);
+            EntityRenderers.register(ModEntities.WATER_BLOCK_EFFECT_ENTITY.get(), WaterEffectEntityRenderer::new);
 
             MolangParser.INSTANCE.register(new LazyVariable("query.target_x", 0.0F));
 
@@ -237,6 +238,7 @@ public class Potioneer
                 ItemBlockRenderTypes.setRenderLayer(ModBlocks.RITUAL_INK.get(), RenderType.cutout());
                 ItemBlockRenderTypes.setRenderLayer(ModBlocks.SOLSEER_TORCH.get(), RenderType.cutout());
                 ItemBlockRenderTypes.setRenderLayer(ModBlocks.SOLSEER_WALL_TORCH.get(), RenderType.cutout());
+                ItemBlockRenderTypes.setRenderLayer(ModBlocks.FAKE_WATER.get(), RenderType.translucent());
             });
 
 

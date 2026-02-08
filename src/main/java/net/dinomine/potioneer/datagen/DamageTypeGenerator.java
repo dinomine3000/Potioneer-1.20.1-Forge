@@ -22,7 +22,7 @@ public class DamageTypeGenerator extends DamageTypeTagsProvider {
 
     @Override
     protected void addTags(HolderLookup.Provider pProvider) {
-        tag(DamageTypeTags.BYPASSES_ARMOR).add(LOW_SANITY, ASTEROID, CHRYON_PIERCE, CRIT);
+        tag(DamageTypeTags.BYPASSES_ARMOR).add(LOW_SANITY, ASTEROID, CHRYON_PIERCE, CRIT, ARREST);
         tag(DamageTypeTags.BYPASSES_SHIELD).add(LOW_SANITY, ASTEROID, CHRYON_PIERCE, CRIT);
         tag(DamageTypeTags.BYPASSES_RESISTANCE).add(LOW_SANITY, ASTEROID, CHRYON_PIERCE, CRIT);
         tag(DamageTypeTags.BYPASSES_EFFECTS).add(LOW_SANITY, ASTEROID, CHRYON_PIERCE, CRIT);
@@ -35,5 +35,6 @@ public class DamageTypeGenerator extends DamageTypeTagsProvider {
 
         tag(Tags.ABSOLUTE).add(CRIT, LOW_SANITY, LOW_SANITY_KILL, LOW_SPIRITUALITY);
         tag(Tags.MENTAL).add(LOW_SANITY, LOW_SANITY_KILL, LOW_SPIRITUALITY);
+        tag(Tags.PURIFICATION).add(ARREST);
     }
 }

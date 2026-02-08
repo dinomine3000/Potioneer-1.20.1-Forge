@@ -1,0 +1,35 @@
+{
+  "structures": [
+    {
+      "structure": "potioneer:wheel_church",
+      "weight": 1
+    },
+    {
+      "structure": "potioneer:wheel_church_surface",
+      "weight": 1
+    },
+    {
+      "structure": "potioneer:red_church",
+      "weight": 2
+    },
+    {
+      "structure": "potioneer:tyrant_church",
+      "weight": 2
+    },
+    {
+      "structure": "potioneer:mystery_church",
+      "weight": 2
+    },
+    {
+      "structure": "potioneer:paragon_church",
+      "weight": 2
+    }
+  ],
+  "placement": {
+    "type": "moogs_structures:advanced_random_spread",
+    "spacing": 15,
+    "separation": 10,
+    "salt": 29871921,
+    "spread_type": "LINEAR"
+  }
+}

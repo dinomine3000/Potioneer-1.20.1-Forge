@@ -13,6 +13,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 public class HalfCooldownAbility extends Ability {
@@ -37,7 +38,10 @@ public class HalfCooldownAbility extends Ability {
             List<UUID> allies = AllySystemSaveData.from((ServerLevel) target.level()).getAlliesOf(player.getUUID());
             for(UUID id: allies){
                 Player ally = target.level().getPlayerByUUID(id);
-                LivingEntityBeyonderCapability allyCap = ally.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve().get();
+                if(ally == null) continue;
+                Optional<LivingEntityBeyonderCapability> optCap = ally.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve();
+                if(optCap.isEmpty()) continue;
+                LivingEntityBeyonderCapability allyCap = optCap.get();
                 refreshAbilityCooldown(allyCap, ally, sequenceLevel);
             }
         }

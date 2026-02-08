@@ -105,7 +105,6 @@ public class MysticalItemHelper {
 //    public static void makeBeyonderWeapon(){}
 
     public static void generateSealedArtifact(ItemStack stack, int pathwaySequenceId, RandomSource random){
-        if(!isValidItemForArtifact(stack)) return;
         CompoundTag root = stack.getOrCreateTag();
         // quantity is 1 for sequence levels 9-7, its 2 for levels 6-4, 3 for 3 and 2, and 4 for 1 and 0
         // commented out bc we dont have enough abilities to avoid the issue of not having enough. if it asks for 4 but theres only 2 availabe, thats a problem

@@ -13,8 +13,8 @@ public class ModEffects {
     public static final DeferredRegister<MobEffect> MOB_EFFECTS
             = DeferredRegister.create(ForgeRegistries.MOB_EFFECTS, Potioneer.MOD_ID);
 
-    public static final RegistryObject<MobEffect> WATER_PRISON = MOB_EFFECTS.register("water_prison",
-            () -> new WaterPrisonEffect(MobEffectCategory.HARMFUL, 0x000dbc));
+    public static final RegistryObject<MobEffect> AOJ_INFLUENCE = MOB_EFFECTS.register("aoj_influence",
+            () -> new AoJInfluenceEffect(MobEffectCategory.HARMFUL, 0x000dbc));
 
     public static final RegistryObject<MobEffect> BLEED_EFFECT = MOB_EFFECTS.register("bleed_effect",
             () -> new ModMobEffect(MobEffectCategory.NEUTRAL, 0x9e2121));

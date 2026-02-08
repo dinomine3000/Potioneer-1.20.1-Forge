@@ -30,7 +30,9 @@ public class MisfortuneAbility extends Ability {
         if(target.level().isClientSide() || cap.getSpirituality() < cost()) return false;
         Optional<LivingEntity> misfortuneTarget = AbilityFunctionHelper.getTargetEntity(target, target.getAttributeBaseValue(ForgeMod.ENTITY_REACH.get()) + 1, false);
         if(misfortuneTarget.isPresent()){
-            LivingEntityBeyonderCapability targetCap = misfortuneTarget.get().getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve().get();
+            Optional<LivingEntityBeyonderCapability> optCap = misfortuneTarget.get().getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve();
+            if(optCap.isEmpty()) return false;
+            LivingEntityBeyonderCapability targetCap = optCap.get();
             targetCap.getEffectsManager().addOrReplaceEffect(BeyonderEffects.WHEEL_INSTANT_BAD_LUCK.createInstance(getSequenceLevel(), 0, 5, true), targetCap, misfortuneTarget.get());
             cap.getLuckManager().consumeLuck(50);
             cap.requestActiveSpiritualityCost(cost());
@@ -45,7 +47,9 @@ public class MisfortuneAbility extends Ability {
         if(target.level().isClientSide() || cap.getSpirituality() < cost()) return false;
         Optional<LivingEntity> misfortuneTarget = AbilityFunctionHelper.getTargetEntity(target, target.getAttributeBaseValue(ForgeMod.ENTITY_REACH.get()) + 1, false);
         if(misfortuneTarget.isPresent()){
-            LivingEntityBeyonderCapability targetCap = misfortuneTarget.get().getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve().get();
+            Optional<LivingEntityBeyonderCapability> optCap = misfortuneTarget.get().getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve();
+            if(optCap.isEmpty()) return false;
+            LivingEntityBeyonderCapability targetCap = optCap.get();
             targetCap.getEffectsManager().addOrReplaceEffect(BeyonderEffects.WHEEL_BAD_LUCK.createInstance(getSequenceLevel(), 0, 5, true), targetCap, misfortuneTarget.get());
             cap.getLuckManager().consumeLuck(50);
             ParticleMaker.createDiceEffectForEntity(target.level(), misfortuneTarget.get());

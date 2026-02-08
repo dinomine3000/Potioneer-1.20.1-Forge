@@ -29,6 +29,7 @@ public class PotioneerDamage {
     public static final ResourceKey<DamageType> LOW_SANITY_KILL = ResourceKey.create(Registries.DAMAGE_TYPE, new ResourceLocation(Potioneer.MOD_ID, "low_sanity_kill"));
     public static final ResourceKey<DamageType> LOW_SPIRITUALITY = ResourceKey.create(Registries.DAMAGE_TYPE, new ResourceLocation(Potioneer.MOD_ID, "low_spirituality"));
     public static final ResourceKey<DamageType> ASTEROID = ResourceKey.create(Registries.DAMAGE_TYPE, new ResourceLocation(Potioneer.MOD_ID, "asteroid"));
+    public static final ResourceKey<DamageType> ARREST = ResourceKey.create(Registries.DAMAGE_TYPE, new ResourceLocation(Potioneer.MOD_ID, "arrest"));
 //    public static final ResourceKey<DamageType> MENTAL = ResourceKey.create(Registries.DAMAGE_TYPE, new ResourceLocation(Potioneer.MOD_ID, "mental"));
 //    public static final ResourceKey<DamageType> ANNIHILATION = ResourceKey.create(Registries.DAMAGE_TYPE, new ResourceLocation(Potioneer.MOD_ID, "annihilation"));
 
@@ -78,5 +79,6 @@ public class PotioneerDamage {
         public static final TagKey<DamageType> ABSOLUTE = TagKey.create(Registries.DAMAGE_TYPE, new ResourceLocation(Potioneer.MOD_ID, "absolute"));
         public static final TagKey<DamageType> MENTAL = TagKey.create(Registries.DAMAGE_TYPE, new ResourceLocation(Potioneer.MOD_ID, "mental"));
         public static final TagKey<DamageType> ANNIHILATION = TagKey.create(Registries.DAMAGE_TYPE, new ResourceLocation(Potioneer.MOD_ID, "annihilation"));
+        public static final TagKey<DamageType> PURIFICATION = TagKey.create(Registries.DAMAGE_TYPE, new ResourceLocation(Potioneer.MOD_ID, "purification"));
     }
 }

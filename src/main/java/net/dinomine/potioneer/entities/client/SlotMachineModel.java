@@ -1,8 +1,7 @@
 package net.dinomine.potioneer.entities.client;
 
 import net.dinomine.potioneer.Potioneer;
-import net.dinomine.potioneer.entities.custom.DiceEffectEntity;
-import net.dinomine.potioneer.entities.custom.SlotMachineEntity;
+import net.dinomine.potioneer.entities.custom.effects.SlotMachineEntity;
 import net.minecraft.resources.ResourceLocation;
 import software.bernie.geckolib.model.GeoModel;
 

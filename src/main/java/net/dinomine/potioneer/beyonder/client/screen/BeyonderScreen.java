@@ -162,7 +162,7 @@ public class BeyonderScreen extends Screen {
         drawScaledString(pGuiGraphics, this.font, PATHWAY_NAME.getString(), this.leftPos + 64, this.topPos + 22, scale, this.color);
         //pGuiGraphics.drawString(this.font, PATHWAY, this.leftPos + 64, this.topPos + 10, this.color, false);
         pGuiGraphics.drawString(this.font, Minecraft.getInstance().player.getDisplayName(), this.leftPos + 64, this.topPos + 10, 0x707070, false);
-        pGuiGraphics.drawWordWrap(this.font, SEQUENCE_NAME, this.leftPos + 63, this.topPos + 45, 100, 0xFF909090);
+        pGuiGraphics.drawWordWrap(this.font, SEQUENCE_NAME, this.leftPos + 62, this.topPos + 45, 110, 0xFF909090);
 
         if(!ClientAbilitiesData.getHotbar().isEmpty()){
             for(int i = 0; i < Math.min(3, ClientAbilitiesData.getHotbar().size()); i++){

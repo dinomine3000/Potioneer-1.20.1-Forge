@@ -1,6 +1,5 @@
-package net.dinomine.potioneer.entities.custom;
+package net.dinomine.potioneer.entities.custom.effects;
 
-import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
@@ -13,20 +12,21 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Vector3f;
 
+import java.util.Optional;
 import java.util.UUID;
 
 public class AbstractEffectEntity extends Entity {
     public static final EntityDataAccessor<Vector3f> TARGET_POS = SynchedEntityData.defineId(AbstractEffectEntity.class, EntityDataSerializers.VECTOR3);
     public static final EntityDataAccessor<Float> ROTATION = SynchedEntityData.defineId(AbstractEffectEntity.class, EntityDataSerializers.FLOAT);
     public static final EntityDataAccessor<Vector3f> OFFSET = SynchedEntityData.defineId(AbstractEffectEntity.class, EntityDataSerializers.VECTOR3);
-    private UUID targetId = null;
+    public static final EntityDataAccessor<Optional<UUID>> TARGET_ID = SynchedEntityData.defineId(AbstractEffectEntity.class, EntityDataSerializers.OPTIONAL_UUID);
     private LivingEntity targetEntity = null;
 
     public void setTarget(UUID targetId){
         if(level() instanceof ServerLevel lvl){
             if(lvl.getEntity(targetId) instanceof LivingEntity living){
                 targetEntity = living;
-                this.targetId = targetId;
+                getEntityData().set(TARGET_ID, Optional.of(targetId));
                 getEntityData().set(TARGET_POS, living.position().toVector3f());
             } else {
                 System.err.println("Warning: Attempted to set effect entity target as a non-living entity!");
@@ -34,7 +34,19 @@ public class AbstractEffectEntity extends Entity {
         }
     }
 
-    protected void setOffset(Vector3f offset){
+    public Optional<UUID> getTargetId(){return getEntityData().get(TARGET_ID);}
+
+    @Override
+    public boolean isNoGravity() {
+        return true;
+    }
+
+    @Override
+    public boolean isPickable() {
+        return false;
+    }
+
+    public void setOffset(Vector3f offset){
         getEntityData().set(OFFSET, offset);
     }
 
@@ -45,11 +57,8 @@ public class AbstractEffectEntity extends Entity {
     @Override
     public void tick() {
         if(!level().isClientSide()){
-            if(targetId == null){
-                kill();
-                return;
-                //System.err.println("Error: no target entity set for charm");
-            }
+            if(getEntityData().get(TARGET_ID).isEmpty()) kill();
+            UUID targetId = getEntityData().get(TARGET_ID).get();
             if(targetEntity == null){
                 targetEntity = (LivingEntity) ((ServerLevel) level()).getEntity(targetId);
                 if(targetEntity == null) kill();
@@ -76,6 +85,7 @@ public class AbstractEffectEntity extends Entity {
     protected void defineSynchedData() {
         this.entityData.define(TARGET_POS, new Vector3f());
         this.entityData.define(ROTATION, 0f);
+        this.entityData.define(TARGET_ID, Optional.empty());
         this.entityData.define(OFFSET, new Vector3f());
     }
 
@@ -93,8 +103,10 @@ public class AbstractEffectEntity extends Entity {
             float z = compoundTag.getFloat("offsetZ");
             getEntityData().set(OFFSET, new Vector3f(x, y, z));
         }
-        if(compoundTag.contains("targetId"))
-            targetId = compoundTag.getUUID("targetId");
+        if(compoundTag.contains("targetId")){
+            UUID targetId = compoundTag.getUUID("targetId");
+            getEntityData().set(TARGET_ID, Optional.of(targetId));
+        }
 
     }
 
@@ -106,6 +118,7 @@ public class AbstractEffectEntity extends Entity {
         compoundTag.putFloat("offsetX", getEntityData().get(OFFSET).x());
         compoundTag.putFloat("offsetY", getEntityData().get(OFFSET).y());
         compoundTag.putFloat("offsetZ", getEntityData().get(OFFSET).z());
-        compoundTag.putUUID("targetId", targetId);
+        if(getEntityData().get(TARGET_ID).isPresent())
+           compoundTag.putUUID("targetId", getEntityData().get(TARGET_ID).get());
     }
 }

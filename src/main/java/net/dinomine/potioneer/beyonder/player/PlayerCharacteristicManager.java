@@ -43,6 +43,8 @@ public class PlayerCharacteristicManager {
         if(aptitudePathway == -1) aptitudePathway = 0;
     }
 
+    public int getAptitudePathway(){return aptitudePathway;}
+
     private int findCharacteristicOfLevel(int sequenceLevel){
         for(int i = lastConsumedCharacteristics.size(); i >= 1; i--){
             if(lastConsumedCharacteristics.get(i - 1)%10 >= sequenceLevel) return i;

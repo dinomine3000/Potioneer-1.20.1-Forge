@@ -133,7 +133,7 @@ public class CharmRecipe implements Recipe<RitualContainer> {
                 throw new JsonParseException("Too many ingredients for charm crafting recipe. The maximum is 6");
             PotionIngredient baseMaterial = PotionIngredient.fromJson(GsonHelper.getNonNull(pJson, "base")).withCount(1);
             int pathwayId = GsonHelper.getAsInt(pJson, "pathwayId");
-            int scaling = Mth.clamp(GsonHelper.getAsInt(pJson, "levelScaling"), 0, 8);
+            int scaling = Mth.clamp(GsonHelper.getAsInt(pJson, "levelScaling"), 0, 9);
             int durScaling = Math.max(GsonHelper.getAsInt(pJson, "durationScaling"), 1);
             return new CharmRecipe(ingredients, baseMaterial, pathwayId, effectId, scaling, durScaling, pRecipeId);
         }

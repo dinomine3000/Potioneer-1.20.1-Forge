@@ -433,4 +433,8 @@ public abstract class Ability {
     public AbilityKey getKey() {
         return this.key;
     }
+
+    public boolean is(String ablId) {
+        return this.abilityId.equalsIgnoreCase(ablId);
+    }
 }

@@ -1,0 +1,9 @@
+{
+  "values": [
+    "#forge:is_sparse",
+    "#forge:is_sandy",
+    "#forge:is_snowy",
+    "#forge:is_cold",
+    "#forge:is_hot"
+  ]
+}

@@ -75,12 +75,12 @@ public abstract class Deity extends EvilSpirit {
         Player targetPlayer = getPlayer(inputData, level, false);
         int inputPathway = pathwayId;
         int reputation = 0; // stand in for the actual reputation calculation
-        if(targetPlayer.getCapability(BeyonderStatsProvider.BEYONDER_STATS).isPresent() && targetPlayer.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve().isPresent()){
+        if(targetPlayer.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve().isPresent()){
             reputation = targetPlayer.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve().get().getReputation(inputPathway);
         }
         //if targeting someone else in the ritual, make a charm based on their level
         if(targetPlayer.getUUID().compareTo(inputData.caster()) != 0){
-            if(targetPlayer.getCapability(BeyonderStatsProvider.BEYONDER_STATS).isPresent()){
+            if(targetPlayer.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve().isPresent()){
                 inputPathway = targetPlayer.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve().get().getCharacteristicManager().getPathwayId();
                 reputation = (int) ((9 - targetPlayer.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve().get().getSequenceLevel())/2f);
             }

@@ -154,12 +154,12 @@ public class CoinItem extends Item implements GeoItem {
         boolean seer = false;
         boolean appraiser = false;
         boolean lucky = false;
-        if(player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).isPresent()){
-            Optional<LivingEntityBeyonderCapability> cap = player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve();
-            sequence = cap.get().getPathwaySequenceId();
-            seer = cap.get().getEffectsManager().hasEffect(BeyonderEffects.MISC_DIVINATION.getEffectId());
-            appraiser = cap.get().getAbilitiesManager().hasAbility(Abilities.APPRAISAL.getAblId());
-            lucky = cap.get().getAbilitiesManager().hasAbility(Abilities.WHEEL_DIVINATION.getAblId()) && cap.get().getLuckManager().passesLuckCheck(0.7f, 0, 0, player.getRandom());
+        if(player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve().isPresent()){
+            LivingEntityBeyonderCapability cap = player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve().get();
+            sequence = cap.getPathwaySequenceId();
+            seer = cap.getAbilitiesManager().hasAbility(Abilities.TYRANT_DIVINATION.getAblId());
+            appraiser = cap.getAbilitiesManager().hasAbility(Abilities.APPRAISAL.getAblId());
+            lucky = cap.getAbilitiesManager().hasAbility(Abilities.WHEEL_DIVINATION.getAblId()) && cap.getLuckManager().passesLuckCheck(0.7f, 0, 0, player.getRandom());
         }
 
         DivinationResult result = MysticismHelper.doDivination(divinationTarget, player, sequence, player.getRandom());
@@ -169,9 +169,9 @@ public class CoinItem extends Item implements GeoItem {
         } else if(lucky || (appraiser && divinationTarget.is(ModItems.BEYONDER_POTION.get()))){
             return result.yesNo();
         } else {
-            if(player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).isPresent()){
-                Optional<LivingEntityBeyonderCapability> cap = player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve();
-                float luck = cap.get().getLuckManager().checkLuck(0.5f);
+            if(player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve().isPresent()){
+                LivingEntityBeyonderCapability cap = player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve().get();
+                float luck = cap.getLuckManager().checkLuck(0.5f);
                 if(player.getRandom().nextFloat() < luck) return result.yesNo();
                 return player.getRandom().nextBoolean();
             }
