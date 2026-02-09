@@ -35,6 +35,7 @@ import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.client.event.RenderBlockScreenEffectEvent;
 import net.minecraftforge.client.event.RenderGuiOverlayEvent;
 import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -135,18 +136,6 @@ public class ClientForgeHandler {
 
         ClientAbilitiesData.setShowHotbar(KeyBindings.INSTANCE.showHotbarKey.isDown());
         ClientAbilitiesData.tick(minecraft.getPartialTick());
-
-
-        Player player = Minecraft.getInstance().player;
-        if(player != null){
-            Set<UUID> enforcers = ClientAbilitiesData.AbilitySpecific.getEnforcers();
-            for(UUID id: enforcers){
-                Player entity = player.level().getPlayerByUUID(id);
-                if(entity == null) continue;
-                ParticleMaker.createAuraParticles(entity, player);
-            }
-        }
-
     }
 
     @SubscribeEvent

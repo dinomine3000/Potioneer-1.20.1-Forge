@@ -105,7 +105,29 @@ public abstract class BeyonderEffect {
      * @return whether it should cancel the event or not
      */
     public boolean onTakeDamage(LivingDamageEvent event, LivingEntity victim, LivingEntity attacker, LivingEntityBeyonderCapability victimCap, Optional<LivingEntityBeyonderCapability> optAttackerCap, boolean calledOnVictim){return false;}
+
+    /**
+     * runs when the damage has been approved and the amount is being calculated (reduced, increased)
+     * @param event
+     * @param victim
+     * @param attacker
+     * @param victimCap
+     * @param attackerCap
+     * @param calledOnVictim
+     * @return
+     */
     public boolean onDamageCalculation(LivingHurtEvent event, LivingEntity victim, LivingEntity attacker, LivingEntityBeyonderCapability victimCap, LivingEntityBeyonderCapability attackerCap, boolean calledOnVictim){return false;}
+
+    /**
+     * runs when verifying a damage proposal. here is where you cancel it.
+     * @param event
+     * @param victim
+     * @param attacker
+     * @param victimCap
+     * @param attackerCap
+     * @param calledOnVictim
+     * @return
+     */
     public boolean onDamageProposal(LivingAttackEvent event, LivingEntity victim, LivingEntity attacker, LivingEntityBeyonderCapability victimCap, LivingEntityBeyonderCapability attackerCap, boolean calledOnVictim) {return false;}
     /**
      * used for replacement purposes. will return true if theyre the same effect but the argument is of a higher sequence
@@ -172,8 +194,10 @@ public abstract class BeyonderEffect {
     }
 
     public void writeToBuffer(FriendlyByteBuf buffer){
+        CompoundTag tag = new CompoundTag();
         BufferUtils.writeStringToBuffer(getId(), buffer);
         buffer.writeInt(sequenceLevel);
+        buffer.writeNbt(tag);
     }
 
     /**
@@ -184,7 +208,10 @@ public abstract class BeyonderEffect {
     public static BeyonderEffect readFromBuffer(FriendlyByteBuf buffer){
         String id = BufferUtils.readString(buffer);
         int level = buffer.readInt();
-        return BeyonderEffects.byId(id, level, 0, -1, true);
+        CompoundTag tag = buffer.readNbt();
+        BeyonderEffect eff = BeyonderEffects.byId(id, level, 0, -1, true);
+        eff.loadNBTData(tag);
+        return eff;
     }
 
 

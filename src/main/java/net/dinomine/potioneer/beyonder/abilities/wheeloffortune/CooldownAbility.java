@@ -4,7 +4,7 @@ import net.dinomine.potioneer.beyonder.abilities.AbilityFunctionHelper;
 import net.dinomine.potioneer.beyonder.abilities.misc.PassiveAbility;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffect;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
-import net.dinomine.potioneer.beyonder.effects.wheeloffortune.BeyonderCooldownEffect;
+import net.dinomine.potioneer.beyonder.effects.wheeloffortune.CooldownRecipientEffect;
 import net.dinomine.potioneer.beyonder.pathways.WheelOfFortunePathway;
 import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
 import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
@@ -36,7 +36,7 @@ public class CooldownAbility extends PassiveAbility {
     }
 
     public static BeyonderEffect createCooldownEffectInstance(int sequenceLevel, int minCooldown, int maxCooldown, int durationTicks){
-        BeyonderCooldownEffect eff = (BeyonderCooldownEffect) BeyonderEffects.WHEEL_COOLDOWN.createInstance(sequenceLevel, 0, durationTicks, true);
+        CooldownRecipientEffect eff = (CooldownRecipientEffect) BeyonderEffects.WHEEL_COOLDOWN.createInstance(sequenceLevel, 0, durationTicks, true);
         eff.withValues(minCooldown, maxCooldown);
         return eff;
     }
@@ -58,7 +58,7 @@ public class CooldownAbility extends PassiveAbility {
                     victimCap.getEffectsManager().addOrReplaceEffect(createCooldownEffectInstance(getSequenceLevel(), minCooldown, maxCooldown, 20*20),
                             victimCap, ent);
                 } else {
-                    BeyonderCooldownEffect.disableRandomAbilities(victimCap, proxyManager, ent, ent.getId() != target.getId(), minCooldown, maxCooldown);
+                    CooldownRecipientEffect.disableRandomAbilities(victimCap, proxyManager, ent, ent.getId() != target.getId(), minCooldown, maxCooldown);
                 }
             });
         }

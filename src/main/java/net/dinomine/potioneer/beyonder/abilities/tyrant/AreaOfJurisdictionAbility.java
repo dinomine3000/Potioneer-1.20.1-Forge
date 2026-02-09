@@ -4,15 +4,13 @@ import net.dinomine.potioneer.beyonder.abilities.Ability;
 import net.dinomine.potioneer.beyonder.abilities.misc.PassiveAbility;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffect;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
-import net.dinomine.potioneer.beyonder.effects.tyrant.BeyonderAoJEffect;
-import net.dinomine.potioneer.beyonder.effects.tyrant.BeyonderAoJInfluenceEffect;
+import net.dinomine.potioneer.beyonder.effects.tyrant.AoJRecipientEffect;
 import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
 import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
 import net.dinomine.potioneer.mob_effects.ModEffects;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -33,7 +31,7 @@ public class AreaOfJurisdictionAbility extends PassiveAbility implements IAreaOf
      * @param sequenceLevel
      */
     public AreaOfJurisdictionAbility(int sequenceLevel) {
-        super(sequenceLevel, BeyonderEffects.TYRANT_AOJ_VISUALIZER, ignored -> "area_of_jurisdiction");
+        super(sequenceLevel, BeyonderEffects.TYRANT_AOJ_SOURCE, ignored -> "area_of_jurisdiction");
         enabledOnAcquire();
     }
 
@@ -60,15 +58,15 @@ public class AreaOfJurisdictionAbility extends PassiveAbility implements IAreaOf
         Optional<LivingEntityBeyonderCapability> optTarget = target.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve();
         if(optTarget.isEmpty()) return false;
         LivingEntityBeyonderCapability targetCap = optTarget.get();
-        BeyonderEffect eff = targetCap.getEffectsManager().getEffect(BeyonderEffects.TYRANT_AOJ_INFLUENCE.getEffectId());
-        if(!(eff instanceof BeyonderAoJInfluenceEffect aoJInfluenceEffect)) return false;
+        BeyonderEffect eff = targetCap.getEffectsManager().getEffect(BeyonderEffects.TYRANT_AOJ_RECIPIENT.getEffectId());
+        if(!(eff instanceof AoJRecipientEffect aoJInfluenceEffect)) return false;
         return aoJInfluenceEffect.isEntityEnforcer(enforcer.getUUID());
     }
 
     @Override
     public void passive(LivingEntityBeyonderCapability cap, LivingEntity target) {
         super.passive(cap, target);
-        if(!getData().getBoolean("aoj_enabled") && target.level().getGameTime() - getData().getLong("timestamp") > 20*30){
+        if(getData().contains("aoj_enabled") && !getData().getBoolean("aoj_enabled") && target.level().getGameTime() - getData().getLong("timestamp") > 20*30){
             CompoundTag tag = getData();
             tag.putBoolean("aoj_enabled", true);
             setData(tag, target);

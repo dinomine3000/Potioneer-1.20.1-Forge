@@ -4,11 +4,10 @@ import net.dinomine.potioneer.beyonder.abilities.AbilityFunctionHelper;
 import net.dinomine.potioneer.beyonder.abilities.misc.PassiveAbility;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffect;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
-import net.dinomine.potioneer.beyonder.effects.wheeloffortune.BeyonderMiningSpeedEffect;
+import net.dinomine.potioneer.beyonder.effects.wheeloffortune.MiningSpeedEffect;
 import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
 
 import java.util.function.Function;
@@ -36,7 +35,7 @@ public class MiningSpeedAbility extends PassiveAbility {
 
     @Override
     protected BeyonderEffect createEffectInstance(LivingEntityBeyonderCapability cap, LivingEntity target) {
-        BeyonderMiningSpeedEffect eff = (BeyonderMiningSpeedEffect) effect.createInstance(sequenceLevel, cost(), -1, true);
+        MiningSpeedEffect eff = (MiningSpeedEffect) effect.createInstance(sequenceLevel, cost(), -1, true);
         CompoundTag tag = getData();
         if(!tag.contains("speed")){
             tag.putFloat("speed", levelToMaxSpeed.apply(getSequenceLevel()));
@@ -59,7 +58,7 @@ public class MiningSpeedAbility extends PassiveAbility {
         float newSpeed = AbilityFunctionHelper.incrementThroughRange(1, levelToMaxSpeed.apply(getSequenceLevel()), 5, currentSpeed);
         if(cap.getEffectsManager().hasEffect(BeyonderEffects.WHEEL_MINING.getEffectId(), getSequenceLevel())){
             BeyonderEffect eff = cap.getEffectsManager().getEffect(BeyonderEffects.WHEEL_MINING.getEffectId(), getSequenceLevel());
-            if(eff instanceof BeyonderMiningSpeedEffect miningSpeedEffect){
+            if(eff instanceof MiningSpeedEffect miningSpeedEffect){
                 miningSpeedEffect.miningSpeed = newSpeed;
             }
         }

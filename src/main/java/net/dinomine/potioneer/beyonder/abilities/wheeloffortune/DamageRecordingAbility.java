@@ -4,7 +4,7 @@ import net.dinomine.potioneer.beyonder.abilities.AbilityFunctionHelper;
 import net.dinomine.potioneer.beyonder.abilities.misc.PassiveAbility;
 import net.dinomine.potioneer.beyonder.damages.PotioneerDamage;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
-import net.dinomine.potioneer.beyonder.effects.wheeloffortune.BeyonderDamageRecordingEffect;
+import net.dinomine.potioneer.beyonder.effects.wheeloffortune.DamageRecordingEffect;
 import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
 import net.dinomine.potioneer.savedata.AllySystemSaveData;
 import net.minecraft.network.chat.Component;
@@ -29,7 +29,7 @@ public class DamageRecordingAbility extends PassiveAbility {
     @Override
     protected boolean primary(LivingEntityBeyonderCapability cap, LivingEntity target) {
         if(target.level().isClientSide()) return false;
-        BeyonderDamageRecordingEffect effect = (BeyonderDamageRecordingEffect) cap.getEffectsManager().getEffect(BeyonderEffects.WHEEL_DAMAGE_RECORDING.getEffectId(), getSequenceLevel());
+        DamageRecordingEffect effect = (DamageRecordingEffect) cap.getEffectsManager().getEffect(BeyonderEffects.WHEEL_DAMAGE_RECORDING.getEffectId(), getSequenceLevel());
         if(effect == null || effect.isRecording()) return false;
         float amount = effect.getRecordedDamage(false);
         if(target.isCrouching()){
@@ -45,7 +45,7 @@ public class DamageRecordingAbility extends PassiveAbility {
     protected boolean secondary(LivingEntityBeyonderCapability cap, LivingEntity target) {
         if(target.level().isClientSide()) return false;
         if(cap.getSpirituality() < cost()) return false;
-        BeyonderDamageRecordingEffect effect = (BeyonderDamageRecordingEffect) cap.getEffectsManager().getEffect(BeyonderEffects.WHEEL_DAMAGE_RECORDING.getEffectId(), getSequenceLevel());
+        DamageRecordingEffect effect = (DamageRecordingEffect) cap.getEffectsManager().getEffect(BeyonderEffects.WHEEL_DAMAGE_RECORDING.getEffectId(), getSequenceLevel());
         if(effect == null) return false;
         float amount = effect.getRecordedDamage(false);
         if(target.isCrouching()){

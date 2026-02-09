@@ -4,25 +4,22 @@ import net.dinomine.potioneer.Potioneer;
 import net.dinomine.potioneer.beyonder.abilities.Abilities;
 import net.dinomine.potioneer.beyonder.abilities.AbilityFunctionHelper;
 import net.dinomine.potioneer.beyonder.abilities.tyrant.AreaOfJurisdictionAbility;
-import net.dinomine.potioneer.beyonder.client.ClientAbilitiesData;
 import net.dinomine.potioneer.beyonder.damages.PotioneerDamage;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffect;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
-import net.dinomine.potioneer.beyonder.effects.wheeloffortune.BeyonderArrowGravitateEffect;
-import net.dinomine.potioneer.beyonder.effects.wheeloffortune.BeyonderZeroDamageBlockEffect;
-import net.dinomine.potioneer.beyonder.effects.wheeloffortune.BeyonderZeroDamageEffect;
+import net.dinomine.potioneer.beyonder.effects.wheeloffortune.ArrowGravitateEffect;
+import net.dinomine.potioneer.beyonder.effects.wheeloffortune.ZeroDamageBlockEffect;
+import net.dinomine.potioneer.beyonder.effects.wheeloffortune.ZeroDamageEffect;
 import net.dinomine.potioneer.beyonder.pathways.BeyonderPathway;
 import net.dinomine.potioneer.beyonder.pathways.Pathways;
 import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
 import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
-import net.dinomine.potioneer.config.PotioneerCommonConfig;
 import net.dinomine.potioneer.item.ModItems;
 import net.dinomine.potioneer.network.PacketHandler;
 import net.dinomine.potioneer.network.messages.PlayerNameSyncMessage;
 import net.dinomine.potioneer.network.messages.SequenceSTCSyncRequest;
 import net.dinomine.potioneer.rituals.spirits.Deity;
 import net.dinomine.potioneer.util.ModTags;
-import net.dinomine.potioneer.util.ParticleMaker;
 import net.dinomine.potioneer.util.misc.DivinationResult;
 import net.dinomine.potioneer.util.misc.MysticalItemHelper;
 import net.dinomine.potioneer.util.misc.MysticismHelper;
@@ -32,10 +29,12 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.players.GameProfileCache;
+import net.minecraft.tags.EntityTypeTags;
+import net.minecraft.tags.TagKey;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.MobType;
 import net.minecraft.world.entity.monster.Zombie;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BowItem;
@@ -98,7 +97,7 @@ public class BeyonderEvents {
                 int level = zeroEffect.getSequenceLevel();
                 if(level < 7 || ItemStack.matches(event.getEntity().getMainHandItem(), event.getStack())){
                     if(level < 8 || cap.getLuckManager().passesLuckCheck(0.35f, 0, 0, event.getEntity().getRandom())){
-                        ((BeyonderZeroDamageEffect) cap.getEffectsManager().getEffect(BeyonderEffects.WHEEL_ZERO_DAMAGE.getEffectId())).playSound(event.getEntity());
+                        ((ZeroDamageEffect) cap.getEffectsManager().getEffect(BeyonderEffects.WHEEL_ZERO_DAMAGE.getEffectId())).playSound(event.getEntity());
                         event.setCanceled(true);
                     }
                 }
@@ -327,7 +326,7 @@ public class BeyonderEvents {
                         event.setCanceled(true);
                         return;
                     }
-                    if(cap.getEffectsManager().hasEffect(BeyonderEffects.TYRANT_AURA.getEffectId()) && event.getEntity().getMaxHealth() < player.getHealth() && AreaOfJurisdictionAbility.isTargetUnderInfluenceOfEnforcer(event.getEntity(), player)){
+                    if(cap.getEffectsManager().hasEffect(BeyonderEffects.TYRANT_AURA_SOURCE.getEffectId()) && event.getEntity().getMaxHealth() < player.getHealth() && AreaOfJurisdictionAbility.isTargetUnderInfluenceOfEnforcer(event.getEntity(), player)){
                         event.setCanceled(true);
                         return;
                     }
@@ -368,7 +367,7 @@ public class BeyonderEvents {
 
     //called inbetween the other two, its used to calculate the damage dealt
     @SubscribeEvent
-    public static void onEntityHurt(LivingHurtEvent event) {
+    public static void onDamageCalculation(LivingHurtEvent event) {
         if(event.getSource().getEntity() != null){
             //FOR THE ATTACKER
             //runs this code in the context of an entity attacking another
@@ -376,6 +375,7 @@ public class BeyonderEvents {
             event.getSource().getEntity().getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
                 cap.getEffectsManager().onAttackDamageCalculation(event, cap);
             });
+            if(event.getEntity().getMobType() == MobType.UNDEAD && event.getSource().is(PotioneerDamage.Tags.PURIFICATION)) event.setAmount(event.getAmount()*2);
         }
     }
 
@@ -418,7 +418,7 @@ public class BeyonderEvents {
                 LivingEntityBeyonderCapability tarCap = target.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve().get();
                 if(tarCap.getEffectsManager().hasEffect(BeyonderEffects.WHEEL_LUCK_EFFECT.getEffectId())) return;
             }
-            BeyonderArrowGravitateEffect eff = (BeyonderArrowGravitateEffect) BeyonderEffects.WHEEL_ARROW.createInstance(9, 0, 10, true);
+            ArrowGravitateEffect eff = (ArrowGravitateEffect) BeyonderEffects.WHEEL_ARROW.createInstance(9, 0, 10, true);
             eff.setValues(target, BowItem.getPowerForTime(event.getCharge()) * 3);
             cap.getEffectsManager().addEffectNoCheck(eff, cap, player);
         });
@@ -427,14 +427,6 @@ public class BeyonderEvents {
     @SubscribeEvent
     public static void onEntityStruckByLightning(EntityStruckByLightningEvent event){
         //cancel this to negate the damage
-        if(event.getEntity() instanceof LivingEntity livingEntity){
-            livingEntity.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
-                if(cap.getEffectsManager().hasEffect(BeyonderEffects.TYRANT_ELECTRIFICATION.getEffectId())){
-                    livingEntity.extinguishFire();
-                    cap.requestActiveSpiritualityCost(50);
-                }
-            });
-        }
     }
 
     @SubscribeEvent
@@ -458,13 +450,13 @@ public class BeyonderEvents {
         if(player.isCreative() || player.isSpectator()) return;
 
         player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent( cap -> {
-            BeyonderZeroDamageEffect zeroEff = (BeyonderZeroDamageEffect) cap.getEffectsManager().getEffect(BeyonderEffects.WHEEL_ZERO_DAMAGE.getEffectId());
+            ZeroDamageEffect zeroEff = (ZeroDamageEffect) cap.getEffectsManager().getEffect(BeyonderEffects.WHEEL_ZERO_DAMAGE.getEffectId());
             if(zeroEff == null || zeroEff.getSequenceLevel() > 6 || !zeroEff.doBlocks()) return;
             int level = zeroEff.getSequenceLevel();
             //TODO make the chance dependent on level maybe?
             if(!cap.getLuckManager().passesLuckCheck(0.00005f, 50, 0, player.getRandom())) return;
             ItemStack blockStack = new ItemStack(event.getPlacedBlock().getBlock());
-            BeyonderZeroDamageBlockEffect eff = (BeyonderZeroDamageBlockEffect) BeyonderEffects.WHEEL_ZERO_BLOCK.createInstance(9, 0, 1, true);
+            ZeroDamageBlockEffect eff = (ZeroDamageBlockEffect) BeyonderEffects.WHEEL_ZERO_BLOCK.createInstance(9, 0, 1, true);
             eff.withItem(blockStack.copyWithCount(1));
             cap.getEffectsManager().addEffectNoCheck(eff, cap, player);
         });

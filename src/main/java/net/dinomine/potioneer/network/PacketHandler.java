@@ -8,6 +8,7 @@ import net.dinomine.potioneer.network.messages.*;
 import net.dinomine.potioneer.network.messages.abilityRelevant.*;
 import net.dinomine.potioneer.network.messages.abilityRelevant.abilitySpecific.AppraisalDataMessage;
 import net.dinomine.potioneer.network.messages.abilityRelevant.abilitySpecific.AuraEffectMessage;
+import net.dinomine.potioneer.network.messages.abilityRelevant.abilitySpecific.SourceRecipientUpdateMessage;
 import net.dinomine.potioneer.network.messages.effects.EvaporateEffect;
 import net.dinomine.potioneer.network.messages.effects.GeneralAreaEffectMessage;
 import net.dinomine.potioneer.network.messages.effects.WaterPrisonEffectSTC;
@@ -43,6 +44,7 @@ public class PacketHandler {
         INSTANCE.registerMessage(i++, GeneralAreaEffectMessage.class, GeneralAreaEffectMessage::encode, GeneralAreaEffectMessage::decode, GeneralAreaEffectMessage::handle);
         INSTANCE.registerMessage(i++, AppraisalDataMessage.class, AppraisalDataMessage::encode, AppraisalDataMessage::decode, AppraisalDataMessage::handle);
         INSTANCE.registerMessage(i++, AuraEffectMessage.class, AuraEffectMessage::encode, AuraEffectMessage::decode, AuraEffectMessage::handle);
+        INSTANCE.registerMessage(i++, SourceRecipientUpdateMessage.class, SourceRecipientUpdateMessage::encode, SourceRecipientUpdateMessage::decode, SourceRecipientUpdateMessage::handle);
 
         INSTANCE.registerMessage(i++, AbilitySyncMessage.class, AbilitySyncMessage::encode, AbilitySyncMessage::decode, AbilitySyncMessage::handle);
         INSTANCE.registerMessage(i++, BeyonderEffectSyncMessage.class, BeyonderEffectSyncMessage::encode, BeyonderEffectSyncMessage::decode, BeyonderEffectSyncMessage::handle);
@@ -67,9 +69,10 @@ public class PacketHandler {
     }
 
     public static <T> void sendMessageSTC(T message, LivingEntity player){
-        if(!(player instanceof Player)) return;
         if(player.level().isClientSide) return;
-        INSTANCE.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) player), message);
+        if(!(player instanceof ServerPlayer sPlayer)) return;
+        if(sPlayer.connection == null) return;
+        INSTANCE.send(PacketDistributor.PLAYER.with(() ->  sPlayer), message);
     }
 
     public static <T> void sendMessageCTS(T message){

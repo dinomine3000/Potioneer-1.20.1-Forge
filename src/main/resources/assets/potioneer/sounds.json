@@ -62,5 +62,12 @@
       "potioneer:punch_2",
       "potioneer:punch_3"
     ]
+  },
+  "arrest": {
+    "sounds": [
+      "potioneer:arrest_1",
+      "potioneer:arrest_2",
+      "potioneer:arrest_3"
+    ]
   }
 }

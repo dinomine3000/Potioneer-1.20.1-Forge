@@ -1,6 +1,7 @@
 package net.dinomine.potioneer.beyonder.abilities;
 
 import com.mojang.datafixers.types.Func;
+import net.dinomine.potioneer.beyonder.pages.Page;
 import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
 import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
 import net.dinomine.potioneer.beyonder.player.PlayerAbilitiesManager;
@@ -13,6 +14,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.common.MinecraftForge;
 
+import java.util.List;
 import java.util.UUID;
 import java.util.function.Function;
 
@@ -437,4 +439,6 @@ public abstract class Ability {
     public boolean is(String ablId) {
         return this.abilityId.equalsIgnoreCase(ablId);
     }
+
+    public List<Page> getPages(){return List.of();}
 }

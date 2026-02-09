@@ -201,19 +201,24 @@ public class Abilities {
     public static final AbilityFactory TYRANT_DROWNING = registerAbility("drowning",
             DrowningAbility::new, 5, 1, 30);
 
+    //retweaked
     public static final AbilityFactory AOJ = registerAbility("area_of_jurisdiction",
             AreaOfJurisdictionAbility::new, 6, 1, 75).hasSecondaryFunction();
 
     //retweaked
     public static final AbilityFactory TYRANT_AURA = registerAbility("aoj_aura",
-            (Integer level) -> PassiveAbility.createAbility(level, BeyonderEffects.TYRANT_AURA, ignored -> "aoj_aura").enabledOnAcquire().canFlip(),
+            (Integer level) -> PassiveAbility.createAbility(level, BeyonderEffects.TYRANT_AURA_SOURCE, ignored -> "aoj_aura").enabledOnAcquire().canFlip(),
             0, 1, 1);
 
-    public static final AbilityFactory TYRANT_ELECTRIFICATION = registerAbility("electrification",
-            (Integer sequenceLevel) -> (PassiveAbility.createAbility(sequenceLevel, BeyonderEffects.TYRANT_ELECTRIFICATION,
-                    ignored -> "electrification"))
-                    .enabledOnAcquire().canFlip().withThreshold(20),
-            272, 1, 20);
+    //retweaked
+    public static final AbilityFactory ARREST = registerAbility("arrest",
+            ArrestAbility::new, 5, 1, 20).hasSecondaryFunction();
+
+//    public static final AbilityFactory TYRANT_ELECTRIFICATION = registerAbility("electrification",
+//            (Integer sequenceLevel) -> (PassiveAbility.createAbility(sequenceLevel, BeyonderEffects.TYRANT_ELECTRIFICATION,
+//                    ignored -> "electrification"))
+//                    .enabledOnAcquire().canFlip().withThreshold(20),
+//            272, 1, 20);
 
     public static final AbilityFactory TYRANT_RAIN = registerAbility("summon_rain",
             RainCreateAbility::new, 200, 1, 70);

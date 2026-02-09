@@ -1,9 +1,8 @@
 package net.dinomine.potioneer.beyonder.abilities.wheeloffortune;
 
 import net.dinomine.potioneer.beyonder.abilities.Ability;
-import net.dinomine.potioneer.beyonder.effects.BeyonderEffect;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
-import net.dinomine.potioneer.beyonder.effects.wheeloffortune.BeyonderGamblingEffect;
+import net.dinomine.potioneer.beyonder.effects.wheeloffortune.GamblingEffect;
 import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -35,7 +34,7 @@ public class GamblingAbility extends Ability {
         this.defaultMaxCooldown = cd;
         if(target.level().isClientSide()) return true;
         cap.requestActiveSpiritualityCost(cost());
-        BeyonderGamblingEffect eff = (BeyonderGamblingEffect) BeyonderEffects.WHEEL_GAMBLING.createInstance(getSequenceLevel(), 0, 2, true);
+        GamblingEffect eff = (GamblingEffect) BeyonderEffects.WHEEL_GAMBLING.createInstance(getSequenceLevel(), 0, 2, true);
         eff.setQuick(getData().getBoolean("quick"));
         cap.getEffectsManager().addEffectNoRefresh(eff, cap, target);
         return true;

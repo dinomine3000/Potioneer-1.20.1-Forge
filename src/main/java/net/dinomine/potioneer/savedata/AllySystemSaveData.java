@@ -120,6 +120,12 @@ public class AllySystemSaveData extends SavedData {
         return isPlayerAllyOf(playerTarget.getUUID(), playerEntity.getUUID());
     }
 
+    public static boolean isAllies(LivingEntity target, LivingEntity ent){
+        if(target.level().isClientSide()) return false;
+        AllySystemSaveData allyData = AllySystemSaveData.from((ServerLevel) target.level());
+        return allyData.areEntitiesAllies(target, ent);
+    }
+
     public static class AllyGroup{
         private final List<UUID> playerList;
         private final String name;

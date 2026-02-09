@@ -61,9 +61,7 @@ public class PlayerAbilitiesManager {
     public List<Page> getPagesFromAbilities(){
         List<Page> result = new ArrayList<>();
         for(Ability abl: abilities.values()){
-            if(abl instanceof MysticalKnowledgeAbility myst){
-                result.addAll(myst.getPages());
-            }
+            result.addAll(abl.getPages());
         }
         return result;
     }

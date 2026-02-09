@@ -312,16 +312,16 @@
 
   "potioneer.beyonder.pathway.tyrant": "Tyrant Pathway",
   "potioneer.beyonder.sequence.swimmer": "Sequence 9 Swimmer",
-  "potioneer.beyonder.sequence.hydro_shaman": "Sequence 8 Hydro Shaman",
-  "potioneer.beyonder.sequence.tempest": "Sequence 7 Tempest",
-  "potioneer.beyonder.sequence.waterborn": "Sequence 6 Waterborn",
-  "potioneer.beyonder.sequence.punisher": "Sequence 5 Punisher",
+  "potioneer.beyonder.sequence.water_mage": "Sequence 8 Water Mage",
+  "potioneer.beyonder.sequence.tempest": "Sequence 7 Hydroborn Enforcer",
+  "potioneer.beyonder.sequence.chaotic_magistrate": "Sequence 6 Chaotic Magistrate",
+  "potioneer.beyonder.sequence.tribunal": "Sequence 5 Tribunal",
 
   "potioneer.beyonder.pathway.mystery": "Mystery Pathway",
   "potioneer.beyonder.sequence.trickster": "Sequence 9 Trickster",
   "potioneer.beyonder.sequence.acrobat": "Sequence 8 Acrobat",
-  "potioneer.beyonder.sequence.voodoo_assassin": "Sequence 7 Voodoo Assassin",
-  "potioneer.beyonder.sequence.parasite": "Sequence 6 Parasite",
+  "potioneer.beyonder.sequence.magician": "Sequence 7 Magician",
+  "potioneer.beyonder.sequence.scribe": "Sequence 6 Scribe",
   "potioneer.beyonder.sequence.traveler": "Sequence 5 Traveler",
 
   "potioneer.beyonder.pathway.red_priest": "Red Priest Pathway",
@@ -329,7 +329,7 @@
   "potioneer.beyonder.sequence.fire_priest": "Sequence 8 Fire Priest",
   "potioneer.beyonder.sequence.pyromaniac": "Sequence 7 Pyromaniac",
   "potioneer.beyonder.sequence.sun-blessed": "Sequence 6 Sun-Blessed",
-  "potioneer.beyonder.sequence.hunter": "Sequence 5 Hunter",
+  "potioneer.beyonder.sequence.paladin": "Sequence 5 Paladin",
 
   "potioneer.beyonder.pathway.paragon": "Paragon Pathway",
   "potioneer.beyonder.sequence.crafter": "Sequence 9 Crafter",

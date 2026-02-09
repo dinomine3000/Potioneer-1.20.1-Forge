@@ -37,6 +37,10 @@ public class PotioneerDamage {
         return getSource(level, CRIT, attacker);
     }
 
+    public static DamageSource arrest(ServerLevel level, LivingEntity attacker) {
+        return getSource(level, ARREST, attacker);
+    }
+
     public static DamageSource crit(ServerLevel level) {
         return getSource(level, CRIT);
     }

@@ -48,7 +48,11 @@ public class PassiveAbility extends Ability {
      * @return
      */
     public PassiveAbility canFlip(){
-        this.canFlip = true;
+        return canFlip(true);
+    }
+
+    public PassiveAbility canFlip(boolean canFlip){
+        this.canFlip = canFlip;
         return this;
     }
 

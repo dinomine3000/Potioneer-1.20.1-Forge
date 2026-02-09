@@ -1,13 +1,10 @@
 package net.dinomine.potioneer.beyonder.abilities.wheeloffortune;
 
 import net.dinomine.potioneer.beyonder.abilities.misc.PassiveAbility;
-import net.dinomine.potioneer.beyonder.effects.BeyonderEffect;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
-import net.dinomine.potioneer.beyonder.effects.wheeloffortune.BeyonderPatienceEffect;
+import net.dinomine.potioneer.beyonder.effects.wheeloffortune.PatienceEffect;
 import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
 import net.minecraft.network.chat.Component;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.LivingEntity;
 
 public class PatienceAbility extends PassiveAbility {
@@ -30,7 +27,7 @@ public class PatienceAbility extends PassiveAbility {
     @Override
     protected boolean secondary(LivingEntityBeyonderCapability cap, LivingEntity target) {
         if(target.level().isClientSide()) return false;
-        BeyonderPatienceEffect effect = (BeyonderPatienceEffect) cap.getEffectsManager().getEffect(BeyonderEffects.WHEEL_PATIENCE.getEffectId(), getSequenceLevel());
+        PatienceEffect effect = (PatienceEffect) cap.getEffectsManager().getEffect(BeyonderEffects.WHEEL_PATIENCE.getEffectId(), getSequenceLevel());
         if(effect == null) return false;
         int luckToGain = effect.getProjectedLuck(cap);
         target.sendSystemMessage(Component.translatableWithFallback("ability.potioneer.patience_test", "You are set to receive %s luck.", luckToGain));

@@ -66,8 +66,8 @@ public class ParticleMaker {
     }
 
     public static void createAuraParticles(Player enforcer, LivingEntity victim) {
-        if(!(victim instanceof Player player)) return;
-        if(!victim.level().isClientSide()) PacketHandler.sendMessageSTC(new AuraEffectMessage(enforcer.getUUID()), player);
+        if(!(victim instanceof Player)) return;
+        if(!victim.level().isClientSide()) return;
         Level level = victim.level();
         RandomSource random = victim.getRandom();
         Vec3 position = enforcer.position();

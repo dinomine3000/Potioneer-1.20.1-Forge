@@ -33,7 +33,7 @@ public class DamageTypeGenerator extends DamageTypeTagsProvider {
         //eventually add Annihilation-type damage sources to the bypasses invulnerability
         tag(DamageTypeTags.BYPASSES_INVULNERABILITY).add(LOW_SANITY, LOW_SANITY_KILL);
 
-        tag(Tags.ABSOLUTE).add(CRIT, LOW_SANITY, LOW_SANITY_KILL, LOW_SPIRITUALITY);
+        tag(Tags.ABSOLUTE).add(ARREST, CRIT, LOW_SANITY, LOW_SANITY_KILL, LOW_SPIRITUALITY);
         tag(Tags.MENTAL).add(LOW_SANITY, LOW_SANITY_KILL, LOW_SPIRITUALITY);
         tag(Tags.PURIFICATION).add(ARREST);
     }

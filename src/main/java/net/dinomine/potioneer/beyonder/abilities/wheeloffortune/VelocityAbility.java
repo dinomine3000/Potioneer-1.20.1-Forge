@@ -4,12 +4,10 @@ import net.dinomine.potioneer.beyonder.abilities.AbilityFunctionHelper;
 import net.dinomine.potioneer.beyonder.abilities.misc.PassiveAbility;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffect;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
-import net.dinomine.potioneer.beyonder.effects.wheeloffortune.BeyonderMiningSpeedEffect;
-import net.dinomine.potioneer.beyonder.effects.wheeloffortune.BeyonderVelocityEffect;
+import net.dinomine.potioneer.beyonder.effects.wheeloffortune.VelocityEffect;
 import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
 
 import java.util.function.Function;
@@ -31,7 +29,7 @@ public class VelocityAbility extends PassiveAbility {
     @Override
     protected BeyonderEffect createEffectInstance(LivingEntityBeyonderCapability cap, LivingEntity target) {
         int cost = cost();
-        BeyonderVelocityEffect eff = (BeyonderVelocityEffect) effect.createInstance(sequenceLevel, cost, -1, true);
+        VelocityEffect eff = (VelocityEffect) effect.createInstance(sequenceLevel, cost, -1, true);
         CompoundTag tag = getData();
         boolean flag = false;
         if(!tag.contains("movement")){
@@ -58,7 +56,7 @@ public class VelocityAbility extends PassiveAbility {
         int newAttack = (int) AbilityFunctionHelper.incrementThroughRange(1, max, max - 1, currentAttack);
         if(cap.getEffectsManager().hasEffect(effect.getEffectId(), getSequenceLevel())){
             BeyonderEffect eff = cap.getEffectsManager().getEffect(effect.getEffectId(), getSequenceLevel());
-            if(eff instanceof BeyonderVelocityEffect velocityEffect){
+            if(eff instanceof VelocityEffect velocityEffect){
                 velocityEffect.attackSpeed = newAttack;
             }
         }
@@ -77,7 +75,7 @@ public class VelocityAbility extends PassiveAbility {
         int newMovement = (int) AbilityFunctionHelper.incrementThroughRange(1, max, max - 1, currentMovement);
         if(cap.getEffectsManager().hasEffect(effect.getEffectId(), getSequenceLevel())){
             BeyonderEffect eff = cap.getEffectsManager().getEffect(effect.getEffectId(), getSequenceLevel());
-            if(eff instanceof BeyonderVelocityEffect velocityEffect){
+            if(eff instanceof VelocityEffect velocityEffect){
                 velocityEffect.movementSpeed = newMovement;
             }
         }

@@ -2,7 +2,7 @@ package net.dinomine.potioneer.beyonder.abilities.wheeloffortune;
 
 import net.dinomine.potioneer.beyonder.abilities.Abilities;
 import net.dinomine.potioneer.beyonder.abilities.Ability;
-import net.dinomine.potioneer.beyonder.effects.wheeloffortune.BeyonderGamblingEffect;
+import net.dinomine.potioneer.beyonder.effects.wheeloffortune.GamblingEffect;
 import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
 import net.minecraft.world.entity.LivingEntity;
 
@@ -33,7 +33,7 @@ public class BetAbility extends Ability {
         int maxDuration = 300;
         int maxLevel = 1;
         float multiplier = 1f + Math.max(luck, 0)/150f;
-        BeyonderGamblingEffect.applyPositiveEffect(cap, target, cap.getLuckManager(), getSequenceLevel(), (int)(multiplier*minDuration), (int)(multiplier*maxDuration), (int)(multiplier*maxLevel), target.getRandom());
+        GamblingEffect.applyPositiveEffect(cap, target, cap.getLuckManager(), getSequenceLevel(), (int)(multiplier*minDuration), (int)(multiplier*maxDuration), (int)(multiplier*maxLevel), target.getRandom());
         cap.getAbilitiesManager().putAbilityOnCooldown(Abilities.GAMBLING.getAblId(), getSequenceLevel(), GamblingAbility.cd, target);
         cap.getLuckManager().consumeLuck(Math.max(luck, 100));
         return true;

@@ -45,6 +45,7 @@ public abstract class MysticalKnowledgeAbility extends Ability {
 
     protected abstract List<Page> getPages(int sequenceLevel);
 
+    @Override
     public List<Page> getPages(){
         List<Page> result = new ArrayList<>(List.of());
         result.addAll(getPages(sequenceLevel));

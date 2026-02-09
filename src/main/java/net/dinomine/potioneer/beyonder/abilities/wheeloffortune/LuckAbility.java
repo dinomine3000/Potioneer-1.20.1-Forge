@@ -3,7 +3,7 @@ package net.dinomine.potioneer.beyonder.abilities.wheeloffortune;
 import net.dinomine.potioneer.beyonder.abilities.misc.PassiveAbility;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffect;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
-import net.dinomine.potioneer.beyonder.effects.wheeloffortune.BeyonderLuckEffect;
+import net.dinomine.potioneer.beyonder.effects.wheeloffortune.LuckEffect;
 import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
 import net.dinomine.potioneer.sound.ModSounds;
 import net.minecraft.network.chat.Component;
@@ -22,7 +22,7 @@ public class LuckAbility extends PassiveAbility {
 
     @Override
     protected BeyonderEffect createEffectInstance(LivingEntityBeyonderCapability cap, LivingEntity target) {
-        BeyonderLuckEffect eff = (BeyonderLuckEffect) BeyonderEffects.WHEEL_LUCK_EFFECT.createInstance(sequenceLevel, 0, -1, true);
+        LuckEffect eff = (LuckEffect) BeyonderEffects.WHEEL_LUCK_EFFECT.createInstance(sequenceLevel, 0, -1, true);
         return eff.withCrit();
     }
 
