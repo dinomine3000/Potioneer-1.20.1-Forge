@@ -53,6 +53,7 @@ public class BeyonderEffects {
     public static final BeyonderEffectType WHEEL_BAD_LUCK = registerEffect("bad_luck", new BeyonderEffectType(TempBadLuckEffect::new));
     public static final BeyonderEffectType WHEEL_CHAOTIC_LUCK = registerEffect("chaotic_luck", new BeyonderEffectType(ChaoticLuckEffect::new));
     public static final BeyonderEffectType TYRANT_WATER_AFFINITY = registerEffect("water_affinity", new BeyonderEffectType(WaterAffinityEffect::new));
+    public static final BeyonderEffectType TYRANT_OCEAN_ORDER = registerEffect("ocean_order", new BeyonderEffectType(OceanOrderEffect::new));
     public static final BeyonderEffectType TYRANT_LIGHTNING_TARGET = registerEffect("lightning_target", new BeyonderEffectType(LightningTargetEffect::new));
     public static final BeyonderEffectType TYRANT_WATER_PRISON = registerEffect("water_prison", new BeyonderEffectType(WaterPrisonEffect::new));
     public static final BeyonderEffectType TYRANT_SCALES = registerEffect("scales", new BeyonderEffectType(ScalesEffect::new));
@@ -63,6 +64,8 @@ public class BeyonderEffects {
     public static final BeyonderEffectType TYRANT_AURA_RECIPIENT = registerEffect("aura_recipient", new BeyonderEffectType(AuraRecipientEffect::new));
     public static final BeyonderEffectType TYRANT_ARREST_SOURCE = registerEffect("arrest_source", new BeyonderEffectType(ArrestSourceEffect::new));
     public static final BeyonderEffectType TYRANT_ARREST_RECIPIENT = registerEffect("arrest_recipient", new BeyonderEffectType(ArrestRecipientEffect::new));
+    public static final BeyonderEffectType TYRANT_MIST_EFFECT = registerEffect("mist", new BeyonderEffectType(MistEffect::new));
+    public static final BeyonderEffectType TYRANT_SENSE_OF_ORDER = registerEffect("sense_of_order", new BeyonderEffectType(SenseOfOrderEffect::new));
     public static final BeyonderEffectType RED_FIRE_AURA = registerEffect("fire_aura", new BeyonderEffectType(BeyonderFireAuraEffect::new));
     public static final BeyonderEffectType RED_FIRE_BUFF = registerEffect("fire_buff", new BeyonderEffectType(BeyonderFireBuffEffect::new));
     public static final BeyonderEffectType RED_LIGHT_BUFF = registerEffect("light_buff", new BeyonderEffectType(BeyonderLightBuffEffect::new));

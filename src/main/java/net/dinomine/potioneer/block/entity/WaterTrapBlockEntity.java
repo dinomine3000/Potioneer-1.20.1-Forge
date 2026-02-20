@@ -1,8 +1,10 @@
 package net.dinomine.potioneer.block.entity;
 
 import net.dinomine.potioneer.Potioneer;
+import net.dinomine.potioneer.beyonder.abilities.Abilities;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
 import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
+import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
 import net.dinomine.potioneer.mob_effects.ModEffects;
 import net.dinomine.potioneer.savedata.AllySystemSaveData;
 import net.minecraft.core.BlockPos;
@@ -32,6 +34,7 @@ import software.bernie.geckolib.core.animation.RawAnimation;
 import software.bernie.geckolib.core.object.PlayState;
 
 import java.util.ArrayList;
+import java.util.Optional;
 import java.util.UUID;
 
 public class WaterTrapBlockEntity extends BlockEntity implements GeoBlockEntity {
@@ -81,13 +84,14 @@ public class WaterTrapBlockEntity extends BlockEntity implements GeoBlockEntity 
         if(!entities.isEmpty()) {
             assert level != null;
             Player caster = level.getPlayerByUUID(id);
+            Optional<LivingEntityBeyonderCapability> optCap = caster.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve();
             for(Entity ent: entities){
                 if(!(ent instanceof LivingEntity living)) return;
                 if(isEntityAllyOfOwner(living)) return;
                 setChanged();
                 applyEffectsToEntity(pLevel, pPos, (LivingEntity) ent);
             }
-            if(caster != null){
+            if(caster != null && optCap.isPresent() && optCap.get().getAbilitiesManager().hasAbilityOrBetter(Abilities.TYRANT_WATER_TRAP.getAblId(), 7)){
                 caster.sendSystemMessage(Component.translatable("potioneer.message.water_trap_activated"));
             }
 

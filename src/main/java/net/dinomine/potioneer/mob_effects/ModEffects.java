@@ -16,6 +16,9 @@ public class ModEffects {
     public static final RegistryObject<MobEffect> AOJ_INFLUENCE = MOB_EFFECTS.register("aoj_influence",
             () -> new AoJInfluenceEffect(MobEffectCategory.HARMFUL, 0x000dbc));
 
+    public static final RegistryObject<MobEffect> MIST_EFFECT = MOB_EFFECTS.register("mist_effect",
+            () -> new MistEffect(MobEffectCategory.NEUTRAL, 0x000dFc));
+
     public static final RegistryObject<MobEffect> BLEED_EFFECT = MOB_EFFECTS.register("bleed_effect",
             () -> new ModMobEffect(MobEffectCategory.NEUTRAL, 0x9e2121));
 

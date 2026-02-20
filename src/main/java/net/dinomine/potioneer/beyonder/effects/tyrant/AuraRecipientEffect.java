@@ -17,6 +17,8 @@ import java.util.UUID;
 public class AuraRecipientEffect extends AbstractSourceRecipientEffect {
     @Override
     public void onAcquire(LivingEntityBeyonderCapability cap, LivingEntity target) {
+        if(sources.keySet().stream().findFirst().isEmpty()) return;
+        clearTarget(target, sources.keySet().stream().findFirst().get());
     }
 
     public void addSourceSilent(UUID enforcerId){
@@ -28,6 +30,7 @@ public class AuraRecipientEffect extends AbstractSourceRecipientEffect {
         if(!(effect instanceof AuraRecipientEffect aojEffect)) return;
         for(Map.Entry<UUID, Integer> entry: aojEffect.sources.entrySet()){
             addSource(entry.getKey(), entry.getValue(), target);
+            clearTarget(target, entry.getKey());
         }
     }
 
@@ -40,7 +43,7 @@ public class AuraRecipientEffect extends AbstractSourceRecipientEffect {
         }
         if(target.level().isClientSide()) return;
         tickDownTime(target);
-        if(target.tickCount%40 == 0){
+        if(target.level().isClientSide() && target.tickCount%40 == 0){
             target.level().playSound(null, target.getOnPos(), SoundEvents.WARDEN_HEARTBEAT, SoundSource.NEUTRAL, 1, 1);
         }
     }
@@ -54,5 +57,13 @@ public class AuraRecipientEffect extends AbstractSourceRecipientEffect {
     @Override
     public void stopEffects(LivingEntityBeyonderCapability cap, LivingEntity target) {
 
+    }
+
+    private void clearTarget(LivingEntity target, UUID playerId){
+        if(target.level().getPlayerByUUID(playerId) != null){
+            if(target.getLastAttacker() != null && target.getLastAttacker().is(target.level().getPlayerByUUID(playerId))){
+                target.setLastHurtByPlayer(null);
+            }
+        }
     }
 }

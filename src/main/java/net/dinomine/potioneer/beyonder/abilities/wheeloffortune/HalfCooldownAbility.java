@@ -42,7 +42,7 @@ public class HalfCooldownAbility extends Ability {
                 Optional<LivingEntityBeyonderCapability> optCap = ally.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve();
                 if(optCap.isEmpty()) continue;
                 LivingEntityBeyonderCapability allyCap = optCap.get();
-                refreshAbilityCooldown(allyCap, ally, sequenceLevel);
+                flag = flag || refreshAbilityCooldown(allyCap, ally, sequenceLevel);
             }
         }
         if(flag) cap.requestActiveSpiritualityCost(cost());

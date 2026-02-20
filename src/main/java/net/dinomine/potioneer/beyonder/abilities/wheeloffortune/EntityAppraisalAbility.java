@@ -92,6 +92,7 @@ public class EntityAppraisalAbility extends Ability {
                         luckAppraisalTarget.getDisplayName(), luckMng.getCurrentEvent().getForecast()));
             }
         }
+        ParticleMaker.summonAOEParticles(target.level(), luckAppraisalTarget.getEyePosition(), 8, luckAppraisalTarget.getBbWidth(), ParticleMaker.Preset.AOE_GRAVITY);
         return true;
     }
 }

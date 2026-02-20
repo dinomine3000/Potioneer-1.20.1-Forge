@@ -20,14 +20,11 @@ public class PhasingEffect extends BeyonderEffect {
         if(target instanceof Player player){
             player.setForcedPose(Pose.STANDING);
         }
-        if(target instanceof ServerPlayer player){
-            if(player.connection == null) return;
-        }
-        target.addEffect(new MobEffectInstance(MobEffects.GLOWING, -1, 1, false, false, true));
     }
 
     @Override
     protected void doTick(LivingEntityBeyonderCapability cap, LivingEntity target) {
+        target.addEffect(new MobEffectInstance(MobEffects.GLOWING, -1, 1, false, false, true));
         if(target instanceof Player player){
             if(!hasNearbySolidSurface(target.level(), player) && (target.getY() > -64 || target.getY() < -68)){
                 cap.getAbilitiesManager().setAbilityEnabled(Abilities.PHASING.getAblId(), getSequenceLevel(), false, cap, target);
@@ -42,7 +39,7 @@ public class PhasingEffect extends BeyonderEffect {
 
     }
 
-    private static boolean hasNearbySolidSurface(Level level, Player player) {
+    public static boolean hasNearbySolidSurface(Level level, Player player) {
         BlockPos base = player.blockPosition();
 
         for (Direction dir : Direction.values()) {

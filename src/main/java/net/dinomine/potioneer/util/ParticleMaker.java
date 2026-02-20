@@ -79,6 +79,16 @@ public class ParticleMaker {
         }
     }
 
+    public static void summonMistParticles(LivingEntity pLivingEntity) {
+        if(!pLivingEntity.level().isClientSide()) return;
+        Level level = pLivingEntity.level();
+        RandomSource random = pLivingEntity.getRandom();
+        for(int i = 0; i < random.nextInt(5, 15); i++){
+            Vec3 pos = pLivingEntity.getEyePosition().offsetRandom(random, 1);
+            level.addParticle(ParticleTypes.FALLING_WATER, pos.x, pos.y, pos.z, 0, 0, 0);
+        }
+    }
+
     public enum Preset{
         AOE_END_ROD,
         AOE_GRAVITY

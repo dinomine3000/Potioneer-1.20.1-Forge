@@ -178,7 +178,8 @@ public class Abilities {
 
     //retweaked
     public static final AbilityFactory OCEAN_ORDER = registerAbility("ocean_order",
-            (Integer level) -> new BlankAbility(level, ignored -> "ocean_order"), 0, 1, 0);
+            (Integer level) -> PassiveAbility.createAbility(level, BeyonderEffects.TYRANT_OCEAN_ORDER, ignored -> "ocean_order").enabledOnAcquire().canFlip(),
+            0, 1, 0);
 
     //retweaked
     public static final AbilityFactory TYRANT_DIVINATION = registerAbility("tyrant_divination",
@@ -207,12 +208,26 @@ public class Abilities {
 
     //retweaked
     public static final AbilityFactory TYRANT_AURA = registerAbility("aoj_aura",
-            (Integer level) -> PassiveAbility.createAbility(level, BeyonderEffects.TYRANT_AURA_SOURCE, ignored -> "aoj_aura").enabledOnAcquire().canFlip(),
-            0, 1, 1);
+            (Integer level) -> PassiveAbility.createAbility(level, BeyonderEffects.TYRANT_AURA_SOURCE, ignored -> "aoj_aura").canFlip().withThreshold(0.1f),
+            0, 1, 1).passiveAndActive();
 
     //retweaked
     public static final AbilityFactory ARREST = registerAbility("arrest",
             ArrestAbility::new, 5, 1, 20).hasSecondaryFunction();
+
+    //retweaked
+    public static final AbilityFactory MIST = registerAbility("mist",
+            (Integer level) -> PassiveAbility.createAbility(level, BeyonderEffects.TYRANT_MIST_EFFECT, ignored -> "mist").canFlip().withThreshold(25),
+            0, 1, 10).passiveAndActive();
+
+    //retweaked
+    public static final AbilityFactory MIST_BLINKING = registerAbility("mist_blinking",
+            MistBlinkingAbility::new, 0, 1, 10).hasSecondaryFunction();
+
+    //retweaked
+    public static final AbilityFactory SENSE_OF_ORDER = registerAbility("sense_of_order",
+            (Integer level) -> PassiveAbility.createAbility(level, BeyonderEffects.TYRANT_SENSE_OF_ORDER, ignored -> "sense_of_order").enabledOnAcquire().canFlip(),
+            0, 1, 0).passive();
 
 //    public static final AbilityFactory TYRANT_ELECTRIFICATION = registerAbility("electrification",
 //            (Integer sequenceLevel) -> (PassiveAbility.createAbility(sequenceLevel, BeyonderEffects.TYRANT_ELECTRIFICATION,

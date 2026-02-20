@@ -27,6 +27,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.players.GameProfileCache;
 import net.minecraft.tags.EntityTypeTags;
@@ -35,6 +36,7 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.MobType;
+import net.minecraft.world.entity.monster.Creeper;
 import net.minecraft.world.entity.monster.Zombie;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BowItem;
@@ -321,8 +323,13 @@ public class BeyonderEvents {
                 if(cap.getEffectsManager().hasEffect(BeyonderEffects.MYSTERY_INVISIBLE.getEffectId())){
                     event.setCanceled(true);
                 }
+                if(cap.getEffectsManager().hasEffectOrBetter(BeyonderEffects.TYRANT_OCEAN_ORDER.getEffectId(), 7) && event.getEntity().getType().is(ModTags.Entities.OCEAN_ORDER_MOBS)){
+                    if(player.getLastAttacker() != null) event.setNewTarget(player.getLastAttacker());
+                    else event.setCanceled(true);
+                    return;
+                }
                 if(event.getEntity().getLastAttacker() == null || !event.getEntity().getLastAttacker().is(player)){
-                    if(cap.getAbilitiesManager().hasAbility(Abilities.OCEAN_ORDER.getAblId()) && event.getEntity().getType().is(ModTags.Entities.OCEAN_ORDER_MOBS)){
+                    if(cap.getEffectsManager().hasEffect(BeyonderEffects.TYRANT_OCEAN_ORDER.getEffectId()) && event.getEntity().getType().is(ModTags.Entities.OCEAN_ORDER_MOBS)){
                         event.setCanceled(true);
                         return;
                     }
@@ -332,6 +339,21 @@ public class BeyonderEvents {
                     }
                 }
             });
+        }
+    }
+
+    @SubscribeEvent
+    public static void livingDestroyBlockEvent(LivingDestroyBlockEvent event){
+        if(event.getEntity().level().isClientSide()) return;
+        ServerLevel level = (ServerLevel) event.getEntity().level();
+        for(Player player: level.getPlayers(ignored -> true)){
+            Optional<LivingEntityBeyonderCapability> optCap = player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve();
+            if(optCap.isEmpty()) return;
+            LivingEntityBeyonderCapability cap = optCap.get();
+            if(AreaOfJurisdictionAbility.isPosInAOJ(event.getPos(), cap, 0)){
+                event.setCanceled(true);
+                return;
+            }
         }
     }
 

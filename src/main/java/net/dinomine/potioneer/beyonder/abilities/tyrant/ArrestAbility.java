@@ -22,10 +22,7 @@ public class ArrestAbility extends PassiveAbility {
 
     @Override
     protected boolean secondary(LivingEntityBeyonderCapability cap, LivingEntity target) {
-        AuraRecipientEffect eff = (AuraRecipientEffect) BeyonderEffects.TYRANT_AURA_RECIPIENT.createInstance(getSequenceLevel(), 0, -1, true);
-        eff.addSourceSilent(target.getUUID());
-        cap.getEffectsManager().addOrReplaceEffect(eff, cap, target);
-        if(getSequenceLevel() >= 8) {
+        if(getSequenceLevel() >= 7) {
             if(target.level().isClientSide())
                 target.sendSystemMessage(Component.translatableWithFallback("message.potioneer.outdated_secondary", "It doesn't do anything... yet"));
             return false;

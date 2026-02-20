@@ -41,7 +41,8 @@ public abstract class ItemStackMixin {
      * @reason paragon and wheel of fortune beyonders should have abilities that allow them to negate or reduce damage taken to items.
      * this should happen even if the item will break, so i cant just "recover X durability", especially in cases like the Axe that can take more damage.
      */
-    @Inject(method = "hurt", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "hurt(ILnet/minecraft/util/RandomSource;Lnet/minecraft/server/level/ServerPlayer;)Z",
+            at = @At("HEAD"), cancellable = true)
     public void onHurt(int pAmount, RandomSource pRandom, ServerPlayer pUser, CallbackInfoReturnable<Boolean> cir) {
         int hold = pAmount;
         DurabilityHurtEvent event = new DurabilityHurtEvent(pUser, pAmount, potioneer$self());

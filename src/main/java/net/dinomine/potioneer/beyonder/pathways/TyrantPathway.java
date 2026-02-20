@@ -92,6 +92,9 @@ public class TyrantPathway extends BeyonderPathway {
                 abilities.add(Abilities.AOJ.create(atSequenceLevel));
                 abilities.add(Abilities.TYRANT_AURA.create(atSequenceLevel));
                 abilities.add(Abilities.ARREST.create(atSequenceLevel));
+                abilities.add(Abilities.MIST.create(atSequenceLevel));
+                abilities.add(Abilities.MIST_BLINKING.create(atSequenceLevel));
+                abilities.add(Abilities.SENSE_OF_ORDER.create(atSequenceLevel));
             case 8:
                 abilities.add(Abilities.TYRANT_DIVINATION.create(atSequenceLevel));
                 abilities.add(Abilities.TYRANT_CREATE_WATER.create(atSequenceLevel));

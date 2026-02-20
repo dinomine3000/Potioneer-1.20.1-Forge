@@ -15,8 +15,10 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.ForgeMod;
 
@@ -164,5 +166,15 @@ public class AbilityFunctionHelper {
             player.push(pushAngle.x, pushAngle.y, pushAngle.z);
             player.hurtMarked = true;
         } else target.addDeltaMovement(pushAngle);
+    }
+
+    public static BlockHitResult getBlockLooking(LivingEntity target) {
+        return target.level().clip(new ClipContext(
+                target.getEyePosition(1),
+                target.getEyePosition(1).add(target.getLookAngle().scale(10d)),
+                ClipContext.Block.COLLIDER,
+                ClipContext.Fluid.WATER,
+                target
+        ));
     }
 }

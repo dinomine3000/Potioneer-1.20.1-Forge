@@ -481,16 +481,19 @@ public class PlayerAbilitiesManager {
         return highest;
     }
 
-    public boolean hasAbility(String ablId) {
+    public boolean hasAbilityOrBetter(String ablId, int sequenceLevel) {
         for(AbilityKey key: abilities.keySet()){
-            if(key.isSameAbility(ablId)) return true;
+            if(key.isSameAbility(ablId) && abilities.get(key).getSequenceLevel() <= sequenceLevel) return true;
         }
         for(ArtifactHolder artifact: artifacts.values()){
             for(AbilityKey key: artifact.getAbilityKeys()){
-                if(key.isSameAbility(ablId)) return true;
+                if(key.isSameAbility(ablId) && abilities.get(key).getSequenceLevel() <= sequenceLevel) return true;
             }
         }
         return false;
+    }
+    public boolean hasAbility(String ablId) {
+        return hasAbilityOrBetter(ablId, 9);
     }
 
     public List<Ability> getAbilities() {
