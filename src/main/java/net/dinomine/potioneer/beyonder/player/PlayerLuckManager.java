@@ -18,7 +18,6 @@ import java.util.Random;
 import java.util.UUID;
 
 public class PlayerLuckManager {
-    //corresponds to 20 minutes irl (ticks once every 10 seconds -> 1200 seconds = 20 mins)
     public static final int MAXIMUM_LUCK = 1000;
     public static final int MINIMUM_LUCK = -1000;
 
