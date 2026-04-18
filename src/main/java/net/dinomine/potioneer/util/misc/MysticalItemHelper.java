@@ -6,6 +6,7 @@ import net.dinomine.potioneer.beyonder.abilities.ArtifactHolder;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffect;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
 import net.dinomine.potioneer.item.ModItems;
+import net.dinomine.potioneer.util.ModCompoundTags;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.LivingEntity;
@@ -16,10 +17,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import static net.dinomine.potioneer.util.ModCompoundTags.BEYONDER_TAG_ID;
+
 public class MysticalItemHelper {
     public static final String ARTIFACT_TAG_ID = "artifact_info";
     public static final String GEM_TAG_ID = "gem_ability_info";
-    public static final String BEYONDER_TAG_ID = "beyonder_info";
     public static final String CHARM_TAG_ID = "mystical_charm_info";
 
     private static final List<MetaArtifactAbility> abilityMap = new ArrayList<>();
@@ -104,7 +106,7 @@ public class MysticalItemHelper {
     //artifact weapons without downsides and without beyonder tag
 //    public static void makeBeyonderWeapon(){}
 
-    public static void generateSealedArtifact(ItemStack stack, int pathwaySequenceId, RandomSource random){
+    public static void generateSealedArtifact(ItemStack stack, List<Integer> pathwaySequenceId, RandomSource random){
         CompoundTag root = stack.getOrCreateTag();
         // quantity is 1 for sequence levels 9-7, its 2 for levels 6-4, 3 for 3 and 2, and 4 for 1 and 0
         // commented out bc we dont have enough abilities to avoid the issue of not having enough. if it asks for 4 but theres only 2 availabe, thats a problem
@@ -112,9 +114,10 @@ public class MysticalItemHelper {
         //TODO: once you have all downsides, uncomment this
         int quantity = 1;
 
-        CompoundTag beyonderInfo = new CompoundTag();
-        beyonderInfo.putInt("id", pathwaySequenceId);
-        root.put(BEYONDER_TAG_ID, beyonderInfo);
+//        CompoundTag beyonderInfo = new CompoundTag();
+//        beyonderInfo.putInt("id", pathwaySequenceId);
+//        root.put(BEYONDER_TAG_ID, beyonderInfo);
+        ModCompoundTags.BeyonderInfoTag.setTagForItem(stack, pathwaySequenceId);
 
         CompoundTag artifactInfo = new CompoundTag();
         artifactInfo.putUUID("artifactId", UUID.randomUUID());

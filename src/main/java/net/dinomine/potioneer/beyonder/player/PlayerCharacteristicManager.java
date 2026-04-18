@@ -4,6 +4,7 @@ import net.dinomine.potioneer.beyonder.abilities.Ability;
 import net.dinomine.potioneer.beyonder.pathways.BeyonderPathway;
 import net.dinomine.potioneer.beyonder.pathways.Pathways;
 import net.dinomine.potioneer.config.PotioneerCommonConfig;
+import net.dinomine.potioneer.util.ModCompoundTags;
 import net.minecraft.nbt.*;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -12,6 +13,9 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 
 import java.util.*;
+import java.util.stream.Collectors;
+
+import static net.dinomine.potioneer.util.misc.CharacteristicHelper.closestToLowerTens;
 
 public class PlayerCharacteristicManager {
     //TODO: make config file for the 60-40 split of current sequence and previous ones
@@ -70,11 +74,11 @@ public class PlayerCharacteristicManager {
      * To drop all of them at once, use another method
      * @return the pathway-sequence id of the dropped characteristic
      */
-    public int dropLevel(LivingEntityBeyonderCapability cap, LivingEntity target){
+    public List<Integer> dropLevel(LivingEntityBeyonderCapability cap, LivingEntity target){
         //remove from the stack
         int droppedCharacteristic = -1;
         if(!PotioneerCommonConfig.ALLOW_CHANGING_PATHWAYS.get() && getSequenceLevel() == 9 && lastConsumedCharacteristics.size() == 1){
-            return -1;
+            return List.of(-1);
         }
         if(!lastConsumedCharacteristics.isEmpty()) droppedCharacteristic = lastConsumedCharacteristics.remove(lastConsumedCharacteristics.size()-1);
 
@@ -95,10 +99,10 @@ public class PlayerCharacteristicManager {
             setAttributes(cap.getBeyonderStats(), player);
             cap.getBeyonderStats().applyStats(player, true);
         }
-        return droppedCharacteristic;
+        return List.of(droppedCharacteristic);
     }
 
-    public List<Integer> dropAllCharacteristics(LivingEntityBeyonderCapability cap, LivingEntity target){
+    public List<List<Integer>> dropAllCharacteristics(LivingEntityBeyonderCapability cap, LivingEntity target){
         List<Integer> characteristicsHolder = new ArrayList<>(lastConsumedCharacteristics);
 
         if(!PotioneerCommonConfig.ALLOW_CHANGING_PATHWAYS.get()){
@@ -127,7 +131,18 @@ public class PlayerCharacteristicManager {
             }
         }
 
-        return characteristicsHolder;
+        return groupByHouseOfTen(characteristicsHolder);
+    }
+
+    public static List<List<Integer>> groupByHouseOfTen(List<Integer> numbers) {
+        if (numbers == null || numbers.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        // Group by house, then extract only the values (the lists)
+        return new ArrayList<>(numbers.stream()
+                .collect(Collectors.groupingBy(num -> Math.floorDiv(num, 10)))
+                .values());
     }
 
     public int getSequenceLevel() {
@@ -281,7 +296,7 @@ public class PlayerCharacteristicManager {
 
     public void saveNBTData(CompoundTag tag){
         CompoundTag acting = new CompoundTag();
-        acting.put("characteristics", toListTag(lastConsumedCharacteristics));
+        acting.put("characteristics", ModCompoundTags.toNumberListTag(lastConsumedCharacteristics));
         ArrayList<Integer> hold = new ArrayList<>();
         ArrayList<Double> finalActing = new ArrayList<>();
         for(int id: lastConsumedCharacteristics){
@@ -290,32 +305,20 @@ public class PlayerCharacteristicManager {
                 finalActing.add(getActing(id));
             }
         }
-        acting.put("acting_progress", toListTag(finalActing));
+        acting.put("acting_progress", ModCompoundTags.toNumberListTag(finalActing));
         acting.putInt("aptitude", aptitudePathway);
         tag.put("acting", acting);
-    }
-
-    private <T extends Number> ListTag toListTag(ArrayList<T> array) {
-        ListTag list = new ListTag();
-        for (T f : array) {
-            if(f instanceof Double dVal){
-                list.add(DoubleTag.valueOf(dVal));
-            } else if(f instanceof Integer iVal){
-                list.add(IntTag.valueOf(iVal));
-            }
-        }
-        return list;
     }
 
     public void loadNBTData(CompoundTag tag, LivingEntityBeyonderCapability cap, LivingEntity target) {
         if(!tag.contains("acting")) return;
         //build list of consumed characteristics
         CompoundTag acting = tag.getCompound("acting");
-        lastConsumedCharacteristics = fromIntListTag(acting.getList("characteristics", Tag.TAG_INT));
+        lastConsumedCharacteristics = ModCompoundTags.fromIntListTag(acting.getList("characteristics", Tag.TAG_INT));
         //build map of acting progress
         //at the same time as i check for repeat, i also build the characteristic counted map
         actingProgress = new HashMap<>();
-        ArrayList<Double> temp_acting_list = fromDoubleListTag(acting.getList("acting_progress", Tag.TAG_DOUBLE));
+        ArrayList<Double> temp_acting_list = ModCompoundTags.fromDoubleListTag(acting.getList("acting_progress", Tag.TAG_DOUBLE));
         characteristicCountMap = new HashMap<>();
         int i = 0;
         for(int id: lastConsumedCharacteristics){
@@ -364,45 +367,6 @@ public class PlayerCharacteristicManager {
         }
         if(lastConsumedCharacteristics.isEmpty()) return;
         cap.getAbilitiesManager().replaceCogitation(getPathwaySequenceId(), cap, target, !fromLoading);
-    }
-
-    /**
-     * given a list of numbers, returns a list of every number that is closest to its lower multiple of 10.
-     * This way, we get the highest level for each pathway
-     * @param nums, a list of characteristics like [17, 18, 19, 25, 24, 29, 37, 36]
-     * @return the best levels for each pathway [17, 24, 36] for the above example
-     */
-    private static List<Integer> closestToLowerTens(List<Integer> nums) {
-        Map<Integer, Integer> bestPerTen = new HashMap<>();
-
-        for (int n : nums) {
-            int base = (n / 10) * 10;
-            int dist = n - base;
-
-            bestPerTen.compute(base, (k, currentBest) -> {
-                if (currentBest == null) return n;
-                int currentDist = currentBest - base;
-                return dist < currentDist ? n : currentBest;
-            });
-        }
-
-        return new ArrayList<>(bestPerTen.values());
-    }
-
-    private ArrayList<Double> fromDoubleListTag(ListTag list) {
-        ArrayList<Double> result = new ArrayList<>();
-        for (Tag tag : list) {
-            result.add(((DoubleTag) tag).getAsDouble());
-        }
-        return result;
-    }
-
-    private ArrayList<Integer> fromIntListTag(ListTag list) {
-        ArrayList<Integer> result = new ArrayList<>();
-        for (Tag tag : list) {
-            result.add(((IntTag) tag).getAsInt());
-        }
-        return result;
     }
 
     public void copyFrom(PlayerCharacteristicManager other) {

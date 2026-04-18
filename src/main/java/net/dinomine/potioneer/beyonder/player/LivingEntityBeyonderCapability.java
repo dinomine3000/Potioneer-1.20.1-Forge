@@ -13,6 +13,7 @@ import net.dinomine.potioneer.network.messages.abilityRelevant.AbilitySyncMessag
 import net.dinomine.potioneer.network.messages.abilityRelevant.PlayerArtifactSyncSTC;
 import net.dinomine.potioneer.network.messages.abilityRelevant.PlayerSyncHotbarMessage;
 import net.dinomine.potioneer.network.messages.advancement.PlayerAdvanceMessage;
+import net.dinomine.potioneer.util.ModCompoundTags;
 import net.dinomine.potioneer.util.misc.CharacteristicHelper;
 import net.dinomine.potioneer.util.misc.MysticalItemHelper;
 import net.minecraft.core.particles.ParticleTypes;
@@ -39,12 +40,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 
+import static net.dinomine.potioneer.util.ModCompoundTags.BEYONDER_TAG_ID;
+
 @AutoRegisterCapability
 public class LivingEntityBeyonderCapability {
     public static final int SANITY_FOR_DAMAGE = 15;
     public static final int SANITY_FOR_DROP = 20;
     public static final int SANITY_MIN_RESPAWN = 40;
-    private static int SECONDS_TO_MAX_SPIRITUALITY = PotioneerCommonConfig.SECONDS_TO_MAX_SPIRITUALITY.get();
+    private static final int SECONDS_TO_MAX_SPIRITUALITY = PotioneerCommonConfig.SECONDS_TO_MAX_SPIRITUALITY.get();
     public static int MAX_REP_DEFAULT = 2;
     public static int MAX_REP = 9;
     public static int PRAYING_COOLDOWN = 20*60*18;
@@ -338,8 +341,9 @@ public class LivingEntityBeyonderCapability {
     }
 
     private static boolean isItemOfSamePathway(ItemStack stack, int exactPathwayId){
-        return stack.hasTag() && stack.getTag().contains(MysticalItemHelper.BEYONDER_TAG_ID)
-                && Math.floorDiv(stack.getTag().getCompound(MysticalItemHelper.BEYONDER_TAG_ID).getInt("id"), 10) == exactPathwayId;
+        CompoundTag beyonderTag = ModCompoundTags.getTagFromItemOrNull(BEYONDER_TAG_ID, stack);
+        return beyonderTag != null
+                && ModCompoundTags.BeyonderInfoTag.isOfSamePathway(exactPathwayId, beyonderTag);
     }
 
     private void characteristicXray(Vec3 position, Player player){
@@ -499,17 +503,17 @@ public class LivingEntityBeyonderCapability {
         this.sanity = nbt.getFloat("sanity");
 //        setPathway(nbt.getInt("pathwaySequenceId"), false);
 
-        if(entity instanceof Player player && nbt.contains("containers_amount")){
-            int containersAmount = nbt.getInt("containers_amount");
-            conjurerContainers = new ArrayList<>();
-            for (int i = 0; i < containersAmount; i++) {
-                int size = nbt.getInt("container_size_" + i);
-                ConjurerContainer iterator = new ConjurerContainer(player, size);
-                iterator.fromTag(nbt.getList("container_" + i, CompoundTag.TAG_COMPOUND));
-                iterator.setDebt(nbt.getInt("container_debt_" + i));
-                conjurerContainers.add(iterator);
-            }
-        }
+//        if(entity instanceof Player player && nbt.contains("containers_amount")){
+//            int containersAmount = nbt.getInt("containers_amount");
+//            conjurerContainers = new ArrayList<>();
+//            for (int i = 0; i < containersAmount; i++) {
+//                int size = nbt.getInt("container_size_" + i);
+//                ConjurerContainer iterator = new ConjurerContainer(player, size);
+//                iterator.fromTag(nbt.getList("container_" + i, CompoundTag.TAG_COMPOUND));
+//                iterator.setDebt(nbt.getInt("container_debt_" + i));
+//                conjurerContainers.add(iterator);
+//            }
+//        }
 
         ArrayList<Integer> loadedPages = new ArrayList<>();
         ListTag pages = nbt.getList("pages", Tag.TAG_INT);
@@ -565,7 +569,7 @@ public class LivingEntityBeyonderCapability {
         if((doDropAlways || doDropActingSafeguard || dropForLowSanity)
                 && (switchingPathwaysCheck || dropEverything)){
             if(dropEverything){
-                CharacteristicHelper.addCharacteristicToLevel(characteristicManager.dropAllCharacteristics(this, entity), player.level(), player, player.position(), player.getRandom());
+                CharacteristicHelper.addCharacteristicsToLevel(characteristicManager.dropAllCharacteristics(this, entity), player.level(), player, player.position(), player.getRandom());
             } else {
                 CharacteristicHelper.addCharacteristicToLevel(characteristicManager.dropLevel(this, entity), player.level(), player, player.position(), player.getRandom());
             }

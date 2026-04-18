@@ -19,6 +19,8 @@ import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache
 import software.bernie.geckolib.core.animation.AnimatableManager;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
+import java.util.List;
+
 public class CharacteristicEntity extends PlaceableItemEntity implements GeoEntity, GeoTintable {
     private AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
     public static final EntityDataAccessor<Integer> BEYONDER_ID = SynchedEntityData.defineId(CharacteristicEntity.class, EntityDataSerializers.INT);
@@ -37,7 +39,7 @@ public class CharacteristicEntity extends PlaceableItemEntity implements GeoEnti
         return entityData.get(BEYONDER_ID);
     }
 
-    public void setSequenceId(int sequenceId){
+    public void setSequenceId(List<Integer> sequenceId){
         entityData.set(BEYONDER_ID, sequenceId);
     }
 

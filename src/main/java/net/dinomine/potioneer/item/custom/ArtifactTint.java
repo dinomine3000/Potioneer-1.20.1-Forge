@@ -1,6 +1,7 @@
 package net.dinomine.potioneer.item.custom;
 
 import net.dinomine.potioneer.beyonder.pathways.Pathways;
+import net.dinomine.potioneer.util.ModCompoundTags;
 import net.dinomine.potioneer.util.misc.MysticalItemHelper;
 import net.minecraft.client.color.item.ItemColor;
 import net.minecraft.world.item.ItemStack;
@@ -16,25 +17,25 @@ public class ArtifactTint implements ItemColor {
     public int getColor(ItemStack itemStack, int i) {
         if(i != 1) return -1;
         int color = 0xFFFF0000;
-        if(itemStack.hasTag() && itemStack.getTag().contains(MysticalItemHelper.BEYONDER_TAG_ID)){
-            int pathwayId = itemStack.getTag().getCompound(MysticalItemHelper.BEYONDER_TAG_ID).getInt("id");
+        if(ModCompoundTags.hasTag(ModCompoundTags.BEYONDER_TAG_ID, itemStack)
+                && itemStack.getTag().contains(MysticalItemHelper.ARTIFACT_TAG_ID)){
+            int pathwayId = ModCompoundTags.BeyonderInfoTag.getAssociatedPathSeqLevel(ModCompoundTags.getTagFromItemOrNull(ModCompoundTags.BEYONDER_TAG_ID, itemStack));
             color = Pathways.getPathwayBySequenceId(pathwayId).getSequenceColorFromLevel(pathwayId);
-            if(itemStack.getTag().contains(MysticalItemHelper.ARTIFACT_TAG_ID)){
-                boolean enabled = MysticalItemHelper.isArtifactEnabled(itemStack);
-                //TODO adjust this once artifacts are done
-                if(enabled) return color;
-                float factor = 0.3f; // 10% brightness
 
-                int r = (color >> 16) & 0xFF;
-                int g = (color >> 8)  & 0xFF;
-                int b = color & 0xFF;
+            boolean enabled = MysticalItemHelper.isArtifactEnabled(itemStack);
+            //TODO adjust this once artifacts are done
+            if(enabled) return color;
+            float factor = 0.3f; // 10% brightness
 
-                r = Math.max(0, (int)(r * factor));
-                g = Math.max(0, (int)(g * factor));
-                b = Math.max(0, (int)(b * factor));
+            int r = (color >> 16) & 0xFF;
+            int g = (color >> 8)  & 0xFF;
+            int b = color & 0xFF;
 
-                return (r << 16) | (g << 8) | b;
-            }
+            r = Math.max(0, (int)(r * factor));
+            g = Math.max(0, (int)(g * factor));
+            b = Math.max(0, (int)(b * factor));
+
+            return (r << 16) | (g << 8) | b;
         }
         return color;
     }

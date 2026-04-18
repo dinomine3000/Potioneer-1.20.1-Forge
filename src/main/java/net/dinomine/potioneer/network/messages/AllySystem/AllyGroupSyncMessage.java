@@ -21,7 +21,9 @@ import net.minecraftforge.network.PacketDistributor;
 import java.util.*;
 import java.util.function.Supplier;
 
-//called on world load and general syncing for advancing and updating the players pathway on both server and client
+
+//TODO evaluate packet sizes on all message
+//synchronizes ally group data to client
 public class AllyGroupSyncMessage {
     List<String> groupNames;
     LinkedHashMap<UUID, String> players;
@@ -56,6 +58,9 @@ public class AllyGroupSyncMessage {
         BufferUtils.writeStringToBuffer(msg.messageType, buffer);
 
         //write player (UUID) list
+        //Note: I do this manually here because i want to ensure they have the same order. If it turns out theres no need for that, then come back.
+        //TODO: verify if this needs to be ordered
+//        buffer.writeMap(msg.players, FriendlyByteBuf::writeUUID, (buf, name) -> BufferUtils.writeStringToBuffer(name, buf));
         buffer.writeInt(msg.players.size());
         for(UUID id: msg.players.keySet()){
             buffer.writeUUID(id);
@@ -83,6 +88,7 @@ public class AllyGroupSyncMessage {
             String name = BufferUtils.readString(buffer);
             players.put(id, name);
         }
+//        Map<UUID, String> playersMap = buffer.readMap(FriendlyByteBuf::readUUID, BufferUtils::readString);
 
         //read groups (String) list
         List<String> groupNames = new ArrayList<>();

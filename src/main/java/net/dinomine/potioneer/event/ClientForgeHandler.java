@@ -14,6 +14,7 @@ import net.dinomine.potioneer.beyonder.pathways.BeyonderPathway;
 import net.dinomine.potioneer.beyonder.pathways.Pathways;
 import net.dinomine.potioneer.item.ModItems;
 import net.dinomine.potioneer.recipe.PotionRecipeData;
+import net.dinomine.potioneer.util.ModCompoundTags;
 import net.dinomine.potioneer.util.ParticleMaker;
 import net.dinomine.potioneer.util.PotioneerMathHelper;
 import net.dinomine.potioneer.util.misc.MysticalItemHelper;
@@ -70,8 +71,8 @@ public class ClientForgeHandler {
                     }
                 }
             }
-            if(stack.hasTag() && stack.getTag().contains(MysticalItemHelper.BEYONDER_TAG_ID)){
-                int pathSeq = stack.getTag().getCompound("beyonder_info").getInt("id");
+            if(ModCompoundTags.hasTag(ModCompoundTags.BEYONDER_TAG_ID, stack)){
+                int pathSeq = ModCompoundTags.BeyonderInfoTag.getAssociatedPathSeqLevel(ModCompoundTags.getTagFromItemOrNull(ModCompoundTags.BEYONDER_TAG_ID, stack));
                 if(appraiser){
                     BeyonderPathway pathway = Pathways.getPathwayById(Math.floorDiv(pathSeq, 10));
                     tooltip.add(Component.empty()

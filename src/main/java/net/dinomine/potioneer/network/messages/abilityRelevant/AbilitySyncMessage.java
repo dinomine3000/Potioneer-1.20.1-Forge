@@ -34,20 +34,23 @@ public class AbilitySyncMessage {
 
     public static void encode(AbilitySyncMessage msg, FriendlyByteBuf buffer){
         buffer.writeInt(msg.messageOp);
-        buffer.writeInt(msg.abilities.size());
-        for(AbilityInfo abl: msg.abilities){
-            abl.encode(buffer);
-        }
+        buffer.writeCollection(msg.abilities, (buf, abl) -> abl.encode(buf));
+//        buffer.writeInt(msg.abilities.size());
+//        for(AbilityInfo abl: msg.abilities){
+//            abl.encode(buffer);
+//        }
     }
 
     public static AbilitySyncMessage decode(FriendlyByteBuf buffer){
         int op = buffer.readInt();
-        int size = buffer.readInt();
-        ArrayList<AbilityInfo> abilities = new ArrayList<>();
-        for(int i = 0; i < size; i++){
-            AbilityInfo info = AbilityInfo.decode(buffer);
-            abilities.add(info);
-        }
+        //TODO verify this works and replace any write/read to buffers with the proper methods
+        ArrayList<AbilityInfo> abilities = new ArrayList<>(buffer.readList(AbilityInfo::decode));
+//        int size = buffer.readInt();
+//        ArrayList<AbilityInfo> abilities = new ArrayList<>();
+//        for(int i = 0; i < size; i++){
+//            AbilityInfo info = AbilityInfo.decode(buffer);
+//            abilities.add(info);
+//        }
         return new AbilitySyncMessage(abilities, op);
     }
 
