@@ -20,6 +20,16 @@ base {
     archivesName = mod_id
 }
 
+def localProperties = new Properties()
+def localPropertiesFile = rootProject.file('local.properties')
+if (localPropertiesFile.exists()) {
+    localProperties.load(new FileInputStream(localPropertiesFile))
+}
+
+// Set defaults if the local file is missing
+project.ext.devUsername = localProperties.getProperty('dev_username') ?: 'DevPlayer'
+project.ext.devUUID = localProperties.getProperty('dev_uuid') ?: '0'
+
 // Mojang ships Java 17 to end users in 1.18+, so your mod should target Java 17.
 java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 
@@ -93,13 +103,11 @@ minecraft {
         }
 
         client {
-            // Comma-separated list of namespaces to load gametests from. Empty = all namespaces.
             property 'forge.enabledGameTestNamespaces', mod_id
             property 'forge.logging.console.level', 'debug'
-            args '--username=Klein', '--uuid=ad6bdbc4-eb2d-40ca-a815-edfb00f36d78', '--skin=./skins/dev1.png'
 
-//            property 'mixin.env.remapRefMap', 'true'
-//            property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
+            // Reference the variables here
+            args "--username=${project.devUsername}", "--uuid=${project.devUUID}", '--skin=./skins/dev1.png'
         }
 
         server {

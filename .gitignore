@@ -23,3 +23,6 @@ run
 
 # Files from Forge MDK
 forge*changelog.txt
+
+# Do not commit local properties (like player name, uuid etc...)
+local.properties
