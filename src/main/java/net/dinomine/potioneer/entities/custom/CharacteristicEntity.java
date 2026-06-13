@@ -2,6 +2,7 @@ package net.dinomine.potioneer.entities.custom;
 
 import net.dinomine.potioneer.beyonder.pathways.Pathways;
 import net.dinomine.potioneer.util.GeoTintable;
+import net.dinomine.potioneer.util.misc.ModCompoundTags;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
@@ -19,27 +20,28 @@ import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache
 import software.bernie.geckolib.core.animation.AnimatableManager;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
-import java.util.List;
-
 public class CharacteristicEntity extends PlaceableItemEntity implements GeoEntity, GeoTintable {
     private AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
     public static final EntityDataAccessor<Integer> BEYONDER_ID = SynchedEntityData.defineId(CharacteristicEntity.class, EntityDataSerializers.INT);
 
-    public CharacteristicEntity(EntityType<CharacteristicEntity> pEntityType, Level pLevel, ItemStack item, int sequenceId) {
+    public CharacteristicEntity(EntityType<CharacteristicEntity> pEntityType, Level pLevel, ItemStack item) {
         super(pEntityType, pLevel, false, true, true, item);
-        entityData.set(BEYONDER_ID, sequenceId);
+        CompoundTag itemTag = ModCompoundTags.getTagFromItem(ModCompoundTags.TAGS.BEYONDER, item);
+        if(itemTag != null)
+            entityData.set(BEYONDER_ID, ModCompoundTags.BeyonderInfoTag.getAssociatedPathSeqLevel(itemTag));
+        else entityData.set(BEYONDER_ID, -1);
         setNoGravity(false);
     }
 
     public CharacteristicEntity(EntityType<CharacteristicEntity> pEntityType, Level pLevel){
-        this(pEntityType, pLevel, ItemStack.EMPTY, -1);
+        this(pEntityType, pLevel, ItemStack.EMPTY);
     }
 
     public int getSequenceId(){
         return entityData.get(BEYONDER_ID);
     }
 
-    public void setSequenceId(List<Integer> sequenceId){
+    public void setSequenceId(int sequenceId){
         entityData.set(BEYONDER_ID, sequenceId);
     }
 

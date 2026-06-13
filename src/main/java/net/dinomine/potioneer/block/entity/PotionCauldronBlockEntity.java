@@ -12,6 +12,7 @@ import net.dinomine.potioneer.savedata.PotionFormulaSaveData;
 import net.dinomine.potioneer.util.ModTags;
 import net.dinomine.potioneer.util.PotioneerMathHelper;
 import net.dinomine.potioneer.util.misc.CharacteristicHelper;
+import net.dinomine.potioneer.util.misc.ModCompoundTags;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
@@ -55,7 +56,7 @@ import static net.dinomine.potioneer.block.custom.PotionCauldronBlock.WATER_LEVE
 public class PotionCauldronBlockEntity extends BlockEntity {
 
     private static final int MAX_CAPACITY= 9;
-    private PotionContentData result;
+    private PotionContentData internalContent;
     private PotionContentData tempResult = PotionContentData.EMPTY;
     //private boolean conflict = false;
     public int countDown;
@@ -93,13 +94,13 @@ public class PotionCauldronBlockEntity extends BlockEntity {
     public PotionCauldronBlockEntity(BlockEntityType<?> pType, BlockPos pPos, BlockState pBlockState) {
         super(pType, pPos, pBlockState);
         state = State.STANDBY;
-        this.result = PotionContentData.EMPTY.copy();
+        this.internalContent = PotionContentData.EMPTY.copy();
     }
 
     public PotionCauldronBlockEntity(BlockPos pPos, BlockState pState){
         super(ModBlockEntities.POTION_CAULDRON_BLOCK_ENTITY.get(), pPos, pState);
         state = State.STANDBY;
-        this.result = PotionContentData.EMPTY.copy();
+        this.internalContent = PotionContentData.EMPTY.copy();
     }
 
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state){
@@ -132,26 +133,21 @@ public class PotionCauldronBlockEntity extends BlockEntity {
 
         //if on finished, checks if there is a result and you can extract it
         } if(this.state == State.FINISHED && hasResult()){
-            PotionContentData output = result.copy();
-            if(output.isValidContainer(heldItemStack)){
+            PotionContentData outputToSet = internalContent.copy();
+            if(outputToSet.isValidContainer(heldItemStack)){
                 if(item == ModItems.VIAL.get()){
-                    cauldron.changeWaterLevel(pLevel, pPos, -1);
-                    result.amount -= 1;
+                    int lvl = ModCompoundTags.PotionInfoTag.MAX_VIAL_AMOUNT;
+                    cauldron.changeWaterLevel(pLevel, pPos, -lvl);
+                    internalContent.amount -= lvl;
                 } else {
-                    if(heldItemStack.getTag() != null && heldItemStack.getTag().contains("potion_info")){
-                        CompoundTag info = heldItemStack.getTag().getCompound("potion_info");
-                        int level = info.getInt("amount");
-                        result.amount += - 2 + level;
-                        cauldron.changeWaterLevel(pLevel, pPos, -2 + level);
-                    } else {
-                        cauldron.changeWaterLevel(pLevel, pPos, -2);
-                        result.amount = 0;
-                    }
+                    int level = ModCompoundTags.PotionInfoTag.getPotionAmount(heldItemStack);
+                    cauldron.changeWaterLevel(pLevel, pPos, -(ModCompoundTags.PotionInfoTag.MAX_FLASK_AMOUNT - level));
+                    internalContent.amount -= (ModCompoundTags.PotionInfoTag.MAX_FLASK_AMOUNT - level);
                 }
                 //if the cauldron becomes empty then clear the result variable
-                if(result.amount < 1) {
+                if(internalContent.amount < 1) {
                     this.state = State.STANDBY;
-                    result = PotionContentData.EMPTY.copy();
+                    internalContent = PotionContentData.EMPTY.copy();
                     countDown = 0;
                     level.setBlockAndUpdate(worldPosition, level.getBlockState(worldPosition).setValue(RESULT, false));
                     setChanged();
@@ -162,19 +158,18 @@ public class PotionCauldronBlockEntity extends BlockEntity {
 
                 //adding result to inventory
                 ItemStack res;
-                if(heldItemStack.is(Items.GLASS_BOTTLE)){
+                if(heldItemStack.is(Items.GLASS_BOTTLE))
                     res = new ItemStack(ModItems.BEYONDER_POTION.get());
-                } else {
+                else
                     res = heldItemStack.copy();
-                }
                 res.setCount(1);
-                applyTags(res, output);
+                applyTags(res, outputToSet);
                 heldItemStack.shrink(1);
-                if(heldItemStack.isEmpty()){
+                if(heldItemStack.isEmpty())
                     pPlayer.setItemInHand(pHand, res);
-                } else if(!pPlayer.getInventory().add(res)){
+                else if(!pPlayer.getInventory().add(res))
                     pPlayer.drop(res, false);
-                }
+
 
                 return InteractionResult.SUCCESS;
             }
@@ -187,27 +182,7 @@ public class PotionCauldronBlockEntity extends BlockEntity {
     }
 
     private void applyTags(ItemStack stack, PotionContentData data){
-        if(stack.hasTag() && stack.getTag().contains("potion_info")){
-            CompoundTag info = stack.getTag().getCompound("potion_info");
-            int level = info.getInt("amount");
-            int newLevel = Math.max(2, level + data.amount);
-            info.putInt("amount", newLevel);
-            boolean prevVal = info.contains("isComplete") ? info.getBoolean("isComplete") : true;
-            info.putBoolean("isComplete", data.isComplete && prevVal);
-
-            CompoundTag modData = stack.getTag();
-            modData.put("potion_info", info);
-            stack.setTag(modData);
-        } else {
-            CompoundTag tag = new CompoundTag();
-            tag.putString("name", data.name);
-            tag.putInt("amount", stack.is(ModItems.VIAL.get()) ? 1 : data.amount);
-            tag.putInt("color", data.color);
-            tag.putBoolean("isComplete", data.isComplete);
-            CompoundTag modData = new CompoundTag();
-            modData.put("potion_info", tag);
-            stack.setTag(modData);
-        }
+        ModCompoundTags.PotionInfoTag.applyTagToItem(data, stack);
     }
 
     public void addIngredient(ItemStack itemStack, boolean shrink){
@@ -241,11 +216,11 @@ public class PotionCauldronBlockEntity extends BlockEntity {
     }
 
     public boolean hasResult(){
-        return !this.result.isEmpty();
+        return !this.internalContent.isEmpty();
     }
 
-    public PotionContentData getResult(){
-        return this.result;
+    public PotionContentData getInternalContent(){
+        return this.internalContent;
     }
 
     public void craft(){
@@ -321,8 +296,8 @@ public class PotionCauldronBlockEntity extends BlockEntity {
 
     public void dropIngredients(Level pLevel,BlockPos pPos){
         if(getBlockState().getValue(RESULT)){
-            if(result != null && PotioneerMathHelper.isInteger(result.name)){
-                CharacteristicHelper.addCharacteristicToLevel(Integer.parseInt(result.name), pLevel, null, pPos.getCenter(), level.random);
+            if(internalContent != null && PotioneerMathHelper.isInteger(internalContent.name)){
+                CharacteristicHelper.addCharacteristicToLevel(Integer.parseInt(internalContent.name), pLevel, null, pPos.getCenter(), level.random);
             }
         } else {
             NonNullList<ItemStack> items = NonNullList.withSize(itemHandler.getSlots(), ItemStack.EMPTY);
@@ -358,7 +333,7 @@ public class PotionCauldronBlockEntity extends BlockEntity {
         modData.put("inventory", itemHandler.serializeNBT());
 
         CompoundTag result = new CompoundTag();
-        this.result.save(result);
+        this.internalContent.save(result);
         modData.put("result", result);
 
         modData.putString("state", state.name());
@@ -371,7 +346,7 @@ public class PotionCauldronBlockEntity extends BlockEntity {
     public void load(CompoundTag pTag) {
         super.load(pTag);
         CompoundTag modData = pTag.getCompound(Potioneer.MOD_ID);
-        this.result = PotionContentData.load(modData.getCompound("result"));
+        this.internalContent = PotionContentData.load(modData.getCompound("result"));
         itemHandler.deserializeNBT(modData.getCompound("inventory"));
         this.countDown = modData.getInt("countdown");
         String name = modData.getString("state");
@@ -431,7 +406,7 @@ public class PotionCauldronBlockEntity extends BlockEntity {
     }
 
     private void finishPotion(Level pLevel, BlockPos pPos, BlockState pState){
-        this.result = tempResult.copy();
+        this.internalContent = tempResult.copy();
         pLevel.playSound(null, pPos, SoundEvents.ZOMBIE_VILLAGER_CURE, SoundSource.BLOCKS, 1f, 1f);
         pLevel.setBlockAndUpdate(pPos, pState.setValue(RESULT, true).setValue(WATER_LEVEL, Mth.clamp(pState.getValue(WATER_LEVEL), 2, 3)));
         tempResult = PotionContentData.EMPTY.copy();

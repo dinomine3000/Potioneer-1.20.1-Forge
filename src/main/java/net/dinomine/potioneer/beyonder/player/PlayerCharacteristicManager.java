@@ -4,7 +4,7 @@ import net.dinomine.potioneer.beyonder.abilities.Ability;
 import net.dinomine.potioneer.beyonder.pathways.BeyonderPathway;
 import net.dinomine.potioneer.beyonder.pathways.Pathways;
 import net.dinomine.potioneer.config.PotioneerCommonConfig;
-import net.dinomine.potioneer.util.ModCompoundTags;
+import net.dinomine.potioneer.util.misc.ModCompoundTags;
 import net.minecraft.nbt.*;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;

@@ -1,8 +1,10 @@
-package net.dinomine.potioneer.beyonder.abilities;
+package net.dinomine.potioneer.util.misc;
 
+import net.dinomine.potioneer.beyonder.abilities.Ability;
+import net.dinomine.potioneer.beyonder.abilities.AbilityInfo;
+import net.dinomine.potioneer.beyonder.abilities.AbilityKey;
 import net.dinomine.potioneer.beyonder.downsides.Downside;
 import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
-import net.dinomine.potioneer.util.misc.MysticalItemHelper;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
@@ -13,8 +15,8 @@ import java.util.List;
 import java.util.UUID;
 
 public class ArtifactHolder {
-    private final HashMap<AbilityKey, Ability> abilities = new HashMap<>();
-    private final HashMap<AbilityKey, Downside> downsides = new HashMap<>();
+    protected final HashMap<AbilityKey, Ability> abilities = new HashMap<>();
+    protected final HashMap<AbilityKey, Downside> downsides = new HashMap<>();
     /**
      * this list contains all the abilities that the player wants to run from this artifact when interacting with the item.
      * say the artifact has door opening and extended reach. when interacting with the item, it would by default run both of these abilities.
@@ -23,7 +25,7 @@ public class ArtifactHolder {
      */
     private final HashMap<AbilityKey, Boolean> abilitiesToActivateOnItemInteract = new HashMap<>();
     private final UUID artifactId;
-    private ItemStack item;
+    protected ItemStack item;
 
     public UUID getArtifactId(){
         return artifactId;
@@ -61,6 +63,7 @@ public class ArtifactHolder {
     }
 
     public ArtifactHolder withStack(ItemStack stack) {
+        if(stack == null) return this;
         this.item = stack;
         return this;
     }
@@ -86,7 +89,7 @@ public class ArtifactHolder {
     }
 
     public void onAcquire(LivingEntityBeyonderCapability cap, LivingEntity target){
-        abilities.values().stream().filter(abl -> !abl.isPassive || abl.isEnabled()).forEach(abl -> abl.onAcquire(cap, target));
+        abilities.values().stream().filter(abl -> !abl.isPassive() || abl.isEnabled()).forEach(abl -> abl.onAcquire(cap, target));
         downsides.values().forEach(downside -> downside.onAcquire(cap, target));
     }
 
@@ -120,39 +123,21 @@ public class ArtifactHolder {
 
     /**
      * saves the artifact to a compound tag
-     * @param artifactTag the tag created for this artifact to use as it pleases.
      * @param saveItem true if it should save the item. set this to false whenever able to not inflate the tag with recursion
      * @return artifactTag with the data written on it.
      */
-    public CompoundTag saveToTag(CompoundTag artifactTag, boolean saveItem){
-        artifactTag.putUUID("artifactId", artifactId);
-        for(Ability abl: abilities.values()){
-            artifactTag.put(abl.getKey().withoutArtifactId().toString(), abl.saveNbt());
-        }
-        for(Ability abl: downsides.values()){
-            artifactTag.put(abl.getKey().withoutArtifactId().toString(), abl.saveNbt());
-        }
-        if(saveItem)
-            artifactTag.put("itemStack", item.save(new CompoundTag()));
-        return artifactTag;
+    public CompoundTag saveToTag(boolean saveItem){
+        return ModCompoundTags.ArtifactInfoTag.getTagFromArtifactHolder(this, saveItem);
+    }
+
+    public static ArtifactHolder loadFromTag(CompoundTag artifactTag, ItemStack stack){
+        ArtifactHolder artifact = ModCompoundTags.ArtifactInfoTag.getArtifactHolderFromTag(artifactTag);
+        if(artifact == null) return null;
+        return artifact.withStack(stack);
     }
 
     public static ArtifactHolder loadFromTag(CompoundTag artifactTag){
-        UUID artifactId = artifactTag.getUUID("artifactId");
-        List<Ability> abilities = new ArrayList<>();
-        for(String stringKey: artifactTag.getAllKeys()){
-            if(stringKey.equals("artifactId")) continue;
-            AbilityKey key = AbilityKey.fromString(stringKey);
-            if(key.isEmpty()) continue;
-            Ability ability = Abilities.getAbilityInstanceByKey(key);
-            ability.setAbilityKey("");
-            ability.loadNbt(artifactTag);
-            ability.setArtifactAbilityKey(artifactId);
-            abilities.add(ability);
-        }
-        ItemStack stack = ItemStack.EMPTY;
-        if(artifactTag.contains("itemStack")) stack = ItemStack.of(artifactTag.getCompound("itemStack"));
-        return new ArtifactHolder(abilities, artifactId, stack);
+        return loadFromTag(artifactTag, null);
     }
 
     public boolean isEmpty() {
@@ -170,7 +155,7 @@ public class ArtifactHolder {
 
     @Override
     public String toString() {
-        return saveToTag(new CompoundTag(), true).toString();
+        return saveToTag(true).toString();
     }
 
     public ItemStack getStack() {
@@ -180,6 +165,6 @@ public class ArtifactHolder {
     public ArtifactHolder updateItemTags() {
         ItemStack returnItem = item.copy();
         MysticalItemHelper.updateArtifactTagOnItem(this, returnItem);
-        return MysticalItemHelper.getArtifactFromitem(returnItem);
+        return MysticalItemHelper.getArtifactFromItem(returnItem);
     }
 }

@@ -10,8 +10,9 @@ import java.util.Objects;
 import java.util.UUID;
 
 public class AbilityKey {
+    private AbilityKey ownerKey = null;
     private String abilityGroup;
-    private String abilityId;
+    private final String abilityId;
     private int sequenceLevel;
     private UUID artifactId;
     private int hash;
@@ -64,6 +65,11 @@ public class AbilityKey {
         this.abilityGroup = PlayerAbilitiesManager.AbilityList.ARTIFACT.name();
         this.artifactId = artifactId;
         doHash();
+        return this;
+    }
+
+    public AbilityKey ownedBy(AbilityKey owner){
+        this.ownerKey = owner;
         return this;
     }
 

@@ -7,6 +7,7 @@ import net.dinomine.potioneer.config.PotioneerCommonConfig;
 import net.dinomine.potioneer.network.PacketHandler;
 import net.dinomine.potioneer.network.messages.advancement.BeginAdvancementMessage;
 import net.dinomine.potioneer.util.GeoTintable;
+import net.dinomine.potioneer.util.misc.ModCompoundTags;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -32,6 +33,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.function.Consumer;
+
+import static net.dinomine.potioneer.util.misc.ModCompoundTags.*;
+import static net.dinomine.potioneer.util.misc.ModCompoundTags.PotionInfoTag.*;
+import static net.dinomine.potioneer.util.misc.ModCompoundTags.TAGS.POTION;
 
 public class BeyonderPotionItem extends PotionItem implements GeoItem, GeoTintable {
     public static final int DIFF_CHANGE_INVALID_LEVEL = 5;
@@ -59,15 +64,7 @@ public class BeyonderPotionItem extends PotionItem implements GeoItem, GeoTintab
 
     @Override
     public void inventoryTick(ItemStack pStack, Level pLevel, Entity pEntity, int pSlotId, boolean pIsSelected) {
-        if(pStack.hasTag() && pStack.getTag().contains("potion_info")){
-            if(!pStack.getTag().getCompound("potion_info").contains("timestamp")){
-                pStack.getTag().getCompound("potion_info").putLong("timestamp", pLevel.getGameTime() + 5*60*20);
-//                pStack.getTag().getCompound("potion_info").putLong("timestamp", pLevel.getGameTime() + 5*20);
-            }
-            if(pStack.getTag().getCompound("potion_info").getLong("timestamp") < pLevel.getGameTime()){
-                pStack.setCount(0);
-            }
-        }
+        ModCompoundTags.PotionInfoTag.tickPotionSpoilTime(pStack, pLevel.getGameTime());
         super.inventoryTick(pStack, pLevel, pEntity, pSlotId, pIsSelected);
     }
 
@@ -100,31 +97,24 @@ public class BeyonderPotionItem extends PotionItem implements GeoItem, GeoTintab
 
     @Override
     public ItemStack finishUsingItem(ItemStack pStack, Level pLevel, LivingEntity pEntityLiving) {
-        if(!pStack.hasTag() || !pStack.getTag().contains("potion_info")) return super.finishUsingItem(pStack, pLevel, pEntityLiving);
+        if(!hasTag(POTION, pStack)) return super.finishUsingItem(pStack, pLevel, pEntityLiving);
         if(!(pEntityLiving instanceof Player player)) return super.finishUsingItem(pStack, pLevel, pEntityLiving);
-        CompoundTag info = pStack.getTag().getCompound("potion_info");
-        String name = info.getString("name");
+        CompoundTag info = getTagFromItem(POTION, pStack);
+        assert info != null;
 
-        boolean validPotion = true;
-        try {
-            Integer.parseInt(name);
-        } catch (Exception e){
-            validPotion = name.equals("conflict");
-        }
+        boolean validPotion = PotionInfoTag.isDrinkablePotion(info);
         if(!validPotion) return super.finishUsingItem(pStack, pLevel, pEntityLiving);
         player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
             if(pLevel.isClientSide()) return;
-            if(name.equals("conflict")){
-                if(!player.isCreative()){
-                    cap.setSanity(0);
-                }
-                player.sendSystemMessage(Component.literal("Lost control on the spot. oh well."));
+            if(isConflictingPotion(info)){
+                if(!player.isCreative()) cap.setSanity(0);
+                player.sendSystemMessage(Component.translatableWithFallback("potioneer.message.lost_control", "Lost control on the spot. oh well."));
                 return;
             }
-            int pathwaySequenceId = Integer.parseInt(name);
+            int pathwaySequenceId = getSequenceLevelOrThrow(info);
             BeyonderPathway newPathway = Pathways.getPathwayById(Math.floorDiv(pathwaySequenceId, 10));
             int addedDifficulty = newPathway.isRitualComplete(pathwaySequenceId%10, player, pLevel);
-            boolean isComplete = info.getBoolean("isComplete");
+            boolean isComplete = isPotionComplete(info);
             addedDifficulty +=  isComplete ? 0 : DIFF_FOR_INCOMPLETE_POTION;
 
             int originalPathSeqId = cap.getPathwaySequenceId();
@@ -151,6 +141,11 @@ public class BeyonderPotionItem extends PotionItem implements GeoItem, GeoTintab
         return super.finishUsingItem(pStack, pLevel, pEntityLiving);
     }
 
+    /**
+     * collects pathway groups, each as a list of ints.
+     * @param proposedGroups
+     * @return
+     */
     public static ArrayList<ArrayList<Integer>> verifyGroupedPathways(List<String> proposedGroups){
         //first, count all pathway id appearances.
         //if any entry isnt an int, skip it but keep counting that group
@@ -215,8 +210,8 @@ public class BeyonderPotionItem extends PotionItem implements GeoItem, GeoTintab
     @Override
     public int getHexColor() {
         ItemStack stack = cachedStack.get();
-        if(stack != null && stack.is(this) && stack.hasTag() && stack.getTag().contains("potion_info")){
-            return stack.getTag().getCompound("potion_info").getInt("color");
+        if(stack != null && stack.is(this) && ModCompoundTags.hasTag(POTION, stack)){
+            return ModCompoundTags.PotionInfoTag.getPotionColor(ModCompoundTags.getTagFromItem(POTION, stack));
         }
 
         return 16742143;

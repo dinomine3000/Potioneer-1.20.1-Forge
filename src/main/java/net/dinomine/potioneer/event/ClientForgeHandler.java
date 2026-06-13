@@ -1,6 +1,5 @@
 package net.dinomine.potioneer.event;
 
-import com.mojang.authlib.GameProfile;
 import com.mojang.blaze3d.platform.InputConstants;
 import net.dinomine.potioneer.Potioneer;
 import net.dinomine.potioneer.beyonder.abilities.Abilities;
@@ -9,41 +8,30 @@ import net.dinomine.potioneer.beyonder.client.ClientAbilitiesData;
 import net.dinomine.potioneer.beyonder.client.ClientStatsData;
 import net.dinomine.potioneer.beyonder.client.KeyBindings;
 import net.dinomine.potioneer.beyonder.client.screen.BeyonderScreen;
-import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
 import net.dinomine.potioneer.beyonder.pathways.BeyonderPathway;
 import net.dinomine.potioneer.beyonder.pathways.Pathways;
 import net.dinomine.potioneer.item.ModItems;
+import net.dinomine.potioneer.item.custom.BeyonderPotion.BeyonderPotionItem;
 import net.dinomine.potioneer.recipe.PotionRecipeData;
-import net.dinomine.potioneer.util.ModCompoundTags;
-import net.dinomine.potioneer.util.ParticleMaker;
+import net.dinomine.potioneer.util.misc.ModCompoundTags;
 import net.dinomine.potioneer.util.PotioneerMathHelper;
 import net.dinomine.potioneer.util.misc.MysticalItemHelper;
 import net.dinomine.potioneer.util.misc.MysticismHelper;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screens.Overlay;
-import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.Style;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.InputEvent;
-import net.minecraftforge.client.event.RenderBlockScreenEffectEvent;
 import net.minecraftforge.client.event.RenderGuiOverlayEvent;
 import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
 import java.util.List;
-import java.util.Set;
-import java.util.UUID;
 
 @Mod.EventBusSubscriber(modid = Potioneer.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
 public class ClientForgeHandler {
@@ -71,8 +59,8 @@ public class ClientForgeHandler {
                     }
                 }
             }
-            if(ModCompoundTags.hasTag(ModCompoundTags.BEYONDER_TAG_ID, stack)){
-                int pathSeq = ModCompoundTags.BeyonderInfoTag.getAssociatedPathSeqLevel(ModCompoundTags.getTagFromItemOrNull(ModCompoundTags.BEYONDER_TAG_ID, stack));
+            if(ModCompoundTags.hasTag(ModCompoundTags.TAGS.BEYONDER, stack)){
+                int pathSeq = ModCompoundTags.BeyonderInfoTag.getAssociatedPathSeqLevel(ModCompoundTags.getTagFromItem(ModCompoundTags.TAGS.BEYONDER, stack));
                 if(appraiser){
                     BeyonderPathway pathway = Pathways.getPathwayById(Math.floorDiv(pathSeq, 10));
                     tooltip.add(Component.empty()
@@ -86,18 +74,18 @@ public class ClientForgeHandler {
                 tooltip.add(Component.literal(PotionRecipeData.getName(stack.getTag().getCompound("recipe_data"))));
             }
             if(appraiser && MysticalItemHelper.isWorkingArtifact(stack)){
-                for(AbilityInfo info: MysticalItemHelper.getArtifactFromitem(stack).getAbilitiesInfo(true)){
+                for(AbilityInfo info: MysticalItemHelper.getArtifactFromItem(stack).getAbilitiesInfo(true)){
                     tooltip.add(info.getMutableNameComponent().withStyle(ChatFormatting.ITALIC));
                 }
             }
-            if(appraiser && stack.hasTag() && stack.getTag().contains("potion_info")){
-                CompoundTag tag = stack.getOrCreateTag().getCompound("potion_info");
-                String name = tag.getString("name");
-                boolean conflict = name.equals("conflict");
+            if(appraiser && ModCompoundTags.hasTag(ModCompoundTags.TAGS.POTION, stack)){
+                CompoundTag potionTag = ModCompoundTags.getTagFromItem(ModCompoundTags.TAGS.POTION, stack);
+                String name = ModCompoundTags.PotionInfoTag.getPotionName(potionTag);
+                boolean conflict = ModCompoundTags.PotionInfoTag.isConflict(name);
                 if(conflict){
                     tooltip.add(Component.translatable("tooltip.potioneer.conflicting_potion").withStyle(ChatFormatting.RED));
                 } else if(PotioneerMathHelper.isInteger(name)){
-                    boolean isComplete = tag.getBoolean("isComplete");
+                    boolean isComplete = ModCompoundTags.PotionInfoTag.isPotionComplete(potionTag);
                     int pathwaySequenceId = Integer.parseInt(name);
                     tooltip.add(Component.translatable("tooltip.potioneer." + (isComplete ? "valid_potion" : "incomplete_potion")).withStyle(ChatFormatting.AQUA));
 
@@ -108,8 +96,8 @@ public class ClientForgeHandler {
                 }
             }
             if(stack.is(ModItems.CHARM.get())){
-                if(stack.hasTag() && stack.getTag().contains(MysticalItemHelper.CHARM_TAG_ID)){
-                    tooltip.add(Component.translatable("beyondereffect.potioneer." + stack.getTag().getCompound(MysticalItemHelper.CHARM_TAG_ID).getString("effectId")));
+                if(ModCompoundTags.hasTag(ModCompoundTags.TAGS.CHARM, stack)){
+                    tooltip.add(Component.translatable("beyondereffect.potioneer." + ModCompoundTags.CharmInfoTag.getEffectId(ModCompoundTags.getTagFromItem(ModCompoundTags.TAGS.CHARM, stack))));
                 } else {
                     tooltip.add(Component.translatable("charm.potioneer.no_effect"));
                 }
@@ -141,7 +129,7 @@ public class ClientForgeHandler {
 
     @SubscribeEvent
     public static void onScrollWheel(InputEvent.MouseScrollingEvent event){
-        if(!ClientAbilitiesData.showHotbar) return;
+        if(!ClientAbilitiesData.isHotbarVisible()) return;
         ClientAbilitiesData.changeCaret((int)event.getScrollDelta());
         event.setCanceled(true);
     }
@@ -153,7 +141,7 @@ public class ClientForgeHandler {
 //                event.setCanceled(true);
 //            }
 //        }
-        if(!ClientAbilitiesData.showHotbar || ClientAbilitiesData.getHotbar().isEmpty()) return;
+        if(ClientAbilitiesData.configScreenOpenAnimation || !ClientAbilitiesData.isHotbarVisible() || !ClientAbilitiesData.isHotbarValid()) return;
         Minecraft minecraft = Minecraft.getInstance();
         boolean success = false;
         if(minecraft.player != null && event.getAction() == InputConstants.PRESS){

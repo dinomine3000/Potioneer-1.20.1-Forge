@@ -11,6 +11,8 @@ import net.dinomine.potioneer.beyonder.client.ClientStatsData;
 import net.dinomine.potioneer.beyonder.client.screen.BeyonderSettingsScreen;
 import net.dinomine.potioneer.beyonder.pathways.Pathways;
 import net.dinomine.potioneer.config.PotioneerClientConfig;
+import net.dinomine.potioneer.util.Animation;
+import net.dinomine.potioneer.util.AnimationHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -34,18 +36,22 @@ public class AbilitiesHotbarHUD {
     private static final int CAST_HEIGHT = 32;
 
     private static final Minecraft minecraft = Minecraft.getInstance();
+    public static final AnimationHandler hotbarAnimation = new AnimationHandler(1.6f, false)
+            .tickInReverse(true)
+            .registerAnimation("hotbar", new Animation()
+                    .animateValue("yOffset", -70, 20)
+                    .animateValue("leftOffset", CASE_WIDTH/2f -70, CASE_WIDTH/2f + 20)
+                    .animateValue("rightOffset", 70, - CASE_WIDTH/2f - 20));
 
     public static boolean shouldDisplayBar() {
-        return (ClientAbilitiesData.showHotbar || minecraft.screen instanceof BeyonderSettingsScreen) && Minecraft.getInstance().player != null && ClientStatsData.getPathwaySequenceId() > -1 && !ClientAbilitiesData.getHotbar().isEmpty();
+        return (ClientAbilitiesData.isHotbarVisible() || minecraft.screen instanceof BeyonderSettingsScreen) && Minecraft.getInstance().player != null && ClientStatsData.getPathwaySequenceId() > -1 && ClientAbilitiesData.isHotbarValid();
     }
 
     public static final IGuiOverlay ABILITY_HOTBAR = ((forgeGui, guiGraphics, partialTick, width, height) -> {
-        if(minecraft.isPaused()){
-            ClientAbilitiesData.showHotbar = false;
-            return;
-        }
+        if(minecraft.isPaused()) return;
 
         ClientAbilitiesData.animationTick(4*minecraft.getDeltaFrameTime());
+        hotbarAnimation.tick(minecraft.getDeltaFrameTime());
         if(!shouldDisplayBar()) return;
 
         // 0 -> animation done, stuff should be in its position
@@ -60,17 +66,24 @@ public class AbilitiesHotbarHUD {
         float scale = (float)ClientConfigData.getCurrentHotbarScale();
         PotioneerClientConfig.HOTBAR_POS hotbarPos = ClientConfigData.getHotbarPosition();
 
-        int yOffset = (int) ((-70*scale + scale*(90*ClientAbilitiesData.openingAnimationPercent)));
+
+        //int yOffset = (int) ((-70*scale + scale*(90*ClientAbilitiesData.openingAnimationPercent)));
+        int yOffset = (int) (scale*hotbarAnimation.getValue("hotbar", "yOffset"));
         int xOffset = width/2;
 
         if(hotbarPos == PotioneerClientConfig.HOTBAR_POS.LEFT){
-            //TODO maybe deal with integer/float division here?
-            xOffset = (int) (scale*(CASE_WIDTH/2 -70 + (90*ClientAbilitiesData.openingAnimationPercent)));
+            xOffset = (int) (scale * hotbarAnimation.getValue("hotbar", "leftOffset"));
             yOffset = minecraft.getWindow().getGuiScaledHeight()/2 + (int)(10*scale*(CASE_HEIGHT/2 - 20));
         } else if(hotbarPos == PotioneerClientConfig.HOTBAR_POS.RIGHT){
-            xOffset = (int) ((minecraft.getWindow().getGuiScaledWidth() + scale*70 - CASE_WIDTH/2 - (scale*90*ClientAbilitiesData.openingAnimationPercent)));
+            xOffset = (int) (scale * (minecraft.getWindow().getGuiScaledWidth() + hotbarAnimation.getValue("hotbar", "rightOffset")));
             yOffset = minecraft.getWindow().getGuiScaledHeight()/2 + (int)(10*scale*(CASE_HEIGHT/2 - 20));
         }
+
+        /*yOffset = (int) (scale * switch (hotbarPos){
+            case LEFT -> hotbarAnimation.getValue("hotbar", "leftOffset");
+            case TOP -> hotbarAnimation.getValue("hotbar", "yOffset");
+            case RIGHT -> hotbarAnimation.getValue("hotbar", "rightOffset");
+        });*/
 
         drawCases(guiGraphics, hotbarPos, animPercent, caret, xOffset, yOffset, infoL, infoC, infoR, scale);
 
@@ -78,10 +91,7 @@ public class AbilitiesHotbarHUD {
     });
 
     private static void drawCases(GuiGraphics guiGraphics, PotioneerClientConfig.HOTBAR_POS hotbarPos, float animPercent, int caret, int xOffset, int yOffset, AbilityInfo infoL, AbilityInfo infoC, AbilityInfo infoR, float scale){
-        if(ClientAbilitiesData.getHotbar().isEmpty()){
-            ClientAbilitiesData.showHotbar = false;
-            return;
-        }
+        if(ClientAbilitiesData.getHotbar().isEmpty()) return;
         if(hotbarPos == PotioneerClientConfig.HOTBAR_POS.LEFT){
             xOffset += (int) (10*scale);
             if(animPercent < 0){

@@ -52,6 +52,7 @@ import net.minecraftforge.event.entity.item.ItemTossEvent;
 import net.minecraftforge.event.entity.living.*;
 import net.minecraftforge.event.entity.player.*;
 import net.minecraftforge.event.level.BlockEvent;
+import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
@@ -72,7 +73,7 @@ public class BeyonderEvents {
         }
     }
 
-    @SubscribeEvent
+    @SubscribeEvent(receiveCanceled = false, priority = EventPriority.NORMAL)
     public static void onRightClickItem(PlayerInteractEvent.RightClickItem event){
         if(!event.getEntity().level().isClientSide()){
             if(MysticalItemHelper.isWorkingArtifact(event.getItemStack())){

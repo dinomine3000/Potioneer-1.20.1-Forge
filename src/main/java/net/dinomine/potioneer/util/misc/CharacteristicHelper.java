@@ -3,8 +3,6 @@ package net.dinomine.potioneer.util.misc;
 import net.dinomine.potioneer.entities.ModEntities;
 import net.dinomine.potioneer.entities.custom.CharacteristicEntity;
 import net.dinomine.potioneer.item.ModItems;
-import net.dinomine.potioneer.util.ModCompoundTags;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
@@ -14,12 +12,13 @@ import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static net.dinomine.potioneer.config.PotioneerCommonConfig.CHANCE_TO_MAKE_ARTIFACT_ON_DEATH;
 
 public class CharacteristicHelper {
-
+    public static void addCharacteristicToLevel(int pathSeqId, Level level, @Nullable Player player, Vec3 position, RandomSource random){
+        addCharacteristicToLevel(List.of(pathSeqId), level, player, position, random);
+    }
     public static void addCharacteristicToLevel(List<Integer> pathwaySequenceIds, Level level, @Nullable Player player, Vec3 position, RandomSource random){
         if(pathwaySequenceIds.isEmpty()) return;
         if(player != null && random.nextFloat() < CHANCE_TO_MAKE_ARTIFACT_ON_DEATH.get()){
@@ -45,8 +44,7 @@ public class CharacteristicHelper {
         if(player != null) MysticismHelper.updateOrApplyMysticismTag(characteristic, 20, player);
 
 
-        CharacteristicEntity entity = new CharacteristicEntity(ModEntities.CHARACTERISTIC.get(), level, characteristic.copy(), pathwaySequenceIds);
-        entity.setSequenceId(pathwaySequenceIds);
+        CharacteristicEntity entity = new CharacteristicEntity(ModEntities.CHARACTERISTIC.get(), level, characteristic.copy());
         entity.moveTo(position.offsetRandom(random, 1f).add(0, 1, 0));
         level.addFreshEntity(entity);
     }

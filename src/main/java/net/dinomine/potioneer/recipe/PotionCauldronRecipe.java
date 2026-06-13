@@ -6,6 +6,7 @@ import com.google.gson.JsonParseException;
 import net.dinomine.potioneer.Potioneer;
 import net.dinomine.potioneer.util.PotionIngredient;
 import net.dinomine.potioneer.util.PotioneerMathHelper;
+import net.dinomine.potioneer.util.misc.ModCompoundTags;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.nbt.CompoundTag;
@@ -47,10 +48,9 @@ public class PotionCauldronRecipe implements Recipe<PotionCauldronContainer> {
 
         //will return true if it finds a valid characteristic-like item
         for(int i = 0; i < simpleContainer.getContainerSize(); i++){
-            if(simpleContainer.getItem(i).hasTag()
-                    && simpleContainer.getItem(i).getTag().contains("beyonder_info")){
-                CompoundTag beyonderTag = simpleContainer.getItem(i).getTag().getCompound("beyonder_info");
-                if(beyonderTag.getInt("id") == this.recipeData.id()) return true;
+            if(ModCompoundTags.hasTag(ModCompoundTags.TAGS.BEYONDER, simpleContainer.getItem(i))){
+                CompoundTag beyonderTag = ModCompoundTags.getTagFromItem(ModCompoundTags.TAGS.BEYONDER, simpleContainer.getItem(i));
+                if(ModCompoundTags.BeyonderInfoTag.containsId(this.recipeData.id(), beyonderTag)) return true;
             }
         }
 

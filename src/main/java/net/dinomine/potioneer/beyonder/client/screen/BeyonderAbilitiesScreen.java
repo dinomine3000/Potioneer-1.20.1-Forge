@@ -6,6 +6,7 @@ import net.dinomine.potioneer.beyonder.client.ClientAbilitiesData;
 import net.dinomine.potioneer.beyonder.client.KeyBindings;
 import net.dinomine.potioneer.beyonder.pathways.Pathways;
 import net.dinomine.potioneer.util.CustomImageButton;
+import net.dinomine.potioneer.util.misc.ArtifactHolder;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;

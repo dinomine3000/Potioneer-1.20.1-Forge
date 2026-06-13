@@ -4,6 +4,8 @@ import com.google.common.collect.Lists;
 import com.google.gson.JsonObject;
 import net.dinomine.potioneer.Potioneer;
 import net.dinomine.potioneer.item.ModItems;
+import net.dinomine.potioneer.item.custom.BeyonderPotion.BeyonderPotionItem;
+import net.dinomine.potioneer.util.misc.ModCompoundTags;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
@@ -38,25 +40,30 @@ public class VialFlaskRecipe extends CustomRecipe {
         //checking if is lone flask or vial
         if(list.size() == 1){
             ItemStack stack = list.get(0);
-            if(stack.is(ModItems.VIAL.get()) || stack.is(ModItems.FLASK.get())){
-                if(stack.hasTag()){
-                    return !stack.getTag().getCompound("potion_info").isEmpty();
+            if(isVialOrFlask(stack)){
+                if(ModCompoundTags.hasTag(ModCompoundTags.TAGS.POTION, stack)){
+                    return true;
                 }
             }
         }
 
-        //checking if its two vials with identical contents
+        //checking if its two vials with identical contents OR 2 flasks with half empty contents
         if(list.size() == 2){
             ItemStack i0 = list.get(0);
             ItemStack i1 = list.get(1);
-            if((i0.is(ModItems.VIAL.get()) || i0.is(ModItems.FLASK.get()))
-                    && (i1.is(ModItems.FLASK.get()) || i1.is(ModItems.VIAL.get())) ){
-                if(i0.hasTag() && i1.hasTag()){
-                    return i0.getTag().getCompound("potion_info").equals(i1.getTag().getCompound("potion_info"));
-                }
-            }
+            if(!isVialOrFlask(i0) || !isVialOrFlask(i1) ) return false;
+            if(!ModCompoundTags.hasTag(ModCompoundTags.TAGS.POTION, i0) || !ModCompoundTags.hasTag(ModCompoundTags.TAGS.POTION, i1)) return false;
+            CompoundTag t0 = ModCompoundTags.getTagFromItem(ModCompoundTags.TAGS.POTION, i0);
+            CompoundTag t1 = ModCompoundTags.getTagFromItem(ModCompoundTags.TAGS.POTION, i1);
+
+            if(!t0.equals(t1)) return false;
+            return ModCompoundTags.PotionInfoTag.sumAmountsLessThan(t0, t1, ModCompoundTags.PotionInfoTag.MAX_FLASK_AMOUNT);
         }
         return false;
+    }
+
+    private boolean isVialOrFlask(ItemStack stack){
+        return stack.is(ModItems.VIAL.get()) || stack.is(ModItems.FLASK.get());
     }
 
     @Override
@@ -73,28 +80,12 @@ public class VialFlaskRecipe extends CustomRecipe {
 
         if(list.size() == 1){
             ItemStack stack = list.get(0);
-            if(stack.is(ModItems.VIAL.get())){
-                CompoundTag tag = stack.getTag().copy();
-                ItemStack res = new ItemStack(ModItems.FLASK.get());
-                res.setTag(tag);
-                return res;
-            } else if (stack.is(ModItems.FLASK.get())){
-                CompoundTag tag = stack.getTag().copy();
-                ItemStack res = new ItemStack(ModItems.VIAL.get());
-                res.setCount(tag.getCompound("potion_info").getInt("amount"));
-                tag.getCompound("potion_info").putInt("amount", 1);
-                res.setTag(tag);
-                return res;
-            }
+            return ModCompoundTags.PotionInfoTag.convertStack(stack);
         } else {
             ItemStack i0 = list.get(0);
-            CompoundTag tag0 = i0.getTag().copy();
-            tag0.getCompound("potion_info").putInt("amount", 2);
-            ItemStack res = new ItemStack(ModItems.FLASK.get());
-            res.setTag(tag0);
-            return res;
+            ItemStack i1 = list.get(1);
+            return ModCompoundTags.PotionInfoTag.sumContentsIntoFlask(i0, i1);
         }
-        return ItemStack.EMPTY;
     }
 
     @Override

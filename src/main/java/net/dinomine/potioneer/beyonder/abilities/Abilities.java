@@ -35,7 +35,7 @@ public class Abilities {
             LuckConsumeDownside::new, 0, 0, 0);
     public static final AbilityFactory LUCK_TREND_DOWNWARDS_DOWNSIDE = registerAbility("d_luck_trend",
             LuckTrendDownwardsDownside::new, 0, 0, 0);
-    public static final AbilityFactory RANDOM_VELOCITY_DOWNSIDE = registerAbility("d_velocit",
+    public static final AbilityFactory RANDOM_VELOCITY_DOWNSIDE = registerAbility("d_velocity",
             RandomVelocityDownside::new, 0, 0, 0);
     public static final AbilityFactory FATE_CAST_DOWNSIDE = registerAbility("d_fate",
             FateCastDownside::new, 0, 0, 0);

@@ -7,7 +7,7 @@ import net.dinomine.potioneer.config.PotioneerCommonConfig;
 import net.dinomine.potioneer.entities.ModEntities;
 import net.dinomine.potioneer.entities.custom.CharacteristicEntity;
 import net.dinomine.potioneer.item.ModItems;
-import net.dinomine.potioneer.util.ModCompoundTags;
+import net.dinomine.potioneer.util.misc.ModCompoundTags;
 import net.dinomine.potioneer.util.misc.MysticalItemHelper;
 import net.dinomine.potioneer.util.misc.MysticismHelper;
 import net.minecraft.client.color.item.ItemColor;
@@ -49,16 +49,17 @@ public class CharacteristicItem extends Item {
         if(pContext.getPlayer() == null) return InteractionResult.FAIL;
         pContext.getLevel().playSound(pContext.getPlayer(), pContext.getClickedPos(), SoundEvents.STONE_PLACE, SoundSource.PLAYERS);
         if(pContext.getLevel().isClientSide()) return InteractionResult.SUCCESS;
-        CharacteristicEntity entity = new CharacteristicEntity(ModEntities.CHARACTERISTIC.get(), pContext.getLevel(), pContext.getItemInHand().copy(), -1);
+
+        CharacteristicEntity entity = new CharacteristicEntity(ModEntities.CHARACTERISTIC.get(), pContext.getLevel(), pContext.getItemInHand().copy());
         Vec3 pos = pContext.getClickedPos().relative(pContext.getClickedFace()).getCenter().add(0, -0.5f, 0);
 
-        ItemStack stack = pContext.getItemInHand();
-        CompoundTag beyonderTag = ModCompoundTags.getTagFromItemOrNull(ModCompoundTags.BEYONDER_TAG_ID, stack);
-        if(beyonderTag != null){
-            entity.setSequenceId(ModCompoundTags.BeyonderInfoTag.getCharIds(beyonderTag));
-        } else {
-            entity.setSequenceId(List.of(-1));
-        }
+//        ItemStack stack = pContext.getItemInHand();
+//        CompoundTag beyonderTag = ModCompoundTags.getTagFromItemOrNull(ModCompoundTags.BEYONDER_TAG_ID, stack);
+//        if(beyonderTag != null){
+//            entity.setSequenceId(ModCompoundTags.BeyonderInfoTag.getAssociatedPathSeqLevel(beyonderTag));
+//        } else {
+//            entity.setSequenceId(-1);
+//        }
 
         entity.moveTo(pos.x, pos.y, pos.z, pContext.getRotation(), 0);
         pContext.getLevel().addFreshEntity(entity);
@@ -72,7 +73,7 @@ public class CharacteristicItem extends Item {
     public void inventoryTick(ItemStack characteristicStack, Level pLevel, Entity pEntity, int pSlotId, boolean pIsSelected) {
         super.inventoryTick(characteristicStack, pLevel, pEntity, pSlotId, pIsSelected);
         if(pLevel.isClientSide()) return;
-        if(ModCompoundTags.hasTag(ModCompoundTags.BEYONDER_TAG_ID, characteristicStack)
+        if(ModCompoundTags.hasTag(ModCompoundTags.TAGS.BEYONDER, characteristicStack)
                 && PotioneerCommonConfig.ARTIFACT_CONVERSION_CHANCE.get() > 0 && pLevel.random.nextInt(PotioneerCommonConfig.ARTIFACT_CONVERSION_CHANCE.get()) == 1){
             if(pEntity instanceof Player player){
                 Optional<LivingEntityBeyonderCapability> cap = player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve();
@@ -101,8 +102,8 @@ public class CharacteristicItem extends Item {
                 for(ItemStack iStack: items){
                     if(MysticalItemHelper.isValidItemForArtifact(iStack)){
                         pLevel.playSound(null, pEntity.getOnPos(), SoundEvents.ENCHANTMENT_TABLE_USE, SoundSource.PLAYERS, 1, 1);
-                        List<Integer> pathwaySequenceIds = ModCompoundTags.BeyonderInfoTag.getCharIds(Objects.requireNonNull(
-                                ModCompoundTags.getTagFromItemOrNull(ModCompoundTags.BEYONDER_TAG_ID, characteristicStack)));
+                        List<Integer> pathwaySequenceIds = ModCompoundTags.BeyonderInfoTag.getCharIds(
+                                ModCompoundTags.getTagFromItem(ModCompoundTags.TAGS.BEYONDER, characteristicStack));
                         MysticalItemHelper.generateSealedArtifact(iStack, pathwaySequenceIds, pLevel.random);
                         copyMysticismTag(iStack, characteristicStack);
                         pEntity.sendSystemMessage(Component.translatable("potioneer.characteristic.corrupt", iStack.getDisplayName().getString()));
@@ -116,10 +117,8 @@ public class CharacteristicItem extends Item {
     }
 
     private static void copyMysticismTag(ItemStack target, ItemStack characteristic){
-        if(!characteristic.getOrCreateTag().contains(MysticismHelper.mysticismTagId)) return;
-        CompoundTag root = target.getOrCreateTag();
-        root.put(MysticismHelper.mysticismTagId, characteristic.getTag().getCompound(MysticismHelper.mysticismTagId));
-        target.setTag(root);
+        if(!ModCompoundTags.hasTag(ModCompoundTags.TAGS.MYSTICISM, characteristic)) return;
+        ModCompoundTags.setItemRootTag(target, ModCompoundTags.getTagFromItem(ModCompoundTags.TAGS.MYSTICISM, characteristic), ModCompoundTags.TAGS.MYSTICISM);
     }
 
     @OnlyIn(Dist.CLIENT)
@@ -129,8 +128,8 @@ public class CharacteristicItem extends Item {
         public int getColor(ItemStack itemStack, int i) {
             int seq = -1;
             if(i != 1) seq = -1;
-            if(ModCompoundTags.hasTag(ModCompoundTags.BEYONDER_TAG_ID, itemStack)){
-                seq = ModCompoundTags.BeyonderInfoTag.getAssociatedPathSeqLevel(ModCompoundTags.getTagFromItemOrNull(ModCompoundTags.BEYONDER_TAG_ID, itemStack));
+            if(ModCompoundTags.hasTag(ModCompoundTags.TAGS.BEYONDER, itemStack)){
+                seq = ModCompoundTags.BeyonderInfoTag.getAssociatedPathSeqLevel(ModCompoundTags.getTagFromItem(ModCompoundTags.TAGS.BEYONDER, itemStack));
             }
             return Pathways.getPathwayBySequenceId(seq).getSequenceColorFromLevel(seq);
         }

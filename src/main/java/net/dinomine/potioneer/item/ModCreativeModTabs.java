@@ -2,6 +2,9 @@ package net.dinomine.potioneer.item;
 
 import net.dinomine.potioneer.Potioneer;
 import net.dinomine.potioneer.block.ModBlocks;
+import net.dinomine.potioneer.item.custom.BeyonderPotion.BeyonderPotionItem;
+import net.dinomine.potioneer.recipe.PotionContentData;
+import net.dinomine.potioneer.util.misc.ModCompoundTags;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -75,13 +78,8 @@ public class ModCreativeModTabs {
 
                         //cactus sap item
                         ItemStack vial = new ItemStack(ModItems.VIAL.get());
-                        CompoundTag tag = new CompoundTag();
-                        CompoundTag potionInfo = new CompoundTag();
-                        potionInfo.putInt("amount", 1);
-                        potionInfo.putString("name", "cactus_sap");
-                        potionInfo.putInt("color", 65280);
-                        tag.put("potion_info", potionInfo);
-                        vial.setTag(tag);
+                        PotionContentData data = new PotionContentData("cactus_sap", 1, false, 65280, false);
+                        ModCompoundTags.PotionInfoTag.setTagForItem(data, vial);
                         output.accept(vial);
 
                         output.accept(ModItems.SPIRIT_FRUIT.get());

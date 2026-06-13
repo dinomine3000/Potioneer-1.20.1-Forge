@@ -27,13 +27,11 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import static net.dinomine.potioneer.util.misc.ModCompoundTags.*;
+import static net.dinomine.potioneer.util.misc.ModCompoundTags.MysticismTag.*;
+
 public class MysticismHelper {
     public static final int radius = 16;
-    public static final String mysticismTagId = "potioneer_mysticism";
-    public static final String spiritualityTagId = "spirituality";
-    public static final String totalSpiritualityId = "total_spirituality";
-    public static final String playerNameTagId = "players";
-
     public static final float divinationCost = 20f;
 
 
@@ -81,9 +79,9 @@ public class MysticismHelper {
         }
 
         //if item exists
-        if(item.hasTag() && item.getTag().contains(mysticismTagId)){
+        if(hasTag(TAGS.MYSTICISM, item)){
             //if the item is mystical...
-            CompoundTag mysticalTag = item.getTag().getCompound(mysticismTagId);
+            CompoundTag mysticalTag = getTagFromItem(TAGS.MYSTICISM, item);
             Player target = getPlayerFromMysticismTag(mysticalTag, level, 0);
             if(target != null) {
                 Optional<LivingEntityBeyonderCapability> cap = target.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve();
@@ -103,11 +101,11 @@ public class MysticismHelper {
             }
         }
 
-        if(item.hasTag() && item.is(ModItems.CHARACTERISTIC.get()) && item.getTag().contains("beyonder_info")){
+        if(item.is(ModItems.CHARACTERISTIC.get()) && hasTag(ModCompoundTags.TAGS.BEYONDER, item)){
             //if the item is mystical...
-            CompoundTag mysticalTag = item.getTag().getCompound(mysticismTagId);
-            CompoundTag beyonderTag = item.getTag().getCompound("beyonder_info");
-            int charSequence = beyonderTag.getInt("id");
+            CompoundTag mysticalTag = getTagFromItem(TAGS.MYSTICISM, item);
+            CompoundTag beyonderTag = ModCompoundTags.getTagFromItem(ModCompoundTags.TAGS.BEYONDER, item);
+            int charSequence = ModCompoundTags.BeyonderInfoTag.getAssociatedPathSeqLevel(beyonderTag);
             boolean yesNo = charSequence == pathwaySequenceId - 1;
             float status = yesNo ? 1f : 0f;
             String clue = "potioneer.beyonder.sequence." + Pathways.getPathwayBySequenceId(charSequence).getSequenceNameFromId(charSequence, false);
@@ -135,17 +133,17 @@ public class MysticismHelper {
         }
 
         if(item.is(ModItems.BEYONDER_POTION.get())){
-            if(item.hasTag() && item.getTag().contains("potion_info")){
-                CompoundTag potionTag = item.getTag().getCompound("potion_info");
-                String name = potionTag.getString("name");
-                boolean complete = potionTag.getBoolean("isComplete");
+            if(hasTag(ModCompoundTags.TAGS.POTION, item)){
+                CompoundTag potionTag = ModCompoundTags.getTagFromItem(ModCompoundTags.TAGS.POTION, item);
+                String name = ModCompoundTags.PotionInfoTag.getPotionName(potionTag);
+                boolean complete = ModCompoundTags.PotionInfoTag.isPotionComplete(potionTag);
 
                 boolean yesNo;
                 int potionSequence = -1;
                 String clue;
                 float status = 0.5f;
 
-                if(name.equalsIgnoreCase("conflict")){
+                if(ModCompoundTags.PotionInfoTag.isConflictingPotion(potionTag)){
                     yesNo = false;
                     status = 0.0f;
                     clue = "Death";
@@ -254,60 +252,29 @@ public class MysticismHelper {
         return entities.stream().map(Entity::getOnPos).toList();
     }
 
-    public static UUID getPlayerIdFromMysticalItem(ItemStack stack, int toConsume){
-        if(stack.hasTag() && stack.getTag().contains(mysticismTagId)){
-            return getPlayerIdFromMysticalItem(stack.getTag().getCompound(mysticismTagId), null, toConsume);
-        }
-        return null;
-    }
-
-    private static UUID getPlayerIdFromMysticalItem(CompoundTag mysticalTag, Level level, int toConsume){
-        CompoundTag spirituality = mysticalTag.getCompound(spiritualityTagId);
-        CompoundTag names = mysticalTag.getCompound(playerNameTagId);
-        float originalTotalSpirituality = mysticalTag.getFloat(totalSpiritualityId);
-        int i = 0;
-        int bestIndex = 0;
-        float bestSpirituality = -1;
-        UUID bestName = UUID.randomUUID();
-        while(spirituality.contains("spirituality_" + i)){
-            float testSpirituality = spirituality.getFloat("spirituality_" + i);
-            if(testSpirituality > bestSpirituality){
-                UUID name = names.getUUID("player_" + i);
-                if(level == null || level.getPlayerByUUID(name) != null){
-                    bestIndex = i;
-                    bestSpirituality = testSpirituality;
-                    bestName = name;
-                }
-            }
-            i++;
-        }
-        if(bestSpirituality != -1){
-            if(bestSpirituality - toConsume <= 0){
-                spirituality.remove("spirituality_" + bestIndex);
-                names.remove("player_" + bestIndex);
-                mysticalTag.putFloat(totalSpiritualityId, originalTotalSpirituality - bestSpirituality);
-            } else {
-                spirituality.putFloat("spirituality_" + bestIndex, bestSpirituality - toConsume);
-                mysticalTag.putFloat(totalSpiritualityId, originalTotalSpirituality - toConsume);
-            }
-            return bestName;
-        }
-        mysticalTag.putFloat(totalSpiritualityId, 0f);
-        return null;
-    }
-
     public static Player getPlayerFromMysticalItem(ItemStack stack, Level level, int toConsume){
-        if(stack.hasTag() && stack.getTag().contains(mysticismTagId)){
-            return getPlayerFromMysticismTag(stack.getTag().getCompound(mysticismTagId), level, toConsume);
-        }
+        if(hasTag(TAGS.MYSTICISM, stack))
+            return getPlayerFromMysticismTag(getTagFromItem(TAGS.MYSTICISM, stack), level, toConsume);
         return null;
     }
 
     private static Player getPlayerFromMysticismTag(CompoundTag mysticalTag, Level level, int toConsume) {
-        UUID id = getPlayerIdFromMysticalItem(mysticalTag, level, toConsume);
+        if(mysticalTag == null) return null;
+        UUID id = getPlayerIdFromMysticalTag(mysticalTag, level, toConsume);
         if(id == null) return null;
         return level.getPlayerByUUID(id);
     }
+    public static UUID getPlayerIdFromMysticalItem(ItemStack stack, int toConsume){
+        if(hasTag(TAGS.MYSTICISM, stack)){
+            return getPlayerIdFromMysticalTag(getTagFromItem(TAGS.MYSTICISM, stack), null, toConsume);
+        }
+        return null;
+    }
+
+    private static UUID getPlayerIdFromMysticalTag(CompoundTag mysticalTag, Level level, int toConsume){
+        return ModCompoundTags.MysticismTag.getPlayerIdFromMysticalTag(mysticalTag, level, toConsume);
+    }
+
 
     public static DivinationResult doDivination(ItemStack item, Player seer, int sequenceId, RandomSource random){
         BlockPos pos = seer.getOnPos();
@@ -325,25 +292,9 @@ public class MysticismHelper {
         return result;
     }
 
-    public static CompoundTag generateMysticismTag(){
-        CompoundTag mystTag = new CompoundTag();
-        CompoundTag spiritualityTag = new CompoundTag();
-        CompoundTag nameTag = new CompoundTag();
-        mystTag.put(spiritualityTagId, spiritualityTag);
-        mystTag.put(playerNameTagId, nameTag);
-        mystTag.putFloat(totalSpiritualityId, 0f);
-        return mystTag;
-    }
-
     public static float getSpiritualityOfItem(ItemStack stack){
-        if(!stack.hasTag() || !stack.getTag().contains(mysticismTagId)) return 0f;
-
-        CompoundTag mystTag = stack.getTag().getCompound(mysticismTagId);
-        return mystTag.getFloat(totalSpiritualityId);
-    }
-
-    public static void updateMysticismTag(ItemStack stack, float spiritualityAmountToAdd, Player target){
-
+        if(!hasTag(ModCompoundTags.TAGS.MYSTICISM, stack)) return 0f;
+        return getSpiritualityOfTag(getTagFromItem(ModCompoundTags.TAGS.MYSTICISM, stack));
     }
 
     /**
@@ -354,57 +305,8 @@ public class MysticismHelper {
      */
     public static void updateOrApplyMysticismTag(ItemStack stack, float spiritualityAmount, Player target) {
         CompoundTag mystTag;
-        if(!stack.hasTag() || !stack.getTag().contains(mysticismTagId)){
-            mystTag = generateMysticismTag();
-        } else {
-            mystTag = stack.getTag().getCompound(mysticismTagId);
-        }
-
-        CompoundTag spiritualityTag = mystTag.getCompound(spiritualityTagId);
-        CompoundTag nameTag = mystTag.getCompound(playerNameTagId);
-
-        //to generate other types of tags that dont include the player (like spirituality-heavy coins found in archeology)
-        if(target != null) {
-            int i = 0;
-            boolean flag = false;
-            //tries to find a valid index i:
-            //an index i is valid if its an index that corresponds to the player
-            //if it couldnt find that player, it then searches for an available spot to write their information
-            //in the end, you get an i that corresponds to either the players old spot, or a new one if its the first time writing this player in.
-            for(String key: nameTag.getAllKeys()){
-                if(nameTag.getUUID(key).equals(target.getUUID())){
-                    flag = true;
-                    break;
-                }
-                i++;
-            }
-            if(!flag){
-                i = 0;
-                while(spiritualityTag.contains("spirituality_" + i)){
-                    i++;
-                }
-            }
-            String tagKey = "spirituality_" + i;
-
-            float oldSpirituality = spiritualityTag.getFloat(tagKey);
-            if(oldSpirituality + spiritualityAmount <= 0){
-                spiritualityTag.remove(tagKey);
-                nameTag.remove("player_" + i);
-            } else {
-                spiritualityTag.putFloat(tagKey, oldSpirituality + spiritualityAmount);
-                nameTag.putUUID("player_" + i, target.getUUID());
-            }
-
-        }
-
-        //calculates the sum everytime for consistency
-        float sum = 0f;
-        for(String key: spiritualityTag.getAllKeys()){
-            sum += spiritualityTag.getFloat(key);
-        }
-
-        mystTag.putFloat(totalSpiritualityId, sum);
-        CompoundTag og = stack.getOrCreateTag();
-        og.put(mysticismTagId, mystTag);
+        if(hasTag(ModCompoundTags.TAGS.MYSTICISM, stack)) mystTag = getTagFromItem(ModCompoundTags.TAGS.MYSTICISM, stack);
+        else mystTag = generateNewMysticismTag();
+        setItemRootTag(stack, updateOrApplyTagInfluence(mystTag, spiritualityAmount, target), TAGS.MYSTICISM);
     }
 }

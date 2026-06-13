@@ -180,7 +180,7 @@ public class PotionCauldronBlock extends BaseEntityBlock {
             if(blockState.getValue(RESULT)){
                 BlockEntity be = blockAndTintGetter.getBlockEntity(blockPos);
                 if(be instanceof PotionCauldronBlockEntity cauldron){
-                    return cauldron.getResult().color;
+                    return cauldron.getInternalContent().color;
                 }
                 return 0x00D91EFF;
             }

@@ -372,6 +372,7 @@
   "potioneer.message.ability_disabled": "Ability is disabled",
   "potioneer.message.water_trap_activated": "One of your water traps was triggered.",
   "potioneer.message.acting_complete": "You feel your potion completely digesting.",
+  "potioneer.message.lost_control": "You lost control.",
   "message.potioneer.sanity.warning0": "Stable",
   "message.potioneer.sanity.warning1": "Unstable",
   "message.potioneer.sanity.warning2": "Danger",

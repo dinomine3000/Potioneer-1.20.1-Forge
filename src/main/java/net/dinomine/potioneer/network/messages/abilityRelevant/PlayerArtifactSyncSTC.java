@@ -1,6 +1,6 @@
 package net.dinomine.potioneer.network.messages.abilityRelevant;
 
-import net.dinomine.potioneer.beyonder.abilities.ArtifactHolder;
+import net.dinomine.potioneer.util.misc.ArtifactHolder;
 import net.dinomine.potioneer.beyonder.client.ClientAbilitiesData;
 import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
 import net.minecraft.client.Minecraft;
@@ -33,8 +33,8 @@ public class PlayerArtifactSyncSTC {
         List<ArtifactHolder> artifacts = msg.artifacts;
         buffer.writeInt(msg.messageOp);
         buffer.writeInt(artifacts.size());
-        for(int i = 0; i < artifacts.size(); i++){
-            buffer.writeNbt(artifacts.get(i).saveToTag(new CompoundTag(), true));
+        for (ArtifactHolder artifact : artifacts) {
+            buffer.writeNbt(artifact.saveToTag(true));
         }
     }
 

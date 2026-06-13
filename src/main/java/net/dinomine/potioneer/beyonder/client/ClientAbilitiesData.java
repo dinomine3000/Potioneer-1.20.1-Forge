@@ -1,19 +1,17 @@
 package net.dinomine.potioneer.beyonder.client;
 
-import com.eliotlash.mclib.math.functions.limit.Min;
 import net.dinomine.potioneer.beyonder.abilities.Abilities;
 import net.dinomine.potioneer.beyonder.abilities.AbilityInfo;
 import net.dinomine.potioneer.beyonder.abilities.AbilityKey;
-import net.dinomine.potioneer.beyonder.abilities.ArtifactHolder;
+import net.dinomine.potioneer.beyonder.client.HUD.AbilitiesHotbarHUD;
+import net.dinomine.potioneer.util.misc.ArtifactHolder;
 import net.dinomine.potioneer.beyonder.client.screen.BeyonderAbilitiesScreen;
 import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
 import net.dinomine.potioneer.beyonder.player.PlayerAbilitiesManager;
-import net.dinomine.potioneer.config.PotioneerClientConfig;
 import net.dinomine.potioneer.network.PacketHandler;
 import net.dinomine.potioneer.network.messages.abilityRelevant.PlayerSyncHotbarMessage;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
@@ -21,7 +19,6 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 import java.util.*;
-import java.util.logging.Level;
 import java.util.stream.Collectors;
 
 @OnlyIn(Dist.CLIENT)
@@ -30,31 +27,31 @@ public class ClientAbilitiesData {
         return new ArrayList<>(abilities.values().stream().toList());
     }
 
+    public static boolean isHotbarValid(){
+        return !hotbar.isEmpty() && abilities.get(hotbar.get(caret)) != null;
+    }
+
+    public static boolean isHotbarVisible(){
+        return AbilitiesHotbarHUD.hotbarAnimation.isPlaying();
+    }
+
     public static void setShowHotbar(boolean val){
         if(configScreenOpenAnimation) return;
-        if(!showHotbar && val && !hotbar.isEmpty() && abilities.get(hotbar.get(caret)) != null){
+        if(!isHotbarValid()){
+            AbilitiesHotbarHUD.hotbarAnimation.tickInReverse(true);
+            return;
+        }
+        if(val && !isHotbarVisible()){
             assert Minecraft.getInstance().player != null;
             Minecraft.getInstance().player.displayClientMessage(Component.translatable("potioneer.ability_name." + abilities.get(hotbar.get(caret)).descId()), true);
-            openAnimation = true;
-            openingAnimationPercent = 0;
-            showHotbar = true;
         }
-        if(openAnimation && !val){
-            openAnimation = false;
-            openingAnimationPercent = 1;
-        }
+        AbilitiesHotbarHUD.hotbarAnimation.tickInReverse(!val);
     }
 
     public static void showHotbarOnConfigScreen(boolean show){
         if(hotbar.isEmpty()) return;
-        if(!configScreenOpenAnimation && show){
-            configScreenOpenAnimation = true;
-            openingAnimationPercent = 0;
-        }
-        if(configScreenOpenAnimation && !show){
-            configScreenOpenAnimation = false;
-            openingAnimationPercent = 1;
-        }
+        AbilitiesHotbarHUD.hotbarAnimation.tickInReverse(!show);
+        configScreenOpenAnimation = show;
     }
 
     public static void updateCaret(){
@@ -230,10 +227,6 @@ public class ClientAbilitiesData {
     }
 
     public static void tick(float dt){
-        scaleAnimationTime += dt;
-        if(scaleAnimationTime > 5){
-            scaleAnimationTime = -5;
-        }
         if(Minecraft.getInstance().isSingleplayer() && Minecraft.getInstance().isPaused()) return;
 
         time += dt;
@@ -284,6 +277,9 @@ public class ClientAbilitiesData {
 
     private static float castPrimary = 0f;
     private static float castSecondary = 0f;
+    /**
+     * this value is for aesthetic purposes only. this does not relate to the ability cooldown, just the primary/secondary cast indicator
+     */
     private static final float maxPrimaryCooldown = 15f;
 
     public static float getPercent(boolean primary){
@@ -299,11 +295,6 @@ public class ClientAbilitiesData {
     public static void animationTick(float dt){
         if(animationTime > 0) animationTime = Math.max(animationTime - dt, 0);
         if(animationTime < 0) animationTime = Math.min(animationTime + dt, 0);
-        float diff = (openAnimation || configScreenOpenAnimation) ? dt : -dt;
-        openingAnimationPercent = Mth.clamp(openingAnimationPercent + diff/10, 0, 1);
-        if(openingAnimationPercent <= 0){
-            showHotbar = false;
-        }
         if(castPrimary > 0f) castPrimary = Math.max(castPrimary - dt, 0);
         if(castSecondary > 0f) castSecondary = Math.max(castSecondary - dt, 0);
         ClientLevel level = Minecraft.getInstance().level;
@@ -315,13 +306,10 @@ public class ClientAbilitiesData {
         }
     }
 
-    public static boolean openAnimation = false;
     public static boolean configScreenOpenAnimation = false;
-    public static float openingAnimationPercent = 0;
     public static final float maxAnimationtime = 0.65f*20;
     public static float animationTime = 0;
     private static float time = 0;
-    public static float scaleAnimationTime = 0;
     private static HashMap<AbilityKey, AbilityInfo> abilities = new LinkedHashMap<>();
     //private static ArrayList<String> abilitiesByIndex;
     private static ArrayList<AbilityKey> hotbar = new ArrayList<>();
@@ -330,7 +318,6 @@ public class ClientAbilitiesData {
      * caret refers to the index in the hotbar -> current selected ability in hotbar
      */
     private static int caret = 0;
-    public static boolean showHotbar = false;
 
     public static int getDisabledPosition() {
         return disabledPosition;

@@ -1,13 +1,15 @@
 package net.dinomine.potioneer.item.custom;
 
 import net.dinomine.potioneer.beyonder.pathways.Pathways;
-import net.dinomine.potioneer.util.ModCompoundTags;
-import net.dinomine.potioneer.util.misc.MysticalItemHelper;
+import net.dinomine.potioneer.util.misc.ModCompoundTags;
 import net.minecraft.client.color.item.ItemColor;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
+import static net.dinomine.potioneer.util.misc.ModCompoundTags.BeyonderInfoTag.getAssociatedPathSeqLevel;
+import static net.dinomine.potioneer.util.misc.ModCompoundTags.getTagFromItem;
+import static net.dinomine.potioneer.util.misc.ModCompoundTags.hasTag;
 
 
 @OnlyIn(Dist.CLIENT)
@@ -17,12 +19,14 @@ public class ArtifactTint implements ItemColor {
     public int getColor(ItemStack itemStack, int i) {
         if(i != 1) return -1;
         int color = 0xFFFF0000;
-        if(ModCompoundTags.hasTag(ModCompoundTags.BEYONDER_TAG_ID, itemStack)
-                && itemStack.getTag().contains(MysticalItemHelper.ARTIFACT_TAG_ID)){
-            int pathwayId = ModCompoundTags.BeyonderInfoTag.getAssociatedPathSeqLevel(ModCompoundTags.getTagFromItemOrNull(ModCompoundTags.BEYONDER_TAG_ID, itemStack));
+        if(hasTag(ModCompoundTags.TAGS.BEYONDER, itemStack)
+                && hasTag(ModCompoundTags.TAGS.ARTIFACT, itemStack)){
+            int pathwayId = getAssociatedPathSeqLevel(
+                    getTagFromItem(ModCompoundTags.TAGS.BEYONDER, itemStack)
+            );
             color = Pathways.getPathwayBySequenceId(pathwayId).getSequenceColorFromLevel(pathwayId);
 
-            boolean enabled = MysticalItemHelper.isArtifactEnabled(itemStack);
+            boolean enabled = ModCompoundTags.ArtifactInfoTag.isArtifactEnabled(itemStack);
             //TODO adjust this once artifacts are done
             if(enabled) return color;
             float factor = 0.3f; // 10% brightness

@@ -1,13 +1,10 @@
 package net.dinomine.potioneer.beyonder.abilities;
 
-import com.mojang.datafixers.types.Func;
 import net.dinomine.potioneer.beyonder.pages.Page;
 import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
 import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
 import net.dinomine.potioneer.beyonder.player.PlayerAbilitiesManager;
 import net.dinomine.potioneer.event.AbilityCastEvent;
-import net.dinomine.potioneer.network.PacketHandler;
-import net.dinomine.potioneer.network.messages.abilityRelevant.AbilitySyncMessage;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.world.entity.LivingEntity;
@@ -29,11 +26,12 @@ public abstract class Ability {
      */
     private boolean previousState = true;
     protected String abilityId;
-    protected AbilityKey key = new AbilityKey();
+    protected AbilityKey abilityKey = new AbilityKey();
     private Function<Integer, Integer> costFunction;
     private CompoundTag abilityData = new CompoundTag();
     protected boolean isActive = true;
     protected boolean isPassive = false;
+    public boolean isPassive(){return isPassive;}
 
     public void receiveUpdateOnClient(AbilityInfo info, LivingEntityBeyonderCapability cap, LivingEntity target){
         if(!target.level().isClientSide()) return;
@@ -62,11 +60,11 @@ public abstract class Ability {
     }
 
     public AbilityInfo getAbilityInfo(){
-        if(key == null){
+        if(abilityKey == null){
             System.out.println("Warning: tried to get ability info with a null key");
             return Abilities.getInfo(abilityId, cooldown, maxCooldown, state, getDescId(sequenceLevel), new AbilityKey(abilityId, sequenceLevel)).withData(abilityData);
         }
-        return Abilities.getInfo(abilityId, cooldown, maxCooldown, state, getDescId(sequenceLevel), key).withData(abilityData);
+        return Abilities.getInfo(abilityId, cooldown, maxCooldown, state, getDescId(sequenceLevel), abilityKey).withData(abilityData);
     }
 
     protected abstract String getDescId(int sequenceLevel);
@@ -94,8 +92,8 @@ public abstract class Ability {
     }
 
     public String getType(){
-        if(key == null) return "";
-        return this.key.getGroup();
+        if(abilityKey == null) return "";
+        return this.abilityKey.getGroup();
     }
 
     /**
@@ -120,13 +118,13 @@ public abstract class Ability {
      * @param abilityList an identifier for the group this ability belongs to (like Recorded, Replicated, Intrinsice, Grazed etc...)
      */
     public AbilityKey setAbilityKey(String abilityList) {
-        this.key = new AbilityKey(abilityList, abilityId, sequenceLevel);
-        return this.key;
+        this.abilityKey = new AbilityKey(abilityList, abilityId, sequenceLevel);
+        return this.abilityKey;
     }
 
     public AbilityKey setArtifactAbilityKey(UUID artifactId){
-        this.key = new AbilityKey(PlayerAbilitiesManager.AbilityList.ARTIFACT.name(), abilityId, sequenceLevel, artifactId);
-        return this.key;
+        this.abilityKey = new AbilityKey(PlayerAbilitiesManager.AbilityList.ARTIFACT.name(), abilityId, sequenceLevel, artifactId);
+        return this.abilityKey;
     }
 
     public boolean isEnabled(){
@@ -252,16 +250,16 @@ public abstract class Ability {
 
     public void setSequenceLevelSilent(int level){
         sequenceLevel = level;
-        if(key != null)
-            this.key = new AbilityKey(key.getGroup(), key.getAbilityId(), level);
+        if(abilityKey != null)
+            this.abilityKey = new AbilityKey(abilityKey.getGroup(), abilityKey.getAbilityId(), level);
     }
 
     public void upgradeToLevel(int level, LivingEntityBeyonderCapability cap, LivingEntity target) {
         if(sequenceLevel == level) return;
         onUpgrade(sequenceLevel, level, cap, target);
         sequenceLevel = level;
-        if(this.key != null)
-            this.key = new AbilityKey(key.getGroup(), key.getAbilityId(), level);
+        if(this.abilityKey != null)
+            this.abilityKey = new AbilityKey(abilityKey.getGroup(), abilityKey.getAbilityId(), level);
     }
 
     /**
@@ -372,7 +370,7 @@ public abstract class Ability {
         setEnabled(cap, target, previousState);
     }
 
-    public Tag saveNbt() {
+    public CompoundTag saveNbt() {
         CompoundTag tag = new CompoundTag();
         tag.putInt("cooldown", cooldown);
         tag.putBoolean("enabled", state);
@@ -388,8 +386,8 @@ public abstract class Ability {
      * @param tag - the complete nbt tag for the abilities manager. Check if your own ability key is in here, and if so you can load it.
      */
     public void loadNbt(CompoundTag tag){
-        if(tag.contains(key.toString())){
-            CompoundTag tag2 = tag.getCompound(key.toString());
+        if(tag.contains(abilityKey.toString())){
+            CompoundTag tag2 = tag.getCompound(abilityKey.toString());
             cooldown = tag2.getInt("cooldown");
             maxCooldown = Math.max(tag2.getInt("cooldown"), 1);
             state = tag2.getBoolean("enabled");
@@ -428,12 +426,12 @@ public abstract class Ability {
 
     @Override
     public String toString() {
-        if(key == null || key.isEmpty()) return getOuterId();
-        return key.toString();
+        if(abilityKey == null || abilityKey.isEmpty()) return getOuterId();
+        return abilityKey.toString();
     }
 
-    public AbilityKey getKey() {
-        return this.key;
+    public AbilityKey getAbilityKey() {
+        return this.abilityKey;
     }
 
     public boolean is(String ablId) {

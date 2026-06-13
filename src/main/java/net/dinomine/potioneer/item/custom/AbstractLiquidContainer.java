@@ -1,5 +1,7 @@
 package net.dinomine.potioneer.item.custom;
 
+import net.dinomine.potioneer.item.custom.BeyonderPotion.BeyonderPotionItem;
+import net.dinomine.potioneer.util.misc.ModCompoundTags;
 import net.minecraft.client.color.item.ItemColor;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
@@ -22,20 +24,15 @@ public abstract class AbstractLiquidContainer extends Item {
 
     @Override
     public Component getName(ItemStack pStack) {
-        if(pStack.hasTag()){
-            if(!pStack.getTag().getCompound("potion_info").isEmpty()){
-                String name = pStack.getTag().getCompound("potion_info").getString("name");
-
-                String key = this.getDescriptionId() + "." + name;
-                Component comp;
-                if(I18n.exists(key))
-                    comp = Component.translatable(key);
-                else
-                    comp = Component.translatable(this.getDescriptionId() + ".generalized", capitalizeFirstLetters(name.replace("_", " ")));
-                return comp;
-            }
-        }
-        return super.getName(pStack);
+        if(!ModCompoundTags.hasTag(ModCompoundTags.TAGS.POTION, pStack)) return super.getName(pStack);
+        String name = ModCompoundTags.PotionInfoTag.getPotionName(ModCompoundTags.getTagFromItem(ModCompoundTags.TAGS.POTION, pStack));
+        String key = this.getDescriptionId() + "." + name;
+        Component comp;
+        if(I18n.exists(key))
+            comp = Component.translatable(key);
+        else
+            comp = Component.translatable(this.getDescriptionId() + ".generalized", capitalizeFirstLetters(name.replace("_", " ")));
+        return comp;
     }
     static String capitalizeFirstLetters(String input) {
         if (input == null || input.isEmpty()) {
@@ -52,12 +49,9 @@ public abstract class AbstractLiquidContainer extends Item {
         @Override
         public int getColor(ItemStack itemStack, int i) {
             if(i != 1) return -1;
-            if(itemStack.hasTag()){
-                if(!itemStack.getTag().getCompound("potion_info").isEmpty()){
-                    return itemStack.getTag().getCompound("potion_info").getInt("color");
-                }
-            }
-            return 0x00000000;
+            if(!ModCompoundTags.hasTag(ModCompoundTags.TAGS.POTION, itemStack))
+                return 0x00000000;
+            return ModCompoundTags.PotionInfoTag.getPotionColor(ModCompoundTags.getTagFromItem(ModCompoundTags.TAGS.POTION, itemStack));
         }
     }
 }

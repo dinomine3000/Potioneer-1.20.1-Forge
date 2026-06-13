@@ -13,9 +13,8 @@ import net.dinomine.potioneer.network.messages.abilityRelevant.AbilitySyncMessag
 import net.dinomine.potioneer.network.messages.abilityRelevant.PlayerArtifactSyncSTC;
 import net.dinomine.potioneer.network.messages.abilityRelevant.PlayerSyncHotbarMessage;
 import net.dinomine.potioneer.network.messages.advancement.PlayerAdvanceMessage;
-import net.dinomine.potioneer.util.ModCompoundTags;
+import net.dinomine.potioneer.util.misc.ModCompoundTags;
 import net.dinomine.potioneer.util.misc.CharacteristicHelper;
-import net.dinomine.potioneer.util.misc.MysticalItemHelper;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.IntTag;
@@ -39,8 +38,6 @@ import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
-
-import static net.dinomine.potioneer.util.ModCompoundTags.BEYONDER_TAG_ID;
 
 @AutoRegisterCapability
 public class LivingEntityBeyonderCapability {
@@ -341,7 +338,7 @@ public class LivingEntityBeyonderCapability {
     }
 
     private static boolean isItemOfSamePathway(ItemStack stack, int exactPathwayId){
-        CompoundTag beyonderTag = ModCompoundTags.getTagFromItemOrNull(BEYONDER_TAG_ID, stack);
+        CompoundTag beyonderTag = ModCompoundTags.getTagFromItem(ModCompoundTags.TAGS.BEYONDER, stack);
         return beyonderTag != null
                 && ModCompoundTags.BeyonderInfoTag.isOfSamePathway(exactPathwayId, beyonderTag);
     }

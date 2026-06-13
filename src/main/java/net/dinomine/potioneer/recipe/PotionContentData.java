@@ -1,7 +1,9 @@
 package net.dinomine.potioneer.recipe;
 
 import net.dinomine.potioneer.item.ModItems;
+import net.dinomine.potioneer.item.custom.BeyonderPotion.BeyonderPotionItem;
 import net.dinomine.potioneer.util.BufferUtils;
+import net.dinomine.potioneer.util.misc.ModCompoundTags;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.item.Item;
@@ -9,6 +11,9 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 
 import java.util.Objects;
+
+import static net.dinomine.potioneer.util.misc.ModCompoundTags.PotionInfoTag.MAX_FLASK_AMOUNT;
+import static net.dinomine.potioneer.util.misc.ModCompoundTags.PotionInfoTag.MAX_VIAL_AMOUNT;
 
 public class PotionContentData {
 
@@ -75,20 +80,18 @@ public class PotionContentData {
 
     public boolean isValidContainer(ItemStack stack){
         Item item = stack.getItem();
-        if(item == Items.GLASS_BOTTLE && this.bottle
-                || ((item == ModItems.VIAL.get() || item == ModItems.FLASK.get()) && !this.bottle)) {
-            if(stack.getTag() != null && stack.getTag().contains("potion_info")){
-                CompoundTag info = stack.getTag().getCompound("potion_info");
-                int level = info.getInt("amount");
-                if(item == ModItems.FLASK.get()){
-                    return level < 2 && info.getString("name").equals(name);
-                } else {
-                    return level < 1;
-                }
-            } else {
-                return true;
-            }
-        } return false;
+        if(this.bottle && item != Items.GLASS_BOTTLE) return false;
+        if((item == ModItems.VIAL.get() || item == ModItems.FLASK.get()) && !this.bottle) return false;
+        if(!ModCompoundTags.hasTag(ModCompoundTags.TAGS.POTION, stack)) return true;
+
+        CompoundTag info = ModCompoundTags.getTagFromItem(ModCompoundTags.TAGS.POTION, stack);
+        int level = ModCompoundTags.PotionInfoTag.getPotionAmount(info);
+        if(item == ModItems.FLASK.get()){
+            return level < MAX_FLASK_AMOUNT && ModCompoundTags.PotionInfoTag.getPotionName(info).equals(name);
+        } else {
+            return level < MAX_VIAL_AMOUNT;
+        }
+
     }
 
     public void writeIntoByteBuf(FriendlyByteBuf friendlyByteBuf){

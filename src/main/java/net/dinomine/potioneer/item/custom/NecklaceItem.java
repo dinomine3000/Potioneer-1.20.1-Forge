@@ -1,6 +1,7 @@
 package net.dinomine.potioneer.item.custom;
 
 import net.dinomine.potioneer.item.ModItems;
+import net.dinomine.potioneer.util.misc.ModCompoundTags;
 import net.dinomine.potioneer.util.misc.MysticalItemHelper;
 import net.minecraft.client.color.item.ItemColor;
 import net.minecraft.nbt.CompoundTag;
@@ -39,19 +40,19 @@ public class NecklaceItem extends Item {
     }
 
     public static boolean isAmuletEnabled(ItemStack amulet){
-        if(!amulet.hasTag() || !amulet.getTag().contains(MysticalItemHelper.ARTIFACT_TAG_ID)) return false;
-        return amulet.getTag().getCompound(MysticalItemHelper.ARTIFACT_TAG_ID).getBoolean("enabled");
+        if(ModCompoundTags.hasTag(ModCompoundTags.TAGS.ARTIFACT, amulet)) return false;
+        return ModCompoundTags.getTagFromItem(ModCompoundTags.TAGS.ARTIFACT, amulet).getBoolean("enabled");
     }
 
     public static void enableAmulet(ItemStack amulet, boolean enable){
         if(!amulet.is(ModItems.AMULET.get())) return;
-        if(!amulet.hasTag() || !amulet.getTag().contains(MysticalItemHelper.ARTIFACT_TAG_ID)) return;
+        if(ModCompoundTags.hasTag(ModCompoundTags.TAGS.ARTIFACT, amulet)) return;
 
-        CompoundTag artifactTag = amulet.getTag().getCompound(MysticalItemHelper.ARTIFACT_TAG_ID);
+        CompoundTag artifactTag = ModCompoundTags.getTagFromItem(ModCompoundTags.TAGS.ARTIFACT, amulet);
         artifactTag.putBoolean("enabled", enable);
     }
 
-    public static void socketGem(ItemStack amulet, ItemStack gem){
+    /*public static void socketGem(ItemStack amulet, ItemStack gem){
         if(!gem.hasTag() || !gem.getTag().contains(MysticalItemHelper.GEM_TAG_ID)) return;
         CompoundTag root = amulet.getOrCreateTag();
         CompoundTag gemTag = gem.getTag().getCompound(MysticalItemHelper.GEM_TAG_ID);
@@ -62,7 +63,7 @@ public class NecklaceItem extends Item {
     public static CompoundTag getGemTagInAmulet(ItemStack amulet){
         if(!amulet.hasTag() || !amulet.getTag().contains(MysticalItemHelper.ARTIFACT_TAG_ID)) return new CompoundTag();
         return amulet.getTag().getCompound(MysticalItemHelper.ARTIFACT_TAG_ID);
-    }
+    }*/
 
     @OnlyIn(Dist.CLIENT)
     public static class NecklaceItemTint implements ItemColor {
@@ -70,11 +71,11 @@ public class NecklaceItem extends Item {
         @Override
         public int getColor(ItemStack itemStack, int i) {
             if(i != 1) return -1;
-            if(itemStack.hasTag()){
+            /*if(itemStack.hasTag()){
                 if(!itemStack.getTag().getCompound(MysticalItemHelper.ARTIFACT_TAG_ID).isEmpty()){
                     return itemStack.getTag().getCompound(MysticalItemHelper.ARTIFACT_TAG_ID).getInt("color");
                 }
-            }
+            }*/
             return 0x00000000;
         }
     }

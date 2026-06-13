@@ -2,13 +2,13 @@ package net.dinomine.potioneer.beyonder.player;
 
 import net.dinomine.potioneer.Potioneer;
 import net.dinomine.potioneer.beyonder.abilities.*;
-import net.dinomine.potioneer.beyonder.abilities.misc.MysticalKnowledgeAbility;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
 import net.dinomine.potioneer.beyonder.pages.Page;
 import net.dinomine.potioneer.network.PacketHandler;
 import net.dinomine.potioneer.network.messages.abilityRelevant.AbilitySyncMessage;
 import net.dinomine.potioneer.network.messages.abilityRelevant.PlayerArtifactSyncSTC;
 import net.dinomine.potioneer.network.messages.abilityRelevant.PlayerCastAbilityMessageCTS;
+import net.dinomine.potioneer.util.misc.ArtifactHolder;
 import net.dinomine.potioneer.util.misc.MysticalItemHelper;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -112,7 +112,7 @@ public class PlayerAbilitiesManager {
 //        boolean tooManyAmulets = false;
         HashMap<UUID, ArtifactHolder> resMap = new HashMap<>();
         iterateThroughInventory(player, itemStack -> {
-            ArtifactHolder artifact = MysticalItemHelper.getArtifactFromitem(itemStack);
+            ArtifactHolder artifact = MysticalItemHelper.getArtifactFromItem(itemStack);
             if(artifact != null)
                 resMap.put(artifact.getArtifactId(), artifact);
         });
@@ -255,7 +255,7 @@ public class PlayerAbilitiesManager {
     private void upgradeAbilitiesToLevel(int sequenceLevel, LivingEntityBeyonderCapability cap, LivingEntity target){
         for(Ability abl: new ArrayList<>(abilities.values())){
             if(abl.getSequenceLevel() > sequenceLevel && abl.getType().equals(AbilityList.INTRINSIC.name())){
-                abilities.remove(abl.getKey());
+                abilities.remove(abl.getAbilityKey());
                 abl.upgradeToLevel(sequenceLevel, cap, target);
                 AbilityKey newKey = abl.setAbilityKey(AbilityList.INTRINSIC.name());
                 abilities.put(newKey, abl);
@@ -640,11 +640,11 @@ public class PlayerAbilitiesManager {
         hotbar.putString("quick", quickAbility.toString());
         nbt.put("hotbar", hotbar);
         for(Ability abl: abilities.values()){
-            nbt.put(abl.getKey().toString(), abl.saveNbt());
+            nbt.put(abl.getAbilityKey().toString(), abl.saveNbt());
         }
         ListTag artifactsTag = new ListTag();
         for(ArtifactHolder artifact: artifacts.values()){
-            artifactsTag.add(artifact.saveToTag(new CompoundTag(), true));
+            artifactsTag.add(artifact.saveToTag(true));
         }
         nbt.put("artifacts", artifactsTag);
     }

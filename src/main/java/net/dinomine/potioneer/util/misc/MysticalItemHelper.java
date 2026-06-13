@@ -1,15 +1,11 @@
 package net.dinomine.potioneer.util.misc;
 
 import net.dinomine.potioneer.beyonder.abilities.Abilities;
-import net.dinomine.potioneer.beyonder.abilities.AbilityKey;
-import net.dinomine.potioneer.beyonder.abilities.ArtifactHolder;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffect;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
 import net.dinomine.potioneer.item.ModItems;
-import net.dinomine.potioneer.util.ModCompoundTags;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.RandomSource;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.common.Tags;
 
@@ -17,12 +13,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import static net.dinomine.potioneer.util.ModCompoundTags.BEYONDER_TAG_ID;
+import static net.dinomine.potioneer.util.misc.ModCompoundTags.*;
+import static net.dinomine.potioneer.util.misc.ModCompoundTags.ArtifactInfoTag.generateArtifactTag;
+import static net.dinomine.potioneer.util.misc.ModCompoundTags.CharmInfoTag.*;
 
 public class MysticalItemHelper {
-    public static final String ARTIFACT_TAG_ID = "artifact_info";
     public static final String GEM_TAG_ID = "gem_ability_info";
-    public static final String CHARM_TAG_ID = "mystical_charm_info";
 
     private static final List<MetaArtifactAbility> abilityMap = new ArrayList<>();
     private static final List<MetaArtifactAbility> downsideMap = new ArrayList<>();
@@ -63,28 +59,24 @@ public class MysticalItemHelper {
     }
 
     public static BeyonderEffect getEffectFromCharm(ItemStack charm){
-        if(!charm.is(ModItems.CHARM.get()) || !charm.hasTag() || !charm.getTag().contains(CHARM_TAG_ID)) return null;
-        String effId = charm.getTag().getCompound(CHARM_TAG_ID).getString("effectId");
-        int duration = charm.getTag().getCompound(CHARM_TAG_ID).getInt("duration");
-        int level = charm.getTag().getCompound(CHARM_TAG_ID).getInt("pathwaySequenceId")%10;
+        if(!charm.is(ModItems.CHARM.get()) || !hasTag(TAGS.CHARM, charm)) return null;
+        CompoundTag charmTag = getTagFromItem(TAGS.CHARM, charm);
+        String effId = getEffectId(charmTag);
+        int duration = getDuration(charmTag);
+        int level = getPathwaySequenceId(charmTag)%10;
         return BeyonderEffects.byId(effId, level, 0, duration, true);
     }
 
     public static int getPathwayIdFromCharm(ItemStack charm){
-        if(!charm.is(ModItems.CHARM.get()) || !charm.hasTag() || !charm.getTag().contains(CHARM_TAG_ID)) return -1;
-        return Math.floorDiv(charm.getTag().getCompound(CHARM_TAG_ID).getInt("pathwaySequenceId"), 10);
+        if(!charm.is(ModItems.CHARM.get()) || !hasTag(TAGS.CHARM, charm)) return -1;
+        return Math.floorDiv(getPathwaySequenceId(getTagFromItem(TAGS.CHARM, charm)), 10);
     }
 
     //artifact without beyonder info or downsides. single use
     public static ItemStack makeCharm(ItemStack stack, String beyonderEffectId, int pathwaySequenceId, int duration){
-        CompoundTag tag = stack.getOrCreateTag();
-        if(tag.contains(CHARM_TAG_ID) || !stack.is(ModItems.CHARM.get()) || beyonderEffectId.isEmpty()) return stack;
+        if(!stack.is(ModItems.CHARM.get()) || beyonderEffectId.isEmpty() || hasTag(TAGS.CHARM, stack) ) return stack;
 
-        CompoundTag charmTag = new CompoundTag();
-        charmTag.putString("effectId", beyonderEffectId);
-        charmTag.putInt("duration", duration);
-        charmTag.putInt("pathwaySequenceId", pathwaySequenceId);
-        tag.put(CHARM_TAG_ID, charmTag);
+        ModCompoundTags.setItemRootTag(stack, createTag(beyonderEffectId, duration, pathwaySequenceId), TAGS.CHARM);
         return stack;
     }
 
@@ -106,8 +98,10 @@ public class MysticalItemHelper {
     //artifact weapons without downsides and without beyonder tag
 //    public static void makeBeyonderWeapon(){}
 
+    public static void generateSealedArtifact(ItemStack stack, int pathwaySequenceId, RandomSource random){
+        generateSealedArtifact(stack, List.of(pathwaySequenceId), random);
+    }
     public static void generateSealedArtifact(ItemStack stack, List<Integer> pathwaySequenceId, RandomSource random){
-        CompoundTag root = stack.getOrCreateTag();
         // quantity is 1 for sequence levels 9-7, its 2 for levels 6-4, 3 for 3 and 2, and 4 for 1 and 0
         // commented out bc we dont have enough abilities to avoid the issue of not having enough. if it asks for 4 but theres only 2 availabe, thats a problem
         //int quantity = (int) Math.floor(-0.375f * sequenceLevel + 4.375f);
@@ -117,16 +111,15 @@ public class MysticalItemHelper {
 //        CompoundTag beyonderInfo = new CompoundTag();
 //        beyonderInfo.putInt("id", pathwaySequenceId);
 //        root.put(BEYONDER_TAG_ID, beyonderInfo);
-        ModCompoundTags.BeyonderInfoTag.setTagForItem(stack, pathwaySequenceId);
 
-        CompoundTag artifactInfo = new CompoundTag();
-        artifactInfo.putUUID("artifactId", UUID.randomUUID());
-        generateAbilityTags(artifactInfo, pathwaySequenceId, random, quantity);
-        root.put(ARTIFACT_TAG_ID, artifactInfo);
-        stack.setTag(root);
+        //create beyonder tag
+        CompoundTag beyonderTag = ModCompoundTags.BeyonderInfoTag.setTagForItem(stack, pathwaySequenceId);
+        //create artifact tag
+        generateAbilityTag(stack, ModCompoundTags.BeyonderInfoTag.getAssociatedPathSeqLevel(beyonderTag), random, quantity);
     }
 
-    private static CompoundTag generateAbilityTags(CompoundTag tag, int pathwaySequenceId, RandomSource random, int quantity) {
+    private static CompoundTag generateAbilityTag(ItemStack stack, int pathwaySequenceId, RandomSource random, int quantity) {
+        //TODO: make this take in all the characteristics and pick abilities based on that
         int level = pathwaySequenceId%10;
         List<String> abilities = new ArrayList<>();
         for(int i = 0; i < quantity; i++){
@@ -135,10 +128,7 @@ public class MysticalItemHelper {
             if(!downId.isEmpty()) abilities.add(downId);
             if(!ablId.isEmpty()) abilities.add(ablId);
         }
-        for(String ablId: abilities){
-            tag.put((new AbilityKey(ablId, level)).toString(), new CompoundTag());
-        }
-        return tag;
+        return generateArtifactTag(stack, abilities, level);
     }
 
     private static String getRandomAbilityId(int pathwaySequenceId, RandomSource random, List<String> dontRepeatAbilities, boolean downsides) {
@@ -168,40 +158,23 @@ public class MysticalItemHelper {
     }
 
     public static boolean isWorkingArtifact(ItemStack stack){
-        return stack.hasTag() && stack.getTag().contains(ARTIFACT_TAG_ID);
+        return hasTag(ModCompoundTags.TAGS.ARTIFACT, stack);
     }
 
-    public static boolean isArtifactEnabled(ItemStack stack){
-        if(!stack.hasTag() || !stack.getTag().contains(ARTIFACT_TAG_ID)) return false;
-        CompoundTag artifactTag = stack.getTag().getCompound(ARTIFACT_TAG_ID);
-        for(String key: artifactTag.getAllKeys()){
-            if(key.equals("artifactId")) continue;
-            if(key.contains(":d_")) continue;
-            if(!artifactTag.getCompound(key).getBoolean("enabled")) continue;
-            return true;
-        }
-        return false;
-    }
-
-    public static ArtifactHolder getArtifactFromitem(ItemStack itemStack) {
+    public static ArtifactHolder getArtifactFromItem(ItemStack itemStack) {
         if(!isWorkingArtifact(itemStack)) return null;
-        CompoundTag artifactTag = itemStack.getTag().getCompound(ARTIFACT_TAG_ID);
+        CompoundTag artifactTag = getTagFromItem(TAGS.ARTIFACT, itemStack);
         return ArtifactHolder.loadFromTag(artifactTag).withStack(itemStack);
     }
 
     public static UUID getArtifactIdFromItem(ItemStack itemStack){
-        if(!isWorkingArtifact(itemStack)) return null;
-        CompoundTag artifactTag = itemStack.getTag().getCompound(ARTIFACT_TAG_ID);
-        return artifactTag.getUUID("artifactId");
+        return ModCompoundTags.ArtifactInfoTag.getArtifactId(itemStack);
     }
 
     public static void updateArtifactTagOnItem(ArtifactHolder artifactHolder, ItemStack itemStack) {
         if(!isWorkingArtifact(itemStack)) return;
-        CompoundTag root = itemStack.getOrCreateTag();
-        if(!root.getCompound(ARTIFACT_TAG_ID).getUUID("artifactId").equals(artifactHolder.getArtifactId())) return;
-        CompoundTag artifactTag = artifactHolder.withStack(itemStack).saveToTag(new CompoundTag(), false);
-        root.put(ARTIFACT_TAG_ID, artifactTag);
-        itemStack.setTag(root);
+        if(!ModCompoundTags.ArtifactInfoTag.getArtifactId(itemStack).equals(artifactHolder.getArtifactId())) return;
+        ModCompoundTags.ArtifactInfoTag.saveArtifactToItem(artifactHolder, itemStack);
     }
 
 //    /**
@@ -213,7 +186,7 @@ public class MysticalItemHelper {
 //    }
 
     public static boolean isCharacteristic(ItemStack item) {
-        return item.hasTag() && item.getTag().contains(BEYONDER_TAG_ID);
+        return hasTag(TAGS.BEYONDER, item);
     }
 //    public static ArtifactHolder getArtifactIdsFromItem(ItemStack stack){
 //        if(!stack.hasTag() || !stack.getTag().contains(ARTIFACT_TAG_ID)) return new ArrayList<>();
