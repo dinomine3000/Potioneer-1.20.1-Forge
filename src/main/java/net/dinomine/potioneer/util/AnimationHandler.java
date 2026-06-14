@@ -105,4 +105,17 @@ public class AnimationHandler {
         timestamp = curTime;
         return deltaTime;
     }
+
+    public static class AbilityAnimationBuilder {
+        private final Animation anim = new Animation();
+
+        //used for ability hotbar animations
+        public AbilityAnimationBuilder routeSlot(String slot, float startX, float endX, float startY, float endY, float startS, float endS) {
+            anim.animateValue("x-" + slot, startX, endX);
+            anim.animateValue("y-" + slot, startY, endY);
+            anim.animateValue("s-" + slot, startS, endS);
+            return this;
+        }
+        public Animation build() { return anim; }
+    }
 }

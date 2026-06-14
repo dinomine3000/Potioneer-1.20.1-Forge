@@ -34,38 +34,25 @@ public class AbilitiesHotbarHUD {
     private static final int CASE_HEIGHT = 32;
     private static final int CAST_WIDTH = 12;
     private static final int CAST_HEIGHT = 32;
-    private static final int CENTER_Y_OFFSET = 2;
+    private static final float CENTER_Y = 10f + CASE_HEIGHT / 2f;
+    private static final float HIGHER_Y = 10f - 2 + CASE_HEIGHT / 2f;
 
     private static final Minecraft minecraft = Minecraft.getInstance();
     public static final AnimationHandler leftCastCooldownAnimation = new AnimationHandler(1f, false, 0f);
     public static final AnimationHandler rightCastCooldownAnimation = new AnimationHandler(1f, false, 0f);
     public static final AnimationHandler scrollAnimation = new AnimationHandler(0.2f, false, 1f)
-            .registerAnimation("scrollLeft", new Animation()
-                    .animateValue("x-left", 0, -60)
-                    .animateValue("x-center", 60, 0)
-                    .animateValue("x-right", 120, 60)
-                    .animateValue("x-extra", -60, -100)
-                    .animateValue("y-left", 10 - CENTER_Y_OFFSET + CASE_HEIGHT/2f, 10 + CASE_HEIGHT/2f)
-                    .animateValue("y-center", 10 + CASE_HEIGHT/2f, 10 - CENTER_Y_OFFSET + CASE_HEIGHT/2f)
-                    .animateValue("y-right", 10 + CASE_HEIGHT/2f)
-                    .animateValue("y-extra", 10 + CASE_HEIGHT/2f)
-                    .animateValue("s-left", 2, 1)
-                    .animateValue("s-center", 1, 2)
-                    .animateValue("s-right", 0, 1)
-                    .animateValue("s-extra", 1, 0))
-            .registerAnimation("scrollRight", new Animation()
-                    .animateValue("x-left", -120, -60)
-                    .animateValue("x-center", -60, 0)
-                    .animateValue("x-right", 0, 60)
-                    .animateValue("x-extra", 60, 100)
-                    .animateValue("y-left", 10 + CASE_HEIGHT/2f)
-                    .animateValue("y-center", 10 + CASE_HEIGHT/2f, 10 - CENTER_Y_OFFSET + CASE_HEIGHT/2f)
-                    .animateValue("y-right", 10 - CENTER_Y_OFFSET + CASE_HEIGHT/2f, 10 + CASE_HEIGHT/2f)
-                    .animateValue("y-extra", 10 + CASE_HEIGHT/2f)
-                    .animateValue("s-left", 0, 1)
-                    .animateValue("s-center", 1, 2)
-                    .animateValue("s-right", 2, 1)
-                    .animateValue("s-extra", 1, 0));
+            .registerAnimation("scrollLeft", new AnimationHandler.AbilityAnimationBuilder()
+        //                          Slot          X: Start -> End       Y: Start -> End       Scale: Start -> End
+                    .routeSlot("left",      0,  -60,    HIGHER_Y, CENTER_Y,     2, 1)
+                    .routeSlot("center",    60,    0,   CENTER_Y,  HIGHER_Y,    1, 2)
+                    .routeSlot("right",     120,   60,  CENTER_Y, CENTER_Y,     0, 1)
+                    .routeSlot("extra",     -60, -100,  CENTER_Y, CENTER_Y,     1, 0).build())
+            .registerAnimation("scrollRight", new AnimationHandler.AbilityAnimationBuilder()
+                    .routeSlot("left",      -120,  -60, CENTER_Y, CENTER_Y,     0, 1)
+                    .routeSlot("center",    -60,    0,  CENTER_Y,  HIGHER_Y,    1, 2)
+                    .routeSlot("right",     0,   60,    HIGHER_Y, CENTER_Y,     2, 1)
+                    .routeSlot("extra",     60, 100,    CENTER_Y, CENTER_Y,     1, 0).build());
+
     public static final AnimationHandler hotbarAnimation = new AnimationHandler(1.6f, false, 0f)
             .tickInReverse(true)
             .registerAnimation("hotbar", new Animation()
