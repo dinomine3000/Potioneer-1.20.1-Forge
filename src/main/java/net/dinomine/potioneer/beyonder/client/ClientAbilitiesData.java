@@ -318,6 +318,8 @@ public class ClientAbilitiesData {
         if(animationTime != 0 || hotbar.isEmpty()) return;
         caret = Math.floorMod(caret + diff, hotbar.size());
         animationTime = diff < 0 ? -maxAnimationtime : maxAnimationtime;
+        if(diff < 0) AbilitiesHotbarHUD.scrollAnimation.startAnimation("scrollRight", false);
+        else AbilitiesHotbarHUD.scrollAnimation.startAnimation("scrollLeft", false);
         if(Minecraft.getInstance().player == null) return;
         Minecraft.getInstance().player.displayClientMessage(Component.translatable("potioneer.ability_name." + abilities.get(hotbar.get(caret)).descId()), true);
     }

@@ -16,6 +16,12 @@ public class Animation {
         return this;
     }
 
+    public Animation animateValue(String valueKey, float staticValue){
+        start.put(valueKey, staticValue);
+        end.put(valueKey, staticValue);
+        return this;
+    }
+
     public Animation animateValue(String valueKey, Function<Float, Float> converter){
         this.converter.put(valueKey, converter);
         return this;

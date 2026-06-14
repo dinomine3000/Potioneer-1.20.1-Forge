@@ -70,6 +70,7 @@ public class AnimationHandler {
 
     public AnimationHandler registerAnimation(String key, Animation animation){
         animations.put(key, animation);
+        animationPlaying = key;
         return this;
     }
 
@@ -79,6 +80,10 @@ public class AnimationHandler {
         if(animations.containsKey(animationKey)) return animations.get(animationKey).getValue(valueKey, getProgress());
         return 0;
     }
+
+    public String getCurrentAnimation(){return animationPlaying;}
+
+    public float getValue(String valueKey){return getValue(animationPlaying, valueKey);}
 
     public float getValue(float start, float end, float percent){
         return Mth.lerp(percent, start, end);
