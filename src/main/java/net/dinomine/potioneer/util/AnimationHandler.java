@@ -15,9 +15,14 @@ public class AnimationHandler {
     private HashMap<String, Animation> animations = new HashMap<>();
 
     public AnimationHandler(float endTime, boolean lerp){
+        this(endTime, lerp, 0);
+    }
+
+    public AnimationHandler(float endTime, boolean lerp, float initialTimeValue){
         if(endTime == 0) throw new IllegalArgumentException("[Potioneer] Animation end time can not be 0");
         this.doLerp = lerp;
         this.endTime = endTime;
+        this.currentTime = initialTimeValue;
     }
 
     public boolean isPlaying(){
@@ -53,6 +58,7 @@ public class AnimationHandler {
     public float tick(float deltaTime){
         if(currentTime > endTime && !tickInReverse) return 1f;
         if(currentTime < 0 && tickInReverse) return 0f;
+        currentTime = Mth.clamp(currentTime, 0, endTime);
         float dt = deltaTime*speedMult;
         if(doLerp){
             currentTime = Mth.lerp(dt, currentTime, tickInReverse ? 0 : endTime);
@@ -86,7 +92,7 @@ public class AnimationHandler {
         return tick(getDeltaTime());
     }
 
-    private float getProgress(){return Mth.clamp(currentTime/endTime, 0, 1);}
+    public float getProgress(){return Mth.clamp(currentTime/endTime, 0, 1);}
 
     private float getDeltaTime(){
         long curTime = System.currentTimeMillis();

@@ -275,28 +275,15 @@ public class ClientAbilitiesData {
 //        });
     }
 
-    private static float castPrimary = 0f;
-    private static float castSecondary = 0f;
-    /**
-     * this value is for aesthetic purposes only. this does not relate to the ability cooldown, just the primary/secondary cast indicator
-     */
-    private static final float maxPrimaryCooldown = 15f;
-
-    public static float getPercent(boolean primary){
-        return (primary ? castPrimary : castSecondary) / maxPrimaryCooldown;
-    }
-
     private static void beginCastAnimation(boolean primary){
-        if(primary) castPrimary = maxPrimaryCooldown;
-        else castSecondary = maxPrimaryCooldown;
+        if(primary) AbilitiesHotbarHUD.leftCastCooldownAnimation.startAnimation("", false);
+        else AbilitiesHotbarHUD.rightCastCooldownAnimation.startAnimation("", false);
     }
 
 
     public static void animationTick(float dt){
         if(animationTime > 0) animationTime = Math.max(animationTime - dt, 0);
         if(animationTime < 0) animationTime = Math.min(animationTime + dt, 0);
-        if(castPrimary > 0f) castPrimary = Math.max(castPrimary - dt, 0);
-        if(castSecondary > 0f) castSecondary = Math.max(castSecondary - dt, 0);
         ClientLevel level = Minecraft.getInstance().level;
         if(level == null) return;
         disabledCountdown -= dt*disableFps/60f;

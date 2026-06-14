@@ -36,7 +36,9 @@ public class AbilitiesHotbarHUD {
     private static final int CAST_HEIGHT = 32;
 
     private static final Minecraft minecraft = Minecraft.getInstance();
-    public static final AnimationHandler hotbarAnimation = new AnimationHandler(1.6f, false)
+    public static final AnimationHandler leftCastCooldownAnimation = new AnimationHandler(1f, false, 0f);
+    public static final AnimationHandler rightCastCooldownAnimation = new AnimationHandler(1f, false, 0f);
+    public static final AnimationHandler hotbarAnimation = new AnimationHandler(1.6f, false, 0f)
             .tickInReverse(true)
             .registerAnimation("hotbar", new Animation()
                     .animateValue("yOffset", -70, 20)
@@ -52,6 +54,8 @@ public class AbilitiesHotbarHUD {
 
         ClientAbilitiesData.animationTick(4*minecraft.getDeltaFrameTime());
         hotbarAnimation.tick(minecraft.getDeltaFrameTime());
+        leftCastCooldownAnimation.tick();
+        rightCastCooldownAnimation.tick();
         if(!shouldDisplayBar()) return;
 
         // 0 -> animation done, stuff should be in its position
@@ -198,10 +202,8 @@ public class AbilitiesHotbarHUD {
         //ability cast (primary vs secondary) shape
         AbilityFactory abl = Abilities.getAbilityFactory(info.getKey());
         if(abl.getHasSecondaryFunction()){
-            float pPercent = ClientAbilitiesData.getPercent(true);
-            float sPercent = ClientAbilitiesData.getPercent(false);
-            int pCastHeight = (int)(CAST_HEIGHT*(1-pPercent));
-            int sCastHeight = (int)(CAST_HEIGHT*(1-sPercent));
+            int pCastHeight = (int)(leftCastCooldownAnimation.getValue(0, CAST_HEIGHT));
+            int sCastHeight = (int)(rightCastCooldownAnimation.getValue(0, CAST_HEIGHT));
             guiGraphics.blit(ICONS, caseX, yPos + (int)(scale * (CAST_HEIGHT - pCastHeight)),
                     (int) (CAST_WIDTH*scale), (int) (pCastHeight*scale), 151, 3 + CAST_HEIGHT - pCastHeight,
                     CAST_WIDTH, pCastHeight, ICONS_WIDTH, ICONS_HEIGHT);
@@ -209,8 +211,7 @@ public class AbilitiesHotbarHUD {
                     (int) (CAST_WIDTH*scale), (int) (sCastHeight*scale), 165, 3 + CAST_HEIGHT - sCastHeight,
                     CAST_WIDTH, sCastHeight, ICONS_WIDTH, ICONS_HEIGHT);
         } else if (ClientConfigData.getHotbarOutlines()){
-            float pPercent = ClientAbilitiesData.getPercent(true);
-            int pCastHeight = (int)(CAST_HEIGHT*(1-pPercent));
+            int pCastHeight = (int)(leftCastCooldownAnimation.getValue(0, CAST_HEIGHT));
             int width = 2*CAST_WIDTH + 2;
             guiGraphics.blit(ICONS, caseX, yPos + (int)(scale * (CAST_HEIGHT - pCastHeight)),
                     (int) (width*scale), (int) (pCastHeight*scale), 151, 3 + CAST_HEIGHT - pCastHeight,

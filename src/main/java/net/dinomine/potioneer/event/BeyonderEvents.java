@@ -100,7 +100,8 @@ public class BeyonderEvents {
                 int level = zeroEffect.getSequenceLevel();
                 if(level < 7 || ItemStack.matches(event.getEntity().getMainHandItem(), event.getStack())){
                     if(level < 8 || cap.getLuckManager().passesLuckCheck(0.35f, 0, 0, event.getEntity().getRandom())){
-                        ((ZeroDamageEffect) cap.getEffectsManager().getEffect(BeyonderEffects.WHEEL_ZERO_DAMAGE.getEffectId())).playSound(event.getEntity());
+                        //TODO: re-evaluate the need for this. i tried it and didnt know why this sound kept happening.
+                        //((ZeroDamageEffect) cap.getEffectsManager().getEffect(BeyonderEffects.WHEEL_ZERO_DAMAGE.getEffectId())).playSound(event.getEntity());
                         event.setCanceled(true);
                     }
                 }
