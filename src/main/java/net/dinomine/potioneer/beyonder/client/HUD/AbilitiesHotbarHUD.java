@@ -67,11 +67,12 @@ public class AbilitiesHotbarHUD {
     public static final IGuiOverlay ABILITY_HOTBAR = ((forgeGui, guiGraphics, partialTick, width, height) -> {
         if(minecraft.isPaused()) return;
 
-        ClientAbilitiesData.animationTick(4*minecraft.getDeltaFrameTime());
-        hotbarAnimation.tick(minecraft.getDeltaFrameTime());
-        leftCastCooldownAnimation.tick();
-        rightCastCooldownAnimation.tick();
-        scrollAnimation.tick();
+        float dt = minecraft.getDeltaFrameTime();
+        ClientAbilitiesData.animationTick(4*dt);
+        hotbarAnimation.tick(dt);
+        leftCastCooldownAnimation.tick(dt);
+        rightCastCooldownAnimation.tick(dt);
+        scrollAnimation.tick(dt);
         if(!shouldDisplayBar()) return;
 
         // 0 -> animation done, stuff should be in its position
