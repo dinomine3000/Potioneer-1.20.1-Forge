@@ -116,6 +116,12 @@ public class AnimationHandler {
             anim.animateValue("s-" + slot, startS, endS);
             return this;
         }
+        //used for ability hotbar animations
+        public AbilityAnimationBuilder routeSlot(String slot, float startY, float endY, float startS, float endS) {
+            anim.animateValue("y-" + slot, startY, endY);
+            anim.animateValue("s-" + slot, startS, endS);
+            return this;
+        }
         public Animation build() { return anim; }
     }
 }

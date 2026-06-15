@@ -35,7 +35,8 @@ public class AbilitiesHotbarHUD {
     private static final int CAST_WIDTH = 12;
     private static final int CAST_HEIGHT = 32;
     private static final float CENTER_Y = 10f + CASE_HEIGHT / 2f;
-    private static final float HIGHER_Y = 10f - 2 + CASE_HEIGHT / 2f;
+    private static final float HIGHER_Y = CENTER_Y - 2;
+    private static final int VERTICAL_ABL_OFFSET = 56;
 
     private static final Minecraft minecraft = Minecraft.getInstance();
     public static final AnimationHandler leftCastCooldownAnimation = new AnimationHandler(1f, false, 0f);
@@ -46,12 +47,24 @@ public class AbilitiesHotbarHUD {
                     .routeSlot("left",      0,  -60,    HIGHER_Y, CENTER_Y,     2, 1)
                     .routeSlot("center",    60,    0,   CENTER_Y,  HIGHER_Y,    1, 2)
                     .routeSlot("right",     120,   60,  CENTER_Y, CENTER_Y,     0, 1)
-                    .routeSlot("extra",     -60, -100,  CENTER_Y, CENTER_Y,     1, 0).build())
+                    .routeSlot("extra",     -60, -100,  CENTER_Y, CENTER_Y,     1, 0)
+        //                          Slot            Y: Start -> End      Scale: Start -> End
+                    .routeSlot("top",           0, -VERTICAL_ABL_OFFSET,     2, 1)
+                    .routeSlot("center-2",      VERTICAL_ABL_OFFSET,  0,    1, 2)
+                    .routeSlot("bottom",        2*VERTICAL_ABL_OFFSET, VERTICAL_ABL_OFFSET,     0, 1)
+                    .routeSlot("extra-2",       -VERTICAL_ABL_OFFSET, -2*VERTICAL_ABL_OFFSET,     1, 0)
+                    .build())
             .registerAnimation("scrollRight", new AnimationHandler.AbilityAnimationBuilder()
                     .routeSlot("left",      -120,  -60, CENTER_Y, CENTER_Y,     0, 1)
                     .routeSlot("center",    -60,    0,  CENTER_Y,  HIGHER_Y,    1, 2)
                     .routeSlot("right",     0,   60,    HIGHER_Y, CENTER_Y,     2, 1)
-                    .routeSlot("extra",     60, 100,    CENTER_Y, CENTER_Y,     1, 0).build());
+                    .routeSlot("extra",     60, 100,    CENTER_Y, CENTER_Y,     1, 0)
+        //                          Slot            Y: Start -> End      Scale: Start -> End
+                    .routeSlot("top",           -2*VERTICAL_ABL_OFFSET, -VERTICAL_ABL_OFFSET,     0, 1)
+                    .routeSlot("center-2",      -VERTICAL_ABL_OFFSET,  0,    1, 2)
+                    .routeSlot("bottom",        0, VERTICAL_ABL_OFFSET,     2, 1)
+                    .routeSlot("extra-2",       VERTICAL_ABL_OFFSET, 2*VERTICAL_ABL_OFFSET,     1, 0)
+                    .build());
 
     public static final AnimationHandler hotbarAnimation = new AnimationHandler(1.6f, false, 0f)
             .tickInReverse(true)
@@ -72,7 +85,7 @@ public class AbilitiesHotbarHUD {
         hotbarAnimation.tick(dt);
         leftCastCooldownAnimation.tick(dt);
         rightCastCooldownAnimation.tick(dt);
-        scrollAnimation.tick(dt);
+        scrollAnimation.tick();
         if(!shouldDisplayBar()) return;
 
         // 0 -> animation done, stuff should be in its position
@@ -91,10 +104,10 @@ public class AbilitiesHotbarHUD {
 
         if(hotbarPos == PotioneerClientConfig.HOTBAR_POS.LEFT){
             xOffset = (int) (scale * hotbarAnimation.getValue("hotbar", "leftOffset"));
-            yOffset = minecraft.getWindow().getGuiScaledHeight()/2 + (int)(10*scale*(CASE_HEIGHT/2 - 20));
+            yOffset = minecraft.getWindow().getGuiScaledHeight()/2;
         } else if(hotbarPos == PotioneerClientConfig.HOTBAR_POS.RIGHT){
             xOffset = (int) (scale * (minecraft.getWindow().getGuiScaledWidth() + hotbarAnimation.getValue("hotbar", "rightOffset")));
-            yOffset = minecraft.getWindow().getGuiScaledHeight()/2 + (int)(10*scale*(CASE_HEIGHT/2 - 20));
+            yOffset = minecraft.getWindow().getGuiScaledHeight()/2;
         }
 
         /*yOffset = (int) (scale * switch (hotbarPos){
@@ -111,70 +124,7 @@ public class AbilitiesHotbarHUD {
     private static void drawCases(GuiGraphics guiGraphics, PotioneerClientConfig.HOTBAR_POS hotbarPos, float animPercent, int caret, int xOffset, int yOffset, float scale){
         if(ClientAbilitiesData.getHotbar().isEmpty()) return;
         int extraCaret = scrollAnimation.getCurrentAnimation().equalsIgnoreCase("scrollLeft") ? caret - 2 : caret + 2;
-        if(hotbarPos == PotioneerClientConfig.HOTBAR_POS.LEFT){
-            xOffset += (int) (10*scale);
-            if(animPercent < 0){
-                drawAbility(guiGraphics, caret + 2,
-                        xOffset,
-                        (int) (yOffset + 120*scale + (int)(48*scale*animPercent)),
-                        -animPercent*scale);
-            }
-            if(animPercent > 0){
-                drawAbility(guiGraphics, caret - 2,
-                        xOffset,
-                        (int) (yOffset -80*scale + (int)(40*scale*animPercent)),
-                        animPercent*scale);
-            }
-            //yOffset + 10 - (int)(10*animPercent)
-            //(xOffset - 60) + (int)(animPercent*60)
-            int diff1 = (int)(scale * 40);
-            int diff2 = (int)(scale * 72);
-            drawAbility(guiGraphics, caret - 1,
-                    xOffset,
-                    (yOffset - diff1) + (int)(animPercent*diff1),
-                    scale*(1f + animPercent));
-            drawAbility(guiGraphics, caret,
-                    xOffset,
-                    yOffset + (int)(animPercent < 0 ? animPercent*diff1 : animPercent*diff2),
-                    scale*(2 - Math.abs(animPercent)));
-            drawAbility(guiGraphics, caret + 1,
-                    xOffset,
-                    yOffset + diff2 + (int)(animPercent*diff2),
-                    scale*(1f - animPercent));
-        }
-        else if(hotbarPos == PotioneerClientConfig.HOTBAR_POS.RIGHT){
-            xOffset -= (int) (10*scale);
-            if(animPercent < 0){
-                drawAbility(guiGraphics, caret + 2,
-                        xOffset,
-                        (int) (yOffset + 120*scale + (int)(40*scale*animPercent)),
-                        -animPercent*scale);
-            }
-            if(animPercent > 0){
-                drawAbility(guiGraphics, caret - 2,
-                        xOffset,
-                        (int) (yOffset -80*scale + (int)(40*scale*animPercent)),
-                        animPercent);
-            }
-            //yOffset + 10 - (int)(10*animPercent)
-            //(xOffset - 60) + (int)(animPercent*60)
-            int diff = (int)(scale*40);
-            drawAbility(guiGraphics,caret - 1,
-                    xOffset,
-                    (yOffset - diff) + (int)(animPercent*diff),
-                    scale*(1f + animPercent));
-            int diff2 = (int)(scale*72);
-            drawAbility(guiGraphics, caret,
-                    xOffset,
-                    yOffset + (int)(animPercent < 0 ? animPercent*diff : animPercent*diff2),
-                    scale*(2 - Math.abs(animPercent)));
-            drawAbility(guiGraphics,caret + 1,
-                    xOffset,
-                    yOffset + diff2 + (int)(animPercent*diff2),
-                    scale*(1f - animPercent));
-
-        }
-        else {
+        if(hotbarPos == PotioneerClientConfig.HOTBAR_POS.TOP){
             drawAbility(guiGraphics, extraCaret,
                     xOffset + (int)(scale * scrollAnimation.getValue("x-extra")),
                     yOffset + (int)(scale * scrollAnimation.getValue("y-extra")),
@@ -192,6 +142,23 @@ public class AbilitiesHotbarHUD {
                     yOffset + (int)(scale * scrollAnimation.getValue("y-right")),
                     scale * scrollAnimation.getValue("s-right"));
 
+        } else {
+            drawAbility(guiGraphics, extraCaret,
+                    xOffset,
+                    yOffset + (int)(scale * scrollAnimation.getValue("y-extra-2")),
+                    scale * scrollAnimation.getValue("s-extra-2"));
+            drawAbility(guiGraphics, caret - 1,
+                    xOffset,
+                    yOffset + (int)(scale * scrollAnimation.getValue("y-top")),
+                    scale * scrollAnimation.getValue("s-top"));
+            drawAbility(guiGraphics, caret,
+                    xOffset,
+                    yOffset + (int)(scale * scrollAnimation.getValue("y-center-2")),
+                    scale * scrollAnimation.getValue("s-center-2"));
+            drawAbility(guiGraphics, caret + 1,
+                    xOffset,
+                    yOffset + (int)(scale * scrollAnimation.getValue("y-bottom")),
+                    scale * scrollAnimation.getValue("s-bottom"));
         }
 
     }
