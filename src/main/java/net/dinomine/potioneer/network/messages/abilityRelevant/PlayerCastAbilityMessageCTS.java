@@ -3,6 +3,7 @@ package net.dinomine.potioneer.network.messages.abilityRelevant;
 import net.dinomine.potioneer.beyonder.abilities.AbilityKey;
 import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
 import net.minecraft.client.Minecraft;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.api.distmarker.Dist;
@@ -14,18 +15,21 @@ import java.util.UUID;
 import java.util.function.Supplier;
 
 //message sent to the server when a client has authorized the casting of an ability
+//OR sent from server to client when casting artifact abilities in full
 public class PlayerCastAbilityMessageCTS {
     public AbilityKey key;
     public boolean primary;
+    public CompoundTag args;
     public UUID artifactId = null;
 
     public PlayerCastAbilityMessageCTS(UUID artifactId){
         this.artifactId = artifactId;
     }
 
-    public PlayerCastAbilityMessageCTS(AbilityKey key, boolean primary){
+    public PlayerCastAbilityMessageCTS(AbilityKey key, boolean primary, CompoundTag args){
         this.key = key;
         this.primary = primary;
+        this.args = args;
     }
 
     public static void encode(PlayerCastAbilityMessageCTS msg, FriendlyByteBuf buffer){
@@ -33,6 +37,7 @@ public class PlayerCastAbilityMessageCTS {
             buffer.writeBoolean(true);
             msg.key.writeToBuffer(buffer);
             buffer.writeBoolean(msg.primary);
+            buffer.writeNbt(msg.args);
         } else{
             buffer.writeBoolean(false);
             buffer.writeUUID(msg.artifactId);
@@ -43,7 +48,8 @@ public class PlayerCastAbilityMessageCTS {
         if(buffer.readBoolean()){
             AbilityKey ablId = AbilityKey.readFromBuffer(buffer);
             boolean primary = buffer.readBoolean();
-            return new PlayerCastAbilityMessageCTS(ablId, primary);
+            CompoundTag args = buffer.readNbt();
+            return new PlayerCastAbilityMessageCTS(ablId, primary, args);
         } else {
             UUID artifactId = buffer.readUUID();
             return new PlayerCastAbilityMessageCTS(artifactId);
@@ -59,7 +65,7 @@ public class PlayerCastAbilityMessageCTS {
                 //on server side
                 Player player = context.getSender();
                 player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
-                    cap.getAbilitiesManager().useAbility(cap, player, msg.key, false, msg.primary);
+                    cap.getAbilitiesManager().useAbility(cap, player, msg.key, false, msg.primary, msg.args);
                 });
             } else {
                 context.enqueueWork(() -> DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> ClientCastAbilityMessage.handlePacket(msg, contextSupplier)));

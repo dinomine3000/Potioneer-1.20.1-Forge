@@ -38,7 +38,10 @@ public class AbilitiesHotbarHUD {
     private static final float HIGHER_Y = CENTER_Y - 2;
     private static final int VERTICAL_ABL_OFFSET = 56;
 
+    private static int currentDisablePosition = 0;
+
     private static final Minecraft minecraft = Minecraft.getInstance();
+    public static final AnimationHandler disabledAnimation = new AnimationHandler(1/24f, false, 0f).doLoop();
     public static final AnimationHandler leftCastCooldownAnimation = new AnimationHandler(1f, false, 0f);
     public static final AnimationHandler rightCastCooldownAnimation = new AnimationHandler(1f, false, 0f);
     public static final AnimationHandler scrollAnimation = new AnimationHandler(0.2f, false, 1f)
@@ -81,8 +84,9 @@ public class AbilitiesHotbarHUD {
         if(minecraft.isPaused()) return;
 
         float dt = minecraft.getDeltaFrameTime();
-        ClientAbilitiesData.animationTick(4*dt);
         hotbarAnimation.tick(dt);
+
+        if(disabledAnimation.tick() == 1) currentDisablePosition = minecraft.player.getRandom().nextInt(0, 12);
         leftCastCooldownAnimation.tick(dt);
         rightCastCooldownAnimation.tick(dt);
         scrollAnimation.tick();
@@ -91,7 +95,6 @@ public class AbilitiesHotbarHUD {
         // 0 -> animation done, stuff should be in its position
         // 1 -> animation just started, caret moved up, stuff should be offset to be to the right of their spot
         // -1 -> animation just started, caret moved down, stuff should be offset to be to the left of their spot
-        float animPercent = ClientAbilitiesData.animationTime / ClientAbilitiesData.maxAnimationtime;
         int caret = ClientAbilitiesData.getCaret();
 
         float scale = (float)ClientConfigData.getCurrentHotbarScale();
@@ -116,12 +119,12 @@ public class AbilitiesHotbarHUD {
             case RIGHT -> hotbarAnimation.getValue("hotbar", "rightOffset");
         });*/
 
-        drawCases(guiGraphics, hotbarPos, animPercent, caret, xOffset, yOffset, scale);
+        drawCases(guiGraphics, hotbarPos, caret, xOffset, yOffset, scale);
 
 
     });
 
-    private static void drawCases(GuiGraphics guiGraphics, PotioneerClientConfig.HOTBAR_POS hotbarPos, float animPercent, int caret, int xOffset, int yOffset, float scale){
+    private static void drawCases(GuiGraphics guiGraphics, PotioneerClientConfig.HOTBAR_POS hotbarPos, int caret, int xOffset, int yOffset, float scale){
         if(ClientAbilitiesData.getHotbar().isEmpty()) return;
         int extraCaret = scrollAnimation.getCurrentAnimation().equalsIgnoreCase("scrollLeft") ? caret - 2 : caret + 2;
         if(hotbarPos == PotioneerClientConfig.HOTBAR_POS.TOP){
@@ -242,7 +245,10 @@ public class AbilitiesHotbarHUD {
                 guiGraphics.blit(ICONS, caseX + (int) (5*scale), caseY + (int)(4*scale), (int)(ICON_WIDTH*scale), (int)(ICON_HEIGHT*scale), 130, 4, ICON_WIDTH, ICON_HEIGHT, ICONS_WIDTH, ICONS_HEIGHT);
                 return;
             }
-            guiGraphics.blit(ICONS, caseX + (int) (5*scale), caseY + (int)(4*scale), (int)(ICON_WIDTH*scale), (int)(ICON_HEIGHT*scale), 130, 32 + ICON_HEIGHT*ClientAbilitiesData.getDisabledPosition(), ICON_WIDTH, ICON_HEIGHT, ICONS_WIDTH, ICONS_HEIGHT);
+            guiGraphics.blit(ICONS, caseX + (int) (5*scale), caseY + (int)(4*scale),
+                    (int)(ICON_WIDTH*scale), (int)(ICON_HEIGHT*scale),
+                    130, 32 + ICON_HEIGHT*currentDisablePosition,
+                    ICON_WIDTH, ICON_HEIGHT, ICONS_WIDTH, ICONS_HEIGHT);
 
         }
     }

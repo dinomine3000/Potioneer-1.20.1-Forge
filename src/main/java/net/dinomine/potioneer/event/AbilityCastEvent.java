@@ -2,6 +2,7 @@ package net.dinomine.potioneer.event;
 
 import net.dinomine.potioneer.beyonder.abilities.Ability;
 import net.dinomine.potioneer.beyonder.abilities.AbilityInfo;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraftforge.event.entity.living.LivingConversionEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
@@ -11,12 +12,16 @@ import net.minecraftforge.eventbus.api.Event;
 public abstract class AbilityCastEvent extends LivingEvent {
     private final Ability ability;
     private final boolean primary;
+    private final CompoundTag args;
 
-    public AbilityCastEvent(Ability abl, LivingEntity caster, boolean primary){
+    public AbilityCastEvent(Ability abl, LivingEntity caster, boolean primary, CompoundTag args){
         super(caster);
         this.ability = abl;
         this.primary = primary;
+        this.args = args;
     }
+
+    public CompoundTag getArguments(){return args;}
 
     public Ability getAbility(){
         return ability;
@@ -33,15 +38,15 @@ public abstract class AbilityCastEvent extends LivingEvent {
     @Cancelable
     public static class Pre extends AbilityCastEvent {
 
-        public Pre(Ability abl, LivingEntity caster, boolean primary) {
-            super(abl, caster, primary);
+        public Pre(Ability abl, LivingEntity caster, boolean primary, CompoundTag args) {
+            super(abl, caster, primary, args);
         }
     }
 
     public static class Post extends AbilityCastEvent {
 
-        public Post(Ability abl, LivingEntity caster, boolean primary) {
-            super(abl, caster, primary);
+        public Post(Ability abl, LivingEntity caster, boolean primary, CompoundTag args) {
+            super(abl, caster, primary, args);
         }
     }
 

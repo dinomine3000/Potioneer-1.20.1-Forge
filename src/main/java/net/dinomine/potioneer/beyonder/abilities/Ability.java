@@ -270,25 +270,39 @@ public abstract class Ability {
      * @param primary
      */
     public boolean castAbility(LivingEntityBeyonderCapability cap, LivingEntity target, boolean primary){
+        return castAbility(cap, target, primary, new CompoundTag());
+    }
+
+    /**
+     * runs the abilities active methods (that is, primary() or secondary()) if the ability is off cooldown.
+     * if an ability wants to run while on cooldown (that is, allow the player to cast the ability primary() or secondary() while on cooldown) it should override this.
+     * @param cap
+     * @param target
+     * @param primary
+     * @param args CompoundTag arguments for the cast
+     */
+    public boolean castAbility(LivingEntityBeyonderCapability cap, LivingEntity target, boolean primary, CompoundTag args){
         if(cooldown != 0) return false;
 
-        boolean cancelledCheck = MinecraftForge.EVENT_BUS.post(new AbilityCastEvent.Pre(this, target, primary));
+        boolean cancelledCheck = MinecraftForge.EVENT_BUS.post(new AbilityCastEvent.Pre(this, target, primary, args));
         if(cancelledCheck) return false;
         if(primary){
-            if(primary(cap, target)){
-                MinecraftForge.EVENT_BUS.post(new AbilityCastEvent.Post(this, target, true));
+            if(primary(cap, target, args)){
+                MinecraftForge.EVENT_BUS.post(new AbilityCastEvent.Post(this, target, true, args));
                 putOnCooldown(target);
                 return true;
             }
         } else {
-            if(secondary(cap, target)){
-                MinecraftForge.EVENT_BUS.post(new AbilityCastEvent.Post(this, target, false));
+            if(secondary(cap, target, args)){
+                MinecraftForge.EVENT_BUS.post(new AbilityCastEvent.Post(this, target, false, args));
                 putOnCooldown(target);
                 return true;
             }
         }
         return false;
     }
+    protected boolean primary(LivingEntityBeyonderCapability cap, LivingEntity target, CompoundTag args){return primary(cap, target);}
+    protected boolean secondary(LivingEntityBeyonderCapability cap, LivingEntity target, CompoundTag args){return secondary(cap, target);}
 
     /**
      * code that will run whenever the level of this ability is changed.

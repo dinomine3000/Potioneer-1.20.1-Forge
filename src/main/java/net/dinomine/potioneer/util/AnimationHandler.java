@@ -11,8 +11,11 @@ public class AnimationHandler {
     private boolean doLerp = false;
     private boolean tickInReverse = false;
     private String animationPlaying = "";
+    private boolean loop = false;
 
     private HashMap<String, Animation> animations = new HashMap<>();
+
+    public AnimationHandler doLoop(){this.loop = true; return this;}
 
     public AnimationHandler(float endTime, boolean lerp){
         this(endTime, lerp, 0);
@@ -56,8 +59,14 @@ public class AnimationHandler {
     }
 
     public float tick(float deltaTime){
-        if(currentTime > endTime && !tickInReverse) return 1f;
-        if(currentTime < 0 && tickInReverse) return 0f;
+        if(currentTime > endTime && !tickInReverse){
+            if(loop) currentTime = 0;
+            else return 1f;
+        }
+        if(currentTime < 0 && tickInReverse) {
+            if(loop) currentTime = endTime;
+            else return 0f;
+        }
         currentTime = Mth.clamp(currentTime, 0, endTime);
         float dt = deltaTime*speedMult;
         if(doLerp){

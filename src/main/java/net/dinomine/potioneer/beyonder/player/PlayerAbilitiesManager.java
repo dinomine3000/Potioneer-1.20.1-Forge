@@ -547,21 +547,21 @@ public class PlayerAbilitiesManager {
         return true;
     }
 
-    public void useAbility(LivingEntityBeyonderCapability cap, LivingEntity tar, AbilityKey key, boolean sync, boolean primary){
+    public void useAbility(LivingEntityBeyonderCapability cap, LivingEntity tar, AbilityKey key, boolean sync, boolean primary, CompoundTag args){
         if(key.isArtifactKey()){
             ArtifactHolder artifact = artifacts.get(key.getArtifactId());
             if(artifact != null){
                 artifact.castAbility(key, primary, cap, tar);
             }
             if(sync && tar.level().isClientSide()){
-                PacketHandler.sendMessageCTS(new PlayerCastAbilityMessageCTS(key, primary));
+                PacketHandler.sendMessageCTS(new PlayerCastAbilityMessageCTS(key, primary, args));
             }
         } else {
             Ability ability = abilities.get(key);
             if(ability != null){
-                ability.castAbility(cap, tar, primary);
+                ability.castAbility(cap, tar, primary, args);
                 if(sync && tar.level().isClientSide()){
-                    PacketHandler.sendMessageCTS(new PlayerCastAbilityMessageCTS(key, primary));
+                    PacketHandler.sendMessageCTS(new PlayerCastAbilityMessageCTS(key, primary, args));
                 }
             }
         }

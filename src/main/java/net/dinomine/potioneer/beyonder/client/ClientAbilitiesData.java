@@ -12,6 +12,7 @@ import net.dinomine.potioneer.network.PacketHandler;
 import net.dinomine.potioneer.network.messages.abilityRelevant.PlayerSyncHotbarMessage;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
@@ -281,21 +282,7 @@ public class ClientAbilitiesData {
     }
 
 
-    public static void animationTick(float dt){
-        if(animationTime > 0) animationTime = Math.max(animationTime - dt, 0);
-        if(animationTime < 0) animationTime = Math.min(animationTime + dt, 0);
-        ClientLevel level = Minecraft.getInstance().level;
-        if(level == null) return;
-        disabledCountdown -= dt*disableFps/60f;
-        if(disabledCountdown < 0){
-            disabledCountdown = 1;
-            disabledPosition = level.random.nextInt(12);
-        }
-    }
-
     public static boolean configScreenOpenAnimation = false;
-    public static final float maxAnimationtime = 0.65f*20;
-    public static float animationTime = 0;
     private static float time = 0;
     private static HashMap<AbilityKey, AbilityInfo> abilities = new LinkedHashMap<>();
     //private static ArrayList<String> abilitiesByIndex;
@@ -306,18 +293,10 @@ public class ClientAbilitiesData {
      */
     private static int caret = 0;
 
-    public static int getDisabledPosition() {
-        return disabledPosition;
-    }
-
-    private static int disabledPosition = 0;
-    private static float disabledCountdown = 0;
-    private static final int disableFps = 24;
 
     public static void changeCaret(int diff){
-        if(animationTime != 0 || hotbar.isEmpty()) return;
+        if(hotbar.isEmpty()) return;
         caret = Math.floorMod(caret + diff, hotbar.size());
-        animationTime = diff < 0 ? -maxAnimationtime : maxAnimationtime;
         if(diff < 0) AbilitiesHotbarHUD.scrollAnimation.startAnimation("scrollRight", false);
         else AbilitiesHotbarHUD.scrollAnimation.startAnimation("scrollLeft", false);
         if(Minecraft.getInstance().player == null) return;
@@ -371,21 +350,11 @@ public class ClientAbilitiesData {
             player.sendSystemMessage(Component.translatable("message.potioneer.insufficient_spirituality", abilityName));
             return false;
         }
-        if(Abilities.getAbilityFactory(key).getHasSecondaryFunction())
-            beginCastAnimation(primary);
+        if(Abilities.getAbilityFactory(key).getHasSecondaryFunction()) beginCastAnimation(primary);
         else if(ClientConfigData.getHotbarOutlines() && primary) beginCastAnimation(true);
         player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
-//                    System.out.println(caret);
-//                    ClientStatsData.setSpirituality(ClientStatsData.getPlayerSpirituality() - abilities.get(caret).cost());
-            cap.getAbilitiesManager().useAbility(cap, player, key, true, primary);
-//            abilities.get(cAblId).setEnabled(false);
+            cap.getAbilitiesManager().useAbility(cap, player, key, true, primary, new CompoundTag());
         });
-//        if(cooldowns.get(cAblId) == 0){
-//        } else if(cooldowns.get(cAblId) > 0){
-//            player.sendSystemMessage(Component.translatable("potioneer.message.ability_cooldown"));
-//        } else {
-//            player.sendSystemMessage(Component.translatable("potioneer.message.ability_disabled"));
-//        }
         return true;
     }
 
