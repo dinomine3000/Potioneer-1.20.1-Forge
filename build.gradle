@@ -103,9 +103,9 @@ minecraft {
         }
 
         client {
+            // Comma-separated list of namespaces to load gametests from. Empty = all namespaces.
             property 'forge.enabledGameTestNamespaces', mod_id
             property 'forge.logging.console.level', 'debug'
-
             // Reference the variables here
             args "--username=${project.devUsername}", "--uuid=${project.devUUID}", '--skin=./skins/dev1.png'
         }

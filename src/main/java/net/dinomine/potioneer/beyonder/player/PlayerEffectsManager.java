@@ -317,6 +317,9 @@ public class PlayerEffectsManager {
     public boolean hasEffect(String effectId){
         return passives.stream().anyMatch(eff -> eff.is(effectId));
     }
+    public boolean hasEffect(BeyonderEffects.BeyonderEffectType effect){
+        return hasEffect(effect.getEffectId());
+    }
 
     public BeyonderEffect getEffect(String effect){
         int idx = indexOf(effect);

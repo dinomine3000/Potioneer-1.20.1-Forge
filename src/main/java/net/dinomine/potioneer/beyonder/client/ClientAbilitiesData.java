@@ -20,12 +20,18 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 @OnlyIn(Dist.CLIENT)
 public class ClientAbilitiesData {
+    private static Consumer<ArrayList<AbilityInfo>> onListChange = null;
     public static ArrayList<AbilityInfo> getAbilities() {
         return new ArrayList<>(abilities.values().stream().toList());
+    }
+    public static ArrayList<AbilityInfo> getAbilities(Consumer<ArrayList<AbilityInfo>> runOnUpdate) {
+        onListChange = runOnUpdate;
+        return getAbilities();
     }
 
     public static boolean isHotbarValid(){
@@ -133,6 +139,8 @@ public class ClientAbilitiesData {
             else
                 System.out.println("Player is null while trying to update abilities on client side.");
         });
+
+        if(onListChange != null) onListChange.accept(getAbilities());
     }
 
     private static void updateHotbarOnChange(){

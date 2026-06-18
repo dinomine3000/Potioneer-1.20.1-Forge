@@ -20,6 +20,7 @@ import net.minecraft.util.Mth;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 import static net.dinomine.potioneer.beyonder.client.HUD.AbilitiesHotbarHUD.*;
 
@@ -98,7 +99,12 @@ public class BeyonderAbilitiesScreen extends Screen {
         this.hotbarButtonBottom = this.topPos + 69;
         this.hotbarButtonRight = this.leftPos + 163;
 
-        abilities = new ArrayList<>(ClientAbilitiesData.getAbilities());
+        abilities = ClientAbilitiesData.getAbilities(updated -> {
+                Collections.reverse(updated);
+                //TODO verify that ability list isnt being reordered every time, it makes no sense to call reverse here
+                this.abilities = updated;
+            }
+        );
         beyonder = !abilities.isEmpty();
         Collections.reverse(abilities);
         buttons = new ArrayList<>();
@@ -324,7 +330,7 @@ public class BeyonderAbilitiesScreen extends Screen {
             //enabled gradient
             if(!ClientAbilitiesData.isEnabled(key)){
                 pGuiGraphics.fillGradient(posX - 7, posY-9,
-                        (int) (posX + 6 + scale*ICON_WIDTH), (int) (posY - 9 + 58), 0xDD999999, 0xDD666666);
+                        (int) (posX + 6 + scale*ICON_WIDTH), (int) (posY - 9 + 58), 0x44440000, 0x44660000);
             }
             //barrier symbol if ability is disabled
             if(ClientAbilitiesData.getCooldown(key) < 0){
@@ -369,7 +375,10 @@ public class BeyonderAbilitiesScreen extends Screen {
         for(int i = 0; i < Math.min(abilities.size(), 6); i++){
             pGuiGraphics.fillGradient(leftPos + 9, topPos + 75 + i*14, leftPos + 19, topPos + 87 + i*14,
                     0x22000000, 0x11000000);
-
+            if(!abilities.get(i + buttonOffset).isEnabled()){
+                pGuiGraphics.fillGradient(leftPos + 6, topPos + 74 + i*14, leftPos + 155, topPos + 87 + i*14,
+                        0x44000000, 0x44440000);
+            }
             drawAbilityIcon(pGuiGraphics, leftPos + 10, topPos + 75 + i*14, 0.5f, i + buttonOffset, false);
             pGuiGraphics.drawString(this.font, abilities.get(i + buttonOffset).getNameComponent(),
                     leftPos + 22, topPos + 77 + i*14, 0, false);

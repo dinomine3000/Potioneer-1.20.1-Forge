@@ -6,7 +6,6 @@ import net.dinomine.potioneer.beyonder.effects.BeyonderEffect;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
 import net.dinomine.potioneer.beyonder.pathways.WheelOfFortunePathway;
 import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
-import net.dinomine.potioneer.util.MarkedProjectile;
 import net.dinomine.potioneer.sound.ModSounds;
 import net.dinomine.potioneer.util.PotioneerMathHelper;
 import net.minecraft.core.Direction;
@@ -27,7 +26,7 @@ import java.util.Optional;
 
 public class LuckEffect extends BeyonderEffect {
     public static final float dodgeChance = 0.2f;
-    public static final float arrowDodgeMagnitude = 1f;
+    public static final float arrowDodgeMagnitude = 0.2f;
     public static final int dodgeLuckCost = 10;
     public static final int dodgeLuckGain = 0;
     private static final float critBaseChance = 0.3f;
@@ -48,29 +47,29 @@ public class LuckEffect extends BeyonderEffect {
     @Override
     protected void doTick(LivingEntityBeyonderCapability cap, LivingEntity target) {
         if(sequenceLevel > 7) return;
-        if(target.tickCount%10 == target.getId()%10){
-            //arrows avoid target
-            List<Entity> entities = AbilityFunctionHelper.getEntitiesAroundPredicate(target, 15, ent -> ent instanceof Projectile);
-            if(entities.isEmpty()) return;
-            for(Entity ent: entities){
-                if(ent instanceof Projectile projectile && (projectile.getOwner() == null || projectile.getOwner().getId() != target.getId())){
+        //run logic 5 times a second
+        if(target.tickCount%4 != target.getId()%4) return;
+
+        List<Entity> entities = AbilityFunctionHelper.getEntitiesAroundPredicate(target, 8, ent -> ent instanceof Projectile);
+        if(entities.isEmpty()) return;
+        for(Entity ent: entities){
+            if(ent instanceof Projectile projectile && (projectile.getOwner() == null || projectile.getOwner().getId() != target.getId())){
 //                    if(ent instanceof AbstractArrow absArrow)
 //                        System.out.println(absArrow.inGround);
-                    if(ent instanceof AbstractArrow absArrow && absArrow.inGround) continue;
-                    if(projectile instanceof MarkedProjectile dProjectile){
-                        Vec3 arrowMovement = projectile.getDeltaMovement().scale(15);
-                        Vec3 arrowEndpoint = projectile.position().add(arrowMovement);
-                        if(target.getBoundingBox().inflate(0.5).intersects(projectile.position(), arrowEndpoint)){
-                            target.level().playSound(null, target.getOnPos(), ModSounds.ARROW_MISS.get(), SoundSource.PLAYERS, 0.4f, (float) target.getRandom().triangle(1, 0.2));
-                            Vec3 orthogonal = PotioneerMathHelper.getRandomOrthogonalConstantY(arrowMovement.with(Direction.Axis.Y, 0),
-                                    true, arrowDodgeMagnitude);
-                            if(orthogonal.dot(target.position().subtract(projectile.position())) > 0)
-                                orthogonal = orthogonal.scale(-1);
-                            Vec3 newDelta = orthogonal.add(projectile.getDeltaMovement().scale(0.5));
-                            projectile.setDeltaMovement(newDelta);
-                            //                        projectile.addDeltaMovement(projectile.position().subtract(target.position()).normalize().scale(2));
-                        }
-                    }
+                if(ent instanceof AbstractArrow absArrow && absArrow.inGround) continue;
+
+                Vec3 arrowMovement = projectile.getDeltaMovement().scale(8);
+                Vec3 arrowEndpoint = projectile.position().add(arrowMovement);
+                if(target.getBoundingBox().inflate(0.5).intersects(projectile.position(), arrowEndpoint)){
+                    target.level().playSound(null, target.getOnPos(), ModSounds.ARROW_MISS.get(), SoundSource.PLAYERS, 0.4f, (float) target.getRandom().triangle(1, 0.2));
+                    Vec3 orthogonal = PotioneerMathHelper.getRandomOrthogonalConstantY(arrowMovement.with(Direction.Axis.Y, 0),
+                            true, arrowDodgeMagnitude);
+                    if(orthogonal.dot(target.position().subtract(projectile.position())) > 0)
+                        orthogonal = orthogonal.scale(-1);
+                    Vec3 newDelta = orthogonal.add(projectile.getDeltaMovement().scale(0.5));
+                    projectile.setDeltaMovement(newDelta);
+                    projectile.hasImpulse = true;
+                    //                        projectile.addDeltaMovement(projectile.position().subtract(target.position()).normalize().scale(2));
                 }
             }
         }

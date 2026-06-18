@@ -435,12 +435,13 @@ public class BeyonderEvents {
         Player player = event.getEntity();
         player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
             if(event.getCharge() < 5) return;
-            Optional<LivingEntity> optional = AbilityFunctionHelper.getTargetEntity(player, 32, 3, false);
+            Optional<LivingEntity> optional = AbilityFunctionHelper.getTargetEntityClosestToCrosshair(player, 32, 3, false);
             if(optional.isEmpty()) return;
             LivingEntity target = optional.get();
             if(target.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve().isPresent()){
                 LivingEntityBeyonderCapability tarCap = target.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve().get();
-                if(tarCap.getEffectsManager().hasEffect(BeyonderEffects.WHEEL_LUCK_EFFECT.getEffectId())) return;
+                //if the desired target has the luck effect, then we dont aim towards them since itll miss.
+                if(tarCap.getEffectsManager().hasEffect(BeyonderEffects.WHEEL_LUCK_EFFECT)) return;
             }
             ArrowGravitateEffect eff = (ArrowGravitateEffect) BeyonderEffects.WHEEL_ARROW.createInstance(9, 0, 10, true);
             eff.setValues(target, BowItem.getPowerForTime(event.getCharge()) * 3);

@@ -122,6 +122,44 @@ public class AbilityFunctionHelper {
         return getTargetEntity(looker, radius, 0, includeAllies);
     }
 
+    public static Optional<LivingEntity> getTargetEntityClosestToCrosshair(LivingEntity looker, double radius, float inflate, boolean includeAllies){
+        ArrayList<LivingEntity> targets = getLivingEntitiesLooking(looker, radius, inflate);
+        Optional<LivingEntity> result = Optional.empty();
+
+        // Track the highest dot product (closest to 1.0 means closest to crosshair)
+        // We set a minimum threshold (e.g., 0.5) so it doesn't snap to things behind or way off-screen
+        double bestAlignment = 0.5;
+
+        // Get the looker's normalized gaze direction vector
+        Vec3 lookDir = looker.getLookAngle().normalize();
+        Vec3 eyePos = looker.getEyePosition(1.0F);
+
+        for (LivingEntity entity : targets) {
+            // Ally check guard clause
+            if (!looker.level().isClientSide() && !includeAllies && looker instanceof Player lookerPlayer && entity instanceof Player entityPlayer) {
+                AllySystemSaveData allies = AllySystemSaveData.from((ServerLevel) looker.level());
+                if (allies.isPlayerAllyOf(lookerPlayer.getUUID(), entityPlayer.getUUID())) {
+                    continue;
+                }
+            }
+
+            // Calculate direction vector from looker's eyes to target's torso/center
+            Vec3 targetCenter = entity.position().add(0, entity.getBbHeight() * 0.5, 0);
+            Vec3 toTarget = targetCenter.subtract(eyePos).normalize();
+
+            // Dot product reveals angular alignment: 1.0 = perfectly centered, 0.0 = perpendicular, -1.0 = directly behind
+            double alignment = lookDir.dot(toTarget);
+
+            // If this target is better aligned with the crosshair than previous ones, select it
+            if (alignment > bestAlignment) {
+                bestAlignment = alignment;
+                result = Optional.of(entity);
+            }
+        }
+
+        return result;
+    }
+
     public static Optional<LivingEntity> getTargetEntity(LivingEntity looker, double radius, float inflate, boolean includeAllies){
         ArrayList<LivingEntity> targets = getLivingEntitiesLooking(looker, radius, inflate);
         Optional<LivingEntity> result = Optional.empty();
