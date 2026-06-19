@@ -87,8 +87,8 @@ public class AbilitiesHotbarHUD {
         hotbarAnimation.tick(dt);
 
         if(disabledAnimation.tick() == 1) currentDisablePosition = minecraft.player.getRandom().nextInt(0, 12);
-        leftCastCooldownAnimation.tick(dt);
-        rightCastCooldownAnimation.tick(dt);
+        leftCastCooldownAnimation.tick();
+        rightCastCooldownAnimation.tick();
         scrollAnimation.tick();
         if(!shouldDisplayBar()) return;
 

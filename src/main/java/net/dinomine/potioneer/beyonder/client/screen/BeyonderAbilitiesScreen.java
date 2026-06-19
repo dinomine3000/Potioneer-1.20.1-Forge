@@ -4,6 +4,7 @@ import net.dinomine.potioneer.Potioneer;
 import net.dinomine.potioneer.beyonder.abilities.*;
 import net.dinomine.potioneer.beyonder.client.ClientAbilitiesData;
 import net.dinomine.potioneer.beyonder.client.KeyBindings;
+import net.dinomine.potioneer.beyonder.client.TooltipHelper;
 import net.dinomine.potioneer.beyonder.pathways.Pathways;
 import net.dinomine.potioneer.util.CustomImageButton;
 import net.dinomine.potioneer.util.misc.ArtifactHolder;
@@ -160,11 +161,11 @@ public class BeyonderAbilitiesScreen extends Screen {
                 0, imageWidth, imageHeight, TEXTURE_WIDTH, TEXTURE_HEIGHT);
         super.render(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
 
+        drawScroll(pGuiGraphics, scrollLeft, scrollTop);
         if(beyonder){
             drawAbilityIcon(pGuiGraphics, leftPos + 19, topPos + 18, 1.5f, selectedCaret, true, pMouseX, pMouseY);
-            renderExtraButtonItems(pGuiGraphics);
+            renderExtraButtonItems(pGuiGraphics, pMouseX, pMouseY);
         }
-        drawScroll(pGuiGraphics, scrollLeft, scrollTop);
     }
 
     private void createButtons(int i){
@@ -345,16 +346,6 @@ public class BeyonderAbilitiesScreen extends Screen {
             Component short_description = Component.translatable("potioneer.short_desc." + data.descId());
             pGuiGraphics.drawWordWrap(this.font, FormattedText.of(short_description.getString()), abilityDescLeft, abilityDescTop, abilityDescLength, 0);
 
-            //tooltip with longer text
-            if(     //If mouse within big square
-                    (mouseX > leftPos + 59 && mouseX < leftPos + 163
-                    && mouseY > topPos + 16 && mouseY < topPos + 68)
-            &&      //if mouse NOT hovering over button
-                    !(mouseX >= hotbarButtonRight - hotbarButtonSide && mouseX < hotbarButtonRight
-                    && mouseY >= hotbarButtonBottom - hotbarButtonSide && mouseY < hotbarButtonBottom)
-            ){
-                pGuiGraphics.renderTooltip(this.font, Component.translatable("potioneer.long_desc." + data.descId()), mouseX, mouseY);
-            }
         }
 
         //itemstack for artifact
@@ -371,7 +362,7 @@ public class BeyonderAbilitiesScreen extends Screen {
 
     }
 
-    private void renderExtraButtonItems(GuiGraphics pGuiGraphics){
+    private void renderExtraButtonItems(GuiGraphics pGuiGraphics, int mouseX, int mouseY){
         for(int i = 0; i < Math.min(abilities.size(), 6); i++){
             pGuiGraphics.fillGradient(leftPos + 9, topPos + 75 + i*14, leftPos + 19, topPos + 87 + i*14,
                     0x22000000, 0x11000000);
@@ -382,6 +373,17 @@ public class BeyonderAbilitiesScreen extends Screen {
             drawAbilityIcon(pGuiGraphics, leftPos + 10, topPos + 75 + i*14, 0.5f, i + buttonOffset, false);
             pGuiGraphics.drawString(this.font, abilities.get(i + buttonOffset).getNameComponent(),
                     leftPos + 22, topPos + 77 + i*14, 0, false);
+        }
+
+        //tooltip with longer text
+        if(     //If mouse within big square
+                (mouseX > leftPos + 59 && mouseX < leftPos + 163
+                        && mouseY > topPos + 16 && mouseY < topPos + 68)
+                        &&      //if mouse NOT hovering over button
+                        !(mouseX >= hotbarButtonRight - hotbarButtonSide && mouseX < hotbarButtonRight
+                                && mouseY >= hotbarButtonBottom - hotbarButtonSide && mouseY < hotbarButtonBottom)
+        ){
+            TooltipHelper.drawTooltip(pGuiGraphics, mouseX, mouseY, this.width/2, this.width, this.height, Component.translatable("potioneer.long_desc." + abilities.get(selectedCaret).descId()), 0xffffff, this.font);
         }
     }
 
