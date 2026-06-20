@@ -9,7 +9,9 @@ import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingDamageEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 
+import javax.annotation.Nullable;
 import java.util.Optional;
+import java.util.PriorityQueue;
 
 public abstract class BeyonderEffect {
     protected int sequenceLevel;
@@ -18,16 +20,41 @@ public abstract class BeyonderEffect {
     public String name;
     protected String effectId;
     protected int cost = 0;
+    protected boolean active;
+    protected Priority priority = Priority.MEDIUM;
 
+    public int getPriority(){return priority.value;}
+
+    public enum Priority {
+        VERY_HIGH(5),
+        HIGH(4),
+        MEDIUM(3),
+        LOW(2),
+        VERY_LOW(1);
+        private final int value;
+
+        Priority(int value) {
+            this.value = value;
+        }
+    }
     public boolean canAdd(LivingEntityBeyonderCapability cap, LivingEntity target){return true;}
 
     public int getMaxLife(){
         return maxLife;
     }
 
-    protected boolean active;
 
     public BeyonderEffect() {
+        setPriority(9);
+    }
+
+    /**
+     * Override this function to define the priority of this effect.
+     * uses the default value 9.
+     * @param sequenceLevel
+     */
+    protected void setPriority(int sequenceLevel){
+        this.priority = Priority.MEDIUM;
     }
 
     public BeyonderEffect withParams(int sequence, int time, boolean active) {
@@ -40,6 +67,7 @@ public abstract class BeyonderEffect {
         this.maxLife = time;
         this.active = active;
         this.cost = cost;
+        setPriority(sequenceLevel%10);
         return this;
     }
 
@@ -104,7 +132,7 @@ public abstract class BeyonderEffect {
      * @param attacker
      * @return whether it should cancel the event or not
      */
-    public boolean onTakeDamage(LivingDamageEvent event, LivingEntity victim, LivingEntity attacker, LivingEntityBeyonderCapability victimCap, Optional<LivingEntityBeyonderCapability> optAttackerCap, boolean calledOnVictim){return false;}
+    public boolean onTakeDamage(LivingDamageEvent event, LivingEntity victim, @Nullable LivingEntity attacker, LivingEntityBeyonderCapability victimCap, Optional<LivingEntityBeyonderCapability>  attackerCap, boolean calledOnVictim){return false;}
 
     /**
      * runs when the damage has been approved and the amount is being calculated (reduced, increased)
@@ -116,7 +144,7 @@ public abstract class BeyonderEffect {
      * @param calledOnVictim
      * @return
      */
-    public boolean onDamageCalculation(LivingHurtEvent event, LivingEntity victim, LivingEntity attacker, LivingEntityBeyonderCapability victimCap, LivingEntityBeyonderCapability attackerCap, boolean calledOnVictim){return false;}
+    public boolean onDamageCalculation(LivingHurtEvent event, LivingEntity victim,  @Nullable LivingEntity attacker, LivingEntityBeyonderCapability victimCap, Optional<LivingEntityBeyonderCapability>  attackerCap, boolean calledOnVictim){return false;}
 
     /**
      * runs when verifying a damage proposal. here is where you cancel it.
@@ -128,7 +156,7 @@ public abstract class BeyonderEffect {
      * @param calledOnVictim
      * @return
      */
-    public boolean onDamageProposal(LivingAttackEvent event, LivingEntity victim, LivingEntity attacker, LivingEntityBeyonderCapability victimCap, LivingEntityBeyonderCapability attackerCap, boolean calledOnVictim) {return false;}
+    public boolean onDamageProposal(LivingAttackEvent event, LivingEntity victim, @Nullable LivingEntity attacker, LivingEntityBeyonderCapability victimCap, Optional<LivingEntityBeyonderCapability>  attackerCap, boolean calledOnVictim) {return false;}
     /**
      * used for replacement purposes. will return true if theyre the same effect but the argument is of a higher sequence
      * aka, will return true if the argument should replace this

@@ -31,8 +31,8 @@ public class TooltipHelper {
         int posX = Math.min(mouseX, screenWidth - ttWidth);
         int posY = Math.min(mouseY, screenHeight - ttHeight);
         //RenderSystem.setShaderColor((color & 0xff0000) >> 16, (color & 0x00ff00) >> 8, color & 0x0000ff, 1f);
-        guiGraphics.blitNineSlicedSized(TEX, posX, posY, ttWidth, ttHeight, SLICE_SIZE, 65, 38, TEX_X, TEX_Y, TEX_WIDTH, TEX_HEIGHT);
+        guiGraphics.blitNineSlicedSized(TEX, posX, posY, ttWidth, ttHeight, SLICE_SIZE, 11, 15, TEX_X, TEX_Y, TEX_WIDTH, TEX_HEIGHT);
         //RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
         guiGraphics.drawWordWrap(font, text, posX + SLICE_SIZE, posY + SLICE_SIZE, ttWidth - 2* SLICE_SIZE, 0xffffff);
-    }
+    } 
 }

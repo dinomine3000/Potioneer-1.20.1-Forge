@@ -95,7 +95,7 @@ public class LuckEffect extends BeyonderEffect {
     }
 
     @Override
-    public boolean onDamageProposal(LivingAttackEvent event, LivingEntity victim, LivingEntity attacker, LivingEntityBeyonderCapability victimCap, LivingEntityBeyonderCapability attackerCap, boolean calledOnVictim) {
+    public boolean onDamageProposal(LivingAttackEvent event, LivingEntity victim, LivingEntity attacker, LivingEntityBeyonderCapability victimCap, Optional<LivingEntityBeyonderCapability> attackerCap, boolean calledOnVictim) {
         //Dodge Damage received
         if(!calledOnVictim || event.getSource().is(PotioneerDamage.Tags.ABSOLUTE)) return false;
         if(victimCap.getLuckManager().passesLuckCheck(sequenceLevel < 5 ? 0.4f : dodgeChance, dodgeLuckCost, dodgeLuckGain, victim.getRandom())){

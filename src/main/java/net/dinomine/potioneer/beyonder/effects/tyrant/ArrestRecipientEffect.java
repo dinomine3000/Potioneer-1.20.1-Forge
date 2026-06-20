@@ -19,6 +19,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 public class ArrestRecipientEffect extends AbstractSourceRecipientEffect {
@@ -66,7 +67,7 @@ public class ArrestRecipientEffect extends AbstractSourceRecipientEffect {
     }
 
     @Override
-    public boolean onDamageCalculation(LivingHurtEvent event, LivingEntity victim, LivingEntity attacker, LivingEntityBeyonderCapability victimCap, LivingEntityBeyonderCapability attackerCap, boolean calledOnVictim) {
+    public boolean onDamageCalculation(LivingHurtEvent event, LivingEntity victim, LivingEntity attacker, LivingEntityBeyonderCapability victimCap, Optional<LivingEntityBeyonderCapability> attackerCap, boolean calledOnVictim) {
         if(victim.level().isClientSide() || !calledOnVictim || !aoj) return false;
         List<Player> playerList = getPlayerList(victim.level());
         if(playerList.isEmpty()) return false;

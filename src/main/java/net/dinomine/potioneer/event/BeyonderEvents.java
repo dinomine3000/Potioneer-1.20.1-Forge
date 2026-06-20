@@ -379,44 +379,35 @@ public class BeyonderEvents {
     //of the 3, its the first to be called, and the one that can be used to negate damage
     @SubscribeEvent
     public static void onDamageProposed(LivingAttackEvent event){
-        if(event.getSource().getEntity() != null){
-            //FOR THE ATTACKER
-            //runs this code in the context of an entity attacking another
-            if(event.getSource().getEntity().level().isClientSide()) return;
-            event.getSource().getEntity().getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
-                cap.getEffectsManager().onAttackProposal(event, cap);
-            });
-        }
+        if(event.getEntity() == null) return;
+        if(event.getEntity().level().isClientSide()) return;
+        event.getEntity().getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
+            cap.getEffectsManager().onAttackProposal(event, cap);
+        });
     }
 
     //called inbetween the other two, its used to calculate the damage dealt
     @SubscribeEvent
     public static void onDamageCalculation(LivingHurtEvent event) {
-        if(event.getSource().getEntity() != null){
-            //FOR THE ATTACKER
-            //runs this code in the context of an entity attacking another
-            if(event.getSource().getEntity().level().isClientSide()) return;
-            event.getSource().getEntity().getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
-                cap.getEffectsManager().onAttackDamageCalculation(event, cap);
-            });
-            if(event.getEntity().getMobType() == MobType.UNDEAD && event.getSource().is(PotioneerDamage.Tags.PURIFICATION)) event.setAmount(event.getAmount()*2);
-        }
+        if(event.getEntity() == null) return;
+        if(event.getEntity().level().isClientSide()) return;
+        event.getEntity().getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
+            cap.getEffectsManager().onAttackDamageCalculation(event, cap);
+        });
+        if(event.getEntity().getMobType() == MobType.UNDEAD && event.getSource().is(PotioneerDamage.Tags.PURIFICATION)) event.setAmount(event.getAmount()*2);
     }
 
 
     //the last one to be called, once the hit has been confirmed and adjusted for. damage should not change in this event.
     @SubscribeEvent
     public static void onEntityTakeDamage(LivingDamageEvent event){
-        if(event.getEntity() != null){
-            //if(player.level().isClientSide()) return;
-            LivingEntity entity = event.getEntity();
-            entity.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
-                if(event.getSource().is(PotioneerDamage.Tags.MENTAL)){
-                    cap.changeSanity(-event.getAmount()/2f);
-                }
-                cap.getEffectsManager().onTakeDamage(event, cap);
-            });
-        }
+        if(event.getEntity() == null) return;
+        event.getEntity().getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
+            if(event.getSource().is(PotioneerDamage.Tags.MENTAL)){
+                cap.changeSanity(-event.getAmount()/2f);
+            }
+            cap.getEffectsManager().onTakeDamage(event, cap);
+        });
     }
 
     @SubscribeEvent

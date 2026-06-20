@@ -15,6 +15,8 @@ import net.minecraft.world.entity.Pose;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 
+import java.util.Optional;
+
 public class MistEffect extends BeyonderEffect {
     @Override
     public void onAcquire(LivingEntityBeyonderCapability cap, LivingEntity target) {
@@ -47,7 +49,7 @@ public class MistEffect extends BeyonderEffect {
     }
 
     @Override
-    public boolean onDamageProposal(LivingAttackEvent event, LivingEntity victim, LivingEntity attacker, LivingEntityBeyonderCapability victimCap, LivingEntityBeyonderCapability attackerCap, boolean calledOnVictim) {
+    public boolean onDamageProposal(LivingAttackEvent event, LivingEntity victim, LivingEntity attacker, LivingEntityBeyonderCapability victimCap, Optional<LivingEntityBeyonderCapability> attackerCap, boolean calledOnVictim) {
         if(victim.level().isClientSide() || !calledOnVictim) return false;
         return !event.getSource().is(PotioneerDamage.Tags.ABSOLUTE) && !event.getSource().is(PotioneerDamage.Tags.ANNIHILATION) && !event.getSource().is(PotioneerDamage.Tags.MENTAL)
                 && (victim.getMobType() != MobType.UNDEAD || !event.getSource().is(PotioneerDamage.Tags.PURIFICATION));

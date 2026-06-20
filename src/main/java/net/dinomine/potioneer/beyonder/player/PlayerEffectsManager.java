@@ -14,34 +14,39 @@ import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 public class PlayerEffectsManager {
-    private ArrayList<BeyonderEffect> passives = new ArrayList<>();
+    private final PriorityQueue<BeyonderEffect> passives = new PriorityQueue<>(Comparator.comparingInt(BeyonderEffect::getPriority));
     public BeyonderStats statsHolder;
 
+    //called from victim perspective
     public void onAttackProposal(LivingAttackEvent event, LivingEntityBeyonderCapability cap){
+        //1: get attacker
         LivingEntity attacker;
         if(event.getSource().getEntity() instanceof LivingEntity){
             attacker = (LivingEntity) event.getSource().getEntity();
         } else if (event.getSource().getDirectEntity() instanceof LivingEntity){
             attacker = (LivingEntity) event.getSource().getDirectEntity();
         } else attacker = null;
-        LivingEntity victim = event.getEntity();
-        Optional<LivingEntityBeyonderCapability> optCap = victim.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve();
-        if(!optCap.isPresent()) return;
-        LivingEntityBeyonderCapability victimCap = optCap.get();
 
-        for(BeyonderEffect effect: passives){
-            if(effect.onDamageProposal(event, victim, attacker, victimCap, cap, false)){
-                if(event.isCancelable()) event.setCanceled(true);
-                return;
+        //2: get attacker cap
+        LivingEntity victim = event.getEntity();
+        Optional<LivingEntityBeyonderCapability> optAttackerCap = Optional.empty();
+        if(attacker != null){
+            optAttackerCap = attacker.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve();
+        }
+
+        if(optAttackerCap.isPresent()){
+            for(BeyonderEffect effect: optAttackerCap.get().getEffectsManager().passives){
+                if(effect.onDamageProposal(event, victim, attacker, cap, optAttackerCap, false)){
+                    if(event.isCancelable()) event.setCanceled(true);
+                    return;
+                }
             }
         }
-        for(BeyonderEffect effect: victimCap.getEffectsManager().passives){
-            if(effect.onDamageProposal(event, victim, attacker, victimCap, cap, true)){
+        for(BeyonderEffect effect: passives){
+            if(effect.onDamageProposal(event, victim, attacker, cap, optAttackerCap, true)){
                 if(event.isCancelable()) event.setCanceled(true);
                 return;
             }
@@ -54,162 +59,71 @@ public class PlayerEffectsManager {
      * @param cap
      */
     public void onAttackDamageCalculation(LivingHurtEvent event, LivingEntityBeyonderCapability cap){
+        //1: get attacker
         LivingEntity attacker;
         if(event.getSource().getEntity() instanceof LivingEntity){
             attacker = (LivingEntity) event.getSource().getEntity();
         } else if (event.getSource().getDirectEntity() instanceof LivingEntity){
             attacker = (LivingEntity) event.getSource().getDirectEntity();
         } else attacker = null;
+
+        //2: get attacker cap
         LivingEntity victim = event.getEntity();
-
-        Optional<LivingEntityBeyonderCapability> optCap = victim.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve();
-        if(optCap.isEmpty()) return;
-        LivingEntityBeyonderCapability victimCap = optCap.get();
-
-        for(BeyonderEffect effect: passives){
-            if(effect.onDamageCalculation(event, victim, attacker, victimCap, cap, false)){
-                if(event.isCancelable()) event.setCanceled(true);
-                else event.setAmount(0);
-                return;
-            }
+        Optional<LivingEntityBeyonderCapability> optAttackerCap = Optional.empty();
+        if(attacker != null){
+            optAttackerCap = attacker.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve();
         }
-        for(BeyonderEffect effect: victimCap.getEffectsManager().passives){
-            if(effect.onDamageCalculation(event, victim, attacker, victimCap, cap, true)){
-                if(event.isCancelable()) event.setCanceled(true);
-                else event.setAmount(0);
-                return;
-            }
-        }
-//        if(attacker instanceof Player player){
-            //additions
-//            if(hasEffect(BeyonderEffects.TYRANT_ELECTRIFICATION) && player.getMainHandItem().is(ModTags.Items.ELECTRIFICATION_WEAPONS)){
-//                player.level().playSound(null, player, SoundEvents.LIGHTNING_BOLT_IMPACT, SoundSource.PLAYERS, 1, 0.5f);
-//                dmg += 5;
-//            }
-//            if(hasEffect(BeyonderEffects.RED_LIGHT_BUFF)){
-//                dmg += 4;
-//            }
-//            if(hasEffect(BeyonderEffects.RED_FIRE_BUFF)){
-//                if(player.isOnFire() && cap.getSpirituality() >= getEffect(BeyonderEffects.EFFECT.RED_FIRE_BUFF).getCost()){
-//                    dmg += 2;
-//                    cap.requestActiveSpiritualityCost(getEffect(BeyonderEffects.EFFECT.RED_FIRE_BUFF).getCost());
-//                }
-//            }
-//            if(hasEffect(BeyonderEffects.EFFECT.RED_WEAPON_PROFICIENCY)){
-//                BeyonderEffect eff = getEffect(BeyonderEffects.EFFECT.RED_WEAPON_PROFICIENCY);
-//                InteractionHand hand = player.getUsedItemHand();
-//
-//                boolean arrow = false;
-//                if(event.getSource().getDirectEntity() != null){
-//                    arrow = event.getSource().getDirectEntity().getType().is(EntityType.ARROW.getTags().toList().get(0));
-//                }
-//                if(player.getItemInHand(hand).is(ModTags.Items.WEAPON_PROFICIENCY) || arrow){
-//                    dmg *= ((10-eff.getSequenceLevel()) * 0.3f + 1f);
-//                }
-//            }
-//            if(hasEffect(BeyonderEffects.EFFECT.MYSTERY_REGEN)
-//                    && attacker.position().distanceTo(event.getEntity().position()) < MysteryPathway.MAX_SAP_DISTANCE){
-//                BeyonderRegenEffect eff = (BeyonderRegenEffect) getEffect(BeyonderEffects.EFFECT.MYSTERY_REGEN);
-//                if(attacker == event.getEntity().getLastAttacker()){
-//                    eff.combo = Math.min(3, eff.combo+1);
-//                } else {
-//                    eff.combo = 0;
-//                }
-//                int max = cap.getMaxSpirituality();
-//                cap.requestActiveSpiritualityCost(-1 * (0.0125f*max*(eff.combo+1)));
-//                player.addEffect(new MobEffectInstance(MobEffects.REGENERATION, 20, (1+eff.combo), true, true, true));
-//                player.getFoodData().eat(1, 0);
-//            }
-//
-//            //mults
-//            if(hasEffectOrBetter(BeyonderEffects.EFFECT.TYRANT_WATER_AFFINITY, 7)){
-//                if(player.isInWater() || player.level().isRaining() || player.level().isThundering()){
-//                    dmg *=2;
-//                }
-//            }
-//            if(hasEffect(BeyonderEffects.EFFECT.RED_PURIFICATION)
-//                    && (event.getEntity().getMobType() == MobType.UNDEAD || event.getEntity().isOnFire())){
-//                BeyonderEffect effe = getEffect(BeyonderEffects.EFFECT.RED_PURIFICATION);
-//                dmg *= 1.2f + 0.1f*(8 - effe.getSequenceLevel());
-//            }
-//        }
-    }
 
-    public void onTakeDamage(LivingDamageEvent event, LivingEntityBeyonderCapability cap){
-        LivingEntity victim = event.getEntity();
-        LivingEntity attacker;
-        if(event.getSource().getEntity() instanceof LivingEntity){
-            attacker = (LivingEntity) event.getSource().getEntity();
-        } else if (event.getSource().getDirectEntity() instanceof LivingEntity){
-            attacker = (LivingEntity) event.getSource().getDirectEntity();
-        } else attacker = null;
-        for(BeyonderEffect effect: passives){
-            if(effect.onTakeDamage(event, victim, attacker, cap, attacker == null ? Optional.empty() : attacker.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve(), true)){
-                if(event.isCancelable()) event.setCanceled(true);
-                else event.setAmount(0);
-                return;
-            }
-        }
-        if(attacker == null) return;
-        if(attacker.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve().isPresent()){
-            LivingEntityBeyonderCapability attackerCap = attacker.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve().get();
-            for(BeyonderEffect effect: attackerCap.getEffectsManager().passives){
-                if(effect.onTakeDamage(event, victim, attacker, cap, Optional.of(attackerCap), false)){
+        if(optAttackerCap.isPresent()) {
+            for(BeyonderEffect effect: optAttackerCap.get().getEffectsManager().passives){
+                if(effect.onDamageCalculation(event, victim, attacker, cap, optAttackerCap, false)){
                     if(event.isCancelable()) event.setCanceled(true);
-                    else event.setAmount(0);
                     return;
                 }
             }
         }
-//        if(hasEffect(BeyonderEffects.EFFECT.TYRANT_ELECTRIFICATION)){
-//            if(event.getSource().is(DamageTypeTags.IS_LIGHTNING)){
-//                event.setAmount(0);
-//            }
-//        }
-//        if(hasEffect(BeyonderEffects.EFFECT.WHEEL_DAMAGE_REDUCE)){
-//            BeyonderEffect reductionEffect = getEffect(BeyonderEffects.EFFECT.WHEEL_DAMAGE_REDUCE, cap.getSequenceLevel());
-//            if(cap.getLuckManager().passesLuckCheck(
-//                    BeyonderLuckReduceDamageEffect.reduceChance,
-//                    BeyonderLuckReduceDamageEffect.luckCost,
-//                    BeyonderLuckReduceDamageEffect.luckGain,
-//                    entity.getRandom())){
-//                cap.requestActiveSpiritualityCost(reductionEffect.getCost());
-//                if(reductionEffect.getSequenceLevel() < BeyonderLuckReduceDamageEffect.sequenceForNegation){
-//                    event.setAmount(0);
-//                } else {
-//                    event.setAmount(event.getAmount()*BeyonderLuckReduceDamageEffect.damageReduction);
-//                }
-//            }
-//        }
-//        if(hasEffect(BeyonderEffects.EFFECT.MYSTERY_FIGURINE) && event.getAmount() >= entity.getHealth()){
-//            BeyonderFigurineEffect effect = (BeyonderFigurineEffect) getEffect(BeyonderEffects.EFFECT.MYSTERY_FIGURINE);
-//            Iterable<ItemStack> items = entity.getAllSlots();
-//            if(entity instanceof Player player) items = player.getInventory().items;
-//            for(ItemStack testItem: items){
-//                if(testItem.is(ModItems.VOODOO_DOLL.get()) && cap.getSpirituality() > effect.getCost()){
-//                    if(entity instanceof Player player)
-//                        entity.level().playSound(player, entity.getOnPos(), SoundEvents.TOTEM_USE, SoundSource.PLAYERS, 1, 1);
-//                    BlockPos pos = entity.getOnPos();
-//                    cap.requestActiveSpiritualityCost(effect.getCost());
-//                    entity.setHealth(3);
-//                    event.setAmount(0);
-//                    ItemEntity drop = new ItemEntity(entity.level(), pos.getX(), pos.getY(), pos.getZ(), testItem.copyWithCount(1));
-//                    testItem.setCount(testItem.getCount() - 1);
-//                    // TODO: Drop unusable copy of voodoo doll
-//                    //entity.level().addFreshEntity(drop);
-//                    entity.playSound(SoundEvents.TOTEM_USE, 1, 1);
-//                    addEffect(new BeyonderInvisibilityEffect(effect.getSequenceLevel(), 0, 1200, true, BeyonderEffects.EFFECT.MYSTERY_INVIS), cap, entity);
-//                    break;
-//                }
-//            }
-//        }
+        for(BeyonderEffect effect: passives){
+            if(effect.onDamageCalculation(event, victim, attacker, cap, optAttackerCap, true)){
+                if(event.isCancelable()) event.setCanceled(true);
+                return;
+            }
+        }
+    }
+
+    public void onTakeDamage(LivingDamageEvent event, LivingEntityBeyonderCapability cap){
+        //1: get attacker
+        LivingEntity attacker;
+        if(event.getSource().getEntity() instanceof LivingEntity){
+            attacker = (LivingEntity) event.getSource().getEntity();
+        } else if (event.getSource().getDirectEntity() instanceof LivingEntity){
+            attacker = (LivingEntity) event.getSource().getDirectEntity();
+        } else attacker = null;
+
+        //2: get attacker cap
+        LivingEntity victim = event.getEntity();
+        Optional<LivingEntityBeyonderCapability> optAttackerCap = Optional.empty();
+        if(attacker != null){
+            optAttackerCap = attacker.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve();
+        }
+
+        if(optAttackerCap.isPresent()){
+            for(BeyonderEffect effect: optAttackerCap.get().getEffectsManager().passives){
+                if(effect.onTakeDamage(event, victim, attacker, cap, optAttackerCap, false)){
+                    if(event.isCancelable()) event.setCanceled(true);
+                    return;
+                }
+            }
+        }
+        for(BeyonderEffect effect: passives){
+            if(effect.onTakeDamage(event, victim, attacker, cap, optAttackerCap, true)){
+                if(event.isCancelable()) event.setCanceled(true);
+                return;
+            }
+        }
     }
 
 
     public void onCraft(PlayerEvent.ItemCraftedEvent event, LivingEntityBeyonderCapability cap){
-//        if(hasEffect(BeyonderEffects.EFFECT.PARAGON_CRAFTING_SPIRITUALITY)){
-//            cap.changeSpirituality(cap.getMaxSpirituality() * 0.01f);
-//        }
     }
 
     public void onPlayerDie(LivingDeathEvent event, LivingEntityBeyonderCapability cap) {
@@ -232,7 +146,7 @@ public class PlayerEffectsManager {
         for(BeyonderEffect eff : passives){
             eff.stopEffects(cap, target);
         }
-        this.passives = new ArrayList<>();
+        this.passives.clear();
     }
 
     public boolean hasEffectOrBetter(BeyonderEffect effect){
@@ -286,20 +200,6 @@ public class PlayerEffectsManager {
         return true;
     }
 
-    public int indexOf(String effectId){
-        for(int i = 0; i < passives.size(); i++){
-            if(passives.get(i).is(effectId)) return i;
-        }
-        return -1;
-    }
-
-    public int indexOf(String effect, int seq){
-        for(int i = 0; i < passives.size(); i++){
-            if(passives.get(i).is(effect, seq)) return i;
-        }
-        return -1;
-    }
-
     /**
      * returns true if it finds an effect of the same ID and sequence
      * @param effectId
@@ -322,35 +222,57 @@ public class PlayerEffectsManager {
     }
 
     public BeyonderEffect getEffect(String effect){
-        int idx = indexOf(effect);
-        if(idx < 0) return null;
-        return passives.get(idx);
+        for (BeyonderEffect eff : passives) {
+            if(eff.is(effect)) return eff;
+        }
+        return null;
     }
 
     public BeyonderEffect getEffect(String effect, int seq){
-        int idx = indexOf(effect, seq);
-        if(idx < 0) return null;
-        return passives.get(idx);
+        for (BeyonderEffect eff : passives) {
+            if(eff.is(effect, seq)) return eff;
+        }
+        return null;
+    }
+
+    public boolean instantRemoveEffect(LivingEntityBeyonderCapability cap, LivingEntity target, String effect){
+        return passives.removeIf(eff -> {
+            if(!eff.is(effect)) return false;
+            eff.stopEffects(cap, target);
+            sendUpdateToClient(List.of(eff), BeyonderEffectSyncMessage.REMOVE, target);
+            return true;
+        });
+    }
+
+    public boolean instantRemoveEffect(LivingEntityBeyonderCapability cap, LivingEntity target, String effect, int sequenceLevel){
+        return passives.removeIf(eff -> {
+            if(!eff.is(effect, sequenceLevel)) return false;
+            eff.stopEffects(cap, target);
+            sendUpdateToClient(List.of(eff), BeyonderEffectSyncMessage.REMOVE, target);
+            return true;
+        });
     }
 
     public boolean removeEffect(String effect){
+        boolean flag = false;
         for (BeyonderEffect passive : passives) {
             if (passive.is(effect)) {
                 passive.endEffectWhenPossible();
-                return true;
+                flag = true;
             }
         }
-        return false;
+        return flag;
     }
 
     public boolean removeEffect(String effect, int seq){
+        boolean flag = false;
         for (BeyonderEffect passive : passives) {
             if (passive.is(effect, seq)) {
                 passive.endEffectWhenPossible();
-                return true;
+                flag = true;
             }
         }
-        return false;
+        return flag;
     }
 
     private void sendUpdateToClient(List<BeyonderEffect> effects, int operation, LivingEntity target){
@@ -378,7 +300,7 @@ public class PlayerEffectsManager {
     }
 
     public void syncToClient(Player player) {
-        sendUpdateToClient(passives, BeyonderEffectSyncMessage.SET, player);
+        sendUpdateToClient(new ArrayList<>(passives), BeyonderEffectSyncMessage.SET, player);
     }
 
     public void onTick(LivingEntityBeyonderCapability cap, LivingEntity target){
@@ -404,22 +326,21 @@ public class PlayerEffectsManager {
     }
 
     private void sweepEffects(LivingEntityBeyonderCapability cap, LivingEntity target){
-        for (int i = passives.size()-1; i >= 0; i--) {
-            if(passives.get(i).endsWithin(0)){
-                BeyonderEffect eff = passives.get(i);
-                eff.stopEffects(cap, target);
-                passives.remove(i);
-                sendUpdateToClient(List.of(eff), BeyonderEffectSyncMessage.REMOVE, target);
-            }
-        }
+        passives.removeIf(eff -> {
+            if(!eff.endsWithin(0)) return false;
+            eff.stopEffects(cap, target);
+            sendUpdateToClient(List.of(eff), BeyonderEffectSyncMessage.REMOVE, target);
+            return true;
+        });
     }
 
     public void saveNBTData(CompoundTag nbt){
         CompoundTag effectsNbt = new CompoundTag();
         effectsNbt.putInt("size", passives.size());
-        for(int i = 0; i < passives.size(); i++){
+        int i = 0;
+        for(BeyonderEffect eff: passives){
             CompoundTag iterator = new CompoundTag();
-            passives.get(i).toNbt(iterator);
+            eff.toNbt(iterator);
             effectsNbt.put(String.valueOf(i), iterator);
         }
         nbt.put("effectData", effectsNbt);

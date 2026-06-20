@@ -48,14 +48,14 @@ public class AuraSourceEffect extends BeyonderEffect {
     }
 
     @Override
-    public boolean onDamageCalculation(LivingHurtEvent event, LivingEntity victim, LivingEntity attacker, LivingEntityBeyonderCapability victimCap, LivingEntityBeyonderCapability attackerCap, boolean calledOnVictim) {
+    public boolean onDamageCalculation(LivingHurtEvent event, LivingEntity victim, LivingEntity attacker, LivingEntityBeyonderCapability victimCap, Optional<LivingEntityBeyonderCapability> attackerCap, boolean calledOnVictim) {
         if(attacker == null || victim.level().isClientSide() || !calledOnVictim) return false;
-        if(attackerCap.isBeyonder() && victimCap.getSequenceLevel() > attackerCap.getSequenceLevel()) return false;
+        if(attackerCap.isEmpty()) return false;
+        if(attackerCap.get().isBeyonder() && victimCap.getSequenceLevel() > attackerCap.get().getSequenceLevel()) return false;
         if(!AreaOfJurisdictionAbility.isTargetUnderInfluenceOfEnforcer(attacker, victim)) return false;
         event.setAmount(event.getAmount()/2f);
         if(attacker instanceof Mob mob && (mob.getLastAttacker() == null || !mob.getLastAttacker().is(victim)) && mob.getTarget() != null && mob.getTarget().is(victim) && mob.getMaxHealth() < victim.getHealth()){
             mob.setTarget(null);
-            mob.setLastHurtMob(null);
             mob.setLastHurtByMob(null);
             mob.setLastHurtByPlayer(null);
         }

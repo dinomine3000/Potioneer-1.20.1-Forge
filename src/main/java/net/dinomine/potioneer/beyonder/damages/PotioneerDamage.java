@@ -19,9 +19,11 @@ import java.util.Map;
 /**
  * i did all the damage type / damage sources thanks to the open source code of the Draconic Evolution mod.
  * I do not claim to have made this by myself. and by this i mean anything to do with damage source/damage type and damage tags creation or alteration.
+ *
+ * when adding a new damage source, dont forget to go to DamageTypeGenerator to add it to any relevant tags
  */
 public class PotioneerDamage {
-    private static Map<ResourceKey<DamageType>, DamageSource> SOURCES = new HashMap<>();
+    private static final Map<ResourceKey<DamageType>, DamageSource> SOURCES = new HashMap<>();
 
     public static final ResourceKey<DamageType> CRIT = ResourceKey.create(Registries.DAMAGE_TYPE, new ResourceLocation(Potioneer.MOD_ID, "crit"));
     public static final ResourceKey<DamageType> CHRYON_PIERCE = ResourceKey.create(Registries.DAMAGE_TYPE, new ResourceLocation(Potioneer.MOD_ID, "chryon_pierce"));
