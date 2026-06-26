@@ -7,11 +7,13 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.dinomine.potioneer.beyonder.pages.Page;
 import net.dinomine.potioneer.beyonder.pages.PageRegistry;
 import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
+import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 
 import java.util.ArrayList;
 
@@ -25,7 +27,10 @@ public class SetBeyonderCommand {
                                 .executes(this::setSequence))))
                 .then(Commands.literal("reset")
                         .then(Commands.argument("target", EntityArgument.entity())
-                            .executes(this::resetSequence)))
+                                .executes(this::resetSequence)))
+                .then(Commands.literal("drop")
+                        .then(Commands.argument("target", EntityArgument.entity())
+                                .executes(this::dropSequence)))
                 .then(Commands.literal("consume")
                         .then(Commands.argument("target", EntityArgument.entity())
                                 .then(Commands.argument("id", IntegerArgumentType.integer())
@@ -76,6 +81,21 @@ public class SetBeyonderCommand {
             if(!(target instanceof LivingEntity lTarget)) return 0;
             lTarget.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap ->{
                 cap.advance(IntegerArgumentType.getInteger(cmd, "id"), false);
+            });
+            return 1;
+        } catch (CommandSyntaxException e) {
+            return 0;
+        }
+    }
+
+
+    private int dropSequence(CommandContext<CommandSourceStack> cmd){
+        try {
+            Entity target = EntityArgument.getEntity(cmd, "target");
+            if(!(target instanceof LivingEntity lTarget)) return 0;
+            lTarget.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
+                cap.dropSequenceLevel();
+                if(lTarget instanceof Player player) cap.syncSequenceData(player);
             });
             return 1;
         } catch (CommandSyntaxException e) {

@@ -1,5 +1,6 @@
 package net.dinomine.potioneer.config;
 
+import net.dinomine.potioneer.beyonder.pathways.Pathways;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
@@ -8,6 +9,7 @@ import net.minecraft.world.item.Items;
 import net.minecraftforge.common.ForgeConfigSpec;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class PotioneerCommonConfig {
@@ -29,6 +31,8 @@ public class PotioneerCommonConfig {
     public static final ForgeConfigSpec.IntValue MIN_SEQUENCE_TO_SWITCH_PATHWAYS;
     public static final ForgeConfigSpec.IntValue ARTIFACT_CONVERSION_CHANCE;
     public static final ForgeConfigSpec.IntValue ARTIFACT_CONVERSION_COOLDOWN;
+    public static final ForgeConfigSpec.DoubleValue PATHWAY_SANITY_PENALTY;
+    public static final ForgeConfigSpec.DoubleValue GROUP_SANITY_PENALTY;
     public static final ForgeConfigSpec.ConfigValue<List<String>> INTERCHANGEABLE_PATHWAYS;
     public static final ForgeConfigSpec.ConfigValue<List<String>> ITEM_GEN_LUCK_EVENT_ITEMS;
     private static final ForgeConfigSpec.ConfigValue<List<String>> RANDOM_ARTIFACT_ITEM_LIST;
@@ -193,8 +197,23 @@ public class PotioneerCommonConfig {
                 "\nIf more than 1 entry contain the same id, those entries will be discarded." +
                 "\nPathways not present here will not be interchangeable." +
                 "\nThe default format for a pathway group is just the pathway IDs separated by a hyphen (-)" +
+                "\nThis affects both the advancement minigame difficulty, as well as the maximum sanity of multiple-pathway-beyonders" +
                 "\nThe IDs for the 5 default pathways are: Miner - 0, Swimmer - 1, Trickster - 2, Warrior - 3, Crafter - 4")
                         .define("pathway_groups", new ArrayList<>(List.of("1-3", "2-4")));
+
+        PATHWAY_SANITY_PENALTY = BUILDER.comment("For people that consume characteristics of more than one pathway (see above), what is the sanity penalty for each individual pathway past 1?" +
+                "\nIf the penalty is 10%, that means the maximum sanity for a pure WoF beyonder if 100%, but if they then consume a characteristic for a neighboring pathway, " +
+                "\nthe maximum (once fully digested) will be 90%. 80% if they consume a third pathway in the same group, etc..." +
+                "\nThis works differently for non-neighboring pathways, check below this setting." +
+                "\nOf note, this does NOT take into consideration the interchange sequence level, that only affect the advancement minigame difficulty")
+                .defineInRange("pathway_sanity_penalty", 0.1d, 0d, 1d);
+
+        GROUP_SANITY_PENALTY = BUILDER.comment("For people that consume characteristics of DIFFERENT GROUPS pathways (see above), what is the sanity penalty for each group present past 1?" +
+                "\nIf the penalty is 20%, that means that, for each pathway-group consumed, their maximum sanity is lowered by 20%" +
+                "\nIf a WoF beyonder consumes 2 characteristics, each from completely different groups, their maximum sanity will be 60% if just taking this setting into account," +
+                "\nand 40% if taking the setting above into account (20% for each group thats not WoF, then another 10% for each pathway thats not WoF" +
+                "\nIf instead the third characteristics were of the same pathway as the second, then they'd only be hit with 70% maximum (20% since they have 2 pathway groups, 1 more than 1, and another 10% because of the individual pathways present)")
+                .defineInRange("group_sanity_penalty", 0.2d, 0d, 1d);
 
         CONSUME_PAGE_ON_USE = BUILDER.comment("When reading a knowledge page and adding it to the beyonder book, should the page be consumed?")
                 .define("consume_page_on_use", false);
@@ -292,5 +311,54 @@ public class PotioneerCommonConfig {
 
         BUILDER.pop();
         SPEC = BUILDER.build();
+    }
+
+
+    /**
+     * collects pathway groups, each as a list of ints.
+     * @return
+     */
+    public static ArrayList<ArrayList<Integer>> getPathwayGroups(){
+        //first, count all pathway id appearances.
+        //if any entry isnt an int, skip it but keep counting that group
+        //if any entry doesnt point to a proper pathway, skip it but keep counting that group.
+        List<String> proposedGroups = INTERCHANGEABLE_PATHWAYS.get();
+        HashMap<Integer, Integer> pathwayCount = new HashMap<>();
+        for(String group: proposedGroups){
+            String[] ids = group.split("-");
+            for(String id: ids){
+                try{
+                    id = id.strip();
+                    int pathwayId = Integer.parseInt(id);
+                    if(Pathways.getPathwayById(pathwayId) != null)
+                        pathwayCount.merge(pathwayId, 1, Integer::sum);
+                } catch (Exception ignored){}
+            }
+        }
+        //then start building the resulting list. it must be a list, and each item must be able to answer the question "do you contain this id?". hence why a nested array list.
+        ArrayList<ArrayList<Integer>> resList = new ArrayList<>();
+        loop:
+        for(String group: proposedGroups){
+            //do the same split as before, but start a new arraylist for this group.
+            String[] ids = group.split("-");
+            ArrayList<Integer> groupList = new ArrayList<>();
+            for(String id: ids){
+                try{
+                    id = id.strip();
+                    int pathwayId = Integer.parseInt(id);
+                    if(Pathways.getPathwayById(pathwayId) != null){
+                        //by this point, the id: 1) is a number and 2) points to a proper pathway
+                        if(pathwayCount.get(pathwayId) > 1) continue loop;
+                        //we continue with the outer loop if we find even a single pathway id that appeared more than once, since that invalidades the grouping.
+                        //otherwise, we just add it to the group list.
+                        groupList.add(pathwayId);
+                    }
+                } catch (Exception ignored){}
+            }
+            //if we get to the end of the outer for loop, we can add the group list to the resulting list so long as we actually got something.
+            if(!groupList.isEmpty())
+                resList.add(groupList);
+        }
+        return resList;
     }
 }

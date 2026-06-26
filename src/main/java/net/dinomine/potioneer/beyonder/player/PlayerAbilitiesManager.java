@@ -228,22 +228,39 @@ public class PlayerAbilitiesManager {
         artifacts = new LinkedHashMap<>();
     }
 
-    public void grantAbilities(List<Ability> newAbilities, int pathwaySequenceId, LivingEntityBeyonderCapability cap, LivingEntity target) {
-        //first, upgrade all existing intrinsic abilities to max sequence level, regardless of their original pathway.
-        upgradeAbilitiesToLevel(pathwaySequenceId%10, cap, target);
-        //then grant new abilities
-        for(Ability abl: newAbilities){
-            //already checks if it exists
-            addAbility(AbilityList.INTRINSIC.name(), abl, cap, target, true, false);
+    public void grantIntrinsicAbilities(List<Ability> abilitiesToSet, int pathwaySequenceId, boolean runOnAcquire, LivingEntityBeyonderCapability cap, LivingEntity target) {
+        if(abilitiesToSet.isEmpty()){
+            cap.getAbilitiesManager().clearAbilities(cap, target);
+            return;
         }
-        //then replace any cogitation abilities with the
-        replaceCogitation(pathwaySequenceId, cap, target, true);
+
+        //first, remove abilities you lose. they shouldnt be affecting you anymore.
+        //only removes abilities that are intrinsic
+        List<AbilityKey> keysToRemove = new ArrayList<>();
+        for(Ability abl: abilities.values().stream().filter(abl -> abl.getType().equalsIgnoreCase(AbilityList.INTRINSIC.name())).toList()){
+            if(abilitiesToSet.stream().noneMatch(abl::is))
+                keysToRemove.add(abl.getAbilityKey());
+        }
+        //sync false since we update in the end
+        keysToRemove.forEach(key -> removeIntrinsicAbility(key, cap, target, false));
+
+        //then, upgrade/downgrade any and all existing intrinsic abilities to the target sequence level, regardless of their original pathway.
+        upgradeAbilitiesToLevel(pathwaySequenceId%10, cap, target);
+
+        //then grant new abilities
+        for(Ability abl: abilitiesToSet){
+            //already checks if it exists
+            addAbility(AbilityList.INTRINSIC.name(), abl, cap, target, runOnAcquire, false);
+        }
+        //then replace any cogitation abilities with the pathway one, so it shows up first.
+        replaceCogitation(pathwaySequenceId, cap, target, runOnAcquire);
 
         //finally, update client info
-        if(target instanceof Player player) updateClientAbilityInfo(player, AbilitySyncMessage.SET);
+        if(target instanceof Player player) updateSetClientAbilityInfo(player);
     }
 
     public void replaceCogitation(int pathwaySequenceId, LivingEntityBeyonderCapability cap, LivingEntity target, boolean runOnAcquire) {
+        if(abilities.isEmpty()) return;
         for(AbilityKey key: new ArrayList<>(abilities.keySet())){
             if(key.isSameAbility(Abilities.COGITATION.getAblId())){
                 abilities.remove(key);
@@ -255,7 +272,7 @@ public class PlayerAbilitiesManager {
 
     private void upgradeAbilitiesToLevel(int sequenceLevel, LivingEntityBeyonderCapability cap, LivingEntity target){
         for(Ability abl: new ArrayList<>(abilities.values())){
-            if(abl.getSequenceLevel() > sequenceLevel && abl.getType().equals(AbilityList.INTRINSIC.name())){
+            if(abl.getSequenceLevel() != sequenceLevel && abl.getType().equals(AbilityList.INTRINSIC.name())){
                 abilities.remove(abl.getAbilityKey());
                 abl.upgradeToLevel(sequenceLevel, cap, target);
                 AbilityKey newKey = abl.setAbilityKey(AbilityList.INTRINSIC.name());
@@ -263,6 +280,17 @@ public class PlayerAbilitiesManager {
             }
         }
     }
+
+    private boolean removeIntrinsicAbility(AbilityKey key, LivingEntityBeyonderCapability cap, LivingEntity target, boolean sync){
+        if(!key.getGroup().equals(AbilityList.INTRINSIC.name())) return false;
+        if(!abilities.containsKey(key)) return false;
+        Ability abl = abilities.get(key);
+        abl.deactivate(cap, target);
+        abilities.remove(key);
+        if(sync && target instanceof Player player) updateClientAbilityInfo(player, List.of(abl.getAbilityInfo()), AbilitySyncMessage.REMOVE);
+        return true;
+    }
+
 
     /**
      * sets the enabled state of the target ability to the given state.
@@ -624,9 +652,9 @@ public class PlayerAbilitiesManager {
         PacketHandler.sendMessageSTC(new AbilitySyncMessage(abilities, operation), player);
     }
 
-    public void updateClientAbilityInfo(Player player, int operation){
+    public void updateSetClientAbilityInfo(Player player){
         if(player.level().isClientSide()) return;
-        PacketHandler.sendMessageSTC(new AbilitySyncMessage(getAbilityInfos(), operation), player);
+        PacketHandler.sendMessageSTC(new AbilitySyncMessage(getAbilityInfos(), AbilitySyncMessage.SET), player);
     }
 
     public void updateClientArtifactInfo(Player player, List<ArtifactHolder> artifacts, int operation) {

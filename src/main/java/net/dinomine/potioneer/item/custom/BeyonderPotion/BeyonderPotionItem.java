@@ -30,7 +30,6 @@ import software.bernie.geckolib.util.RenderUtils;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -124,7 +123,7 @@ public class BeyonderPotionItem extends PotionItem implements GeoItem, GeoTintab
                 //sequence level for changing check
                 if(pathwaySequenceId%10 >= PotioneerCommonConfig.MIN_SEQUENCE_TO_SWITCH_PATHWAYS.get()) addedDifficulty += DIFF_CHANGE_INVALID_LEVEL;
                 //pathway group check
-                ArrayList<ArrayList<Integer>> interchangeablePathwayGroups = verifyGroupedPathways(PotioneerCommonConfig.INTERCHANGEABLE_PATHWAYS.get());
+                ArrayList<ArrayList<Integer>> interchangeablePathwayGroups = PotioneerCommonConfig.getPathwayGroups();
                 boolean matchGroup = false;
                 int ogPathId = Math.floorDiv(originalPathSeqId, 10);
                 int newPathId = Math.floorDiv(pathwaySequenceId, 10);
@@ -141,53 +140,6 @@ public class BeyonderPotionItem extends PotionItem implements GeoItem, GeoTintab
         return super.finishUsingItem(pStack, pLevel, pEntityLiving);
     }
 
-    /**
-     * collects pathway groups, each as a list of ints.
-     * @param proposedGroups
-     * @return
-     */
-    public static ArrayList<ArrayList<Integer>> verifyGroupedPathways(List<String> proposedGroups){
-        //first, count all pathway id appearances.
-        //if any entry isnt an int, skip it but keep counting that group
-        //if any entry doesnt point to a proper pathway, skip it but keep counting that group.
-        HashMap<Integer, Integer> pathwayCount = new HashMap<>();
-        for(String group: proposedGroups){
-            String[] ids = group.split("-");
-            for(String id: ids){
-                try{
-                    id = id.strip();
-                    int pathwayId = Integer.parseInt(id);
-                    if(Pathways.getPathwayById(pathwayId) != null)
-                        pathwayCount.merge(pathwayId, 1, Integer::sum);
-                } catch (Exception ignored){}
-            }
-        }
-        //then start building the resulting list. it must be a list, and each item must be able to answer the question "do you contain this id?". hence why a nested array list.
-        ArrayList<ArrayList<Integer>> resList = new ArrayList<>();
-        loop:
-        for(String group: proposedGroups){
-            //do the same split as before, but start a new arraylist for this group.
-            String[] ids = group.split("-");
-            ArrayList<Integer> groupList = new ArrayList<>();
-            for(String id: ids){
-                try{
-                    id = id.strip();
-                    int pathwayId = Integer.parseInt(id);
-                    if(Pathways.getPathwayById(pathwayId) != null){
-                        //by this point, the id: 1) is a number and 2) points to a proper pathway
-                        if(pathwayCount.get(pathwayId) > 1) continue loop;
-                        //we continue with the outer loop if we find even a single pathway id that appeared more than once, since that invalidades the grouping.
-                        //otherwise, we just add it to the group list.
-                        groupList.add(pathwayId);
-                    }
-                } catch (Exception ignored){}
-            }
-            //if we get to the end of the outer for loop, we can add the group list to the resulting list so long as we actually got something.
-            if(!groupList.isEmpty())
-                resList.add(groupList);
-        }
-        return resList;
-    }
 
 
     @Override

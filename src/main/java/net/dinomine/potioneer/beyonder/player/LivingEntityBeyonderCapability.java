@@ -369,9 +369,9 @@ public class LivingEntityBeyonderCapability {
         advance(id, false);
     }
 
-    public void advance(int id, boolean fromLoading){
+    public void advance(int id, boolean silent){
         consumeCharacteristic(id);
-        if(!fromLoading){
+        if(!silent){
             //confetti here;
             entity.sendSystemMessage(Component.literal("You successfully advanced, hooray!"));
             spirituality = maxSpirituality;
@@ -379,13 +379,16 @@ public class LivingEntityBeyonderCapability {
         }
     }
 
+    public void dropSequenceLevel(){
+        getBeyonderStats().setAttributes(Pathways.BEYONDERLESS.get().getStatsFor(0));
+        characteristicManager.dropLevel(this, entity);
+        maxSpirituality = characteristicManager.getMaxSpirituality();
+    }
+
     private void consumeCharacteristic(int id){
         getBeyonderStats().setAttributes(Pathways.BEYONDERLESS.get().getStatsFor(0));
-        characteristicManager.consumeCharacteristic(id);
-        abilitiesManager.grantAbilities(characteristicManager.getAbilitiesFromCharacteristics(), getPathwaySequenceId(), this, entity);
-        if(entity instanceof Player player) characteristicManager.setAttributes(beyonderStats, player);
+        characteristicManager.consumeCharacteristic(this, entity, id);
         maxSpirituality = characteristicManager.getMaxSpirituality();
-        if(entity instanceof Player player) getBeyonderStats().applyStats(player, true);
     }
 
     public String getPathwayName(boolean capitalize){
@@ -546,7 +549,7 @@ public class LivingEntityBeyonderCapability {
     public void syncSequenceData(Player player){
         if(!player.level().isClientSide()){
             PacketHandler.sendMessageSTC(new PlayerAdvanceMessage(getCharacteristicManager().getLastConsumedCharacteristics()), player);
-            getAbilitiesManager().updateClientAbilityInfo(player, AbilitySyncMessage.SET);
+            getAbilitiesManager().updateSetClientAbilityInfo(player);
             getAbilitiesManager().updateClientArtifactInfo(player, PlayerArtifactSyncSTC.SET);
             PacketHandler.sendMessageSTC(new PlayerSyncHotbarMessage(getAbilitiesManager().clientHotbar, getAbilitiesManager().quickAbility), player);
             getEffectsManager().syncToClient(player);

@@ -90,4 +90,14 @@ public class CharacteristicHelper {
 
         return new ArrayList<>(bestPerTen.values());
     }
+
+    public static List<Integer> floorDivTen(List<Integer> nums){
+        ArrayList<Integer> res = new ArrayList<>();
+        for(int num: nums){
+            int div = Math.floorDiv(num, 10);
+            if(res.contains(div)) continue;
+            res.add(div);
+        }
+        return res;
+    }
 }

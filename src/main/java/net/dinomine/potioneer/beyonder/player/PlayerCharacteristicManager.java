@@ -16,6 +16,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static net.dinomine.potioneer.util.misc.CharacteristicHelper.closestToLowerTens;
+import static net.dinomine.potioneer.util.misc.CharacteristicHelper.floorDivTen;
 
 public class PlayerCharacteristicManager {
     //TODO: make config file for the 60-40 split of current sequence and previous ones
@@ -56,7 +57,7 @@ public class PlayerCharacteristicManager {
         return 0;
     }
 
-    public void consumeCharacteristic(int characId){
+    public void consumeCharacteristic(LivingEntityBeyonderCapability cap, LivingEntity entity, int characId){
         //add characteristic to the stack
         int idx = findCharacteristicOfLevel(characId%10);
         lastConsumedCharacteristics.add(idx, characId);
@@ -67,6 +68,10 @@ public class PlayerCharacteristicManager {
 
         //adjust acting progress
         actingProgress.put(characId, Mth.clamp(actingProgress.getOrDefault(characId, 0d)*(count-1d)/(count), 0, 1));
+
+
+        cap.getAbilitiesManager().grantIntrinsicAbilities(getAbilitiesFromCharacteristics(), getPathwaySequenceId(), true, cap, entity);
+        if(entity instanceof Player player) setAttributes(cap.getBeyonderStats(), player);
     }
 
     /**
@@ -97,7 +102,6 @@ public class PlayerCharacteristicManager {
         setAllAbilities(cap, target, false);
         if(target instanceof Player player){
             setAttributes(cap.getBeyonderStats(), player);
-            cap.getBeyonderStats().applyStats(player, true);
         }
         return List.of(droppedCharacteristic);
     }
@@ -134,7 +138,7 @@ public class PlayerCharacteristicManager {
         return groupByHouseOfTen(characteristicsHolder);
     }
 
-    public static List<List<Integer>> groupByHouseOfTen(List<Integer> numbers) {
+    private static List<List<Integer>> groupByHouseOfTen(List<Integer> numbers) {
         if (numbers == null || numbers.isEmpty()) {
             return Collections.emptyList();
         }
@@ -216,7 +220,23 @@ public class PlayerCharacteristicManager {
 //            return 0.6d + 0.4d * actingProgress.values().stream().findFirst().get();
             return Mth.clamp(0.6d + 0.4d*actingProgress.values().stream().findFirst().get() - 0.25*(9-getSequenceLevel()), 0, 1);
         } else {
-            return getAdjustedActingPercent(getPathwaySequenceId());
+            List<Integer> presentPathways = floorDivTen(lastConsumedCharacteristics).stream().map(id -> Math.floorDiv(id, 10)).toList();
+            if(presentPathways.size() == 1)
+                return getAdjustedActingPercent(getPathwaySequenceId());
+
+            //TODO if this has a significant impact on performance, cache the penalty amount
+
+            double totalPenalty = PotioneerCommonConfig.PATHWAY_SANITY_PENALTY.get() * (presentPathways.size() - 1);
+            ArrayList<ArrayList<Integer>> groups = PotioneerCommonConfig.getPathwayGroups();
+            ArrayList<Integer> foundGroupsIdx = new ArrayList<>();
+            for(ArrayList<Integer> group: groups){
+                if(group.stream().anyMatch(presentPathways::contains)) totalPenalty += PotioneerCommonConfig.GROUP_SANITY_PENALTY.get();
+            }
+            //remove one because we dont count the original group
+            //if youre in 2 groups, penalty should be 1x, if youre in 4 groups, penalty should be 3x
+            totalPenalty -= PotioneerCommonConfig.GROUP_SANITY_PENALTY.get();
+
+            return getAdjustedActingPercent(getPathwaySequenceId()) * (1-totalPenalty);
         }
     }
 
@@ -247,29 +267,6 @@ public class PlayerCharacteristicManager {
     public double getActingPercentForSequence(int pathwayId){
         return actingProgress.getOrDefault(pathwayId, 0d);
     }
-
-//    public double getAggregatedActingProgress(int maxSequenceLevel){
-//        if(actingProgress.isEmpty()) return 1d;
-//        double aggregatePercent = 0d;
-//        int i = 0;
-//        for(Map.Entry<Integer, Double> charac: actingProgress.entrySet()){
-//            int pathwaySequenceId = charac.getKey();
-//            if(pathwaySequenceId%10 >= maxSequenceLevel){
-//                i++;
-//                aggregatePercent += charac.getValue();
-//            }
-//        }
-//        aggregatePercent = aggregatePercent/i;
-//        return Mth.clamp(aggregatePercent, 0, 1);
-//    }
-
-//    public void resetPassiveActing(PlayerLuckManager luckMng, RandomSource random, int pathwaySequenceId){
-//        double[] list = getActingList(pathwaySequenceId);
-//        if(list != null && list.length > 0) list[pathwaySequenceId%10] = Mth.clamp(list[pathwaySequenceId%10] + passiveActing, 0, 1);
-//        passiveActingLimit = randomLimit.get();
-//        if(luckMng.passesLuckCheck(0.3f, 40, 0, random)) passiveActingLimit +=0.15f;
-//        passiveActing = 0;
-//    }
 
     private double getActing(int pathwaySequenceId){
         return actingProgress.getOrDefault(pathwaySequenceId, 0d);
@@ -345,28 +342,8 @@ public class PlayerCharacteristicManager {
     }
 
     private void setAllAbilities(LivingEntityBeyonderCapability cap, LivingEntity target, boolean fromLoading) {
-        int highestLevel = getSequenceLevel();
-        List<Ability> allAbilities = new ArrayList<>();
-        for(int characId: lastConsumedCharacteristics){
-            allAbilities.addAll(Pathways.getPathwayBySequenceId(characId).getAbilities(characId, highestLevel));
-        }
-//        //get highest level for each pathway
-//        List<Integer> pathwayLevels = closestToLowerTens(lastConsumedCharacteristics);
-//        //get abilities for each pathway
-//        for(int sequence: pathwayLevels){
-//            allAbilities.addAll(Pathways.getPathwayBySequenceId(sequence).getAbilities(sequence%10, highestLevel));
-//        }
-        //make sure every ability is the highest level
-//        for(Ability abl: allAbilities){
-//            abl.setSequenceLevelSilent(highestLevel);
-//        }
-        //set
-        cap.getAbilitiesManager().clearAbilities(cap, target);
-        for(Ability abl: allAbilities){
-            cap.getAbilitiesManager().addAbility(PlayerAbilitiesManager.AbilityList.INTRINSIC.name(), abl, cap, target, false, false);
-        }
-        if(lastConsumedCharacteristics.isEmpty()) return;
-        cap.getAbilitiesManager().replaceCogitation(getPathwaySequenceId(), cap, target, !fromLoading);
+        List<Ability> allAbilities = getAbilitiesFromCharacteristics();
+        cap.getAbilitiesManager().grantIntrinsicAbilities(allAbilities, getPathwaySequenceId(), !fromLoading, cap, target);
     }
 
     public void copyFrom(PlayerCharacteristicManager other) {

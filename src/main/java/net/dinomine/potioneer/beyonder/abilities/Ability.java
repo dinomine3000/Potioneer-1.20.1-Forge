@@ -451,6 +451,9 @@ public abstract class Ability {
     public boolean is(String ablId) {
         return this.abilityId.equalsIgnoreCase(ablId);
     }
+    public boolean is(Ability abl) {
+        return this.is(abl.abilityId);
+    }
 
     public List<Page> getPages(){return List.of();}
 }
