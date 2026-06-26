@@ -4,6 +4,8 @@ import net.dinomine.potioneer.Potioneer;
 import net.dinomine.potioneer.beyonder.client.ClientConfigData;
 import net.dinomine.potioneer.beyonder.client.ClientStatsData;
 import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
+import net.dinomine.potioneer.util.Animation;
+import net.dinomine.potioneer.util.AnimationHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
@@ -15,12 +17,17 @@ public class MagicOrbOverlay {
     private static final ResourceLocation ORB = new ResourceLocation(Potioneer.MOD_ID, "textures/gui/hud_orb_bg.png");
     private static final ResourceLocation ORB_OVERLAY = new ResourceLocation(Potioneer.MOD_ID, "textures/gui/hud_orb_overlay.png");
     private static final ResourceLocation MANA = new ResourceLocation(Potioneer.MOD_ID, "textures/gui/spirituality.png");
+    private static final ResourceLocation ARROW = new ResourceLocation(Potioneer.MOD_ID, "textures/gui/orb_down_arrow.png");
 
+    private static final AnimationHandler arrowAnimation = new AnimationHandler(0.7f, false, 0.7f)
+            .registerAnimation("play", new Animation()
+                    .animateValue("spriteY", (animPercent) -> 64f*((int) (animPercent*7))));
     private static final Minecraft minecraft = Minecraft.getInstance();
 
     public static final IGuiOverlay HUD_MAGIC = ((forgeGui, guiGraphics, partialTick, width, height) -> {
         int id = ClientStatsData.getPathwaySequenceId();
         if(id < 0) return;
+        arrowAnimation.tick();
         ClientConfigData.updateData();
 
         int multiplier = ClientConfigData.getCurrentOrbScale();
@@ -41,7 +48,6 @@ public class MagicOrbOverlay {
         float mana_percent = Mth.clamp(Math.round(100f*ClientStatsData.getPlayerSpirituality() / ClientStatsData.getPlayerMaxSpirituality())/100f, 0, 1);
 
         int sanity_percent = getSanityIndex();
-
         guiGraphics.blit(ORB, offsetLeft, yOffset,
                 bgSide, bgSide,
                 ((id/10) %4)*64, id > 40 ? 64:0,
@@ -69,6 +75,12 @@ public class MagicOrbOverlay {
                 64, 64,
                 256, 128);
 
+        guiGraphics.blit(ARROW, offsetLeft, yOffset,
+                bgSide, bgSide,
+                0, arrowAnimation.getValue("play", "spriteY"),
+                64, 64,
+                64, 512);
+
     });
 
     public static int getSanityIndex(){
@@ -78,5 +90,9 @@ public class MagicOrbOverlay {
         if(sanity < 45) sanity_percent++;
         if(sanity < LivingEntityBeyonderCapability.SANITY_FOR_DROP) sanity_percent++;
         return sanity_percent;
+    }
+
+    public static void playSpiritualityDown() {
+        arrowAnimation.startAnimation("play", false);
     }
 }
