@@ -4,6 +4,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import net.dinomine.potioneer.Potioneer;
+import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
 import net.dinomine.potioneer.item.ModItems;
 import net.dinomine.potioneer.util.BufferUtils;
 import net.dinomine.potioneer.util.PotionIngredient;
@@ -131,6 +132,8 @@ public class CharmRecipe implements Recipe<RitualContainer> {
             NonNullList<PotionIngredient> ingredients = itemsFromJson(GsonHelper.getAsJsonArray(pJson, "ingredients"));
             if (ingredients.size() > 6)
                 throw new JsonParseException("Too many ingredients for charm crafting recipe. The maximum is 6");
+            if (!BeyonderEffects.exists(effectId))
+                throw new JsonParseException("Effect id doesn't exist: " + effectId);
             PotionIngredient baseMaterial = PotionIngredient.fromJson(GsonHelper.getNonNull(pJson, "base")).withCount(1);
             int pathwayId = GsonHelper.getAsInt(pJson, "pathwayId");
             int scaling = Mth.clamp(GsonHelper.getAsInt(pJson, "levelScaling"), 0, 9);

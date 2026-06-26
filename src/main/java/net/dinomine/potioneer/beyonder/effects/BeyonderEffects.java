@@ -128,21 +128,20 @@ public class BeyonderEffects {
     }
 
     public static BeyonderEffectType getRandomEffect(String prefix) {
-        List<BeyonderEffectType> typeList = new ArrayList<>();
-        switch (prefix.toLowerCase()){
-            case "wheel":
-                typeList = List.of(WHEEL_FORTUNE, WHEEL_SILK, WHEEL_MINING);
-            case "tyrant":
-                typeList = List.of(TYRANT_LIGHTNING_TARGET, TYRANT_WATER_AFFINITY);
-            case "mystery":
-                typeList = List.of(MYSTERY_INVISIBLE, MYSTERY_REACH, MYSTERY_STEP_UP, MYSTERY_FALL_NEGATE);
-            case "red":
-                typeList = List.of(RED_FIRE_BUFF, RED_LIGHT_BUFF, RED_PROFICIENCY, RED_PURIFICATION);
-            case "paragon":
-                typeList = List.of(PARAGON_CRAFTING, PARAGON_XP, PARAGON_REGEN);
-        }
+        List<BeyonderEffectType> typeList = switch (prefix.toLowerCase()) {
+            case "wheel" -> List.of(WHEEL_FORTUNE, WHEEL_SILK, WHEEL_MINING);
+            case "tyrant" -> List.of(TYRANT_LIGHTNING_TARGET, TYRANT_WATER_AFFINITY);
+            case "mystery" -> List.of(MYSTERY_INVISIBLE, MYSTERY_REACH, MYSTERY_STEP_UP, MYSTERY_FALL_NEGATE);
+            case "red" -> List.of(RED_FIRE_BUFF, RED_LIGHT_BUFF, RED_PROFICIENCY, RED_PURIFICATION);
+            case "paragon" -> List.of(PARAGON_CRAFTING, PARAGON_XP, PARAGON_REGEN);
+            default -> new ArrayList<>();
+        };
         return typeList.isEmpty() ? null : typeList.get((int)(Math.random()*typeList.size()));
 
+    }
+
+    public static boolean exists(String effectId) {
+        return EFFECTS.containsKey(effectId);
     }
 
     public static class BeyonderEffectType{
