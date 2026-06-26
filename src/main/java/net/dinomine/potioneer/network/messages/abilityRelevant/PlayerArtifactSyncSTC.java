@@ -21,6 +21,7 @@ public class PlayerArtifactSyncSTC {
     public static final int ADD = 0;
     public static final int REMOVE = 1;
     public static final int SET = 2;
+    public static final int UPDATE = 3;
     public List<ArtifactHolder> artifacts;
     public int messageOp;
 
@@ -79,6 +80,9 @@ class ClientArtifactSyncHandler
                 break;
             case PlayerArtifactSyncSTC.SET:
                 ClientAbilitiesData.setArtifacts(msg.artifacts);
+                break;
+            case PlayerArtifactSyncSTC.UPDATE:
+                ClientAbilitiesData.updateArtifacts(msg.artifacts);
                 break;
         }
         player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {

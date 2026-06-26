@@ -1,9 +1,17 @@
 package net.dinomine.potioneer.mixin;
 
+import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
 import net.dinomine.potioneer.event.DurabilityHurtEvent;
+import net.dinomine.potioneer.item.ModItems;
+import net.dinomine.potioneer.util.misc.ModCompoundTags;
 import net.minecraft.advancements.CriteriaTriggers;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.AdventureModeCheck;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.DigDurabilityEnchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
@@ -14,7 +22,11 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+
+import javax.annotation.Nullable;
+import java.util.function.Consumer;
 
 @Mixin(ItemStack.class)
 public abstract class ItemStackMixin {
@@ -30,6 +42,8 @@ public abstract class ItemStackMixin {
 
     @Shadow
     public abstract void setDamageValue(int arg1);
+
+    @Shadow @Nullable private AdventureModeCheck adventurePlaceCheck;
 
     @Unique
     private ItemStack potioneer$self(){
@@ -57,7 +71,6 @@ public abstract class ItemStackMixin {
         pAmount = event.getAmount();
         if (!this.isDamageableItem()) {
             cir.setReturnValue(false);
-            return;
         } else {
             if (pAmount > 0) {
                 int i = EnchantmentHelper.getItemEnchantmentLevel(Enchantments.UNBREAKING, potioneer$self());
@@ -83,7 +96,43 @@ public abstract class ItemStackMixin {
             int l = this.getDamageValue() + pAmount;
             this.setDamageValue(l);
             cir.setReturnValue(l >= this.getMaxDamage());
-            return;
+        }
+    }
+
+
+    /**
+     * @author dinomine3000
+     * @reason artifacts items cant break. if they break, the player should get a "useless" item with the same abilities and characteristics
+     */
+    @Inject(method = "hurtAndBreak(ILnet/minecraft/world/entity/LivingEntity;Ljava/util/function/Consumer;)V",
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/world/item/ItemStack;shrink(I)V"))
+    public <T extends LivingEntity> void hurtAndBreak(int pAmount, T pEntity, Consumer<T> pOnBroken, CallbackInfo ci) {
+        if(!(pEntity instanceof Player player)) return;
+        ItemStack stack = potioneer$self();
+        if(stack.getCount() <= 1){
+            //give player mock item with same relevant tags
+            ItemStack broken = new ItemStack(ModItems.BROKEN_ARTIFACT.get());
+            CompoundTag artifactTag = ModCompoundTags.getTagFromItem(ModCompoundTags.TAGS.ARTIFACT, stack);
+            CompoundTag beyonderTag = ModCompoundTags.getTagFromItem(ModCompoundTags.TAGS.BEYONDER, stack);
+            CompoundTag mystTag = ModCompoundTags.getTagFromItem(ModCompoundTags.TAGS.MYSTICISM, stack);
+
+            //dont check myst tag, that one doesnt really matter here. other tools with spirituality can be destroyed without issue.
+            if(artifactTag == null && beyonderTag == null) return;
+
+            ModCompoundTags.setItemRootTag(broken, artifactTag, ModCompoundTags.TAGS.ARTIFACT);
+            ModCompoundTags.setItemRootTag(broken, beyonderTag, ModCompoundTags.TAGS.BEYONDER);
+            ModCompoundTags.setItemRootTag(broken, mystTag, ModCompoundTags.TAGS.MYSTICISM);
+
+            if(stack.hasCustomHoverName())
+                broken.setHoverName(stack.getHoverName());
+
+            if(!player.addItem(broken.copy())){
+                player.drop(broken, false, true);
+            }
+
+            player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
+                cap.getAbilitiesManager().updateArtifact(ModCompoundTags.ArtifactInfoTag.getArtifactId(artifactTag), player, broken);
+            });
         }
     }
 }

@@ -183,6 +183,23 @@ public class ClientAbilitiesData {
         BeyonderAbilitiesScreen.refreshAbilitiesScreen();
     }
 
+
+    public static void updateArtifacts(List<ArtifactHolder> artifacts) {
+        for(ArtifactHolder artifact: artifacts){
+            for (AbilityInfo abl : artifact.getAbilitiesInfo(false)) {
+                abilities.put(abl.getKey(), abl);
+            }
+        }
+        updateHotbarOnChange();
+        ClientStatsData.getCapability().ifPresent(cap -> {
+            if(Minecraft.getInstance().player != null)
+                cap.getAbilitiesManager().updateArtifactsOnClient(artifacts, cap, Minecraft.getInstance().player);
+            else
+                System.out.println("Player is null while trying to set artifacts on client side.");
+        });
+        BeyonderAbilitiesScreen.refreshAbilitiesScreen();
+    }
+
     public static void removeArtifacts(List<ArtifactHolder> artifacts) {
         for(ArtifactHolder artifact: artifacts){
             for(AbilityInfo info: artifact.getAbilitiesInfo(false)){

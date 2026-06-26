@@ -18,6 +18,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.fml.ModList;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import top.theillusivec4.curios.api.CuriosApi;
 import top.theillusivec4.curios.api.type.capability.ICuriosItemHandler;
 import top.theillusivec4.curios.api.type.inventory.ICurioStacksHandler;
@@ -114,7 +115,7 @@ public class PlayerAbilitiesManager {
         iterateThroughInventory(player, itemStack -> {
             ArtifactHolder artifact = MysticalItemHelper.getArtifactFromItem(itemStack);
             if(artifact != null)
-                resMap.put(artifact.getArtifactId(), artifact);
+                resMap.putIfAbsent(artifact.getArtifactId(), artifact);
         });
         return resMap;
     }
@@ -339,6 +340,15 @@ public class PlayerAbilitiesManager {
         addArtifactsOnClient(artifacts, cap, player, false);
     }
 
+    public void updateArtifactsOnClient(List<ArtifactHolder> artifacts, LivingEntityBeyonderCapability cap, Player player){
+        if(!player.level().isClientSide()) return;
+        for(ArtifactHolder artifact: artifacts){
+            ArtifactHolder oldArtifact = this.artifacts.getOrDefault(artifact.getArtifactId(), null);
+            if(oldArtifact == null) continue;
+            this.artifacts.put(artifact.getArtifactId(), artifact);
+        }
+    }
+
     public void addAbilitiesOnClient(List<AbilityInfo> abilities, @NotNull LivingEntityBeyonderCapability cap, LivingEntity target, boolean runOnAcquire) {
         if(!target.level().isClientSide()) return;
         for(AbilityInfo abl: abilities){
@@ -498,6 +508,12 @@ public class PlayerAbilitiesManager {
 
     public List<Ability> getAbilities() {
         return new ArrayList<>(abilities.values());
+    }
+
+    public void updateArtifact(@Nullable UUID artifactId, Player player, ItemStack artifactStack) {
+        if(artifactId == null || !artifacts.containsKey(artifactId)) return;
+        ArtifactHolder artifact = artifacts.get(artifactId).withStack(artifactStack);
+        updateClientArtifactInfo(player, List.of(artifact), PlayerArtifactSyncSTC.UPDATE);
     }
 
 //    public void updateArtifactsOnClient(List<ArtifactHolder> artifacts,  @NotNull LivingEntityBeyonderCapability cap, Player player) {

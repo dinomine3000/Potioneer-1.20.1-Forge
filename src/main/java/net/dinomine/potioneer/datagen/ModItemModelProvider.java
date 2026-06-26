@@ -72,6 +72,7 @@ public class ModItemModelProvider extends ItemModelProvider {
         handheldItem(ModItems.FIRE_SWORD);
         handheldItem(ModItems.FROZEN_SWORD);
         handheldItem(ModItems.RITUAL_DAGGER);
+        handheldItem(ModItems.BROKEN_ARTIFACT);
 
 
         /*simpleItem(ModItems.METAL_DETECTOR);

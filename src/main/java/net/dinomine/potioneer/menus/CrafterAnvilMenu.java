@@ -99,6 +99,7 @@ public class CrafterAnvilMenu extends AnvilMenu {
     @Override
     public void createResult() {
         // instabuild ability necessary for the anvil to generate the result everytime, regardless of cost
+        // this has unintended consequences, like making items not take damage, so it should be handled very carefully
         boolean oldBuild = this.player.getAbilities().instabuild;
         this.player.getAbilities().instabuild = fuelContainer.hasFuel();
         super.createResult();

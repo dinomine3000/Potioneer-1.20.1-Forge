@@ -42,14 +42,15 @@ public abstract class ModCompoundTags {
         }
     }
 
-    public static CompoundTag setItemRootTag(ItemStack item, CompoundTag tag, String tagKeyId){
+    public static CompoundTag setItemRootTag(ItemStack item, @Nullable CompoundTag tag, String tagKeyId){
         CompoundTag root = item.getOrCreateTag();
+        if(tag == null) return root;
         root.put(tagKeyId, tag);
         item.setTag(root);
         return root;
     }
 
-    public static CompoundTag setItemRootTag(ItemStack item, CompoundTag tag, TAGS tagKey){
+    public static CompoundTag setItemRootTag(ItemStack item, @Nullable CompoundTag tag, TAGS tagKey){
         return setItemRootTag(item, tag, tagKey.tagId);
     }
 

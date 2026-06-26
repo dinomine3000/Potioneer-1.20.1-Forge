@@ -351,6 +351,10 @@ public class BeyonderAbilitiesScreen extends Screen {
         //itemstack for artifact
         if(main && key.isArtifactKey()){
             ArtifactHolder artifact = ClientAbilitiesData.getArtifact(key);
+            if(artifact == null){
+                System.out.println("Warning: Can't render item as artifact is null with key = " + key);
+                return;
+            }
             pGuiGraphics.blit(TEXTURE, leftPos + 36, topPos + 49, 22, 23, 55, 226,
                     22, 23, TEXTURE_WIDTH, TEXTURE_HEIGHT);
             pGuiGraphics.renderFakeItem(artifact.getStack(), leftPos + 39, topPos + 52);

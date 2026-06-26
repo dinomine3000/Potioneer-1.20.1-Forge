@@ -32,6 +32,9 @@ public class ModItems {
     public static final RegistryObject<Item> SAPPHIRE = ITEMS.register("sapphire",
             () -> new Item(new Item.Properties()));
 
+    public static final RegistryObject<Item> BROKEN_ARTIFACT = ITEMS.register("broken_artifact",
+            () -> new Item(new Item.Properties().stacksTo(1).fireResistant()));
+
     public static final RegistryObject<Item> CURSED_SKULL = ITEMS.register("knowledge_skull",
             () -> new Item(new Item.Properties().stacksTo(1)));
 
