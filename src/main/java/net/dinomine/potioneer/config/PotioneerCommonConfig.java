@@ -1,5 +1,6 @@
 package net.dinomine.potioneer.config;
 
+import net.dinomine.potioneer.beyonder.pathways.BeyonderPathway;
 import net.dinomine.potioneer.beyonder.pathways.Pathways;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
@@ -314,11 +315,14 @@ public class PotioneerCommonConfig {
     }
 
 
+    private static ArrayList<ArrayList<Integer>> pathwayGroups = null;
+
     /**
      * collects pathway groups, each as a list of ints.
      * @return
      */
     public static ArrayList<ArrayList<Integer>> getPathwayGroups(){
+        if(pathwayGroups != null) return pathwayGroups;
         //first, count all pathway id appearances.
         //if any entry isnt an int, skip it but keep counting that group
         //if any entry doesnt point to a proper pathway, skip it but keep counting that group.
@@ -359,6 +363,17 @@ public class PotioneerCommonConfig {
             if(!groupList.isEmpty())
                 resList.add(groupList);
         }
+
+        //finally, add missing pathways. pathways that were not mentioned should be returned as part of an individual group
+        List<Integer> allPathways = Pathways.getAllPathways().stream().map(BeyonderPathway::getId).toList();
+        pathLoop:
+        for(int path: allPathways){
+            for(List<Integer> group: resList){
+                if(group.contains(path)) continue pathLoop;
+            }
+            resList.add(new ArrayList<>(List.of(path)));
+        }
+        pathwayGroups = resList;
         return resList;
     }
 }

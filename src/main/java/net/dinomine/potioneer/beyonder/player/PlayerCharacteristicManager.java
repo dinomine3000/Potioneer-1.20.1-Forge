@@ -79,13 +79,14 @@ public class PlayerCharacteristicManager {
      * To drop all of them at once, use another method
      * @return the pathway-sequence id of the dropped characteristic
      */
-    public List<Integer> dropLevel(LivingEntityBeyonderCapability cap, LivingEntity target){
+    public List<Integer> dropLevel(LivingEntityBeyonderCapability cap, LivingEntity target, boolean forceDrop){
+        if(lastConsumedCharacteristics.isEmpty())
+            return List.of(-1);
         //remove from the stack
-        int droppedCharacteristic = -1;
-        if(!PotioneerCommonConfig.ALLOW_CHANGING_PATHWAYS.get() && getSequenceLevel() == 9 && lastConsumedCharacteristics.size() == 1){
+        if(!forceDrop && !PotioneerCommonConfig.ALLOW_CHANGING_PATHWAYS.get() && getSequenceLevel() == 9 && lastConsumedCharacteristics.size() == 1){
             return List.of(-1);
         }
-        if(!lastConsumedCharacteristics.isEmpty()) droppedCharacteristic = lastConsumedCharacteristics.remove(lastConsumedCharacteristics.size()-1);
+        int droppedCharacteristic = lastConsumedCharacteristics.remove(lastConsumedCharacteristics.size()-1);
 
         //reduce count on the map
         characteristicCountMap.merge(droppedCharacteristic, -1, Integer::sum);
@@ -220,17 +221,16 @@ public class PlayerCharacteristicManager {
 //            return 0.6d + 0.4d * actingProgress.values().stream().findFirst().get();
             return Mth.clamp(0.6d + 0.4d*actingProgress.values().stream().findFirst().get() - 0.25*(9-getSequenceLevel()), 0, 1);
         } else {
-            List<Integer> presentPathways = floorDivTen(lastConsumedCharacteristics).stream().map(id -> Math.floorDiv(id, 10)).toList();
+            List<Integer> presentPathways = floorDivTen(lastConsumedCharacteristics);
             if(presentPathways.size() == 1)
                 return getAdjustedActingPercent(getPathwaySequenceId());
 
-            //TODO if this has a significant impact on performance, cache the penalty amount
-
-            double totalPenalty = PotioneerCommonConfig.PATHWAY_SANITY_PENALTY.get() * (presentPathways.size() - 1);
             ArrayList<ArrayList<Integer>> groups = PotioneerCommonConfig.getPathwayGroups();
-            ArrayList<Integer> foundGroupsIdx = new ArrayList<>();
+            //TODO if this has a significant impact on performance, cache the penalty amount
+            double totalPenalty = PotioneerCommonConfig.PATHWAY_SANITY_PENALTY.get() * (presentPathways.size() - 1);
             for(ArrayList<Integer> group: groups){
-                if(group.stream().anyMatch(presentPathways::contains)) totalPenalty += PotioneerCommonConfig.GROUP_SANITY_PENALTY.get();
+                if(group.stream().anyMatch(presentPathways::contains))
+                    totalPenalty += PotioneerCommonConfig.GROUP_SANITY_PENALTY.get();
             }
             //remove one because we dont count the original group
             //if youre in 2 groups, penalty should be 1x, if youre in 4 groups, penalty should be 3x

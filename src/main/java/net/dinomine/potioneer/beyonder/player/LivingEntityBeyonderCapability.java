@@ -381,7 +381,7 @@ public class LivingEntityBeyonderCapability {
 
     public void dropSequenceLevel(){
         getBeyonderStats().setAttributes(Pathways.BEYONDERLESS.get().getStatsFor(0));
-        characteristicManager.dropLevel(this, entity);
+        characteristicManager.dropLevel(this, entity, true);
         maxSpirituality = characteristicManager.getMaxSpirituality();
     }
 
@@ -571,7 +571,7 @@ public class LivingEntityBeyonderCapability {
             if(dropEverything){
                 CharacteristicHelper.addCharacteristicsToLevel(characteristicManager.dropAllCharacteristics(this, entity), player.level(), player, player.position(), player.getRandom());
             } else {
-                CharacteristicHelper.addCharacteristicToLevel(characteristicManager.dropLevel(this, entity), player.level(), player, player.position(), player.getRandom());
+                CharacteristicHelper.addCharacteristicToLevel(characteristicManager.dropLevel(this, entity, false), player.level(), player, player.position(), player.getRandom());
             }
         }
     }
