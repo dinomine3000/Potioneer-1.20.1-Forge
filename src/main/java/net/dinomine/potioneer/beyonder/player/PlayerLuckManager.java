@@ -14,6 +14,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.common.MinecraftForge;
 
+import java.util.Arrays;
 import java.util.Random;
 import java.util.UUID;
 
@@ -181,25 +182,7 @@ public class PlayerLuckManager {
      * @return the new chance value, representative of the luck of the target
      */
     public static float checkLuck(int luck, float chance){
-        if(chance >= 1) return 1;
-        if(luck == 0) return chance;
-        if(chance < 0) return chance;
-        if(PotioneerCommonConfig.USE_ALTERNATE_LUCK_FUNCTION.get()){
-            return (float) Math.pow(chance, (6.8*Math.pow(10, -7)*chance*chance - 0.00162d * chance + 1));
-        }
-        float newChance;
-        float b = 3.6f;
-        float d = 20f;
-        if(luck > 0){
-            //B(x)
-            float a = b * (float) Math.pow(10, luck/100f - 1);
-            newChance = (float) (Math.log(a*chance + 1) / Math.log(a + 1));
-        } else {
-            //L(x)
-            float c = luck / (d - luck);
-            newChance = (float) (Math.log(c*chance + 1) / Math.log(c+1));
-        }
-        return newChance;
+        return LuckMath.checkLuck(luck, chance);
     }
 
     public static boolean passesLuckCheck(int luck, float chance, RandomSource random){
@@ -284,5 +267,64 @@ public class PlayerLuckManager {
         float[] res = range.getDataForHud();
         res[9] = luck;
         return res;
+    }
+
+    private static class LuckMath{
+        private static final double[] X1 = {0,  20,  50, 150, 300, 400, 500, 600, 700, 800, 840, 900, 950, 970, 1000};
+        private static final double[] Y1 = {0, 100, 180, 220, 250, 270, 300, 340, 380, 440, 500, 600, 700, 800, 1000};
+
+        /**
+         * Replicates l1(x) from Desmos.
+         * Takes an input x and returns the linearly interpolated adjusted value.
+         */
+        public static double getAdjustedLuck(double x) {
+            // Handle edge cases out of bounds
+            if (x <= X1[0]) return Y1[0];
+            if (x >= X1[X1.length - 1]) return Y1[Y1.length - 1];
+
+            int index = Arrays.binarySearch(X1, x);
+            if (index >= 0) {
+                return Y1[index];
+            }
+
+            // If x falls between two elements, binarySearch returns: -(insertion_point) - 1
+            // We invert this to find the index of the upper bounding element
+            int insertionPoint = -(index + 1);
+
+            // Determine the indices of the surrounding points (i and i+1 from your Desmos formula)
+            int i = insertionPoint - 1;
+            int iPlusOne = insertionPoint;
+
+            double xI = X1[i];
+            double xIPlusOne = X1[iPlusOne];
+            double yI = Y1[i];
+            double yIPlusOne = Y1[iPlusOne];
+
+            // Perform the standard linear interpolation formula: y_i + m * (x - x_i)
+            double slope = (yIPlusOne - yI) / (xIPlusOne - xI);
+            return yI + slope * (x - xI);
+        }
+
+        private static float checkLuck(int luck, float chance){
+            if(chance >= 1) return 1;
+            if(luck == 0) return chance;
+            if(chance < 0) return chance;
+            if(PotioneerCommonConfig.USE_ALTERNATE_LUCK_FUNCTION.get()){
+                return (float) Math.pow(chance, (6.8*Math.pow(10, -7)*chance*chance - 0.00162d * chance + 1));
+            }
+            float newChance;
+            float a = 0.2f;
+            float d = 20f;
+            if(luck > 0){
+                //B(x)
+                float b2 = a * (float) Math.pow(10, getAdjustedLuck(luck)/100f - 1);
+                newChance = (float) (Math.log(b2*chance + 1) / Math.log(b2 + 1));
+            } else {
+                //L(x)
+                float c = luck / (d - luck);
+                newChance = (float) (Math.log(c*chance + 1) / Math.log(c+1));
+            }
+            return newChance;
+        }
     }
 }
