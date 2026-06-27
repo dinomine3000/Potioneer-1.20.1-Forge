@@ -33,6 +33,7 @@ import net.minecraft.server.players.GameProfileCache;
 import net.minecraft.tags.EntityTypeTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.MobType;
@@ -112,7 +113,9 @@ public class BeyonderEvents {
     @SubscribeEvent
     public static void livingBreathEvent(LivingBreatheEvent event){
         LivingEntity entity = event.getEntity();
+        if(entity.hasEffect(MobEffects.WATER_BREATHING)) return;
         entity.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
+            if(cap.getEffectsManager().hasEffect(BeyonderEffects.TYRANT_WATER_AFFINITY)) return;
             if(cap.getEffectsManager().hasEffect(BeyonderEffects.TYRANT_DROWNING.getEffectId())){
                 int sequenceLevel = cap.getEffectsManager().getEffect(BeyonderEffects.TYRANT_DROWNING.getEffectId()).getSequenceLevel();
                 int multiplier = 1 + (int)((9-sequenceLevel)/2f);

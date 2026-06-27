@@ -174,7 +174,7 @@ public class Abilities {
     //retweaked
     public static final AbilityFactory WATER_SCALES = registerAbility("scales",
             (Integer level) -> PassiveAbility.createAbility(level, BeyonderEffects.TYRANT_SCALES, ignored -> "scales").canFlip().withThreshold(0.1f),
-            0, 1, 5);
+            0, 1, 3);
 
     //retweaked
     public static final AbilityFactory OCEAN_ORDER = registerAbility("ocean_order",

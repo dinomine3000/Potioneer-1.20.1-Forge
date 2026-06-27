@@ -122,7 +122,7 @@ public class PassiveAbility extends Ability {
     }
 
     @Override
-    public void deactivate(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    public final void deactivate(LivingEntityBeyonderCapability cap, LivingEntity target) {
         cap.getEffectsManager().removeEffect(effect.getEffectId(), sequenceLevel);
     }
 }

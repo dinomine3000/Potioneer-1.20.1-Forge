@@ -10,14 +10,18 @@ import net.minecraft.world.entity.player.Player;
 
 public class DrowningEffect extends BeyonderEffect {
     @Override
-    public void onAcquire(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    public void onAcquire(LivingEntityBeyonderCapability cap, LivingEntity target) {}
+
+    @Override
+    public void onAcquire(LivingEntityBeyonderCapability cap, LivingEntity target, boolean fromLoading) {
+        if(fromLoading) return;
         target.level().playSound(null, target.getOnPos(), SoundEvents.AMBIENT_UNDERWATER_ENTER, SoundSource.NEUTRAL, 1, 1);
-        if(target instanceof Player player)
-            ParticleMaker.createWaterBlockEffectForPlayer(player, target.level());
+        ParticleMaker.createWaterBlockEffectForPlayer(target, target.level(), maxLife);
     }
 
     @Override
     protected void doTick(LivingEntityBeyonderCapability cap, LivingEntity target) {
+        target.level().playSound(null, target.getOnPos(), SoundEvents.AMBIENT_UNDERWATER_LOOP_ADDITIONS, SoundSource.NEUTRAL, 1, 1);
     }
 
     @Override

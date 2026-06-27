@@ -68,6 +68,7 @@ public class WaterCreateAbility extends Ability {
                 if(removeWaterBreadthFirstSearch(level, targetPos, (int) radius)){
                     cap.requestActiveSpiritualityCost(-cost());
                     target.addEffect(new MobEffectInstance(MobEffects.REGENERATION, 20, 3, false, false, true));
+                    if(target instanceof Player player) player.getFoodData().eat(2, 1);
                     return true;
                 }
             }

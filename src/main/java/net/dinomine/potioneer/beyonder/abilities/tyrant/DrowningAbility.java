@@ -42,13 +42,14 @@ public class DrowningAbility extends Ability {
             int duration = 20*10*(10-sequenceLevel);
             AllySystemSaveData saveData = AllySystemSaveData.from((ServerLevel) target.level());
             ArrayList<LivingEntity> hits = AbilityFunctionHelper.getLivingEntitiesAround(target, radius, ent -> !saveData.areEntitiesAllies(ent, target));
+            //hits = AbilityFunctionHelper.getLivingEntitiesAround(target, radius);
             for(LivingEntity entity: hits){
                 if(entity.is(target)) continue;
                 entity.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(victimCap ->
                         victimCap.getEffectsManager().addOrReplaceEffect(BeyonderEffects.TYRANT_DROWNING.createInstance(getSequenceLevel(), 0, duration, true), victimCap, entity));
             }
             ParticleMaker.summonAOEParticles(target.level(), target.getEyePosition(), (int)(2*radius), radius, ParticleMaker.Preset.AOE_END_ROD);
-            target.level().playSound(null, target.getOnPos(), SoundEvents.MINECART_INSIDE_UNDERWATER, SoundSource.PLAYERS, 1, 1);
+            //target.level().playSound(null, target.getOnPos(), SoundEvents.MINECART_INSIDE_UNDERWATER, SoundSource.PLAYERS, 1, 1);
             cap.requestActiveSpiritualityCost(cost());
             return true;
         }

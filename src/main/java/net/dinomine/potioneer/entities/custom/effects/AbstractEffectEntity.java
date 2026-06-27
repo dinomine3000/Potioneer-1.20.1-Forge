@@ -5,6 +5,7 @@ import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -20,7 +21,7 @@ public class AbstractEffectEntity extends Entity {
     public static final EntityDataAccessor<Float> ROTATION = SynchedEntityData.defineId(AbstractEffectEntity.class, EntityDataSerializers.FLOAT);
     public static final EntityDataAccessor<Vector3f> OFFSET = SynchedEntityData.defineId(AbstractEffectEntity.class, EntityDataSerializers.VECTOR3);
     public static final EntityDataAccessor<Optional<UUID>> TARGET_ID = SynchedEntityData.defineId(AbstractEffectEntity.class, EntityDataSerializers.OPTIONAL_UUID);
-    private LivingEntity targetEntity = null;
+    protected LivingEntity targetEntity = null;
 
     public void setTarget(UUID targetId){
         if(level() instanceof ServerLevel lvl){
@@ -45,6 +46,20 @@ public class AbstractEffectEntity extends Entity {
     public boolean isPickable() {
         return false;
     }
+    @Override
+    public boolean isPushable() {
+        return false;
+    }
+
+    @Override
+    public boolean canBeCollidedWith() {
+        return false;
+    }
+
+    @Override
+    public boolean hurt(DamageSource source, float amount) {
+        return false;
+    }
 
     public void setOffset(Vector3f offset){
         getEntityData().set(OFFSET, offset);
@@ -57,7 +72,10 @@ public class AbstractEffectEntity extends Entity {
     @Override
     public void tick() {
         if(!level().isClientSide()){
-            if(getEntityData().get(TARGET_ID).isEmpty()) kill();
+            if(getEntityData().get(TARGET_ID).isEmpty()) {
+                kill();
+                return;
+            }
             UUID targetId = getEntityData().get(TARGET_ID).get();
             if(targetEntity == null){
                 targetEntity = (LivingEntity) ((ServerLevel) level()).getEntity(targetId);

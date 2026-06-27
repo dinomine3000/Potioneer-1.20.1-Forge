@@ -111,11 +111,6 @@ public class AreaOfJurisdictionAbility extends PassiveAbility implements IAreaOf
         return Math.max(Math.abs(test.getX() - center.getX()), Math.abs(test.getZ() - center.getZ())) <= radius;
     }
 
-
-    @Override
-    public void deactivate(LivingEntityBeyonderCapability cap, LivingEntity target) {
-    }
-
     @Override
     public List<BlockPos> getCenters() {
         if(!getData().contains("centerX") || !getData().getBoolean("aoj_enabled")) return List.of();

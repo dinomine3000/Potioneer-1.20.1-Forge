@@ -94,10 +94,11 @@ public class ParticleMaker {
         AOE_GRAVITY
     }
 
-    public static void createWaterBlockEffectForPlayer(Player player, Level level){
+    public static void createWaterBlockEffectForPlayer(LivingEntity target, Level level, int duration){
         WaterBlockEffectEntity effect = new WaterBlockEffectEntity(ModEntities.WATER_BLOCK_EFFECT_ENTITY.get(), level);
-        effect.setOffset(new Vector3f(0f, 1f, 0f));
-        effect.setTarget(player.getUUID());
+        effect.setOffset(new Vector3f(0f, target.getEyeHeight() - 1f, 0f));
+        effect.setTarget(target.getUUID());
+        effect.setDuration(duration);
         level.addFreshEntity(effect);
     }
 

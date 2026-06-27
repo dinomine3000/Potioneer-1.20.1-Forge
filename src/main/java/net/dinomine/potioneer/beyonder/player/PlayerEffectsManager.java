@@ -193,11 +193,15 @@ public class PlayerEffectsManager {
         return addEffect(effect, cap, target, true);
     }
 
-    private boolean addEffect(BeyonderEffect effect, LivingEntityBeyonderCapability cap, LivingEntity target, boolean sync){
+    private boolean addEffect(BeyonderEffect effect, LivingEntityBeyonderCapability cap, LivingEntity target, boolean sync, boolean fromLoading){
         passives.add(effect);
-        effect.onAcquire(cap, target);
+        effect.onAcquire(cap, target, fromLoading);
         if(sync) sendUpdateToClient(List.of(effect), BeyonderEffectSyncMessage.ADD, target);
         return true;
+    }
+
+    private boolean addEffect(BeyonderEffect effect, LivingEntityBeyonderCapability cap, LivingEntity target, boolean sync){
+        return addEffect(effect, cap, target, sync, false);
     }
 
     /**
@@ -363,7 +367,7 @@ public class PlayerEffectsManager {
                         iterator.getBoolean("active"));
             effect.setLifetime(iterator.getInt("lifetime"));
             effect.loadNBTData(iterator);
-            addEffect(effect, cap, entity, false);
+            addEffect(effect, cap, entity, false, true);
         }
     }
 

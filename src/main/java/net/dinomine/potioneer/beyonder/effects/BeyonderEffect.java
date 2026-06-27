@@ -200,6 +200,7 @@ public abstract class BeyonderEffect {
      * @param target
      */
     public abstract void onAcquire(LivingEntityBeyonderCapability cap, LivingEntity target);
+    public void onAcquire(LivingEntityBeyonderCapability cap, LivingEntity target, boolean fromLoading){onAcquire(cap, target);};
     protected abstract void doTick(LivingEntityBeyonderCapability cap, LivingEntity target);
     public abstract void stopEffects(LivingEntityBeyonderCapability cap, LivingEntity target);
 

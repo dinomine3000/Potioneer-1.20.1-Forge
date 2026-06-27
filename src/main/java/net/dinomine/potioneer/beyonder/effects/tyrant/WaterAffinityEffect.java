@@ -16,13 +16,10 @@ import java.util.UUID;
 
 public class WaterAffinityEffect extends BeyonderEffect {
     private static final UUID attributeId = UUID.fromString("9716a637-f0c7-41fa-9852-918df4567a91");
-    private boolean levelUp;
-
     private boolean nightFlag = false, waterFlag = false;
 
     @Override
     public void onAcquire(LivingEntityBeyonderCapability cap, LivingEntity target) {
-        levelUp = sequenceLevel < 8;
         if(target instanceof Player player){
             AbilityFunctionHelper.addAttributeTo(player, attributeId, "swim speed affinity modifier",
                     (int)((sequenceLevel-8.7-8.5)*(sequenceLevel-3.6-8.5)*0.08), AttributeModifier.Operation.MULTIPLY_BASE, ForgeMod.SWIM_SPEED.get());
