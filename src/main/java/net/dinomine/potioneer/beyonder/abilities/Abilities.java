@@ -40,6 +40,10 @@ public class Abilities {
     public static final AbilityFactory FATE_CAST_DOWNSIDE = registerAbility("d_fate",
             FateCastDownside::new, 0, 0, 0);
 
+
+    public static final AbilityFactory BLANK_OPTIONS = registerAbility("blank_options",
+            BlankOptionsAbility::new, 0, 0, 0);
+
     // -------------------------- WHEEL OF FORTUNE ---------------------------------------------------
 
     //retweaked

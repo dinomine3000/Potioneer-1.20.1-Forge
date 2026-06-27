@@ -7,6 +7,7 @@ import net.dinomine.potioneer.beyonder.abilities.AbilityInfo;
 import net.dinomine.potioneer.beyonder.client.ClientAbilitiesData;
 import net.dinomine.potioneer.beyonder.client.ClientStatsData;
 import net.dinomine.potioneer.beyonder.client.KeyBindings;
+import net.dinomine.potioneer.beyonder.client.screen.AbilityOptionsScreen;
 import net.dinomine.potioneer.beyonder.client.screen.BeyonderScreen;
 import net.dinomine.potioneer.beyonder.pathways.BeyonderPathway;
 import net.dinomine.potioneer.beyonder.pathways.Pathways;
@@ -141,18 +142,24 @@ public class ClientForgeHandler {
 //                event.setCanceled(true);
 //            }
 //        }
-        if(ClientAbilitiesData.configScreenOpenAnimation || !ClientAbilitiesData.isHotbarVisible() || !ClientAbilitiesData.isHotbarValid()) return;
         Minecraft minecraft = Minecraft.getInstance();
         boolean success = false;
-        if(minecraft.player != null && event.getAction() == InputConstants.PRESS){
-            if(event.getButton() == InputConstants.MOUSE_BUTTON_LEFT)
-                success = ClientAbilitiesData.useAbility(minecraft.player, true);
-            else if(event.getButton() == InputConstants.MOUSE_BUTTON_RIGHT)
-                success = ClientAbilitiesData.useAbility(minecraft.player, false);
+        if(minecraft.player == null) return;
+        if(event.getAction() == InputConstants.PRESS && minecraft.screen == null){
+            if(!ClientAbilitiesData.configScreenOpenAnimation && ClientAbilitiesData.isHotbarVisible() && ClientAbilitiesData.isHotbarValid()){
+                if(event.getButton() == InputConstants.MOUSE_BUTTON_LEFT)
+                    success = ClientAbilitiesData.useAbility(minecraft.player, true);
+                else if(event.getButton() == InputConstants.MOUSE_BUTTON_RIGHT)
+                    success = ClientAbilitiesData.useAbility(minecraft.player, false);
+            }
         }
+
         if(success){
             event.setCanceled(true);
         }
+
+        if(event.getAction() == InputConstants.RELEASE)
+            AbilityOptionsScreen.mouseRelease();
     }
 
 }

@@ -1,6 +1,8 @@
 package net.dinomine.potioneer.beyonder.abilities;
 
+import net.dinomine.potioneer.beyonder.client.screen.AbilityOptionsScreen;
 import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
+import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.LivingEntity;
 
@@ -34,7 +36,7 @@ public abstract class AbilityWithOptions extends Ability {
     protected boolean primary(LivingEntityBeyonderCapability cap, LivingEntity target, CompoundTag args) {
         if(primaryOptions == null) return primary(cap, target);
 
-        String choice = validadeArguments(args, primaryOptions, target.level().isClientSide);
+        String choice = validadeArguments(args, primaryOptions, target.level().isClientSide, true);
         if(choice.isEmpty()) return false;
         return primaryWithArgument(cap, target, choice);
     }
@@ -43,20 +45,20 @@ public abstract class AbilityWithOptions extends Ability {
     protected boolean secondary(LivingEntityBeyonderCapability cap, LivingEntity target, CompoundTag args) {
         if(secondaryOptions == null) return secondary(cap, target);
 
-        String choice = validadeArguments(args, secondaryOptions, target.level().isClientSide);
+        String choice = validadeArguments(args, secondaryOptions, target.level().isClientSide, false);
         if(choice.isEmpty()) return false;
         return secondaryWithArgument(cap, target, choice);
     }
 
-    private String validadeArguments(CompoundTag args, AbilityOptions options, boolean clientSide){
+    private String validadeArguments(CompoundTag args, AbilityOptions options, boolean clientSide, boolean castPrimary){
         //if nothing is selected, prompt choice
         if(!args.contains("option"))
-            return promptChoice(options, clientSide);
+            return promptChoice(options, clientSide, castPrimary);
 
         //if something is selected, verify its final
         String choice = args.getString("option");
         if(!isFinalOption(choice, options))
-            return promptChoice(choice, options, clientSide);
+            return promptChoice(choice, options, clientSide, castPrimary);
 
         return choice;
     }
@@ -65,15 +67,15 @@ public abstract class AbilityWithOptions extends Ability {
         return options.getPossibleFinalOptions().contains(choice);
     }
 
-    private String promptChoice(AbilityOptions rootOptions, boolean clientSide){
+    private String promptChoice(AbilityOptions rootOptions, boolean clientSide, boolean castPrimary){
         if(!clientSide || rootOptions == null) return "";
-        //TODO: screen logic here.
+        Minecraft.getInstance().setScreen(new AbilityOptionsScreen(rootOptions, this.abilityKey, castPrimary));
         return "";
     }
-    private String promptChoice(String choice, AbilityOptions rootOptions, boolean clientSide){
+    private String promptChoice(String choice, AbilityOptions rootOptions, boolean clientSide, boolean castPrimary){
         if(!clientSide || rootOptions == null) return "";
         AbilityOptions choiceOption = findOptionWithName(rootOptions, choice);
-        return promptChoice(choiceOption, true);
+        return promptChoice(choiceOption, true, castPrimary);
     }
 
     private AbilityOptions findOptionWithName(AbilityOptions rootOptions, String choice){

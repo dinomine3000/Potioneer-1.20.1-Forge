@@ -363,6 +363,9 @@ public class ClientAbilitiesData {
     }
 
     public static boolean useAbility(Player player, AbilityKey key, boolean primary){
+        return useAbility(player, key, primary, new CompoundTag());
+    }
+    public static boolean useAbility(Player player, AbilityKey key, boolean primary, CompoundTag args){
         if(abilities.isEmpty() || key == null || abilities.get(key) == null ) return false;
         Component abilityName = abilities.get(key).getNameComponent();
         if(abilities.get(key).getCooldown() < 0){
@@ -378,7 +381,7 @@ public class ClientAbilitiesData {
         if(Abilities.getAbilityFactory(key).getHasSecondaryFunction()) beginCastAnimation(primary);
         else if(ClientConfigData.getHotbarOutlines() && primary) beginCastAnimation(true);
         player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
-            cap.getAbilitiesManager().useAbility(cap, player, key, true, primary, new CompoundTag());
+            cap.getAbilitiesManager().useAbility(cap, player, key, true, primary, args);
         });
         return true;
     }
