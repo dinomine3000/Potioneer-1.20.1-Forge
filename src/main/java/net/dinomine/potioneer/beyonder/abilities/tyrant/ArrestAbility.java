@@ -1,8 +1,7 @@
 package net.dinomine.potioneer.beyonder.abilities.tyrant;
 
-import net.dinomine.potioneer.beyonder.abilities.misc.PassiveAbility;
+import net.dinomine.potioneer.beyonder.abilities.PassiveAbility;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
-import net.dinomine.potioneer.beyonder.effects.tyrant.AuraRecipientEffect;
 import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.LivingEntity;

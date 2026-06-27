@@ -1,4 +1,4 @@
-package net.dinomine.potioneer.beyonder.abilities.misc;
+package net.dinomine.potioneer.beyonder.abilities;
 
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
 import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
@@ -11,8 +11,8 @@ import java.util.function.Function;
  * in this case, when the effect ends, it should disable the ability.
  * the effect duration is passed as argument in the constructor.
  */
-public class TimedPassiveAbility extends PassiveAbility{
-    private Function<Integer, Integer> durationFunction;
+public class TimedPassiveAbility extends PassiveAbility {
+    private final Function<Integer, Integer> durationFunction;
     protected TimedPassiveAbility(int sequenceLevel, BeyonderEffects.BeyonderEffectType effect, Function<Integer, String> descId, Function<Integer, Integer> durationFunction) {
         super(sequenceLevel, effect, descId);
         this.durationFunction = durationFunction;

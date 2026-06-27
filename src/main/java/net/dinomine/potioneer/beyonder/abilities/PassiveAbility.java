@@ -1,6 +1,5 @@
-package net.dinomine.potioneer.beyonder.abilities.misc;
+package net.dinomine.potioneer.beyonder.abilities;
 
-import net.dinomine.potioneer.beyonder.abilities.Ability;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffect;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
 import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
