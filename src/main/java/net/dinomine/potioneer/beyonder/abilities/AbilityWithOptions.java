@@ -69,7 +69,10 @@ public abstract class AbilityWithOptions extends Ability {
 
     private String promptChoice(AbilityOptions rootOptions, boolean clientSide, boolean castPrimary){
         if(!clientSide || rootOptions == null) return "";
-        Minecraft.getInstance().setScreen(new AbilityOptionsScreen(rootOptions, this.abilityKey, castPrimary));
+
+        Minecraft.getInstance().tell(() -> {
+            Minecraft.getInstance().setScreen(new AbilityOptionsScreen(rootOptions, this.abilityKey, castPrimary));
+        });
         return "";
     }
     private String promptChoice(String choice, AbilityOptions rootOptions, boolean clientSide, boolean castPrimary){

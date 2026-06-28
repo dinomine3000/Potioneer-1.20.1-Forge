@@ -321,11 +321,15 @@ public class ClientAbilitiesData {
 
     public static void changeCaret(int diff){
         if(hotbar.isEmpty()) return;
+        if(!AbilitiesHotbarHUD.scrollAnimation.isFinished()) return;
         caret = Math.floorMod(caret + diff, hotbar.size());
-        if(diff < 0) AbilitiesHotbarHUD.scrollAnimation.startAnimation("scrollRight", false);
-        else AbilitiesHotbarHUD.scrollAnimation.startAnimation("scrollLeft", false);
         if(Minecraft.getInstance().player == null) return;
         Minecraft.getInstance().player.displayClientMessage(Component.translatable("potioneer.ability_name." + abilities.get(hotbar.get(caret)).descId()), true);
+
+        if(diff < 0)
+            AbilitiesHotbarHUD.scrollAnimation.startAnimation("scrollRight", false);
+        else
+            AbilitiesHotbarHUD.scrollAnimation.startAnimation("scrollLeft", false);
     }
 
     public static int getCaret(){

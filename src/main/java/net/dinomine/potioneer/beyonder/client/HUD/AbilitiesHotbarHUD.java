@@ -44,7 +44,7 @@ public class AbilitiesHotbarHUD {
     public static final AnimationHandler disabledAnimation = new AnimationHandler(1/24f, false, 0f).doLoop();
     public static final AnimationHandler leftCastCooldownAnimation = new AnimationHandler(1f, false, 0f);
     public static final AnimationHandler rightCastCooldownAnimation = new AnimationHandler(1f, false, 0f);
-    public static final AnimationHandler scrollAnimation = new AnimationHandler(0.2f, false, 1f)
+    public static final AnimationHandler scrollAnimation = new AnimationHandler(0.1f, false, 0.1f)
             .registerAnimation("scrollLeft", new AnimationHandler.AbilityAnimationBuilder()
         //                          Slot          X: Start -> End       Y: Start -> End       Scale: Start -> End
                     .routeSlot("left",      0,  -60,    HIGHER_Y, CENTER_Y,     2, 1)

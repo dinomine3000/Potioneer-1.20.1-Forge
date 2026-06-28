@@ -29,8 +29,17 @@ public class AnimationHandler {
     }
 
     public boolean isPlaying(){
-//        return (tickInReverse && currentTime > 0) || (!tickInReverse && currentTime < endTime);
         return currentTime > 0;
+    }
+
+    public boolean isFinished(){
+        return (tickInReverse && currentTime <= 0) || (!tickInReverse && currentTime >= endTime);
+    }
+
+    public AnimationHandler resumeOrStartIfFinished(String animationKey, boolean playInReverse){
+        if(currentTime >= endTime) startAnimation(animationKey, playInReverse);
+        else resumeAnimation(animationKey, playInReverse);
+        return this;
     }
 
     public AnimationHandler startAnimation(String animationKey, boolean playInReverse){
