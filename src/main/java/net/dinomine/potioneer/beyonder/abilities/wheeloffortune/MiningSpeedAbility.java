@@ -89,10 +89,10 @@ public class MiningSpeedAbility extends PassiveAbility {
         }
         int i = 0;
         this.speedOptions = new AbilityOptions()
-                .addOption(speeds.get(i), Component.literal(speeds.get(i++)))
-                .addOption(speeds.get(i), Component.literal(speeds.get(i++)))
-                .addOption(speeds.get(i), Component.literal(speeds.get(i++)))
-                .addOption(speeds.get(i), Component.literal(speeds.get(i++)))
-                .addOption(speeds.get(i), Component.literal(speeds.get(i++)));
+                .addEmptyOption(speeds.get(i), Component.literal(speeds.get(i++)))
+                .addEmptyOption(speeds.get(i), Component.literal(speeds.get(i++)))
+                .addEmptyOption(speeds.get(i), Component.literal(speeds.get(i++)))
+                .addEmptyOption(speeds.get(i), Component.literal(speeds.get(i++)))
+                .addEmptyOption(speeds.get(i), Component.literal(speeds.get(i++)));
     }
 }

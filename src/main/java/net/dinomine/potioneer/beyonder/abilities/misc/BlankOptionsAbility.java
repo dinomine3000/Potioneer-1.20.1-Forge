@@ -9,6 +9,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 
 public class BlankOptionsAbility extends AbilityWithOptions {
+    private static final int TEXTURE_WIDTH = 180, TEXTURE_HEIGHT = 632;
     private static final ResourceLocation TEXTURE_LOCATION = new ResourceLocation(Potioneer.MOD_ID, "textures/gui/ability_icon_atlas.png");
     /**
      * pass the sequence level or pathway-sequence id to define the abilities sequence level
@@ -19,15 +20,15 @@ public class BlankOptionsAbility extends AbilityWithOptions {
      */
     public BlankOptionsAbility(int sequenceLevel) {
         super(sequenceLevel);
-        addPrimaryOptions(new AbilityOptions()
-                .addOption("big fireball", Component.literal("Big Fireball"), TEXTURE_LOCATION, 5, 32, 16, 24)
-                .addOption("test fireball", Component.literal("Test"), TEXTURE_LOCATION, 83, 80, 16, 24)
-                .addOption("amount", new AbilityOptions()
-                        .addOption("small fireball", Component.literal("Small Fireball"), TEXTURE_LOCATION, 83, 104, 16, 24)
-                        .addOption("medium fireball", Component.literal("Medium Fireball"), TEXTURE_LOCATION, 83, 56, 16, 24)
-                        .addOption("big fireball", Component.literal("Big Fireball"), TEXTURE_LOCATION, 83, 32, 16, 24)
-                        .addOption("raven", Component.literal("Ravens"), TEXTURE_LOCATION, 109, 32, 16, 24),
-                    Component.literal("Smaller Options"), TEXTURE_LOCATION, 57, 56, 16, 24)
+        addPrimaryOptions(new AbilityOptions(TEXTURE_LOCATION, TEXTURE_WIDTH, TEXTURE_HEIGHT)
+                .addOption("big fireball", Component.literal("Big Fireball"), 5, 32, 16, 24)
+                .addOption("test fireball", Component.literal("Test"), 83, 80, 16, 24)
+                .addOption("amount", new AbilityOptions(TEXTURE_LOCATION, TEXTURE_WIDTH, TEXTURE_HEIGHT)
+                        .addOption("small fireball", Component.literal("Small Fireball"), 83, 104, 16, 24)
+                        .addOption("medium fireball", Component.literal("Medium Fireball"), 83, 56, 16, 24)
+                        .addOption("big fireball", Component.literal("Big Fireball"), 83, 32, 16, 24)
+                        .addOption("raven", Component.literal("Ravens"), 109, 32, 16, 24),
+                    Component.literal("Smaller Options"), 57, 56, 16, 24)
         );
     }
 

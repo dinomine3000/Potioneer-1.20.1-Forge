@@ -22,6 +22,7 @@ public class AbilityOptionsScreen extends Screen {
     private static final ResourceLocation TEXTURE = new ResourceLocation(Potioneer.MOD_ID, "textures/gui/ability_options.png");
     private static final int DEADZONE = 20;
     private static final int ORB_SIDE_LENGTH = 38;
+    private static final int MAX_ICON_SIZE = 24;
 
     private AbilityOptions options;
     private final AbilityKey abilityKey;
@@ -83,8 +84,15 @@ public class AbilityOptionsScreen extends Screen {
                 pGuiGraphics.blitNineSlicedSized(TEXTURE, posX + ORB_SIDE_LENGTH/2 - width/2 - cornerSize, posY + ORB_SIDE_LENGTH, width + cornerSize*2, this.font.lineHeight + 2*cornerSize, cornerSize, 8, 8, 15, 41, 94, 56);
                 pGuiGraphics.blit(TEXTURE, posX, posY, 0, 0, ORB_SIDE_LENGTH, ORB_SIDE_LENGTH, 94, 56);
             }
-            if(currOption.textureLocation != null)
-                pGuiGraphics.blit(currOption.textureLocation, posX + ORB_SIDE_LENGTH/2 - currOption.sizeX/2, posY + ORB_SIDE_LENGTH/2 - currOption.sizeY/2, currOption.textureX, currOption.textureY, currOption.sizeX, currOption.sizeY, 180, 632);
+            if(currOption.textureLocation != null){
+                float scaleAdjust = Math.min(MAX_ICON_SIZE/currOption.sizeX, MAX_ICON_SIZE/currOption.sizeY);
+                int iconWidth = (int) (scaleAdjust*currOption.sizeX);
+                int iconHeight = (int) (scaleAdjust*currOption.sizeY);
+                pGuiGraphics.blit(currOption.textureLocation, posX + ORB_SIDE_LENGTH/2 - iconWidth/2, posY + ORB_SIDE_LENGTH/2 - iconHeight/2,
+                        currOption.textureX, currOption.textureY,
+                        iconWidth, iconHeight,
+                        currOption.textureWidth, currOption.textureHeight);
+            }
             pGuiGraphics.drawString(this.font, name, posX + ORB_SIDE_LENGTH/2 - this.font.width(name)/2 + 1, posY + ORB_SIDE_LENGTH + cornerSize, 0xffffff, false);
         }
 
