@@ -203,6 +203,10 @@ public class Abilities {
             WaterCreateAbility::new, 3, 1, 1).hasSecondaryFunction();
 
     //retweaked
+    public static final AbilityFactory TYRANT_WATER_SPELLS = registerAbility("water_spells",
+            WaterSpellAbility::new, 3, 1, 0).hasSecondaryFunction();
+
+    //retweaked
     public static final AbilityFactory TYRANT_DROWNING = registerAbility("drowning",
             DrowningAbility::new, 5, 1, 30);
 
@@ -250,9 +254,6 @@ public class Abilities {
 
     public static final AbilityFactory TYRANT_LIGHTNING_STRIKE = registerAbility("thunder_strike",
             ThunderStrikeAbility::new, 248, 1, 50);
-
-    public static final AbilityFactory TYRANT_REMOVE_WATER = registerAbility("water_sponge",
-            WaterRemoveAbility::new, 128, 1, 5);
 
 
     // -------------------------- MYSTERY ---------------------------------------------------
