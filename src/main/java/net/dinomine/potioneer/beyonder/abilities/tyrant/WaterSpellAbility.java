@@ -11,6 +11,7 @@ import net.dinomine.potioneer.savedata.AllySystemSaveData;
 import net.dinomine.potioneer.util.ParticleMaker;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
@@ -60,6 +61,11 @@ public class WaterSpellAbility extends AbilityWithOptions {
     }
 
     @Override
+    protected boolean primary(LivingEntityBeyonderCapability cap, LivingEntity target) {
+        return primaryWithArgument(cap, target, "drowning");
+    }
+
+    @Override
     protected boolean primaryWithArgument(LivingEntityBeyonderCapability cap, LivingEntity target, String args) {
         if(args.equalsIgnoreCase("drowning")){
             if(target.level().isClientSide()) return true;
@@ -68,9 +74,9 @@ public class WaterSpellAbility extends AbilityWithOptions {
                 int duration = 20*10*(10-sequenceLevel);
                 AllySystemSaveData saveData = AllySystemSaveData.from((ServerLevel) target.level());
                 ArrayList<LivingEntity> hits = AbilityFunctionHelper.getLivingEntitiesAround(target, radius, ent -> !saveData.areEntitiesAllies(ent, target));
-                //hits = AbilityFunctionHelper.getLivingEntitiesAround(target, radius);
+                hits = AbilityFunctionHelper.getLivingEntitiesAround(target, radius);
                 for(LivingEntity entity: hits){
-                    if(entity.is(target)) continue;
+                    //if(entity.is(target)) continue;
                     entity.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(victimCap ->
                             victimCap.getEffectsManager().addOrReplaceEffect(BeyonderEffects.TYRANT_DROWNING.createInstance(getSequenceLevel(), 0, duration, true), victimCap, entity));
                 }

@@ -36,6 +36,9 @@ public class AbstractEffectEntity extends Entity {
     }
 
     public Optional<UUID> getTargetId(){return getEntityData().get(TARGET_ID);}
+    public LivingEntity getTargetEntity(){
+        return targetEntity;
+    }
 
     @Override
     public boolean isNoGravity() {

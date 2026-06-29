@@ -5,6 +5,9 @@ import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
 import net.dinomine.potioneer.util.ParticleMaker;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 
@@ -22,6 +25,9 @@ public class DrowningEffect extends BeyonderEffect {
     @Override
     protected void doTick(LivingEntityBeyonderCapability cap, LivingEntity target) {
         target.level().playSound(null, target.getOnPos(), SoundEvents.AMBIENT_UNDERWATER_LOOP_ADDITIONS, SoundSource.NEUTRAL, 1, 1);
+        if(!target.hasEffect(MobEffects.MOVEMENT_SLOWDOWN) || target.getEffect(MobEffects.MOVEMENT_SLOWDOWN).getAmplifier() < 2){
+            target.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, maxLife - lifetime, 2, true, false));
+        }
     }
 
     @Override
