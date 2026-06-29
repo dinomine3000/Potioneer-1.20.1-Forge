@@ -1,4 +1,4 @@
-package net.dinomine.potioneer.beyonder.abilities.tyrant;
+package net.dinomine.potioneer.beyonder.events;
 
 import com.mojang.blaze3d.shaders.FogShape;
 import com.mojang.blaze3d.systems.RenderSystem;

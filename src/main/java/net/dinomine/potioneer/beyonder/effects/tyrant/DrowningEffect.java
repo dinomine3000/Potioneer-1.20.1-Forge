@@ -17,21 +17,22 @@ public class DrowningEffect extends BeyonderEffect {
 
     @Override
     public void onAcquire(LivingEntityBeyonderCapability cap, LivingEntity target, boolean fromLoading) {
-        if(fromLoading) return;
-        target.level().playSound(null, target.getOnPos(), SoundEvents.AMBIENT_UNDERWATER_ENTER, SoundSource.NEUTRAL, 1, 1);
+        if(!fromLoading)
+            target.level().playSound(null, target.getOnPos(), SoundEvents.AMBIENT_UNDERWATER_ENTER, SoundSource.NEUTRAL, 1, 1);
         ParticleMaker.createWaterBlockEffectForPlayer(target, target.level(), maxLife);
     }
 
     @Override
     protected void doTick(LivingEntityBeyonderCapability cap, LivingEntity target) {
+        if(target.level().isClientSide()) return;
         target.level().playSound(null, target.getOnPos(), SoundEvents.AMBIENT_UNDERWATER_LOOP_ADDITIONS, SoundSource.NEUTRAL, 1, 1);
         if(!target.hasEffect(MobEffects.MOVEMENT_SLOWDOWN) || target.getEffect(MobEffects.MOVEMENT_SLOWDOWN).getAmplifier() < 2){
-            target.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, maxLife - lifetime, 2, true, false));
+            target.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, Math.max(maxLife - lifetime, 1), 2, true, false));
         }
     }
 
     @Override
     public void stopEffects(LivingEntityBeyonderCapability cap, LivingEntity target) {
-
+        if(target.hasEffect(MobEffects.MOVEMENT_SLOWDOWN)) target.removeEffect(MobEffects.MOVEMENT_SLOWDOWN);
     }
 }

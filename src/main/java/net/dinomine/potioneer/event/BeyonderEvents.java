@@ -149,8 +149,6 @@ public class BeyonderEvents {
                 newStore.copyFrom(oldStore, event.getEntity());
             });
             event.getOriginal().invalidateCaps();
-//            PacketHandler.INSTANCE.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) event.getEntity()),
-//                    new PlayerSyncHotbarMessage(newStore.getAbilitiesManager().clientHotbar, newStore.getAbilitiesManager().quickAbility));
         });
     }
 

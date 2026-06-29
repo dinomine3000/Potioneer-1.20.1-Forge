@@ -7,6 +7,8 @@ import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.Level;
 import org.joml.Vector3f;
+import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
+import software.bernie.geckolib.core.animation.AnimatableManager;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -27,7 +29,7 @@ public class WaterBlockEffectEntity extends AbstractEffectEntity {
     @Override
     public void tick() {
         super.tick();
-        if(tickCount > entityData.get(DURATION) || (targetEntity != null && targetEntity.isDeadOrDying()))
+        if(tickCount > entityData.get(DURATION) || (getTargetEntity() != null && getTargetEntity().isDeadOrDying()))
             kill();
     }
 
@@ -50,6 +52,6 @@ public class WaterBlockEffectEntity extends AbstractEffectEntity {
     @Override
     protected void addAdditionalSaveData(CompoundTag compoundTag) {
         super.addAdditionalSaveData(compoundTag);
-        compoundTag.putInt("drowningDuration", getEntityData().get(DURATION));
+        compoundTag.putInt("drowningDuration", getEntityData().get(DURATION) - tickCount);
     }
 }

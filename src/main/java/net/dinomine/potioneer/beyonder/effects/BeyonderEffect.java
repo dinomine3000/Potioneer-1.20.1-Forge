@@ -206,10 +206,10 @@ public abstract class BeyonderEffect {
 
     public void toNbt(CompoundTag nbt){
         nbt.putInt("level", sequenceLevel);
-        nbt.putInt("lifetime", lifetime);
-        nbt.putInt("maxLife", maxLife);
         nbt.putInt("cost", cost);
+        nbt.putInt("maxLife", maxLife);
         nbt.putBoolean("active", active);
+        nbt.putInt("lifetime", lifetime);
         nbt.putString("ID", effectId);
     }
 

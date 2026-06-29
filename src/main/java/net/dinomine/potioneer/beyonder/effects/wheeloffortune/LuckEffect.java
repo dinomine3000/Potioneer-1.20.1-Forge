@@ -97,14 +97,16 @@ public class LuckEffect extends BeyonderEffect {
     @Override
     public boolean onDamageProposal(LivingAttackEvent event, LivingEntity victim, LivingEntity attacker, LivingEntityBeyonderCapability victimCap, Optional<LivingEntityBeyonderCapability> attackerCap, boolean calledOnVictim) {
         //Dodge Damage received
-        if(!calledOnVictim || event.getSource().is(PotioneerDamage.Tags.ABSOLUTE)) return false;
+        if(!calledOnVictim || event.getSource().is(PotioneerDamage.Tags.ABSOLUTE) || event.getSource().is(PotioneerDamage.Tags.MENTAL)) return false;
+
+        Entity dmgSrc = event.getSource().getDirectEntity();
+        if(dmgSrc == null) dmgSrc = attacker;
+        if(dmgSrc == null) return false;
+
         if(victimCap.getLuckManager().passesLuckCheck(sequenceLevel < 5 ? 0.4f : dodgeChance, dodgeLuckCost, dodgeLuckGain, victim.getRandom())){
             victimCap.getCharacteristicManager().progressActing(WheelOfFortunePathway.LUCK_ACTING_INC, 6);
             RandomSource random = victim.getRandom();
             victim.level().playSound(null, victim.getOnPos(), ModSounds.WHOOOOSH.get(), SoundSource.PLAYERS, 0.6f, (float) random.triangle(1, 0.2));
-
-            Entity dmgSrc = event.getSource().getDirectEntity();
-            if(dmgSrc == null) dmgSrc = attacker;
             Vec3 attackDirection = new Vec3(dmgSrc.getX() - victim.getX(), 0, dmgSrc.getZ() - victim.getZ());
             attackDirection = attackDirection.normalize();
 //            Vec3 orthogonal = victim.getLookAngle();

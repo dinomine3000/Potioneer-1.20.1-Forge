@@ -1,7 +1,9 @@
 package net.dinomine.potioneer.entities.custom.effects;
 
+import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.network.syncher.EntityDataSerializer;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
@@ -12,31 +14,54 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Vector3f;
+import software.bernie.geckolib.core.animatable.GeoAnimatable;
+import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
+import software.bernie.geckolib.core.animation.AnimatableManager;
 
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.ExecutionException;
 
-public class AbstractEffectEntity extends Entity {
+public abstract class AbstractEffectEntity extends Entity {
     public static final EntityDataAccessor<Vector3f> TARGET_POS = SynchedEntityData.defineId(AbstractEffectEntity.class, EntityDataSerializers.VECTOR3);
     public static final EntityDataAccessor<Float> ROTATION = SynchedEntityData.defineId(AbstractEffectEntity.class, EntityDataSerializers.FLOAT);
+    public static final EntityDataAccessor<Integer> TARGET_INT_ID = SynchedEntityData.defineId(AbstractEffectEntity.class, EntityDataSerializers.INT);
     public static final EntityDataAccessor<Vector3f> OFFSET = SynchedEntityData.defineId(AbstractEffectEntity.class, EntityDataSerializers.VECTOR3);
-    public static final EntityDataAccessor<Optional<UUID>> TARGET_ID = SynchedEntityData.defineId(AbstractEffectEntity.class, EntityDataSerializers.OPTIONAL_UUID);
-    protected LivingEntity targetEntity = null;
+    public static final EntityDataAccessor<Boolean> ROTATE_WITH_HEAD = SynchedEntityData.defineId(AbstractEffectEntity.class, EntityDataSerializers.BOOLEAN);
+    private LivingEntity targetEntity = null;
+    protected UUID targetId = null;
 
-    public void setTarget(UUID targetId){
-        if(level() instanceof ServerLevel lvl){
-            if(lvl.getEntity(targetId) instanceof LivingEntity living){
-                targetEntity = living;
-                getEntityData().set(TARGET_ID, Optional.of(targetId));
-                getEntityData().set(TARGET_POS, living.position().toVector3f());
-            } else {
-                System.err.println("Warning: Attempted to set effect entity target as a non-living entity!");
-            }
+    public void setTarget(LivingEntity targetEntity){
+        if(!level().isClientSide){
+            this.targetEntity = targetEntity;
+            this.targetId = targetEntity.getUUID();
+            getEntityData().set(TARGET_POS, targetEntity.position().toVector3f());
+            getEntityData().set(TARGET_INT_ID, targetEntity.getId());
+            targetEntity.getCapability(BeyonderStatsProvider.EFFECT_ENTITIES).ifPresent(cap -> {
+                cap.addEffect(this);
+            });
         }
     }
 
-    public Optional<UUID> getTargetId(){return getEntityData().get(TARGET_ID);}
+    public int getTargetIntId(){
+        return entityData.get(TARGET_INT_ID);
+    }
+
+    public UUID getTargetId(){return targetId;}
     public LivingEntity getTargetEntity(){
+        if(level().isClientSide) return null;
+        if(targetEntity != null) return targetEntity;
+        if(targetId == null){
+            System.out.println("[Potioneer] Effect entity with no target set. Deleting...");
+            kill();
+            return null;
+        }
+        if(level() instanceof ServerLevel serverLevel){
+            Entity ent = serverLevel.getEntity(targetId);
+            if(ent instanceof LivingEntity living)
+                targetEntity = living;
+        }
+
         return targetEntity;
     }
 
@@ -75,39 +100,35 @@ public class AbstractEffectEntity extends Entity {
     @Override
     public void tick() {
         if(!level().isClientSide()){
-            if(getEntityData().get(TARGET_ID).isEmpty()) {
-                kill();
-                return;
-            }
-            UUID targetId = getEntityData().get(TARGET_ID).get();
-            if(targetEntity == null){
-                targetEntity = (LivingEntity) ((ServerLevel) level()).getEntity(targetId);
-                if(targetEntity == null) kill();
-            }
-            if(targetEntity != null){
-                Vector3f offset = new Vector3f(getEntityData().get(OFFSET));
+            LivingEntity target = getTargetEntity();
+            if(target == null) return;
+            Vector3f offset = new Vector3f(getEntityData().get(OFFSET));
 
-                float yawRad = (float) Math.toRadians(-getYRot());
-                offset.rotateY(yawRad);
+            float targetRotation = rotatesWithHead() ? target.getYHeadRot() : target.getYRot();
+            float yawRad = (float) Math.toRadians(-targetRotation);
+            offset.rotateY(yawRad);
 
-                Vector3f targetPos = targetEntity.position().toVector3f();
+            Vector3f targetPos = target.position().toVector3f();
 
-                getEntityData().set(TARGET_POS, targetPos.add(offset));
-            }
-            if(targetEntity != null)
-                getEntityData().set(ROTATION, targetEntity.getYRot());
+            getEntityData().set(TARGET_POS, targetPos.add(offset));
+            getEntityData().set(ROTATION, targetRotation);
         }
         Vector3f targetPos = getEntityData().get(TARGET_POS);
         this.setPos(new Vec3(targetPos));
         setYRot(getEntityData().get(ROTATION));
     }
 
+    public boolean rotatesWithHead(){
+        return entityData.get(ROTATE_WITH_HEAD);
+    }
+
     @Override
     protected void defineSynchedData() {
         this.entityData.define(TARGET_POS, new Vector3f());
         this.entityData.define(ROTATION, 0f);
-        this.entityData.define(TARGET_ID, Optional.empty());
         this.entityData.define(OFFSET, new Vector3f());
+        this.entityData.define(ROTATE_WITH_HEAD, false);
+        this.entityData.define(TARGET_INT_ID, 0);
     }
 
     @Override
@@ -125,10 +146,23 @@ public class AbstractEffectEntity extends Entity {
             getEntityData().set(OFFSET, new Vector3f(x, y, z));
         }
         if(compoundTag.contains("targetId")){
-            UUID targetId = compoundTag.getUUID("targetId");
-            getEntityData().set(TARGET_ID, Optional.of(targetId));
+            targetId = compoundTag.getUUID("targetId");
+            LivingEntity target = getTargetEntity();
+            if(target != null)
+                entityData.set(TARGET_INT_ID, target.getId());
+        }
+        if(compoundTag.contains("rotateHead")){
+            boolean rotateHead = compoundTag.getBoolean("rotateHead");
+            getEntityData().set(ROTATE_WITH_HEAD, rotateHead);
         }
 
+    }
+
+    @Override
+    public void remove(RemovalReason pReason) {
+        super.remove(pReason);
+        if(targetEntity == null) return;
+        targetEntity.getCapability(BeyonderStatsProvider.EFFECT_ENTITIES).ifPresent(cap -> cap.stopEffect(this));
     }
 
     @Override
@@ -139,7 +173,8 @@ public class AbstractEffectEntity extends Entity {
         compoundTag.putFloat("offsetX", getEntityData().get(OFFSET).x());
         compoundTag.putFloat("offsetY", getEntityData().get(OFFSET).y());
         compoundTag.putFloat("offsetZ", getEntityData().get(OFFSET).z());
-        if(getEntityData().get(TARGET_ID).isPresent())
-           compoundTag.putUUID("targetId", getEntityData().get(TARGET_ID).get());
+        compoundTag.putBoolean("rotateHead", getEntityData().get(ROTATE_WITH_HEAD));
+        if(targetId != null)
+           compoundTag.putUUID("targetId", targetId);
     }
 }

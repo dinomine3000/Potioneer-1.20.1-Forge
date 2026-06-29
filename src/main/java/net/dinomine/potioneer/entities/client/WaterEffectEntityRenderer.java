@@ -30,7 +30,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @OnlyIn(Dist.CLIENT)
-public class WaterEffectEntityRenderer extends EntityRenderer<WaterBlockEffectEntity> {
+public class WaterEffectEntityRenderer extends AbstractEffectEntityRenderer<WaterBlockEffectEntity> {
     public WaterEffectEntityRenderer(EntityRendererProvider.Context pContext) {
         super(pContext);
     }
@@ -38,16 +38,15 @@ public class WaterEffectEntityRenderer extends EntityRenderer<WaterBlockEffectEn
     @Override
     public void render(WaterBlockEffectEntity pEntity, float pEntityYaw, float pPartialTick, PoseStack poseStack, MultiBufferSource pBuffer, int pPackedLight) {
         if(Minecraft.getInstance().player != null && Minecraft.getInstance().options.getCameraType().isFirstPerson()){
-            Optional<UUID> targetId = pEntity.getTargetId();
-            if(targetId.isPresent() && targetId.get().equals(Minecraft.getInstance().player.getUUID())){
+            UUID targetId = pEntity.getTargetId();
+            if(targetId != null && targetId.equals(Minecraft.getInstance().player.getUUID())){
                 return;
             }
         }
+        super.render(pEntity, pEntityYaw, pPartialTick, poseStack, pBuffer, pPackedLight);
 
-        poseStack.pushPose();
 
         LivingEntity targetEntity = pEntity.getTargetEntity();
-        poseStack.translate(-0.5D, 0.25D, -0.5D);
 
         BlockState water = ModBlocks.FAKE_WATER.get().defaultBlockState();
 
@@ -64,7 +63,6 @@ public class WaterEffectEntityRenderer extends EntityRenderer<WaterBlockEffectEn
                 RenderType.translucent()
         );
 
-        poseStack.popPose();
 //        super.render(pEntity, pEntityYaw, pPartialTick, poseStack, pBuffer, pPackedLight);
     }
 

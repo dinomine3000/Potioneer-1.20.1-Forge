@@ -133,7 +133,7 @@ public class PlayerEffectsManager {
     public String toString(){
         String res = "";
         for(BeyonderEffect eff : passives){
-            res = res.concat(eff.getId().concat(String.valueOf(eff.getSequenceLevel())).concat("\n"));
+            res = res.concat(eff.getId().concat(String.valueOf(eff.getSequenceLevel()) + " - Max Life: ").concat(String.valueOf(eff.getMaxLife())).concat("\n"));
         }
         return res;
     }
@@ -143,6 +143,7 @@ public class PlayerEffectsManager {
     }
 
     public void clearEffects(LivingEntityBeyonderCapability cap, LivingEntity target){
+        sendUpdateToClient(passives.stream().toList(), BeyonderEffectSyncMessage.REMOVE, target);
         for(BeyonderEffect eff : passives){
             eff.stopEffects(cap, target);
         }
@@ -362,8 +363,8 @@ public class PlayerEffectsManager {
             }
             BeyonderEffect effect = type.createInstance(
                         iterator.getInt("level"),
-                        iterator.getInt("maxLife"),
                         iterator.getInt("cost"),
+                        iterator.getInt("maxLife"),
                         iterator.getBoolean("active"));
             effect.setLifetime(iterator.getInt("lifetime"));
             effect.loadNBTData(iterator);

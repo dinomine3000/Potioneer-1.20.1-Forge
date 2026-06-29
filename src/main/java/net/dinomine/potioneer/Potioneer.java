@@ -151,7 +151,7 @@ public class Potioneer
         public static void onClientSetup(FMLClientSetupEvent event)
         {
 
-            //Geckolib registers
+            //entity renderers registers
             EntityRenderers.register(ModEntities.CHRYON.get(), ChryonRenderer::new);
             EntityRenderers.register(ModEntities.PECAN.get(), PecanRenderer::new);
             EntityRenderers.register(ModEntities.WANDERING_CACTUS.get(), WanderingCactusRenderer::new);
