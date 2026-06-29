@@ -93,6 +93,8 @@ public abstract class AbstractEffectEntity extends Entity {
         getEntityData().set(OFFSET, offset);
     }
 
+    public Vector3f getOffset(){return entityData.get(OFFSET);}
+
     public AbstractEffectEntity(EntityType<?> pEntityType, Level pLevel) {
         super(pEntityType, pLevel);
     }
@@ -102,20 +104,12 @@ public abstract class AbstractEffectEntity extends Entity {
         if(!level().isClientSide()){
             LivingEntity target = getTargetEntity();
             if(target == null) return;
-            Vector3f offset = new Vector3f(getEntityData().get(OFFSET));
-
-            float targetRotation = rotatesWithHead() ? target.getYHeadRot() : target.getYRot();
-            float yawRad = (float) Math.toRadians(-targetRotation);
-            offset.rotateY(yawRad);
 
             Vector3f targetPos = target.position().toVector3f();
-
-            getEntityData().set(TARGET_POS, targetPos.add(offset));
-            getEntityData().set(ROTATION, targetRotation);
+            getEntityData().set(TARGET_POS, targetPos);
         }
         Vector3f targetPos = getEntityData().get(TARGET_POS);
         this.setPos(new Vec3(targetPos));
-        setYRot(getEntityData().get(ROTATION));
     }
 
     public boolean rotatesWithHead(){

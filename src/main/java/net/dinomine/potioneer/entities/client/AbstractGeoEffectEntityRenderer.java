@@ -8,7 +8,7 @@ import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.model.GeoModel;
 import software.bernie.geckolib.renderer.GeoEntityRenderer;
 
-public abstract class AbstractGeoEffectEntityRenderer<T extends AbstractEffectEntity & GeoEntity> extends GeoEntityRenderer<T> {
+public abstract class AbstractGeoEffectEntityRenderer<T extends AbstractEffectEntity & GeoEntity> extends GeoEntityRenderer<T> implements IAbstractEffectRenderer{
     public AbstractGeoEffectEntityRenderer(EntityRendererProvider.Context renderManager, GeoModel<T> model) {
         super(renderManager, model);
     }
@@ -16,6 +16,6 @@ public abstract class AbstractGeoEffectEntityRenderer<T extends AbstractEffectEn
     @Override
     protected void applyRotations(T animatable, PoseStack poseStack, float ageInTicks, float rotationYaw, float partialTick) {
         super.applyRotations(animatable, poseStack, ageInTicks, rotationYaw, partialTick);
-        poseStack.mulPose(Axis.YP.rotationDegrees(-animatable.getYRot()));
+        renderEffect(animatable, poseStack);
     }
 }

@@ -82,7 +82,7 @@ public class WaterSpellAbility extends AbilityWithOptions {
                 }
                 ParticleMaker.summonAOEParticles(target.level(), target.getEyePosition(), (int)(2*radius), radius, ParticleMaker.Preset.AOE_END_ROD);
                 //target.level().playSound(null, target.getOnPos(), SoundEvents.MINECART_INSIDE_UNDERWATER, SoundSource.PLAYERS, 1, 1);
-                cap.requestActiveSpiritualityCost(DROWNING_COST);
+                //cap.requestActiveSpiritualityCost(DROWNING_COST);
                 return true;
             }
         }

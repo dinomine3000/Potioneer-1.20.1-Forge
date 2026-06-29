@@ -104,7 +104,6 @@ public class ParticleMaker {
 
     public static void createSlotMachineForEntity(Level level, LivingEntity target, boolean success){
         SlotMachineEntity slotMachine = new SlotMachineEntity(ModEntities.SLOT_MACHINE_ENTITY.get(), level);
-        slotMachine.setInvulnerable(true);
         slotMachine.setTarget(target);
         slotMachine.setSuccess(success);
         level.addFreshEntity(slotMachine);
@@ -112,7 +111,6 @@ public class ParticleMaker {
 
     public static void createDiceEffectForEntity(Level level, LivingEntity target){
         DiceEffectEntity dice = new DiceEffectEntity(ModEntities.DICE_EFFECT_ENTITY.get(), level);
-        dice.setInvulnerable(true);
         dice.setTarget(target);
         level.addFreshEntity(dice);
     }
