@@ -26,7 +26,7 @@ public class GamblingAbility extends Ability {
 
     @Override
     protected String getDescId(int sequenceLevel) {
-        return sequenceLevel < 6 ? "gambling_2" : "gambling";
+        return sequenceLevel < 6 ? "gambling_2" : "gambling_1";
     }
 
     @Override

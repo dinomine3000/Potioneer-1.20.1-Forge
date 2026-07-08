@@ -62,7 +62,7 @@ public class MysticismHelper {
                 //gives you the name of your next sequence.
                 //YesNo are become true
                 boolean yesNo = true;
-                String clue = "potioneer.beyonder.sequence." + Pathways.getPathwayBySequenceId(pathwaySequenceId - 1).getSequenceNameFromId(pathwaySequenceId - 1, false);
+                String clue = "beyonder.potioneer.sequence." + Pathways.getPathwayBySequenceId(pathwaySequenceId - 1).getSequenceNameFromId(pathwaySequenceId - 1, false);
                 int resSequence = pathwaySequenceId - 1;
                 ArrayList<BlockPos> responsePositions = new ArrayList<>();
                 return new DivinationResult(yesNo, responsePositions, resSequence, 1f, clue, ItemStack.EMPTY);
@@ -108,7 +108,7 @@ public class MysticismHelper {
             int charSequence = ModCompoundTags.BeyonderInfoTag.getAssociatedPathSeqLevel(beyonderTag);
             boolean yesNo = charSequence == pathwaySequenceId - 1;
             float status = yesNo ? 1f : 0f;
-            String clue = "potioneer.beyonder.sequence." + Pathways.getPathwayBySequenceId(charSequence).getSequenceNameFromId(charSequence, false);
+            String clue = "beyonder.potioneer.sequence." + Pathways.getPathwayBySequenceId(charSequence).getSequenceNameFromId(charSequence, false);
             ItemStack stack = savedData.getRandomItemFromFormulaFor(charSequence, random);
             List<BlockPos> positions = findItemInArea(seer, stack, position, 64, level);
 
@@ -151,7 +151,7 @@ public class MysticismHelper {
                     yesNo = complete;
                     try{
                         potionSequence = Integer.parseInt(name);
-                        clue = "potioneer.beyonder.sequence." + Pathways.getPathwayBySequenceId(potionSequence).getSequenceNameFromId(potionSequence, false);
+                        clue = "beyonder.potioneer.sequence." + Pathways.getPathwayBySequenceId(potionSequence).getSequenceNameFromId(potionSequence, false);
                         status = potionSequence%10 == (pathwaySequenceId - 1) % 10 ? 1f : 0.7f;
                     } catch (Exception e){
                         clue = name;

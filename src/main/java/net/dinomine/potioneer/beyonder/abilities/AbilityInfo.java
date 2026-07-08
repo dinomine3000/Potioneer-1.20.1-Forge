@@ -91,11 +91,11 @@ public class AbilityInfo {
     }
 
     public Component getNameComponent(){
-        return Component.translatableWithFallback("potioneer.ability_name." + descId(), StringUtils.capitalize(descId.replace("_", " ")));
+        return Component.translatableWithFallback("ability.potioneer_name." + descId(), StringUtils.capitalize(descId.replace("_", " ")));
     }
 
     public MutableComponent getMutableNameComponent(){
-        return Component.translatableWithFallback("potioneer.ability_name." + descId(), StringUtils.capitalize(descId.replace("_", " ")));
+        return Component.translatableWithFallback("ability.potioneer_name." + descId(), StringUtils.capitalize(descId.replace("_", " ")));
     }
 
     public int maxCooldown() {

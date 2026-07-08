@@ -107,7 +107,7 @@ public class BeyonderPotionItem extends PotionItem implements GeoItem, GeoTintab
             if(pLevel.isClientSide()) return;
             if(isConflictingPotion(info)){
                 if(!player.isCreative()) cap.setSanity(0);
-                player.sendSystemMessage(Component.translatableWithFallback("potioneer.message.lost_control", "Lost control on the spot. oh well."));
+                player.sendSystemMessage(Component.translatableWithFallback("message.potioneer.lost_control", "Lost control on the spot. oh well."));
                 return;
             }
             int pathwaySequenceId = getSequenceLevelOrThrow(info);

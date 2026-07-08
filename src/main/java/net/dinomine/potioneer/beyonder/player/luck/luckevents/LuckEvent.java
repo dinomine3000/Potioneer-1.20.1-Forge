@@ -60,7 +60,7 @@ public abstract class LuckEvent {
 
             MinecraftForge.EVENT_BUS.post(new LuckEventCastEvent.TriggeredPost(target, cap.getLuckManager().getLuck(), this));
 
-            target.sendSystemMessage(Component.translatable("potioneer.luck.trigger_" + this.mag.toString().toLowerCase()));
+            target.sendSystemMessage(Component.translatable("luck.potioneer.trigger_" + this.mag.toString().toLowerCase()));
             target.level().playSound(null, target.getOnPos(), isPositive(mag) ? ModSounds.LUCK.get(): ModSounds.UNLUCK.get(), SoundSource.NEUTRAL, 1, 1);
             triggerEvent(cap, cap.getLuckManager(), target);
             return true;

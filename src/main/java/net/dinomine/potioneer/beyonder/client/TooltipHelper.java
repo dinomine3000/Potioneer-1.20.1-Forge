@@ -29,7 +29,7 @@ public class TooltipHelper {
         //so we adjust it here to make the box more flush with the text width.
         ttWidth = Math.min(font.width(lines.stream().max(Comparator.comparingInt(font::width)).get()) + 2*SLICE_SIZE, ttWidth);
         int posX = Math.min(mouseX, screenWidth - ttWidth);
-        int posY = Math.min(mouseY, screenHeight - ttHeight);
+        int posY = Math.min(mouseY, screenHeight - ttHeight) + 5;
         //RenderSystem.setShaderColor((color & 0xff0000) >> 16, (color & 0x00ff00) >> 8, color & 0x0000ff, 1f);
         guiGraphics.blitNineSlicedSized(TEX, posX, posY, ttWidth, ttHeight, SLICE_SIZE, 11, 15, TEX_X, TEX_Y, TEX_WIDTH, TEX_HEIGHT);
         //RenderSystem.setShaderColor(1f, 1f, 1f, 1f);

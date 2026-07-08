@@ -92,7 +92,7 @@ public class WaterTrapBlockEntity extends BlockEntity implements GeoBlockEntity 
                 applyEffectsToEntity(pLevel, pPos, (LivingEntity) ent);
             }
             if(caster != null && optCap.isPresent() && optCap.get().getAbilitiesManager().hasAbilityOrBetter(Abilities.TYRANT_WATER_TRAP.getAblId(), 7)){
-                caster.sendSystemMessage(Component.translatable("potioneer.message.water_trap_activated"));
+                caster.sendSystemMessage(Component.translatable("message.potioneer.water_trap_activated"));
             }
 
             pLevel.destroyBlock(pPos, false);
@@ -143,7 +143,7 @@ public class WaterTrapBlockEntity extends BlockEntity implements GeoBlockEntity 
         if(!isOwner(player.getUUID(), sequenceId)) return;
         setChanged();
         effectIndex = Math.floorMod((effectIndex + (player.isCrouching() ? -1 : 1)), 4);
-        player.sendSystemMessage(Component.translatable("potioneer.pathway.trap_effect_" + effectIndex));
+        player.sendSystemMessage(Component.translatable("pathway.potioneer.trap_effect_" + effectIndex));
     }
 
     public CompoundTag getUpdateTag() {

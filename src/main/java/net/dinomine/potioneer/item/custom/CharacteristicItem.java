@@ -106,7 +106,7 @@ public class CharacteristicItem extends Item {
                                 ModCompoundTags.getTagFromItem(ModCompoundTags.TAGS.BEYONDER, characteristicStack));
                         MysticalItemHelper.generateSealedArtifact(iStack, pathwaySequenceIds, pLevel.random);
                         copyMysticismTag(iStack, characteristicStack);
-                        pEntity.sendSystemMessage(Component.translatable("potioneer.characteristic.corrupt", iStack.getDisplayName().getString()));
+                        pEntity.sendSystemMessage(Component.translatable("characteristic.potioneer.corrupt", iStack.getDisplayName().getString()));
                         characteristicStack.setCount(0);
                         cap.get().putCharacteristicArtifactCooldown(PotioneerCommonConfig.ARTIFACT_CONVERSION_COOLDOWN.get());
                         break;

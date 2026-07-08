@@ -145,7 +145,7 @@ public class BeyonderScreen extends Screen {
                 this.color + 0x99000000, this.color + 0x99000000);
         if(pMouseX > leftPos + 12 && pMouseY < leftPos + 164
                 && pMouseY > topPos + 152 && pMouseY < topPos + 160){
-            pGuiGraphics.renderTooltip(this.font, Component.translatable("potioneer.tooltip.acting_bar" + (acting > 0.95f ? "_done" : "")), pMouseX, pMouseY);
+            pGuiGraphics.renderTooltip(this.font, Component.translatable("tooltip.potioneer.acting_bar" + (acting > 0.95f ? "_done" : "")), pMouseX, pMouseY);
         }
 
         //blit default overlay
@@ -224,11 +224,11 @@ public class BeyonderScreen extends Screen {
         );
 
         //draw stats
-        pGuiGraphics.drawWordWrap(this.font, Component.translatable("potioneer.beyonder.stat_hp").append(" " + ClientStatsData.getStat(0)), leftPos + 63, topPos + 67, 100, this.color);
-        pGuiGraphics.drawWordWrap(this.font, Component.translatable("potioneer.beyonder.stat_dmg").append(" " + ClientStatsData.getStat(1)), leftPos + 63, topPos + 80, 100, this.color);
-        pGuiGraphics.drawWordWrap(this.font, Component.translatable("potioneer.beyonder.stat_armor").append(" " + ClientStatsData.getStat(2)), leftPos + 63, topPos + 93, 100, this.color);
-        pGuiGraphics.drawWordWrap(this.font, Component.translatable("potioneer.beyonder.stat_tough").append(" " + ClientStatsData.getStat(3)), leftPos + 63, topPos + 106, 100, this.color);
-        pGuiGraphics.drawWordWrap(this.font, Component.translatable("potioneer.beyonder.stat_knock").append(" " + ClientStatsData.getStat(4)), leftPos + 63, topPos + 119, 100, this.color);
+        pGuiGraphics.drawWordWrap(this.font, Component.translatable("beyonder.potioneer.stat_hp").append(" " + ClientStatsData.getStat(0)), leftPos + 63, topPos + 67, 100, this.color);
+        pGuiGraphics.drawWordWrap(this.font, Component.translatable("beyonder.potioneer.stat_dmg").append(" " + ClientStatsData.getStat(1)), leftPos + 63, topPos + 80, 100, this.color);
+        pGuiGraphics.drawWordWrap(this.font, Component.translatable("beyonder.potioneer.stat_armor").append(" " + ClientStatsData.getStat(2)), leftPos + 63, topPos + 93, 100, this.color);
+        pGuiGraphics.drawWordWrap(this.font, Component.translatable("beyonder.potioneer.stat_tough").append(" " + ClientStatsData.getStat(3)), leftPos + 63, topPos + 106, 100, this.color);
+        pGuiGraphics.drawWordWrap(this.font, Component.translatable("beyonder.potioneer.stat_knock").append(" " + ClientStatsData.getStat(4)), leftPos + 63, topPos + 119, 100, this.color);
     }
 
     public void drawScaledString(GuiGraphics guiGraphics, Font font, String text, int x, int y, float scale, int color) {

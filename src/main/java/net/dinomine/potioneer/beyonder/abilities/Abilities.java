@@ -91,7 +91,7 @@ public class Abilities {
     //retweaked
     public static final AbilityFactory CALAMITY_INCREASE = registerAbility("calamity",
             (Integer sequenceLevel) -> PassiveAbility.createAbility(sequenceLevel, BeyonderEffects.WHEEL_CALAMITY,
-                            (level) -> level < 8 ? (level < 6 ? "calamity_3" : "calamity_2" ): "calamity")
+                            (level) -> level < 8 ? (level < 6 ? "calamity_3" : "calamity_2" ): "calamity_1")
                     .enabledOnAcquire(),
             4, 0, 0).passive();
 

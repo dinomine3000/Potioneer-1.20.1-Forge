@@ -55,6 +55,7 @@ public class ClientEventsTyrant {
                     0, 0, event.getGuiGraphics().guiWidth(), event.getGuiGraphics().guiHeight(), 0, 0, 16, 16, 16, 16);
             event.getGuiGraphics().setColor(1f, 1f, 1f, 1f);
             RenderSystem.disableBlend();
+
         }
     }
 

@@ -50,7 +50,7 @@ public class AnvilGuiAbility extends Ability {
                         player,
                         new SimpleMenuProvider((i, inventory, player1) ->
                                 new CrafterAnvilMenu(i, inventory, ContainerLevelAccess.create(player1.level(), player1.getOnPos()), getSequenceLevel()),
-                                Component.translatable("potioneer.menu.anvil_menu")),
+                                Component.translatable("menu.potioneer.anvil_menu")),
                         buff -> buff.writeInt(getSequenceLevel()));
 
                 cap.requestActiveSpiritualityCost(cost());

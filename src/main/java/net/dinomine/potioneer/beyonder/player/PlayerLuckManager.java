@@ -97,7 +97,7 @@ public class PlayerLuckManager {
             return null;
         }
         else{
-            target.sendSystemMessage(Component.translatable("potioneer.luck.event_cast_" + target.getRandom().nextInt(4)));
+            target.sendSystemMessage(Component.translatable("luck.potioneer.event_cast_" + target.getRandom().nextInt(4)));
             MinecraftForge.EVENT_BUS.post(new LuckEventCastEvent.Post(target, luck, proposedEvent));
             return proposedEvent;
         }
@@ -106,7 +106,7 @@ public class PlayerLuckManager {
     public void forceCastEvent(LivingEntity target, LivingEntityBeyonderCapability cap, boolean instantCast){
         LuckEvent proposedEvent = LuckEvents.getRandomEventFromLuck(luck, target.getRandom())
                 .createInstance(getRandomNumber(PotioneerCommonConfig.MINIMUM_LUCK_EVENT_TIMER.get()*20, PotioneerCommonConfig.MAXIMUM_LUCK_EVENT_TIMER.get()*20, luck < 0, target.getRandom()));
-        target.sendSystemMessage(Component.translatable("potioneer.luck.event_cast_" + target.getRandom().nextInt(4)));
+        target.sendSystemMessage(Component.translatable("luck.potioneer.event_cast_" + target.getRandom().nextInt(4)));
         MinecraftForge.EVENT_BUS.post(new LuckEventCastEvent.Post(target, luck, proposedEvent));
         if(instantCast) proposedEvent.triggerEvent(cap, this, target);
     }

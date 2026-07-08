@@ -41,7 +41,7 @@ public class CraftingGuiAbility extends Ability {
                     player,
                     new SimpleMenuProvider((i, inventory, player1) ->
                             new CrafterMenu(i, inventory, ContainerLevelAccess.create(player1.level(), player1.getOnPos()), getSequenceLevel()),
-                            Component.translatable("potioneer.menu.crafter_menu")),
+                            Component.translatable("menu.potioneer.crafter_menu")),
                     buff -> buff.writeInt(getSequenceLevel()));
 
             cap.requestActiveSpiritualityCost(cost());

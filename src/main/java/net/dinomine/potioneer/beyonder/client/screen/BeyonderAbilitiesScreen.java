@@ -7,6 +7,7 @@ import net.dinomine.potioneer.beyonder.client.KeyBindings;
 import net.dinomine.potioneer.beyonder.client.TooltipHelper;
 import net.dinomine.potioneer.beyonder.pathways.Pathways;
 import net.dinomine.potioneer.util.CustomImageButton;
+import net.dinomine.potioneer.util.PotioneerMathHelper;
 import net.dinomine.potioneer.util.misc.ArtifactHolder;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -18,10 +19,11 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
 
 import static net.dinomine.potioneer.beyonder.client.HUD.AbilitiesHotbarHUD.*;
 
@@ -61,8 +63,11 @@ public class BeyonderAbilitiesScreen extends Screen {
     private Button removeFromHotbarButton;
     private Button addToQuickSelectButton;
     private Button removeFromQuickSelectButton;
+    private Button descriptionOffsetLeftButton, descriptionOffsetRightButton;
 
     private Button goToMainMenuButton, goToOptionsMenu, goToAllyMenu;
+
+    private int abilityDescOffset = 0;
 
     public BeyonderAbilitiesScreen() {
         super(TITLE);
@@ -73,7 +78,7 @@ public class BeyonderAbilitiesScreen extends Screen {
         selectedCaret = 0;
         buttonOffset = 0;
         dragging = false;
-        focusedOffset = -1;
+        offsetOfSelection = -1;
     }
 
     @Override
@@ -99,6 +104,7 @@ public class BeyonderAbilitiesScreen extends Screen {
         this.scrollTop = this.topPos + 74;
         this.hotbarButtonBottom = this.topPos + 69;
         this.hotbarButtonRight = this.leftPos + 163;
+        abilityDescOffset = 0;
 
         abilities = ClientAbilitiesData.getAbilities(updated -> {
                 Collections.reverse(updated);
@@ -118,6 +124,13 @@ public class BeyonderAbilitiesScreen extends Screen {
                 castAbilityAt(true);
             }, button -> castAbilityAt(false));
             addRenderableWidget(castAbilityButton);
+
+            descriptionOffsetLeftButton = new ImageButton(leftPos + 100, topPos - 20, 11, 17,
+                    127, 212, 18, TEXTURE, TEXTURE_WIDTH, TEXTURE_HEIGHT, btn -> offsetAbilityDescription(-1));
+            descriptionOffsetLeftButton.setTooltip(Tooltip.create(Component.translatable("gui.potioneer.offset_ability_desc_left")));
+            descriptionOffsetRightButton = new ImageButton(leftPos + 120, topPos - 20, 11, 17,
+                    113, 212, 18, TEXTURE, TEXTURE_WIDTH, TEXTURE_HEIGHT, btn -> offsetAbilityDescription(1));
+            descriptionOffsetRightButton.setTooltip(Tooltip.create(Component.translatable("gui.potioneer.offset_ability_desc_right")));
 
             addToHotbarButton = new ImageButton(hotbarButtonRight - hotbarButtonSide, hotbarButtonBottom - hotbarButtonSide, hotbarButtonSide, hotbarButtonSide,
                     176, 105, hotbarButtonSide, TEXTURE, TEXTURE_WIDTH, TEXTURE_HEIGHT, btn -> {addAbilityToHotbar();});
@@ -147,6 +160,8 @@ public class BeyonderAbilitiesScreen extends Screen {
             addRenderableWidget(removeFromHotbarButton);
             addRenderableWidget(addToQuickSelectButton);
             addRenderableWidget(removeFromQuickSelectButton);
+            addWidget(descriptionOffsetLeftButton);
+            addWidget(descriptionOffsetRightButton);
             updateHotbarButton();
         }
     }
@@ -160,6 +175,11 @@ public class BeyonderAbilitiesScreen extends Screen {
         pGuiGraphics.blit(TEXTURE, leftPos, topPos, imageWidth, imageHeight, 0,
                 0, imageWidth, imageHeight, TEXTURE_WIDTH, TEXTURE_HEIGHT);
         super.render(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
+
+        if(hasPreviousDescription(getCurrentAbility(), abilityDescOffset))
+            descriptionOffsetLeftButton.render(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
+        if(hasNextDescription(getCurrentAbility(), abilityDescOffset))
+            descriptionOffsetRightButton.render(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
 
         drawScroll(pGuiGraphics, scrollLeft, scrollTop);
         if(beyonder){
@@ -191,6 +211,11 @@ public class BeyonderAbilitiesScreen extends Screen {
         }
         updateHotbarButton();
         ClientAbilitiesData.setHotbarChanged();
+    }
+
+    private void offsetAbilityDescription(int diff){
+        if(hasPreviousDescription(getCurrentAbility(), abilityDescOffset) && diff < 0) abilityDescOffset += diff;
+        if(hasNextDescription(getCurrentAbility(), abilityDescOffset) && diff > 0) abilityDescOffset += diff;
     }
 
     private void addAbilityToHotbar(){
@@ -247,16 +272,18 @@ public class BeyonderAbilitiesScreen extends Screen {
     }
 
     private void changeCaret(int buttonIdx){
+
         // when double clicking the list entry, cast ability
-        if(selectedCaret == buttonIdx + buttonOffset && dClickCountdown > 0){
+        offsetOfSelection = buttonIdx + buttonOffset;
+        if(selectedCaret == offsetOfSelection && dClickCountdown > 0){
             castAbilityAt(true);
             dClickCountdown = 0;
         } else {
             for(ImageButton btn: buttons){
                 btn.setFocused(false);
             }
-            focusedOffset = buttonIdx + buttonOffset;
-            this.selectedCaret = buttonIdx + buttonOffset;
+            abilityDescOffset = 0;
+            this.selectedCaret = offsetOfSelection;
             dClickCountdown = 7;
         }
         updateHotbarButton();
@@ -272,11 +299,13 @@ public class BeyonderAbilitiesScreen extends Screen {
             refreshAbilitiesScreen();
             return;
         }
-        Component name = data.getNameComponent();
         //int caret = abilities.size() - 1 - abilityIndex;
 
         //name title
         if(main){
+
+
+            Component name = Component.translatableWithFallback("ability.potioneer_name." + getAbilityDescriptionId(data, abilityDescOffset), StringUtils.capitalize(data.descId().replace("_", " ")));
             pGuiGraphics.drawString(this.font, name, leftPos + 24 + imageWidth/2 - this.font.width(name)/2, topPos + 9, 0, false);
         }
 
@@ -343,7 +372,7 @@ public class BeyonderAbilitiesScreen extends Screen {
             //make button to cast secondary ability here
 
             //description text
-            Component short_description = Component.translatable("potioneer.short_desc." + data.descId());
+            Component short_description = Component.translatable("short_desc.potioneer." + getAbilityDescriptionId(data, abilityDescOffset));
             pGuiGraphics.drawWordWrap(this.font, FormattedText.of(short_description.getString()), abilityDescLeft, abilityDescTop, abilityDescLength, 0);
 
         }
@@ -387,7 +416,9 @@ public class BeyonderAbilitiesScreen extends Screen {
                         !(mouseX >= hotbarButtonRight - hotbarButtonSide && mouseX < hotbarButtonRight
                                 && mouseY >= hotbarButtonBottom - hotbarButtonSide && mouseY < hotbarButtonBottom)
         ){
-            TooltipHelper.drawTooltip(pGuiGraphics, mouseX, mouseY, this.width/2, this.width, this.height, Component.translatable("potioneer.long_desc." + abilities.get(selectedCaret).descId()), 0xffffff, this.font);
+            TooltipHelper.drawTooltip(pGuiGraphics, mouseX, mouseY, this.width/2, this.width, this.height,
+                    Component.translatable("long_desc.potioneer." + getAbilityDescriptionId(getCurrentAbility(), abilityDescOffset)),
+                    0xffffff, this.font);
         }
     }
 
@@ -396,6 +427,10 @@ public class BeyonderAbilitiesScreen extends Screen {
         float percent = size > 6 ? (float) buttonOffset / (size - 6) : 0;
         pGuiGraphics.blit(TEXTURE, posX, (int)(posY + percent*69), 12, 15,
                 size > 6 ? 0 : 12, 211, 12, 15, TEXTURE_WIDTH, TEXTURE_HEIGHT);
+    }
+
+    private AbilityInfo getCurrentAbility(){
+        return selectedCaret < abilities.size() ? abilities.get(selectedCaret) : null;
     }
 
     @Override
@@ -417,7 +452,7 @@ public class BeyonderAbilitiesScreen extends Screen {
             buttonOffset = offset;
             for(int i = 0; i < buttons.size(); i++){
                 ImageButton btn = buttons.get(i);
-                btn.setFocused(buttonOffset + i == focusedOffset);
+                btn.setFocused(buttonOffset + i == offsetOfSelection);
             }
         }
         return super.mouseClicked(pMouseX, pMouseY, pButton);
@@ -435,13 +470,13 @@ public class BeyonderAbilitiesScreen extends Screen {
             buttonOffset = offset;
             for(int i = 0; i < buttons.size(); i++){
                 ImageButton btn = buttons.get(i);
-                btn.setFocused(buttonOffset + i == focusedOffset);
+                btn.setFocused(buttonOffset + i == offsetOfSelection);
             }
         }
         return super.mouseDragged(pMouseX, pMouseY, pButton, pDragX, pDragY);
     }
 
-    int focusedOffset = 0;
+    int offsetOfSelection = 0;
     @Override
     public boolean mouseScrolled(double pMouseX, double pMouseY, double pDelta) {
         if(abilities.size() > 6){
@@ -451,12 +486,12 @@ public class BeyonderAbilitiesScreen extends Screen {
             if(pDelta < 0){
                 for(int i = buttons.size() - 1; i >= 0; i--){
                     ImageButton btn = buttons.get(i);
-                    btn.setFocused(buttonOffset + i == focusedOffset);
+                    btn.setFocused(buttonOffset + i == offsetOfSelection);
                 }
             } else {
                 for(int i = 0; i < buttons.size(); i++){
                     ImageButton btn = buttons.get(i);
-                    btn.setFocused(buttonOffset + i == focusedOffset);
+                    btn.setFocused(buttonOffset + i == offsetOfSelection);
                 }
             }
         }
@@ -466,5 +501,30 @@ public class BeyonderAbilitiesScreen extends Screen {
     public static void refreshAbilitiesScreen(){
         if(Minecraft.getInstance().screen instanceof BeyonderAbilitiesScreen)
             Minecraft.getInstance().setScreen(new BeyonderAbilitiesScreen());
+    }
+
+    private static boolean hasPreviousDescription(AbilityInfo data, int currentOffset){
+        if(data == null) return false;
+        String[] descElements = data.descId().split("_");
+        String lastElement = descElements[descElements.length - 1];
+        return PotioneerMathHelper.isInteger(lastElement) && Integer.parseInt(lastElement) + currentOffset > 1;
+    }
+
+    private static boolean hasNextDescription(AbilityInfo data, int currentOffset){
+        if(data == null) return false;
+        String[] descElements = data.descId().split("_");
+        String lastElement = descElements[descElements.length - 1];
+        return PotioneerMathHelper.isInteger(lastElement) && currentOffset < 0;
+    }
+
+    private static String getAbilityDescriptionId(AbilityInfo data, int descriptionOffset){
+        if(data == null) return "";
+        String[] descElements = data.descId().split("_");
+        String lastElement = descElements[descElements.length - 1];
+        if(!PotioneerMathHelper.isInteger(lastElement) || Integer.parseInt(lastElement) <= 1) return data.descId();
+        if(descriptionOffset >= 0) return data.descId();
+        descElements[descElements.length - 1] = String.valueOf(Integer.parseInt(lastElement) + descriptionOffset);
+        return String.join("_", descElements);
+
     }
 }

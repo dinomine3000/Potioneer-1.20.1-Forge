@@ -144,7 +144,7 @@ public class ClientStatsData {
             Minecraft.getInstance().player.playSound(SoundEvents.EXPERIENCE_ORB_PICKUP, 1, 1);
         }
         if(acting >= 0.95 && actingProgress < 0.95){
-            Minecraft.getInstance().player.sendSystemMessage(Component.translatable("potioneer.message.acting_complete"));
+            Minecraft.getInstance().player.sendSystemMessage(Component.translatable("message.potioneer.acting_complete"));
         }
         actingProgress = acting;
     }

@@ -37,12 +37,12 @@ public class ConjurerContainerAbility extends Ability {
 //
 //                player.openMenu(new SimpleMenuProvider((id, playerInv, container) -> {
 //                    return new ChestMenu(MenuType.GENERIC_9x1, id, playerInv, cont, 1);
-//                }, Component.translatable("potioneer.menu.conjurer_menu")));
+//                }, Component.translatable("menu.potioneer.conjurer_menu")));
 //                cap.requestActiveSpiritualityCost(info.cost());
 
                 player.openMenu(new SimpleMenuProvider((id, playerInv, container) -> {
                     return new ConjurerContainerMenu(MenuType.GENERIC_9x1, id, playerInv, cont, 1);
-                }, Component.translatable("potioneer.menu.conjurer_menu")));
+                }, Component.translatable("menu.potioneer.conjurer_menu")));
                 cap.requestActiveSpiritualityCost(cost());
                 return putOnCooldown(target);
             }
