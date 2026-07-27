@@ -180,7 +180,7 @@ public class AbilitiesHotbarHUD {
 
         //ability cast (primary vs secondary) shape
         AbilityFactory abl = Abilities.getAbilityFactory(info.getKey());
-        if(abl.getHasSecondaryFunction()){
+        if(abl.getHasSecondaryFunction(info.getSequenceLevel())){
             int pCastHeight = (int)(leftCastCooldownAnimation.getValue(0, CAST_HEIGHT));
             int sCastHeight = (int)(rightCastCooldownAnimation.getValue(0, CAST_HEIGHT));
             guiGraphics.blit(ICONS, caseX, caseY + (int)(scale * (CAST_HEIGHT - pCastHeight)),

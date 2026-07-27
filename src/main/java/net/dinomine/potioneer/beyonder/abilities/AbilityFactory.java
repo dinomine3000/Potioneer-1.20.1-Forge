@@ -13,8 +13,8 @@ public class AbilityFactory {
      * base cost in spirituality for client checking. if the client has less than this spirituality, the ability wont trigger
      */
     private Function<Integer, Integer> costFunction;
+    private Function<Integer, Boolean> secondaryCheck;
     private int pathwayId;
-    private boolean hasSecondaryFunction;
     private Function<Integer, Ability> createFunction;
     private boolean passive = false;
     private boolean active = true;
@@ -26,7 +26,7 @@ public class AbilityFactory {
         this.pathwayId = pathwayId;
         this.createFunction = createFunction;
         this.ablId = ablId;
-        this.hasSecondaryFunction = false;
+        secondaryCheck = lvl -> false;
     }
 
     public AbilityFactory(int posY, int pathwayId, Function<Integer, Integer> costFunction, String ablId, Function<Integer, Ability> createFunction){
@@ -34,9 +34,8 @@ public class AbilityFactory {
     }
 
     public AbilityFactory hasSecondaryFunction(){
-        return this.hasSecondaryFunction(true);
+        return this.hasSecondaryFunction(9);
     }
-
     public AbilityFactory passiveAndActive(){
         this.active = true;
         this.passive = true;
@@ -49,13 +48,17 @@ public class AbilityFactory {
         return this;
     }
 
-    public AbilityFactory hasSecondaryFunction(boolean secondary){
-        this.hasSecondaryFunction = secondary;
+    public AbilityFactory hasSecondaryFunction(Function<Integer, Boolean> levelCheck){
+        this.secondaryCheck = levelCheck;
         return this;
     }
 
-    public boolean getHasSecondaryFunction(){
-        return this.hasSecondaryFunction;
+    public AbilityFactory hasSecondaryFunction(int levelCheck){
+        return this.hasSecondaryFunction(lvl -> lvl <= levelCheck);
+    }
+
+    public boolean getHasSecondaryFunction(int level){
+        return this.secondaryCheck.apply(level);
     }
 
     public int getPosY() {

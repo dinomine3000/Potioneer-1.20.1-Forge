@@ -3,6 +3,7 @@ package net.dinomine.potioneer.beyonder.player;
 import com.google.common.base.Suppliers;
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
+import net.dinomine.potioneer.beyonder.pathways.Pathways;
 import net.dinomine.potioneer.network.PacketHandler;
 import net.dinomine.potioneer.network.messages.PlayerMiningSpeedSync;
 import net.minecraft.server.level.ServerPlayer;
@@ -65,6 +66,11 @@ public class BeyonderStats {
         miningSpeedMult = 1;
         mayFly = false;
         playerAttributes = new float[]{0, 0, 0, 0, 0};
+    }
+
+    public void resetAndApplyStats(LivingEntity entity, boolean heal) {
+        resetStats();
+        if(entity instanceof Player player) applyStats(player, heal);
     }
 
     public void setStats(BeyonderStats otherStats, LivingEntity target){

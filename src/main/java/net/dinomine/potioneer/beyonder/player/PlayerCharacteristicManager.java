@@ -397,7 +397,7 @@ public class PlayerCharacteristicManager {
     }
 
     public int getMaxSpirituality() {
-        int bestSpirituality = 0;
+        int bestSpirituality = 100;
         for(int i: lastConsumedCharacteristics){
             int testSpir = Pathways.getPathwayBySequenceId(i).getMaxSpirituality(i%10);
             if(testSpir > bestSpirituality) bestSpirituality = testSpir;

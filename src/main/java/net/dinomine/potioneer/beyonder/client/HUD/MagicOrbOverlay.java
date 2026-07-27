@@ -16,6 +16,7 @@ public class MagicOrbOverlay {
     private static float tick = 0;
     private static final int slowdown = 16;
     private static final ResourceLocation ORB = new ResourceLocation(Potioneer.MOD_ID, "textures/gui/hud_orb_bg.png");
+    private static final ResourceLocation ORB_BEYONDERLESS = new ResourceLocation(Potioneer.MOD_ID, "textures/gui/hud_orb_beyonderless.png");
     private static final ResourceLocation ORB_OVERLAY = new ResourceLocation(Potioneer.MOD_ID, "textures/gui/hud_orb_overlay.png");
     private static final ResourceLocation MANA = new ResourceLocation(Potioneer.MOD_ID, "textures/gui/spirituality.png");
     private static final ResourceLocation ARROW = new ResourceLocation(Potioneer.MOD_ID, "textures/gui/orb_down_arrow.png");
@@ -27,7 +28,8 @@ public class MagicOrbOverlay {
 
     public static final IGuiOverlay HUD_MAGIC = ((forgeGui, guiGraphics, partialTick, width, height) -> {
         int id = ClientStatsData.getPathwaySequenceId();
-        if(id < 0 && !isHoldingArtifact()) return;
+        boolean mundane = id < 0;
+        if(mundane && !isHoldingArtifact()) return;
         arrowAnimation.tick();
         ClientConfigData.updateData();
 
@@ -49,11 +51,18 @@ public class MagicOrbOverlay {
         float mana_percent = Mth.clamp(Math.round(100f*ClientStatsData.getPlayerSpirituality() / ClientStatsData.getPlayerMaxSpirituality())/100f, 0, 1);
 
         int sanity_percent = getSanityIndex();
-        guiGraphics.blit(ORB, offsetLeft, yOffset,
-                bgSide, bgSide,
-                ((id/10) %4)*64, id > 40 ? 64:0,
-                64, 64,
-                256, 128);
+        if(mundane)
+            guiGraphics.blit(ORB_BEYONDERLESS, offsetLeft, yOffset,
+                    bgSide, bgSide,
+                    0, 0,
+                    64, 64,
+                    64, 64);
+        else
+            guiGraphics.blit(ORB, offsetLeft, yOffset,
+                    bgSide, bgSide,
+                    ((id/10) %4)*64, id > 40 ? 64:0,
+                    64, 64,
+                    256, 128);
 
 //        guiGraphics.blit(MANA, offsetLeft+10, yOffset + 10 + (int)(43-mana_percent*43),
 //                10 + sanity_percent*64, 10 + frame*64 + (int)((1-mana_percent)*43),
@@ -70,11 +79,12 @@ public class MagicOrbOverlay {
                 43, UVHeightToBlit,
                 256, 1984);
 
-        guiGraphics.blit(ORB_OVERLAY, offsetLeft, yOffset,
-                bgSide, bgSide,
-                ((id/10) %4)*64, id > 40 ? 64:0,
-                64, 64,
-                256, 128);
+        if(!mundane)
+            guiGraphics.blit(ORB_OVERLAY, offsetLeft, yOffset,
+                    bgSide, bgSide,
+                    ((id/10) %4)*64, id > 40 ? 64:0,
+                    64, 64,
+                    256, 128);
 
         guiGraphics.blit(ARROW, offsetLeft, yOffset,
                 bgSide, bgSide,

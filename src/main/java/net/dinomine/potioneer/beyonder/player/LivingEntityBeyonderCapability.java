@@ -60,6 +60,7 @@ public class LivingEntityBeyonderCapability {
     //but for a sequence 1 it might be 2 times instead.
     //https://www.desmos.com/calculator/4idokgotbr
     private final Supplier<Float> spiritualityToSanityScalar = () ->{
+        if(!isBeyonder()) return 1f;
         if(getSequenceLevel() > 4){
             return getSequenceLevel()/2f + 0.5f;
         } else {
@@ -357,9 +358,13 @@ public class LivingEntityBeyonderCapability {
     }
 
     public boolean resetBeyonder(boolean definitive){
+        getBeyonderStats().resetAndApplyStats(entity, true);
         this.abilitiesManager.clearAbilities(this, entity);
         characteristicManager.reset();
-        if(definitive) entity.sendSystemMessage(Component.literal("Reset beyonder powers."));
+        if(definitive){
+            entity.sendSystemMessage(Component.literal("Reset beyonder powers."));
+            setMaxSpirituality(100);
+        }
         if(definitive && entity instanceof Player player) syncSequenceData(player);
         return true;
     }
@@ -380,15 +385,15 @@ public class LivingEntityBeyonderCapability {
     }
 
     public void dropSequenceLevel(){
-        getBeyonderStats().setAttributes(Pathways.BEYONDERLESS.get().getStatsFor(0));
+        getBeyonderStats().resetStats();
         characteristicManager.dropLevel(this, entity, true);
-        maxSpirituality = characteristicManager.getMaxSpirituality();
+        setMaxSpirituality(characteristicManager.getMaxSpirituality());
     }
 
     private void consumeCharacteristic(int id){
-        getBeyonderStats().setAttributes(Pathways.BEYONDERLESS.get().getStatsFor(0));
+        getBeyonderStats().resetStats();
         characteristicManager.consumeCharacteristic(this, entity, id);
-        maxSpirituality = characteristicManager.getMaxSpirituality();
+        setMaxSpirituality(characteristicManager.getMaxSpirituality());
     }
 
     public String getPathwayName(boolean capitalize){

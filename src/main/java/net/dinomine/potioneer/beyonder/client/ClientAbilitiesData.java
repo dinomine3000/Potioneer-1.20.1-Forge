@@ -382,7 +382,7 @@ public class ClientAbilitiesData {
             player.sendSystemMessage(Component.translatable("message.potioneer.insufficient_spirituality", abilityName));
             return false;
         }
-        if(Abilities.getAbilityFactory(key).getHasSecondaryFunction()) beginCastAnimation(primary);
+        if(Abilities.getAbilityFactory(key).getHasSecondaryFunction(key.getSequenceLevel())) beginCastAnimation(primary);
         else if(ClientConfigData.getHotbarOutlines() && primary) beginCastAnimation(true);
         player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
             cap.getAbilitiesManager().useAbility(cap, player, key, true, primary, args);

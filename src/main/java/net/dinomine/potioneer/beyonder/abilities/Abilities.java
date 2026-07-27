@@ -112,7 +112,7 @@ public class Abilities {
     //retweaked
     public static final AbilityFactory PATIENCE = registerAbility("patience",
             (PatienceAbility::new),
-            11, 0, 0).hasSecondaryFunction(true).passiveAndActive();
+            11, 0, 0).hasSecondaryFunction().passiveAndActive();
 
     //retweaked
     public static final AbilityFactory VELOCITY = registerAbility("velocity",

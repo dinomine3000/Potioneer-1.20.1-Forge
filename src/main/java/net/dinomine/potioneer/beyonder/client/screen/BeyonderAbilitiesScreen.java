@@ -311,7 +311,7 @@ public class BeyonderAbilitiesScreen extends Screen {
 
         //right click functionality
         AbilityFactory abl = Abilities.getAbilityFactory(data.getKey());
-        if(main && abl.getHasSecondaryFunction()){
+        if(main && abl.getHasSecondaryFunction(data.getSequenceLevel())){
             pGuiGraphics.blit(TEXTURE, leftPos + 165, topPos + 30, 7, 11, 178, 1, 7, 11, TEXTURE_WIDTH, TEXTURE_HEIGHT);
             if(mouseX >= leftPos + 165 && mouseX <= leftPos + 173
                     && mouseY >= topPos + 29 && mouseY <= topPos + 41){
