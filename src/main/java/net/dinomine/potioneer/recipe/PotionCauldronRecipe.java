@@ -42,15 +42,19 @@ public class PotionCauldronRecipe implements Recipe<PotionCauldronContainer> {
 
     @Override
     public boolean matches(@NotNull PotionCauldronContainer simpleContainer, Level level) {
+        // THIS FUNCTION DOES NOTHING.
+        //shouldnt be called, see PotionRecipe
+
         if(level.isClientSide()) return false;
         if(this.recipeData.fire() && !simpleContainer.isOnFire()) return false;
         if(this.recipeData.waterLevel() != simpleContainer.getWaterLevel()) return false;
 
         //will return true if it finds a valid characteristic-like item
+        //if you use a characteristic with more than 1 levels, itll read it as the highest level.
         for(int i = 0; i < simpleContainer.getContainerSize(); i++){
             if(ModCompoundTags.hasTag(ModCompoundTags.TAGS.BEYONDER, simpleContainer.getItem(i))){
                 CompoundTag beyonderTag = ModCompoundTags.getTagFromItem(ModCompoundTags.TAGS.BEYONDER, simpleContainer.getItem(i));
-                if(ModCompoundTags.BeyonderInfoTag.containsId(this.recipeData.id(), beyonderTag)) return true;
+                if(ModCompoundTags.BeyonderInfoTag.getAssociatedPathSeqLevel(beyonderTag) == this.recipeData.id()) return true;
             }
         }
 
