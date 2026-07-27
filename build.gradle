@@ -230,11 +230,6 @@ dependencies {
     compileOnly(fg.deobf("top.theillusivec4.curios:curios-forge:${curios_version}+1.20.1:api"))
     runtimeOnly(fg.deobf("top.theillusivec4.curios:curios-forge:${curios_version}+1.20.1"))
 
-    //moogs lib
-    implementation fg.deobf(
-            "curse.maven:moogs-structure-lib-1337167:7238548"
-    )
-
     //world edit
     implementation fg.deobf("curse.maven:worldedit-225608:4586218")
 //

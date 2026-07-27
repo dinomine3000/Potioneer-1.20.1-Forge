@@ -26,9 +26,9 @@
     }
   ],
   "placement": {
-    "type": "moogs_structures:advanced_random_spread",
-    "spacing": 15,
-    "separation": 10,
+    "type": "minecraft:random_spread",
+    "spacing": 32,
+    "separation": 13,
     "salt": 29871921,
     "spread_type": "LINEAR"
   }

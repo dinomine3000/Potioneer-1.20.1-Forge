@@ -1,5 +1,5 @@
 {
-  "type": "moogs_structures:moogs_structures_generic_jigsaw_structure",
+  "type": "minecraft:jigsaw",
   "start_pool": "potioneer:churches/wheel_church_pool",
   "size": 1,
   "start_height": { "absolute": 0 },
@@ -7,10 +7,7 @@
   "step": "surface_structures",
   "spawn_overrides": {},
   "project_start_to_heightmap": "WORLD_SURFACE_WG",
-  "cannot_spawn_in_liquid": true,
-  "terrain_height_radius_check": 1,
-  "allowed_terrain_height_range": 6,
-  "burying_type": "LOWEST_CORNER",
+  "use_expansion_hack": false,
   "terrain_adaptation": "beard_box",
-  "dimension_padding": 5
+  "max_distance_from_center": 16
 }
