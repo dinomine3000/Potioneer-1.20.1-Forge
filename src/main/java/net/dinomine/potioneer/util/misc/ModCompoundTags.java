@@ -271,6 +271,9 @@ public abstract class ModCompoundTags {
             return artifactTag;
         }
 
+        public static boolean isItemArtifact(ItemStack mainHandItem) {
+            return hasTag(TAGS.ARTIFACT, mainHandItem);
+        }
     }
 
     /**

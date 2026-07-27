@@ -6,6 +6,7 @@ import net.dinomine.potioneer.beyonder.client.ClientStatsData;
 import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
 import net.dinomine.potioneer.util.Animation;
 import net.dinomine.potioneer.util.AnimationHandler;
+import net.dinomine.potioneer.util.misc.ModCompoundTags;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
@@ -26,7 +27,7 @@ public class MagicOrbOverlay {
 
     public static final IGuiOverlay HUD_MAGIC = ((forgeGui, guiGraphics, partialTick, width, height) -> {
         int id = ClientStatsData.getPathwaySequenceId();
-        if(id < 0) return;
+        if(id < 0 && !isHoldingArtifact()) return;
         arrowAnimation.tick();
         ClientConfigData.updateData();
 
@@ -82,6 +83,10 @@ public class MagicOrbOverlay {
                 64, 512);
 
     });
+
+    private static boolean isHoldingArtifact() {
+        return Minecraft.getInstance().player != null && ModCompoundTags.ArtifactInfoTag.isItemArtifact(Minecraft.getInstance().player.getMainHandItem());
+    }
 
     public static int getSanityIndex(){
         float sanity = Mth.clamp(ClientStatsData.getPlayerSanity(), 0, 100);
