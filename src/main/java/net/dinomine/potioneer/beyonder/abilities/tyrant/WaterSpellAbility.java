@@ -40,7 +40,6 @@ public class WaterSpellAbility extends AbilityWithOptions {
     private static final int CONJURE_COST = 5;
     private static final int ABSORB_COST = 3;
     private static final int DROWNING_COST = 30;
-    private static final Direction[] ALL_DIRECTIONS = Direction.values();
     /**
      * pass the sequence level or pathway-sequence id to define the abilities sequence level
      * abilities that depend on changing pathways like Cogitation, that exists for every pathway, need to process their own pathway-sequence id here.
@@ -50,6 +49,8 @@ public class WaterSpellAbility extends AbilityWithOptions {
      */
     public WaterSpellAbility(int sequenceLevel) {
         super(sequenceLevel);
+        addPrimaryOptions(new AbilityOptions()
+                .addEmptyOption("drowning", Component.literal("Drowning")));
         addSecondaryOptions(new AbilityOptions()
                 .addEmptyOption("create", Component.literal("Conjure Water"))
                 .addEmptyOption("consume", Component.literal("Consume Water")));
@@ -61,11 +62,6 @@ public class WaterSpellAbility extends AbilityWithOptions {
     }
 
     @Override
-    protected boolean primary(LivingEntityBeyonderCapability cap, LivingEntity target) {
-        return primaryWithArgument(cap, target, "drowning");
-    }
-
-    @Override
     protected boolean primaryWithArgument(LivingEntityBeyonderCapability cap, LivingEntity target, String args) {
         if(args.equalsIgnoreCase("drowning")){
             if(target.level().isClientSide()) return true;
@@ -74,9 +70,9 @@ public class WaterSpellAbility extends AbilityWithOptions {
                 int duration = 20*10*(10-sequenceLevel);
                 AllySystemSaveData saveData = AllySystemSaveData.from((ServerLevel) target.level());
                 ArrayList<LivingEntity> hits = AbilityFunctionHelper.getLivingEntitiesAround(target, radius, ent -> !saveData.areEntitiesAllies(ent, target));
-                hits = AbilityFunctionHelper.getLivingEntitiesAround(target, radius);
+                //hits = AbilityFunctionHelper.getLivingEntitiesAround(target, radius);
                 for(LivingEntity entity: hits){
-                    //if(entity.is(target)) continue;
+                    if(entity.is(target)) continue;
                     entity.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(victimCap ->
                             victimCap.getEffectsManager().addOrReplaceEffect(BeyonderEffects.TYRANT_DROWNING.createInstance(getSequenceLevel(), 0, duration, true), victimCap, entity));
                 }
@@ -123,7 +119,7 @@ public class WaterSpellAbility extends AbilityWithOptions {
     //copied from SpongeBlock class
     private static boolean removeWaterBreadthFirstSearch(Level pLevel, BlockPos pPos, int radius) {
         return BlockPos.breadthFirstTraversal(pPos, radius, 65, (position, consumer) -> {
-            for(Direction direction : ALL_DIRECTIONS) {
+            for(Direction direction : Direction.values()) {
                 consumer.accept(position.relative(direction));
             }
 
