@@ -8,6 +8,7 @@ import net.dinomine.potioneer.Potioneer;
 import net.dinomine.potioneer.beyonder.abilities.Ability;
 import net.dinomine.potioneer.beyonder.pathways.WheelOfFortunePathway;
 import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
+import net.dinomine.potioneer.sound.ModSounds;
 import net.dinomine.potioneer.util.ParticleMaker;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
@@ -68,11 +69,15 @@ public class BlockAppraisalAbility extends Ability {
                         i += 0.2F;
                     }
 
+                    target.level().playSound(target, target.getOnPos(), ModSounds.XRAY.get(), SoundSource.PLAYERS, 1, (float) target.getRandom().triangle(1, 0.2f));
+
                     FX fx = FXHelper.getFX(new ResourceLocation(Potioneer.MOD_ID, "xray_radar"));
                     new EntityEffect(fx, level, player, EntityEffect.AutoRotate.NONE).start();
 
                     FX blockEffect = FXHelper.getFX(new ResourceLocation(Potioneer.MOD_ID, "xray_block"));
-                    new BlockEffect(blockEffect, level, match).start();
+                    BlockEffect blockEffect1 = new BlockEffect(blockEffect, level, match);
+                    blockEffect1.setDelay(100);
+                    blockEffect1.start();
                 });
             } else {
                 cap.getCharacteristicManager().progressActing(WheelOfFortunePathway.APPRAISER_ACTING_APPRAISE, 8);
@@ -91,8 +96,12 @@ public class BlockAppraisalAbility extends Ability {
         cap.requestActiveSpiritualityCost(cost()/2f);
         int radius = (9 - getSequenceLevel())*3 + 7;
         if(target.level().isClientSide()){
-            renderParticles(target.level(), radius, target.position().x, target.position().y, target.position().z);
+            //renderParticles(target.level(), radius, target.position().x, target.position().y, target.position().z);
             putOnCooldown(20, target);
+            target.level().playSound(target, target.getOnPos(), ModSounds.XRAY.get(), SoundSource.PLAYERS, 1, (float) target.getRandom().triangle(1, 0.2f));
+
+            FX fx = FXHelper.getFX(new ResourceLocation(Potioneer.MOD_ID, "xray_radar"));
+            new EntityEffect(fx, target.level(), target, EntityEffect.AutoRotate.NONE).start();
             return false;
         }
         ServerLevel level = (ServerLevel) target.level();
@@ -114,6 +123,7 @@ public class BlockAppraisalAbility extends Ability {
         }
         target.sendSystemMessage(Component.translatable("ability.potioneer.ores_found", component));
         cap.getCharacteristicManager().progressActing(WheelOfFortunePathway.APPRAISER_ACTING_APPRAISE, 8);
+
         return true;
     }
 

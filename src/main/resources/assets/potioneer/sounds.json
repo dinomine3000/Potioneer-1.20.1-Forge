@@ -74,5 +74,10 @@
     "sounds": [
       "potioneer:water_trap"
     ]
+  },
+  "xray": {
+    "sounds": [
+      "potioneer:xray_radar_sfx"
+    ]
   }
 }
