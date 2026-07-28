@@ -1,5 +1,10 @@
 package net.dinomine.potioneer.beyonder.abilities.wheeloffortune;
 
+import com.lowdragmc.photon.client.fx.BlockEffect;
+import com.lowdragmc.photon.client.fx.EntityEffect;
+import com.lowdragmc.photon.client.fx.FX;
+import com.lowdragmc.photon.client.fx.FXHelper;
+import net.dinomine.potioneer.Potioneer;
 import net.dinomine.potioneer.beyonder.abilities.Ability;
 import net.dinomine.potioneer.beyonder.pathways.WheelOfFortunePathway;
 import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
@@ -8,6 +13,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -61,6 +67,12 @@ public class BlockAppraisalAbility extends Ability {
                                 iterator.x, iterator.y, iterator.z, speedScale*pointing.x, speedScale*pointing.y, speedScale*pointing.z);
                         i += 0.2F;
                     }
+
+                    FX fx = FXHelper.getFX(new ResourceLocation(Potioneer.MOD_ID, "xray_radar"));
+                    new EntityEffect(fx, level, player, EntityEffect.AutoRotate.NONE).start();
+
+                    FX blockEffect = FXHelper.getFX(new ResourceLocation(Potioneer.MOD_ID, "xray_block"));
+                    new BlockEffect(blockEffect, level, match).start();
                 });
             } else {
                 cap.getCharacteristicManager().progressActing(WheelOfFortunePathway.APPRAISER_ACTING_APPRAISE, 8);
