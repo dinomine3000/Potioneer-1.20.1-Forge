@@ -4,6 +4,7 @@ import com.mojang.authlib.GameProfile;
 import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
 import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
 import net.dinomine.potioneer.network.PacketHandler;
+import net.dinomine.potioneer.network.messages.AllySystem.AllyGroupSyncMessage;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.players.GameProfileCache;
@@ -45,6 +46,7 @@ public class SequenceSTCSyncRequest {
 
     public static void sendUpdateToClient(LivingEntityBeyonderCapability cap, ServerPlayer player){
         cap.syncSequenceData(player);
+        AllyGroupSyncMessage.sendGroupList(player);
         /*Map<UUID, GameProfileCache.GameProfileInfo> profileMap = player.level().getServer().getProfileCache().profilesByUUID;
         Map<UUID, String> nameMap = new HashMap<>();
         for(UUID id: profileMap.keySet()){

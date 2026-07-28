@@ -40,21 +40,27 @@ public class AllyGroupSyncMessage {
     }
 
     //C2S requests
-    public static AllyGroupSyncMessage requestGroups(){
+    public static AllyGroupSyncMessage requestGroupsMessage(){
         return new AllyGroupSyncMessage(new LinkedHashMap<>(), new ArrayList<>(), new ArrayList<>(), "");
     }
 
-    public static AllyGroupSyncMessage requestPlayers(String groupName){
+    public static AllyGroupSyncMessage requestPlayersMessage(String groupName){
         return new AllyGroupSyncMessage(new LinkedHashMap<>(), new ArrayList<>(), new ArrayList<>(), groupName);
     }
 
     //S2C replies
-    public static AllyGroupSyncMessage sendPlayerList(List<UUID> players, ServerLevel level){
+    private static AllyGroupSyncMessage sendPlayerList(List<UUID> players, ServerLevel level){
         return new AllyGroupSyncMessage(getPlayerNamesFromUUIDs(level.getServer(), players), new ArrayList<>(), new ArrayList<>(), "players");
     }
 
-    public static AllyGroupSyncMessage sendGroupList(List<String> groupsToSend, List<String> groupsPlayerIsIn){
+    private static AllyGroupSyncMessage sendGroupList(List<String> groupsToSend, List<String> groupsPlayerIsIn){
         return new AllyGroupSyncMessage(new LinkedHashMap<>(), groupsToSend, groupsPlayerIsIn, "groups");
+    }
+
+    public static void sendGroupList(ServerPlayer player){
+        ServerLevel level = (ServerLevel) player.level();
+        AllySystemSaveData data = AllySystemSaveData.from(level);
+        sendGroupsToPlayer(data, player);
     }
 
     public static void encode(AllyGroupSyncMessage msg, FriendlyByteBuf buffer){

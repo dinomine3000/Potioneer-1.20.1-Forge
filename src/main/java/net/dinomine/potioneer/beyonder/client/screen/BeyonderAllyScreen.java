@@ -1,6 +1,5 @@
 package net.dinomine.potioneer.beyonder.client.screen;
 
-import com.mojang.authlib.GameProfile;
 import net.dinomine.potioneer.Potioneer;
 import net.dinomine.potioneer.beyonder.client.ClientAllyData;
 import net.dinomine.potioneer.network.PacketHandler;
@@ -15,7 +14,6 @@ import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.multiplayer.PlayerInfo;
 import net.minecraft.client.resources.DefaultPlayerSkin;
-import net.minecraft.client.resources.SkinManager;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
@@ -33,9 +31,10 @@ public class BeyonderAllyScreen extends Screen {
 
     private Button goToMainMenu, goToAbilitiesMenu, goToOptionsMenu;
     private Button createGroupButton, joinGroupButton;
-    private EditBox groupName, groupPassword;
+    private EditBox groupNameBox, groupPasswordBox;
     private Button groupBtn1, groupBtn2, groupBtn3;
     private Button leaveGroup1, leaveGroup2, leaveGroup3;
+    private Button joinGroup1, joinGroup2, joinGroup3;
 
     private String NAME_SUGGESTION = Component.translatable("gui.potioneer.group_name_suggestion").getString();
     private String PASSWORD_SUGGESTION = Component.translatable("gui.potioneer.group_password_suggestion").getString();
@@ -59,7 +58,7 @@ public class BeyonderAllyScreen extends Screen {
 
     @Override
     public boolean keyPressed(int pKeyCode, int pScanCode, int pModifiers) {
-        if(pKeyCode == 69 && !groupName.isFocused() && !groupPassword.isFocused()) {
+        if(pKeyCode == 69 && !groupNameBox.isFocused() && !groupPasswordBox.isFocused()) {
             this.onClose();
             return true;
         }
@@ -96,14 +95,14 @@ public class BeyonderAllyScreen extends Screen {
         joinGroupButton.setTooltip(Tooltip.create(Component.translatable("gui.potioneer.join_group")));
         addRenderableWidget(joinGroupButton);
 
-        groupName = new EditBox(this.font, leftPos + 8, topPos + 25, 130, 14, Component.translatable("gui.potioneer.group_name"));
-        groupName.setSuggestion(NAME_SUGGESTION);
-        groupName.setMaxLength(120);
-        addRenderableWidget(groupName);
-        groupPassword = new EditBox(this.font, leftPos + 8, topPos + 45, 130, 14, Component.translatable("gui.potioneer.group_password"));
-        groupPassword.setSuggestion(PASSWORD_SUGGESTION);
-        groupPassword.setMaxLength(120);
-        addRenderableWidget(groupPassword);
+        groupNameBox = new EditBox(this.font, leftPos + 8, topPos + 25, 130, 14, Component.translatable("gui.potioneer.group_name"));
+        groupNameBox.setSuggestion(NAME_SUGGESTION);
+        groupNameBox.setMaxLength(120);
+        addRenderableWidget(groupNameBox);
+        groupPasswordBox = new EditBox(this.font, leftPos + 8, topPos + 45, 130, 14, Component.translatable("gui.potioneer.group_password"));
+        groupPasswordBox.setSuggestion(PASSWORD_SUGGESTION);
+        groupPasswordBox.setMaxLength(120);
+        addRenderableWidget(groupPasswordBox);
 
         groupBtn1 = new ImageButton(leftPos + 6, topPos + 68, 135, 14,
                 14, 211, 14, TEXTURE, TEXTURE_WIDTH, TEXTURE_HEIGHT, btn -> { showPlayersForGroup(btn, 0);});
@@ -123,9 +122,22 @@ public class BeyonderAllyScreen extends Screen {
         addRenderableWidget(leaveGroup2);
         leaveGroup3 = new ImageButton(leftPos + 141, topPos + 96, 14, 14,
                 149, 211, 14, TEXTURE, TEXTURE_WIDTH, TEXTURE_HEIGHT, btn -> { leaveGroup(2);});
+
+        joinGroup1 = new ImageButton(leftPos + 141, topPos + 68, 14, 14,
+                163, 211, 14, TEXTURE, TEXTURE_WIDTH, TEXTURE_HEIGHT, btn -> { quickJoinGroup(0);});
+        addRenderableWidget(leaveGroup1);
+        joinGroup2 = new ImageButton(leftPos + 141, topPos + 82, 14, 14,
+                163, 211, 14, TEXTURE, TEXTURE_WIDTH, TEXTURE_HEIGHT, btn -> { quickJoinGroup(1);});
+        addRenderableWidget(leaveGroup2);
+        joinGroup3 = new ImageButton(leftPos + 141, topPos + 96, 14, 14,
+                163, 211, 14, TEXTURE, TEXTURE_WIDTH, TEXTURE_HEIGHT, btn -> { quickJoinGroup(2);});
+
         leaveGroup1.setTooltip(Tooltip.create(Component.translatable("gui.potioneer.leave_group")));
         leaveGroup2.setTooltip(Tooltip.create(Component.translatable("gui.potioneer.leave_group")));
         leaveGroup3.setTooltip(Tooltip.create(Component.translatable("gui.potioneer.leave_group")));
+        joinGroup1.setTooltip(Tooltip.create(Component.translatable("gui.potioneer.quick_join_group")));
+        joinGroup2.setTooltip(Tooltip.create(Component.translatable("gui.potioneer.quick_join_group")));
+        joinGroup3.setTooltip(Tooltip.create(Component.translatable("gui.potioneer.quick_join_group")));
         addRenderableWidget(leaveGroup3);
     }
 
@@ -139,47 +151,56 @@ public class BeyonderAllyScreen extends Screen {
         pGuiGraphics.drawString(this.font, TITLE, width/2 - this.font.width(TITLE)/2, topPos + 10, 0, false);
 
         //update text input suggestions
-        if(groupName.getValue().isEmpty()){
-            groupName.setSuggestion(NAME_SUGGESTION);
+        if(groupNameBox.getValue().isEmpty()){
+            groupNameBox.setSuggestion(NAME_SUGGESTION);
         } else {
-            groupName.setSuggestion("");
+            groupNameBox.setSuggestion("");
         }
-        if(groupPassword.getValue().isEmpty()){
-            groupPassword.setSuggestion(PASSWORD_SUGGESTION);
+        if(groupPasswordBox.getValue().isEmpty()){
+            groupPasswordBox.setSuggestion(PASSWORD_SUGGESTION);
         } else {
-            groupPassword.setSuggestion("");
+            groupPasswordBox.setSuggestion("");
         }
 
         //create group button
         createGroupButton.render(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
         joinGroupButton.render(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
-        groupName.render(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
-        groupPassword.render(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
+        groupNameBox.render(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
+        groupPasswordBox.render(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
 
         //individual group buttons
         disableButtons(3);
         disableButtons(2);
         disableButtons(1);
+        String groupName;
         switch (ClientAllyData.getGroupsSize()){
             case 3:
-                enableButtons(3);
+                groupName = ClientAllyData.getGroupName(2 + groupOffset);
+                enableButtons(3, ClientAllyData.isPlayerInGroup(groupName));
                 groupBtn3.render(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
-                pGuiGraphics.drawString(this.font, ClientAllyData.getGroupNameForRender(2 + groupOffset), leftPos + 9, topPos + 99, 0, false);
+
+                pGuiGraphics.drawString(this.font, shortenName(groupName), leftPos + 9, topPos + 99, 0, false);
+
                 leaveGroup3.render(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
+                joinGroup3.render(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
             case 2:
-                enableButtons(2);
+                groupName = ClientAllyData.getGroupName(1 + groupOffset);
+                enableButtons(2, ClientAllyData.isPlayerInGroup(groupName));
                 groupBtn2.render(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
-                pGuiGraphics.drawString(this.font, ClientAllyData.getGroupNameForRender(1 + groupOffset), leftPos + 9, topPos + 85, 0, false);
+                pGuiGraphics.drawString(this.font, shortenName(groupName), leftPos + 9, topPos + 85, 0, false);
                 leaveGroup2.render(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
+                joinGroup2.render(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
             case 1:
-                enableButtons(1);
+                groupName = ClientAllyData.getGroupName(groupOffset);
+                enableButtons(1, ClientAllyData.isPlayerInGroup(groupName));
                 groupBtn1.render(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
-                pGuiGraphics.drawString(this.font, ClientAllyData.getGroupNameForRender(groupOffset), leftPos + 9, topPos + 71, 0, false);
+                pGuiGraphics.drawString(this.font, shortenName(groupName), leftPos + 9, topPos + 71, 0, false);
                 leaveGroup1.render(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
+                joinGroup2.render(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
         }
 
         for(int i = 0; i < ClientAllyData.getPlayerNumber(); i++){
-            Map.Entry<UUID, String> entry = ClientAllyData.getEntryAt(i + playerOffset);
+            Map.Entry<UUID, String> entry = ClientAllyData.getPlayerAtPosition(i + playerOffset);
             if(entry == null) continue;
             pGuiGraphics.blit(TEXTURE, leftPos + 6, topPos + 116 + 14*i, 149, 14, 14,
                     183, 149, 14, TEXTURE_WIDTH, TEXTURE_HEIGHT);
@@ -195,6 +216,11 @@ public class BeyonderAllyScreen extends Screen {
                 194, 12, 15, TEXTURE_WIDTH, TEXTURE_HEIGHT);
         pGuiGraphics.blit(TEXTURE, leftPos + 158, topPos + 116 + playerSliderY, 12, 15, enablePlayerSlider ? 177 : 189,
                 194, 12, 15, TEXTURE_WIDTH, TEXTURE_HEIGHT);
+    }
+
+    private static String shortenName(String groupName){
+        if(groupName.length() > 16) return groupName.substring(0, 16).concat("...");
+        return groupName;
     }
 
     @Override
@@ -263,22 +289,28 @@ public class BeyonderAllyScreen extends Screen {
         return super.mouseReleased(pMouseX, pMouseY, pButton);
     }
 
-    private void enableButtons(int idx){
+    private void enableButtons(int idx, boolean isPlayerIn){
         switch (idx){
             case 3:
-                leaveGroup3.active = true;
+                leaveGroup3.active = isPlayerIn;
+                leaveGroup3.visible = isPlayerIn;
+                joinGroup3.active = !isPlayerIn;
+                joinGroup3.visible = !isPlayerIn;
                 groupBtn3.active = true;
-                leaveGroup3.visible = true;
                 break;
             case 2:
-                leaveGroup2.active = true;
+                leaveGroup2.active = isPlayerIn;
+                leaveGroup2.visible = isPlayerIn;
+                joinGroup2.active = !isPlayerIn;
+                joinGroup2.visible = !isPlayerIn;
                 groupBtn2.active = true;
-                leaveGroup2.visible = true;
                 break;
             case 1:
-                leaveGroup1.active = true;
+                leaveGroup1.active = isPlayerIn;
+                leaveGroup1.visible = isPlayerIn;
+                joinGroup1.active = !isPlayerIn;
+                joinGroup1.visible = !isPlayerIn;
                 groupBtn1.active = true;
-                leaveGroup1.visible = true;
         }
     }
 
@@ -305,25 +337,30 @@ public class BeyonderAllyScreen extends Screen {
         if(ClientAllyData.getGroupsSize() < idx+1) return;
         playerOffset = 0;
         playerSliderY = 0;
-        System.out.println("Showing players at " + ClientAllyData.getGroupNameById(idx + groupOffset));
-        ClientAllyData.requestPlayers(ClientAllyData.getGroupNameById(idx + groupOffset));
+        System.out.println("Showing players at " + ClientAllyData.getGroupNameMod(idx + groupOffset));
+        ClientAllyData.requestPlayers(ClientAllyData.getGroupNameMod(idx + groupOffset));
     }
 
     private void createGroup(){
-        PacketHandler.INSTANCE.sendToServer(AllyChangeMessageC2S.createGroup(groupName.getValue(), groupPassword.getValue()));
-        PacketHandler.INSTANCE.sendToServer(AllyGroupSyncMessage.requestGroups());
+        PacketHandler.INSTANCE.sendToServer(AllyChangeMessageC2S.createGroup(groupNameBox.getValue(), groupPasswordBox.getValue()));
+        PacketHandler.INSTANCE.sendToServer(AllyGroupSyncMessage.requestGroupsMessage());
     }
 
     private void joinGroup(){
-        PacketHandler.INSTANCE.sendToServer(AllyChangeMessageC2S.joinGroup(groupName.getValue(), groupPassword.getValue()));
-        PacketHandler.INSTANCE.sendToServer(AllyGroupSyncMessage.requestGroups());
+        PacketHandler.INSTANCE.sendToServer(AllyChangeMessageC2S.joinGroup(groupNameBox.getValue(), groupPasswordBox.getValue()));
+        PacketHandler.INSTANCE.sendToServer(AllyGroupSyncMessage.requestGroupsMessage());
+    }
+
+    private void quickJoinGroup(int idx){
+        String groupName = ClientAllyData.getGroupName(idx + groupOffset);
+        groupNameBox.setValue(groupName);
     }
 
     private void leaveGroup(int idx){
         groupOffset = 0;
         groupSliderY = 0;
-        PacketHandler.INSTANCE.sendToServer(AllyChangeMessageC2S.leaveGroup(ClientAllyData.getGroupNameById(idx + groupOffset)));
-        PacketHandler.INSTANCE.sendToServer(AllyGroupSyncMessage.requestGroups());
+        PacketHandler.INSTANCE.sendToServer(AllyChangeMessageC2S.leaveGroup(ClientAllyData.getGroupName(idx + groupOffset)));
+        PacketHandler.INSTANCE.sendToServer(AllyGroupSyncMessage.requestGroupsMessage());
     }
 
     @Override
