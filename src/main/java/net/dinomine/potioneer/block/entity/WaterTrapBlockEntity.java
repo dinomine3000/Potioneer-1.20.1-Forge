@@ -7,6 +7,7 @@ import net.dinomine.potioneer.beyonder.abilities.tyrant.AreaOfJurisdictionAbilit
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
 import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
 import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
+import net.dinomine.potioneer.block.ModBlocks;
 import net.dinomine.potioneer.savedata.AllySystemSaveData;
 import net.dinomine.potioneer.util.misc.ModCompoundTags;
 import net.minecraft.core.BlockPos;
@@ -202,6 +203,8 @@ public class WaterTrapBlockEntity extends BlockEntity implements GeoBlockEntity 
     public static boolean isPassable(BlockGetter level, BlockPos pos) {
         BlockState state = level.getBlockState(pos);
         if (state.isAir()) return true;
+        if(state.is(ModBlocks.WATER_TRAP_BLOCK.get()))
+            return false;
 
         VoxelShape shape = state.getCollisionShape(level, pos, CollisionContext.empty());
 
