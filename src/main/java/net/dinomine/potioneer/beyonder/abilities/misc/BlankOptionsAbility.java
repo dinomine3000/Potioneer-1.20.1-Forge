@@ -20,7 +20,7 @@ public class BlankOptionsAbility extends AbilityWithOptions {
      */
     public BlankOptionsAbility(int sequenceLevel) {
         super(sequenceLevel);
-        addPrimaryOptions(new AbilityOptions(TEXTURE_LOCATION, TEXTURE_WIDTH, TEXTURE_HEIGHT)
+        setPrimaryOptions(new AbilityOptions(TEXTURE_LOCATION, TEXTURE_WIDTH, TEXTURE_HEIGHT)
                 .addOption("big fireball", Component.literal("Big Fireball"), 5, 32, 16, 24)
                 .addOption("test fireball", Component.literal("Test"), 83, 80, 16, 24)
                 .addOption("amount", new AbilityOptions(TEXTURE_LOCATION, TEXTURE_WIDTH, TEXTURE_HEIGHT)

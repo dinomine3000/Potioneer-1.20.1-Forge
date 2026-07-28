@@ -1,17 +1,17 @@
 package net.dinomine.potioneer.beyonder.abilities.tyrant;
 
-import net.dinomine.potioneer.beyonder.abilities.Ability;
 import net.dinomine.potioneer.beyonder.abilities.AbilityFunctionHelper;
 import net.dinomine.potioneer.beyonder.abilities.AbilityOptions;
 import net.dinomine.potioneer.beyonder.abilities.AbilityWithOptions;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
 import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
 import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
+import net.dinomine.potioneer.block.ModBlocks;
+import net.dinomine.potioneer.block.entity.WaterTrapBlockEntity;
 import net.dinomine.potioneer.savedata.AllySystemSaveData;
 import net.dinomine.potioneer.util.ParticleMaker;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
@@ -28,18 +28,22 @@ import net.minecraft.world.level.block.BucketPickup;
 import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.ForgeMod;
 
 import java.util.ArrayList;
 
+import static net.dinomine.potioneer.block.custom.BaseLightSourceBlock.WATERLOGGED;
 import static net.minecraft.world.level.block.Block.dropResources;
 
 public class WaterSpellAbility extends AbilityWithOptions {
     private static final int CONJURE_COST = 5;
     private static final int ABSORB_COST = 3;
     private static final int DROWNING_COST = 30;
+    private static final int WATER_TRAP_COST = 30;
     /**
      * pass the sequence level or pathway-sequence id to define the abilities sequence level
      * abilities that depend on changing pathways like Cogitation, that exists for every pathway, need to process their own pathway-sequence id here.
@@ -49,11 +53,13 @@ public class WaterSpellAbility extends AbilityWithOptions {
      */
     public WaterSpellAbility(int sequenceLevel) {
         super(sequenceLevel);
-        addPrimaryOptions(new AbilityOptions()
-                .addEmptyOption("drowning", Component.literal("Drowning")));
-        addSecondaryOptions(new AbilityOptions()
+        setPrimaryOptions(new AbilityOptions()
+                .addEmptyOption("drowning", Component.literal("Drowning"))
+                .addEmptyOption("water_trap", Component.literal("Water Trap")));
+        setSecondaryOptions(new AbilityOptions()
                 .addEmptyOption("create", Component.literal("Conjure Water"))
-                .addEmptyOption("consume", Component.literal("Consume Water")));
+                .addEmptyOption("consume", Component.literal("Consume Water"))
+                .addEmptyOption("remove_trap", Component.literal("Absorb Water Trap")));
     }
 
     @Override
@@ -63,25 +69,8 @@ public class WaterSpellAbility extends AbilityWithOptions {
 
     @Override
     protected boolean primaryWithArgument(LivingEntityBeyonderCapability cap, LivingEntity target, String args) {
-        if(args.equalsIgnoreCase("drowning")){
-            if(target.level().isClientSide()) return true;
-            if(cap.getSpirituality() > DROWNING_COST){
-                double radius = target.getAttributeBaseValue(ForgeMod.ENTITY_REACH.get()) + (10 - getSequenceLevel());
-                int duration = 20*10*(10-sequenceLevel);
-                AllySystemSaveData saveData = AllySystemSaveData.from((ServerLevel) target.level());
-                ArrayList<LivingEntity> hits = AbilityFunctionHelper.getLivingEntitiesAround(target, radius, ent -> !saveData.areEntitiesAllies(ent, target));
-                //hits = AbilityFunctionHelper.getLivingEntitiesAround(target, radius);
-                for(LivingEntity entity: hits){
-                    if(entity.is(target)) continue;
-                    entity.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(victimCap ->
-                            victimCap.getEffectsManager().addOrReplaceEffect(BeyonderEffects.TYRANT_DROWNING.createInstance(getSequenceLevel(), 0, duration, true), victimCap, entity));
-                }
-                ParticleMaker.summonAOEParticles(target.level(), target.getEyePosition(), (int)(2*radius), radius, ParticleMaker.Preset.AOE_END_ROD);
-                //target.level().playSound(null, target.getOnPos(), SoundEvents.MINECART_INSIDE_UNDERWATER, SoundSource.PLAYERS, 1, 1);
-                //cap.requestActiveSpiritualityCost(DROWNING_COST);
-                return true;
-            }
-        }
+        if(args.equalsIgnoreCase("drowning")) return applyDrowning(cap, target);
+        else if(args.equalsIgnoreCase("water_trap")) return placeWaterTrap(cap, target);
         return false;
     }
 
@@ -112,6 +101,27 @@ public class WaterSpellAbility extends AbilityWithOptions {
                     return true;
                 }
             }
+        } else if (args.equalsIgnoreCase("remove_trap")) return absorbWaterTrap(cap, target);
+        return false;
+    }
+
+    protected boolean applyDrowning(LivingEntityBeyonderCapability cap, LivingEntity target){
+        if(target.level().isClientSide()) return true;
+        if(cap.getSpirituality() > DROWNING_COST){
+            double radius = target.getAttributeBaseValue(ForgeMod.ENTITY_REACH.get()) + (10 - getSequenceLevel());
+            int duration = 20*10*(10-sequenceLevel);
+            AllySystemSaveData saveData = AllySystemSaveData.from((ServerLevel) target.level());
+            ArrayList<LivingEntity> hits = AbilityFunctionHelper.getLivingEntitiesAround(target, radius, ent -> !saveData.areEntitiesAllies(ent, target));
+            //hits = AbilityFunctionHelper.getLivingEntitiesAround(target, radius);
+            for(LivingEntity entity: hits){
+                if(entity.is(target)) continue;
+                entity.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(victimCap ->
+                        victimCap.getEffectsManager().addOrReplaceEffect(BeyonderEffects.TYRANT_DROWNING.createInstance(getSequenceLevel(), 0, duration, true), victimCap, entity));
+            }
+            ParticleMaker.summonAOEParticles(target.level(), target.getEyePosition(), (int)(2*radius), radius, ParticleMaker.Preset.AOE_END_ROD);
+            //target.level().playSound(null, target.getOnPos(), SoundEvents.MINECART_INSIDE_UNDERWATER, SoundSource.PLAYERS, 1, 1);
+            //cap.requestActiveSpiritualityCost(DROWNING_COST);
+            return true;
         }
         return false;
     }
@@ -146,5 +156,79 @@ public class WaterSpellAbility extends AbilityWithOptions {
             }
             return true;
         }) > 1;
+    }
+
+    protected boolean absorbWaterTrap(LivingEntityBeyonderCapability cap, LivingEntity target){
+        if(target.level().isClientSide()) return true;
+        if(!(target instanceof Player player)) return false;
+        HitResult block = player.pick(player.getAttributeBaseValue(ForgeMod.BLOCK_REACH.get()) + 0.5, 0f, false);
+        Level level = player.level();
+        if(block instanceof BlockHitResult rayTrace){
+            //if the block youre targeting is a water trap and its yours
+            if(level.getBlockState(rayTrace.getBlockPos()).is(ModBlocks.WATER_TRAP_BLOCK.get())){
+                BlockEntity be = level.getBlockEntity(rayTrace.getBlockPos());
+                if(be instanceof WaterTrapBlockEntity waterBe && waterBe.isOwner(player.getUUID())){
+                    waterBe.markForAbsorption();
+                    level.destroyBlock(rayTrace.getBlockPos(), false, target);
+                    cap.requestActiveSpiritualityCost(-WATER_TRAP_COST/2f);
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    protected boolean placeWaterTrap(LivingEntityBeyonderCapability cap, LivingEntity target) {
+        if(target.level().isClientSide()) return true;
+        if(!(target instanceof Player player)) return false;
+        HitResult block = player.pick(player.getAttributeBaseValue(ForgeMod.BLOCK_REACH.get()) + 0.5, 0f, false);
+        Level level = player.level();
+        if(block instanceof BlockHitResult rayTrace){
+            BlockPos targetPos = rayTrace.getBlockPos().relative(rayTrace.getDirection());
+            //otherwise, if the block you are targeting can be replaced
+            if(cap.getSpirituality() > WATER_TRAP_COST
+                    && !level.getBlockState(rayTrace.getBlockPos()).is(Blocks.AIR)
+                    && !level.getBlockState(rayTrace.getBlockPos()).is(Blocks.WATER)
+                    && level.getBlockState(rayTrace.getBlockPos()).canBeReplaced()){
+                placeBlock(level, rayTrace.getBlockPos(), cap, WATER_TRAP_COST, player);
+                return true;
+
+            }
+            //otherwise, if the block on the side you are targeting can be replaced
+            else if(cap.getSpirituality() > WATER_TRAP_COST
+                    && !level.getBlockState(rayTrace.getBlockPos()).is(Blocks.AIR)
+                    && level.getBlockState(targetPos).canBeReplaced())
+            {
+                placeBlock(level, targetPos, cap, WATER_TRAP_COST, player);
+                return true;
+            }
+        }
+
+        //by this point, normal placement failed, so we use a custom algorithm
+        Vec3 eyePos = target.getEyePosition();
+        BlockPos headPos = BlockPos.containing(eyePos);
+        Vec3 lookDir = target.getLookAngle().normalize();
+        float jump = 0.05f;
+        BlockPos found = null;
+        while(found == null){
+            eyePos = eyePos.add(lookDir.scale(jump));
+            BlockPos testPos = BlockPos.containing(eyePos);
+            if(Math.abs(testPos.getX() - headPos.getX()) <= 1 &&
+                    Math.abs(testPos.getY() - headPos.getY()) <= 1 &&
+                    Math.abs(testPos.getZ() - headPos.getZ()) <= 1) continue;
+            found = testPos;
+        }
+
+        placeBlock(level, found, cap, WATER_TRAP_COST, player);
+        return true;
+    }
+
+    private static void placeBlock(Level level, BlockPos positionToPlace, LivingEntityBeyonderCapability cap, int cost, Player player){
+        boolean water = level.getFluidState(positionToPlace).getType() == Fluids.WATER;
+        level.setBlockAndUpdate(positionToPlace,
+                ModBlocks.WATER_TRAP_BLOCK.get().defaultBlockState().setValue(WATERLOGGED, water));
+        WaterTrapBlockEntity be = (WaterTrapBlockEntity) level.getBlockEntity(positionToPlace);
+        if(be != null) be.setPlacedByPlayer(player.getUUID(), cap.getSequenceLevel());
+        cap.requestActiveSpiritualityCost(cost);
     }
 }

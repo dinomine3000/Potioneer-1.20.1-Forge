@@ -98,10 +98,10 @@ public class TyrantPathway extends BeyonderPathway {
             case 8:
                 abilities.add(Abilities.TYRANT_DIVINATION.create(atSequenceLevel));
                 //abilities.add(Abilities.TYRANT_CREATE_WATER.create(atSequenceLevel));
-                abilities.add(Abilities.TYRANT_WATER_TRAP.create(atSequenceLevel));
+                //abilities.add(Abilities.TYRANT_WATER_TRAP.create(atSequenceLevel));
                 abilities.add(Abilities.TYRANT_WATER_SPELLS.create(atSequenceLevel));
                 abilities.add(Abilities.TYRANT_WATER_PRISON.create(atSequenceLevel));
-                abilities.add(Abilities.TYRANT_DROWNING.create(atSequenceLevel));
+                //abilities.add(Abilities.TYRANT_DROWNING.create(atSequenceLevel));
             case 9:
                 abilities.add(Abilities.WATER_AFFINITY.create(atSequenceLevel));
                 abilities.add(Abilities.WATER_SCALES.create(atSequenceLevel));

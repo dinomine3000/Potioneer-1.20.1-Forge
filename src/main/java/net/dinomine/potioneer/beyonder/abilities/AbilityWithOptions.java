@@ -1,12 +1,8 @@
 package net.dinomine.potioneer.beyonder.abilities;
 
-import net.dinomine.potioneer.beyonder.client.screen.AbilityOptionsScreen;
 import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
-import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.LivingEntity;
-
-import java.util.List;
 
 import static net.dinomine.potioneer.beyonder.abilities.AbilityOptionsUtil.validadeArguments;
 
@@ -26,11 +22,11 @@ public abstract class AbilityWithOptions extends Ability {
         super(sequenceLevel);
     }
 
-    protected void addPrimaryOptions(AbilityOptions primaryOptions){
+    protected void setPrimaryOptions(AbilityOptions primaryOptions){
         this.primaryOptions = primaryOptions;
     }
 
-    protected void addSecondaryOptions(AbilityOptions secondaryOptions){
+    protected void setSecondaryOptions(AbilityOptions secondaryOptions){
         this.secondaryOptions = secondaryOptions;
     }
 
