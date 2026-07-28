@@ -2,13 +2,16 @@ package net.dinomine.potioneer.block.entity;
 
 import net.dinomine.potioneer.Potioneer;
 import net.dinomine.potioneer.beyonder.abilities.Abilities;
+import net.dinomine.potioneer.beyonder.abilities.AbilityFunctionHelper;
+import net.dinomine.potioneer.beyonder.abilities.tyrant.AreaOfJurisdictionAbility;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
 import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
 import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
-import net.dinomine.potioneer.mob_effects.ModEffects;
 import net.dinomine.potioneer.savedata.AllySystemSaveData;
+import net.dinomine.potioneer.util.misc.ModCompoundTags;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.Connection;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
@@ -19,10 +22,16 @@ import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.VoxelShape;
+import org.jetbrains.annotations.NotNull;
 import software.bernie.geckolib.animatable.GeoBlockEntity;
 import software.bernie.geckolib.core.animatable.GeoAnimatable;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
@@ -33,7 +42,9 @@ import software.bernie.geckolib.core.animation.AnimationState;
 import software.bernie.geckolib.core.animation.RawAnimation;
 import software.bernie.geckolib.core.object.PlayState;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -41,7 +52,14 @@ public class WaterTrapBlockEntity extends BlockEntity implements GeoBlockEntity 
     private AnimatableInstanceCache cache = new SingletonAnimatableInstanceCache(this);
     private int effectIndex = 0;
     private int sequenceLevel = 8;
+    private boolean isInAOJ = false;
+    private List<String> casterAllyGroups = new ArrayList<>();
+    private int numberOfChainsBelow = 0;
     private UUID id = null;
+
+    public List<String> getCasterAllyGroups(){return casterAllyGroups;}
+    public boolean isInAOJ() {return isInAOJ;}
+    public int getChains(){return numberOfChainsBelow;}
 
     public WaterTrapBlockEntity(BlockPos pPos, BlockState pBlockState) {
         super(ModBlockEntities.WATER_TRAP_BLOCK_ENTITY.get(), pPos, pBlockState);
@@ -51,14 +69,13 @@ public class WaterTrapBlockEntity extends BlockEntity implements GeoBlockEntity 
         this.id = uuid;
         this.sequenceLevel = sequenceLevel;
         if (level != null && !level.isClientSide) {
+            gatherAndSyncData();
             setChanged();
         }
     }
 
-    public boolean isOwner(UUID uId, int sequenceId){
-        //return(Math.floorDiv(sequenceId, 10) == 1 && Math.floorMod(sequenceId, 10) <= 8 && uId.compareTo(id) == 0);
-        //changed to account for using artifacts -> the owner does not have to be of the pathway
-        return uId.compareTo(id) == 0;
+    public boolean isOwner(UUID uId){
+        return id != null && uId != null && uId.compareTo(id) == 0;
     }
 
     @Override
@@ -67,7 +84,7 @@ public class WaterTrapBlockEntity extends BlockEntity implements GeoBlockEntity 
     }
 
     private PlayState predicate(AnimationState<GeoAnimatable> state) {
-        state.setAnimation(RawAnimation.begin().thenPlayAndHold("animation.model.create"));
+        state.setAnimation(RawAnimation.begin().thenLoop("idle"));
         return PlayState.CONTINUE;
     }
 
@@ -77,35 +94,41 @@ public class WaterTrapBlockEntity extends BlockEntity implements GeoBlockEntity 
         return cache;
     }
 
+    private int tickCount = 0;
     public void tick(Level pLevel, BlockPos pPos, BlockState pState) {
-        AABB box = new AABB(pPos.offset(2, 1, 2), pPos.offset(-1, -1, -1));
-        ArrayList<Entity> entities = new ArrayList<>(pLevel.getEntities((Entity)null, box, entity -> entity instanceof LivingEntity));
-
+        if(tickCount++ % 5 == 0) return;
+        ArrayList<LivingEntity> entities = AbilityFunctionHelper.getLivingEntitiesAround(pPos, level, 2, ent -> !isEntityAllyOfOwner(ent));
         if(!entities.isEmpty()) {
             assert level != null;
-            Player caster = level.getPlayerByUUID(id);
-            Optional<LivingEntityBeyonderCapability> optCap = caster.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve();
-            for(Entity ent: entities){
-                if(!(ent instanceof LivingEntity living)) return;
-                if(isEntityAllyOfOwner(living)) return;
+            for(LivingEntity ent: entities){
                 setChanged();
-                applyEffectsToEntity(pLevel, pPos, (LivingEntity) ent);
+                applyEffectsToEntity(pLevel, pPos, ent);
             }
-            if(caster != null && optCap.isPresent() && optCap.get().getAbilitiesManager().hasAbilityOrBetter(Abilities.TYRANT_WATER_TRAP.getAblId(), 7)){
-                caster.sendSystemMessage(Component.translatable("message.potioneer.water_trap_activated"));
+            if(id != null && level instanceof ServerLevel sLevel){
+                Entity caster = sLevel.getEntity(id);
+                if(caster != null){
+                    LivingEntityBeyonderCapability cap = caster.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve().get();
+                    if(cap.getAbilitiesManager().hasAbilityOrBetter(Abilities.TYRANT_WATER_TRAP.getAblId(), 7)){
+                        caster.sendSystemMessage(Component.translatable("message.potioneer.water_trap_activated"));
+                    }
+                }
             }
-
             pLevel.destroyBlock(pPos, false);
+        }
+        else if(tickCount%100 == 0){
+            gatherAndSyncData();
+            tickCount = 0;
         }
     }
 
     private boolean isEntityAllyOfOwner(LivingEntity ent){
-        if(!(level instanceof ServerLevel serverLevel)) return false;
+        if(!(level instanceof ServerLevel serverLevel) || id == null) return false;
         if(ent instanceof Player player){
             AllySystemSaveData data = AllySystemSaveData.from(serverLevel);
             return data.isPlayerAllyOf(player.getUUID(), id);
         } return false;
     }
+
 
     private void applyEffectsToEntity(Level level, BlockPos pos, LivingEntity entity){
         switch (effectIndex){
@@ -139,22 +162,88 @@ public class WaterTrapBlockEntity extends BlockEntity implements GeoBlockEntity 
         }
     }
 
-    public void incrementIndex(Player player, int sequenceId){
-        if(!isOwner(player.getUUID(), sequenceId)) return;
+    public void incrementIndex(Player player){
+        if(!isOwner(player.getUUID())) return;
         setChanged();
         effectIndex = Math.floorMod((effectIndex + (player.isCrouching() ? -1 : 1)), 4);
         player.sendSystemMessage(Component.translatable("pathway.potioneer.trap_effect_" + effectIndex));
     }
 
-    public CompoundTag getUpdateTag() {
-        return saveWithoutMetadata();
+    public void gatherAndSyncData(){
+        if(level != null && level.isClientSide) return;
+        if(!(level instanceof ServerLevel sLevel)) return;
+        //number of chains to render
+        numberOfChainsBelow = 0;
+        BlockPos pos = getBlockPos();
+        for(int y = pos.getY() - 1; y > level.getMinBuildHeight(); y--){
+            if(isPassable(level, pos.atY(y))) numberOfChainsBelow++;
+            else break;
+        }
+        if(id != null && sLevel.getEntity(id) != null){
+            //sequence level
+            LivingEntityBeyonderCapability cap = sLevel.getEntity(id).getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve().get();
+            this.sequenceLevel = cap.getSequenceLevel();
+
+            //AOJ status
+            isInAOJ = AreaOfJurisdictionAbility.isPosInAOJ(pos, cap, 0);
+
+            //ally group list
+            AllySystemSaveData allyData = AllySystemSaveData.from(sLevel);
+            casterAllyGroups = new ArrayList<>(allyData.getGroupNamesPlayerIsIn(id));
+        } else {
+            casterAllyGroups = new ArrayList<>();
+            isInAOJ = false;
+            this.sequenceLevel = 8;
+        }
+        setChanged();
+        level.sendBlockUpdated(getBlockPos(), getBlockState(), getBlockState(), Block.UPDATE_CLIENTS);
+    }
+
+    public static boolean isPassable(BlockGetter level, BlockPos pos) {
+        BlockState state = level.getBlockState(pos);
+        if (state.isAir()) return true;
+
+        VoxelShape shape = state.getCollisionShape(level, pos, CollisionContext.empty());
+
+        if (shape.isEmpty() || state.canBeReplaced()) {
+            return true;
+        }
+
+        AABB centerRay = new AABB(0.375, 0.0, 0.375, 0.625, 1.0, 0.625);
+        boolean blocksCenter = shape.toAabbs().stream().anyMatch(aabb -> aabb.intersects(centerRay));
+
+        return !blocksCenter;
     }
 
     @Override
-    public @org.jetbrains.annotations.Nullable Packet<ClientGamePacketListener> getUpdatePacket() {
+    public @NotNull CompoundTag getUpdateTag() {
+        CompoundTag tag = new CompoundTag();
+        tag.putInt("chains", numberOfChainsBelow);
+        tag.putBoolean("aoj", isInAOJ);
+        ModCompoundTags.writeStringList(tag, "groups", casterAllyGroups);
+        if(id != null) tag.putUUID("casterId", id);
+        return tag;
+    }
+
+    @Override
+    public void handleUpdateTag(CompoundTag tag) {
+        this.numberOfChainsBelow = tag.getInt("chains");
+        this.isInAOJ = tag.getBoolean("aoj");
+        this.casterAllyGroups = ModCompoundTags.readStringList(tag, "groups");
+        if(tag.contains("casterId")) id = tag.getUUID("casterId"); else id = null;
+    }
+
+    @Nullable
+    @Override
+    public Packet<ClientGamePacketListener> getUpdatePacket() {
         return ClientboundBlockEntityDataPacket.create(this);
     }
 
+    @Override
+    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt) {
+        CompoundTag tag = pkt.getTag();
+        if (tag != null) handleUpdateTag(tag);
+    }
 
     @Override
     protected void saveAdditional(CompoundTag pTag) {
@@ -165,6 +254,7 @@ public class WaterTrapBlockEntity extends BlockEntity implements GeoBlockEntity 
             modData.putUUID("playerId", id);
         }
         pTag.put(Potioneer.MOD_ID, modData);
+        pTag.put("otherData", getUpdateTag());
         super.saveAdditional(pTag);
     }
 
@@ -173,6 +263,7 @@ public class WaterTrapBlockEntity extends BlockEntity implements GeoBlockEntity 
         super.load(pTag);
         this.effectIndex = pTag.getCompound(Potioneer.MOD_ID).getInt("effect");
         this.sequenceLevel = pTag.getCompound(Potioneer.MOD_ID).getInt("level");
+        handleUpdateTag(pTag.getCompound("otherData"));
         if(pTag.getCompound(Potioneer.MOD_ID).contains("playerId")) id = pTag.getCompound(Potioneer.MOD_ID).getUUID("playerId");
     }
 

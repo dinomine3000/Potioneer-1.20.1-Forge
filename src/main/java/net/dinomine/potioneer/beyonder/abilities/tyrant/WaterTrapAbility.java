@@ -67,7 +67,7 @@ public class WaterTrapAbility extends Ability {
             } else if(level.getBlockState(rayTrace.getBlockPos()).is(ModBlocks.WATER_TRAP_BLOCK.get())){
                 //if the block youre targeting is a water trap and its yours
                 BlockEntity be = level.getBlockEntity(rayTrace.getBlockPos());
-                if(be instanceof WaterTrapBlockEntity waterBe && waterBe.isOwner(player.getUUID(), 10 + getSequenceLevel())){
+                if(be instanceof WaterTrapBlockEntity waterBe && waterBe.isOwner(player.getUUID())){
                     level.destroyBlock(rayTrace.getBlockPos(), false, target);
                     cap.requestActiveSpiritualityCost(-cost()/2f);
                 }

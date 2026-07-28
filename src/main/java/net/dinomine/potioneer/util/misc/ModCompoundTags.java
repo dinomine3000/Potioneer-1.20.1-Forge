@@ -105,6 +105,28 @@ public abstract class ModCompoundTags {
         return result;
     }
 
+    public static void writeStringList(CompoundTag parentTag, String key, List<String> stringList) {
+        ListTag listTag = new ListTag();
+
+        for (String str : stringList) {
+            listTag.add(StringTag.valueOf(str));
+        }
+        parentTag.put(key, listTag);
+    }
+
+    public static List<String> readStringList(CompoundTag parentTag, String key) {
+        List<String> result = new ArrayList<>();
+
+        if (parentTag.contains(key, Tag.TAG_LIST)) {
+            ListTag listTag = parentTag.getList(key, Tag.TAG_STRING);
+
+            for (int i = 0; i < listTag.size(); i++) {
+                String value = listTag.getString(i);
+                result.add(value);
+            }
+        }
+        return result;
+    }
     /**
      * Tag that holds characteristic information. any item with this will be seen as a characteristic.
      * "beyonder_info": {

@@ -115,10 +115,10 @@ public class AllyGroupSyncMessage {
             PacketHandler.INSTANCE.send(PacketDistributor.PLAYER.with(() -> player),
                     AllyGroupSyncMessage.sendGroupList(
                             data.getGroups(),
-                            data.getGroupNamesAllyIsIn(player.getUUID())
+                            data.getGroupNamesPlayerIsIn(player.getUUID())
                     ));
         } else {
-            List<String> allyGroups = data.getGroupNamesAllyIsIn(player.getUUID());
+            List<String> allyGroups = data.getGroupNamesPlayerIsIn(player.getUUID());
             PacketHandler.INSTANCE.send(PacketDistributor.PLAYER.with(() -> player),
                     AllyGroupSyncMessage.sendGroupList(allyGroups, allyGroups));
         }

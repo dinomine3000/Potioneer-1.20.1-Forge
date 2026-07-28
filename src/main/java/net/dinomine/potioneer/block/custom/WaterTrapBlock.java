@@ -35,7 +35,7 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
 
 public class WaterTrapBlock extends BaseEntityBlock implements SimpleWaterloggedBlock {
-    private static final VoxelShape SHAPE = Block.box(-16, 0, -16, 32, 1, 32);
+    private static final VoxelShape SHAPE = Block.box(0, 0, 0, 16, 16, 16);
 
     public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
 
@@ -110,7 +110,7 @@ public class WaterTrapBlock extends BaseEntityBlock implements SimpleWaterlogged
         if(pLevel.isClientSide) return InteractionResult.SUCCESS;
         BlockEntity be = pLevel.getBlockEntity(pPos);
         if(be instanceof WaterTrapBlockEntity trapEntity && pPlayer.getCapability(BeyonderStatsProvider.BEYONDER_STATS).isPresent()){
-            trapEntity.incrementIndex(pPlayer, pPlayer.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve().get().getPathwaySequenceId());
+            trapEntity.incrementIndex(pPlayer);
             return InteractionResult.SUCCESS;
         }
         return InteractionResult.PASS;

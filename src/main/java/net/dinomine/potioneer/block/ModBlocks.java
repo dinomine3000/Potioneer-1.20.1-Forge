@@ -67,8 +67,8 @@ public class ModBlocks {
 
     public static final RegistryObject<Block> WATER_TRAP_BLOCK = BLOCKS.register("water_trap",
             () -> new WaterTrapBlock(
-                    BlockBehaviour.Properties.of().noCollission().friction(-1).destroyTime(10)
-                            .sound(SoundType.LILY_PAD).pushReaction(PushReaction.DESTROY)));
+                    BlockBehaviour.Properties.copy(Blocks.BEDROCK).noCollission().friction(-1)
+                            .sound(SoundType.NETHERITE_BLOCK).pushReaction(PushReaction.DESTROY)));
 
     public static final RegistryObject<Block> PRIEST_LIGHT = BLOCKS.register("priest_light",
             () -> new PriestLightSourceBlock(

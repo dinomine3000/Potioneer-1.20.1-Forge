@@ -29,8 +29,8 @@ public class AllySystemSaveData extends SavedData {
         return groups.values().stream().filter(group -> group.isPlayerInGroup(player)).toList();
     }
 
-    public List<String> getGroupNamesAllyIsIn(UUID player){
-        return groups.keySet().stream().filter(key -> groups.get(key).isPlayerInGroup(player)).toList();
+    public List<String> getGroupNamesPlayerIsIn(UUID player){
+        return getGroupsPlayerIsIn(player).stream().map(group -> group.name).toList();
     }
 
     public List<UUID> getAlliesOf(UUID player){

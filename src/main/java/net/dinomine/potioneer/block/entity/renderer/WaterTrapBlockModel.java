@@ -14,7 +14,7 @@ public class WaterTrapBlockModel extends GeoModel<WaterTrapBlockEntity> {
 
     @Override
     public ResourceLocation getTextureResource(WaterTrapBlockEntity minerLightBlockEntity) {
-        return new ResourceLocation(Potioneer.MOD_ID, "textures/block/water_trap_1.png");
+        return new ResourceLocation(Potioneer.MOD_ID, "textures/block/water_trap.png");
     }
 
     @Override
