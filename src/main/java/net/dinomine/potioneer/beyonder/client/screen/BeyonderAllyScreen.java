@@ -122,15 +122,17 @@ public class BeyonderAllyScreen extends Screen {
         addRenderableWidget(leaveGroup2);
         leaveGroup3 = new ImageButton(leftPos + 141, topPos + 96, 14, 14,
                 149, 211, 14, TEXTURE, TEXTURE_WIDTH, TEXTURE_HEIGHT, btn -> { leaveGroup(2);});
+        addRenderableWidget(leaveGroup3);
 
         joinGroup1 = new ImageButton(leftPos + 141, topPos + 68, 14, 14,
                 163, 211, 14, TEXTURE, TEXTURE_WIDTH, TEXTURE_HEIGHT, btn -> { quickJoinGroup(0);});
-        addRenderableWidget(leaveGroup1);
+        addRenderableWidget(joinGroup1);
         joinGroup2 = new ImageButton(leftPos + 141, topPos + 82, 14, 14,
                 163, 211, 14, TEXTURE, TEXTURE_WIDTH, TEXTURE_HEIGHT, btn -> { quickJoinGroup(1);});
-        addRenderableWidget(leaveGroup2);
+        addRenderableWidget(joinGroup2);
         joinGroup3 = new ImageButton(leftPos + 141, topPos + 96, 14, 14,
                 163, 211, 14, TEXTURE, TEXTURE_WIDTH, TEXTURE_HEIGHT, btn -> { quickJoinGroup(2);});
+        addRenderableWidget(joinGroup3);
 
         leaveGroup1.setTooltip(Tooltip.create(Component.translatable("gui.potioneer.leave_group")));
         leaveGroup2.setTooltip(Tooltip.create(Component.translatable("gui.potioneer.leave_group")));
@@ -138,7 +140,6 @@ public class BeyonderAllyScreen extends Screen {
         joinGroup1.setTooltip(Tooltip.create(Component.translatable("gui.potioneer.quick_join_group")));
         joinGroup2.setTooltip(Tooltip.create(Component.translatable("gui.potioneer.quick_join_group")));
         joinGroup3.setTooltip(Tooltip.create(Component.translatable("gui.potioneer.quick_join_group")));
-        addRenderableWidget(leaveGroup3);
     }
 
     @Override
@@ -196,7 +197,7 @@ public class BeyonderAllyScreen extends Screen {
                 groupBtn1.render(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
                 pGuiGraphics.drawString(this.font, shortenName(groupName), leftPos + 9, topPos + 71, 0, false);
                 leaveGroup1.render(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
-                joinGroup2.render(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
+                joinGroup1.render(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
         }
 
         for(int i = 0; i < ClientAllyData.getPlayerNumber(); i++){
@@ -354,6 +355,7 @@ public class BeyonderAllyScreen extends Screen {
     private void quickJoinGroup(int idx){
         String groupName = ClientAllyData.getGroupName(idx + groupOffset);
         groupNameBox.setValue(groupName);
+        //groupNameBox.insertText(groupName);
     }
 
     private void leaveGroup(int idx){

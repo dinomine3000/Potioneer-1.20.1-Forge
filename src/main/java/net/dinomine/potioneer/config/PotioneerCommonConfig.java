@@ -189,7 +189,7 @@ public class PotioneerCommonConfig {
                         "\n10 means anyone can switch to a neighboring pathway at any level, -1 means they never can.")
                 .defineInRange("min_level_to_switch", 4, -1, 10);
 
-        PUBLIC_GROUPS = BUILDER.comment("Should every player be able to see every group in the server or just admins?\n"
+        PUBLIC_GROUPS = BUILDER.comment("Should every player be able to see every group in the server?\n"
                         + "True means everyone can see every group and their players, false will mean they can only see groups they're in.\n"
                         + "Note that this doesnt put them in the group - they'll still need the password to get in.")
                 .define("public_groups", false);
