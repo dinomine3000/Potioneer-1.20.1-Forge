@@ -57,14 +57,18 @@ public class AllyChangeMessageC2S {
         //Server receives message
         context.enqueueWork(() -> {
             AllySystemSaveData data = AllySystemSaveData.from(level);
+            boolean successFlag = false;
             if(msg.joinGroup){
-                data.tryAddPlayer(msg.groupName, player.getUUID(), msg.groupPassword);
+                successFlag = data.tryAddPlayer(msg.groupName, player.getUUID(), msg.groupPassword);
             } else if(msg.createGroup){
-                boolean createRest = data.createGroup(msg.groupName, msg.groupPassword, player.getUUID());
-                System.out.println("Group creation attempt success: " + createRest);
+                successFlag = data.createGroup(msg.groupName, msg.groupPassword, player.getUUID());
+                System.out.println("Group creation attempt success: " + successFlag);
             } else {
-                boolean leaveRes = data.removePlayer(msg.groupName, player.getUUID());
-                System.out.println("Leaving group " + msg.groupName + " success: " + leaveRes);
+                successFlag = data.removePlayer(msg.groupName, player.getUUID());
+                System.out.println("Leaving group " + msg.groupName + " success: " + successFlag);
+            }
+
+            if(successFlag){//update clients
             }
         });
 

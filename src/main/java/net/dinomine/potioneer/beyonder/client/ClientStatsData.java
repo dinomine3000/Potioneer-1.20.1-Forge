@@ -29,15 +29,6 @@ public class ClientStatsData {
     private static int luck = 0;
     private static int minLuck = 0;
     private static int maxLuck = 0;
-    private static Map<UUID, String> serverPlayerList = new HashMap<>();
-
-    public static void setServerPlayerList(Map<UUID, String> playerList){
-        serverPlayerList = playerList;
-    }
-
-    public static String getPlayerNameFromId(UUID uuid){
-        return serverPlayerList.getOrDefault(uuid, "Unknown");
-    }
 
     public static void attemptAdvancement(int newSeq, int addedDifficulty){
         Optional<LivingEntityBeyonderCapability> capOpt = getCapability();

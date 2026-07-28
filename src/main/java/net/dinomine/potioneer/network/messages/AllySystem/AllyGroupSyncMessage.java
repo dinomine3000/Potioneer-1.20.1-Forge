@@ -1,5 +1,6 @@
 package net.dinomine.potioneer.network.messages.AllySystem;
 
+import com.google.common.collect.Maps;
 import com.mojang.authlib.GameProfile;
 import net.dinomine.potioneer.beyonder.client.ClientAllyData;
 import net.dinomine.potioneer.config.PotioneerCommonConfig;
@@ -25,32 +26,35 @@ import java.util.function.Supplier;
 //TODO evaluate packet sizes on all message
 //synchronizes ally group data to client
 public class AllyGroupSyncMessage {
-    List<String> groupNames;
-    LinkedHashMap<UUID, String> players;
+    List<String> groupNamesToSend;
+    List<String> groupNamesPlayerIsIn;
+    LinkedHashMap<UUID, String> playersInGroup;
     String messageType;
+
     //S2C -> sends list of players from specific group
-    private AllyGroupSyncMessage(LinkedHashMap<UUID, String> player, List<String> groupNames, String type){
-        this.players = player;
-        this.groupNames = groupNames;
+    private AllyGroupSyncMessage(LinkedHashMap<UUID, String> player, List<String> groupNamesToSend, List<String> groupNamesPlayerIsIn, String type){
+        this.playersInGroup = player;
+        this.groupNamesToSend = groupNamesToSend;
+        this.groupNamesPlayerIsIn = groupNamesPlayerIsIn;
         this.messageType = type;
     }
 
     //C2S requests
     public static AllyGroupSyncMessage requestGroups(){
-        return new AllyGroupSyncMessage(new LinkedHashMap<>(), new ArrayList<>(), "");
+        return new AllyGroupSyncMessage(new LinkedHashMap<>(), new ArrayList<>(), new ArrayList<>(), "");
     }
 
     public static AllyGroupSyncMessage requestPlayers(String groupName){
-        return new AllyGroupSyncMessage(new LinkedHashMap<>(), new ArrayList<>(), groupName);
+        return new AllyGroupSyncMessage(new LinkedHashMap<>(), new ArrayList<>(), new ArrayList<>(), groupName);
     }
 
     //S2C replies
     public static AllyGroupSyncMessage sendPlayerList(List<UUID> players, ServerLevel level){
-        return new AllyGroupSyncMessage(getPlayerNamesFromUUIDs(level.getServer(), players), new ArrayList<>(), "players");
+        return new AllyGroupSyncMessage(getPlayerNamesFromUUIDs(level.getServer(), players), new ArrayList<>(), new ArrayList<>(), "players");
     }
 
-    public static AllyGroupSyncMessage sendGroupList(List<String> groups){
-        return new AllyGroupSyncMessage(new LinkedHashMap<>(), groups, "groups");
+    public static AllyGroupSyncMessage sendGroupList(List<String> groupsToSend, List<String> groupsPlayerIsIn){
+        return new AllyGroupSyncMessage(new LinkedHashMap<>(), groupsToSend, groupsPlayerIsIn, "groups");
     }
 
     public static void encode(AllyGroupSyncMessage msg, FriendlyByteBuf buffer){
@@ -59,19 +63,9 @@ public class AllyGroupSyncMessage {
 
         //write player (UUID) list
         //Note: I do this manually here because i want to ensure they have the same order. If it turns out theres no need for that, then come back.
-        //TODO: verify if this needs to be ordered
-//        buffer.writeMap(msg.players, FriendlyByteBuf::writeUUID, (buf, name) -> BufferUtils.writeStringToBuffer(name, buf));
-        buffer.writeInt(msg.players.size());
-        for(UUID id: msg.players.keySet()){
-            buffer.writeUUID(id);
-            BufferUtils.writeStringToBuffer(msg.players.get(id), buffer);
-        }
-
-        //write groups (String) list
-        buffer.writeInt(msg.groupNames.size());
-        for(int i = 0; i < msg.groupNames.size(); i++){
-            BufferUtils.writeStringToBuffer(msg.groupNames.get(i), buffer);
-        }
+        buffer.writeMap(msg.playersInGroup, FriendlyByteBuf::writeUUID, (buf, name) -> BufferUtils.writeStringToBuffer(name, buf));
+        buffer.writeCollection(msg.groupNamesToSend, ((buf, s) -> BufferUtils.writeStringToBuffer(s, buf)));
+        buffer.writeCollection(msg.groupNamesPlayerIsIn, ((buf, s) -> BufferUtils.writeStringToBuffer(s, buf)));
 
     }
 
@@ -79,25 +73,10 @@ public class AllyGroupSyncMessage {
         //read message type
         String messageType = BufferUtils.readString(buffer);
 
-
-        //read player (UUID) list
-        LinkedHashMap<UUID, String> players = new LinkedHashMap<>();
-        int size = buffer.readInt();
-        for(int i = 0; i < size; i++){
-            UUID id = buffer.readUUID();
-            String name = BufferUtils.readString(buffer);
-            players.put(id, name);
-        }
-//        Map<UUID, String> playersMap = buffer.readMap(FriendlyByteBuf::readUUID, BufferUtils::readString);
-
-        //read groups (String) list
-        List<String> groupNames = new ArrayList<>();
-        size = buffer.readInt();
-        for(int i = 0; i < size; i++){
-            groupNames.add(BufferUtils.readString(buffer));
-        }
-
-        return new AllyGroupSyncMessage(players, groupNames, messageType);
+        LinkedHashMap<UUID, String> players = buffer.readMap(Maps::newLinkedHashMapWithExpectedSize, FriendlyByteBuf::readUUID, BufferUtils::readString);
+        List<String> groupNames = buffer.readList(BufferUtils::readString);
+        List<String> groupNamesPlayerIsIn = buffer.readList(BufferUtils::readString);
+        return new AllyGroupSyncMessage(players, groupNames, groupNamesPlayerIsIn, messageType);
     }
 
     public static void handle(AllyGroupSyncMessage msg, Supplier<NetworkEvent.Context> contextSupplier){
@@ -113,12 +92,7 @@ public class AllyGroupSyncMessage {
                 ServerLevel level = (ServerLevel) player.level();
                 AllySystemSaveData data = AllySystemSaveData.from(level);
                 if(msg.messageType.isEmpty()){
-                    PacketHandler.INSTANCE.send(PacketDistributor.PLAYER.with(() -> player),
-                            AllyGroupSyncMessage.sendGroupList(
-                                    PotioneerCommonConfig.PUBLIC_GROUPS.get() ?
-                                            data.getGroups()
-                                            : data.getGroupNamesAllyIsIn(player.getUUID())
-                            ));
+                    sendGroupsToPlayer(data, player);
                 } else {
                     List<UUID> players = data.getPlayersInGroup(msg.messageType);
                     PacketHandler.INSTANCE.send(PacketDistributor.PLAYER.with(() -> player),
@@ -128,6 +102,20 @@ public class AllyGroupSyncMessage {
         });
 
         context.setPacketHandled(true);
+    }
+
+    public static void sendGroupsToPlayer(AllySystemSaveData data, ServerPlayer player){
+        if(PotioneerCommonConfig.PUBLIC_GROUPS.get()){
+            PacketHandler.INSTANCE.send(PacketDistributor.PLAYER.with(() -> player),
+                    AllyGroupSyncMessage.sendGroupList(
+                            data.getGroups(),
+                            data.getGroupNamesAllyIsIn(player.getUUID())
+                    ));
+        } else {
+            List<String> allyGroups = data.getGroupNamesAllyIsIn(player.getUUID());
+            PacketHandler.INSTANCE.send(PacketDistributor.PLAYER.with(() -> player),
+                    AllyGroupSyncMessage.sendGroupList(allyGroups, allyGroups));
+        }
     }
 
     public static LinkedHashMap<UUID, String> getPlayerNamesFromUUIDs(MinecraftServer server, List<UUID> uuids) {
@@ -166,9 +154,9 @@ class AllyClientSync
         if (player != null)
         {
             if(msg.messageType.equals("groups")){
-                ClientAllyData.setGroups(msg.groupNames);
+                ClientAllyData.setGroups(msg.groupNamesToSend, msg.groupNamesPlayerIsIn);
             } else if(msg.messageType.equals("players")){
-                ClientAllyData.setCurrentPlayers(msg.players);
+                ClientAllyData.setCurrentPlayers(msg.playersInGroup);
             } else {
                 System.out.println("Invalid message type given: " + msg.messageType);
             }

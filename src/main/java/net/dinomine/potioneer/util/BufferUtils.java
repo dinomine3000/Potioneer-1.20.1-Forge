@@ -23,19 +23,25 @@ public class BufferUtils {
         return builder.toString();
     }
 
-    public static void writeIntListToBuffer(List<Integer> list, FriendlyByteBuf buffer){
+    public static <T> void writeList(List<T> list, FriendlyByteBuf buffer, FriendlyByteBuf.Writer<T> writer){
         buffer.writeInt(list.size());
-        for(int i = 0; i < list.size(); i++){
-            buffer.writeInt(list.get(i));
+        for (T t : list) writer.accept(buffer, t);
+    }
+
+    public static <T> List<T> readList(FriendlyByteBuf buffer, FriendlyByteBuf.Reader<T> reader){
+        List<T> list = new ArrayList<>();
+        int size = buffer.readInt();
+        for(int i = 0; i < size; i++){
+            list.add(reader.apply(buffer));
         }
+        return list;
+    }
+
+    public static void writeIntListToBuffer(List<Integer> list, FriendlyByteBuf buffer){
+        writeList(list, buffer, FriendlyByteBuf::writeInt);
     }
 
     public static List<Integer> readIntListFromBuffer(FriendlyByteBuf buffer){
-        List<Integer> list = new ArrayList<>();
-        int size = buffer.readInt();
-        for(int i = 0; i < size; i++){
-            list.add(buffer.readInt());
-        }
-        return list;
+        return readList(buffer, FriendlyByteBuf::readInt);
     }
 }

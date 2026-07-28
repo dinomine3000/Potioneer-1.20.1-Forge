@@ -13,6 +13,8 @@ import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.multiplayer.PlayerInfo;
+import net.minecraft.client.resources.DefaultPlayerSkin;
 import net.minecraft.client.resources.SkinManager;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -181,7 +183,7 @@ public class BeyonderAllyScreen extends Screen {
             if(entry == null) continue;
             pGuiGraphics.blit(TEXTURE, leftPos + 6, topPos + 116 + 14*i, 149, 14, 14,
                     183, 149, 14, TEXTURE_WIDTH, TEXTURE_HEIGHT);
-            pGuiGraphics.blit(getPlayerSkin(entry.getKey(), entry.getValue()), leftPos + 9, topPos + 119 + 14*i, 8, 8, 8,
+            pGuiGraphics.blit(getPlayerSkin(entry.getKey()), leftPos + 9, topPos + 119 + 14*i, 8, 8, 8,
                     8, 8, 8, 64, 64);
             pGuiGraphics.drawString(this.font, entry.getValue(), leftPos + 19, topPos + 119 + 14*i, 0, false);
         }
@@ -328,12 +330,17 @@ public class BeyonderAllyScreen extends Screen {
     public boolean isPauseScreen() {
         return false;
     }
-    public static ResourceLocation getPlayerSkin(UUID uuid, String name) {
-        GameProfile profile = new GameProfile(uuid, name); // Create profile with UUID + name
-        SkinManager skinManager = Minecraft.getInstance().getSkinManager();
-        ResourceLocation skin = skinManager.getInsecureSkinLocation(profile); // Won’t contact server, only local cache
+    public static ResourceLocation getPlayerSkin(UUID uuid) {
+        Minecraft mc = Minecraft.getInstance();
 
-        return skin; // Custom or cached skin
+        if (mc.getConnection() != null) {
+            PlayerInfo info = mc.getConnection().getPlayerInfo(uuid);
+            if (info != null) {
+                return info.getSkinLocation();
+            }
+        }
+
+        return DefaultPlayerSkin.getDefaultSkin(uuid);
     }
 
     @Override

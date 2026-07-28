@@ -58,7 +58,7 @@ public class ClientForgeHandler {
                 if (spirituality > 0){
                     tooltip.add(Component.translatable("tooltip.potioneer.spirituality", spirituality).withStyle(ChatFormatting.GRAY));
                     if(appraiser){
-                        String name = ClientStatsData.getPlayerNameFromId(MysticismHelper.getPlayerIdFromMysticalItem(stack, 0));
+                        String name = "PLACEHOLDER!! if you see this, let the dev know he fckd up";
                         tooltip.add(Component.translatable("tooltip.potioneer.spirituality_player", name));
                     }
                 }

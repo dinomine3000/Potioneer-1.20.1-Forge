@@ -7,6 +7,7 @@ import java.util.*;
 
 public class ClientAllyData {
     private static List<String> groups = new ArrayList<>();
+    private static List<String> groupsPlayerIsIn = new ArrayList<>();
     private static LinkedHashMap<UUID, String> currentDisplayPlayers = new LinkedHashMap<>();
 
     public static String getGroupNameById(int idx){
@@ -43,9 +44,9 @@ public class ClientAllyData {
         PacketHandler.INSTANCE.sendToServer(AllyGroupSyncMessage.requestGroups());
     }
 
-    public static void setGroups(List<String> newGroups){
-        System.out.println("Set groups to: " + newGroups);
-        groups = newGroups;
+    public static void setGroups(List<String> allGroups, List<String> allyGroups){
+        groups = allGroups;
+        groupsPlayerIsIn = allyGroups;
     }
 
     public static void setCurrentPlayers(LinkedHashMap<UUID, String> newPlayers){

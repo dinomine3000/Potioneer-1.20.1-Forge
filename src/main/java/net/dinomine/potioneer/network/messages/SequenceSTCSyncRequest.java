@@ -2,6 +2,7 @@ package net.dinomine.potioneer.network.messages;
 
 import com.mojang.authlib.GameProfile;
 import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
+import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
 import net.dinomine.potioneer.network.PacketHandler;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
@@ -34,18 +35,22 @@ public class SequenceSTCSyncRequest {
         context.enqueueWork(() -> {
             player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
                 if(!context.getDirection().getReceptionSide().isClient()){
-                    cap.syncSequenceData(player);
-                    Map<UUID, GameProfileCache.GameProfileInfo> profileMap = player.level().getServer().getProfileCache().profilesByUUID;
-                    Map<UUID, String> nameMap = new HashMap<>();
-                    for(UUID id: profileMap.keySet()){
-                        nameMap.put(id, profileMap.get(id).getProfile().getName());
-                    }
-                    PacketHandler.sendMessageSTC(new PlayerNameSyncMessage(nameMap), player);
+                    sendUpdateToClient(cap, player);
                 }
             });
         });
 
         context.setPacketHandled(true);
+    }
+
+    public static void sendUpdateToClient(LivingEntityBeyonderCapability cap, ServerPlayer player){
+        cap.syncSequenceData(player);
+        /*Map<UUID, GameProfileCache.GameProfileInfo> profileMap = player.level().getServer().getProfileCache().profilesByUUID;
+        Map<UUID, String> nameMap = new HashMap<>();
+        for(UUID id: profileMap.keySet()){
+            nameMap.put(id, profileMap.get(id).getProfile().getName());
+        }
+        PacketHandler.sendMessageSTC(new PlayerNameSyncMessage(nameMap), player);*/
     }
 
 }

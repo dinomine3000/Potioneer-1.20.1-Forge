@@ -64,8 +64,6 @@ public class PacketHandler {
         INSTANCE.registerMessage(i++, PlayerSTCStatsSync.class, PlayerSTCStatsSync::encode, PlayerSTCStatsSync::decode, PlayerSTCStatsSync::handle);
         INSTANCE.registerMessage(i++, RitualC2STextSync.class, RitualC2STextSync::encode, RitualC2STextSync::decode, RitualC2STextSync::handle);
         INSTANCE.registerMessage(i++, SequenceSTCSyncRequest.class, SequenceSTCSyncRequest::encode, SequenceSTCSyncRequest::decode, SequenceSTCSyncRequest::handle);
-
-        INSTANCE.registerMessage(i++, PlayerNameSyncMessage.class, PlayerNameSyncMessage::encode, PlayerNameSyncMessage::decode, PlayerNameSyncMessage::handle);
     }
 
     public static <T> void sendMessageSTC(T message, LivingEntity player){

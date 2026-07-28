@@ -16,7 +16,6 @@ import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
 import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
 import net.dinomine.potioneer.item.ModItems;
 import net.dinomine.potioneer.network.PacketHandler;
-import net.dinomine.potioneer.network.messages.PlayerNameSyncMessage;
 import net.dinomine.potioneer.network.messages.SequenceSTCSyncRequest;
 import net.dinomine.potioneer.rituals.spirits.Deity;
 import net.dinomine.potioneer.util.ModTags;
@@ -56,6 +55,7 @@ import net.minecraftforge.event.level.BlockEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.network.PacketDistributor;
 
 import java.nio.ByteBuffer;
 import java.security.MessageDigest;
@@ -299,24 +299,16 @@ public class BeyonderEvents {
     }
 
     @SubscribeEvent
+    public static void onLoggedIn(PlayerEvent.PlayerLoggedInEvent event){
+        ServerPlayer player = (ServerPlayer) event.getEntity();
+        if(player.level().isClientSide()) return;
+        player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(stats -> {
+            SequenceSTCSyncRequest.sendUpdateToClient(stats, player);
+        });
+    }
+
+    @SubscribeEvent
     public static void onWorldLoad(EntityJoinLevelEvent event){
-        if(event.getEntity() instanceof Player player){
-            if(player.level().isClientSide()){
-                player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(stats -> {
-                    PacketHandler.sendMessageCTS(new SequenceSTCSyncRequest());
-                });
-            } else {
-                Map<UUID, GameProfileCache.GameProfileInfo> profileMap = player.level().getServer().getProfileCache().profilesByUUID;
-                Map<UUID, String> nameMap = new HashMap<>();
-                for(UUID id: profileMap.keySet()){
-                    nameMap.put(id, profileMap.get(id).getProfile().getName());
-                }
-                for(Player player1: event.getLevel().players()){
-                    if(player1.is(player)) continue;
-                    PacketHandler.sendMessageSTC(new PlayerNameSyncMessage(nameMap), player1);
-                }
-            }
-        }
     }
 
     @SubscribeEvent
