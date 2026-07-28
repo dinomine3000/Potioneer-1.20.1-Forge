@@ -19,7 +19,6 @@ public abstract class Ability {
     private boolean state = true;
     private int cooldown = 0;
     private int maxCooldown = 1;
-    protected int defaultMaxCooldown = 20;
     protected int sequenceLevel;
     /**
      * used when revoking the ability. this stores the previous state to be recovered.
@@ -31,6 +30,8 @@ public abstract class Ability {
     private CompoundTag abilityData = new CompoundTag();
     protected boolean isActive = true;
     protected boolean isPassive = false;
+    private int temporaryCooldown = -1;
+    protected int defaultMaxCooldown = 20;
     public boolean isPassive(){return isPassive;}
 
     public void receiveUpdateOnClient(AbilityInfo info, LivingEntityBeyonderCapability cap, LivingEntity target){
@@ -76,7 +77,11 @@ public abstract class Ability {
      * @param sequenceLevel
      */
     public Ability(int sequenceLevel){
+        this(sequenceLevel, 20);
+    }
+    public Ability(int sequenceLevel, int defaultMaxCooldown){
         this.sequenceLevel = sequenceLevel%10;
+        this.defaultMaxCooldown = defaultMaxCooldown;
     }
 
     protected void setCost(Function<Integer, Integer> costFunction){
@@ -211,6 +216,10 @@ public abstract class Ability {
         if(cooldown < -2) cooldown++;
     }
 
+    protected void setNextCooldownAs(int cooldownTicks){
+        temporaryCooldown = cooldownTicks;
+    }
+
     /**
      * puts the ability on cooldown.
      * only accepts positive or zero values
@@ -224,8 +233,9 @@ public abstract class Ability {
         return true;
     }
 
-    public boolean putOnCooldown(LivingEntity target){
-        putOnCooldown(defaultMaxCooldown, target);
+    private boolean putOnCooldown(LivingEntity target){
+        putOnCooldown(temporaryCooldown >= 0 ? temporaryCooldown : defaultMaxCooldown, target);
+        temporaryCooldown = -1;
         return true;
     }
 

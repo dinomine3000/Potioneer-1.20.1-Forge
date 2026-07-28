@@ -41,7 +41,7 @@ public class EnderChestAbility extends Ability {
                     return ChestMenu.threeRows(id, playerInv, chest);
                 }, Component.translatable("container.enderchest")));
                 cap.requestActiveSpiritualityCost(cost());
-                return putOnCooldown(target);
+                return true;
             }
         }
 

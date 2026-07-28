@@ -22,8 +22,7 @@ public class ConjurePickaxeAbility extends Ability {
     }
 
     public ConjurePickaxeAbility(int sequence){
-        super(sequence);
-        defaultMaxCooldown = 20*30;
+        super(sequence, 20*3);
     }
 
     @Override

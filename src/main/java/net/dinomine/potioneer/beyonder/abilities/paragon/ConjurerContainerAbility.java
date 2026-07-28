@@ -29,7 +29,7 @@ public class ConjurerContainerAbility extends Ability {
                 && target instanceof LocalPlayer player
                 && cap.getSpirituality() >= cost()){
             player.playSound(SoundEvents.CHEST_OPEN);
-            return putOnCooldown(target);
+            return true;
         }
         if(cap.getSpirituality() > cost() && !target.level().isClientSide()){
             if(target instanceof Player player){
@@ -44,7 +44,7 @@ public class ConjurerContainerAbility extends Ability {
                     return new ConjurerContainerMenu(MenuType.GENERIC_9x1, id, playerInv, cont, 1);
                 }, Component.translatable("menu.potioneer.conjurer_menu")));
                 cap.requestActiveSpiritualityCost(cost());
-                return putOnCooldown(target);
+                return true;
             }
         }
 

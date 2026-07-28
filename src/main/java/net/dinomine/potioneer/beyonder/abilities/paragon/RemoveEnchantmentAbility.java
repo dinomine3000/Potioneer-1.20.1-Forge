@@ -23,21 +23,19 @@ public class RemoveEnchantmentAbility extends Ability {
     @Override
     public boolean primary(LivingEntityBeyonderCapability cap, LivingEntity target) {
         if(target.level().isClientSide()) {
-            if(cap.getSpirituality() > cost()){
-                return putOnCooldown(target);
-            }
+            if(cap.getSpirituality() > cost()) return true;
         }
         if(cap.getSpirituality() > cost()){
             ItemStack item = target.getMainHandItem();
             if(item.isEnchanted()){
                 item.getTag().remove("Enchantments");
                 cap.requestActiveSpiritualityCost(cost());
-                return putOnCooldown(target);
+                return true;
             }
             if(item.is(Items.ENCHANTED_BOOK)){
                 item.setCount(0);
                 target.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(Items.BOOK));
-                return putOnCooldown(target);
+                return true;
             }
         }
 

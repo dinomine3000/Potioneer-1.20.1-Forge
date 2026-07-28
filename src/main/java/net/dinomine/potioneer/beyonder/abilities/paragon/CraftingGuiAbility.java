@@ -35,7 +35,7 @@ public class CraftingGuiAbility extends Ability {
 
     @Override
     public boolean primary(LivingEntityBeyonderCapability cap, LivingEntity target) {
-        if(target.level().isClientSide()) return putOnCooldown(target);
+        if(target.level().isClientSide()) return true;
         if(cap.getSpirituality() > cost() && target instanceof ServerPlayer player){
             NetworkHooks.openScreen(
                     player,
@@ -45,7 +45,7 @@ public class CraftingGuiAbility extends Ability {
                     buff -> buff.writeInt(getSequenceLevel()));
 
             cap.requestActiveSpiritualityCost(cost());
-            return putOnCooldown(target);
+            return true;
         }
         return false;
     }

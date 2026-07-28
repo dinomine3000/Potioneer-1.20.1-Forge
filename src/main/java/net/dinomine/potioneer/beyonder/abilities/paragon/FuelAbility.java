@@ -34,7 +34,7 @@ public class FuelAbility extends Ability {
         float adjustedPercent = percentCost - ((float) (9 - getSequenceLevel()) / 9 * percentDelta);
         if(target.level().isClientSide()) {
             if(cap.getSpirituality() > cap.getMaxSpirituality() * adjustedPercent){
-                return putOnCooldown(target);
+                return true;
             }
         }
         if(cap.getSpirituality() > cap.getMaxSpirituality()*adjustedPercent){
@@ -45,7 +45,7 @@ public class FuelAbility extends Ability {
                     player.drop(result, false, true);
                 }
                 cap.requestActiveSpiritualityCost(cap.getMaxSpirituality()*adjustedPercent);
-                return putOnCooldown(target);
+                return true;
             }
         }
 
