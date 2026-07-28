@@ -26,7 +26,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
@@ -46,7 +45,6 @@ import software.bernie.geckolib.core.object.PlayState;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 public class WaterTrapBlockEntity extends BlockEntity implements GeoBlockEntity {
@@ -57,6 +55,7 @@ public class WaterTrapBlockEntity extends BlockEntity implements GeoBlockEntity 
     private List<String> casterAllyGroups = new ArrayList<>();
     private int numberOfChainsBelow = 0;
     private UUID id = null;
+    private boolean diffused = false;
 
     public List<String> getCasterAllyGroups(){return casterAllyGroups;}
     public boolean isInAOJ() {return isInAOJ;}
@@ -98,25 +97,8 @@ public class WaterTrapBlockEntity extends BlockEntity implements GeoBlockEntity 
     private int tickCount = 0;
     public void tick(Level pLevel, BlockPos pPos, BlockState pState) {
         if(tickCount++ % 5 == 0) return;
-        ArrayList<LivingEntity> entities = AbilityFunctionHelper.getLivingEntitiesAround(pPos, level, 2, ent -> !isEntityAllyOfOwner(ent));
-        if(!entities.isEmpty()) {
-            assert level != null;
-            for(LivingEntity ent: entities){
-                setChanged();
-                applyEffectsToEntity(pLevel, pPos, ent);
-            }
-            if(id != null && level instanceof ServerLevel sLevel){
-                Entity caster = sLevel.getEntity(id);
-                if(caster != null){
-                    LivingEntityBeyonderCapability cap = caster.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve().get();
-                    if(cap.getAbilitiesManager().hasAbilityOrBetter(Abilities.TYRANT_WATER_TRAP.getAblId(), 7)){
-                        caster.sendSystemMessage(Component.translatable("message.potioneer.water_trap_activated"));
-                    }
-                }
-            }
-            pLevel.destroyBlock(pPos, false);
-        }
-        else if(tickCount%100 == 0){
+        tryToExplode(true);
+        if(tickCount%100 == 0){
             gatherAndSyncData();
             tickCount = 0;
         }
@@ -130,6 +112,27 @@ public class WaterTrapBlockEntity extends BlockEntity implements GeoBlockEntity 
         } return false;
     }
 
+    private void tryToExplode(boolean destroy){
+        ArrayList<LivingEntity> entities = AbilityFunctionHelper.getLivingEntitiesAround(getBlockPos(), level, 2, ent -> !isEntityAllyOfOwner(ent));
+        if(!entities.isEmpty()) {
+            assert level != null;
+            for(LivingEntity ent: entities){
+                setChanged();
+                applyEffectsToEntity(level, getBlockPos(), ent);
+            }
+            if(id != null && level instanceof ServerLevel sLevel){
+                Entity caster = sLevel.getEntity(id);
+                if(caster != null){
+                    LivingEntityBeyonderCapability cap = caster.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve().get();
+                    if(cap.getAbilitiesManager().hasAbilityOrBetter(Abilities.TYRANT_WATER_TRAP.getAblId(), 7)){
+                        caster.sendSystemMessage(Component.translatable("message.potioneer.water_trap_activated"));
+                    }
+                }
+            }
+            markForAbsorption();
+            if(destroy) level.destroyBlock(getBlockPos(), false);
+        }
+    }
 
     private void applyEffectsToEntity(Level level, BlockPos pos, LivingEntity entity){
         switch (effectIndex){
@@ -218,6 +221,17 @@ public class WaterTrapBlockEntity extends BlockEntity implements GeoBlockEntity 
         return !blocksCenter;
     }
 
+    public void markForAbsorption() {
+        diffused = true;
+    }
+
+    public void onDestroy(){
+        if(!diffused) tryToExplode(false);
+        //confetti here.
+        System.out.println("Confetti yaya. bomb went off.");
+
+    }
+
     @Override
     public @NotNull CompoundTag getUpdateTag() {
         CompoundTag tag = new CompoundTag();
@@ -269,5 +283,4 @@ public class WaterTrapBlockEntity extends BlockEntity implements GeoBlockEntity 
         handleUpdateTag(pTag.getCompound("otherData"));
         if(pTag.getCompound(Potioneer.MOD_ID).contains("playerId")) id = pTag.getCompound(Potioneer.MOD_ID).getUUID("playerId");
     }
-
 }

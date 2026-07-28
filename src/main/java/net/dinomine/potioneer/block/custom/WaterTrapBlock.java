@@ -55,17 +55,21 @@ public class WaterTrapBlock extends BaseEntityBlock implements SimpleWaterlogged
         return pState.getValue(WATERLOGGED) ? Fluids.WATER.getSource().defaultFluidState() : super.getFluidState(pState);
     }
 
-    @Override
-    public boolean canBeReplaced(BlockState pState, BlockPlaceContext pUseContext){
-        return true;
-    }
-
     public BlockState updateShape(BlockState pState, Direction pFacing, BlockState pFacingState, LevelAccessor pLevel, BlockPos pCurrentPos, BlockPos pFacingPos) {
         if (pState.getValue(WATERLOGGED)) {
             pLevel.scheduleTick(pCurrentPos, Fluids.WATER, Fluids.WATER.getTickDelay(pLevel));
         }
 
         return super.updateShape(pState, pFacing, pFacingState, pLevel, pCurrentPos, pFacingPos);
+    }
+
+    @Override
+    public void onRemove(BlockState pState, Level pLevel, BlockPos pPos, BlockState pNewState, boolean pMovedByPiston) {
+        BlockEntity be = pLevel.getBlockEntity(pPos);
+        if(be instanceof WaterTrapBlockEntity trapEntity){
+            trapEntity.onDestroy();
+        }
+        super.onRemove(pState, pLevel, pPos, pNewState, pMovedByPiston);
     }
 
     @Override

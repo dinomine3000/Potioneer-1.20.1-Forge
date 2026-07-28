@@ -51,15 +51,15 @@ public class WaterTrapBlockRenderer extends GeoBlockRenderer<WaterTrapBlockEntit
 
     private static void renderChains(int chainCount, PoseStack poseStack, MultiBufferSource bufferSource, int packedLight){
         poseStack.pushPose();
-        poseStack.translate(0.5D, -0.5D, 0.5D);
+        poseStack.translate(0.5D, 0, 0.5D);
         //poseStack.mulPose(Axis.ZP.rotationDegrees(90));
         poseStack.pushPose();
             float increment = 1/16f;
             RenderUtils.renderTiledSubTextureQuad(poseStack, bufferSource.getBuffer(RenderType.entityTranslucent(CHAINS_LOCATION)),
-                    -1.5f*increment, 0.5f, 1.5f*increment,
-                    1.5f*increment, 0.5f, -1.5f*increment,
-                    1.5f*increment, -0.5f - chainCount, -1.5f*increment,
-                    -1.5f*increment, -0.5f - chainCount, 1.5f*increment,
+                    -1.5f*increment, 0f, 1.5f*increment,
+                    1.5f*increment, 0f, -1.5f*increment,
+                    1.5f*increment,  -chainCount, -1.5f*increment,
+                    -1.5f*increment, -chainCount, 1.5f*increment,
                     0f, 3/16f, 0, 1, chainCount,
                     1f, 1f, 1f, 1f, packedLight
             );
@@ -67,10 +67,10 @@ public class WaterTrapBlockRenderer extends GeoBlockRenderer<WaterTrapBlockEntit
         poseStack.pushPose();
             poseStack.mulPose(Axis.YP.rotationDegrees(-90));
             RenderUtils.renderTiledSubTextureQuad(poseStack, bufferSource.getBuffer(RenderType.entityTranslucent(CHAINS_LOCATION)),
-                    -1.5f*increment, 0.5f, 1.5f*increment,
-                    1.5f*increment, 0.5f, -1.5f*increment,
-                    1.5f*increment, -0.5f - chainCount, -1.5f*increment,
-                    -1.5f*increment, -0.5f - chainCount, 1.5f*increment,
+                    -1.5f*increment, 0f, 1.5f*increment,
+                    1.5f*increment, 0f, -1.5f*increment,
+                    1.5f*increment, -chainCount, -1.5f*increment,
+                    -1.5f*increment, -chainCount, 1.5f*increment,
                     3/16f, 6/16f, 0, 1, chainCount,
                     1f, 1f, 1f, 1f, packedLight
             );
