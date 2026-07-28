@@ -24,6 +24,7 @@ public class ModSounds {
     public static final RegistryObject<SoundEvent> ARROW_MISS = registerSoundEvents("arrow_miss");
     public static final RegistryObject<SoundEvent> CRIT = registerSoundEvents("crit");
     public static final RegistryObject<SoundEvent> ARREST = registerSoundEvents("arrest");
+    public static final RegistryObject<SoundEvent> WATER_TRAP = registerSoundEvents("water_trap");
 
 
 

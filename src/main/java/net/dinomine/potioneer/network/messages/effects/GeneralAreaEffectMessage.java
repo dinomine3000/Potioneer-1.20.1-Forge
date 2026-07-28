@@ -1,9 +1,14 @@
 package net.dinomine.potioneer.network.messages.effects;
 
+import net.dinomine.potioneer.particle.ModParticles;
+import net.dinomine.potioneer.particle.custom.GenericParticleOptions;
 import net.dinomine.potioneer.util.BufferUtils;
 import net.dinomine.potioneer.util.ParticleMaker;
 import net.minecraft.client.Minecraft;
+import net.minecraft.core.particles.DustParticleOptions;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.entity.AreaEffectCloud;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
@@ -12,6 +17,7 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.network.NetworkEvent;
 import org.joml.Vector3f;
+import org.joml.Vector4f;
 
 import java.util.function.Supplier;
 
@@ -61,12 +67,19 @@ class GeneralAreaEffectClient
         if (player != null)
         {
             Level level = player.level();
+            GenericParticleOptions waterTrap = new GenericParticleOptions(new Vector4f(0f, 0.2f, 1f, 1f), 1, 0.9f, 0, 20);
             switch (msg.preset){
                 case AOE_GRAVITY:
                     ParticleMaker.fallingGlow(level, new Vec3(msg.centerPos), msg.radius);
                     break;
                 case AOE_END_ROD:
                     ParticleMaker.particleExplosionRandom(level, msg.radius, msg.centerPos.x, msg.centerPos.y, msg.centerPos.z);
+                    break;
+                case WATER_TRAP:
+                    ParticleMaker.particleExplosionRandom(waterTrap, 0.15f, level, msg.radius, msg.centerPos.x, msg.centerPos.y, msg.centerPos.z);
+                    break;
+                case WATER_IMPLOSION:
+                    ParticleMaker.implosion(waterTrap, 0.10f, level, msg.radius, msg.centerPos);
                     break;
             }
         }

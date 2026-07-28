@@ -4,13 +4,22 @@ import net.dinomine.potioneer.Potioneer;
 import net.dinomine.potioneer.beyonder.abilities.Abilities;
 import net.dinomine.potioneer.beyonder.abilities.AbilityFunctionHelper;
 import net.dinomine.potioneer.beyonder.abilities.tyrant.AreaOfJurisdictionAbility;
+import net.dinomine.potioneer.beyonder.damages.PotioneerDamage;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
 import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
 import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
 import net.dinomine.potioneer.block.ModBlocks;
+import net.dinomine.potioneer.network.PacketHandler;
+import net.dinomine.potioneer.network.messages.effects.GeneralAreaEffectMessage;
 import net.dinomine.potioneer.savedata.AllySystemSaveData;
+import net.dinomine.potioneer.sound.ModSounds;
+import net.dinomine.potioneer.util.ParticleMaker;
 import net.dinomine.potioneer.util.misc.ModCompoundTags;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Position;
+import net.minecraft.core.particles.DustParticleOptions;
+import net.minecraft.core.particles.ParticleOptions;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Connection;
 import net.minecraft.network.chat.Component;
@@ -18,6 +27,8 @@ import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
@@ -31,7 +42,9 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import net.minecraftforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
+import org.joml.Vector3f;
 import software.bernie.geckolib.animatable.GeoBlockEntity;
 import software.bernie.geckolib.core.animatable.GeoAnimatable;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
@@ -56,6 +69,7 @@ public class WaterTrapBlockEntity extends BlockEntity implements GeoBlockEntity 
     private int numberOfChainsBelow = 0;
     private UUID id = null;
     private boolean diffused = false;
+    private boolean exploded = false;
 
     public List<String> getCasterAllyGroups(){return casterAllyGroups;}
     public boolean isInAOJ() {return isInAOJ;}
@@ -113,14 +127,16 @@ public class WaterTrapBlockEntity extends BlockEntity implements GeoBlockEntity 
     }
 
     private void tryToExplode(boolean destroy){
+        if(!(level instanceof ServerLevel sLevel)) return;
+        if(exploded) return;
         ArrayList<LivingEntity> entities = AbilityFunctionHelper.getLivingEntitiesAround(getBlockPos(), level, 2, ent -> !isEntityAllyOfOwner(ent));
         if(!entities.isEmpty()) {
             assert level != null;
             for(LivingEntity ent: entities){
                 setChanged();
-                applyEffectsToEntity(level, getBlockPos(), ent);
+                applyEffectsToEntity(sLevel, getBlockPos(), ent);
             }
-            if(id != null && level instanceof ServerLevel sLevel){
+            if(id != null){
                 Entity caster = sLevel.getEntity(id);
                 if(caster != null){
                     LivingEntityBeyonderCapability cap = caster.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve().get();
@@ -129,12 +145,12 @@ public class WaterTrapBlockEntity extends BlockEntity implements GeoBlockEntity 
                     }
                 }
             }
-            markForAbsorption();
+            exploded = true;
             if(destroy) level.destroyBlock(getBlockPos(), false);
         }
     }
 
-    private void applyEffectsToEntity(Level level, BlockPos pos, LivingEntity entity){
+    private void applyEffectsToEntity(ServerLevel level, BlockPos pos, LivingEntity entity){
         switch (effectIndex){
             case 0:
                 entity.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 30*20, 10 - sequenceLevel));
@@ -145,22 +161,17 @@ public class WaterTrapBlockEntity extends BlockEntity implements GeoBlockEntity 
                 });
                 break;
             case 2:
-                if(
-                        level.isEmptyBlock(pos.below().below())
-                     && level.isEmptyBlock(pos.below().below().below())
-                        )
+                if(level.isEmptyBlock(pos.below().below())
+                     && level.isEmptyBlock(pos.below().below().below()))
                 {
                     BlockPos target = pos.below().below().below();
                     entity.teleportTo(target.getX(), target.getY(), target.getZ());
                     break;
                 }
             default:
-                Player player = level.getPlayerByUUID(id);
-                if(player == null){
-                    entity.hurt(level.damageSources().magic(), -1 + (10 - sequenceLevel)*3);
-                } else {
-                    entity.hurt(level.damageSources().indirectMagic(player, null), -1 + (10 - sequenceLevel)*3);
-                }
+                Player player = id == null ? null: level.getPlayerByUUID(id);
+                entity.invulnerableTime = 0;
+                entity.hurt(PotioneerDamage.water_trap(level, player), -1 + (10 - sequenceLevel)*3);
                 break;
 
         }
@@ -228,7 +239,15 @@ public class WaterTrapBlockEntity extends BlockEntity implements GeoBlockEntity 
     public void onDestroy(){
         if(!diffused) tryToExplode(false);
         //confetti here.
-        System.out.println("Confetti yaya. bomb went off.");
+
+        if(diffused){
+            PacketHandler.INSTANCE.send(PacketDistributor.DIMENSION.with(() -> level.dimension()), new GeneralAreaEffectMessage(ParticleMaker.Preset.WATER_IMPLOSION, getBlockPos().getCenter().toVector3f(), 2));
+            level.playSound(null, getBlockPos(), SoundEvents.BUCKET_FILL, SoundSource.BLOCKS, 1, (float) level.random.triangle(1, 0.2f));
+        }
+        else{
+            PacketHandler.INSTANCE.send(PacketDistributor.DIMENSION.with(() -> level.dimension()), new GeneralAreaEffectMessage(ParticleMaker.Preset.WATER_TRAP, getBlockPos().getCenter().toVector3f(), 2));
+            level.playSound(null, getBlockPos(), ModSounds.WATER_TRAP.get(), SoundSource.BLOCKS, 1, (float) level.random.triangle(1, 0.2f));
+        }
 
     }
 

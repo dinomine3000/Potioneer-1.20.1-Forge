@@ -69,5 +69,10 @@
       "potioneer:arrest_2",
       "potioneer:arrest_3"
     ]
+  },
+  "water_trap": {
+    "sounds": [
+      "potioneer:water_trap"
+    ]
   }
 }

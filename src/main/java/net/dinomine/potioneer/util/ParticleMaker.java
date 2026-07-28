@@ -9,9 +9,11 @@ import net.dinomine.potioneer.entities.custom.effects.WaterBlockEffectEntity;
 import net.dinomine.potioneer.network.PacketHandler;
 import net.dinomine.potioneer.network.messages.abilityRelevant.abilitySpecific.AuraEffectMessage;
 import net.dinomine.potioneer.network.messages.effects.GeneralAreaEffectMessage;
+import net.dinomine.potioneer.particle.custom.GenericParticleOptions;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -19,6 +21,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Vector3f;
+import org.joml.Vector4f;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -91,7 +94,9 @@ public class ParticleMaker {
 
     public enum Preset{
         AOE_END_ROD,
-        AOE_GRAVITY
+        AOE_GRAVITY,
+        WATER_TRAP,
+        WATER_IMPLOSION
     }
 
     public static void createWaterBlockEffectForPlayer(LivingEntity target, Level level, int duration){
@@ -142,6 +147,37 @@ public class ParticleMaker {
         for(int i = 0; i < particles; i++){
             level.addParticle(particle, x, y, z,
                     speedScale*(1 - 2*random.nextFloat()), speedScale*(1 - 2*random.nextFloat()), speedScale*(1 - 2*random.nextFloat()));
+        }
+    }
+
+    public static void implosion(ParticleOptions particle, float scalar, Level level, double radius, Vector3f center) {
+        RandomSource random = level.getRandom();
+        int particles = random.nextInt((int) (20 * radius), (int) (40 * radius));
+        float speedScale = (float) (radius * scalar);
+
+        for (int i = 0; i < particles; i++) {
+            // Generate a random point on a sphere surface using normalized directional vectors
+            float dirX = 1.0f - 2.0f * random.nextFloat();
+            float dirY = 1.0f - 2.0f * random.nextFloat();
+            float dirZ = 1.0f - 2.0f * random.nextFloat();
+
+            Vector3f dir = new Vector3f(dirX, dirY, dirZ);
+            if (dir.lengthSquared() == 0) {
+                dir.set(0, 1, 0); // Guard against zero vector division
+            }
+            dir.normalize();
+
+            // Spawn position: Outer edge of the sphere (Center + Direction * Radius)
+            double spawnX = center.x + dir.x() * radius;
+            double spawnY = center.y + dir.y() * radius;
+            double spawnZ = center.z + dir.z() * radius;
+
+            // Inward velocity vector pointing back to (x, y, z)
+            double vx = -dir.x() * speedScale;
+            double vy = -dir.y() * speedScale;
+            double vz = -dir.z() * speedScale;
+
+            level.addParticle(particle, spawnX, spawnY, spawnZ, vx, vy, vz);
         }
     }
 

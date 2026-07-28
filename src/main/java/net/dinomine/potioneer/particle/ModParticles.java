@@ -1,5 +1,6 @@
 package net.dinomine.potioneer.particle;
 
+import com.mojang.serialization.Codec;
 import net.dinomine.potioneer.Potioneer;
 import net.dinomine.potioneer.particle.custom.*;
 import net.minecraft.client.Minecraft;
@@ -18,7 +19,6 @@ import net.minecraftforge.registries.RegistryObject;
 public class ModParticles {
     public static final DeferredRegister<ParticleType<?>> PARTICLE_TYPES =
             DeferredRegister.create(ForgeRegistries.PARTICLE_TYPES, Potioneer.MOD_ID);
-
     public static final RegistryObject<SimpleParticleType> POTION_CAULDRON_PARTICLES =
             PARTICLE_TYPES.register("potion_cauldron_particles",
                     () -> new SimpleParticleType(true));
@@ -29,6 +29,13 @@ public class ModParticles {
     public static final RegistryObject<SimpleParticleType> CRIT_PARTICLES =
             PARTICLE_TYPES.register("critical_strike", () -> new SimpleParticleType(true));
 
+    public static final RegistryObject<ParticleType<GenericParticleOptions>> GENERIC_PARTICLE =
+            PARTICLE_TYPES.register("generic", () -> new ParticleType<>(false, GenericParticleOptions.DESERIALIZER) {
+                @Override
+                public Codec<GenericParticleOptions> codec() {
+                    return GenericParticleOptions.CODEC;
+                }
+            });
     public static void register(IEventBus eventBus){
         PARTICLE_TYPES.register(eventBus);
     }
@@ -38,14 +45,15 @@ public class ModParticles {
     public static void registerFactories(RegisterParticleProvidersEvent evt) {
         evt.registerSpriteSet(ModParticles.POTION_CAULDRON_PARTICLES.get(), PotionCauldronParticles.Provider::new);
 //        evt.registerSpriteSet(ModParticles.INCENSE_PARTICLES.get(),spriteSet -> new IncenseSmokeParticle.IncenseSmokeParticleProvider(spriteSet, 0xFFAA66CC));
-        Minecraft.getInstance().particleEngine.register(
+        evt.registerSpriteSet(
                 ModParticles.INCENSE_PARTICLES.get(),
                 IncenseSmokeParticle.IncenseSmokeParticleProvider::new
         );
-        Minecraft.getInstance().particleEngine.register(
+        evt.registerSpriteSet(
                 ModParticles.CRIT_PARTICLES.get(),
                 CriticalStrikeParticle.Provider::new
         );
+        evt.registerSpriteSet(ModParticles.GENERIC_PARTICLE.get(), GenericControlParticle.Provider::new);
         //Minecraft.getInstance().particleEngine.register(POTION_CAULDRON_PARTICLES.get(), PotionCauldronParticles.Provider::new);
     }
 

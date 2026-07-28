@@ -32,11 +32,22 @@ public class PotioneerDamage {
     public static final ResourceKey<DamageType> LOW_SPIRITUALITY = ResourceKey.create(Registries.DAMAGE_TYPE, new ResourceLocation(Potioneer.MOD_ID, "low_spirituality"));
     public static final ResourceKey<DamageType> ASTEROID = ResourceKey.create(Registries.DAMAGE_TYPE, new ResourceLocation(Potioneer.MOD_ID, "asteroid"));
     public static final ResourceKey<DamageType> ARREST = ResourceKey.create(Registries.DAMAGE_TYPE, new ResourceLocation(Potioneer.MOD_ID, "arrest"));
+    public static final ResourceKey<DamageType> WATER_TRAP = ResourceKey.create(Registries.DAMAGE_TYPE, new ResourceLocation(Potioneer.MOD_ID, "water_trap_explosion"));
+    public static final ResourceKey<DamageType> WATER_TRAP_ENVIRONMENT = ResourceKey.create(Registries.DAMAGE_TYPE, new ResourceLocation(Potioneer.MOD_ID, "water_trap_explosion_environment"));
 //    public static final ResourceKey<DamageType> MENTAL = ResourceKey.create(Registries.DAMAGE_TYPE, new ResourceLocation(Potioneer.MOD_ID, "mental"));
 //    public static final ResourceKey<DamageType> ANNIHILATION = ResourceKey.create(Registries.DAMAGE_TYPE, new ResourceLocation(Potioneer.MOD_ID, "annihilation"));
 
     public static DamageSource crit(ServerLevel level, LivingEntity attacker) {
         return getSource(level, CRIT, attacker);
+    }
+
+    public static DamageSource water_trap(ServerLevel level, @Nullable LivingEntity attacker) {
+        if(attacker == null) return water_trap(level);
+        return getSource(level, WATER_TRAP, attacker);
+    }
+
+    private static DamageSource water_trap(ServerLevel level) {
+        return getSource(level, WATER_TRAP_ENVIRONMENT);
     }
 
     public static DamageSource arrest(ServerLevel level, LivingEntity attacker) {
@@ -74,7 +85,6 @@ public class PotioneerDamage {
     private static DamageSource getSource(Level level, ResourceKey<DamageType> type, @Nullable Entity projectile, @Nullable Entity owner) {
         return new DamageSource(level.registryAccess().registryOrThrow(Registries.DAMAGE_TYPE).getHolderOrThrow(type), projectile, owner);
     }
-
 
     private static DamageSource getSource(Level level, ResourceKey<DamageType> type) {
         return SOURCES.computeIfAbsent(type, e -> new DamageSource(level.registryAccess().registryOrThrow(Registries.DAMAGE_TYPE).getHolderOrThrow(e)));

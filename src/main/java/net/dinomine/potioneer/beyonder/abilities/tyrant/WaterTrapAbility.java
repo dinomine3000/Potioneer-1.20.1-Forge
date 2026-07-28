@@ -86,7 +86,7 @@ public class WaterTrapAbility extends Ability {
         }
 
         placeBlock(level, found, cap, cost(), player);
-        return false;
+        return true;
     }
 
     private static void placeBlock(Level level, BlockPos positionToPlace, LivingEntityBeyonderCapability cap, int cost, Player player){
