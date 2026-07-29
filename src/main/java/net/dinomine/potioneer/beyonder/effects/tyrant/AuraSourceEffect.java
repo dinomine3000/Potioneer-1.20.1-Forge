@@ -27,7 +27,7 @@ public class AuraSourceEffect extends BeyonderEffect {
         cap.requestPassiveSpiritualityCost(cost);
         if(target.tickCount%20 != target.getId()%20) return;
         target.level().getEntities(target, target.getBoundingBox().inflate(auraRadius)).forEach(ent -> applyAuraEffects(ent, target));
-        applyAuraEffects(target, target);
+        //applyAuraEffects(target, target);
     }
 
     private void applyAuraEffects(Entity entity, LivingEntity enforcer){
