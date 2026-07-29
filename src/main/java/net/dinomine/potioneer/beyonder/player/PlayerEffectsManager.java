@@ -288,6 +288,10 @@ public class PlayerEffectsManager {
 
     public void addEffectsOnClient(List<BeyonderEffect> effects, @NotNull LivingEntityBeyonderCapability cap, Player player) {
         for(BeyonderEffect eff: effects){
+            if(eff == null) {
+                System.out.println("Warning: Client received a null effect!");
+                continue;
+            }
             addEffect(eff, cap, player, false);
         }
     }
@@ -355,22 +359,9 @@ public class PlayerEffectsManager {
 
         for (int i = 0; i < list.size(); i++) {
             CompoundTag iterator = list.getCompound(i);
-            BeyonderEffects.BeyonderEffectType type = BeyonderEffects.getEffect(iterator.getString("ID"));
-
-            if (type == null) {
-                System.out.println("Warning: read NBT data of a null effect: " + iterator);
-                continue;
-            }
-
-            BeyonderEffect effect = type.createInstance(
-                    iterator.getInt("level"),
-                    iterator.getInt("cost"),
-                    iterator.getInt("maxLife"),
-                    iterator.getBoolean("active"));
-            effect.setLifetime(iterator.getInt("lifetime"));
-            effect.loadNBTData(iterator);
-
-            addEffect(effect, cap, entity, false, true);
+            BeyonderEffect eff = BeyonderEffect.readEffectFromNBTTag(iterator);
+            if(eff == null) continue;
+            addEffect(eff, cap, entity, false, true);
         }
     }
 

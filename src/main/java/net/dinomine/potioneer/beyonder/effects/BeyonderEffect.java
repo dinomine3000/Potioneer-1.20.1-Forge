@@ -213,8 +213,6 @@ public abstract class BeyonderEffect {
         nbt.putString("ID", effectId);
     }
 
-    //nbt data is loaded in the effects manager
-
     /**
      * function that effects can utilize to load their custom effect information
      * @param nbt
@@ -222,10 +220,27 @@ public abstract class BeyonderEffect {
     public void loadNBTData(CompoundTag nbt){
     }
 
+    public static BeyonderEffect readEffectFromNBTTag(CompoundTag tag){
+        if(tag == null) return null;
+        BeyonderEffects.BeyonderEffectType type = BeyonderEffects.getEffect(tag.getString("ID"));
+
+        if (type == null) {
+            System.out.println("Warning: read NBT data of a null effect: " + tag);
+            return null;
+        }
+
+        BeyonderEffect effect = type.createInstance(
+                tag.getInt("level"),
+                tag.getInt("cost"),
+                tag.getInt("maxLife"),
+                tag.getBoolean("active"));
+        effect.setLifetime(tag.getInt("lifetime"));
+        effect.loadNBTData(tag);
+        return effect;
+    }
     public void writeToBuffer(FriendlyByteBuf buffer){
         CompoundTag tag = new CompoundTag();
-        BufferUtils.writeStringToBuffer(getId(), buffer);
-        buffer.writeInt(sequenceLevel);
+        toNbt(tag);
         buffer.writeNbt(tag);
     }
 
@@ -235,12 +250,7 @@ public abstract class BeyonderEffect {
      * @return
      */
     public static BeyonderEffect readFromBuffer(FriendlyByteBuf buffer){
-        String id = BufferUtils.readString(buffer);
-        int level = buffer.readInt();
-        CompoundTag tag = buffer.readNbt();
-        BeyonderEffect eff = BeyonderEffects.byId(id, level, 0, -1, true);
-        eff.loadNBTData(tag);
-        return eff;
+        return readEffectFromNBTTag(buffer.readNbt());
     }
 
 
