@@ -566,13 +566,11 @@ public class LivingEntityBeyonderCapability {
 
     public void onPlayerDie(LivingDeathEvent event) {
         if(!isBeyonder() || !(event.getEntity() instanceof Player player)) return;
-        boolean dropForLowSanity = sanity < SANITY_FOR_DROP && PotioneerCommonConfig.CHARACTERISTIC_DROP_CRITERIA_ENUM_VALUE.get() == PotioneerCommonConfig.CharacteristicDropCriteria.LOW_SANITY;
-        boolean doDropActingSafeguard = maxSanity.get() < 5;
-        boolean doDropAlways = PotioneerCommonConfig.CHARACTERISTIC_DROP_CRITERIA_ENUM_VALUE.get() == PotioneerCommonConfig.CharacteristicDropCriteria.ALWAYS;
+        boolean dropForLowSanity = PotioneerCommonConfig.shouldDropCharacteristic(sanity, player.getRandom());
+        boolean doDropActingSafeguard = maxSanity.get() < SANITY_FOR_DAMAGE;
         boolean switchingPathwaysCheck = PotioneerCommonConfig.ALLOW_CHANGING_PATHWAYS.get() || characteristicManager.hasMoreThanOneCharacteristic();
         boolean dropEverything = PotioneerCommonConfig.DROP_ALL_CHARACTERISTICS.get();
-        if((doDropAlways || doDropActingSafeguard || dropForLowSanity)
-                && (switchingPathwaysCheck || dropEverything)){
+        if((doDropActingSafeguard || dropForLowSanity) && (switchingPathwaysCheck || dropEverything)){
             if(dropEverything){
                 CharacteristicHelper.addCharacteristicsToLevel(characteristicManager.dropAllCharacteristics(this, entity), player.level(), player, player.position(), player.getRandom());
             } else {

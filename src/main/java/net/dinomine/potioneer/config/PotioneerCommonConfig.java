@@ -2,8 +2,11 @@ package net.dinomine.potioneer.config;
 
 import net.dinomine.potioneer.beyonder.pathways.BeyonderPathway;
 import net.dinomine.potioneer.beyonder.pathways.Pathways;
+import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -16,6 +19,21 @@ import java.util.List;
 public class PotioneerCommonConfig {
     public static final ForgeConfigSpec.Builder BUILDER = new ForgeConfigSpec.Builder();
     public static final ForgeConfigSpec SPEC;
+
+    public static boolean shouldDropCharacteristic(float sanity, RandomSource rnd) {
+        if(PotioneerCommonConfig.CHARACTERISTIC_DROP_CRITERIA_ENUM_VALUE.get() == PotioneerCommonConfig.CharacteristicDropCriteria.CHANCE){
+            int max = DROP_NEVER_SANITY_THRESHOLD.get();
+            int min = DROP_GUARANTEED_SANITY_THRESHOLD.get();
+            if(sanity >= max) return false;
+            if(sanity <= min) return true;
+            float val = sanity - min;
+            float range = max - min;
+            return rnd.nextFloat() >= (val / range);
+        } else if (PotioneerCommonConfig.CHARACTERISTIC_DROP_CRITERIA_ENUM_VALUE.get() == PotioneerCommonConfig.CharacteristicDropCriteria.LOW_SANITY){
+            return sanity < LivingEntityBeyonderCapability.SANITY_FOR_DROP;
+        }
+        return PotioneerCommonConfig.CHARACTERISTIC_DROP_CRITERIA_ENUM_VALUE.get() == CharacteristicDropCriteria.ALWAYS;
+    }
 
     public enum DestructionLevel {
         ALWAYS,
@@ -64,6 +82,8 @@ public class PotioneerCommonConfig {
     public static final ForgeConfigSpec.BooleanValue UNIVERSAL_OCEAN_ORDER;
 
     public static final ForgeConfigSpec.EnumValue<CharacteristicDropCriteria> CHARACTERISTIC_DROP_CRITERIA_ENUM_VALUE;
+    public static final ForgeConfigSpec.IntValue DROP_GUARANTEED_SANITY_THRESHOLD;
+    public static final ForgeConfigSpec.IntValue DROP_NEVER_SANITY_THRESHOLD;
     public static final ForgeConfigSpec.BooleanValue DROP_ALL_CHARACTERISTICS;
 
     public static List<Item> getRandomArtifactItems(){
@@ -80,6 +100,7 @@ public class PotioneerCommonConfig {
     public enum CharacteristicDropCriteria{
         ALWAYS,
         LOW_SANITY,
+        CHANCE,
         NEVER
     }
     public enum ITEM_GEN_EVENT{
@@ -160,6 +181,16 @@ public class PotioneerCommonConfig {
         CHARACTERISTIC_DROP_CRITERIA_ENUM_VALUE = BUILDER.comment("What are the criteria for dropping a characteristic on death?" +
                         "\nOf note, if someone consumes a characteristic, but the result is that their maximum sanity is too low to live, they will always drop their latest characteristic, even if this is set to never.")
                 .defineEnum("char_drop_criteria", CharacteristicDropCriteria.LOW_SANITY);
+
+        DROP_NEVER_SANITY_THRESHOLD = BUILDER.comment("If 'char_drop_criteria' was chosen as \"CHANCE\", this is used as the threshold for never dropping it. That is, if the sanity is above this value, they will never drop their characteristic." +
+                        "\nThe chances scale inversely from this value towards the 'always_drop_sanity_threshold' (below)." +
+                        "\nIe.: if this is 70 and the other is 20, anyone above 70 never drops, anyone below 20 always drops, and someone at 45 (halfway) has a 50% chance of dropping it.")
+                .defineInRange("never_drop_sanity_threshold", 70, 0, 100);
+
+        DROP_GUARANTEED_SANITY_THRESHOLD = BUILDER.comment("If 'char_drop_criteria' was chosen as \"CHANCE\", this is used as the threshold for always dropping it. That is, if the sanity is below this value, they will always drop their characteristic." +
+                        "\nThe chances scale inversely from 'never_drop_sanity_threshold' value towards this one." +
+                        "\nIe.: if the other one is 70 and this is 20, anyone above 70 never drops, anyone below 20 always drops, and someone at 45 (halfway) has a 50% chance of dropping it.")
+                .defineInRange("always_drop_sanity_threshold", 20, 0, 100);
 
         DROP_ALL_CHARACTERISTICS = BUILDER.comment("When someone drops a characteristics, should they drop all they have, or just their most recent highest level one?" +
                         "\nTrue will make them drop everything, false will make them drop their highest sequence characteristic only, and if there are more than one such characteristics, it will drop the most recent one.")
