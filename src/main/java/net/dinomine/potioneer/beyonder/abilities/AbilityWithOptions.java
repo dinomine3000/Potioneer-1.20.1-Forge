@@ -21,6 +21,9 @@ public abstract class AbilityWithOptions extends Ability {
     public AbilityWithOptions(int sequenceLevel) {
         super(sequenceLevel);
     }
+    public AbilityWithOptions(int sequenceLevel, int defaultCooldown) {
+        super(sequenceLevel, defaultCooldown);
+    }
 
     protected void setPrimaryOptions(AbilityOptions primaryOptions){
         this.primaryOptions = primaryOptions;
