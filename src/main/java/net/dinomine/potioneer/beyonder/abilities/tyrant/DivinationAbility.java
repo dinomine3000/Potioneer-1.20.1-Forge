@@ -53,7 +53,8 @@ public class DivinationAbility extends MysticalKnowledgeAbility {
 
     @Override
     protected boolean secondary(LivingEntityBeyonderCapability cap, LivingEntity target) {
-        if(!target.getMainHandItem().is(Items.FILLED_MAP) || !(target instanceof Player player)) return false;
+        return false;
+        /*if(!target.getMainHandItem().is(Items.FILLED_MAP) || !(target instanceof Player player)) return false;
         if(target.level().isClientSide()) return cap.getSpirituality() > cost();
 
         ItemStack mapItem = target.getMainHandItem();
@@ -65,7 +66,7 @@ public class DivinationAbility extends MysticalKnowledgeAbility {
             MapItemSavedData.addTargetDecoration(mapItem, positions.get(i), decName, MapDecoration.Type.RED_X);
         }
         if(!positions.isEmpty()) MapItem.lockMap(target.level(), mapItem);
-        return true;
+        return true;*/
     }
 
     public DivinationAbility(int sequence){

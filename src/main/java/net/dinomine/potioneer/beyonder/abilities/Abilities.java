@@ -54,12 +54,12 @@ public class Abilities {
     //retweaked
     public static final AbilityFactory MINING_SPEED = registerAbility("mining",
             sequenceLevel -> (new MiningSpeedAbility(sequenceLevel)).canFlip().enabledOnAcquire(),
-            0, 0, 0).hasSecondaryFunction().passive();
+            0, 0).hasSecondaryFunction().passive();
 
     //retweaked
     public static final AbilityFactory ZERO_DAMAGE = registerAbility("zero_damage",
             ZeroDamageAbility::new,
-            8, 0, 0).hasSecondaryFunction().passive();
+            8, 0).hasSecondaryFunction().passive();
 
     //retweaked
     public static final AbilityFactory VOID_VISION = registerAbility("void_vision",
@@ -68,7 +68,7 @@ public class Abilities {
 
     //retweaked
     public static final AbilityFactory WHEEL_KNOWLEDGE = registerAbility("wheel_knowledge",
-            WheelKnowledgeAbility::new, 13, 0, 0).passive();
+            WheelKnowledgeAbility::new, 13, 0).passive();
 
     //retweaked
     public static final AbilityFactory MINER_LIGHT = registerAbility("miner_light",
@@ -78,14 +78,14 @@ public class Abilities {
     public static final AbilityFactory FORTUNE_ABILITY = registerAbility("fortune",
             (Integer sequenceLevel) -> PassiveAbility.createAbility(sequenceLevel, BeyonderEffects.WHEEL_FORTUNE,
                             (ignored) -> "fortune")
-                    .canFlip().withThreshold(0.1f),
-            6, 0, level -> 5).passive();
+                    .canFlip().withThreshold(0.1f).withCost(5),
+            6, 0, 5).passive();
 
     //retweaked
     public static final AbilityFactory SILK_TOUCH_ABILITY = registerAbility("silk",
             (Integer sequenceLevel) -> PassiveAbility.createAbility(sequenceLevel, BeyonderEffects.WHEEL_SILK,
                             (ignored) -> "silk")
-                    .canFlip().withThreshold(0.1f),
+                    .canFlip().withThreshold(0.1f).withCost(5),
             5, 0, 5).passive();
 
     //retweaked
@@ -93,7 +93,7 @@ public class Abilities {
             (Integer sequenceLevel) -> PassiveAbility.createAbility(sequenceLevel, BeyonderEffects.WHEEL_CALAMITY,
                             (level) -> level < 8 ? (level < 6 ? "calamity_3" : "calamity_2" ): "calamity_1")
                     .enabledOnAcquire(),
-            4, 0, 0).passive();
+            4, 0).passive();
 
     //retweaked
     public static final AbilityFactory BLOCK_APPRAISAL = registerAbility("block_appraisal",
@@ -102,7 +102,7 @@ public class Abilities {
 
     //retweaked
     public static final AbilityFactory APPRAISAL = registerAbility("appraisal",
-            AppraisalAbility::new, 14, 0, 0).passive();
+            AppraisalAbility::new, 14, 0).passive();
 
     //retweaked
     public static final AbilityFactory TARGET_APPRAISAL = registerAbility("target_appraisal",
@@ -112,12 +112,12 @@ public class Abilities {
     //retweaked
     public static final AbilityFactory PATIENCE = registerAbility("patience",
             (PatienceAbility::new),
-            11, 0, 0).hasSecondaryFunction().passiveAndActive();
+            11, 0).hasSecondaryFunction().passiveAndActive();
 
     //retweaked
     public static final AbilityFactory VELOCITY = registerAbility("velocity",
-            sequenceLevel -> (new VelocityAbility(sequenceLevel)).enabledOnAcquire().withThreshold(0.1f),
-            10, 0, 3).hasSecondaryFunction().passiveAndActive();
+            sequenceLevel -> (new VelocityAbility(sequenceLevel)).enabledOnAcquire().withThreshold(0.1f).withCost(3),
+            10, 0, 12).hasSecondaryFunction().passiveAndActive();
 
     //retweaked
     public static final AbilityFactory MINER_BONE_MEAL = registerAbility("w_bone_meal",
@@ -151,48 +151,44 @@ public class Abilities {
     //retweaked
     public static final AbilityFactory PHASING = registerAbility("phasing",
             (Integer sequenceLevel) -> PassiveAbility.createAbility(sequenceLevel, BeyonderEffects.WHEEL_PHASING,
-                            ignored -> "phasing").canFlip(),
+                            ignored -> "phasing").canFlip().withCost(20),
             21, 0, 20).passive();
 
     //retweaked
     public static final AbilityFactory MISFORTUNE = registerAbility("misfortune", MisfortuneAbility::new,
-            23, 0, 40).hasSecondaryFunction();
+            23, 0, 25).hasSecondaryFunction();
 
     //retweaked
     public static final AbilityFactory BET = registerAbility("bet", BetAbility::new,
-            22, 0, 0);
+            22, 0);
 
     //retweaked
     public static final AbilityFactory RECORD_DAMAGE = registerAbility("damage_recording", DamageRecordingAbility::new,
-            4, 0, 0).hasSecondaryFunction().passiveAndActive();
+            4, 0).hasSecondaryFunction().passiveAndActive();
 
     // -------------------------- TYRANT ---------------------------------------------------
 
     //retweaked
     public static final AbilityFactory WATER_AFFINITY = registerAbility("water_affinity",
             (Integer sequenceLevel) -> PassiveAbility.createAbility(sequenceLevel, BeyonderEffects.TYRANT_WATER_AFFINITY,
-                            (ignored) -> "water_affinity")
+                            (level) -> "water_affinity_" + (level < 9 ? "2" : "1"))
                     .canFlip().enabledOnAcquire(),
-            0, 1, 0);
+            0, 1);
 
     //retweaked
     public static final AbilityFactory WATER_SCALES = registerAbility("scales",
-            (Integer level) -> PassiveAbility.createAbility(level, BeyonderEffects.TYRANT_SCALES, ignored -> "scales").canFlip().withThreshold(0.1f),
-            0, 1, 3);
+            (Integer level) -> PassiveAbility.createAbility(level, BeyonderEffects.TYRANT_SCALES, ignored -> "scales").canFlip().withThreshold(0.1f).withCost(ignored -> 1),
+            0, 1, 10);
 
     //retweaked
     public static final AbilityFactory OCEAN_ORDER = registerAbility("ocean_order",
             (Integer level) -> PassiveAbility.createAbility(level, BeyonderEffects.TYRANT_OCEAN_ORDER, ignored -> "ocean_order").enabledOnAcquire().canFlip(),
-            0, 1, 0);
+            0, 1);
 
     //retweaked
     public static final AbilityFactory TYRANT_DIVINATION = registerAbility("tyrant_divination",
             DivinationAbility::new,
-            1, 1, 0).hasSecondaryFunction();
-
-    //retweaked
-    public static final AbilityFactory TYRANT_WATER_PRISON = registerAbility("water_prison",
-            WaterPrisonAbility::new, 5, 1, 40);
+            1, 1);
 
     //retweaked
     public static final AbilityFactory TYRANT_WATER_TRAP = registerAbility("water_trap",
@@ -396,13 +392,9 @@ public class Abilities {
     public static final AbilityFactory DURABILITY_REGEN = registerAbility("durability_regen",
             DurabilityRegenAbility::new, 56, 4, 3);
 
+    private static AbilityFactory registerAbility(String ablId, Function<Integer, Ability> constructor, int posY, int pathwayId){return registerAbility(ablId, constructor, posY, pathwayId, 0);}
     private static AbilityFactory registerAbility(String ablId, Function<Integer, Ability> constructor, int posY, int pathwayId, int minSpirToActivate){
-        if(ABILITIES.containsKey(ablId)){
-            throw new RuntimeException("Error: Tried to register an ability with an already existing ID");
-        }
-        AbilityFactory factory = new AbilityFactory(posY, pathwayId, ignored -> minSpirToActivate, ablId, constructor);
-        ABILITIES.put(ablId, factory);
-        return factory;
+        return registerAbility(ablId, constructor, posY, pathwayId, ignored -> minSpirToActivate);
     }
     private static AbilityFactory registerAbility(String ablId, Function<Integer, Ability> constructor, int posY, int pathwayId, Function<Integer, Integer> costFunction){
         if(ABILITIES.containsKey(ablId)){

@@ -25,6 +25,7 @@ public class EntityAppraisalAbility extends Ability {
         super(sequence);
         this.isActive = true;
         this.isPassive = false;
+        withCost(5);
     }
 
     @Override

@@ -23,6 +23,7 @@ public class ConjurePickaxeAbility extends Ability {
 
     public ConjurePickaxeAbility(int sequence){
         super(sequence, 20*3);
+        withCost(level -> 45 + 15*(10-level));
     }
 
     @Override

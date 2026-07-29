@@ -11,7 +11,6 @@ import net.dinomine.potioneer.beyonder.player.PlayerAbilitiesManager;
 import net.dinomine.potioneer.network.PacketHandler;
 import net.dinomine.potioneer.network.messages.abilityRelevant.PlayerSyncHotbarMessage;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
@@ -380,7 +379,7 @@ public class ClientAbilitiesData {
         }
         if(abilities.get(key).getCooldown() != 0)
             return true;
-        int cost = Abilities.getAbilityFactory(key).getCostFunction().apply(key.getSequenceLevel());
+        int cost = Abilities.getAbilityFactory(key).getMinimumSpiritualityToActivate(key.getSequenceLevel());
         float spir = ClientStatsData.getPlayerSpirituality();
         if(spir < cost){
             player.sendSystemMessage(Component.translatable("message.potioneer.insufficient_spirituality", abilityName));

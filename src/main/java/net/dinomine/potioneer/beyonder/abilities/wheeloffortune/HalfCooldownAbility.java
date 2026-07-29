@@ -21,6 +21,7 @@ public class HalfCooldownAbility extends Ability {
     public HalfCooldownAbility(int sequence){
         super(sequence);
         defaultMaxCooldown = 60*20;
+        setCost(level -> 50+20*Math.max(0, 6 - level));
     }
 
     @Override

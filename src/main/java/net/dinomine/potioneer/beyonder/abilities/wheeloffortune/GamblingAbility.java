@@ -22,6 +22,7 @@ public class GamblingAbility extends Ability {
         CompoundTag tag = new CompoundTag();
         tag.putBoolean("quick", false);
         setDataSilent(tag);
+        withCost(40);
     }
 
     @Override

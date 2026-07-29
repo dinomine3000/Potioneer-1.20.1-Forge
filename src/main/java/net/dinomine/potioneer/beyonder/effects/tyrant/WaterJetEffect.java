@@ -7,9 +7,11 @@ import net.dinomine.potioneer.Potioneer;
 import net.dinomine.potioneer.beyonder.abilities.AbilityFunctionHelper;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffect;
 import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
+import net.dinomine.potioneer.savedata.AllySystemSaveData;
 import net.dinomine.potioneer.sound.ModSounds;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
@@ -38,9 +40,12 @@ public class WaterJetEffect extends BeyonderEffect {
 
     @Override
     protected void doTick(LivingEntityBeyonderCapability cap, LivingEntity target) {
+        if(target.level().isClientSide()) return;
         Vec3 look = target.getLookAngle();
         Vec3 pushAngle = look.normalize().scale(MAGNITUDE);
+        AllySystemSaveData data = AllySystemSaveData.from((ServerLevel) target.level());
         AbilityFunctionHelper.getLivingEntitiesLooking(target, RANGE, 1, false).forEach(ent -> {
+            if(data.areEntitiesAllies(target, ent)) return;
             ent.push(pushAngle.x, pushAngle.y, pushAngle.z);
             ent.hasImpulse = true;
             ent.hurtMarked = true;

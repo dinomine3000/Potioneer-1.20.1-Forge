@@ -6,6 +6,7 @@ import net.dinomine.potioneer.block.ModBlocks;
 public class MinerLightAbility extends LightAbility {
     public MinerLightAbility(int sequence){
         super(sequence, ModBlocks.MINER_LIGHT.get().defaultBlockState());
+        withCost(5);
     }
 
     @Override

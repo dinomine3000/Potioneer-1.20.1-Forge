@@ -23,6 +23,7 @@ public class FateAbility extends Ability {
     public FateAbility(int sequenceLevel) {
         super(sequenceLevel);
         defaultMaxCooldown = 20*60;
+        withCost(level -> 50 + 20*Math.max(0, 6 - level));
     }
 
     @Override

@@ -71,7 +71,7 @@ public class WaterSpellAbility extends AbilityWithOptions {
 
     @Override
     protected String getDescId(int sequenceLevel) {
-        return "water_spell";
+        return "water_spell_7";
     }
 
     @Override
@@ -197,7 +197,7 @@ public class WaterSpellAbility extends AbilityWithOptions {
                 pLevel.setBlock(positionToEmpty, Blocks.AIR.defaultBlockState(), 3);
             }
             return true;
-        }) > 1;
+        }) > 0;
     }
 
     protected boolean absorbWaterTrap(LivingEntityBeyonderCapability cap, LivingEntity target){

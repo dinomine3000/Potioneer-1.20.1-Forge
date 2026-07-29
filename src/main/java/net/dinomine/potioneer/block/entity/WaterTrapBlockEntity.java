@@ -153,7 +153,10 @@ public class WaterTrapBlockEntity extends BlockEntity implements GeoBlockEntity 
     private void applyEffectsToEntity(ServerLevel level, BlockPos pos, LivingEntity entity){
         switch (effectIndex){
             case 0:
-                entity.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 30*20, 10 - sequenceLevel));
+                entity.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
+                    int duration = 20*10*(10-sequenceLevel)/2;
+                    cap.getEffectsManager().addOrReplaceEffect(BeyonderEffects.TYRANT_DROWNING.createInstance(sequenceLevel, 0, duration, true), cap, entity);
+                });
                 break;
             case 1:
                 entity.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {

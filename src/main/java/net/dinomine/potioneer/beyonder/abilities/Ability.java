@@ -26,7 +26,7 @@ public abstract class Ability {
     private boolean previousState = true;
     protected String abilityId;
     protected AbilityKey abilityKey = new AbilityKey();
-    private Function<Integer, Integer> costFunction;
+    private Function<Integer, Integer> costFunction = null;
     private CompoundTag abilityData = new CompoundTag();
     protected boolean isActive = true;
     protected boolean isPassive = false;
@@ -439,6 +439,11 @@ public abstract class Ability {
 
     public Ability withCost(Function<Integer, Integer> costFunction){
         this.costFunction = costFunction;
+        return this;
+    }
+
+    public Ability withCost(int constantCost){
+        this.costFunction = ignored -> constantCost;
         return this;
     }
 

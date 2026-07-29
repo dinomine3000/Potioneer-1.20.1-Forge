@@ -36,6 +36,7 @@ public class BlockAppraisalAbility extends Ability {
     public BlockAppraisalAbility(int sequence){
         super(sequence);
         defaultMaxCooldown = 15*20;
+        withCost(level -> 15 + 5*(9-level));
     }
 
     @Override

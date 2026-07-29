@@ -22,6 +22,7 @@ public class BoneMealAbility extends Ability {
         super(sequence);
         this.isActive = true;
         this.isPassive = false;
+        withCost(level-> 2*(10-level));
     }
 
     @Override

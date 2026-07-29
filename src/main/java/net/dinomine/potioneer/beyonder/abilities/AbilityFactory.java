@@ -12,7 +12,7 @@ public class AbilityFactory {
     /**
      * base cost in spirituality for client checking. if the client has less than this spirituality, the ability wont trigger
      */
-    private Function<Integer, Integer> costFunction;
+    private Function<Integer, Integer> minimumSpiritualityToActivate = null;
     private Function<Integer, Boolean> secondaryCheck;
     private int pathwayId;
     private Function<Integer, Ability> createFunction;
@@ -20,13 +20,16 @@ public class AbilityFactory {
     private boolean active = true;
 
     public AbilityFactory(ResourceLocation textureLocation, int posY, int pathwayId, Function<Integer, Integer> costFunction, String ablId, Function<Integer, Ability> createFunction){
-        this.costFunction = costFunction;
+        this.minimumSpiritualityToActivate = costFunction;
         this.textureLocation = textureLocation;
         this.posY = 32 + 24*posY;
         this.pathwayId = pathwayId;
         this.createFunction = createFunction;
         this.ablId = ablId;
         secondaryCheck = lvl -> false;
+    }
+    public AbilityFactory(ResourceLocation textureLocation, int posY, int pathwayId, String ablId, Function<Integer, Ability> createFunction){
+        this(textureLocation, posY, pathwayId, null, ablId, createFunction);
     }
 
     public AbilityFactory(int posY, int pathwayId, Function<Integer, Integer> costFunction, String ablId, Function<Integer, Ability> createFunction){
@@ -73,8 +76,8 @@ public class AbilityFactory {
         return getAblId().concat(":" + sequenceLevel);
     }
 
-    public Function<Integer, Integer> getCostFunction() {
-        return costFunction;
+    public int getMinimumSpiritualityToActivate(int level) {
+        return minimumSpiritualityToActivate == null ? 0 : minimumSpiritualityToActivate.apply(level);
     }
 
     public ResourceLocation getTextureLocation(){
@@ -84,7 +87,7 @@ public class AbilityFactory {
     public int getPathwayId(){return pathwayId;}
 
     public Ability create(int pathwaySequenceId){
-        return createFunction.apply(pathwaySequenceId).withAbilityId(ablId).withCost(costFunction);
+        return createFunction.apply(pathwaySequenceId).withAbilityId(ablId);
     }
 
     public AbilityInfo getInfo(int cooldown, int maxCd, boolean enabled, String descId, String innerId) {

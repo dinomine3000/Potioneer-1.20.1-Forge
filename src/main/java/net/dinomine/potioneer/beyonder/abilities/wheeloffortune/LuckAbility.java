@@ -18,6 +18,7 @@ public class LuckAbility extends PassiveAbility {
         super(sequence, BeyonderEffects.WHEEL_LUCK_EFFECT, ignored -> "luck");
         enabledOnAcquire();
         defaultMaxCooldown = 20*250;
+        setCost(ignored -> 150);
     }
 
     @Override

@@ -28,6 +28,7 @@ public class CooldownAbility extends PassiveAbility {
         enabledOnAcquire();
         canFlip();
         this.defaultMaxCooldown = 20*20;
+        withCost(level-> 10 + 10*(9-level));
     }
 
     @Override
