@@ -11,6 +11,7 @@ import net.dinomine.potioneer.network.messages.abilityRelevant.abilitySpecific.A
 import net.dinomine.potioneer.network.messages.abilityRelevant.abilitySpecific.SourceRecipientUpdateMessage;
 import net.dinomine.potioneer.network.messages.effects.EvaporateEffect;
 import net.dinomine.potioneer.network.messages.effects.GeneralAreaEffectMessage;
+import net.dinomine.potioneer.network.messages.effects.PhotonFxMessage;
 import net.dinomine.potioneer.network.messages.effects.WaterPrisonEffectSTC;
 import net.dinomine.potioneer.network.messages.advancement.AdvancementFailMessageCTS;
 import net.dinomine.potioneer.network.messages.advancement.BeginAdvancementMessage;
@@ -64,6 +65,7 @@ public class PacketHandler {
         INSTANCE.registerMessage(i++, PlayerSTCStatsSync.class, PlayerSTCStatsSync::encode, PlayerSTCStatsSync::decode, PlayerSTCStatsSync::handle);
         INSTANCE.registerMessage(i++, RitualC2STextSync.class, RitualC2STextSync::encode, RitualC2STextSync::decode, RitualC2STextSync::handle);
         INSTANCE.registerMessage(i++, SequenceSTCSyncRequest.class, SequenceSTCSyncRequest::encode, SequenceSTCSyncRequest::decode, SequenceSTCSyncRequest::handle);
+        INSTANCE.registerMessage(i++, PhotonFxMessage.class, PhotonFxMessage::encode, PhotonFxMessage::decode, PhotonFxMessage::handle);
     }
 
     public static <T> void sendMessageSTC(T message, LivingEntity player){

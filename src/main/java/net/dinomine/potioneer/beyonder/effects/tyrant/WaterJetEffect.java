@@ -9,6 +9,7 @@ import net.dinomine.potioneer.beyonder.effects.BeyonderEffect;
 import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
 import net.dinomine.potioneer.savedata.AllySystemSaveData;
 import net.dinomine.potioneer.sound.ModSounds;
+import net.dinomine.potioneer.util.ParticleMaker;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
@@ -30,11 +31,7 @@ public class WaterJetEffect extends BeyonderEffect {
 
     @Override
     public void onAcquire(LivingEntityBeyonderCapability cap, LivingEntity target) {
-        FX fx = FXHelper.getFX(new ResourceLocation(Potioneer.MOD_ID, "water_jet_stream_weak"));
-        EntityEffect jetEffect = new EntityEffect(fx, target.level(), target, EntityEffect.AutoRotate.LOOK);
-        jetEffect.setOffset(0, 1, 0);
-        jetEffect.setRotation(0, 90, 0);
-        jetEffect.start();
+        if(!target.level().isClientSide()) ParticleMaker.createWaterJet(target);
         target.playSound(ModSounds.WATER_JET.get(), 1, (float) target.getRandom().triangle(1, 0.2));
     }
 

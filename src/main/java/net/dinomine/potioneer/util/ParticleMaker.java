@@ -1,6 +1,10 @@
 package net.dinomine.potioneer.util;
 
 import com.lowdragmc.photon.Photon;
+import com.lowdragmc.photon.client.fx.EntityEffect;
+import com.lowdragmc.photon.client.fx.FX;
+import com.lowdragmc.photon.client.fx.FXHelper;
+import net.dinomine.potioneer.Potioneer;
 import net.dinomine.potioneer.beyonder.abilities.tyrant.AreaOfJurisdictionAbility;
 import net.dinomine.potioneer.entities.ModEntities;
 import net.dinomine.potioneer.entities.custom.effects.DiceEffectEntity;
@@ -9,17 +13,21 @@ import net.dinomine.potioneer.entities.custom.effects.WaterBlockEffectEntity;
 import net.dinomine.potioneer.network.PacketHandler;
 import net.dinomine.potioneer.network.messages.abilityRelevant.abilitySpecific.AuraEffectMessage;
 import net.dinomine.potioneer.network.messages.effects.GeneralAreaEffectMessage;
+import net.dinomine.potioneer.network.messages.effects.PhotonFxMessage;
 import net.dinomine.potioneer.particle.custom.GenericParticleOptions;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.network.PacketDistributor;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 
@@ -96,7 +104,21 @@ public class ParticleMaker {
         AOE_END_ROD,
         AOE_GRAVITY,
         WATER_TRAP,
-        WATER_IMPLOSION
+        WATER_IMPLOSION,
+        WATER_JET
+    }
+    public static void createWaterJet(int targetId, Level level){createWaterJet(level.getEntity(targetId));}
+    public static void createWaterJet(Entity target){
+        if(!target.level().isClientSide()){
+            PacketHandler.INSTANCE.send(PacketDistributor.DIMENSION.with(() -> target.level().dimension()),
+                    new PhotonFxMessage(Preset.WATER_JET, target));
+            return;
+        }
+        FX fx = FXHelper.getFX(new ResourceLocation(Potioneer.MOD_ID, "water_jet_stream_weak"));
+        EntityEffect jetEffect = new EntityEffect(fx, target.level(), target, EntityEffect.AutoRotate.LOOK);
+        jetEffect.setOffset(0, 1, 0);
+        jetEffect.setRotation(0, 90, 0);
+        jetEffect.start();
     }
 
     public static void createWaterBlockEffectForPlayer(LivingEntity target, Level level, int duration){
