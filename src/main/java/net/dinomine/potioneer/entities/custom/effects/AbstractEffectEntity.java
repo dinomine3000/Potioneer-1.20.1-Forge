@@ -23,7 +23,7 @@ public abstract class AbstractEffectEntity extends Entity {
     private LivingEntity targetEntity = null;
     protected UUID targetUUID = null;
 
-    private int breathingRoom = 20*5;
+    private int breathingRoom = 10;
 
     public void setTarget(LivingEntity targetEntity){
         if(!level().isClientSide){
@@ -45,12 +45,10 @@ public abstract class AbstractEffectEntity extends Entity {
         if(level().isClientSide) return null;
         if(targetEntity != null){
             if(targetEntity.isAlive()) return targetEntity;
-            kill();
             return null;
         }
         if(targetUUID == null){
             System.out.println("[Potioneer] Effect entity with no target set. Deleting...");
-            kill();
             return null;
         }
         if(level() instanceof ServerLevel serverLevel){
@@ -102,7 +100,8 @@ public abstract class AbstractEffectEntity extends Entity {
         int targetId = getTargetIntId();
         Entity target = level().getEntity(targetId);
         if (target != null) {
-            this.setPos(target.position());
+            if(target instanceof LivingEntity lTarget && lTarget.isDeadOrDying()) kill();
+            else this.setPos(target.position());
         } else {
             if(breathingRoom-- < 0)
                 this.discard();

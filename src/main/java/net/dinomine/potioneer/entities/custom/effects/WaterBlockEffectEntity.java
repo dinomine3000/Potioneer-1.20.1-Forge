@@ -1,5 +1,7 @@
 package net.dinomine.potioneer.entities.custom.effects;
 
+import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
+import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
@@ -30,8 +32,15 @@ public class WaterBlockEffectEntity extends AbstractEffectEntity {
     @Override
     public void tick() {
         super.tick();
-        if(tickCount > entityData.get(DURATION) || (getTargetEntity() != null && getTargetEntity().isDeadOrDying()))
+        if(tickCount > entityData.get(DURATION)){
             kill();
+            return;
+        }
+        if(!level().isClientSide && getTargetEntity() != null){
+            getTargetEntity().getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
+                if(!cap.getEffectsManager().hasEffect(BeyonderEffects.TYRANT_DROWNING)) kill();
+            });
+        }
     }
 
 
