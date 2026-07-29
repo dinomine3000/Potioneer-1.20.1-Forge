@@ -2,6 +2,7 @@ package net.dinomine.potioneer.beyonder.client.screen;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import net.dinomine.potioneer.Potioneer;
+import net.dinomine.potioneer.beyonder.abilities.Ability;
 import net.dinomine.potioneer.beyonder.abilities.AbilityKey;
 import net.dinomine.potioneer.beyonder.abilities.AbilityOptions;
 import net.dinomine.potioneer.beyonder.client.ClientAbilitiesData;
@@ -28,6 +29,13 @@ public class AbilityOptionsScreen extends Screen {
     private final AbilityKey abilityKey;
     private final boolean castPrimary;
     private int mouseX, mouseY;
+
+
+    public static void start(AbilityOptions rootOptions, Ability abl, boolean castPrimary) {
+        Minecraft.getInstance().tell(() -> {
+            Minecraft.getInstance().setScreen(new AbilityOptionsScreen(rootOptions, abl.getAbilityKey(), castPrimary));
+        });
+    }
 
     @Override
     public boolean isPauseScreen() {

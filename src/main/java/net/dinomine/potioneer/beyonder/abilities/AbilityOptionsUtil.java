@@ -1,7 +1,6 @@
 package net.dinomine.potioneer.beyonder.abilities;
 
 import net.dinomine.potioneer.beyonder.client.screen.AbilityOptionsScreen;
-import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.CompoundTag;
 
 import java.util.List;
@@ -39,9 +38,7 @@ public class AbilityOptionsUtil {
     private static String promptChoice(AbilityOptions rootOptions, Ability abl, boolean clientSide, boolean castPrimary){
         if(!clientSide || rootOptions == null) return "";
 
-        Minecraft.getInstance().tell(() -> {
-            Minecraft.getInstance().setScreen(new AbilityOptionsScreen(rootOptions, abl.abilityKey, castPrimary));
-        });
+        AbilityOptionsScreen.start(rootOptions, abl, castPrimary);
         return "";
     }
     private static String promptChoice(String choice, Ability abl, AbilityOptions rootOptions, boolean clientSide, boolean castPrimary){
