@@ -5,6 +5,7 @@ import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
 import net.dinomine.potioneer.network.PacketHandler;
 import net.dinomine.potioneer.network.messages.abilityRelevant.BeyonderEffectSyncMessage;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
@@ -339,35 +340,36 @@ public class PlayerEffectsManager {
         });
     }
 
-    public void saveNBTData(CompoundTag nbt){
-        CompoundTag effectsNbt = new CompoundTag();
-        effectsNbt.putInt("size", passives.size());
-        int i = 0;
-        for(BeyonderEffect eff: passives){
-            CompoundTag iterator = new CompoundTag();
-            eff.toNbt(iterator);
-            effectsNbt.put(String.valueOf(i), iterator);
+    public void saveNBTData(CompoundTag nbt) {
+        ListTag list = new ListTag();
+        for (BeyonderEffect eff : passives) {
+            CompoundTag effectTag = new CompoundTag();
+            eff.toNbt(effectTag);
+            list.add(effectTag);
         }
-        nbt.put("effectData", effectsNbt);
+        nbt.put("effectData", list);
     }
 
-    public void loadNBTData(CompoundTag nbt, LivingEntityBeyonderCapability cap, LivingEntity entity){
-        CompoundTag effectsTag = nbt.getCompound("effectData");
-        int size = effectsTag.getInt("size");
-        for(int i = 0; i < size; i++){
-            CompoundTag iterator = effectsTag.getCompound(String.valueOf(i));
+    public void loadNBTData(CompoundTag nbt, LivingEntityBeyonderCapability cap, LivingEntity entity) {
+        ListTag list = nbt.getList("effectData", ListTag.TAG_COMPOUND);
+
+        for (int i = 0; i < list.size(); i++) {
+            CompoundTag iterator = list.getCompound(i);
             BeyonderEffects.BeyonderEffectType type = BeyonderEffects.getEffect(iterator.getString("ID"));
-            if(type == null) {
+
+            if (type == null) {
                 System.out.println("Warning: read NBT data of a null effect: " + iterator);
                 continue;
             }
+
             BeyonderEffect effect = type.createInstance(
-                        iterator.getInt("level"),
-                        iterator.getInt("cost"),
-                        iterator.getInt("maxLife"),
-                        iterator.getBoolean("active"));
+                    iterator.getInt("level"),
+                    iterator.getInt("cost"),
+                    iterator.getInt("maxLife"),
+                    iterator.getBoolean("active"));
             effect.setLifetime(iterator.getInt("lifetime"));
             effect.loadNBTData(iterator);
+
             addEffect(effect, cap, entity, false, true);
         }
     }

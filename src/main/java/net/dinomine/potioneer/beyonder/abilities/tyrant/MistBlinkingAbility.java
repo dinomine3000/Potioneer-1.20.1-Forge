@@ -39,7 +39,7 @@ public class MistBlinkingAbility extends Ability {
         ServerLevel level = (ServerLevel) target.level();
         if(AreaOfJurisdictionAbility.isPosInAOJ(blockPos, cap, 0)){
             cap.getAbilitiesManager().putAbilityOnCooldown(Abilities.MIST.getAblId(), getSequenceLevel(), 20, target);
-            cap.getEffectsManager().addOrReplaceEffect(BeyonderEffects.TYRANT_MIST_EFFECT.createInstance(getSequenceLevel(), 0, 30, true), cap, target);
+            cap.getEffectsManager().addOrReplaceEffect(BeyonderEffects.TYRANT_MIST_EFFECT.createInstance(getSequenceLevel(), 0, 10, true), cap, target);
             Vec3 pos = target.getEyePosition();
             level.sendParticles(ParticleTypes.FALLING_WATER, pos.x, pos.y, pos.z, 50, 1, 0, 1, 0);
             Vec3 motion = target.getDeltaMovement();

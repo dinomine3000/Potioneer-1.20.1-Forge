@@ -41,7 +41,6 @@ public class AuraRecipientEffect extends AbstractSourceRecipientEffect {
             if(playerEnforcer == null) continue;
             applyAuraEffects(target, cap, playerEnforcer);
         }
-        if(target.level().isClientSide()) return;
         tickDownTime(target);
         if(target.level().isClientSide() && target.tickCount%40 == 0){
             target.level().playSound(null, target.getOnPos(), SoundEvents.WARDEN_HEARTBEAT, SoundSource.NEUTRAL, 1, 1);

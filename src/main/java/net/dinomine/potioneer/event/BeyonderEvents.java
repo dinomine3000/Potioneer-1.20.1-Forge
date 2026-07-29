@@ -1,5 +1,6 @@
 package net.dinomine.potioneer.event;
 
+import com.sk89q.worldedit.world.fluid.FluidTypes;
 import net.dinomine.potioneer.Potioneer;
 import net.dinomine.potioneer.beyonder.abilities.Abilities;
 import net.dinomine.potioneer.beyonder.abilities.AbilityFunctionHelper;
@@ -30,10 +31,12 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.players.GameProfileCache;
 import net.minecraft.tags.EntityTypeTags;
+import net.minecraft.tags.FluidTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityDimensions;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.MobType;
 import net.minecraft.world.entity.monster.Creeper;
@@ -43,17 +46,22 @@ import net.minecraft.world.item.BowItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.Enchantments;
+import net.minecraftforge.client.event.RenderNameTagEvent;
+import net.minecraftforge.common.ForgeMod;
 import net.minecraftforge.common.Tags;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.ServerChatEvent;
+import net.minecraftforge.event.entity.EntityEvent;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.event.entity.EntityStruckByLightningEvent;
 import net.minecraftforge.event.entity.item.ItemTossEvent;
 import net.minecraftforge.event.entity.living.*;
 import net.minecraftforge.event.entity.player.*;
 import net.minecraftforge.event.level.BlockEvent;
+import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fluids.FluidType;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.network.PacketDistributor;
 
@@ -141,6 +149,17 @@ public class BeyonderEvents {
     }
 
     @SubscribeEvent
+    @SuppressWarnings("removal")
+    public static void testChangeSize(EntityEvent.Size event){
+        /*if(!(event.getEntity() instanceof Player player)) return;
+        if(!player.isCrouching()) return;
+
+        event.setNewSize(EntityDimensions.fixed(0.6F, 0.8F));
+        event.setNewEyeHeight(0.6F);*/
+    }
+
+    //best to copy relevant data from old player instance to new one, but not synching.
+    @SubscribeEvent
     public static void onPlayerCloned(PlayerEvent.Clone event){
         if(event.getOriginal().level().isClientSide()) return;
         event.getEntity().getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(newStore -> {
@@ -149,6 +168,26 @@ public class BeyonderEvents {
                 newStore.copyFrom(oldStore, event.getEntity());
             });
             event.getOriginal().invalidateCaps();
+        });
+    }
+
+    //best for login-specific uses, like custom messages or large packet synchronizing.
+    @SubscribeEvent
+    public static void onLoggedIn(PlayerEvent.PlayerLoggedInEvent event){
+    }
+
+    //best for updating stats on respawning.
+    @SubscribeEvent
+    public static void onPlayerRespawn(PlayerEvent.PlayerRespawnEvent event){
+        event.getEntity().getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(LivingEntityBeyonderCapability::onRespawn);
+    }
+
+    //works best for synching. handles player respawn, logging in and cloning.
+    @SubscribeEvent
+    public static void onWorldLoad(EntityJoinLevelEvent event){
+        if(!(event.getEntity() instanceof ServerPlayer player)) return;
+        player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(stats -> {
+            SequenceSTCSyncRequest.sendUpdateToClient(stats, player);
         });
     }
 
@@ -267,7 +306,7 @@ public class BeyonderEvents {
 
     @SubscribeEvent
     public static void livingVisibilityEvent(LivingEvent.LivingVisibilityEvent event){
-        if(event.getEntity() instanceof Zombie) event.modifyVisibility(0.2);
+        if(event.getEntity() instanceof Zombie) event.modifyVisibility(0.8);
     }
 
     private static long stringToLong(String input) {
@@ -296,19 +335,6 @@ public class BeyonderEvents {
         event.getEntity().getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
             cap.onTick(event.getEntity(), !event.getEntity().level().isClientSide());
         });
-    }
-
-    @SubscribeEvent
-    public static void onLoggedIn(PlayerEvent.PlayerLoggedInEvent event){
-        ServerPlayer player = (ServerPlayer) event.getEntity();
-        if(player.level().isClientSide()) return;
-        player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(stats -> {
-            SequenceSTCSyncRequest.sendUpdateToClient(stats, player);
-        });
-    }
-
-    @SubscribeEvent
-    public static void onWorldLoad(EntityJoinLevelEvent event){
     }
 
     @SubscribeEvent
@@ -357,14 +383,6 @@ public class BeyonderEvents {
         if(event.getEntity().level().isClientSide()) return;
         event.getEntity().getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
             cap.getEffectsManager().onCraft(event, cap);
-        });
-    }
-
-
-    @SubscribeEvent
-    public static void onPlayerRespawn(PlayerEvent.PlayerRespawnEvent event){
-        event.getEntity().getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
-            cap.onRespawn();
         });
     }
 

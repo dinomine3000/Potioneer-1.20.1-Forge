@@ -16,6 +16,6 @@ public abstract class AbstractGeoEffectEntityRenderer<T extends AbstractEffectEn
     @Override
     protected void applyRotations(T animatable, PoseStack poseStack, float ageInTicks, float rotationYaw, float partialTick) {
         super.applyRotations(animatable, poseStack, ageInTicks, rotationYaw, partialTick);
-        renderEffect(animatable, poseStack);
+        renderEffect(animatable, poseStack, partialTick);
     }
 }

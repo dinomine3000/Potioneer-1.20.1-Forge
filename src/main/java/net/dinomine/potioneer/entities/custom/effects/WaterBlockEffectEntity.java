@@ -17,6 +17,7 @@ public class WaterBlockEffectEntity extends AbstractEffectEntity {
     public static final EntityDataAccessor<Integer> DURATION = SynchedEntityData.defineId(WaterBlockEffectEntity.class, EntityDataSerializers.INT);
     public WaterBlockEffectEntity(EntityType<?> pEntityType, Level pLevel) {
         super(pEntityType, pLevel);
+        entityData.set(ROTATE_WITH_HEAD, true);
     }
 
     @Override

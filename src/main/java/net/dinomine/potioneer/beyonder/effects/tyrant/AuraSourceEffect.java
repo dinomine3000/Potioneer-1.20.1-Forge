@@ -32,7 +32,7 @@ public class AuraSourceEffect extends BeyonderEffect {
 
     private void applyAuraEffects(Entity entity, LivingEntity enforcer){
         if(!(entity instanceof LivingEntity livingEntity)) return;
-        //if(AllySystemSaveData.isAllies(livingEntity, enforcer)) return;
+        if(AllySystemSaveData.isAllies(livingEntity, enforcer)) return;
         Optional<LivingEntityBeyonderCapability> optCap = livingEntity.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve();
         Optional<LivingEntityBeyonderCapability> optCapEnforcer = enforcer.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve();
         if(optCap.isEmpty() || optCapEnforcer.isEmpty()) return;

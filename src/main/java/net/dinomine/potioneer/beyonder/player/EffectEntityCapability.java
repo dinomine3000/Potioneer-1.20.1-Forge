@@ -60,8 +60,10 @@ public class EffectEntityCapability {
         ListTag effectsList = compoundTag.getList("effectEntities", Tag.TAG_COMPOUND);
         for(int i = 0; i < effectsList.size(); i++){
             Optional<Entity> effect = EntityType.create(effectsList.getCompound(i), entity.level());
-            if(effect.isPresent() && effect.get() instanceof AbstractEffectEntity effectEntity)
-                effects.add(effectEntity);
+            if(effect.isPresent() && effect.get() instanceof AbstractEffectEntity effectEntity){
+                effectEntity.setTarget(entity);
+                entity.level().addFreshEntity(effectEntity);
+            }
         }
 
     }

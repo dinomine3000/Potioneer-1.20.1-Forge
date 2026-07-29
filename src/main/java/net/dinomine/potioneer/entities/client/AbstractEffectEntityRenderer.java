@@ -47,6 +47,6 @@ public abstract class AbstractEffectEntityRenderer<T extends AbstractEffectEntit
     public void render(T pEntity, float pEntityYaw, float pPartialTick, PoseStack pPoseStack, MultiBufferSource pBuffer, int pPackedLight) {
         super.render(pEntity, pEntityYaw, pPartialTick, pPoseStack, pBuffer, pPackedLight);
         //pPoseStack.mulPose(Axis.YP.rotationDegrees(-pEntity.getYRot()));
-        renderEffect(pEntity, pPoseStack);
+        renderEffect(pEntity, pPoseStack, pPartialTick);
     }
 }
