@@ -45,7 +45,7 @@ import static net.minecraft.world.level.block.Block.dropResources;
 
 public class WaterSpellAbility extends AbilityWithOptions {
     private static final int CONJURE_COST = 5;
-    private static final int ABSORB_COST = 3;
+    private static final int ABSORB_COST = 2;
     private static final int DROWNING_COST = 30;
     private static final int WATER_TRAP_COST = 30;
     private static final int WATER_JET_COST = 10;
@@ -104,10 +104,10 @@ public class WaterSpellAbility extends AbilityWithOptions {
             if(block instanceof BlockHitResult rayTrace){
                 BlockPos targetPos = rayTrace.getBlockPos().relative(rayTrace.getDirection());
                 double radius = target.getAttributeBaseValue(ForgeMod.ENTITY_REACH.get()) + (10 - getSequenceLevel());
-                if(removeWaterBreadthFirstSearch(level, targetPos, (int) radius)){
-                    cap.requestActiveSpiritualityCost(-ABSORB_COST);
-                    target.addEffect(new MobEffectInstance(MobEffects.REGENERATION, 20, 3, false, false, true));
-                    if(target instanceof Player player) player.getFoodData().eat(2, 1);
+                int blocksRemoved = removeWaterBreadthFirstSearch(level, targetPos, (int) radius);
+                if(blocksRemoved > 0){
+                    cap.requestActiveSpiritualityCost(-ABSORB_COST*blocksRemoved);
+                    //target.addEffect(new MobEffectInstance(MobEffects.REGENERATION, 20, 3, false, false, true));
                     setNextCooldownAs(50);
                     return true;
                 }
@@ -169,7 +169,7 @@ public class WaterSpellAbility extends AbilityWithOptions {
     }
 
     //copied from SpongeBlock class
-    private static boolean removeWaterBreadthFirstSearch(Level pLevel, BlockPos pPos, int radius) {
+    private static int removeWaterBreadthFirstSearch(Level pLevel, BlockPos pPos, int radius) {
         return BlockPos.breadthFirstTraversal(pPos, radius, 65, (position, consumer) -> {
             for(Direction direction : Direction.values()) {
                 consumer.accept(position.relative(direction));
@@ -197,7 +197,7 @@ public class WaterSpellAbility extends AbilityWithOptions {
                 pLevel.setBlock(positionToEmpty, Blocks.AIR.defaultBlockState(), 3);
             }
             return true;
-        }) > 0;
+        });
     }
 
     protected boolean absorbWaterTrap(LivingEntityBeyonderCapability cap, LivingEntity target){

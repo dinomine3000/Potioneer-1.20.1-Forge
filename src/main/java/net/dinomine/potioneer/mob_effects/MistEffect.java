@@ -12,7 +12,6 @@ public class MistEffect extends MobEffect {
 
     @Override
     public void applyEffectTick(LivingEntity pLivingEntity, int pAmplifier) {
-        ParticleMaker.summonMistParticles(pLivingEntity);
     }
 
     @Override

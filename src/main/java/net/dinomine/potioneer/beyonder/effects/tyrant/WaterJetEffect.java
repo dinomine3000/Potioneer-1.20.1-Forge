@@ -41,7 +41,7 @@ public class WaterJetEffect extends BeyonderEffect {
         Vec3 look = target.getLookAngle();
         Vec3 pushAngle = look.normalize().scale(MAGNITUDE);
         AllySystemSaveData data = AllySystemSaveData.from((ServerLevel) target.level());
-        AbilityFunctionHelper.getLivingEntitiesLooking(target, RANGE, 1, false).forEach(ent -> {
+        AbilityFunctionHelper.getLivingEntitiesLooking(target, RANGE, 0, false).forEach(ent -> {
             if(data.areEntitiesAllies(target, ent)) return;
             ent.push(pushAngle.x, pushAngle.y, pushAngle.z);
             ent.hasImpulse = true;
