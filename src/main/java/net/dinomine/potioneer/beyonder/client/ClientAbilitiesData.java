@@ -374,8 +374,12 @@ public class ClientAbilitiesData {
         Component abilityName = abilities.get(key).getNameComponent();
         if(abilities.get(key).getCooldown() < 0){
             player.sendSystemMessage(Component.translatableWithFallback("message.potioneer.blocked_ability", "%s has been disabled.", abilityName));
-            return false;
+            //return true so the player doesnt accidentaly hit something
+            AbilitiesHotbarHUD.disabledHighlightAnimation.startAnimation("", false);
+            return true;
         }
+        if(abilities.get(key).getCooldown() != 0)
+            return true;
         int cost = Abilities.getAbilityFactory(key).getCostFunction().apply(key.getSequenceLevel());
         float spir = ClientStatsData.getPlayerSpirituality();
         if(spir < cost){

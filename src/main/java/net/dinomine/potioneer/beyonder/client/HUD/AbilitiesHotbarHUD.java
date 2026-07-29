@@ -15,14 +15,9 @@ import net.dinomine.potioneer.util.Animation;
 import net.dinomine.potioneer.util.AnimationHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
-import net.minecraft.util.RandomSource;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraftforge.client.gui.overlay.IGuiOverlay;
-
-import java.util.logging.Level;
 
 public class AbilitiesHotbarHUD {
     private static final ResourceLocation ICONS = new ResourceLocation(Potioneer.MOD_ID, "textures/gui/ability_icon_atlas.png");
@@ -42,6 +37,7 @@ public class AbilitiesHotbarHUD {
 
     private static final Minecraft minecraft = Minecraft.getInstance();
     public static final AnimationHandler disabledAnimation = new AnimationHandler(1/24f, false, 0f).doLoop();
+    public static final AnimationHandler disabledHighlightAnimation = new AnimationHandler(1/4f, false, 1f);
     public static final AnimationHandler leftCastCooldownAnimation = new AnimationHandler(1f, false, 0f);
     public static final AnimationHandler rightCastCooldownAnimation = new AnimationHandler(1f, false, 0f);
     public static final AnimationHandler scrollAnimation = new AnimationHandler(0.1f, false, 0.1f)
@@ -90,6 +86,7 @@ public class AbilitiesHotbarHUD {
         leftCastCooldownAnimation.tick();
         rightCastCooldownAnimation.tick();
         scrollAnimation.tick();
+        disabledHighlightAnimation.tick();
         if(!shouldDisplayBar()) return;
 
         // 0 -> animation done, stuff should be in its position
@@ -242,7 +239,18 @@ public class AbilitiesHotbarHUD {
         if(ClientAbilitiesData.getCooldown(caret) < 0){
             if(!ClientConfigData.getAlternativeBlocking()){
                 //Copied from the icons part
-                guiGraphics.blit(ICONS, caseX + (int) (5*scale), caseY + (int)(4*scale), (int)(ICON_WIDTH*scale), (int)(ICON_HEIGHT*scale), 130, 4, ICON_WIDTH, ICON_HEIGHT, ICONS_WIDTH, ICONS_HEIGHT);
+                guiGraphics.pose().pushPose();
+                float animationScale = disabledHighlightAnimation.getValue(1.5f, 1f);
+                float iconXPos = caseX + (int) (5*scale);
+                float iconYPos = caseY + (int)(4*scale);
+                guiGraphics.pose().translate(
+                        iconXPos - (animationScale-1)*(ICON_WIDTH*scale)/2,
+                        iconYPos - (animationScale-1)*(ICON_HEIGHT*scale)/2, 0);
+                //guiGraphics.pose().translate(-iconXPos, -iconYPos, 0);
+                guiGraphics.pose().scale(animationScale, animationScale, animationScale);
+                //guiGraphics.pose().translate(animationScale*iconXPos, animationScale*iconYPos, 0);
+                guiGraphics.blit(ICONS, 0, 0, (int)(ICON_WIDTH*scale), (int)(ICON_HEIGHT*scale), 130, 4, ICON_WIDTH, ICON_HEIGHT, ICONS_WIDTH, ICONS_HEIGHT);
+                guiGraphics.pose().popPose();
                 return;
             }
             guiGraphics.blit(ICONS, caseX + (int) (5*scale), caseY + (int)(4*scale),
