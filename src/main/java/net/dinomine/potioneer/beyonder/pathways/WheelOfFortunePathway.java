@@ -20,6 +20,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -156,6 +157,7 @@ public class WheelOfFortunePathway extends BeyonderPathway {
                 abilities.add(Abilities.ZERO_DAMAGE.create(atSequenceLevel));
         }
 
+        Collections.reverse(abilities);
         return abilities;
 
     }

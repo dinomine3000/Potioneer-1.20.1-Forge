@@ -7,6 +7,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class ParagonPathway extends BeyonderPathway {
@@ -67,7 +68,7 @@ public class ParagonPathway extends BeyonderPathway {
 
     @Override
     public List<Ability> getAbilities(int ofSequenceLevel, int atSequenceLevel) {
-        ArrayList<Ability> activeAbilities = new ArrayList<>();
+        ArrayList<Ability> abilities = new ArrayList<>();
 
         switch(ofSequenceLevel%10){
             case 0:
@@ -78,20 +79,21 @@ public class ParagonPathway extends BeyonderPathway {
             case 5:
             case 6:
             case 7:
-                activeAbilities.add(Abilities.XP_COST_REDUCE.create(atSequenceLevel));
-                activeAbilities.add(Abilities.REMOVE_ENCHANTMENT.create(atSequenceLevel));
+                abilities.add(Abilities.XP_COST_REDUCE.create(atSequenceLevel));
+                abilities.add(Abilities.REMOVE_ENCHANTMENT.create(atSequenceLevel));
             case 8:
-                activeAbilities.add(Abilities.ANVIL_GUI.create(atSequenceLevel));
-                activeAbilities.add(Abilities.CONJURER_CONTAINER.create(atSequenceLevel));
-                activeAbilities.add(Abilities.CRAFTER_BONE_MEAL.create(atSequenceLevel));
-                activeAbilities.add(Abilities.ENDER_CHEST.create(atSequenceLevel));
+                abilities.add(Abilities.ANVIL_GUI.create(atSequenceLevel));
+                abilities.add(Abilities.CONJURER_CONTAINER.create(atSequenceLevel));
+                abilities.add(Abilities.CRAFTER_BONE_MEAL.create(atSequenceLevel));
+                abilities.add(Abilities.ENDER_CHEST.create(atSequenceLevel));
             case 9:
-                activeAbilities.add(Abilities.CRAFTING_SPIRITUALITY.create(atSequenceLevel));
-                activeAbilities.add(Abilities.CRAFTING_GUI.create(atSequenceLevel));
-                activeAbilities.add(Abilities.FUEL_CREATE.create(atSequenceLevel));
-                activeAbilities.add(Abilities.DURABILITY_REGEN.create(atSequenceLevel));
+                abilities.add(Abilities.CRAFTING_SPIRITUALITY.create(atSequenceLevel));
+                abilities.add(Abilities.CRAFTING_GUI.create(atSequenceLevel));
+                abilities.add(Abilities.FUEL_CREATE.create(atSequenceLevel));
+                abilities.add(Abilities.DURABILITY_REGEN.create(atSequenceLevel));
         }
-        return activeAbilities;
+        Collections.reverse(abilities);
+        return abilities;
     }
 
     @Override

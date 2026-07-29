@@ -7,6 +7,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 
@@ -65,7 +66,7 @@ public class MysteryPathway extends BeyonderPathway {
 
     @Override
     public List<Ability> getAbilities(int ofSequenceLevel, int atSequenceLevel) {
-        ArrayList<Ability> activeAbilities = new ArrayList<>();
+        ArrayList<Ability> abilities = new ArrayList<>();
 
         switch(ofSequenceLevel%10){
             case 0:
@@ -76,21 +77,22 @@ public class MysteryPathway extends BeyonderPathway {
             case 5:
             case 6:
             case 7:
-                activeAbilities.add(Abilities.AIR_BULLET.create(atSequenceLevel));
-                activeAbilities.add(Abilities.PAPER_FIGURINE_SUBSTITUTE.create(atSequenceLevel));
-                activeAbilities.add(Abilities.PANACEA.create(atSequenceLevel));
-                activeAbilities.add(Abilities.PUSH.create(atSequenceLevel));
+                abilities.add(Abilities.AIR_BULLET.create(atSequenceLevel));
+                abilities.add(Abilities.PAPER_FIGURINE_SUBSTITUTE.create(atSequenceLevel));
+                abilities.add(Abilities.PANACEA.create(atSequenceLevel));
+                abilities.add(Abilities.PUSH.create(atSequenceLevel));
             case 8:
-                activeAbilities.add(Abilities.CANCEL_FALL_DAMAGE.create(atSequenceLevel));
-                activeAbilities.add(Abilities.STEP_UP.create(atSequenceLevel));
-                activeAbilities.add(Abilities.LEAP.create(atSequenceLevel));
+                abilities.add(Abilities.CANCEL_FALL_DAMAGE.create(atSequenceLevel));
+                abilities.add(Abilities.STEP_UP.create(atSequenceLevel));
+                abilities.add(Abilities.LEAP.create(atSequenceLevel));
             case 9:
-                activeAbilities.add(Abilities.EXTENDED_REACH.create(atSequenceLevel));
-                activeAbilities.add(Abilities.DOOR_OPENING.create(atSequenceLevel));
-                activeAbilities.add(Abilities.MYSTERY_REGEN.create(atSequenceLevel));
-                activeAbilities.add(Abilities.INVISIBILITY.create(atSequenceLevel));
+                abilities.add(Abilities.EXTENDED_REACH.create(atSequenceLevel));
+                abilities.add(Abilities.DOOR_OPENING.create(atSequenceLevel));
+                abilities.add(Abilities.MYSTERY_REGEN.create(atSequenceLevel));
+                abilities.add(Abilities.INVISIBILITY.create(atSequenceLevel));
         }
-        return activeAbilities;
+        Collections.reverse(abilities);
+        return abilities;
     }
 
     @Override

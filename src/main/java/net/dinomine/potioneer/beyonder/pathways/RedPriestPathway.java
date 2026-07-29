@@ -7,6 +7,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class RedPriestPathway extends BeyonderPathway {
@@ -92,6 +93,7 @@ public class RedPriestPathway extends BeyonderPathway {
                 abilities.add(Abilities.WEAPON_PROFICIENCY.create(atSequenceLevel));
         }
 
+        Collections.reverse(abilities);
         return abilities;
     }
 

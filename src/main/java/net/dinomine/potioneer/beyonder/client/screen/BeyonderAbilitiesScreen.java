@@ -106,12 +106,7 @@ public class BeyonderAbilitiesScreen extends Screen {
         this.hotbarButtonRight = this.leftPos + 163;
         abilityDescOffset = 0;
 
-        abilities = ClientAbilitiesData.getAbilities(updated -> {
-                Collections.reverse(updated);
-                //TODO verify that ability list isnt being reordered every time, it makes no sense to call reverse here
-                this.abilities = updated;
-            }
-        );
+        abilities = ClientAbilitiesData.getAbilities();
         beyonder = !abilities.isEmpty();
         Collections.reverse(abilities);
         buttons = new ArrayList<>();

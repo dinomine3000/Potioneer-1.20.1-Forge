@@ -10,6 +10,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class TyrantPathway extends BeyonderPathway {
@@ -106,7 +107,7 @@ public class TyrantPathway extends BeyonderPathway {
                 abilities.add(Abilities.WATER_SCALES.create(atSequenceLevel));
                 abilities.add(Abilities.OCEAN_ORDER.create(atSequenceLevel));
         }
-
+        Collections.reverse(abilities);
         return abilities;
     }
 
