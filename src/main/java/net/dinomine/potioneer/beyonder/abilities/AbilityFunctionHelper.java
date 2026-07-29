@@ -182,21 +182,23 @@ public class AbilityFunctionHelper {
         return isTargetInSightsOf(target, looker, 0);
     }
 
-    private static boolean isTargetInSightsOf(LivingEntity target, LivingEntity looker, float inflate){
+    private static boolean isTargetInSightsOf(LivingEntity target, LivingEntity looker, float inflate){return isTargetInSightsOf(target, looker, inflate, true);}
+    private static boolean isTargetInSightsOf(LivingEntity target, LivingEntity looker, float inflate, boolean hitThroughWalls){
         if(looker.is(target)) return false;
         Vec3 lookAngle = looker.getLookAngle();
         double dist = target.position().subtract(looker.getEyePosition()).length();
         Vec3 eye = looker.getEyePosition();
         Vec3 end = looker.getEyePosition().add(lookAngle.scale(dist+1));
-        return target.getBoundingBoxForCulling().inflate(inflate).intersects(eye, end);
+        return target.getBoundingBoxForCulling().inflate(inflate).intersects(eye, end) && (hitThroughWalls || looker.hasLineOfSight(target));
     }
 
     public static ArrayList<LivingEntity> getLivingEntitiesLooking(LivingEntity looker, double radius){
         return getLivingEntitiesLooking(looker, radius, 0);
     }
 
-    public static ArrayList<LivingEntity> getLivingEntitiesLooking(LivingEntity looker, double radius, float inflate){
-        return getLivingEntitiesAround(looker, radius, ent -> isTargetInSightsOf(ent, looker, inflate));
+    public static ArrayList<LivingEntity> getLivingEntitiesLooking(LivingEntity looker, double radius, float inflate){return getLivingEntitiesLooking(looker, radius, inflate, true);}
+    public static ArrayList<LivingEntity> getLivingEntitiesLooking(LivingEntity looker, double radius, float inflate, boolean hitThroughWalls){
+        return getLivingEntitiesAround(looker, radius, ent -> isTargetInSightsOf(ent, looker, inflate, hitThroughWalls));
     }
 
     public static void pushEntity(LivingEntity target, Vec3 pushAngle) {

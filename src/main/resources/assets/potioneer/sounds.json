@@ -79,5 +79,10 @@
     "sounds": [
       "potioneer:xray_radar_sfx"
     ]
+  },
+  "water_jet": {
+    "sounds": [
+      "potioneer:water_jet"
+    ]
   }
 }

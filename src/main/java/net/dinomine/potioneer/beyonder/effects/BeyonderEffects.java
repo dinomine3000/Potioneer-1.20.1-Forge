@@ -58,6 +58,7 @@ public class BeyonderEffects {
     public static final BeyonderEffectType TYRANT_WATER_PRISON = registerEffect("water_prison", new BeyonderEffectType(WaterPrisonEffect::new));
     public static final BeyonderEffectType TYRANT_SCALES = registerEffect("scales", new BeyonderEffectType(ScalesEffect::new));
     public static final BeyonderEffectType TYRANT_DROWNING = registerEffect("drowning", new BeyonderEffectType(DrowningEffect::new));
+    public static final BeyonderEffectType TYRANT_WATER_JET = registerEffect("water_jet", new BeyonderEffectType(WaterJetEffect::new));
     public static final BeyonderEffectType TYRANT_AOJ_SOURCE = registerEffect("aoj_viewer", new BeyonderEffectType(AoJSourceEffect::new));
     public static final BeyonderEffectType TYRANT_AOJ_RECIPIENT = registerEffect("aoj_influence", new BeyonderEffectType(AoJRecipientEffect::new));
     public static final BeyonderEffectType TYRANT_AURA_SOURCE = registerEffect("aura_source", new BeyonderEffectType(AuraSourceEffect::new));
@@ -160,12 +161,12 @@ public class BeyonderEffects {
             this.effectId = effectId;
         }
 
-        public BeyonderEffect createInstance(int sequence, int duration, boolean active) {
-            return factory.get().withParams(sequence, duration, active).setId(effectId);
+        public BeyonderEffect createInstance(int sequence, int duration, boolean visible) {
+            return factory.get().withParams(sequence, duration, visible).setId(effectId);
         }
 
-        public BeyonderEffect createInstance(int sequence, int cost, int duration, boolean active) {
-            return factory.get().withParams(sequence, duration, active, cost).setId(effectId);
+        public BeyonderEffect createInstance(int sequence, int cost, int duration, boolean visible) {
+            return factory.get().withParams(sequence, duration, visible, cost).setId(effectId);
         }
 
 

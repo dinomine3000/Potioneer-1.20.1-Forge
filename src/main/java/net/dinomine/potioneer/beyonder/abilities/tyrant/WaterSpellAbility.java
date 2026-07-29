@@ -3,7 +3,9 @@ package net.dinomine.potioneer.beyonder.abilities.tyrant;
 import net.dinomine.potioneer.beyonder.abilities.AbilityFunctionHelper;
 import net.dinomine.potioneer.beyonder.abilities.AbilityOptions;
 import net.dinomine.potioneer.beyonder.abilities.AbilityWithOptions;
+import net.dinomine.potioneer.beyonder.effects.BeyonderEffect;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
+import net.dinomine.potioneer.beyonder.effects.tyrant.WaterJetEffect;
 import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
 import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
 import net.dinomine.potioneer.block.ModBlocks;
@@ -46,6 +48,7 @@ public class WaterSpellAbility extends AbilityWithOptions {
     private static final int ABSORB_COST = 3;
     private static final int DROWNING_COST = 30;
     private static final int WATER_TRAP_COST = 30;
+    private static final int WATER_JET_COST = 10;
     /**
      * pass the sequence level or pathway-sequence id to define the abilities sequence level
      * abilities that depend on changing pathways like Cogitation, that exists for every pathway, need to process their own pathway-sequence id here.
@@ -58,7 +61,8 @@ public class WaterSpellAbility extends AbilityWithOptions {
         setPrimaryOptions(new AbilityOptions()
                 .addEmptyOption("drowning", Component.literal("Drowning"))
                 .addEmptyOption("water_trap", Component.literal("Water Trap"))
-                .addEmptyOption("water_prison", Component.literal("Water Prison")));
+                .addEmptyOption("water_prison", Component.literal("Water Prison"))
+                .addEmptyOption("water_jet", Component.literal("Water Jet")));
         setSecondaryOptions(new AbilityOptions()
                 .addEmptyOption("create", Component.literal("Conjure Water"))
                 .addEmptyOption("consume", Component.literal("Consume Water"))
@@ -104,6 +108,7 @@ public class WaterSpellAbility extends AbilityWithOptions {
                     cap.requestActiveSpiritualityCost(-ABSORB_COST);
                     target.addEffect(new MobEffectInstance(MobEffects.REGENERATION, 20, 3, false, false, true));
                     if(target instanceof Player player) player.getFoodData().eat(2, 1);
+                    setNextCooldownAs(50);
                     return true;
                 }
             }
@@ -113,7 +118,13 @@ public class WaterSpellAbility extends AbilityWithOptions {
     }
 
     private boolean doWaterJet(LivingEntityBeyonderCapability cap, LivingEntity target){
-
+        if(cap.getSpirituality() < WATER_JET_COST) return false;
+        if(target.level().isClientSide()) return true;
+        if(cap.getEffectsManager().hasEffect(BeyonderEffects.TYRANT_WATER_JET)) return false;
+        BeyonderEffect waterJetEffect = BeyonderEffects.TYRANT_WATER_JET.createInstance(getSequenceLevel(), WaterJetEffect.DURATION, false);
+        cap.getEffectsManager().addOrReplaceEffect(waterJetEffect, cap, target);
+        cap.requestActiveSpiritualityCost(WATER_JET_COST);
+        setNextCooldownAs(WaterJetEffect.DURATION);
         return true;
     }
 
@@ -202,7 +213,6 @@ public class WaterSpellAbility extends AbilityWithOptions {
                     waterBe.markForAbsorption();
                     level.destroyBlock(rayTrace.getBlockPos(), false, target);
                     cap.requestActiveSpiritualityCost(-WATER_TRAP_COST/2f);
-                    setNextCooldownAs(20*5);
                     return true;
                 }
             }

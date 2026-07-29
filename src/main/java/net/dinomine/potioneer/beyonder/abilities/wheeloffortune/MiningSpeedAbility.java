@@ -75,7 +75,6 @@ public class MiningSpeedAbility extends PassiveAbility {
         data.putFloat("speed", newSpeed);
         setData(data, target);
         target.sendSystemMessage(Component.translatable("ability.potioneer.mining_speed_set", Math.round(newSpeed*100)/100f));
-        putOnCooldown(target);
         return true;
     }
 

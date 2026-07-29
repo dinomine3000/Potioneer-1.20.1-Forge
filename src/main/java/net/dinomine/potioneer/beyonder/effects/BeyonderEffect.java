@@ -11,7 +11,6 @@ import net.minecraftforge.event.entity.living.LivingHurtEvent;
 
 import javax.annotation.Nullable;
 import java.util.Optional;
-import java.util.PriorityQueue;
 
 public abstract class BeyonderEffect {
     protected int sequenceLevel;
@@ -20,7 +19,7 @@ public abstract class BeyonderEffect {
     public String name;
     protected String effectId;
     protected int cost = 0;
-    protected boolean active;
+    protected boolean visible;
     protected Priority priority = Priority.MEDIUM;
 
     public int getPriority(){return priority.value;}
@@ -57,15 +56,15 @@ public abstract class BeyonderEffect {
         this.priority = Priority.MEDIUM;
     }
 
-    public BeyonderEffect withParams(int sequence, int time, boolean active) {
-        return withParams(sequence, time, active, 0);
+    public BeyonderEffect withParams(int sequence, int time, boolean visible) {
+        return withParams(sequence, time, visible, 0);
     }
 
-    public BeyonderEffect withParams(int sequence, int time, boolean active, int cost) {
+    public BeyonderEffect withParams(int sequence, int time, boolean visible, int cost) {
         this.sequenceLevel = sequence%10;
         this.lifetime = time == -1 ? -2 : 0;
         this.maxLife = time;
-        this.active = active;
+        this.visible = visible;
         this.cost = cost;
         setPriority(sequenceLevel%10);
         return this;
@@ -168,7 +167,7 @@ public abstract class BeyonderEffect {
     }
 
     public void setActive(boolean active, LivingEntityBeyonderCapability cap, LivingEntity target){
-        this.active = active;
+        this.visible = active;
         if(!active){
             stopEffects(cap, target);
         }
@@ -178,14 +177,8 @@ public abstract class BeyonderEffect {
         return this.cost;
     }
 
-    public boolean isActive(){
-        return this.active;
-    }
-
     public void effectTick(LivingEntityBeyonderCapability cap, LivingEntity target){
-        if(active){
-            doTick(cap, target);
-        }
+        doTick(cap, target);
         if(maxLife > 0){
             this.lifetime++;
         }
@@ -199,7 +192,14 @@ public abstract class BeyonderEffect {
      * @param cap
      * @param target
      */
-    public abstract void onAcquire(LivingEntityBeyonderCapability cap, LivingEntity target);
+    public void onAcquire(LivingEntityBeyonderCapability cap, LivingEntity target){};
+
+    /**
+     * same as onAcquire, but you also get information of whether its from loading into the world or not
+     * @param cap
+     * @param target
+     * @param fromLoading
+     */
     public void onAcquire(LivingEntityBeyonderCapability cap, LivingEntity target, boolean fromLoading){onAcquire(cap, target);};
     protected abstract void doTick(LivingEntityBeyonderCapability cap, LivingEntity target);
     public abstract void stopEffects(LivingEntityBeyonderCapability cap, LivingEntity target);
@@ -208,7 +208,7 @@ public abstract class BeyonderEffect {
         nbt.putInt("level", sequenceLevel);
         nbt.putInt("cost", cost);
         nbt.putInt("maxLife", maxLife);
-        nbt.putBoolean("active", active);
+        nbt.putBoolean("active", visible);
         nbt.putInt("lifetime", lifetime);
         nbt.putString("ID", effectId);
     }
