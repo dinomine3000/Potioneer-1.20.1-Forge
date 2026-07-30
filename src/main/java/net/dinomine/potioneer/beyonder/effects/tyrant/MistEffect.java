@@ -8,6 +8,7 @@ import net.dinomine.potioneer.beyonder.effects.wheeloffortune.PhasingEffect;
 import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
 import net.dinomine.potioneer.mob_effects.ModEffects;
 import net.dinomine.potioneer.mob_effects.ServerEffectVisualHandling;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
@@ -19,13 +20,17 @@ import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import java.util.Optional;
 
 public class MistEffect extends BeyonderEffect {
+    private boolean wasFlyingBefore = false;
     @Override
-    public void onAcquire(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    public void onAcquire(LivingEntityBeyonderCapability cap, LivingEntity target, boolean fromLoading) {
 //        if(target instanceof Player player){
 //            player.setForcedPose(Pose.);
 //        }
         if(target.level().isClientSide()) return;
         ServerEffectVisualHandling.addMistEntity(target);
+        if(fromLoading || !(target instanceof Player player)) return;
+        wasFlyingBefore = player.getAbilities().flying;
+
     }
 
     @Override
@@ -36,7 +41,10 @@ public class MistEffect extends BeyonderEffect {
         if(target instanceof Player player){
             player.setNoGravity(true);
             player.setArrowCount(0);
-            player.getAbilities().flying = true;
+            if(!player.level().isClientSide() && !player.getAbilities().flying){
+                player.getAbilities().flying = true;
+                player.onUpdateAbilities();
+            }
         }
     }
 
@@ -45,7 +53,7 @@ public class MistEffect extends BeyonderEffect {
         target.removeEffect(MobEffects.INVISIBILITY);
         target.removeEffect(ModEffects.MIST_EFFECT.get());
         if(target instanceof Player player){
-            player.getAbilities().flying = player.getAbilities().mayfly;
+            player.getAbilities().flying = wasFlyingBefore;
             player.setNoGravity(false);
             player.setForcedPose(null);
         }
@@ -57,5 +65,17 @@ public class MistEffect extends BeyonderEffect {
         if(victim.level().isClientSide() || !calledOnVictim) return false;
         return !event.getSource().is(PotioneerDamage.Tags.ABSOLUTE) && !event.getSource().is(PotioneerDamage.Tags.ANNIHILATION) && !event.getSource().is(PotioneerDamage.Tags.MENTAL)
                 && (victim.getMobType() != MobType.UNDEAD || !event.getSource().is(PotioneerDamage.Tags.PURIFICATION));
+    }
+
+    @Override
+    public void toNbt(CompoundTag nbt) {
+        super.toNbt(nbt);
+        nbt.putBoolean("flying", wasFlyingBefore);
+    }
+
+    @Override
+    public void loadNBTData(CompoundTag nbt) {
+        super.loadNBTData(nbt);
+        wasFlyingBefore = nbt.getBoolean("flying");
     }
 }
