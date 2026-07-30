@@ -361,6 +361,7 @@ public class LivingEntityBeyonderCapability {
         getBeyonderStats().resetAndApplyStats(entity, true);
         this.abilitiesManager.clearAbilities(this, entity);
         characteristicManager.reset();
+        effectsManager.clearEffects(this, entity);
         if(definitive){
             entity.sendSystemMessage(Component.literal("Reset beyonder powers."));
             setMaxSpirituality(100);
@@ -539,11 +540,11 @@ public class LivingEntityBeyonderCapability {
         this.timePrayed = nbt.contains("prayCd") ? nbt.getLong("prayCd") : -1;
 
         this.luckManager.loadNBTData(nbt);
-        this.effectsManager.loadNBTData(nbt, this, entity);
         //characteristics before ablities because characteristics give abilities.
         this.characteristicManager.loadNBTData(nbt, this, entity);
         maxSpirituality = characteristicManager.getMaxSpirituality();
         this.abilitiesManager.loadNBTData(nbt, this, entity);
+        this.effectsManager.loadNBTData(nbt, this, entity);
         //this.abilitiesManager.onAcquireAbilities(this, entity);
         //TODO make abilities manager actually save and load item abilities.
         //this.abilitiesManager.loadNBTData(nbt);

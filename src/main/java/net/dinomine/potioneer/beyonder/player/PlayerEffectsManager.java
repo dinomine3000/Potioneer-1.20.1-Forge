@@ -273,7 +273,7 @@ public class PlayerEffectsManager {
     public boolean removeEffect(String effect, int seq){
         boolean flag = false;
         for (BeyonderEffect passive : passives) {
-            if (passive.is(effect, seq)) {
+            if (passive.isOrWorse(effect, seq)) {
                 passive.endEffectWhenPossible();
                 flag = true;
             }

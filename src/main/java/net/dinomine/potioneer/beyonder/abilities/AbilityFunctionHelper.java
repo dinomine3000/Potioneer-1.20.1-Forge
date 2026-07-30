@@ -22,6 +22,7 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.ForgeMod;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -86,6 +87,22 @@ public class AbilityFunctionHelper {
         Supplier<Multimap<Attribute, AttributeModifier>> resMod = Suppliers.memoize(() ->
                 ImmutableMultimap.of(attribute, modifier));
         return resMod.get();
+    }
+
+    public static @Nullable LivingEntity getLivingEntityLooking(LivingEntity looker, double reach, int inflate){
+        List<LivingEntity> hits = getLivingEntitiesLooking(looker, reach, inflate, false);
+        if(hits.isEmpty()) return null;
+        LivingEntity closest = null;
+        double smallestDist = Double.MAX_VALUE;
+        for(LivingEntity ent: hits){
+            if(ent.is(looker)) continue;
+            double iDist = looker.distanceTo(ent);
+            if(iDist < smallestDist){
+                smallestDist = iDist;
+                closest = ent;
+            }
+        }
+        return closest;
     }
 
     public static ArrayList<LivingEntity> getLivingEntitiesAround(LivingEntity target, double radius){

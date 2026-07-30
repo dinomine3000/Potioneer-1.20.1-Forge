@@ -20,8 +20,9 @@ public class AbilityInfo {
     private AbilityKey key = new AbilityKey();
     private CompoundTag abilityData = new CompoundTag();
     private boolean isDownside = false;
+    private int sequenceLevel;
 
-    public AbilityInfo(int pathwayId, int cooldown, int maxCooldown, boolean enabled, String descId, LinkedHashSet<String> allDescIds, String innerId) {
+    public AbilityInfo(int pathwayId, int cooldown, int maxCooldown, boolean enabled, String descId, LinkedHashSet<String> allDescIds, String innerId, int sequenceLevel) {
         this.pathwayId = pathwayId;
         this.cooldown = cooldown;
         this.maxCd = maxCooldown;
@@ -29,6 +30,7 @@ public class AbilityInfo {
         this.allDescIds = allDescIds;
         this.enabled = enabled;
         this.innerAbilityId = innerId;
+        this.sequenceLevel = sequenceLevel;
     }
 
     public AbilityInfo markDownside(){
@@ -54,12 +56,9 @@ public class AbilityInfo {
     }
 
     public int getSequenceLevel(){
-        return this.key.getSequenceLevel();
+        return sequenceLevel;
     }
 
-//    public AbilityInfo(int posX, int posY, String name, int sequenceId, int cost, int maxCooldown, String descId){
-//
-//    }
 
     public void encode(FriendlyByteBuf buffer){
         buffer.writeInt(pathwayId);
@@ -77,6 +76,7 @@ public class AbilityInfo {
         key.writeToBuffer(buffer);
         buffer.writeNbt(abilityData);
         buffer.writeBoolean(isDownside);
+        buffer.writeInt(sequenceLevel);
     }
 
     public static AbilityInfo decode(FriendlyByteBuf buffer){
@@ -96,7 +96,8 @@ public class AbilityInfo {
         AbilityKey key = AbilityKey.readFromBuffer(buffer);
         CompoundTag tag = buffer.readAnySizeNbt();
         boolean downside = buffer.readBoolean();
-        return new AbilityInfo(pathwayId, cooldown, maxCd, enabled, descId, allDescIds, innerId).withKey(key).withData(tag).markDownside(downside);
+        int sequenceLevel = buffer.readInt();
+        return new AbilityInfo(pathwayId, cooldown, maxCd, enabled, descId, allDescIds, innerId, sequenceLevel).withKey(key).withData(tag).markDownside(downside);
     }
     public String innerId(){
         return innerAbilityId;

@@ -42,6 +42,7 @@ public abstract class BeyonderEffect {
         return maxLife;
     }
 
+    public boolean canBeCleansed(){return true;}
 
     public BeyonderEffect() {
         setPriority(9);
@@ -91,6 +92,10 @@ public abstract class BeyonderEffect {
 
     public boolean isOrBetter(String id, int seq){
         return is(id) && this.sequenceLevel <= seq;
+    }
+
+    public boolean isOrWorse(String id, int seq){
+        return is(id) && this.sequenceLevel >= seq;
     }
     @Override
     public boolean equals(Object obj) {

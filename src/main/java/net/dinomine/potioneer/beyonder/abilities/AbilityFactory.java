@@ -91,11 +91,11 @@ public class AbilityFactory {
         return createFunction.apply(pathwaySequenceId).withAbilityId(ablId);
     }
 
-    public AbilityInfo getInfo(int cooldown, int maxCd, boolean enabled, String descId, LinkedHashSet<String> allDescIds, String innerId) {
-        return new AbilityInfo(pathwayId, cooldown, maxCd, enabled, descId, allDescIds, innerId);
+    public AbilityInfo getInfo(int cooldown, int maxCd, boolean enabled, String descId, LinkedHashSet<String> allDescIds, String innerId, int sequenceLevel) {
+        return new AbilityInfo(pathwayId, cooldown, maxCd, enabled, descId, allDescIds, innerId, sequenceLevel);
     }
 
-    public AbilityInfo getInfo(int cooldown, int maxCd, boolean enabled, String descId, LinkedHashSet<String> allDescIds, String innerId, int pathwayId) {
-        return new AbilityInfo(pathwayId, cooldown, maxCd, enabled, descId, allDescIds, innerId);
+    public AbilityInfo getInfo(int cooldown, int maxCd, boolean enabled, String descId, LinkedHashSet<String> allDescIds, String innerId, int pathwayId, int sequenceLevel) {
+        return new AbilityInfo(pathwayId, cooldown, maxCd, enabled, descId, allDescIds, innerId, sequenceLevel);
     }
 }

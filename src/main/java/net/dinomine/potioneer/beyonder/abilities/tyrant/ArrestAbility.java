@@ -14,9 +14,9 @@ public class ArrestAbility extends PassiveAbility {
     }
 
     @Override
-    public void upgradeToLevel(int level, LivingEntityBeyonderCapability cap, LivingEntity target) {
-        super.upgradeToLevel(level, cap, target);
-        canFlip(level < 7);
+    public void onUpgrade(int oldLevel, int newLevel, LivingEntityBeyonderCapability cap, LivingEntity target) {
+        canFlip(newLevel < 7);
+        if(newLevel > 6) setEnabled(cap, target, true);
     }
 
     @Override

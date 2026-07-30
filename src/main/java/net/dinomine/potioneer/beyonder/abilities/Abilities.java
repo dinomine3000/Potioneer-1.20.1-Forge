@@ -178,7 +178,7 @@ public class Abilities {
 
     //retweaked
     public static final AbilityFactory WATER_SCALES = registerAbility("scales",
-            (Integer level) -> PassiveAbility.createAbility(level, BeyonderEffects.TYRANT_SCALES, ignored -> "scales").canFlip().withThreshold(0.1f).withCost(ignored -> 1),
+            (Integer level) -> PassiveAbility.createAbility(level, BeyonderEffects.TYRANT_SCALES, lvl -> lvl < 6 ? "scales_2" : "scales").canFlip().withThreshold(0.1f).withCost(ignored -> 1),
             0, 1, 10);
 
     //retweaked
@@ -196,16 +196,8 @@ public class Abilities {
             WaterTrapAbility::new, 2, 1, level -> 40);
 
     //retweaked
-    public static final AbilityFactory TYRANT_CREATE_WATER = registerAbility("water_create",
-            WaterCreateAbility::new, 3, 1, 1).hasSecondaryFunction();
-
-    //retweaked
     public static final AbilityFactory TYRANT_WATER_SPELLS = registerAbility("water_spells",
             WaterSpellAbility::new, 3, 1, 0).hasSecondaryFunction();
-
-    //retweaked
-    public static final AbilityFactory TYRANT_DROWNING = registerAbility("drowning",
-            DrowningAbility::new, 5, 1, 30);
 
     //retweaked
     public static final AbilityFactory AOJ = registerAbility("area_of_jurisdiction",
@@ -233,6 +225,9 @@ public class Abilities {
     public static final AbilityFactory SENSE_OF_ORDER = registerAbility("sense_of_order",
             (Integer level) -> PassiveAbility.createAbility(level, BeyonderEffects.TYRANT_SENSE_OF_ORDER, ignored -> "sense_of_order").enabledOnAcquire().canFlip(),
             0, 1, 0).passive();
+
+    public static final AbilityFactory AMPLIFICATION = registerAbility("amplification",
+            AmplificationAbility::new, 0, 1, 100).hasSecondaryFunction();
 
 //    public static final AbilityFactory TYRANT_ELECTRIFICATION = registerAbility("electrification",
 //            (Integer sequenceLevel) -> (PassiveAbility.createAbility(sequenceLevel, BeyonderEffects.TYRANT_ELECTRIFICATION,
@@ -430,8 +425,8 @@ public class Abilities {
         return getAbilityInstance(key.getAbilityId(), key.getSequenceLevel());
     }
 
-    public static AbilityInfo getInfo(String abilityId, int cooldown, int maxCd, boolean enabled, String descId, LinkedHashSet<String> allDescIds, AbilityKey key){
-        return ABILITIES.get(abilityId).getInfo(cooldown, maxCd, enabled, descId, allDescIds, abilityId).withKey(key);
+    public static AbilityInfo getInfo(String abilityId, int cooldown, int maxCd, boolean enabled, String descId, LinkedHashSet<String> allDescIds, AbilityKey key, int sequenceLevel){
+        return ABILITIES.get(abilityId).getInfo(cooldown, maxCd, enabled, descId, allDescIds, abilityId, sequenceLevel).withKey(key);
     }
 
     /**
@@ -445,7 +440,7 @@ public class Abilities {
      * @param pathwayId
      * @return
      */
-    public static AbilityInfo getInfo(String abilityId, int cooldown, int maxCd, boolean enabled, String descId, LinkedHashSet<String> allDescIds, AbilityKey key, int pathwayId){
-        return ABILITIES.get(abilityId).getInfo(cooldown, maxCd, enabled, descId, allDescIds, abilityId, pathwayId).withKey(key);
+    public static AbilityInfo getInfo(String abilityId, int cooldown, int maxCd, boolean enabled, String descId, LinkedHashSet<String> allDescIds, AbilityKey key, int pathwayId, int sequenceLevel){
+        return ABILITIES.get(abilityId).getInfo(cooldown, maxCd, enabled, descId, allDescIds, abilityId, pathwayId, sequenceLevel).withKey(key);
     }
 }

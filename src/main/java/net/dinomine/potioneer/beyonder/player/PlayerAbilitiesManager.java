@@ -302,10 +302,23 @@ public class PlayerAbilitiesManager {
      * @param target
      */
     public void setAbilityEnabled(String abilityId, int sequenceLevel, boolean state, LivingEntityBeyonderCapability cap, LivingEntity target) {
+        applyToValidAbilities(abl -> abl.setEnabled(cap, target, state), abilityId, sequenceLevel, false);
+        /*for(Map.Entry<AbilityKey, Ability> abilityEntry: abilities.entrySet()){
+            AbilityKey iKey = abilityEntry.getKey();
+            if(iKey.isSameAbility(abilityId) && abilityEntry.getValue().getSequenceLevel() >= sequenceLevel){
+                abilityEntry.getValue().setEnabled(cap, target, state);
+            }
+        }*/
+    }
+
+    private void applyToValidAbilities(Consumer<Ability> applier, String abilityId, int sequenceLevel, boolean specificLevel){
         for(Map.Entry<AbilityKey, Ability> abilityEntry: abilities.entrySet()){
             AbilityKey iKey = abilityEntry.getKey();
-            if(iKey.isSameAbility(abilityId) && iKey.getSequenceLevel() >= sequenceLevel){
-                abilityEntry.getValue().setEnabled(cap, target, state);
+            if(iKey.isSameAbility(abilityId) &&
+                    (abilityEntry.getValue().getSequenceLevel() == sequenceLevel ||
+                            (!specificLevel && abilityEntry.getValue().getSequenceLevel() > sequenceLevel))
+            ){
+                applier.accept(abilityEntry.getValue());
             }
         }
     }
@@ -319,12 +332,13 @@ public class PlayerAbilitiesManager {
      * @param target
      */
     public void putAbilityOnCooldown(String abilityId, int sequenceLevel, int cooldownTicks, LivingEntity target){
-        for(Map.Entry<AbilityKey, Ability> abilityEntry: abilities.entrySet()){
+        applyToValidAbilities(abl -> abl.putOnCooldown(cooldownTicks, target), abilityId, sequenceLevel, false);
+        /*for(Map.Entry<AbilityKey, Ability> abilityEntry: abilities.entrySet()){
             AbilityKey iKey = abilityEntry.getKey();
-            if(iKey.isSameAbility(abilityId) && iKey.getSequenceLevel() >= sequenceLevel){
+            if(iKey.isSameAbility(abilityId) && abilityEntry.getValue().getSequenceLevel() >= sequenceLevel){
                 abilityEntry.getValue().putOnCooldown(cooldownTicks, target);
             }
-        }
+        }*/
     }
 
     public void putAbilityOnCooldown(AbilityKey key, int cooldownTicks, LivingEntity target){
@@ -334,7 +348,7 @@ public class PlayerAbilitiesManager {
     public boolean isEnabledExactLevel(String abilityId, int sequenceLevel){
         for(Map.Entry<AbilityKey, Ability> abilityEntry: abilities.entrySet()){
             AbilityKey iKey = abilityEntry.getKey();
-            if(iKey.isSameAbility(abilityId) && iKey.getSequenceLevel() == sequenceLevel){
+            if(iKey.isSameAbility(abilityId) && abilityEntry.getValue().getSequenceLevel() == sequenceLevel){
                 return abilityEntry.getValue().isEnabled();
             }
         }
@@ -344,7 +358,7 @@ public class PlayerAbilitiesManager {
     public boolean isEnabledAtLevelOrLower(String abilityId, int sequenceLevel) {
         for(Map.Entry<AbilityKey, Ability> abilityEntry: abilities.entrySet()){
             AbilityKey iKey = abilityEntry.getKey();
-            if(iKey.isSameAbility(abilityId) && iKey.getSequenceLevel() >= sequenceLevel){
+            if(iKey.isSameAbility(abilityId) && abilityEntry.getValue().getSequenceLevel() >= sequenceLevel){
                 return abilityEntry.getValue().isEnabled();
             }
         }
@@ -613,21 +627,23 @@ public class PlayerAbilitiesManager {
     }
 
     public void setEnabledAtLevel(String ablId, int sequenceLevel, boolean enabling, LivingEntityBeyonderCapability cap, LivingEntity target){
-        for(Map.Entry<AbilityKey, Ability> entry: abilities.entrySet()){
+        applyToValidAbilities(abl -> abl.setEnabled(cap, target, enabling), ablId, sequenceLevel, true);
+        /*for(Map.Entry<AbilityKey, Ability> entry: abilities.entrySet()){
             AbilityKey iKey = entry.getKey();
             if(iKey.isSameAbility(ablId) && iKey.getSequenceLevel() == sequenceLevel){
                 entry.getValue().setEnabled(cap, target, enabling);
             }
-        }
+        }*/
     }
 
     public void setEnabledAtLevelOrLower(String ablId, int sequenceLevel, boolean enabling, LivingEntityBeyonderCapability cap, LivingEntity target){
-        for(Map.Entry<AbilityKey, Ability> entry: abilities.entrySet()){
+        applyToValidAbilities(abl -> abl.setEnabled(cap, target, enabling), ablId, sequenceLevel, false);
+        /*for(Map.Entry<AbilityKey, Ability> entry: abilities.entrySet()){
             AbilityKey iKey = entry.getKey();
             if(iKey.isSameAbility(ablId) && iKey.getSequenceLevel() >= sequenceLevel){
                 entry.getValue().setEnabled(cap, target, enabling);
             }
-        }
+        }*/
     }
 
     /**

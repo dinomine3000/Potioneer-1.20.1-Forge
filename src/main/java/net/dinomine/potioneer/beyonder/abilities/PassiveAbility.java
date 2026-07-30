@@ -55,6 +55,12 @@ public class PassiveAbility extends Ability {
         return this;
     }
 
+    @Override
+    public void onUpgrade(int oldLevel, int newLevel, LivingEntityBeyonderCapability cap, LivingEntity target) {
+        if(oldLevel < newLevel)
+            deactivate(cap, target);
+    }
+
     public PassiveAbility enabledOnAcquire(){
         this.enabledOnAcquire = true;
         return this;

@@ -19,8 +19,8 @@ public class DurabilityRegenAbility extends PassiveAbility {
     }
 
     @Override
-    public void upgradeToLevel(int level, LivingEntityBeyonderCapability cap, LivingEntity target) {
-        levelUp = level%10 <= 7;
+    public void onUpgrade(int oldLevel, int newLevel, LivingEntityBeyonderCapability cap, LivingEntity target) {
+        levelUp = newLevel <= 7;
     }
 
     @Override

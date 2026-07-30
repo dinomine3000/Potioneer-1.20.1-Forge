@@ -17,15 +17,15 @@ public class CogitationAbility extends PassiveAbility {
 
     @Override
     public AbilityInfo getAbilityInfo() {
-        return Abilities.getInfo(abilityId, getCooldown(), getMaxCooldown(), isEnabled(), getMainDescId(sequenceLevel), getAllDescId(sequenceLevel), getAbilityKey(), Math.floorDiv(pathwaySequenceId, 10));
+        return Abilities.getInfo(abilityId, getCooldown(), getMaxCooldown(), isEnabled(), getMainDescId(sequenceLevel), getAllDescId(sequenceLevel), getAbilityKey(), Math.floorDiv(pathwaySequenceId, 10), sequenceLevel);
     }
 
-    @Override
-    public void upgradeToLevel(int pathwaySequenceId, LivingEntityBeyonderCapability cap, LivingEntity target) {
+    /*@Override
+    public void upgradePathway(int pathwaySequenceId, LivingEntityBeyonderCapability cap, LivingEntity target) {
         if(this.pathwaySequenceId == pathwaySequenceId) return;
         onUpgrade(this.pathwaySequenceId, pathwaySequenceId, cap, target);
         this.pathwaySequenceId = pathwaySequenceId;
-    }
+    }*/
 
     @Override
     public int getSequenceLevel() {

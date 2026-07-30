@@ -65,9 +65,15 @@ public abstract class Ability {
     public AbilityInfo getAbilityInfo(){
         if(abilityKey == null){
             System.out.println("Warning: tried to get ability info with a null key");
-            return Abilities.getInfo(abilityId, cooldown, maxCooldown, state, getMainDescId(sequenceLevel), getAllDescId(sequenceLevel), new AbilityKey(abilityId, sequenceLevel)).withData(abilityData);
+            return Abilities.getInfo(abilityId, cooldown, maxCooldown, state,
+                    getMainDescId(sequenceLevel), getAllDescId(sequenceLevel),
+                    new AbilityKey(abilityId, sequenceLevel), sequenceLevel)
+                    .withData(abilityData);
         }
-        return Abilities.getInfo(abilityId, cooldown, maxCooldown, state, getMainDescId(sequenceLevel), getAllDescId(sequenceLevel), abilityKey).withData(abilityData);
+        return Abilities.getInfo(abilityId, cooldown, maxCooldown, state,
+                getMainDescId(sequenceLevel), getAllDescId(sequenceLevel),
+                abilityKey, sequenceLevel)
+                .withData(abilityData);
     }
 
     protected abstract String getMainDescId(int sequenceLevel);
@@ -269,18 +275,19 @@ public abstract class Ability {
         });
     }
 
-    public void setSequenceLevelSilent(int level){
-        sequenceLevel = level;
-        if(abilityKey != null)
-            this.abilityKey = new AbilityKey(abilityKey.getGroup(), abilityKey.getAbilityId(), level);
-    }
-
-    public void upgradeToLevel(int level, LivingEntityBeyonderCapability cap, LivingEntity target) {
+    public final void upgradeToLevel(int level, LivingEntityBeyonderCapability cap, LivingEntity target) {
         if(sequenceLevel == level) return;
         onUpgrade(sequenceLevel, level, cap, target);
         sequenceLevel = level;
         if(this.abilityKey != null)
             this.abilityKey = new AbilityKey(abilityKey.getGroup(), abilityKey.getAbilityId(), level);
+    }
+
+    public void upgradeToLevelSilently(int level, LivingEntityBeyonderCapability cap, LivingEntity target) {
+        if(sequenceLevel == level) return;
+        onUpgrade(sequenceLevel, level, cap, target);
+        sequenceLevel = level;
+        sendUpdateMessageToClient(target);
     }
 
     /**

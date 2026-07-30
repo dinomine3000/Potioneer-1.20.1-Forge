@@ -185,6 +185,7 @@ public class BeyonderStats {
         if(heal && maxHealthO < player.getMaxHealth()){
             player.heal(player.getMaxHealth() - maxHealthO);
         }
+        if(player.getHealth() > player.getMaxHealth()) player.setHealth(player.getMaxHealth());
     }
 
     //Credit to the create mod

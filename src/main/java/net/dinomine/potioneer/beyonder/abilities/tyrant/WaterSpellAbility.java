@@ -87,10 +87,10 @@ public class WaterSpellAbility extends AbilityWithOptions {
     }
 
     @Override
-    public void upgradeToLevel(int level, LivingEntityBeyonderCapability cap, LivingEntity target) {
-        super.upgradeToLevel(level, cap, target);
-        updateOptions(level);
+    public void onUpgrade(int oldLevel, int newLevel, LivingEntityBeyonderCapability cap, LivingEntity target) {
+        updateOptions(newLevel);
     }
+
 
     @Override
     protected String getMainDescId(int sequenceLevel) {
@@ -174,6 +174,7 @@ public class WaterSpellAbility extends AbilityWithOptions {
             if(ally instanceof ServerPlayer player) playerAllies.add(player);
         }
         if(!healFlag) return false;
+
 
         target.hurt(PotioneerDamage.tyrantHealing((ServerLevel) target.level()), alliesAround.size());
         if(target instanceof ServerPlayer playerTarget) playerAllies.add(playerTarget);
