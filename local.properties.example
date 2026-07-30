@@ -1,2 +1,5 @@
-dev_username=Name
-dev_uuid=UUID
+dev1_username=Name1
+dev1_uuid=UUID1
+
+dev2_username=Name2
+dev2_uuid=UUID2

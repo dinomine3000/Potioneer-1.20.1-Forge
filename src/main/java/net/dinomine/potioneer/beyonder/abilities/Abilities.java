@@ -178,7 +178,7 @@ public class Abilities {
 
     //retweaked
     public static final AbilityFactory WATER_SCALES = registerAbility("scales",
-            (Integer level) -> PassiveAbility.createAbility(level, BeyonderEffects.TYRANT_SCALES, lvl -> lvl < 6 ? "scales_2" : "scales").canFlip().withThreshold(0.1f).withCost(ignored -> 1),
+            (Integer level) -> PassiveAbility.createAbility(level, BeyonderEffects.TYRANT_SCALES, ignored -> "scales").canFlip().withThreshold(0.1f).withCost(ignored -> 1),
             0, 1, 10);
 
     //retweaked

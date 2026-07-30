@@ -15,6 +15,7 @@ import net.dinomine.potioneer.savedata.AllySystemSaveData;
 import net.dinomine.potioneer.sound.ModSounds;
 import net.dinomine.potioneer.util.ParticleMaker;
 import net.dinomine.potioneer.util.misc.ModCompoundTags;
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Position;
 import net.minecraft.core.particles.DustParticleOptions;
@@ -22,7 +23,9 @@ import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Connection;
+import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
@@ -140,7 +143,25 @@ public class WaterTrapBlockEntity extends BlockEntity implements GeoBlockEntity 
                 Entity caster = sLevel.getEntity(id);
                 if(caster != null){
                     LivingEntityBeyonderCapability cap = caster.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve().get();
-                    if(cap.getAbilitiesManager().hasAbilityOrBetter(Abilities.TYRANT_WATER_TRAP.getAblId(), 7)){
+                    if(cap.getAbilitiesManager().hasAbilityOrBetter(Abilities.TYRANT_WATER_SPELLS.getAblId(), 7)){
+                        // Define the command you want to autofill into their chat bar
+                        String commandToSuggest = "/t command_name";
+
+                        // Create the clickable text component
+                        Component clickableText = Component.literal("[Click to prepare command]")
+                                .withStyle(style -> style
+                                        .withColor(ChatFormatting.AQUA)
+                                        .withUnderlined(true)
+                                        .withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, commandToSuggest))
+                                        .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal("Click to insert command into chat")))
+                                );
+
+                        // Combine your translatable message with the clickable component
+                        Component message = Component.translatable("message.potioneer.water_trap_activated")
+                                .append(" ")
+                                .append(clickableText);
+
+                        caster.sendSystemMessage(message);
                         caster.sendSystemMessage(Component.translatable("message.potioneer.water_trap_activated"));
                     }
                 }

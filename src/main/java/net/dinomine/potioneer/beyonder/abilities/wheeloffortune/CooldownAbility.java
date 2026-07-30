@@ -44,8 +44,10 @@ public class CooldownAbility extends PassiveAbility {
 
     @Override
     protected boolean primary(LivingEntityBeyonderCapability cap, LivingEntity target) {
-        cap.requestActiveSpiritualityCost(cost());
+        if(cap.getSpirituality() < cost()) return false;
         ParticleMaker.summonAOEParticles(target.level(), target.position(), 2*effectRadius, effectRadius, ParticleMaker.Preset.AOE_END_ROD);
+        if(target.level().isClientSide()) return true;
+        cap.requestActiveSpiritualityCost(cost());
         List<LivingEntity> victims = AbilityFunctionHelper.getLivingEntitiesAround(target, effectRadius);
         for(LivingEntity ent: victims){
             if(!PotioneerCommonConfig.COOLDOWN_TARGET_ALLIES.get() && ent instanceof Player playerVictim && target instanceof Player playerCaster && playerVictim != playerCaster){

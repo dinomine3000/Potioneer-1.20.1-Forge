@@ -27,9 +27,10 @@ if (localPropertiesFile.exists()) {
 }
 
 // Set defaults if the local file is missing
-project.ext.devUsername = localProperties.getProperty('dev_username') ?: 'DevPlayer'
-project.ext.devUUID = localProperties.getProperty('dev_uuid') ?: '0'
-
+project.ext.devUsername1 = localProperties.getProperty('dev1_username') ?: 'Klein'
+project.ext.devUUID1 = localProperties.getProperty('dev1_uuid') ?: '0'
+project.ext.devUsername2 = localProperties.getProperty('dev2_username') ?: 'Amon'
+project.ext.devUUID2 = localProperties.getProperty('dev2_uuid') ?: '0'
 // Mojang ships Java 17 to end users in 1.18+, so your mod should target Java 17.
 java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 
@@ -101,13 +102,28 @@ minecraft {
                 }
             }
         }
-
         client {
-            // Comma-separated list of namespaces to load gametests from. Empty = all namespaces.
             property 'forge.enabledGameTestNamespaces', mod_id
             property 'forge.logging.console.level', 'debug'
-            // Reference the variables here
-            args "--username=${project.devUsername}", "--uuid=${project.devUUID}", '--skin=./skins/dev1.png'
+        }
+
+        client1 {
+            parent runs.client
+            workingDirectory project.file('run/client1')
+            taskName 'runClient1'
+
+            // Pass flags as distinct tokens
+            args '--username', "${project.devUsername1}",
+                    '--uuid', "${project.devUUID1}"
+        }
+
+        client2 {
+            parent runs.client
+            workingDirectory project.file('run/client2')
+            taskName 'runClient2'
+
+            args '--username', "${project.devUsername2}",
+                    '--uuid', "${project.devUUID2}"
         }
 
         server {
