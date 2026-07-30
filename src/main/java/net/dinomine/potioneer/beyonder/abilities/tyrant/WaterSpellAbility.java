@@ -3,6 +3,7 @@ package net.dinomine.potioneer.beyonder.abilities.tyrant;
 import net.dinomine.potioneer.beyonder.abilities.AbilityFunctionHelper;
 import net.dinomine.potioneer.beyonder.abilities.AbilityOptions;
 import net.dinomine.potioneer.beyonder.abilities.AbilityWithOptions;
+import net.dinomine.potioneer.beyonder.damages.PotioneerDamage;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffect;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
 import net.dinomine.potioneer.beyonder.effects.tyrant.WaterJetEffect;
@@ -10,6 +11,8 @@ import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
 import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
 import net.dinomine.potioneer.block.ModBlocks;
 import net.dinomine.potioneer.block.entity.WaterTrapBlockEntity;
+import net.dinomine.potioneer.network.PacketHandler;
+import net.dinomine.potioneer.network.messages.effects.GeneralAreaEffectMessage;
 import net.dinomine.potioneer.savedata.AllySystemSaveData;
 import net.dinomine.potioneer.sound.ModSounds;
 import net.dinomine.potioneer.util.ParticleMaker;
@@ -17,8 +20,11 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.damagesource.DamageSources;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
@@ -37,8 +43,10 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.ForgeMod;
+import net.minecraftforge.network.PacketDistributor;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import static net.dinomine.potioneer.block.custom.BaseLightSourceBlock.WATERLOGGED;
 import static net.minecraft.world.level.block.Block.dropResources;
@@ -49,6 +57,7 @@ public class WaterSpellAbility extends AbilityWithOptions {
     private static final int DROWNING_COST = 30;
     private static final int WATER_TRAP_COST = 30;
     private static final int WATER_JET_COST = 10;
+    private static final int HEALING_COST = 30;
     /**
      * pass the sequence level or pathway-sequence id to define the abilities sequence level
      * abilities that depend on changing pathways like Cogitation, that exists for every pathway, need to process their own pathway-sequence id here.
@@ -58,20 +67,33 @@ public class WaterSpellAbility extends AbilityWithOptions {
      */
     public WaterSpellAbility(int sequenceLevel) {
         super(sequenceLevel, 20);
-        setPrimaryOptions(new AbilityOptions()
+        updateOptions(sequenceLevel);
+    }
+
+    private void updateOptions(int sequenceLevel){
+        AbilityOptions pOption = new AbilityOptions()
                 .addEmptyOption("drowning", Component.literal("Drowning"))
                 .addEmptyOption("water_trap", Component.literal("Water Trap"))
                 .addEmptyOption("water_prison", Component.literal("Water Prison"))
-                .addEmptyOption("water_jet", Component.literal("Water Jet")));
-        setSecondaryOptions(new AbilityOptions()
+                .addEmptyOption("water_jet", Component.literal("Water Jet"));
+        if(sequenceLevel < 8) pOption.addEmptyOption("healing", Component.literal("Healing"));
+        AbilityOptions sOptions = new AbilityOptions()
                 .addEmptyOption("create", Component.literal("Conjure Water"))
                 .addEmptyOption("consume", Component.literal("Consume Water"))
-                .addEmptyOption("remove_trap", Component.literal("Absorb Water Trap")));
+                .addEmptyOption("remove_trap", Component.literal("Absorb Water Trap"));
+        setPrimaryOptions(pOption);
+        setSecondaryOptions(sOptions);
+    }
+
+    @Override
+    public void upgradeToLevel(int level, LivingEntityBeyonderCapability cap, LivingEntity target) {
+        super.upgradeToLevel(level, cap, target);
+        updateOptions(level);
     }
 
     @Override
     protected String getDescId(int sequenceLevel) {
-        return "water_spell_7";
+        return "water_spell_" + (sequenceLevel < 8 ? "8" : "7");
     }
 
     @Override
@@ -80,6 +102,7 @@ public class WaterSpellAbility extends AbilityWithOptions {
         else if(args.equalsIgnoreCase("water_trap")) return placeWaterTrap(cap, target);
         else if(args.equalsIgnoreCase("water_prison")) return applyWaterPrison(cap, target);
         else if(args.equalsIgnoreCase("water_jet")) return doWaterJet(cap, target);
+        else if(args.equalsIgnoreCase("healing")) return doHealing(cap, target);
         return false;
     }
 
@@ -115,6 +138,34 @@ public class WaterSpellAbility extends AbilityWithOptions {
         }
         else if (args.equalsIgnoreCase("remove_trap")) return absorbWaterTrap(cap, target);
         return false;
+    }
+
+
+    private final int HEALING_RADIUS = 16;
+    private boolean doHealing(LivingEntityBeyonderCapability cap, LivingEntity target){
+        if(cap.getSpirituality() < HEALING_COST) return false;
+        if(target.level().isClientSide()) return true;
+
+        AllySystemSaveData data = AllySystemSaveData.from((ServerLevel) target.level());
+        List<LivingEntity> alliesAround = AbilityFunctionHelper.getLivingEntitiesAround(target, HEALING_RADIUS, ent -> data.areEntitiesAllies(ent, target));
+        if(alliesAround.isEmpty()) return false;
+
+        boolean healFlag = false;
+        List<ServerPlayer> playerAllies = new ArrayList<>();
+        for(LivingEntity ally: alliesAround){
+            if(ally.is(target)) continue;
+            healFlag = true;
+            ally.heal(6);
+            if(ally instanceof ServerPlayer player) playerAllies.add(player);
+        }
+        if(!healFlag) return false;
+
+        target.hurt(PotioneerDamage.tyrantHealing((ServerLevel) target.level()), alliesAround.size());
+        if(target instanceof ServerPlayer playerTarget) playerAllies.add(playerTarget);
+        setNextCooldownAs(20*10);
+        cap.requestActiveSpiritualityCost(HEALING_COST);
+        PacketHandler.sendToPlayers(new GeneralAreaEffectMessage(ParticleMaker.Preset.AOE_END_ROD, target.getOnPos().getCenter().toVector3f(), HEALING_RADIUS), playerAllies);
+        return true;
     }
 
     private boolean doWaterJet(LivingEntityBeyonderCapability cap, LivingEntity target){

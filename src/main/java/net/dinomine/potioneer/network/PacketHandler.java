@@ -14,15 +14,19 @@ import net.dinomine.potioneer.network.messages.advancement.AdvancementFailMessag
 import net.dinomine.potioneer.network.messages.advancement.BeginAdvancementMessage;
 import net.dinomine.potioneer.network.messages.advancement.PlayerAdvanceMessage;
 import net.minecraft.core.BlockPos;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.network.NetworkRegistry;
 import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.network.simple.SimpleChannel;
 
+import java.util.Collection;
 import java.util.List;
 
 public class PacketHandler {
@@ -65,28 +69,69 @@ public class PacketHandler {
         INSTANCE.registerMessage(i++, PhotonFxMessage.class, PhotonFxMessage::encode, PhotonFxMessage::decode, PhotonFxMessage::handle);
         INSTANCE.registerMessage(i++, EntityEffectVisualMessage.class, EntityEffectVisualMessage::encode, EntityEffectVisualMessage::decode, EntityEffectVisualMessage::handle);
     }
-
-    public static <T> void sendMessageSTC(T message, LivingEntity player){
-        if(player.level().isClientSide) return;
-        if(!(player instanceof ServerPlayer sPlayer)) return;
-        if(sPlayer.connection == null) return;
-        INSTANCE.send(PacketDistributor.PLAYER.with(() ->  sPlayer), message);
+    public static <T> void sendToPlayer(T message, ServerPlayer player) {
+        if (player.connection == null) return;
+        INSTANCE.send(PacketDistributor.PLAYER.with(() -> player), message);
     }
 
-    public static <T> void sendMessageCTS(T message){
+    /** Send to a list/collection of specific players (Server -> Client) */
+    public static <T> void sendToPlayers(T message, Collection<ServerPlayer> players) {
+        for (ServerPlayer player : players) {
+            sendToPlayer(message, player);
+        }
+    }
+
+    /** Send to all players connected to the server (Server -> Client) */
+    public static <T> void sendToAll(T message) {
+        INSTANCE.send(PacketDistributor.ALL.noArg(), message);
+    }
+
+    /** Send to all players tracking a specific entity (Server -> Client) */
+    public static <T> void sendToTrackingEntity(T message, Entity entity) {
+        INSTANCE.send(PacketDistributor.TRACKING_ENTITY.with(() -> entity), message);
+    }
+
+    /** Send to all players tracking a specific entity AND the entity itself if it's a player */
+    public static <T> void sendToTrackingEntityAndSelf(T message, Entity entity) {
+        INSTANCE.send(PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> entity), message);
+    }
+
+    /** Send to all players near a position in a world dimension */
+    public static <T> void sendToNear(T message, ResourceKey<Level> dimension, double x, double y, double z, double radius) {
+        INSTANCE.send(PacketDistributor.NEAR.with(() ->
+                new PacketDistributor.TargetPoint(x, y, z, radius, dimension)
+        ), message);
+    }
+
+    /** Send to all players in a specific dimension */
+    public static <T> void sendToDimension(T message, ResourceKey<Level> dimension) {
+        INSTANCE.send(PacketDistributor.DIMENSION.with(() -> dimension), message);
+    }
+
+    /** Send from Client to Server */
+    public static <T> void sendToServer(T message) {
         INSTANCE.sendToServer(message);
     }
 
-    public static <T> void sendMessageToClientsAround(BlockPos pos, Level level, int radius, T message) {
-        List<LivingEntity> entities = AbilityFunctionHelper.getLivingEntitiesAround(pos, level, radius);
-        for(LivingEntity ent: entities){
-            sendMessageSTC(message, ent);
+    public static <T> void sendMessageSTC(T message, LivingEntity player) {
+        if (player.level().isClientSide()) return;
+        if (player instanceof ServerPlayer sPlayer) {
+            sendToPlayer(message, sPlayer);
         }
     }
+
+    public static <T> void sendMessageCTS(T message) {
+        sendToServer(message);
+    }
+
+    public static <T> void sendMessageToClientsAround(BlockPos pos, Level level, int radius, T message) {
+        if (level.isClientSide()) return;
+        sendToNear(message, level.dimension(), pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, radius);
+    }
+
     public static <T> void sendMessageToClientsAround(LivingEntity target, int radius, T message) {
-        List<LivingEntity> entities = AbilityFunctionHelper.getLivingEntitiesAround(target, radius);
-        for(LivingEntity ent: entities){
-            sendMessageSTC(message, ent);
-        }
+        if (target.level().isClientSide()) return;
+        Vec3 pos = target.position();
+        sendToNear(message, target.level().dimension(), pos.x, pos.y, pos.z, radius);
     }
 }

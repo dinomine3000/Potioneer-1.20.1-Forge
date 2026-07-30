@@ -32,6 +32,7 @@ public class PotioneerDamage {
     public static final ResourceKey<DamageType> LOW_SPIRITUALITY = ResourceKey.create(Registries.DAMAGE_TYPE, new ResourceLocation(Potioneer.MOD_ID, "low_spirituality"));
     public static final ResourceKey<DamageType> ASTEROID = ResourceKey.create(Registries.DAMAGE_TYPE, new ResourceLocation(Potioneer.MOD_ID, "asteroid"));
     public static final ResourceKey<DamageType> ARREST = ResourceKey.create(Registries.DAMAGE_TYPE, new ResourceLocation(Potioneer.MOD_ID, "arrest"));
+    public static final ResourceKey<DamageType> TYRANT_HEALING = ResourceKey.create(Registries.DAMAGE_TYPE, new ResourceLocation(Potioneer.MOD_ID, "tyrant_healing"));
     public static final ResourceKey<DamageType> WATER_TRAP = ResourceKey.create(Registries.DAMAGE_TYPE, new ResourceLocation(Potioneer.MOD_ID, "water_trap_explosion"));
     public static final ResourceKey<DamageType> WATER_TRAP_ENVIRONMENT = ResourceKey.create(Registries.DAMAGE_TYPE, new ResourceLocation(Potioneer.MOD_ID, "water_trap_explosion_environment"));
 //    public static final ResourceKey<DamageType> MENTAL = ResourceKey.create(Registries.DAMAGE_TYPE, new ResourceLocation(Potioneer.MOD_ID, "mental"));
@@ -39,6 +40,10 @@ public class PotioneerDamage {
 
     public static DamageSource crit(ServerLevel level, LivingEntity attacker) {
         return getSource(level, CRIT, attacker);
+    }
+
+    public static DamageSource tyrantHealing(ServerLevel level) {
+        return getSource(level, TYRANT_HEALING);
     }
 
     public static DamageSource water_trap(ServerLevel level, @Nullable LivingEntity attacker) {
