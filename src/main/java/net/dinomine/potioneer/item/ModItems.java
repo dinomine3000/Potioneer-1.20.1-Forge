@@ -32,6 +32,18 @@ public class ModItems {
     public static final RegistryObject<Item> SAPPHIRE = ITEMS.register("sapphire",
             () -> new Item(new Item.Properties()));
 
+    public static final RegistryObject<Item> WATER_HELMET = ITEMS.register("water_helmet",
+            () -> new ArmorItem(ModArmorMaterials.WATER, ArmorItem.Type.HELMET, new Item.Properties()));
+
+    public static final RegistryObject<Item> WATER_CHESTPLATE = ITEMS.register("water_chestplate",
+            () -> new ArmorItem(ModArmorMaterials.WATER, ArmorItem.Type.CHESTPLATE, new Item.Properties()));
+
+    public static final RegistryObject<Item> WATER_LEGGINGS = ITEMS.register("water_leggings",
+            () -> new ArmorItem(ModArmorMaterials.WATER, ArmorItem.Type.LEGGINGS, new Item.Properties()));
+
+    public static final RegistryObject<Item> WATER_BOOTS = ITEMS.register("water_boots",
+            () -> new ArmorItem(ModArmorMaterials.WATER, ArmorItem.Type.BOOTS, new Item.Properties()));
+
     public static final RegistryObject<Item> BROKEN_ARTIFACT = ITEMS.register("broken_artifact",
             () -> new Item(new Item.Properties().stacksTo(1).fireResistant()));
 

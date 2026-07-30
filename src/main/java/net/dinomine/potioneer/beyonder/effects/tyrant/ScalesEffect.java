@@ -1,11 +1,13 @@
 package net.dinomine.potioneer.beyonder.effects.tyrant;
 
+import com.google.common.collect.Multimap;
 import net.dinomine.potioneer.beyonder.abilities.AbilityFunctionHelper;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffect;
 import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
@@ -17,18 +19,20 @@ public class ScalesEffect extends BeyonderEffect {
 
     @Override
     public void onAcquire(LivingEntityBeyonderCapability cap, LivingEntity target) {
-        if(target instanceof Player player){
-            AbilityFunctionHelper.addAttributeTo(player, attributeId, "scales armor", 4 + (9-getSequenceLevel())*2, AttributeModifier.Operation.ADDITION, Attributes.ARMOR);
+        if(sequenceLevel < 8 && target instanceof Player player){
+            AbilityFunctionHelper.addAttributeTo(player, getModifier());
         }
     }
 
     @Override
     protected void doTick(LivingEntityBeyonderCapability cap, LivingEntity target) {
         if(target.level().isClientSide()) return;
+        cap.getEffectsManager().statsHolder.addArmor(4 + (9-getSequenceLevel())*2);
         if(target.isInWater()){
             if(target.getHealth() < target.getMaxHealth()){
                 int amplifier = (int)((10 - getSequenceLevel())/2f);
-                target.addEffect(new MobEffectInstance(MobEffects.REGENERATION, 22, amplifier, false, true, true));
+                if(!target.hasEffect(MobEffects.REGENERATION))
+                    target.addEffect(new MobEffectInstance(MobEffects.REGENERATION, 25, amplifier, false, true, true));
                 cap.requestPassiveSpiritualityCost(cost);
             }
         }
@@ -36,8 +40,11 @@ public class ScalesEffect extends BeyonderEffect {
 
     @Override
     public void stopEffects(LivingEntityBeyonderCapability cap, LivingEntity target) {
-        if(target instanceof Player player){
-            AbilityFunctionHelper.removeAttribute(player, attributeId, "scales armor", 4 + (9-getSequenceLevel())*2, AttributeModifier.Operation.ADDITION, Attributes.ARMOR);
-        }
+        if(target instanceof Player player)
+            AbilityFunctionHelper.removeAttribute(player, getModifier());
+    }
+
+    private static Multimap<Attribute, AttributeModifier> getModifier(){
+        return AbilityFunctionHelper.getEntityModifier(Attributes.KNOCKBACK_RESISTANCE, attributeId, AttributeModifier.Operation.ADDITION, "scales_knockback", 1d);
     }
 }

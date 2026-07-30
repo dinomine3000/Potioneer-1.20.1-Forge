@@ -228,7 +228,7 @@ public class BeyonderScreen extends Screen {
         pGuiGraphics.drawWordWrap(this.font, Component.translatable("beyonder.potioneer.stat_dmg").append(" " + ClientStatsData.getStat(1)), leftPos + 63, topPos + 80, 100, this.color);
         pGuiGraphics.drawWordWrap(this.font, Component.translatable("beyonder.potioneer.stat_armor").append(" " + ClientStatsData.getStat(2)), leftPos + 63, topPos + 93, 100, this.color);
         pGuiGraphics.drawWordWrap(this.font, Component.translatable("beyonder.potioneer.stat_tough").append(" " + ClientStatsData.getStat(3)), leftPos + 63, topPos + 106, 100, this.color);
-        pGuiGraphics.drawWordWrap(this.font, Component.translatable("beyonder.potioneer.stat_knock").append(" " + ClientStatsData.getStat(4)), leftPos + 63, topPos + 119, 100, this.color);
+        pGuiGraphics.drawWordWrap(this.font, Component.translatable("beyonder.potioneer.stat_max_sanity").append(" " + ClientStatsData.getStat(4)), leftPos + 63, topPos + 119, 100, this.color);
     }
 
     public void drawScaledString(GuiGraphics guiGraphics, Font font, String text, int x, int y, float scale, int color) {

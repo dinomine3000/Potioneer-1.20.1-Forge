@@ -20,24 +20,27 @@ public class PlayerSTCStatsSync {
     public float spirituality;
     public int maxSpirituality;
     public int sanity;
+    public int maxSanity;
     public float actingProgress;
     public int[] stats;
     public List<Integer> pages;
 
-    public PlayerSTCStatsSync(float spirituality, int maxSpirituality, int sanity, float actingProgress, int[] stats, List<Integer> pages) {
+    public PlayerSTCStatsSync(float spirituality, int maxSpirituality, int sanity, int maxSanity, float actingProgress, int[] stats, List<Integer> pages) {
         this.spirituality = spirituality;
         this.maxSpirituality = maxSpirituality;
         this.sanity = sanity;
+        this.maxSanity = maxSanity;
         this.actingProgress = actingProgress;
         this.stats = stats;
         if(pages.isEmpty()) pages.add(1);
         this.pages = pages;
     }
 
-    public PlayerSTCStatsSync(float spirituality, int maxSpirituality, int sanity, float actingProgress, int[] stats) {
+    public PlayerSTCStatsSync(float spirituality, int maxSpirituality, int sanity, int maxSanity, float actingProgress, int[] stats) {
         this.spirituality = spirituality;
         this.maxSpirituality = maxSpirituality;
         this.sanity = sanity;
+        this.maxSanity = maxSanity;
         this.actingProgress = actingProgress;
         this.stats = stats;
         this.pages = new ArrayList<>();
@@ -47,6 +50,7 @@ public class PlayerSTCStatsSync {
         buffer.writeFloat(msg.spirituality);
         buffer.writeInt(msg.maxSpirituality);
         buffer.writeInt(msg.sanity);
+        buffer.writeInt(msg.maxSanity);
         buffer.writeFloat(msg.actingProgress);
         buffer.writeInt(msg.stats[0]);
         buffer.writeInt(msg.stats[1]);
@@ -60,6 +64,7 @@ public class PlayerSTCStatsSync {
         float spir = buffer.readFloat();
         int max = buffer.readInt();
         int san = buffer.readInt();
+        int maxSan = buffer.readInt();
         float acting = buffer.readFloat();
         int hp = buffer.readInt();
         int dmg = buffer.readInt();
@@ -67,8 +72,8 @@ public class PlayerSTCStatsSync {
         int tough = buffer.readInt();
         int knockback = buffer.readInt();
         List<Integer> pages = BufferUtils.readIntListFromBuffer(buffer);
-        if(pages.isEmpty()) return new PlayerSTCStatsSync(spir, max, san, acting, new int[]{hp, dmg, armor, tough, knockback});
-        return new PlayerSTCStatsSync(spir, max, san, acting, new int[]{hp, dmg, armor, tough, knockback}, pages);
+        if(pages.isEmpty()) return new PlayerSTCStatsSync(spir, max, san, maxSan, acting, new int[]{hp, dmg, armor, tough, knockback});
+        return new PlayerSTCStatsSync(spir, max, san, maxSan, acting, new int[]{hp, dmg, armor, tough, knockback}, pages);
     }
 
     public static void handle(PlayerSTCStatsSync msg, Supplier<NetworkEvent.Context> contextSupplier){
@@ -92,6 +97,7 @@ class ClientHudStatsSyncMessage
     public static void handlePacket(PlayerSTCStatsSync msg)
     {
         ClientStatsData.setActing(msg.actingProgress);
+        ClientStatsData.setMaxSanity(msg.maxSanity);
 //        ClientStatsData.setLuck(msg.luck, msg.minLuck, msg.maxLuck);
         if(Minecraft.getInstance().player == null) return;
         Minecraft.getInstance().player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {

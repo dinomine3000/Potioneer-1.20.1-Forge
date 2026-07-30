@@ -1,113 +1,99 @@
-[26Jun2026 12:35:17.605] [main/INFO] [cpw.mods.modlauncher.Launcher/MODLAUNCHER]: ModLauncher running: args [--launchTarget, forgedatauserdev, --assetIndex, 5, --assetsDir, C:\Users\Utilizador\.gradle\caches\forge_gradle\assets, --gameDir, ., --fml.forgeVersion, 47.3.0, --fml.mcVersion, 1.20.1, --fml.forgeGroup, net.minecraftforge, --fml.mcpVersion, 20230612.114412, --mod, potioneer, --all, --output, C:\Users\Utilizador\Desktop\mods\Potioneer\src\generated\resources, --existing, C:\Users\Utilizador\Desktop\mods\Potioneer\src\main\resources, --mixin.config, mixins.potioneer.json]
-[26Jun2026 12:35:17.605] [main/INFO] [cpw.mods.modlauncher.Launcher/MODLAUNCHER]: ModLauncher 10.0.9+10.0.9+main.dcd20f30 starting: java version 17.0.13 by Eclipse Adoptium; OS Windows 11 arch amd64 version 10.0
-[26Jun2026 12:35:17.728] [main/INFO] [net.minecraftforge.fml.loading.ImmediateWindowHandler/]: ImmediateWindowProvider not loading because launch target is forgedatauserdev
-[26Jun2026 12:35:17.777] [main/INFO] [mixin/]: SpongePowered MIXIN Subsystem Version=0.8.5 Source=union:/C:/Users/Utilizador/.gradle/caches/modules-2/files-2.1/org.spongepowered/mixin/0.8.5/9d1c0c3a304ae6697ecd477218fa61b850bf57fc/mixin-0.8.5.jar%23128!/ Service=ModLauncher Env=CLIENT
-[26Jun2026 12:35:18.146] [main/WARN] [net.minecraftforge.fml.loading.moddiscovery.ModFileParser/LOADING]: Mod file C:\Users\Utilizador\.gradle\caches\modules-2\files-2.1\net.minecraftforge\javafmllanguage\1.20.1-47.3.0\d7ebc62120f202109e300e084ca1a31a7b946a62\javafmllanguage-1.20.1-47.3.0.jar is missing mods.toml file
-[26Jun2026 12:35:18.150] [main/WARN] [net.minecraftforge.fml.loading.moddiscovery.ModFileParser/LOADING]: Mod file C:\Users\Utilizador\.gradle\caches\modules-2\files-2.1\net.minecraftforge\lowcodelanguage\1.20.1-47.3.0\1bf3e845ea0ce750096da8c71c8364b188ab74d4\lowcodelanguage-1.20.1-47.3.0.jar is missing mods.toml file
-[26Jun2026 12:35:18.152] [main/WARN] [net.minecraftforge.fml.loading.moddiscovery.ModFileParser/LOADING]: Mod file C:\Users\Utilizador\.gradle\caches\modules-2\files-2.1\net.minecraftforge\mclanguage\1.20.1-47.3.0\6093682e943ddccbabf70539319d7f2fe64db2e7\mclanguage-1.20.1-47.3.0.jar is missing mods.toml file
-[26Jun2026 12:35:18.156] [main/WARN] [net.minecraftforge.fml.loading.moddiscovery.ModFileParser/LOADING]: Mod file C:\Users\Utilizador\.gradle\caches\modules-2\files-2.1\net.minecraftforge\fmlcore\1.20.1-47.3.0\3b6be96aba3e323f3c918e8ef6a96312d82d76ad\fmlcore-1.20.1-47.3.0.jar is missing mods.toml file
-[26Jun2026 12:35:18.486] [main/WARN] [net.minecraftforge.jarjar.selection.JarSelector/]: Attempted to select a dependency jar for JarJar which was passed in as source: ldlib. Using Mod File: C:\Users\Utilizador\.gradle\caches\forge_gradle\deobf_dependencies\com\lowdragmc\ldlib\ldlib-forge-1.20.1\1.0.40_mapped_parchment_2023.09.03-1.20.1\ldlib-forge-1.20.1-1.0.40_mapped_parchment_2023.09.03-1.20.1.jar
-[26Jun2026 12:35:18.487] [main/INFO] [net.minecraftforge.fml.loading.moddiscovery.JarInJarDependencyLocator/]: Found 3 dependencies adding them to mods collection
-[26Jun2026 12:35:20.831] [main/WARN] [mixin/]: Compatibility level JAVA_17 specified by mixins.potioneer.json is higher than the maximum level supported by this version of mixin (JAVA_13).
-[26Jun2026 12:35:20.832] [main/INFO] [mixin/]: Compatibility level set to JAVA_17
-[26Jun2026 12:35:20.930] [main/INFO] [cpw.mods.modlauncher.LaunchServiceHandler/MODLAUNCHER]: Launching target 'forgedatauserdev' with arguments [--gameDir, ., --assetsDir, C:\Users\Utilizador\.gradle\caches\forge_gradle\assets, --assetIndex, 5, --mod, potioneer, --all, --output, C:\Users\Utilizador\Desktop\mods\Potioneer\src\generated\resources, --existing, C:\Users\Utilizador\Desktop\mods\Potioneer\src\main\resources]
-[26Jun2026 12:35:21.075] [main/INFO] [mixin/]: Attempting to load Fernflower decompiler (Threaded mode)
-[26Jun2026 12:35:21.077] [main/INFO] [mixin/]: Fernflower could not be loaded, exported classes will not be decompiled. NoClassDefFoundError: org/jetbrains/java/decompiler/main/extern/IResultSaver
-[26Jun2026 12:35:21.118] [main/INFO] [mixin/]: Preparing mixins for MixinEnvironment[DEFAULT]
-[26Jun2026 12:35:21.118] [main/INFO] [mixin/]: Selecting config mixins.potioneer.json
-[26Jun2026 12:35:21.134] [main/WARN] [mixin/]: Reference map 'mixins.potioneer.refmap.json' for mixins.potioneer.json could not be read. If this is a development environment you can ignore this message
-[26Jun2026 12:35:21.134] [main/INFO] [mixin/]: Selecting config mixinextras.init.mixins.json
-[26Jun2026 12:35:21.255] [main/INFO] [mixin/]: Selecting config geckolib.mixins.json
-[26Jun2026 12:35:21.565] [main/INFO] [mixin/]: Remapping refMap geckolib.refmap.json using C:\Users\Utilizador\Desktop\mods\Potioneer\build\createSrgToMcp\output.srg
-[26Jun2026 12:35:21.565] [main/INFO] [mixin/]: Selecting config ldlib-common.mixins.json
-[26Jun2026 12:35:21.574] [main/INFO] [mixin/]: Remapping refMap ldlib-common-1.20.1-ldlib-common-refmap.json using C:\Users\Utilizador\Desktop\mods\Potioneer\build\createSrgToMcp\output.srg
-[26Jun2026 12:35:21.574] [main/INFO] [mixin/]: Selecting config ldlib.mixins.json
-[26Jun2026 12:35:21.577] [main/INFO] [mixin/]: Remapping refMap ldlib-forge-1.20.1-ldlib-forge-refmap.json using C:\Users\Utilizador\Desktop\mods\Potioneer\build\createSrgToMcp\output.srg
-[26Jun2026 12:35:21.577] [main/INFO] [mixin/]: Selecting config photon-common.mixins.json
-[26Jun2026 12:35:21.582] [main/INFO] [mixin/]: Remapping refMap photon-common-1.20.1-photon-common-refmap.json using C:\Users\Utilizador\Desktop\mods\Potioneer\build\createSrgToMcp\output.srg
-[26Jun2026 12:35:21.582] [main/INFO] [mixin/]: Selecting config photon.mixins.json
-[26Jun2026 12:35:21.584] [main/INFO] [mixin/]: Remapping refMap photon-forge-1.20.1-photon-forge-refmap.json using C:\Users\Utilizador\Desktop\mods\Potioneer\build\createSrgToMcp\output.srg
-[26Jun2026 12:35:21.584] [main/INFO] [mixin/]: Selecting config moogs_structures-common.mixins.json
-[26Jun2026 12:35:21.584] [main/INFO] [mixin/]: Remapping refMap moogs_structure_lib-1.20-common-refmap.json using C:\Users\Utilizador\Desktop\mods\Potioneer\build\createSrgToMcp\output.srg
-[26Jun2026 12:35:21.584] [main/INFO] [mixin/]: Selecting config moogs_structures-forge.mixins.json
-[26Jun2026 12:35:21.599] [main/INFO] [mixin/]: Selecting config curios.mixins.json
-[26Jun2026 12:35:21.601] [main/INFO] [mixin/]: Remapping refMap curios.refmap.json using C:\Users\Utilizador\Desktop\mods\Potioneer\build\createSrgToMcp\output.srg
-[26Jun2026 12:35:21.601] [main/INFO] [mixin/]: Preparing mixins.potioneer.json (1)
-[26Jun2026 12:35:21.667] [main/INFO] [mixin/]: Preparing mixinextras.init.mixins.json (0)
-[26Jun2026 12:35:21.667] [main/INFO] [mixin/]: Preparing geckolib.mixins.json (1)
-[26Jun2026 12:35:21.667] [main/INFO] [mixin/]: Preparing ldlib-common.mixins.json (29)
-[26Jun2026 12:35:21.815] [main/INFO] [mixin/]: Preparing ldlib.mixins.json (3)
-[26Jun2026 12:35:21.838] [main/INFO] [mixin/]: Preparing photon-common.mixins.json (5)
-[26Jun2026 12:35:21.864] [main/INFO] [mixin/]: Preparing photon.mixins.json (3)
-[26Jun2026 12:35:21.869] [main/INFO] [mixin/]: Preparing moogs_structures-common.mixins.json (12)
-[26Jun2026 12:35:22.154] [main/INFO] [mixin/]: Preparing moogs_structures-forge.mixins.json (0)
-[26Jun2026 12:35:22.154] [main/INFO] [mixin/]: Preparing curios.mixins.json (13)
-[26Jun2026 12:35:22.223] [main/INFO] [mixin/]: Prepared 63 mixins in 1.100 sec (17.5ms avg) (0ms load, 0ms transform, 0ms plugin)
-[26Jun2026 12:35:23.787] [main/INFO] [net.minecraftforge.data.loading.DatagenModLoader/]: Initializing Data Gatherer for mods [potioneer]
-[26Jun2026 12:35:23.925] [main/INFO] [MixinExtras|Service/]: Initializing MixinExtras via com.llamalad7.mixinextras.service.MixinExtrasServiceImpl(version=0.3.5).
-[26Jun2026 12:35:23.933] [main/INFO] [mixin/]: Mixing accessor.EntityAccessor from ldlib-common.mixins.json into net.minecraft.world.entity.Entity
-[26Jun2026 12:35:23.956] [main/INFO] [mixin/]: Mixing AccessorEntity from curios.mixins.json into net.minecraft.world.entity.Entity
-[26Jun2026 12:35:24.047] [main/INFO] [mixin/]: Mixing MixinLivingEntity from curios.mixins.json into net.minecraft.world.entity.LivingEntity
-[26Jun2026 12:35:24.844] [main/INFO] [mixin/]: Mixing MixinPowderSnowBlock from curios.mixins.json into net.minecraft.world.level.block.PowderSnowBlock
-[26Jun2026 12:35:25.076] [main/INFO] [mixin/]: Mixing BlockEntityMixin from ldlib-common.mixins.json into net.minecraft.world.level.block.entity.BlockEntity
-[26Jun2026 12:35:25.575] [main/INFO] [mixin/]: Mixing accessor.AbstractContainerMenuAccessor from ldlib-common.mixins.json into net.minecraft.world.inventory.AbstractContainerMenu
-[26Jun2026 12:35:25.808] [main/INFO] [mixin/]: Mixing ItemStackMixin from mixins.potioneer.json into net.minecraft.world.item.ItemStack
-[26Jun2026 12:35:25.808] [main/INFO] [mixin/]: Renaming synthetic method lambda$hurtAndBreak$0(Lnet/minecraft/nbt/CompoundTag;Lnet/minecraft/world/entity/player/Player;Lnet/minecraft/world/item/ItemStack;Lnet/dinomine/potioneer/beyonder/player/LivingEntityBeyonderCapability;)V to md79efa0$lambda$hurtAndBreak$0$0 in mixins.potioneer.json:ItemStackMixin
-[26Jun2026 12:35:26.503] [main/INFO] [mixin/]: Mixing MixinShearsItem from curios.mixins.json into net.minecraft.world.item.ShearsItem
-[26Jun2026 12:35:27.971] [main/INFO] [mixin/]: Mixing accessor.ServerPlayerAccessor from ldlib-common.mixins.json into net.minecraft.server.level.ServerPlayer
-[26Jun2026 12:35:28.432] [main/INFO] [mixin/]: Mixing structures.StructureProcessorAccessor from moogs_structures-common.mixins.json into net.minecraft.world.level.levelgen.structure.templatesystem.StructureProcessor
-[26Jun2026 12:35:28.477] [main/INFO] [mixin/]: Mixing structures.StructureTemplateManagerAccessor from moogs_structures-common.mixins.json into net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplateManager
-[26Jun2026 12:35:28.521] [main/INFO] [mixin/]: Mixing MixinInventory from curios.mixins.json into net.minecraft.world.entity.player.Inventory
-[26Jun2026 12:35:28.558] [main/INFO] [mixin/]: Mixing accessor.SlotAccessor from ldlib-common.mixins.json into net.minecraft.world.inventory.Slot
-[26Jun2026 12:35:28.798] [main/INFO] [mixin/]: Mixing MixinApplyBonusCount from curios.mixins.json into net.minecraft.world.level.storage.loot.functions.ApplyBonusCount
-[26Jun2026 12:35:29.233] [main/INFO] [mixin/]: Mixing structures.StructurePieceAccessor from moogs_structures-common.mixins.json into net.minecraft.world.level.levelgen.structure.StructurePiece
-[26Jun2026 12:35:29.365] [main/INFO] [mixin/]: Mixing structures.PoolElementStructurePieceAccessor from moogs_structures-common.mixins.json into net.minecraft.world.level.levelgen.structure.PoolElementStructurePiece
-[26Jun2026 12:35:29.405] [main/INFO] [mixin/]: Mixing structures.StructurePoolAccessor from moogs_structures-common.mixins.json into net.minecraft.world.level.levelgen.structure.pools.StructureTemplatePool
-[26Jun2026 12:35:29.405] [main/INFO] [mixin/]: Renaming @Accessor method getCODEC_REFERENCE()Lorg/apache/commons/lang3/mutable/MutableObject; to getCODEC_REFERENCE_$md$79efa0$0 in moogs_structures-common.mixins.json:structures.StructurePoolAccessor
-[26Jun2026 12:35:29.695] [main/INFO] [mixin/]: Mixing structures.SinglePoolElementAccessor from moogs_structures-common.mixins.json into net.minecraft.world.level.levelgen.structure.pools.SinglePoolElement
-[26Jun2026 12:35:29.749] [main/INFO] [mixin/]: Mixing structures.ListPoolElementAccessor from moogs_structures-common.mixins.json into net.minecraft.world.level.levelgen.structure.pools.ListPoolElement
-[26Jun2026 12:35:30.182] [modloading-worker-0/INFO] [mixin/]: Mixing accessor.MinecraftAccessor from photon-common.mixins.json into net.minecraft.client.Minecraft
-[26Jun2026 12:35:30.187] [modloading-worker-0/INFO] [mixin/]: Renaming @Accessor method getFps()I to getFps_$md$79efa0$0 in photon-common.mixins.json:accessor.MinecraftAccessor
-[26Jun2026 12:35:30.240] [modloading-worker-0/INFO] [Photon/]: Photon is initializing on platform: Forge
-[26Jun2026 12:35:30.240] [modloading-worker-0/INFO] [LowDragLib/]: LowDragLib is initializing on platform: Forge
-[26Jun2026 12:35:30.240] [modloading-worker-0/INFO] [net.minecraftforge.common.ForgeMod/FORGEMOD]: Forge mod loading, version 47.3.0, for MC 1.20.1 with MCP 20230612.114412
-[26Jun2026 12:35:30.240] [modloading-worker-0/INFO] [net.minecraftforge.common.MinecraftForge/FORGE]: MinecraftForge v47.3.0 Initialized
-[26Jun2026 12:35:30.292] [modloading-worker-0/INFO] [mixin/]: Mixing ModelBakeryMixin from ldlib-common.mixins.json into net.minecraft.client.resources.model.ModelBakery
-[26Jun2026 12:35:30.292] [modloading-worker-0/INFO] [mixin/]: Renaming synthetic method lambda$injectLoadModel$0(Lnet/minecraft/resources/ResourceLocation;)Lnet/minecraft/client/resources/model/UnbakedModel; to md79efa0$lambda$injectLoadModel$0$0 in ldlib-common.mixins.json:ModelBakeryMixin
-[26Jun2026 12:35:30.304] [modloading-worker-0/INFO] [mixin/]: Mixing accessor.ModelBakeryAccessor from ldlib-common.mixins.json into net.minecraft.client.resources.model.ModelBakery
-[26Jun2026 12:35:30.433] [modloading-worker-0/INFO] [mixin/]: Mixing accessor.AbstractContainerScreenAccessor from ldlib-common.mixins.json into net.minecraft.client.gui.screens.inventory.AbstractContainerScreen
-[26Jun2026 12:35:30.544] [modloading-worker-0/WARN] [software.bernie.geckolib.GeckoLib/]: Minecraft.getInstance() was null, could not register reload listeners
-[26Jun2026 12:35:30.668] [modloading-worker-0/INFO] [mezz.jei.library.load.PluginCaller/]: Sending ConfigManager...
-[26Jun2026 12:35:30.685] [modloading-worker-0/INFO] [mezz.jei.library.load.PluginCaller/]: Sending ConfigManager took 13.57 ms
-[26Jun2026 12:35:30.707] [modloading-worker-0/INFO] [mixin/]: Mixing ReloadableResourceManagerMixin from ldlib-common.mixins.json into net.minecraft.server.packs.resources.ReloadableResourceManager
-[26Jun2026 12:35:30.841] [modloading-worker-0/INFO] [mixin/]: Mixing accessor.ShaderInstanceAccessor from photon-common.mixins.json into net.minecraft.client.renderer.ShaderInstance
-[26Jun2026 12:35:30.909] [modloading-worker-0/INFO] [mixin/]: Mixing ParticleEngineMixin from ldlib-common.mixins.json into net.minecraft.client.particle.ParticleEngine
-[26Jun2026 12:35:30.911] [modloading-worker-0/INFO] [mixin/]: Renaming synthetic method lambda$injectTick$0(Ljava/util/Map$Entry;)Z to md79efa0$lambda$injectTick$0$0 in ldlib-common.mixins.json:ParticleEngineMixin
-[26Jun2026 12:35:30.912] [modloading-worker-0/INFO] [mixin/]: Mixing accessor.ParticleEngineAccessor from ldlib-common.mixins.json into net.minecraft.client.particle.ParticleEngine
-[26Jun2026 12:35:30.919] [modloading-worker-0/INFO] [mixin/]: Mixing accessor.ParticleEngineAccessor from photon-common.mixins.json into net.minecraft.client.particle.ParticleEngine
-[26Jun2026 12:35:30.927] [modloading-worker-0/INFO] [mixin/]: Mixing ParticleEngineMixin from photon.mixins.json into net.minecraft.client.particle.ParticleEngine
-[26Jun2026 12:35:30.929] [modloading-worker-0/INFO] [mixin/]: Mixing no_iris.ParticleEngineMixin from photon.mixins.json into net.minecraft.client.particle.ParticleEngine
-[26Jun2026 12:35:31.661] [main/WARN] [net.minecraft.server.packs.VanillaPackResourcesBuilder/]: Assets URL 'union:/C:/Users/Utilizador/Desktop/mods/Potioneer/build/fg_cache/net/minecraftforge/forge/1.20.1-47.3.0_mapped_parchment_2023.09.03-1.20.1/forge-1.20.1-47.3.0_mapped_parchment_2023.09.03-1.20.1.jar%23191!/assets/.mcassetsroot' uses unexpected schema
-[26Jun2026 12:35:31.661] [main/WARN] [net.minecraft.server.packs.VanillaPackResourcesBuilder/]: Assets URL 'union:/C:/Users/Utilizador/Desktop/mods/Potioneer/build/fg_cache/net/minecraftforge/forge/1.20.1-47.3.0_mapped_parchment_2023.09.03-1.20.1/forge-1.20.1-47.3.0_mapped_parchment_2023.09.03-1.20.1.jar%23191!/data/.mcassetsroot' uses unexpected schema
-[26Jun2026 12:35:31.695] [main/INFO] [mixin/]: Mixing resources.NamespaceResourceManagerAccessor from moogs_structures-common.mixins.json into net.minecraft.server.packs.resources.FallbackResourceManager
-[26Jun2026 12:35:31.921] [main/INFO] [net.minecraft.data.DataGenerator/]: Starting provider: Recipes
-[26Jun2026 12:35:31.945] [main/INFO] [mixin/]: Mixing MixinNbtPredicate from curios.mixins.json into net.minecraft.advancements.critereon.NbtPredicate
-[26Jun2026 12:35:32.011] [main/INFO] [net.minecraft.data.DataGenerator/]: Recipes finished after 88 ms
-[26Jun2026 12:35:32.011] [main/INFO] [net.minecraft.data.DataGenerator/]: Starting provider: Block States: potioneer
-[26Jun2026 12:35:32.155] [main/INFO] [net.minecraft.data.DataGenerator/]: Block States: potioneer finished after 147 ms
-[26Jun2026 12:35:32.155] [main/INFO] [net.minecraft.data.DataGenerator/]: Starting provider: Item Models: potioneer
-[26Jun2026 12:35:32.185] [main/INFO] [net.minecraft.data.DataGenerator/]: Item Models: potioneer finished after 27 ms
-[26Jun2026 12:35:32.185] [main/INFO] [net.minecraft.data.DataGenerator/]: Starting provider: Loot Tables
-[26Jun2026 12:35:32.222] [main/INFO] [net.minecraft.data.DataGenerator/]: Loot Tables finished after 35 ms
-[26Jun2026 12:35:32.222] [main/INFO] [net.minecraft.data.DataGenerator/]: Starting provider: Tags for minecraft:block mod id potioneer
-[26Jun2026 12:35:32.235] [main/INFO] [net.minecraft.data.DataGenerator/]: Tags for minecraft:block mod id potioneer finished after 15 ms
-[26Jun2026 12:35:32.235] [main/INFO] [net.minecraft.data.DataGenerator/]: Starting provider: Tags for minecraft:item mod id potioneer
-[26Jun2026 12:35:32.235] [main/INFO] [net.minecraft.data.DataGenerator/]: Tags for minecraft:item mod id potioneer finished after 3 ms
-[26Jun2026 12:35:32.235] [main/INFO] [net.minecraft.data.DataGenerator/]: Starting provider: Registries
-[26Jun2026 12:35:32.266] [main/INFO] [net.minecraft.data.DataGenerator/]: Registries finished after 30 ms
-[26Jun2026 12:35:32.266] [main/INFO] [net.minecraft.data.DataGenerator/]: Starting provider: Global Loot Modifiers : potioneer
-[26Jun2026 12:35:32.274] [main/INFO] [net.minecraft.data.DataGenerator/]: Global Loot Modifiers : potioneer finished after 7 ms
-[26Jun2026 12:35:32.274] [main/INFO] [net.minecraft.data.DataGenerator/]: Starting provider: Tags for minecraft:damage_type mod id potioneer
-[26Jun2026 12:35:32.289] [main/INFO] [net.minecraft.data.DataGenerator/]: Tags for minecraft:damage_type mod id potioneer finished after 8 ms
-[26Jun2026 12:35:32.289] [main/INFO] [net.minecraft.data.DataGenerator/]: All providers took: 369 ms
-[26Jun2026 12:35:32.306] [main/INFO] [net.minecraft.data.HashCache/]: Caching: total files: 130, old count: 129, new count: 131, removed stale: 0, written: 1
+[30Jul2026 11:43:10.394] [main/INFO] [cpw.mods.modlauncher.Launcher/MODLAUNCHER]: ModLauncher running: args [--launchTarget, forgedatauserdev, --assetIndex, 5, --assetsDir, C:\Users\Utilizador\.gradle\caches\forge_gradle\assets, --gameDir, ., --fml.forgeVersion, 47.3.0, --fml.mcVersion, 1.20.1, --fml.forgeGroup, net.minecraftforge, --fml.mcpVersion, 20230612.114412, --mod, potioneer, --all, --output, C:\Users\Utilizador\Desktop\mods\Potioneer\src\generated\resources, --existing, C:\Users\Utilizador\Desktop\mods\Potioneer\src\main\resources, --mixin.config, mixins.potioneer.json]
+[30Jul2026 11:43:10.405] [main/INFO] [cpw.mods.modlauncher.Launcher/MODLAUNCHER]: ModLauncher 10.0.9+10.0.9+main.dcd20f30 starting: java version 17.0.13 by Eclipse Adoptium; OS Windows 11 arch amd64 version 10.0
+[30Jul2026 11:43:10.545] [main/INFO] [net.minecraftforge.fml.loading.ImmediateWindowHandler/]: ImmediateWindowProvider not loading because launch target is forgedatauserdev
+[30Jul2026 11:43:10.594] [main/INFO] [mixin/]: SpongePowered MIXIN Subsystem Version=0.8.5 Source=union:/C:/Users/Utilizador/.gradle/caches/modules-2/files-2.1/org.spongepowered/mixin/0.8.5/9d1c0c3a304ae6697ecd477218fa61b850bf57fc/mixin-0.8.5.jar%23128!/ Service=ModLauncher Env=CLIENT
+[30Jul2026 11:43:10.946] [main/WARN] [net.minecraftforge.fml.loading.moddiscovery.ModFileParser/LOADING]: Mod file C:\Users\Utilizador\.gradle\caches\modules-2\files-2.1\net.minecraftforge\javafmllanguage\1.20.1-47.3.0\d7ebc62120f202109e300e084ca1a31a7b946a62\javafmllanguage-1.20.1-47.3.0.jar is missing mods.toml file
+[30Jul2026 11:43:10.954] [main/WARN] [net.minecraftforge.fml.loading.moddiscovery.ModFileParser/LOADING]: Mod file C:\Users\Utilizador\.gradle\caches\modules-2\files-2.1\net.minecraftforge\lowcodelanguage\1.20.1-47.3.0\1bf3e845ea0ce750096da8c71c8364b188ab74d4\lowcodelanguage-1.20.1-47.3.0.jar is missing mods.toml file
+[30Jul2026 11:43:10.956] [main/WARN] [net.minecraftforge.fml.loading.moddiscovery.ModFileParser/LOADING]: Mod file C:\Users\Utilizador\.gradle\caches\modules-2\files-2.1\net.minecraftforge\mclanguage\1.20.1-47.3.0\6093682e943ddccbabf70539319d7f2fe64db2e7\mclanguage-1.20.1-47.3.0.jar is missing mods.toml file
+[30Jul2026 11:43:10.965] [main/WARN] [net.minecraftforge.fml.loading.moddiscovery.ModFileParser/LOADING]: Mod file C:\Users\Utilizador\.gradle\caches\modules-2\files-2.1\net.minecraftforge\fmlcore\1.20.1-47.3.0\3b6be96aba3e323f3c918e8ef6a96312d82d76ad\fmlcore-1.20.1-47.3.0.jar is missing mods.toml file
+[30Jul2026 11:43:11.215] [main/WARN] [net.minecraftforge.jarjar.selection.JarSelector/]: Attempted to select a dependency jar for JarJar which was passed in as source: ldlib. Using Mod File: C:\Users\Utilizador\.gradle\caches\forge_gradle\deobf_dependencies\com\lowdragmc\ldlib\ldlib-forge-1.20.1\1.0.40_mapped_parchment_2023.09.03-1.20.1\ldlib-forge-1.20.1-1.0.40_mapped_parchment_2023.09.03-1.20.1.jar
+[30Jul2026 11:43:11.215] [main/INFO] [net.minecraftforge.fml.loading.moddiscovery.JarInJarDependencyLocator/]: Found 3 dependencies adding them to mods collection
+[30Jul2026 11:43:13.016] [main/WARN] [mixin/]: Compatibility level JAVA_17 specified by mixins.potioneer.json is higher than the maximum level supported by this version of mixin (JAVA_13).
+[30Jul2026 11:43:13.024] [main/INFO] [mixin/]: Compatibility level set to JAVA_17
+[30Jul2026 11:43:13.055] [main/INFO] [cpw.mods.modlauncher.LaunchServiceHandler/MODLAUNCHER]: Launching target 'forgedatauserdev' with arguments [--gameDir, ., --assetsDir, C:\Users\Utilizador\.gradle\caches\forge_gradle\assets, --assetIndex, 5, --mod, potioneer, --all, --output, C:\Users\Utilizador\Desktop\mods\Potioneer\src\generated\resources, --existing, C:\Users\Utilizador\Desktop\mods\Potioneer\src\main\resources]
+[30Jul2026 11:43:13.164] [main/INFO] [mixin/]: Attempting to load Fernflower decompiler (Threaded mode)
+[30Jul2026 11:43:13.166] [main/INFO] [mixin/]: Fernflower could not be loaded, exported classes will not be decompiled. NoClassDefFoundError: org/jetbrains/java/decompiler/main/extern/IResultSaver
+[30Jul2026 11:43:13.316] [main/INFO] [mixin/]: Preparing mixins for MixinEnvironment[DEFAULT]
+[30Jul2026 11:43:13.316] [main/INFO] [mixin/]: Selecting config mixins.potioneer.json
+[30Jul2026 11:43:13.316] [main/WARN] [mixin/]: Reference map 'mixins.potioneer.refmap.json' for mixins.potioneer.json could not be read. If this is a development environment you can ignore this message
+[30Jul2026 11:43:13.316] [main/INFO] [mixin/]: Selecting config photon-common.mixins.json
+[30Jul2026 11:43:13.495] [main/INFO] [mixin/]: Remapping refMap photon-common-1.20.1-photon-common-refmap.json using C:\Users\Utilizador\Desktop\mods\Potioneer\build\createSrgToMcp\output.srg
+[30Jul2026 11:43:13.495] [main/INFO] [mixin/]: Selecting config photon.mixins.json
+[30Jul2026 11:43:13.524] [main/INFO] [mixin/]: Remapping refMap photon-forge-1.20.1-photon-forge-refmap.json using C:\Users\Utilizador\Desktop\mods\Potioneer\build\createSrgToMcp\output.srg
+[30Jul2026 11:43:13.525] [main/INFO] [mixin/]: Selecting config mixinextras.init.mixins.json
+[30Jul2026 11:43:13.625] [main/INFO] [mixin/]: Selecting config curios.mixins.json
+[30Jul2026 11:43:13.625] [main/INFO] [mixin/]: Remapping refMap curios.refmap.json using C:\Users\Utilizador\Desktop\mods\Potioneer\build\createSrgToMcp\output.srg
+[30Jul2026 11:43:13.625] [main/INFO] [mixin/]: Selecting config geckolib.mixins.json
+[30Jul2026 11:43:13.635] [main/INFO] [mixin/]: Remapping refMap geckolib.refmap.json using C:\Users\Utilizador\Desktop\mods\Potioneer\build\createSrgToMcp\output.srg
+[30Jul2026 11:43:13.635] [main/INFO] [mixin/]: Selecting config ldlib-common.mixins.json
+[30Jul2026 11:43:13.636] [main/INFO] [mixin/]: Remapping refMap ldlib-common-1.20.1-ldlib-common-refmap.json using C:\Users\Utilizador\Desktop\mods\Potioneer\build\createSrgToMcp\output.srg
+[30Jul2026 11:43:13.636] [main/INFO] [mixin/]: Selecting config ldlib.mixins.json
+[30Jul2026 11:43:13.636] [main/INFO] [mixin/]: Remapping refMap ldlib-forge-1.20.1-ldlib-forge-refmap.json using C:\Users\Utilizador\Desktop\mods\Potioneer\build\createSrgToMcp\output.srg
+[30Jul2026 11:43:13.636] [main/INFO] [mixin/]: Preparing mixins.potioneer.json (1)
+[30Jul2026 11:43:13.705] [main/INFO] [mixin/]: Preparing photon-common.mixins.json (5)
+[30Jul2026 11:43:13.748] [main/INFO] [mixin/]: Preparing photon.mixins.json (3)
+[30Jul2026 11:43:13.774] [main/INFO] [mixin/]: Preparing mixinextras.init.mixins.json (0)
+[30Jul2026 11:43:13.774] [main/INFO] [mixin/]: Preparing curios.mixins.json (13)
+[30Jul2026 11:43:13.825] [main/INFO] [mixin/]: Preparing geckolib.mixins.json (1)
+[30Jul2026 11:43:13.826] [main/INFO] [mixin/]: Preparing ldlib-common.mixins.json (29)
+[30Jul2026 11:43:13.885] [main/INFO] [mixin/]: Preparing ldlib.mixins.json (3)
+[30Jul2026 11:43:13.937] [main/INFO] [mixin/]: Prepared 51 mixins in 0.621 sec (12.2ms avg) (0ms load, 0ms transform, 0ms plugin)
+[30Jul2026 11:43:14.515] [main/INFO] [net.minecraftforge.data.loading.DatagenModLoader/]: Initializing Data Gatherer for mods [potioneer]
+[30Jul2026 11:43:14.646] [main/INFO] [MixinExtras|Service/]: Initializing MixinExtras via com.llamalad7.mixinextras.service.MixinExtrasServiceImpl(version=0.3.5).
+[30Jul2026 11:43:14.655] [main/INFO] [mixin/]: Mixing AccessorEntity from curios.mixins.json into net.minecraft.world.entity.Entity
+[30Jul2026 11:43:14.685] [main/INFO] [mixin/]: Mixing accessor.EntityAccessor from ldlib-common.mixins.json into net.minecraft.world.entity.Entity
+[30Jul2026 11:43:14.772] [main/INFO] [mixin/]: Mixing MixinLivingEntity from curios.mixins.json into net.minecraft.world.entity.LivingEntity
+[30Jul2026 11:43:15.594] [main/INFO] [mixin/]: Mixing MixinPowderSnowBlock from curios.mixins.json into net.minecraft.world.level.block.PowderSnowBlock
+[30Jul2026 11:43:15.784] [main/INFO] [mixin/]: Mixing BlockEntityMixin from ldlib-common.mixins.json into net.minecraft.world.level.block.entity.BlockEntity
+[30Jul2026 11:43:16.084] [main/INFO] [mixin/]: Mixing accessor.AbstractContainerMenuAccessor from ldlib-common.mixins.json into net.minecraft.world.inventory.AbstractContainerMenu
+[30Jul2026 11:43:16.278] [main/INFO] [mixin/]: Mixing ItemStackMixin from mixins.potioneer.json into net.minecraft.world.item.ItemStack
+[30Jul2026 11:43:16.278] [main/INFO] [mixin/]: Renaming synthetic method lambda$hurtAndBreak$0(Lnet/minecraft/nbt/CompoundTag;Lnet/minecraft/world/entity/player/Player;Lnet/minecraft/world/item/ItemStack;Lnet/dinomine/potioneer/beyonder/player/LivingEntityBeyonderCapability;)V to md865d73$lambda$hurtAndBreak$0$0 in mixins.potioneer.json:ItemStackMixin
+[30Jul2026 11:43:16.844] [main/INFO] [mixin/]: Mixing MixinShearsItem from curios.mixins.json into net.minecraft.world.item.ShearsItem
+[30Jul2026 11:43:18.125] [main/INFO] [mixin/]: Mixing accessor.ServerPlayerAccessor from ldlib-common.mixins.json into net.minecraft.server.level.ServerPlayer
+[30Jul2026 11:43:18.644] [main/INFO] [mixin/]: Mixing MixinInventory from curios.mixins.json into net.minecraft.world.entity.player.Inventory
+[30Jul2026 11:43:18.665] [main/INFO] [mixin/]: Mixing accessor.SlotAccessor from ldlib-common.mixins.json into net.minecraft.world.inventory.Slot
+[30Jul2026 11:43:18.806] [main/INFO] [mixin/]: Mixing MixinApplyBonusCount from curios.mixins.json into net.minecraft.world.level.storage.loot.functions.ApplyBonusCount
+[30Jul2026 11:43:19.437] [modloading-worker-0/INFO] [mixin/]: Mixing accessor.MinecraftAccessor from photon-common.mixins.json into net.minecraft.client.Minecraft
+[30Jul2026 11:43:19.440] [modloading-worker-0/INFO] [mixin/]: Renaming @Accessor method getFps()I to getFps_$md$865d73$0 in photon-common.mixins.json:accessor.MinecraftAccessor
+[30Jul2026 11:43:19.462] [modloading-worker-0/INFO] [LowDragLib/]: LowDragLib is initializing on platform: Forge
+[30Jul2026 11:43:19.462] [modloading-worker-0/INFO] [Photon/]: Photon is initializing on platform: Forge
+[30Jul2026 11:43:19.485] [modloading-worker-0/INFO] [net.minecraftforge.common.ForgeMod/FORGEMOD]: Forge mod loading, version 47.3.0, for MC 1.20.1 with MCP 20230612.114412
+[30Jul2026 11:43:19.485] [modloading-worker-0/INFO] [net.minecraftforge.common.MinecraftForge/FORGE]: MinecraftForge v47.3.0 Initialized
+[30Jul2026 11:43:19.493] [modloading-worker-0/INFO] [mixin/]: Mixing ModelBakeryMixin from ldlib-common.mixins.json into net.minecraft.client.resources.model.ModelBakery
+[30Jul2026 11:43:19.494] [modloading-worker-0/INFO] [mixin/]: Renaming synthetic method lambda$injectLoadModel$0(Lnet/minecraft/resources/ResourceLocation;)Lnet/minecraft/client/resources/model/UnbakedModel; to md865d73$lambda$injectLoadModel$0$0 in ldlib-common.mixins.json:ModelBakeryMixin
+[30Jul2026 11:43:19.501] [modloading-worker-0/INFO] [mixin/]: Mixing accessor.ModelBakeryAccessor from ldlib-common.mixins.json into net.minecraft.client.resources.model.ModelBakery
+[30Jul2026 11:43:19.608] [modloading-worker-0/INFO] [mixin/]: Mixing accessor.AbstractContainerScreenAccessor from ldlib-common.mixins.json into net.minecraft.client.gui.screens.inventory.AbstractContainerScreen
+[30Jul2026 11:43:19.694] [modloading-worker-0/WARN] [software.bernie.geckolib.GeckoLib/]: Minecraft.getInstance() was null, could not register reload listeners
+[30Jul2026 11:43:19.830] [modloading-worker-0/INFO] [mezz.jei.library.load.PluginCaller/]: Sending ConfigManager...
+[30Jul2026 11:43:19.834] [modloading-worker-0/INFO] [mezz.jei.library.load.PluginCaller/]: Sending ConfigManager took 8.276 ms
+[30Jul2026 11:43:19.846] [modloading-worker-0/INFO] [mixin/]: Mixing ReloadableResourceManagerMixin from ldlib-common.mixins.json into net.minecraft.server.packs.resources.ReloadableResourceManager
+[30Jul2026 11:43:19.924] [modloading-worker-0/INFO] [mixin/]: Mixing accessor.ShaderInstanceAccessor from photon-common.mixins.json into net.minecraft.client.renderer.ShaderInstance
+[30Jul2026 11:43:19.988] [modloading-worker-0/INFO] [mixin/]: Mixing accessor.ParticleEngineAccessor from photon-common.mixins.json into net.minecraft.client.particle.ParticleEngine
+[30Jul2026 11:43:19.996] [modloading-worker-0/INFO] [mixin/]: Mixing ParticleEngineMixin from photon.mixins.json into net.minecraft.client.particle.ParticleEngine
+[30Jul2026 11:43:19.999] [modloading-worker-0/INFO] [mixin/]: Mixing no_iris.ParticleEngineMixin from photon.mixins.json into net.minecraft.client.particle.ParticleEngine
+[30Jul2026 11:43:20.001] [modloading-worker-0/INFO] [mixin/]: Mixing ParticleEngineMixin from ldlib-common.mixins.json into net.minecraft.client.particle.ParticleEngine
+[30Jul2026 11:43:20.001] [modloading-worker-0/INFO] [mixin/]: Renaming synthetic method lambda$injectTick$0(Ljava/util/Map$Entry;)Z to md865d73$lambda$injectTick$0$0 in ldlib-common.mixins.json:ParticleEngineMixin
+[30Jul2026 11:43:20.002] [modloading-worker-0/INFO] [mixin/]: Mixing accessor.ParticleEngineAccessor from ldlib-common.mixins.json into net.minecraft.client.particle.ParticleEngine
+[30Jul2026 11:43:20.452] [main/WARN] [net.minecraft.server.packs.VanillaPackResourcesBuilder/]: Assets URL 'union:/C:/Users/Utilizador/Desktop/mods/Potioneer/build/fg_cache/net/minecraftforge/forge/1.20.1-47.3.0_mapped_parchment_2023.09.03-1.20.1/forge-1.20.1-47.3.0_mapped_parchment_2023.09.03-1.20.1.jar%23191!/assets/.mcassetsroot' uses unexpected schema
+[30Jul2026 11:43:20.454] [main/WARN] [net.minecraft.server.packs.VanillaPackResourcesBuilder/]: Assets URL 'union:/C:/Users/Utilizador/Desktop/mods/Potioneer/build/fg_cache/net/minecraftforge/forge/1.20.1-47.3.0_mapped_parchment_2023.09.03-1.20.1/forge-1.20.1-47.3.0_mapped_parchment_2023.09.03-1.20.1.jar%23191!/data/.mcassetsroot' uses unexpected schema
+[30Jul2026 11:43:20.635] [main/INFO] [net.minecraft.data.DataGenerator/]: Starting provider: Recipes
+[30Jul2026 11:43:20.645] [main/INFO] [mixin/]: Mixing MixinNbtPredicate from curios.mixins.json into net.minecraft.advancements.critereon.NbtPredicate
+[30Jul2026 11:43:20.704] [main/INFO] [net.minecraft.data.DataGenerator/]: Recipes finished after 65 ms
+[30Jul2026 11:43:20.704] [main/INFO] [net.minecraft.data.DataGenerator/]: Starting provider: Block States: potioneer
+[30Jul2026 11:43:20.825] [main/INFO] [net.minecraft.data.DataGenerator/]: Block States: potioneer finished after 124 ms
+[30Jul2026 11:43:20.825] [main/INFO] [net.minecraft.data.DataGenerator/]: Starting provider: Item Models: potioneer
+[30Jul2026 11:43:20.870] [main/INFO] [net.minecraft.data.DataGenerator/]: Item Models: potioneer finished after 42 ms
+[30Jul2026 11:43:20.870] [main/INFO] [net.minecraft.data.DataGenerator/]: Starting provider: Loot Tables
+[30Jul2026 11:43:20.905] [main/INFO] [net.minecraft.data.DataGenerator/]: Loot Tables finished after 36 ms
+[30Jul2026 11:43:20.905] [main/INFO] [net.minecraft.data.DataGenerator/]: Starting provider: Tags for minecraft:block mod id potioneer
+[30Jul2026 11:43:20.923] [main/INFO] [net.minecraft.data.DataGenerator/]: Tags for minecraft:block mod id potioneer finished after 14 ms
+[30Jul2026 11:43:20.924] [main/INFO] [net.minecraft.data.DataGenerator/]: Starting provider: Tags for minecraft:item mod id potioneer
+[30Jul2026 11:43:20.924] [main/INFO] [net.minecraft.data.DataGenerator/]: Tags for minecraft:item mod id potioneer finished after 2 ms
+[30Jul2026 11:43:20.924] [main/INFO] [net.minecraft.data.DataGenerator/]: Starting provider: Registries
+[30Jul2026 11:43:20.944] [main/INFO] [net.minecraft.data.DataGenerator/]: Registries finished after 19 ms
+[30Jul2026 11:43:20.944] [main/INFO] [net.minecraft.data.DataGenerator/]: Starting provider: Global Loot Modifiers : potioneer
+[30Jul2026 11:43:20.953] [main/INFO] [net.minecraft.data.DataGenerator/]: Global Loot Modifiers : potioneer finished after 6 ms
+[30Jul2026 11:43:20.953] [main/INFO] [net.minecraft.data.DataGenerator/]: Starting provider: Tags for minecraft:damage_type mod id potioneer
+[30Jul2026 11:43:20.955] [main/INFO] [net.minecraft.data.DataGenerator/]: Tags for minecraft:damage_type mod id potioneer finished after 6 ms
+[30Jul2026 11:43:20.955] [main/INFO] [net.minecraft.data.DataGenerator/]: All providers took: 321 ms
+[30Jul2026 11:43:20.976] [main/INFO] [net.minecraft.data.HashCache/]: Caching: total files: 134, old count: 130, new count: 135, removed stale: 0, written: 4

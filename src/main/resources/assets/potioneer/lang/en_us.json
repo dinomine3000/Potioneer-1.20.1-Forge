@@ -32,6 +32,10 @@
   "item.potioneer.cauldron_rod": "Cauldron Rod",
   "item.potioneer.knowledge_skull": "Cursed Skull",
   "item.potioneer.sealed_bundle": "Spirituality Sealed Bundle",
+  "item.potioneer.water_helmet": "Water Helmet",
+  "item.potioneer.water_chestplate": "Water Chestplate",
+  "item.potioneer.water_leggings": "Water Leggings",
+  "item.potioneer.water_boots": "Water Boots",
 
   "block.potioneer.potion_cauldron": "Potion Cauldron",
   "block.potioneer.star_flower_block": "Star Flower",
@@ -368,6 +372,7 @@
   "beyonder.potioneer.stat_armor": "Armor:",
   "beyonder.potioneer.stat_tough": "Toughness:",
   "beyonder.potioneer.stat_knock": "Knockback Resistance:",
+  "beyonder.potioneer.stat_max_sanity": "Maximum Sanity:",
 
   "short_desc.potioneer.": "Undefined",
   "long_desc.potioneer.": "Undefined2",

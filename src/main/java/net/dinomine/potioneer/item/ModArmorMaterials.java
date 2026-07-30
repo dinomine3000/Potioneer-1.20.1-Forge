@@ -10,7 +10,7 @@ import net.minecraft.world.item.crafting.Ingredient;
 import java.util.function.Supplier;
 
 public enum ModArmorMaterials implements ArmorMaterial {
-    WATER("sapphire", 26, new int[]{5, 7, 5, 4}, 25, SoundEvents.AMBIENT_UNDERWATER_ENTER, 1f, 0f, () -> Ingredient.EMPTY);
+    WATER("water", 26, new int[]{5, 7, 5, 4}, 25, SoundEvents.AMBIENT_UNDERWATER_ENTER, 1f, 0f, () -> Ingredient.EMPTY);
 
     private final String name;
     private final int durabilityMultiplier;

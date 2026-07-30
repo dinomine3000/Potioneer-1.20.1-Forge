@@ -331,8 +331,11 @@ public class PlayerEffectsManager {
             });
         }
         sweepEffects(cap, target);
-        cap.getBeyonderStats().setStats(statsHolder, target);
-        if(target instanceof Player player) cap.getBeyonderStats().applyEffects(player, statsHolder);
+        cap.getBeyonderStats().setEffects(statsHolder, target);
+        if(target instanceof Player player){
+            cap.getBeyonderStats().applyEffects(player, statsHolder);
+            cap.getBeyonderStats().addStatsAndApplyIfChanged(statsHolder, player);
+        }
     }
 
     private void sweepEffects(LivingEntityBeyonderCapability cap, LivingEntity target){

@@ -287,7 +287,7 @@ public class LivingEntityBeyonderCapability {
                 if(entity instanceof Player player){
                     abilitiesManager.updateArtifacts(this, player);
                     PacketHandler.sendMessageSTC(new PlayerSTCStatsSync(this.spirituality, this.maxSpirituality,
-                            (int) this.sanity, (float) characteristicManager.getAdjustedActingPercent(getPathwaySequenceId()),
+                            (int) this.sanity, getMaxSanity(), (float) characteristicManager.getAdjustedActingPercent(getPathwaySequenceId()),
                             beyonderStats.getIntStats()), player);
                 }
                 applyCost();
@@ -419,7 +419,7 @@ public class LivingEntityBeyonderCapability {
         pageList.add(pageNumber);
         if(entity instanceof Player player)
             PacketHandler.sendMessageSTC(new PlayerSTCStatsSync(this.spirituality, this.maxSpirituality,
-                (int) this.sanity, (float) characteristicManager.getAdjustedActingPercent(getPathwaySequenceId()),
+                (int) this.sanity, getMaxSanity(), (float) characteristicManager.getAdjustedActingPercent(getPathwaySequenceId()),
                 beyonderStats.getIntStats(), pageList), player);
         return true;
     }
@@ -436,7 +436,7 @@ public class LivingEntityBeyonderCapability {
         this.pageList = new ArrayList<>();
         if(entity instanceof Player player)
             PacketHandler.sendMessageSTC(new PlayerSTCStatsSync(this.spirituality, this.maxSpirituality,
-                    (int) this.sanity, (float) characteristicManager.getAdjustedActingPercent(getPathwaySequenceId()),
+                    (int) this.sanity, getMaxSanity(), (float) characteristicManager.getAdjustedActingPercent(getPathwaySequenceId()),
                     beyonderStats.getIntStats(), pageList), player);
     }
 
@@ -559,7 +559,7 @@ public class LivingEntityBeyonderCapability {
             PacketHandler.sendMessageSTC(new PlayerSyncHotbarMessage(getAbilitiesManager().clientHotbar, getAbilitiesManager().quickAbility), player);
             getEffectsManager().syncToClient(player);
             PacketHandler.sendMessageSTC(new PlayerSTCStatsSync(this.spirituality, this.maxSpirituality,
-                    (int) this.sanity, (float) characteristicManager.getAdjustedActingPercent(getPathwaySequenceId()),
+                    (int) this.sanity, getMaxSanity(), (float) characteristicManager.getAdjustedActingPercent(getPathwaySequenceId()),
                     beyonderStats.getIntStats(), pageList), player);
         }
     }

@@ -3,7 +3,6 @@ package net.dinomine.potioneer.beyonder.player;
 import com.google.common.base.Suppliers;
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
-import net.dinomine.potioneer.beyonder.pathways.Pathways;
 import net.dinomine.potioneer.network.PacketHandler;
 import net.dinomine.potioneer.network.messages.PlayerMiningSpeedSync;
 import net.minecraft.server.level.ServerPlayer;
@@ -21,10 +20,15 @@ public class BeyonderStats {
     private float miningSpeedMult = 1;
     private boolean mayFly = false;
     private float[] playerAttributes;
-    private float[] playerEffectAttributes;
+    private BeyonderStats tempEffectStats = null;
 
     BeyonderStats(){
+        this(true);
+    }
+    BeyonderStats(boolean idk){
         resetStats();
+        if(idk)
+            tempEffectStats = new BeyonderStats(false);
     }
 
     public void addDamage(float dmg){
@@ -34,6 +38,18 @@ public class BeyonderStats {
     public void addHealth(int i) {
         playerAttributes[0] += i;
     }
+
+    public void addArmor(int i) {
+        playerAttributes[2] += i;
+    }
+
+    public void addToughness(int i) {
+        playerAttributes[3] += i;
+    }
+
+    /*public void addKnockbackRes(int i) {
+        playerAttributes[4] += i;
+    }*/
 
     public void enableFlight(){
         mayFly = true;
@@ -73,7 +89,7 @@ public class BeyonderStats {
         if(entity instanceof Player player) applyStats(player, heal);
     }
 
-    public void setStats(BeyonderStats otherStats, LivingEntity target){
+    public void setEffects(BeyonderStats otherStats, LivingEntity target){
         if(otherStats.miningSpeedMult != getMiningSpeed() && target instanceof ServerPlayer player){
             updateClientIfMiningSpeedChanged(player, otherStats.miningSpeedMult);
         }
@@ -82,12 +98,32 @@ public class BeyonderStats {
         //this.playerEffectAttributes = oldStore.playerAttributes;
     }
 
+    private BeyonderStats(BeyonderStats other){
+        int i = 0;
+        this.playerAttributes = new float[]{other.playerAttributes[i++], other.playerAttributes[i++], other.playerAttributes[i++], other.playerAttributes[i++], other.playerAttributes[i++]};
+    }
+
+    private boolean hasSameStatsAs(BeyonderStats otherStats){
+        int i = 0;
+        return this.playerAttributes[i] == otherStats.playerAttributes[i++] &&
+                this.playerAttributes[i] == otherStats.playerAttributes[i++] &&
+                this.playerAttributes[i] == otherStats.playerAttributes[i++] &&
+                this.playerAttributes[i] == otherStats.playerAttributes[i++] &&
+                this.playerAttributes[i] == otherStats.playerAttributes[i++];
+    }
+
+    public void addStatsAndApplyIfChanged(BeyonderStats otherStats, Player target){
+        BeyonderStats other = new BeyonderStats(otherStats);
+        if(other.hasSameStatsAs(tempEffectStats)) return;
+        tempEffectStats = other;
+        applyStats(target, false);
+    }
     public int[] getIntStats(){
-        int hp = (int) playerAttributes[0];
-        int dmg = (int) playerAttributes[1];
-        int arm = (int) playerAttributes[2];
-        int tou = (int) playerAttributes[3];
-        int kno = (int) playerAttributes[4];
+        int hp = (int) (playerAttributes[0] + tempEffectStats.playerAttributes[0]);
+        int dmg = (int) (playerAttributes[1] + tempEffectStats.playerAttributes[1]);
+        int arm = (int) (playerAttributes[2] + tempEffectStats.playerAttributes[2]);
+        int tou = (int) (playerAttributes[3] + tempEffectStats.playerAttributes[3]);
+        int kno = (int) (playerAttributes[4] + tempEffectStats.playerAttributes[4]);
         return new int[]{hp, dmg, arm, tou, kno};
     }
 
@@ -108,35 +144,46 @@ public class BeyonderStats {
         player.getAbilities().mayfly = player.isCreative() || player.isSpectator() || statsHolder.mayFly;
     }
 
+    private float getStat(int idx){
+        return playerAttributes[idx] + tempEffectStats.playerAttributes[idx];
+    }
+
     public void applyStats(Player player, boolean heal){
+        float maxHealthO = player.getMaxHealth();
         player.getAttributes().removeAttributeModifiers(getHealthModifier(1));
         player.getAttributes().removeAttributeModifiers(getAttackModifier(2));
         player.getAttributes().removeAttributeModifiers(getArmorModifier(2));
         player.getAttributes().removeAttributeModifiers(getToughnessModifier(2));
-        player.getAttributes().removeAttributeModifiers(getKnockbackModifier(2));
+        //player.getAttributes().removeAttributeModifiers(getKnockbackModifier(2));
 //        System.out.println("Removed attributes.");
-        if(playerAttributes[0] != 0){
+        float hpStat = getStat(0);
+        float atkStat = getStat(1);
+        float armStat = getStat(2);
+        float touStat = getStat(3);
+        float knockStat = getStat(4);
+
+        if(hpStat != 0){
 //            System.out.println("Added health.");
-            player.getAttributes().addTransientAttributeModifiers(getHealthModifier(playerAttributes[0]));
+            player.getAttributes().addTransientAttributeModifiers(getHealthModifier(hpStat));
         }
-        if(playerAttributes[1] != 0){
+        if(atkStat != 0){
 //            System.out.println("Added attack.");
-            player.getAttributes().addTransientAttributeModifiers(getAttackModifier(playerAttributes[1]));
+            player.getAttributes().addTransientAttributeModifiers(getAttackModifier(atkStat));
         }
-        if(playerAttributes[2] != 0){
+        if(armStat != 0){
 //            System.out.println("Added armor.");
-            player.getAttributes().addTransientAttributeModifiers(getArmorModifier(playerAttributes[2]));
+            player.getAttributes().addTransientAttributeModifiers(getArmorModifier(armStat));
         }
-        if(playerAttributes[3] != 0){
+        if(touStat != 0){
 //            System.out.println("Added toughness.");
-            player.getAttributes().addTransientAttributeModifiers(getToughnessModifier(playerAttributes[3]));
+            player.getAttributes().addTransientAttributeModifiers(getToughnessModifier(touStat));
         }
-        if(playerAttributes[4] != 0){
+        /*if(knockStat != 0){
 //            System.out.println("Added knockback res.");
-            player.getAttributes().addTransientAttributeModifiers(getKnockbackModifier(playerAttributes[4]));
-        }
-        if(heal && player.getHealth() > player.getMaxHealth()){
-            player.setHealth(player.getMaxHealth());
+            player.getAttributes().addTransientAttributeModifiers(getKnockbackModifier(knockStat));
+        }*/
+        if(heal && maxHealthO < player.getMaxHealth()){
+            player.heal(player.getMaxHealth() - maxHealthO);
         }
     }
 

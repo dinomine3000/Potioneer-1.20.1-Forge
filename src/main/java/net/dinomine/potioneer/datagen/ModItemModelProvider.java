@@ -73,6 +73,10 @@ public class ModItemModelProvider extends ItemModelProvider {
         handheldItem(ModItems.FROZEN_SWORD);
         handheldItem(ModItems.RITUAL_DAGGER);
         handheldItem(ModItems.BROKEN_ARTIFACT);
+        simpleArmorItem(ModItems.WATER_HELMET);
+        simpleArmorItem(ModItems.WATER_CHESTPLATE);
+        simpleArmorItem(ModItems.WATER_LEGGINGS);
+        simpleArmorItem(ModItems.WATER_BOOTS);
 
 
         /*simpleItem(ModItems.METAL_DETECTOR);
@@ -163,6 +167,11 @@ public class ModItemModelProvider extends ItemModelProvider {
                                         "item/" + itemRegistryObject.getId().getPath()));
             });
         }
+    }
+
+    private void simpleArmorItem(RegistryObject<Item> itemRegistryObject) {
+        this.withExistingParent(itemRegistryObject.getId().getPath(), mcLoc("item/generated"))
+                .texture("layer0", new ResourceLocation(Potioneer.MOD_ID, "item/" + itemRegistryObject.getId().getPath()));
     }
 
     private ItemModelBuilder simpleItem(RegistryObject<Item> item) {

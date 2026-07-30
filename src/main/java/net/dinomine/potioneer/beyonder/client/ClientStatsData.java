@@ -25,6 +25,7 @@ public class ClientStatsData {
     public static boolean keyPressed = false;
 //    private static int[] beyonderStats = new int[]{0, 0, 0, 0, 0};
     private static float actingProgress = 0;
+    private static int maxSanity = 100;
 
     private static int luck = 0;
     private static int minLuck = 0;
@@ -95,6 +96,7 @@ public class ClientStatsData {
     }
 
     public static int getStat(int idx){
+        if(idx == 4) return maxSanity;
         if(getCapability().isPresent()){
             return getCapability().get().getBeyonderStats().getIntStats()[idx];
         }
@@ -146,5 +148,9 @@ public class ClientStatsData {
 
     public static Level getLevel() {
         return Minecraft.getInstance().level;
+    }
+
+    public static void setMaxSanity(int inMax) {
+        maxSanity = inMax;
     }
 }

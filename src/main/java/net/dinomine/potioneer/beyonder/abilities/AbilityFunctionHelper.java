@@ -62,16 +62,24 @@ public class AbilityFunctionHelper {
         return Mth.clamp(currentVal + range/increments, min, max);
     }
 
-    public static void removeAttribute(Player player, UUID attributeId, String attributeName, int attributeAmount, AttributeModifier.Operation operation, Attribute attribute){
-        player.getAttributes().removeAttributeModifiers(getEntityModifier(attribute, attributeId, operation, attributeName, attributeAmount));
+    public static void removeAttribute(Player player, Multimap<Attribute, AttributeModifier> pMap){
+        player.getAttributes().removeAttributeModifiers(pMap);
     }
 
-    public static void addAttributeTo(Player player, UUID attributeId, String attributeName, int attributeAmount, AttributeModifier.Operation operation, Attribute attribute){
-        player.getAttributes().addTransientAttributeModifiers(getEntityModifier(attribute, attributeId, operation, attributeName, attributeAmount));
+    public static void removeAttribute(Player player, UUID attributeId, String attributeName, double attributeAmount, AttributeModifier.Operation operation, Attribute attribute){
+        removeAttribute(player, getEntityModifier(attribute, attributeId, operation, attributeName, attributeAmount));
+    }
+
+    public static void addAttributeTo(Player player, UUID attributeId, String attributeName, double attributeAmount, AttributeModifier.Operation operation, Attribute attribute){
+        addAttributeTo(player, getEntityModifier(attribute, attributeId, operation, attributeName, attributeAmount));
+    }
+
+    public static void addAttributeTo(Player player, Multimap<Attribute, AttributeModifier> pMap){
+        player.getAttributes().addTransientAttributeModifiers(pMap);
     }
 
     //Credit to the create mod
-    private static Multimap<Attribute, AttributeModifier> getEntityModifier(Attribute attribute, UUID attributeId, AttributeModifier.Operation operation, String name, int amount){
+    public static Multimap<Attribute, AttributeModifier> getEntityModifier(Attribute attribute, UUID attributeId, AttributeModifier.Operation operation, String name, double amount){
         AttributeModifier modifier =
                 new AttributeModifier(attributeId, name, amount, operation);
 
