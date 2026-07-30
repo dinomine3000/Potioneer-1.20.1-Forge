@@ -17,7 +17,7 @@ import java.util.ArrayList;
 
 public class AirBulletAbility extends Ability {
     @Override
-    protected String getDescId(int sequenceLevel) {
+    protected String getMainDescId(int sequenceLevel) {
         return "air_bullet";
     }
 

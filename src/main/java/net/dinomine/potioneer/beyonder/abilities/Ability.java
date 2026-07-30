@@ -11,6 +11,8 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.common.MinecraftForge;
 
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.UUID;
 import java.util.function.Function;
@@ -63,12 +65,21 @@ public abstract class Ability {
     public AbilityInfo getAbilityInfo(){
         if(abilityKey == null){
             System.out.println("Warning: tried to get ability info with a null key");
-            return Abilities.getInfo(abilityId, cooldown, maxCooldown, state, getDescId(sequenceLevel), new AbilityKey(abilityId, sequenceLevel)).withData(abilityData);
+            return Abilities.getInfo(abilityId, cooldown, maxCooldown, state, getMainDescId(sequenceLevel), getAllDescId(sequenceLevel), new AbilityKey(abilityId, sequenceLevel)).withData(abilityData);
         }
-        return Abilities.getInfo(abilityId, cooldown, maxCooldown, state, getDescId(sequenceLevel), abilityKey).withData(abilityData);
+        return Abilities.getInfo(abilityId, cooldown, maxCooldown, state, getMainDescId(sequenceLevel), getAllDescId(sequenceLevel), abilityKey).withData(abilityData);
     }
 
-    protected abstract String getDescId(int sequenceLevel);
+    protected abstract String getMainDescId(int sequenceLevel);
+
+    protected LinkedHashSet<String> getAllDescId(int sequenceLevel){
+        LinkedHashSet<String> res = new LinkedHashSet<>();
+        for(int lvl = sequenceLevel + 1; lvl < 10; lvl++){
+            if(getMainDescId(sequenceLevel).equalsIgnoreCase(getMainDescId(lvl))) continue;
+            res.add(getMainDescId(lvl));
+        }
+        return res;
+    };
 
     /**
      * pass the sequence level or pathway-sequence id to define the abilities sequence level

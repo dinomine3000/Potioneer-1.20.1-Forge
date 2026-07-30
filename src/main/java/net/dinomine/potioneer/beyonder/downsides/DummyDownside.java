@@ -6,7 +6,7 @@ import net.minecraft.world.entity.LivingEntity;
 public class DummyDownside extends Downside{
 
     @Override
-    protected String getDescId(int sequenceLevel) {
+    protected String getMainDescId(int sequenceLevel) {
         return "d_dummy";
     }
 

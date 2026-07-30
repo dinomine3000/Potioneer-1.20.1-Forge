@@ -40,7 +40,7 @@ public class BlankOptionsAbility extends AbilityWithOptions {
     }
 
     @Override
-    protected String getDescId(int sequenceLevel) {
+    protected String getMainDescId(int sequenceLevel) {
         return "";
     }
 }

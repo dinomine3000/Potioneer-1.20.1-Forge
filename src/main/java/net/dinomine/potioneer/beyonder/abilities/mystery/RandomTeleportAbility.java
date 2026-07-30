@@ -12,7 +12,7 @@ import net.minecraft.world.level.Level;
 public class RandomTeleportAbility extends Ability {
 
     @Override
-    protected String getDescId(int sequenceLevel) {
+    protected String getMainDescId(int sequenceLevel) {
         return "random_teleport";
     }
 

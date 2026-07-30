@@ -3,7 +3,6 @@ package net.dinomine.potioneer.beyonder.abilities.wheeloffortune;
 import net.dinomine.potioneer.beyonder.abilities.Ability;
 import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
 import net.dinomine.potioneer.util.misc.ModCompoundTags;
-import net.dinomine.potioneer.util.misc.MysticalItemHelper;
 import net.dinomine.potioneer.util.misc.MysticismHelper;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -17,7 +16,7 @@ import net.minecraft.world.item.ItemStack;
 public class ConjurePickaxeAbility extends Ability {
 
     @Override
-    protected String getDescId(int sequenceLevel) {
+    protected String getMainDescId(int sequenceLevel) {
         return "pick";
     }
 
@@ -45,7 +44,7 @@ public class ConjurePickaxeAbility extends Ability {
             cap.requestActiveSpiritualityCost(cost());
             return true;
         } else {
-            target.sendSystemMessage(Component.translatableWithFallback("message.potioneer.insufficient_spirituality", "Not enough spirituality to cast ability.", getDescId(sequenceLevel)));
+            target.sendSystemMessage(Component.translatableWithFallback("message.potioneer.insufficient_spirituality", "Not enough spirituality to cast ability.", getMainDescId(sequenceLevel)));
         }
         return false;
     }

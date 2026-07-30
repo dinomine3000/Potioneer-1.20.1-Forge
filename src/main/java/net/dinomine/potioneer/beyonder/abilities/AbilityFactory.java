@@ -3,6 +3,7 @@ package net.dinomine.potioneer.beyonder.abilities;
 import net.dinomine.potioneer.Potioneer;
 import net.minecraft.resources.ResourceLocation;
 
+import java.util.LinkedHashSet;
 import java.util.function.Function;
 
 public class AbilityFactory {
@@ -90,11 +91,11 @@ public class AbilityFactory {
         return createFunction.apply(pathwaySequenceId).withAbilityId(ablId);
     }
 
-    public AbilityInfo getInfo(int cooldown, int maxCd, boolean enabled, String descId, String innerId) {
-        return new AbilityInfo(pathwayId, cooldown, maxCd, enabled, descId, innerId);
+    public AbilityInfo getInfo(int cooldown, int maxCd, boolean enabled, String descId, LinkedHashSet<String> allDescIds, String innerId) {
+        return new AbilityInfo(pathwayId, cooldown, maxCd, enabled, descId, allDescIds, innerId);
     }
 
-    public AbilityInfo getInfo(int cooldown, int maxCd, boolean enabled, String descId, String innerId, int pathwayId) {
-        return new AbilityInfo(pathwayId, cooldown, maxCd, enabled, descId, innerId);
+    public AbilityInfo getInfo(int cooldown, int maxCd, boolean enabled, String descId, LinkedHashSet<String> allDescIds, String innerId, int pathwayId) {
+        return new AbilityInfo(pathwayId, cooldown, maxCd, enabled, descId, allDescIds, innerId);
     }
 }

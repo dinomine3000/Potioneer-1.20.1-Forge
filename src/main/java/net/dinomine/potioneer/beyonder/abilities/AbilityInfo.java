@@ -7,9 +7,12 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.LinkedHashSet;
+
 public class AbilityInfo {
     private final int pathwayId;
     private final String descId;
+    private final LinkedHashSet<String> allDescIds;
     private boolean enabled;
     private int cooldown;
     private int maxCd;
@@ -18,11 +21,12 @@ public class AbilityInfo {
     private CompoundTag abilityData = new CompoundTag();
     private boolean isDownside = false;
 
-    public AbilityInfo(int pathwayId, int cooldown, int maxCooldown, boolean enabled, String descId, String innerId) {
+    public AbilityInfo(int pathwayId, int cooldown, int maxCooldown, boolean enabled, String descId, LinkedHashSet<String> allDescIds, String innerId) {
         this.pathwayId = pathwayId;
         this.cooldown = cooldown;
         this.maxCd = maxCooldown;
         this.descId = descId;
+        this.allDescIds = allDescIds;
         this.enabled = enabled;
         this.innerAbilityId = innerId;
     }
@@ -63,6 +67,12 @@ public class AbilityInfo {
         buffer.writeInt(maxCd);
         buffer.writeBoolean(enabled);
         BufferUtils.writeStringToBuffer(descId, buffer);
+
+        buffer.writeVarInt(allDescIds.size());
+        for (String id : allDescIds) {
+            BufferUtils.writeStringToBuffer(id, buffer);
+        }
+
         BufferUtils.writeStringToBuffer(innerAbilityId, buffer);
         key.writeToBuffer(buffer);
         buffer.writeNbt(abilityData);
@@ -75,13 +85,19 @@ public class AbilityInfo {
         int maxCd = buffer.readInt();
         boolean enabled = buffer.readBoolean();
         String descId = BufferUtils.readString(buffer);
+
+        int count = buffer.readVarInt();
+        LinkedHashSet<String> allDescIds = new LinkedHashSet<>(count);
+        for (int i = 0; i < count; i++) {
+            allDescIds.add(BufferUtils.readString(buffer));
+        }
+
         String innerId = BufferUtils.readString(buffer);
         AbilityKey key = AbilityKey.readFromBuffer(buffer);
         CompoundTag tag = buffer.readAnySizeNbt();
         boolean downside = buffer.readBoolean();
-        return new AbilityInfo(pathwayId, cooldown, maxCd, enabled, descId, innerId).withKey(key).withData(tag).markDownside(downside);
+        return new AbilityInfo(pathwayId, cooldown, maxCd, enabled, descId, allDescIds, innerId).withKey(key).withData(tag).markDownside(downside);
     }
-
     public String innerId(){
         return innerAbilityId;
     }
@@ -89,6 +105,8 @@ public class AbilityInfo {
     public String descId(){
         return descId;
     }
+
+    public LinkedHashSet<String> allDescIds(){return allDescIds;}
 
     public Component getNameComponent(){
         return Component.translatableWithFallback("ability.potioneer_name." + descId(), StringUtils.capitalize(descId.replace("_", " ")));

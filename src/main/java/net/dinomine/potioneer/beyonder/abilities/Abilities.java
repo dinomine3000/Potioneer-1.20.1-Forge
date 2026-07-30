@@ -13,6 +13,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.effect.MobEffects;
 
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.function.Function;
 
 public class Abilities {
@@ -429,8 +430,8 @@ public class Abilities {
         return getAbilityInstance(key.getAbilityId(), key.getSequenceLevel());
     }
 
-    public static AbilityInfo getInfo(String abilityId, int cooldown, int maxCd, boolean enabled, String descId, AbilityKey key){
-        return ABILITIES.get(abilityId).getInfo(cooldown, maxCd, enabled, descId, abilityId).withKey(key);
+    public static AbilityInfo getInfo(String abilityId, int cooldown, int maxCd, boolean enabled, String descId, LinkedHashSet<String> allDescIds, AbilityKey key){
+        return ABILITIES.get(abilityId).getInfo(cooldown, maxCd, enabled, descId, allDescIds, abilityId).withKey(key);
     }
 
     /**
@@ -444,7 +445,7 @@ public class Abilities {
      * @param pathwayId
      * @return
      */
-    public static AbilityInfo getInfo(String abilityId, int cooldown, int maxCd, boolean enabled, String descId, AbilityKey key, int pathwayId){
-        return ABILITIES.get(abilityId).getInfo(cooldown, maxCd, enabled, descId, abilityId, pathwayId).withKey(key);
+    public static AbilityInfo getInfo(String abilityId, int cooldown, int maxCd, boolean enabled, String descId, LinkedHashSet<String> allDescIds, AbilityKey key, int pathwayId){
+        return ABILITIES.get(abilityId).getInfo(cooldown, maxCd, enabled, descId, allDescIds, abilityId, pathwayId).withKey(key);
     }
 }

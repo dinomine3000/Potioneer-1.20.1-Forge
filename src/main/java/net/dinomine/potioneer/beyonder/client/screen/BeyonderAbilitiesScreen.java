@@ -24,6 +24,7 @@ import org.apache.commons.lang3.StringUtils;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.LinkedHashSet;
 
 import static net.dinomine.potioneer.beyonder.client.HUD.AbilitiesHotbarHUD.*;
 
@@ -121,10 +122,10 @@ public class BeyonderAbilitiesScreen extends Screen {
             addRenderableWidget(castAbilityButton);
 
             descriptionOffsetLeftButton = new ImageButton(leftPos + 100, topPos - 20, 11, 17,
-                    127, 212, 18, TEXTURE, TEXTURE_WIDTH, TEXTURE_HEIGHT, btn -> offsetAbilityDescription(-1));
+                    127, 212, 18, TEXTURE, TEXTURE_WIDTH, TEXTURE_HEIGHT, btn -> offsetAbilityDescription(1));
             descriptionOffsetLeftButton.setTooltip(Tooltip.create(Component.translatable("gui.potioneer.offset_ability_desc_left")));
             descriptionOffsetRightButton = new ImageButton(leftPos + 120, topPos - 20, 11, 17,
-                    113, 212, 18, TEXTURE, TEXTURE_WIDTH, TEXTURE_HEIGHT, btn -> offsetAbilityDescription(1));
+                    113, 212, 18, TEXTURE, TEXTURE_WIDTH, TEXTURE_HEIGHT, btn -> offsetAbilityDescription(-1));
             descriptionOffsetRightButton.setTooltip(Tooltip.create(Component.translatable("gui.potioneer.offset_ability_desc_right")));
 
             addToHotbarButton = new ImageButton(hotbarButtonRight - hotbarButtonSide, hotbarButtonBottom - hotbarButtonSide, hotbarButtonSide, hotbarButtonSide,
@@ -209,8 +210,10 @@ public class BeyonderAbilitiesScreen extends Screen {
     }
 
     private void offsetAbilityDescription(int diff){
-        if(hasPreviousDescription(getCurrentAbility(), abilityDescOffset) && diff < 0) abilityDescOffset += diff;
-        if(hasNextDescription(getCurrentAbility(), abilityDescOffset) && diff > 0) abilityDescOffset += diff;
+        //btw, diff is reversed. positive -> go in the 'previous' direction. negative -> go in the 'next' direction.
+        //this is because 0 corresponds to the main desc id, and id rather keep this value positive, and previous descriptions should show on the left.
+        if(hasPreviousDescription(getCurrentAbility(), abilityDescOffset) && diff > 0) abilityDescOffset += diff;
+        if(hasNextDescription(getCurrentAbility(), abilityDescOffset) && diff < 0) abilityDescOffset += diff;
     }
 
     private void addAbilityToHotbar(){
@@ -500,26 +503,23 @@ public class BeyonderAbilitiesScreen extends Screen {
 
     private static boolean hasPreviousDescription(AbilityInfo data, int currentOffset){
         if(data == null) return false;
-        String[] descElements = data.descId().split("_");
-        String lastElement = descElements[descElements.length - 1];
-        return PotioneerMathHelper.isInteger(lastElement) && Integer.parseInt(lastElement) + currentOffset > 1;
+        LinkedHashSet<String> otherDescriptions = data.allDescIds();
+        if(otherDescriptions.isEmpty()) return false;
+        return otherDescriptions.size() > currentOffset;
     }
 
     private static boolean hasNextDescription(AbilityInfo data, int currentOffset){
         if(data == null) return false;
-        String[] descElements = data.descId().split("_");
-        String lastElement = descElements[descElements.length - 1];
-        return PotioneerMathHelper.isInteger(lastElement) && currentOffset < 0;
+        return currentOffset > 0;
     }
 
     private static String getAbilityDescriptionId(AbilityInfo data, int descriptionOffset){
         if(data == null) return "";
-        String[] descElements = data.descId().split("_");
-        String lastElement = descElements[descElements.length - 1];
-        if(!PotioneerMathHelper.isInteger(lastElement) || Integer.parseInt(lastElement) <= 1) return data.descId();
-        if(descriptionOffset >= 0) return data.descId();
-        descElements[descElements.length - 1] = String.valueOf(Integer.parseInt(lastElement) + descriptionOffset);
-        return String.join("_", descElements);
+        if(descriptionOffset == 0) return data.descId();
+        LinkedHashSet<String> otherDescriptions = data.allDescIds();
+        if(otherDescriptions.isEmpty()) return data.descId();
+        if(otherDescriptions.size() < descriptionOffset) return data.descId();
+        return new ArrayList<>(otherDescriptions).get(descriptionOffset - 1);
 
     }
 }

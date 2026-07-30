@@ -29,7 +29,7 @@ public class EntityAppraisalAbility extends Ability {
     }
 
     @Override
-    protected String getDescId(int sequenceLevel) {
+    protected String getMainDescId(int sequenceLevel) {
         return "target_appraisal_" + (sequenceLevel > 7 ? "1" : "2");
     }
 

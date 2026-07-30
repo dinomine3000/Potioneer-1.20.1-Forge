@@ -60,7 +60,7 @@ public class MisfortuneAbility extends Ability {
     }
 
     @Override
-    protected String getDescId(int sequenceLevel) {
+    protected String getMainDescId(int sequenceLevel) {
         return "misfortune";
     }
 }

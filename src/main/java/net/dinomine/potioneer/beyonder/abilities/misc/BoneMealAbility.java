@@ -14,7 +14,7 @@ import net.minecraft.world.phys.HitResult;
 
 public class BoneMealAbility extends Ability {
     @Override
-    protected String getDescId(int sequenceLevel) {
+    protected String getMainDescId(int sequenceLevel) {
         return abilityId;
     }
 

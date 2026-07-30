@@ -26,7 +26,7 @@ import java.util.ArrayList;
 public class WaterPrisonAbility extends Ability {
 
     @Override
-    protected String getDescId(int sequenceLevel) {
+    protected String getMainDescId(int sequenceLevel) {
         return "water_prison";
     }
 

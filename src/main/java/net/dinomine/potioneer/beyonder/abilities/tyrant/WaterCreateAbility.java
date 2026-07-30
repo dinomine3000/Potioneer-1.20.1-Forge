@@ -30,7 +30,7 @@ public class WaterCreateAbility extends Ability {
     private static final Direction[] ALL_DIRECTIONS = Direction.values();
 
     @Override
-    protected String getDescId(int sequenceLevel) {
+    protected String getMainDescId(int sequenceLevel) {
         return "water_create";
     }
 

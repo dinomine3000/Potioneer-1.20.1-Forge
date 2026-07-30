@@ -19,7 +19,7 @@ public class ThunderStrikeAbility extends Ability {
     private static final float actingProgress = 0.001f;
 
     @Override
-    protected String getDescId(int sequenceLevel) {
+    protected String getMainDescId(int sequenceLevel) {
         return "thunder_strike";
     }
 

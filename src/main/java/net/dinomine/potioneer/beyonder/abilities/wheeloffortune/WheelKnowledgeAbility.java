@@ -42,7 +42,7 @@ public class WheelKnowledgeAbility extends MysticalKnowledgeAbility {
     }
 
     @Override
-    protected String getDescId(int sequenceLevel) {
+    protected String getMainDescId(int sequenceLevel) {
         return "wheel_knowledge";
     }
 }

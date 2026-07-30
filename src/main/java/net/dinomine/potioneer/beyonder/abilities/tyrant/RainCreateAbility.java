@@ -8,7 +8,7 @@ import net.minecraft.world.entity.LivingEntity;
 public class RainCreateAbility extends Ability {
 
     @Override
-    protected String getDescId(int sequenceLevel) {
+    protected String getMainDescId(int sequenceLevel) {
         return "summon_rain";
     }
 

@@ -37,7 +37,7 @@ public class AnvilGuiAbility extends Ability {
     }
 
     @Override
-    protected String getDescId(int sequenceLevel) {
+    protected String getMainDescId(int sequenceLevel) {
         return "anvil_gui_" + (levelUp.get() ? "2" : "1");
     }
 

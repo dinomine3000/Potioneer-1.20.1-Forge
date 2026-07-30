@@ -22,7 +22,7 @@ import static net.minecraft.world.level.block.DoorBlock.OPEN;
 public class DoorOpeningAbility extends Ability {
 
     @Override
-    protected String getDescId(int sequenceLevel) {
+    protected String getMainDescId(int sequenceLevel) {
         return "door_opening";
     }
 

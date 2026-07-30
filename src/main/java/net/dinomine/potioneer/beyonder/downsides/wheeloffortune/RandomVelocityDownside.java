@@ -25,7 +25,7 @@ public class RandomVelocityDownside extends Downside {
     }
 
     @Override
-    protected String getDescId(int sequenceLevel) {
+    protected String getMainDescId(int sequenceLevel) {
         return "d_velocity";
     }
 }

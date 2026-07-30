@@ -11,7 +11,7 @@ public class PriestLightAbility extends LightAbility {
     }
 
     @Override
-    protected String getDescId(int sequenceLevel) {
+    protected String getMainDescId(int sequenceLevel) {
         return "priest_light";
     }
 

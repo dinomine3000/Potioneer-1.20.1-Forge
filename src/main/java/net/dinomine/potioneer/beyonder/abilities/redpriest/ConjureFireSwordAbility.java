@@ -12,7 +12,7 @@ import net.minecraft.world.item.ItemStack;
 public class ConjureFireSwordAbility extends Ability {
 
     @Override
-    protected String getDescId(int sequenceLevel) {
+    protected String getMainDescId(int sequenceLevel) {
         return "fire_sword";
     }
 

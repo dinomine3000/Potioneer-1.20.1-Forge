@@ -9,7 +9,7 @@ import net.minecraft.world.entity.LivingEntity;
 public class DummyAbility extends Ability{
 
     @Override
-    protected String getDescId(int sequenceLevel) {
+    protected String getMainDescId(int sequenceLevel) {
         return "dummy";
     }
 

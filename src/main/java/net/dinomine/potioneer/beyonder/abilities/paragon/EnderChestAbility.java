@@ -20,7 +20,7 @@ public class EnderChestAbility extends Ability {
     }
 
     @Override
-    protected String getDescId(int sequenceLevel) {
+    protected String getMainDescId(int sequenceLevel) {
         return "ender_chest";
     }
 

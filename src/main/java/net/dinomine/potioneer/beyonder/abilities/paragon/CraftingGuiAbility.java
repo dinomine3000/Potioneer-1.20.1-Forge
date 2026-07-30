@@ -23,7 +23,7 @@ import java.util.Optional;
 public class CraftingGuiAbility extends Ability {
 
     @Override
-    protected String getDescId(int sequenceLevel) {
+    protected String getMainDescId(int sequenceLevel) {
         return "crafting_gui";
     }
 

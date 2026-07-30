@@ -25,7 +25,7 @@ public class HalfCooldownAbility extends Ability {
     }
 
     @Override
-    protected String getDescId(int sequenceLevel) {
+    protected String getMainDescId(int sequenceLevel) {
         return sequenceLevel < 6 ? "refresh_cooldown" : "half_cooldown";
     }
 

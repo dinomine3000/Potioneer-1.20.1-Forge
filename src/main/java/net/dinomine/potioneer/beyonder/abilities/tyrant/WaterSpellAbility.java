@@ -46,6 +46,7 @@ import net.minecraftforge.common.ForgeMod;
 import net.minecraftforge.network.PacketDistributor;
 
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 
 import static net.dinomine.potioneer.block.custom.BaseLightSourceBlock.WATERLOGGED;
@@ -92,8 +93,22 @@ public class WaterSpellAbility extends AbilityWithOptions {
     }
 
     @Override
-    protected String getDescId(int sequenceLevel) {
-        return "water_spell_" + (sequenceLevel < 8 ? "8" : "7");
+    protected String getMainDescId(int sequenceLevel) {
+        return "water_spell";
+    }
+
+    @Override
+    protected LinkedHashSet<String> getAllDescId(int sequenceLevel) {
+        LinkedHashSet<String> res = new LinkedHashSet<>();
+        res.add("water_spell_1");
+        res.add("water_spell_2");
+        res.add("water_spell_3");
+        res.add("water_spell_4");
+        res.add("water_spell_5");
+        res.add("water_spell_6");
+        if(sequenceLevel < 8)
+            res.add("water_spell_7");
+        return res;
     }
 
     @Override
@@ -158,7 +173,7 @@ public class WaterSpellAbility extends AbilityWithOptions {
             ally.heal(6);
             if(ally instanceof ServerPlayer player) playerAllies.add(player);
         }
-        //if(!healFlag) return false;
+        if(!healFlag) return false;
 
         target.hurt(PotioneerDamage.tyrantHealing((ServerLevel) target.level()), alliesAround.size());
         if(target instanceof ServerPlayer playerTarget) playerAllies.add(playerTarget);

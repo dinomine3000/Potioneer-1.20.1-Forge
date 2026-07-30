@@ -10,7 +10,7 @@ import net.minecraft.world.phys.Vec3;
 public class RainLeapAbility extends Ability {
 
     @Override
-    protected String getDescId(int sequenceLevel) {
+    protected String getMainDescId(int sequenceLevel) {
         return "rain_leap";
     }
 

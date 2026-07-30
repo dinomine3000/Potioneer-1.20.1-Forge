@@ -16,7 +16,7 @@ import java.util.Optional;
 
 public class FateAbility extends Ability {
     @Override
-    protected String getDescId(int sequenceLevel) {
+    protected String getMainDescId(int sequenceLevel) {
         return "fate";
     }
 

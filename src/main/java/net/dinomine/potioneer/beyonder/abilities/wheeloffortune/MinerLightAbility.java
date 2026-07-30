@@ -10,7 +10,7 @@ public class MinerLightAbility extends LightAbility {
     }
 
     @Override
-    protected String getDescId(int sequenceLevel) {
+    protected String getMainDescId(int sequenceLevel) {
         return "miner_light" + (sequenceLevel < 5 ? "_2": "_1");
     }
 }

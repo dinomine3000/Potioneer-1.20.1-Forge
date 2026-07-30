@@ -13,7 +13,7 @@ public class WheelBoneMealAbility extends BoneMealAbility {
     }
 
     @Override
-    protected String getDescId(int sequenceLevel) {
+    protected String getMainDescId(int sequenceLevel) {
         return "w_bone_meal";
     }
 }
