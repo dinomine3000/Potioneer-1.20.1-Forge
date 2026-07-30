@@ -14,6 +14,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RenderGuiOverlayEvent;
+import net.minecraftforge.client.event.RenderPlayerEvent;
 import net.minecraftforge.client.event.ViewportEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
@@ -24,15 +25,6 @@ import java.util.Optional;
 
 @Mod.EventBusSubscriber(modid = Potioneer.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
 public class ClientEventsTyrant {
-
-    @SubscribeEvent
-    public static void onPlayerClientTick(TickEvent.PlayerTickEvent event) {
-        if (!event.player.level().isClientSide()) return;
-
-        if (event.player.hasEffect(ModEffects.MIST_EFFECT.get())) {
-            ParticleMaker.summonMistParticles(event.player);
-        }
-    }
 
     @SubscribeEvent
     public static void onComputeFogColor(ViewportEvent.ComputeFogColor event) {

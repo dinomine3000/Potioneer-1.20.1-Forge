@@ -9,10 +9,7 @@ import net.dinomine.potioneer.network.messages.abilityRelevant.*;
 import net.dinomine.potioneer.network.messages.abilityRelevant.abilitySpecific.AppraisalDataMessage;
 import net.dinomine.potioneer.network.messages.abilityRelevant.abilitySpecific.AuraEffectMessage;
 import net.dinomine.potioneer.network.messages.abilityRelevant.abilitySpecific.SourceRecipientUpdateMessage;
-import net.dinomine.potioneer.network.messages.effects.EvaporateEffect;
-import net.dinomine.potioneer.network.messages.effects.GeneralAreaEffectMessage;
-import net.dinomine.potioneer.network.messages.effects.PhotonFxMessage;
-import net.dinomine.potioneer.network.messages.effects.WaterPrisonEffectSTC;
+import net.dinomine.potioneer.network.messages.effects.*;
 import net.dinomine.potioneer.network.messages.advancement.AdvancementFailMessageCTS;
 import net.dinomine.potioneer.network.messages.advancement.BeginAdvancementMessage;
 import net.dinomine.potioneer.network.messages.advancement.PlayerAdvanceMessage;
@@ -66,6 +63,7 @@ public class PacketHandler {
         INSTANCE.registerMessage(i++, RitualC2STextSync.class, RitualC2STextSync::encode, RitualC2STextSync::decode, RitualC2STextSync::handle);
         INSTANCE.registerMessage(i++, SequenceSTCSyncRequest.class, SequenceSTCSyncRequest::encode, SequenceSTCSyncRequest::decode, SequenceSTCSyncRequest::handle);
         INSTANCE.registerMessage(i++, PhotonFxMessage.class, PhotonFxMessage::encode, PhotonFxMessage::decode, PhotonFxMessage::handle);
+        INSTANCE.registerMessage(i++, EntityEffectVisualMessage.class, EntityEffectVisualMessage::encode, EntityEffectVisualMessage::decode, EntityEffectVisualMessage::handle);
     }
 
     public static <T> void sendMessageSTC(T message, LivingEntity player){

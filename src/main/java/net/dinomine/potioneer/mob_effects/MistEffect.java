@@ -15,7 +15,7 @@ public class MistEffect extends MobEffect {
     }
 
     @Override
-    public boolean isDurationEffectTick(int pDuration, int pAmplifier) {
-        return true;
+    public boolean isDurationEffectTick(int duration, int pAmplifier) {
+        return false;
     }
 }

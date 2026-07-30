@@ -1,10 +1,11 @@
-package net.dinomine.potioneer.event;
+package net.dinomine.potioneer.beyonder.events;
 
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
 import net.dinomine.potioneer.beyonder.pathways.WheelOfFortunePathway;
 import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
 import net.dinomine.potioneer.beyonder.player.luck.luckevents.LuckEvent;
 import net.dinomine.potioneer.beyonder.player.luck.luckevents.LuckEvents;
+import net.dinomine.potioneer.event.LuckEventCastEvent;
 import net.minecraftforge.event.level.BlockEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;

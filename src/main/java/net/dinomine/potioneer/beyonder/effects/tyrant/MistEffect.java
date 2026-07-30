@@ -7,6 +7,7 @@ import net.dinomine.potioneer.beyonder.effects.BeyonderEffect;
 import net.dinomine.potioneer.beyonder.effects.wheeloffortune.PhasingEffect;
 import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
 import net.dinomine.potioneer.mob_effects.ModEffects;
+import net.dinomine.potioneer.mob_effects.ServerEffectVisualHandling;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
@@ -23,6 +24,8 @@ public class MistEffect extends BeyonderEffect {
 //        if(target instanceof Player player){
 //            player.setForcedPose(Pose.);
 //        }
+        if(target.level().isClientSide()) return;
+        ServerEffectVisualHandling.addMistEntity(target);
     }
 
     @Override
@@ -46,6 +49,7 @@ public class MistEffect extends BeyonderEffect {
             player.setNoGravity(false);
             player.setForcedPose(null);
         }
+        ServerEffectVisualHandling.removeMistEntity(target);
     }
 
     @Override
