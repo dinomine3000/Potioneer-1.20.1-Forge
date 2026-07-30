@@ -158,7 +158,7 @@ public class WaterSpellAbility extends AbilityWithOptions {
             ally.heal(6);
             if(ally instanceof ServerPlayer player) playerAllies.add(player);
         }
-        if(!healFlag) return false;
+        //if(!healFlag) return false;
 
         target.hurt(PotioneerDamage.tyrantHealing((ServerLevel) target.level()), alliesAround.size());
         if(target instanceof ServerPlayer playerTarget) playerAllies.add(playerTarget);

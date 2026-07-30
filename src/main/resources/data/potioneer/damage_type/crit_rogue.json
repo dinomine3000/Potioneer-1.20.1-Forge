@@ -1,5 +1,5 @@
 {
   "exhaustion": 0.1,
-  "message_id": "potioneer.arrest",
+  "message_id": "potioneer.crit_rogue",
   "scaling": "when_caused_by_living_non_player"
 }

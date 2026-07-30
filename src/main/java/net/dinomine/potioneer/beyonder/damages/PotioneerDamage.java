@@ -26,6 +26,7 @@ public class PotioneerDamage {
     private static final Map<ResourceKey<DamageType>, DamageSource> SOURCES = new HashMap<>();
 
     public static final ResourceKey<DamageType> CRIT = ResourceKey.create(Registries.DAMAGE_TYPE, new ResourceLocation(Potioneer.MOD_ID, "crit"));
+    public static final ResourceKey<DamageType> CRIT_ROGUE = ResourceKey.create(Registries.DAMAGE_TYPE, new ResourceLocation(Potioneer.MOD_ID, "crit_rogue"));
     public static final ResourceKey<DamageType> CHRYON_PIERCE = ResourceKey.create(Registries.DAMAGE_TYPE, new ResourceLocation(Potioneer.MOD_ID, "chryon_pierce"));
     public static final ResourceKey<DamageType> LOW_SANITY = ResourceKey.create(Registries.DAMAGE_TYPE, new ResourceLocation(Potioneer.MOD_ID, "low_sanity"));
     public static final ResourceKey<DamageType> LOW_SANITY_KILL = ResourceKey.create(Registries.DAMAGE_TYPE, new ResourceLocation(Potioneer.MOD_ID, "low_sanity_kill"));
@@ -60,7 +61,7 @@ public class PotioneerDamage {
     }
 
     public static DamageSource crit(ServerLevel level) {
-        return getSource(level, CRIT);
+        return getSource(level, CRIT_ROGUE);
     }
 
     public static DamageSource asteroid(ServerLevel level) {

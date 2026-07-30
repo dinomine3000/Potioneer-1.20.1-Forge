@@ -418,13 +418,15 @@
 
   "death.attack.potioneer.chryon_pierce": "%s was poked to death by a Chryon.",
   "death.attack.potioneer.crit": "%s was killed by repeated crit damage from %s.",
-  "death.attack.potioneer.water_trap_explosion": "%s exploded from %s's water trap.",
-  "death.attack.potioneer.water_trap_explosion_environment": "%s was killed by a rogue water trap.",
+  "death.attack.potioneer.crit_rogue": "%s was killed by repeated crit damage.",
+  "death.attack.potioneer.water_trap_player": "%s exploded from %s's water trap.",
+  "death.attack.potioneer.water_trap": "%s was killed by a rogue water trap.",
   "death.attack.potioneer.tyrant_healing": "%s died trying to heal their allies.",
   "death.attack.potioneer.low_sanity": "%s went insane.",
   "death.attack.potioneer.low_sanity_kill": "%s succumbed to madness and lost control.",
   "death.attack.potioneer.low_spirituality": "%s drained themselves dry of spirituality.",
   "death.attack.potioneer.asteroid": "%s was eradicated by a meteor.",
+  "death.attack.potioneer.arrest": "%s was purified after being arrested by %s.",
 
   "short_desc.potioneer.cogitation": "Your essence... your being... this is what makes you",
   "long_desc.potioneer.cogitation": "Concentrate your spirituality and recuperate in a safe place.",
