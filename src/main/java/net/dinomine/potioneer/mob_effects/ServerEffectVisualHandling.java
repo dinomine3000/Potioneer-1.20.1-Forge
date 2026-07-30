@@ -16,7 +16,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-@OnlyIn(Dist.DEDICATED_SERVER)
 @Mod.EventBusSubscriber
 public class ServerEffectVisualHandling {
     private static final Set<Integer> mistEntities = new HashSet<>();
