@@ -25,8 +25,8 @@ public class AbilitiesHotbarHUD {
     public static int ICONS_HEIGHT = 632;
     public static int ICON_WIDTH = 16;
     public static int ICON_HEIGHT = 24;
-    private static final int CASE_WIDTH = 26;
-    private static final int CASE_HEIGHT = 32;
+    public static final int CASE_WIDTH = 26;
+    public static final int CASE_HEIGHT = 32;
     private static final int CAST_WIDTH = 12;
     private static final int CAST_HEIGHT = 32;
     private static final float CENTER_Y = 10f + CASE_HEIGHT / 2f;
@@ -125,37 +125,37 @@ public class AbilitiesHotbarHUD {
         if(ClientAbilitiesData.getHotbar().isEmpty()) return;
         int extraCaret = scrollAnimation.getCurrentAnimation().equalsIgnoreCase("scrollLeft") ? caret - 2 : caret + 2;
         if(hotbarPos == PotioneerClientConfig.HOTBAR_POS.TOP){
-            drawAbility(guiGraphics, extraCaret,
+            drawAbility(guiGraphics, ClientAbilitiesData.getAbilityAt(extraCaret),
                     xOffset + (int)(scale * scrollAnimation.getValue("x-extra")),
                     yOffset + (int)(scale * scrollAnimation.getValue("y-extra")),
                     scale * scrollAnimation.getValue("s-extra"));
-            drawAbility(guiGraphics, caret - 1,
+            drawAbility(guiGraphics, ClientAbilitiesData.getAbilityAt(caret - 1),
                     xOffset + (int)(scale * scrollAnimation.getValue("x-left")) ,
                     yOffset + (int)(scale * scrollAnimation.getValue("y-left")),
                     scale * scrollAnimation.getValue("s-left"));
-            drawAbility(guiGraphics, caret,
+            drawAbility(guiGraphics, ClientAbilitiesData.getAbilityAt(caret),
                     xOffset + (int)(scale * scrollAnimation.getValue("x-center")),
                     yOffset + (int)(scale * scrollAnimation.getValue("y-center")),
                     scale * scrollAnimation.getValue("s-center"));
-            drawAbility(guiGraphics, caret + 1,
+            drawAbility(guiGraphics, ClientAbilitiesData.getAbilityAt(caret + 1),
                     xOffset + (int)(scale * scrollAnimation.getValue("x-right")) ,
                     yOffset + (int)(scale * scrollAnimation.getValue("y-right")),
                     scale * scrollAnimation.getValue("s-right"));
 
         } else {
-            drawAbility(guiGraphics, extraCaret,
+            drawAbility(guiGraphics, ClientAbilitiesData.getAbilityAt(extraCaret),
                     xOffset,
                     yOffset + (int)(scale * scrollAnimation.getValue("y-extra-2")),
                     scale * scrollAnimation.getValue("s-extra-2"));
-            drawAbility(guiGraphics, caret - 1,
+            drawAbility(guiGraphics, ClientAbilitiesData.getAbilityAt(caret - 1),
                     xOffset,
                     yOffset + (int)(scale * scrollAnimation.getValue("y-top")),
                     scale * scrollAnimation.getValue("s-top"));
-            drawAbility(guiGraphics, caret,
+            drawAbility(guiGraphics, ClientAbilitiesData.getAbilityAt(caret),
                     xOffset,
                     yOffset + (int)(scale * scrollAnimation.getValue("y-center-2")),
                     scale * scrollAnimation.getValue("s-center-2"));
-            drawAbility(guiGraphics, caret + 1,
+            drawAbility(guiGraphics, ClientAbilitiesData.getAbilityAt(caret + 1),
                     xOffset,
                     yOffset + (int)(scale * scrollAnimation.getValue("y-bottom")),
                     scale * scrollAnimation.getValue("s-bottom"));
@@ -163,9 +163,8 @@ public class AbilitiesHotbarHUD {
 
     }
 
-    public static void drawAbility(GuiGraphics guiGraphics, int caret, int xPos, int yPos, float scale){
+    public static void drawAbility(GuiGraphics guiGraphics, AbilityInfo info, int xPos, int yPos, float scale){
         if(scale <= 0.01) return;
-        AbilityInfo info = ClientAbilitiesData.getAbilityAt(caret);
         if(info == null) return;
         int abilityX = Pathways.getPathwayById(info.getPathwayId()).getAbilityX();
         int caseX = xPos - (int) (CASE_WIDTH * scale / 2);
@@ -195,8 +194,8 @@ public class AbilitiesHotbarHUD {
         }
 
         //ability icon
-        if(!ClientAbilitiesData.isEnabled(caret)){
-            RenderSystem.setShaderColor(0.6F, 0.6F, 0.6F, 1.0F); // Greyscale tint
+        if(!info.isEnabled()){
+            RenderSystem.setShaderColor(0.6F, 0.6F, 0.6F, 1.0F);
         }
         ResourceLocation AbilityIcon = Abilities.getAbilityFactory(info.innerId()).getTextureLocation();
         guiGraphics.blit(AbilityIcon, caseX + (int) (5*scale), caseY + (int)(4*scale), (int)(ICON_WIDTH*scale), (int)(ICON_HEIGHT*scale), abilityX, abl.getPosY(), ICON_WIDTH, ICON_HEIGHT, ICONS_WIDTH, ICONS_HEIGHT);
@@ -222,7 +221,7 @@ public class AbilitiesHotbarHUD {
         //disabled gradient
         float spir = ClientStatsData.getPlayerSpirituality();
         int cost = abl.getMinimumSpiritualityToActivate(info.getSequenceLevel());
-        if(!ClientAbilitiesData.isEnabled(caret) || spir < cost){
+        if(!info.isEnabled() || spir < cost){
 //            guiGraphics.blit(ICONS, caseX + (int) (5*scale), caseY + (int)(4*scale), (int)(ICON_WIDTH*scale), (int)(ICON_HEIGHT*scale), 130, 32, ICON_WIDTH, ICON_HEIGHT, ICONS_WIDTH, ICONS_HEIGHT);
 
             guiGraphics.fillGradient(caseX + (int) (5*scale), caseY + (int) (4*scale),
@@ -231,12 +230,12 @@ public class AbilitiesHotbarHUD {
 
 
         //cooldown gradient
-        float percent = Mth.clamp(1 - ((float) ClientAbilitiesData.getCooldown(caret) / ClientAbilitiesData.getMaxCooldown(caret)), 0, 1);
+        float percent = Mth.clamp(1 - ((float) info.getCooldown() / info.maxCooldown()), 0, 1);
         guiGraphics.fillGradient(caseX + (int) (5*scale), (int) (caseY + (int) (4*scale) + (percent)*ICON_HEIGHT*scale),
                 (int) (caseX + (int) (5*scale) + ICON_WIDTH*scale), (int) (caseY + (int) (4*scale) + ICON_HEIGHT*scale), 0xDD696969, 0xDD424242);
 
         //barrier symbol if ability is disabled
-        if(ClientAbilitiesData.getCooldown(caret) < 0){
+        if(info.getCooldown() < 0){
             if(!ClientConfigData.getAlternativeBlocking()){
                 //Copied from the icons part
                 guiGraphics.pose().pushPose();

@@ -143,7 +143,7 @@ public class BeyonderScreen extends Screen {
         pGuiGraphics.fillGradient(leftPos + 12, topPos + 152,
                 leftPos + 12 + (int)(152*acting), topPos + 160,
                 this.color + 0x99000000, this.color + 0x99000000);
-        if(pMouseX > leftPos + 12 && pMouseY < leftPos + 164
+        if(pMouseX > leftPos + 11 && pMouseX < leftPos + 164
                 && pMouseY > topPos + 152 && pMouseY < topPos + 160){
             pGuiGraphics.renderTooltip(this.font, Component.translatable("tooltip.potioneer.acting_bar" + (acting > 0.95f ? "_done" : "")), pMouseX, pMouseY);
         }

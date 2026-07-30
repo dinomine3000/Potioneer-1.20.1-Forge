@@ -1,15 +1,21 @@
 package net.dinomine.potioneer.beyonder.effects;
 
 import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
+import net.dinomine.potioneer.network.PacketHandler;
+import net.dinomine.potioneer.network.messages.abilityRelevant.BeyonderEffectSyncMessage;
 import net.dinomine.potioneer.util.BufferUtils;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingDamageEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 
 import javax.annotation.Nullable;
+import java.util.List;
 import java.util.Optional;
 
 public abstract class BeyonderEffect {
@@ -258,6 +264,11 @@ public abstract class BeyonderEffect {
         return readEffectFromNBTTag(buffer.readNbt());
     }
 
+
+    public void sendDataToClient(Player player){
+        if(!(player instanceof ServerPlayer serverPlayer)) return;
+        PacketHandler.sendToPlayer(new BeyonderEffectSyncMessage(List.of(this), BeyonderEffectSyncMessage.Operation.UPDATE), serverPlayer);
+    }
 
     public boolean shouldPersistInDeath() {
         return false;

@@ -309,6 +309,20 @@ public class PlayerEffectsManager {
         }
     }
 
+    public void updateEffectsOnClient(List<BeyonderEffect> effects) {
+        outer:
+        for(BeyonderEffect incomingEffect: effects){
+            for(BeyonderEffect existingEffect: passives){
+                if(incomingEffect.is(existingEffect)) {
+                    CompoundTag tag = new CompoundTag();
+                    incomingEffect.toNbt(tag);
+                    existingEffect.loadNBTData(tag);
+                    continue outer;
+                }
+            }
+        }
+    }
+
     public void syncToClient(Player player) {
         sendUpdateToClient(new ArrayList<>(passives), BeyonderEffectSyncMessage.SET, player);
     }
@@ -381,5 +395,4 @@ public class PlayerEffectsManager {
             }
         }
     }
-
 }

@@ -21,9 +21,9 @@ public class ServerEventsTyrant {
         if(event.getAbility().isDownside()) return;
         event.getEntity().getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
             WeakeningEffect weakening = (WeakeningEffect) cap.getEffectsManager().getEffect(BeyonderEffects.TYRANT_WEAKENING.getEffectId());
-            int weaken = weakening == null ? -1 : weakening.canWeaken(ablKey);
+            int weaken = weakening == null ? -1 : weakening.canWeaken(ablKey, event.getEntity());
             AmplificationEffect amplificationEffect = (AmplificationEffect) cap.getEffectsManager().getEffect(BeyonderEffects.TYRANT_AMPLIFICATION.getEffectId());
-            int amplify = amplificationEffect == null ? -1 : amplificationEffect.canAmplify(ablKey);
+            int amplify = amplificationEffect == null ? -1 : amplificationEffect.canAmplify(ablKey, event.getEntity());
 
             if(weaken == amplify || (weaken != -1 && amplify != -1)) return;
             boolean upgrade = amplify != -1;

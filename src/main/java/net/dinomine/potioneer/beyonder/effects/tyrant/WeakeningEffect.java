@@ -4,6 +4,10 @@ import net.dinomine.potioneer.beyonder.abilities.Ability;
 import net.dinomine.potioneer.beyonder.abilities.AbilityKey;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffect;
 import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 
 import java.util.HashSet;
@@ -12,7 +16,8 @@ import java.util.Set;
 public class WeakeningEffect extends BeyonderEffect {
     private int weakeningsLeft = 0;
     private boolean weakenAbilities = false;
-    private Set<AbilityKey> affectedInstances = new HashSet<>();
+    private final Set<AbilityKey> affectedInstances = new HashSet<>();
+    public Set<AbilityKey> getAffectedInstances(){return affectedInstances;}
 
     @Override
     public void onAcquire(LivingEntityBeyonderCapability cap, LivingEntity target, boolean fromLoading) {
@@ -23,11 +28,12 @@ public class WeakeningEffect extends BeyonderEffect {
         }
     }
 
-    public int canWeaken(AbilityKey ablKey){
+    public int canWeaken(AbilityKey ablKey, LivingEntity target){
         if(weakeningsLeft < 1) return -1;
         if(affectedInstances.contains(ablKey)) return -1;
         affectedInstances.add(ablKey);
         weakeningsLeft--;
+        if(target instanceof ServerPlayer player) sendDataToClient(player);
         return sequenceLevel;
     }
 
@@ -49,6 +55,42 @@ public class WeakeningEffect extends BeyonderEffect {
         for(AbilityKey key: affectedInstances){
             Ability abl = cap.getAbilitiesManager().getAbility(key);
             abl.upgradeToLevelSilently(abl.getSequenceLevel() - 1, cap, target);
+        }
+    }
+
+    @Override
+    public void toNbt(CompoundTag nbt) {
+        super.toNbt(nbt);
+        nbt.putInt("weakeningsLeft", this.weakeningsLeft);
+        nbt.putBoolean("weakenAbilities", this.weakenAbilities);
+
+        ListTag affectedList = new ListTag();
+        for (AbilityKey key : this.affectedInstances) {
+            CompoundTag keyTag = new CompoundTag();
+            keyTag.putString("key", key.toString());
+            affectedList.add(keyTag);
+        }
+        nbt.put("affectedInstances", affectedList);
+    }
+
+    @Override
+    public void loadNBTData(CompoundTag nbt) {
+        super.loadNBTData(nbt);
+        if (nbt.contains("weakeningsLeft")) {
+            this.weakeningsLeft = nbt.getInt("weakeningsLeft");
+        }
+        if (nbt.contains("weakenAbilities")) {
+            this.weakenAbilities = nbt.getBoolean("weakenAbilities");
+        }
+
+        this.affectedInstances.clear();
+        if (nbt.contains("affectedInstances", Tag.TAG_LIST)) {
+            ListTag affectedList = nbt.getList("affectedInstances", Tag.TAG_COMPOUND);
+            for (int i = 0; i < affectedList.size(); i++) {
+                CompoundTag keyTag = affectedList.getCompound(i);
+                AbilityKey key = AbilityKey.fromString(keyTag.getString("key"));
+                this.affectedInstances.add(key);
+            }
         }
     }
 }

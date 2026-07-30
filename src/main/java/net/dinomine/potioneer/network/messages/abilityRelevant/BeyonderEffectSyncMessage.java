@@ -16,20 +16,51 @@ import java.util.function.Supplier;
 
 //message to synchronize beyonder effects
 public class BeyonderEffectSyncMessage {
-    public static final int ADD = 0;
-    public static final int REMOVE = 1;
-    public static final int SET = 2;
-    public List<BeyonderEffect> effects;
-    public int operation;
+    public enum Operation {
+        ADD(0),
+        REMOVE(1),
+        SET(2),
+        UPDATE(3);
 
-    public BeyonderEffectSyncMessage(List<BeyonderEffect> effects, int operation){
+        private final int id;
+
+        Operation(int id) {
+            this.id = id;
+        }
+
+        public int getId() {
+            return id;
+        }
+
+        public static Operation fromId(int id) {
+            for (Operation op : values()) {
+                if (op.id == id) {
+                    return op;
+                }
+            }
+            throw new IllegalArgumentException("Invalid Operation ID: " + id);
+        }
+    }
+
+    public static final int ADD = Operation.ADD.getId();
+    public static final int REMOVE = Operation.REMOVE.getId();
+    public static final int SET = Operation.SET.getId();
+    public static final int UPDATE = Operation.UPDATE.getId();
+
+    public List<BeyonderEffect> effects;
+    public Operation operation;
+
+    public BeyonderEffectSyncMessage(List<BeyonderEffect> effects, int operation) {
+        this(effects, Operation.fromId(operation));
+    }
+
+    public BeyonderEffectSyncMessage(List<BeyonderEffect> effects, Operation operation) {
         this.effects = effects;
         this.operation = operation;
     }
 
-
     public static void encode(BeyonderEffectSyncMessage msg, FriendlyByteBuf buffer){
-        buffer.writeInt(msg.operation);
+        buffer.writeInt(msg.operation.id);
         buffer.writeInt(msg.effects.size());
         for(BeyonderEffect eff: msg.effects){
             eff.writeToBuffer(buffer);
@@ -64,17 +95,8 @@ public class BeyonderEffectSyncMessage {
         for(BeyonderEffect eff: effects){
             blr.append(eff.getId()).append(", ");
         }
-        blr.append("\nOperation: ").append(operation);
+        blr.append("\nOperation: ").append(operation.toString());
         return blr.toString();
-    }
-
-    private static String operationFromOrdinal(int operation){
-        return switch (operation){
-            case 0 -> "ADD";
-            case 1 -> "REMOVE";
-            case 2 -> "SET";
-            default -> "UNKNOWN";
-        };
     }
 }
 
@@ -89,9 +111,10 @@ class ClientEffectSyncMessage
         if(player == null) return;
         player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
             switch (msg.operation){
-                case BeyonderEffectSyncMessage.ADD -> cap.getEffectsManager().addEffectsOnClient(msg.effects, cap, player);
-                case BeyonderEffectSyncMessage.SET -> cap.getEffectsManager().setEffectsOnClient(msg.effects, cap, player);
-                case BeyonderEffectSyncMessage.REMOVE -> cap.getEffectsManager().removeEffectsOnClient(msg.effects, cap, player);
+                case ADD -> cap.getEffectsManager().addEffectsOnClient(msg.effects, cap, player);
+                case SET -> cap.getEffectsManager().setEffectsOnClient(msg.effects, cap, player);
+                case REMOVE -> cap.getEffectsManager().removeEffectsOnClient(msg.effects, cap, player);
+                case UPDATE -> cap.getEffectsManager().updateEffectsOnClient(msg.effects);
             }
         });
     }

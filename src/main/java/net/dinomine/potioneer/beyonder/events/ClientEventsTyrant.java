@@ -1,14 +1,27 @@
 package net.dinomine.potioneer.beyonder.events;
 
+import com.eliotlash.mclib.math.functions.limit.Min;
 import com.mojang.blaze3d.shaders.FogShape;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.dinomine.potioneer.Potioneer;
+import net.dinomine.potioneer.beyonder.abilities.Abilities;
+import net.dinomine.potioneer.beyonder.abilities.Ability;
+import net.dinomine.potioneer.beyonder.abilities.AbilityFactory;
+import net.dinomine.potioneer.beyonder.abilities.AbilityKey;
+import net.dinomine.potioneer.beyonder.client.ClientAbilitiesData;
+import net.dinomine.potioneer.beyonder.client.ClientStatsData;
+import net.dinomine.potioneer.beyonder.client.HUD.AbilitiesHotbarHUD;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
+import net.dinomine.potioneer.beyonder.effects.tyrant.AmplificationEffect;
+import net.dinomine.potioneer.beyonder.effects.tyrant.WeakeningEffect;
 import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
 import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
+import net.dinomine.potioneer.config.PotioneerClientConfig;
+import net.dinomine.potioneer.config.PotioneerCommonConfig;
 import net.dinomine.potioneer.mob_effects.ModEffects;
 import net.dinomine.potioneer.util.ParticleMaker;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.FogRenderer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
@@ -21,6 +34,8 @@ import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Mod.EventBusSubscriber(modid = Potioneer.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
@@ -47,6 +62,36 @@ public class ClientEventsTyrant {
 
                 event.setCanceled(true);
             }
+        }
+    }
+
+    @SubscribeEvent
+    public static void renderAmplifyWeaken(RenderGuiOverlayEvent.Post event){
+        GuiGraphics guiGraphics = event.getGuiGraphics();
+        Optional<LivingEntityBeyonderCapability> optCap = ClientStatsData.getCapability();
+        if(optCap.isEmpty()) return;
+        LivingEntityBeyonderCapability cap = optCap.get();
+        WeakeningEffect weakening = (WeakeningEffect) cap.getEffectsManager().getEffect(BeyonderEffects.TYRANT_WEAKENING.getEffectId());
+        AmplificationEffect amplification = (AmplificationEffect) cap.getEffectsManager().getEffect(BeyonderEffects.TYRANT_AMPLIFICATION.getEffectId());
+
+        List<AbilityKey> weakenedAbls = new ArrayList<>();
+        List<AbilityKey> amplifiedAbls = new ArrayList<>();
+        if(weakening != null) weakenedAbls = new ArrayList<>(weakening.getAffectedInstances());
+        if(amplification != null) amplifiedAbls = new ArrayList<>(amplification.getAffectedInstances());
+        int idx = 0;
+
+        float scale = (float) (PotioneerClientConfig.HOTBAR_SCALE.get()*1f);
+
+        for(AbilityKey key: weakenedAbls){
+            Ability abl = cap.getAbilitiesManager().getAbility(key);
+            AbilitiesHotbarHUD.drawAbility(guiGraphics, abl.getAbilityInfo(), (int)((idx++)*(AbilitiesHotbarHUD.CASE_WIDTH*scale)) + 5 + AbilitiesHotbarHUD.CASE_WIDTH/2, 10, scale);
+            //guiGraphics.drawString(Minecraft.getInstance().font, abl.getAbilityInfo().descId(), 0, (int) (Minecraft.getInstance().font.lineHeight*1.5*(idx++)), 0, false);
+        }
+
+        for(AbilityKey key: amplifiedAbls){
+            Ability abl = cap.getAbilitiesManager().getAbility(key);
+            AbilitiesHotbarHUD.drawAbility(guiGraphics, abl.getAbilityInfo(), (int)((idx++)*(AbilitiesHotbarHUD.CASE_WIDTH*scale)) + 5 + AbilitiesHotbarHUD.CASE_WIDTH/2, (int) (20 + AbilitiesHotbarHUD.CASE_HEIGHT*scale), scale);
+            //guiGraphics.drawString(Minecraft.getInstance().font, abl.getAbilityInfo().descId(), 0, 10 + (int) (Minecraft.getInstance().font.lineHeight*1.5*(idx++)), 0, false);
         }
     }
 
