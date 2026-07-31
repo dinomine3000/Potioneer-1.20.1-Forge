@@ -51,8 +51,8 @@ public class AmplificationEffect extends BeyonderEffect {
         if(amplifyAbilities) return;
         cap.getEffectsManager().statsHolder.addDamage(1 + Math.max(0, 7 - sequenceLevel));
         cap.getEffectsManager().statsHolder.addHealth(2 + 4*Math.max(0, 7 - sequenceLevel));
-        cap.getEffectsManager().statsHolder.addArmor(4 + 2*Math.max(0, 7 - sequenceLevel));
-        cap.getEffectsManager().statsHolder.addToughness(4 + 2*Math.max(0, 7 - sequenceLevel));
+        cap.getEffectsManager().statsHolder.addDefense(4 + 2*Math.max(0, 7 - sequenceLevel));
+        cap.getEffectsManager().statsHolder.addResistance(4 + 2*Math.max(0, 7 - sequenceLevel));
     }
 
     @Override

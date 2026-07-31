@@ -1,6 +1,7 @@
 package net.dinomine.potioneer.entities.custom;
 
 import net.dinomine.potioneer.beyonder.damages.PotioneerDamage;
+import net.dinomine.potioneer.beyonder.player.BeyonderAttributes;
 import net.dinomine.potioneer.entities.goals.ChryonPierceGoal;
 import net.dinomine.potioneer.entities.goals.ChryonSwingGoal;
 import net.minecraft.core.BlockPos;
@@ -175,8 +176,9 @@ public class ChryonEntity extends Monster implements GeoEntity {
                 .add(Attributes.ATTACK_DAMAGE, 11)
                 .add(Attributes.ATTACK_SPEED, 0.2f)
                 .add(Attributes.ARMOR, 20f)
-                .add(Attributes.KNOCKBACK_RESISTANCE, 5f)
-                .add(Attributes.MOVEMENT_SPEED, 0.2f).build();
+                .add(Attributes.KNOCKBACK_RESISTANCE, 0.7f)
+                .add(Attributes.MOVEMENT_SPEED, 0.2f)
+                .add(BeyonderAttributes.RESISTANCE.get(), 2).build();
     }
 
 

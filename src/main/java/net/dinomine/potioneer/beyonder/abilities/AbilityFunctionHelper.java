@@ -63,19 +63,19 @@ public class AbilityFunctionHelper {
         return Mth.clamp(currentVal + range/increments, min, max);
     }
 
-    public static void removeAttribute(Player player, Multimap<Attribute, AttributeModifier> pMap){
+    public static void removeAttribute(LivingEntity player, Multimap<Attribute, AttributeModifier> pMap){
         player.getAttributes().removeAttributeModifiers(pMap);
     }
 
-    public static void removeAttribute(Player player, UUID attributeId, String attributeName, double attributeAmount, AttributeModifier.Operation operation, Attribute attribute){
+    public static void removeAttribute(LivingEntity player, UUID attributeId, String attributeName, double attributeAmount, AttributeModifier.Operation operation, Attribute attribute){
         removeAttribute(player, getEntityModifier(attribute, attributeId, operation, attributeName, attributeAmount));
     }
 
-    public static void addAttributeTo(Player player, UUID attributeId, String attributeName, double attributeAmount, AttributeModifier.Operation operation, Attribute attribute){
+    public static void addAttributeTo(LivingEntity player, UUID attributeId, String attributeName, double attributeAmount, AttributeModifier.Operation operation, Attribute attribute){
         addAttributeTo(player, getEntityModifier(attribute, attributeId, operation, attributeName, attributeAmount));
     }
 
-    public static void addAttributeTo(Player player, Multimap<Attribute, AttributeModifier> pMap){
+    public static void addAttributeTo(LivingEntity player, Multimap<Attribute, AttributeModifier> pMap){
         player.getAttributes().addTransientAttributeModifiers(pMap);
     }
 

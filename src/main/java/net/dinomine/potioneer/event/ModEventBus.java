@@ -1,20 +1,29 @@
 package net.dinomine.potioneer.event;
 
 import net.dinomine.potioneer.Potioneer;
+import net.dinomine.potioneer.beyonder.player.BeyonderAttributes;
 import net.dinomine.potioneer.entities.ModEntities;
 import net.dinomine.potioneer.entities.custom.ChryonEntity;
 import net.dinomine.potioneer.entities.custom.DemonicWolfEntity;
 import net.dinomine.potioneer.entities.custom.PecanEntity;
 import net.dinomine.potioneer.entities.custom.WanderingCactusEntity;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.SpawnPlacements;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
+import net.minecraftforge.event.entity.EntityAttributeModificationEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 
 @Mod.EventBusSubscriber(modid = Potioneer.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class ModEventBus {
+
+    @SubscribeEvent
+    public static void onEntityAttributeModification(EntityAttributeModificationEvent event) {
+        event.add(EntityType.PLAYER, BeyonderAttributes.DEFENSE.get());
+        event.add(EntityType.PLAYER, BeyonderAttributes.RESISTANCE.get());
+    }
 
     @SubscribeEvent
     public static void commonSetup(FMLCommonSetupEvent event){

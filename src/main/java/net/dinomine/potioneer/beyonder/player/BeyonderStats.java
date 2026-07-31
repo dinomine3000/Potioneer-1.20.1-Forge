@@ -10,6 +10,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.monster.Zombie;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 
@@ -39,11 +40,11 @@ public class BeyonderStats {
         playerAttributes[0] += i;
     }
 
-    public void addArmor(int i) {
+    public void addDefense(int i) {
         playerAttributes[2] += i;
     }
 
-    public void addToughness(int i) {
+    public void addResistance(int i) {
         playerAttributes[3] += i;
     }
 
@@ -148,18 +149,18 @@ public class BeyonderStats {
         return playerAttributes[idx] + tempEffectStats.playerAttributes[idx];
     }
 
-    public void applyStats(Player player, boolean heal){
+    public void applyStats(LivingEntity player, boolean heal){
         float maxHealthO = player.getMaxHealth();
         player.getAttributes().removeAttributeModifiers(getHealthModifier(1));
         player.getAttributes().removeAttributeModifiers(getAttackModifier(2));
-        player.getAttributes().removeAttributeModifiers(getArmorModifier(2));
-        player.getAttributes().removeAttributeModifiers(getToughnessModifier(2));
+        player.getAttributes().removeAttributeModifiers(getDefenseModifier(2));
+        player.getAttributes().removeAttributeModifiers(getResistanceModifier(2));
         //player.getAttributes().removeAttributeModifiers(getKnockbackModifier(2));
 //        System.out.println("Removed attributes.");
         float hpStat = getStat(0);
         float atkStat = getStat(1);
-        float armStat = getStat(2);
-        float touStat = getStat(3);
+        float defenseState = getStat(2);
+        float resistanceStat = getStat(3);
         float knockStat = getStat(4);
 
         if(hpStat != 0){
@@ -170,13 +171,13 @@ public class BeyonderStats {
 //            System.out.println("Added attack.");
             player.getAttributes().addTransientAttributeModifiers(getAttackModifier(atkStat));
         }
-        if(armStat != 0){
+        if(defenseState != 0){
 //            System.out.println("Added armor.");
-            player.getAttributes().addTransientAttributeModifiers(getArmorModifier(armStat));
+            player.getAttributes().addTransientAttributeModifiers(getDefenseModifier(defenseState));
         }
-        if(touStat != 0){
+        if(resistanceStat != 0){
 //            System.out.println("Added toughness.");
-            player.getAttributes().addTransientAttributeModifiers(getToughnessModifier(touStat));
+            player.getAttributes().addTransientAttributeModifiers(getResistanceModifier(resistanceStat));
         }
         /*if(knockStat != 0){
 //            System.out.println("Added knockback res.");
@@ -211,25 +212,25 @@ public class BeyonderStats {
         return attackMod.get();
     }
 
-    private static Multimap<Attribute, AttributeModifier> getArmorModifier(float val){
+    private static Multimap<Attribute, AttributeModifier> getDefenseModifier(float val){
         AttributeModifier singleRangeAttributeModifier =
                 new AttributeModifier(UUID.fromString("2d7b02cd-d93c-4abb-aa82-da8897bdd0c6"),
-                        "potioneer armor mod", val,
+                        "potioneer defense mod", val,
 
                         AttributeModifier.Operation.ADDITION);
         Supplier<Multimap<Attribute, AttributeModifier>> armorMod = Suppliers.memoize(() ->
-                ImmutableMultimap.of(Attributes.ARMOR, singleRangeAttributeModifier));
+                ImmutableMultimap.of(BeyonderAttributes.DEFENSE.get(), singleRangeAttributeModifier));
         return armorMod.get();
     }
 
-    private static Multimap<Attribute, AttributeModifier> getToughnessModifier(float val){
+    private static Multimap<Attribute, AttributeModifier> getResistanceModifier(float val){
         AttributeModifier singleRangeAttributeModifier =
                 new AttributeModifier(UUID.fromString("5adc375c-e334-4eba-96a0-52bbc84b5b6c"),
-                        "potioneer toughness mod", val,
+                        "potioneer resistance mod", val,
 
                         AttributeModifier.Operation.ADDITION);
         Supplier<Multimap<Attribute, AttributeModifier>> toughMod = Suppliers.memoize(() ->
-                ImmutableMultimap.of(Attributes.ARMOR_TOUGHNESS, singleRangeAttributeModifier));
+                ImmutableMultimap.of(BeyonderAttributes.RESISTANCE.get(), singleRangeAttributeModifier));
         return toughMod.get();
     }
 

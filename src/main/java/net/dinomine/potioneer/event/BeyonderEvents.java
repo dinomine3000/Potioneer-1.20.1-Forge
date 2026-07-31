@@ -2,6 +2,7 @@ package net.dinomine.potioneer.event;
 
 import com.sk89q.worldedit.world.fluid.FluidTypes;
 import net.dinomine.potioneer.Potioneer;
+import net.dinomine.potioneer.beyonder.ModAttributes;
 import net.dinomine.potioneer.beyonder.abilities.Abilities;
 import net.dinomine.potioneer.beyonder.abilities.AbilityFunctionHelper;
 import net.dinomine.potioneer.beyonder.abilities.tyrant.AreaOfJurisdictionAbility;
@@ -13,6 +14,7 @@ import net.dinomine.potioneer.beyonder.effects.wheeloffortune.ZeroDamageBlockEff
 import net.dinomine.potioneer.beyonder.effects.wheeloffortune.ZeroDamageEffect;
 import net.dinomine.potioneer.beyonder.pathways.BeyonderPathway;
 import net.dinomine.potioneer.beyonder.pathways.Pathways;
+import net.dinomine.potioneer.beyonder.player.BeyonderAttributes;
 import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
 import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
 import net.dinomine.potioneer.item.ModItems;
@@ -391,21 +393,32 @@ public class BeyonderEvents {
     @SubscribeEvent
     public static void onDamageProposed(LivingAttackEvent event){
         if(event.getEntity() == null) return;
-        if(event.getEntity().level().isClientSide()) return;
-        event.getEntity().getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
+        LivingEntity ent = event.getEntity();
+        if(BeyonderAttributes.getResistance(ent) >= event.getAmount() && !event.getSource().is(PotioneerDamage.Tags.ABSOLUTE)){
+            event.setCanceled(event.isCancelable());
+            event.setResult(Event.Result.DENY);
+            return;
+        }
+        if(ent.level().isClientSide()) return;
+        ent.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
             cap.getEffectsManager().onAttackProposal(event, cap);
         });
     }
 
     //called inbetween the other two, its used to calculate the damage dealt
-    @SubscribeEvent
+    @SubscribeEvent(priority = EventPriority.HIGH)
     public static void onDamageCalculation(LivingHurtEvent event) {
         if(event.getEntity() == null) return;
         if(event.getEntity().level().isClientSide()) return;
+
+        LivingEntity ent = event.getEntity();
+        if(BeyonderAttributes.getDefense(ent) > 0){
+            event.setAmount((float) (event.getAmount()*BeyonderAttributes.getDefenseMultiplier(ent)));
+        }
+        if(event.getEntity().getMobType() == MobType.UNDEAD && event.getSource().is(PotioneerDamage.Tags.PURIFICATION)) event.setAmount(event.getAmount()*2);
         event.getEntity().getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
             cap.getEffectsManager().onAttackDamageCalculation(event, cap);
         });
-        if(event.getEntity().getMobType() == MobType.UNDEAD && event.getSource().is(PotioneerDamage.Tags.PURIFICATION)) event.setAmount(event.getAmount()*2);
     }
 
 

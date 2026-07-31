@@ -2,6 +2,7 @@ package net.dinomine.potioneer.beyonder.client;
 
 import net.dinomine.potioneer.beyonder.client.screen.AdvancementScreen;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
+import net.dinomine.potioneer.beyonder.player.BeyonderAttributes;
 import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
 import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
 import net.dinomine.potioneer.config.PotioneerClientConfig;
@@ -97,6 +98,8 @@ public class ClientStatsData {
 
     public static int getStat(int idx){
         if(idx == 4) return maxSanity;
+        if(idx == 2) return (int) BeyonderAttributes.getResistance(Minecraft.getInstance().player);
+        if(idx == 3) return (int)(100*BeyonderAttributes.getDefense(Minecraft.getInstance().player));
         if(getCapability().isPresent()){
             return getCapability().get().getBeyonderStats().getIntStats()[idx];
         }
