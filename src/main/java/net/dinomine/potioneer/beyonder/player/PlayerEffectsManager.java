@@ -157,14 +157,14 @@ public class PlayerEffectsManager {
 
     /**
      * this method will make sure that the effect you add is added as a single effect,
-     * that is, it wont do anything if there already something like it or better,
-     * and if it does add it it will make sure the previous effect, if it existed, is removed, and then this one is added
+     * that is, if there is something worse or nothing, itll remove it and then add the incoming effect.
+     * and otherwise, if there is something of equal level, itll call the refresh method
      * @param effect
      * @param cap
      * @param target
      * @return
      */
-    public boolean addOrReplaceEffect(BeyonderEffect effect, LivingEntityBeyonderCapability cap, LivingEntity target){
+    public boolean addOrRefreshEffect(BeyonderEffect effect, LivingEntityBeyonderCapability cap, LivingEntity target){
         if(target.level().isClientSide()) return false;
         if(effect == null) return false;
         if(!effect.canAdd(cap, target)) return false;
@@ -391,7 +391,7 @@ public class PlayerEffectsManager {
     public void copyFrom(PlayerEffectsManager otherEffects, LivingEntityBeyonderCapability cap, Player player) {
         for (BeyonderEffect passive : otherEffects.passives) {
             if(passive.shouldPersistInDeath()){
-                addOrReplaceEffect(passive, cap, player);
+                addOrRefreshEffect(passive, cap, player);
             }
         }
     }

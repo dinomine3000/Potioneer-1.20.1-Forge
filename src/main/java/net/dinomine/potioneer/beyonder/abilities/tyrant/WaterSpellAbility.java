@@ -23,10 +23,6 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.damagesource.DamageSources;
-import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -43,7 +39,6 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.ForgeMod;
-import net.minecraftforge.network.PacketDistributor;
 
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
@@ -189,7 +184,7 @@ public class WaterSpellAbility extends AbilityWithOptions {
         if(target.level().isClientSide()) return true;
         if(cap.getEffectsManager().hasEffect(BeyonderEffects.TYRANT_WATER_JET)) return false;
         BeyonderEffect waterJetEffect = BeyonderEffects.TYRANT_WATER_JET.createInstance(getSequenceLevel(), WaterJetEffect.DURATION, false);
-        cap.getEffectsManager().addOrReplaceEffect(waterJetEffect, cap, target);
+        cap.getEffectsManager().addOrRefreshEffect(waterJetEffect, cap, target);
         cap.requestActiveSpiritualityCost(WATER_JET_COST);
         setNextCooldownAs(WaterJetEffect.DURATION);
         return true;
@@ -204,7 +199,7 @@ public class WaterSpellAbility extends AbilityWithOptions {
             for(LivingEntity entity: hits){
                 if(entity.is(target)) continue;
                 entity.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(victimCap ->
-                        victimCap.getEffectsManager().addOrReplaceEffect(BeyonderEffects.TYRANT_WATER_PRISON.createInstance(getSequenceLevel(), 0, 20*30, true), victimCap, entity));
+                        victimCap.getEffectsManager().addOrRefreshEffect(BeyonderEffects.TYRANT_WATER_PRISON.createInstance(getSequenceLevel(), 0, 20*30, true), victimCap, entity));
             }
             ParticleMaker.summonAOEParticles(target.level(), target.getEyePosition(), (int)(2*radius), radius, ParticleMaker.Preset.AOE_END_ROD);
             target.level().playSound(null, target.getOnPos(), ModSounds.WATER_PRISON.get(), SoundSource.PLAYERS, 1, 1);
@@ -225,7 +220,7 @@ public class WaterSpellAbility extends AbilityWithOptions {
             for(LivingEntity entity: hits){
                 if(entity.is(target)) continue;
                 entity.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(victimCap ->
-                        victimCap.getEffectsManager().addOrReplaceEffect(BeyonderEffects.TYRANT_DROWNING.createInstance(getSequenceLevel(), 0, duration, true), victimCap, entity));
+                        victimCap.getEffectsManager().addOrRefreshEffect(BeyonderEffects.TYRANT_DROWNING.createInstance(getSequenceLevel(), 0, duration, true), victimCap, entity));
             }
             ParticleMaker.summonAOEParticles(target.level(), target.getEyePosition(), (int)(2*radius), radius, ParticleMaker.Preset.AOE_END_ROD);
             //target.level().playSound(null, target.getOnPos(), SoundEvents.MINECART_INSIDE_UNDERWATER, SoundSource.PLAYERS, 1, 1);

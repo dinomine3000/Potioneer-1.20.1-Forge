@@ -25,7 +25,7 @@ public class TimedPassiveAbility extends PassiveAbility {
     @Override
     public void passive(LivingEntityBeyonderCapability cap, LivingEntity target) {
         if(isEnabled()){
-            cap.getEffectsManager().addOrReplaceEffect(effect.createInstance(sequenceLevel, cost(), durationFunction.apply(getSequenceLevel()), true), cap, target);
+            cap.getEffectsManager().addOrRefreshEffect(effect.createInstance(sequenceLevel, cost(), durationFunction.apply(getSequenceLevel()), true), cap, target);
             if(cap.getSpirituality() <= cap.getMaxSpirituality()*minimumSpiritualityThreshold) flipEnable(cap, target);
         }
     }

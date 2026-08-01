@@ -53,7 +53,7 @@ public class AoJSourceEffect extends BeyonderEffect {
     private static void applyAojInfluenceToEntity(Entity entity, LivingEntity enforcer, AllySystemSaveData allyData, LivingEntityBeyonderCapability cap){
         if(entity instanceof LivingEntity livingEntity && !allyData.areEntitiesAllies(livingEntity, enforcer) && AreaOfJurisdictionAbility.isPosInAOJ(livingEntity.getOnPos(), cap, 0)){
             livingEntity.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(victimCap -> {
-                victimCap.getEffectsManager().addOrReplaceEffect(AoJRecipientEffect.getInstance(enforcer.getUUID()),
+                victimCap.getEffectsManager().addOrRefreshEffect(AoJRecipientEffect.getInstance(enforcer.getUUID()),
                         victimCap, livingEntity);
             });
         }

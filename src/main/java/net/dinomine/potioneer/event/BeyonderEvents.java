@@ -353,21 +353,6 @@ public class BeyonderEvents {
     }
 
     @SubscribeEvent
-    public static void livingDestroyBlockEvent(LivingDestroyBlockEvent event){
-        if(event.getEntity().level().isClientSide()) return;
-        ServerLevel level = (ServerLevel) event.getEntity().level();
-        for(Player player: level.getPlayers(ignored -> true)){
-            Optional<LivingEntityBeyonderCapability> optCap = player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve();
-            if(optCap.isEmpty()) return;
-            LivingEntityBeyonderCapability cap = optCap.get();
-            if(AreaOfJurisdictionAbility.isPosInAOJ(event.getPos(), cap, 0)){
-                event.setCanceled(true);
-                return;
-            }
-        }
-    }
-
-    @SubscribeEvent
     public static void onCraft(PlayerEvent.ItemCraftedEvent event){
         if(event.getEntity().level().isClientSide()) return;
         event.getEntity().getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {

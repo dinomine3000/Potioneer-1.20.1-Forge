@@ -58,7 +58,7 @@ public class CooldownAbility extends PassiveAbility {
                 if(ent.getId() == target.getId()) proxyManager = cap.getLuckManager();
                 else cap.getCharacteristicManager().progressActing(WheelOfFortunePathway.GAMBLER_ACTING_COOLDOWN, 7);
                 if(PotioneerCommonConfig.COOLDOWN_ABILITY_CAST_COOLDOWN.get()){
-                    victimCap.getEffectsManager().addOrReplaceEffect(createCooldownEffectInstance(getSequenceLevel(), minCooldown, maxCooldown, 20*20),
+                    victimCap.getEffectsManager().addOrRefreshEffect(createCooldownEffectInstance(getSequenceLevel(), minCooldown, maxCooldown, 20*20),
                             victimCap, ent);
                 } else {
                     CooldownRecipientEffect.disableRandomAbilities(victimCap, proxyManager, ent, ent.getId() != target.getId(), minCooldown, maxCooldown);

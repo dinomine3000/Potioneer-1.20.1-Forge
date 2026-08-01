@@ -43,9 +43,7 @@ public class WaterJetEffect extends BeyonderEffect {
         AllySystemSaveData data = AllySystemSaveData.from((ServerLevel) target.level());
         AbilityFunctionHelper.getLivingEntitiesLooking(target, RANGE, 0, false).forEach(ent -> {
             if(data.areEntitiesAllies(target, ent)) return;
-            ent.push(pushAngle.x, pushAngle.y, pushAngle.z);
-            ent.hasImpulse = true;
-            ent.hurtMarked = true;
+            AbilityFunctionHelper.pushEntity(ent, pushAngle);
         });
     }
 

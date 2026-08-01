@@ -180,7 +180,7 @@ public class CharmEntity extends Entity implements GeoEntity {
             return;
         }
         target.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
-            if(cap.getEffectsManager().addOrReplaceEffect(this.effect, cap, target))
+            if(cap.getEffectsManager().addOrRefreshEffect(this.effect, cap, target))
                 level().playSound(null, target, SoundEvents.BEACON_POWER_SELECT, SoundSource.PLAYERS, 2, 1);
             else
                 level().playSound(null, target, SoundEvents.GLASS_BREAK, SoundSource.PLAYERS, 2, 1);

@@ -29,7 +29,7 @@ public class AidResponse extends SpiritResponse implements RandomizableResponse<
         Player effectTarget = getPlayer(inputData, level, targetCaster);
         if(effectTarget == null) return;
         effectTarget.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
-            cap.getEffectsManager().addOrReplaceEffect(getRandomEffectByPathway(pathwayId), cap, effectTarget);
+            cap.getEffectsManager().addOrRefreshEffect(getRandomEffectByPathway(pathwayId), cap, effectTarget);
         });
     }
 

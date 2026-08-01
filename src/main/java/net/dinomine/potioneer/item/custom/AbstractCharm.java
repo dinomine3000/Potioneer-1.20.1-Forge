@@ -11,7 +11,6 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -46,7 +45,7 @@ public class AbstractCharm extends Item {
     private void activateCharmOnSelf(Player player, ItemStack stack, InteractionHand usedHand){
         BeyonderEffect eff = MysticalItemHelper.getEffectFromCharm(stack);
         player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
-            if(cap.getEffectsManager().addOrReplaceEffect(eff, cap, player)){
+            if(cap.getEffectsManager().addOrRefreshEffect(eff, cap, player)){
                 player.setItemInHand(usedHand, ItemStack.EMPTY);
             }
         });

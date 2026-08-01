@@ -1,4 +1,4 @@
-// 1.20.1	2026-06-26T11:46:34.0750399	Tags for minecraft:damage_type mod id potioneer
+// 1.20.1	2026-08-01T20:45:29.3066669	Tags for minecraft:damage_type mod id potioneer
 7b19c07028a55a7740e3f422b3ff9b63071e84a7 data/minecraft/tags/damage_type/always_hurts_ender_dragons.json
 a8ca9a1ed9e8083c0be913d3af0f2168b63bd4eb data/minecraft/tags/damage_type/bypasses_armor.json
 06c8a801b319965c96208e0c991d8bd9f126da5d data/minecraft/tags/damage_type/bypasses_cooldown.json
@@ -7,6 +7,6 @@ a8ca9a1ed9e8083c0be913d3af0f2168b63bd4eb data/minecraft/tags/damage_type/bypasse
 e8af6d8cfdf7b71b708806808725875588676b0b data/minecraft/tags/damage_type/bypasses_invulnerability.json
 1e23d6f6dc8338f83f2ef67270990ba755f80176 data/minecraft/tags/damage_type/bypasses_resistance.json
 1e23d6f6dc8338f83f2ef67270990ba755f80176 data/minecraft/tags/damage_type/bypasses_shield.json
-6cb7be70f9c86b9eb6b41060543354c990114194 data/potioneer/tags/damage_type/absolute.json
+17bf4fe196f234b11b7abdbd96420bf1beee19a3 data/potioneer/tags/damage_type/absolute.json
 4da623c5ac897ac9e507bb760dd08ea4dd70b801 data/potioneer/tags/damage_type/mental.json
-a0b8487481adc771364223aa202c16c296b3a4e9 data/potioneer/tags/damage_type/purification.json
+d62633821eb99a0426093f9c2108225871e92d87 data/potioneer/tags/damage_type/purification.json

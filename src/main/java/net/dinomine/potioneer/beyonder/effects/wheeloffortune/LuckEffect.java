@@ -89,7 +89,7 @@ public class LuckEffect extends BeyonderEffect {
 //            victimCap.getEffectsManager().removeEffect(BeyonderEffects.WHEEL_CRIT.getEffectId(), getSequenceLevel());
             CritEffect eff = (CritEffect) BeyonderEffects.WHEEL_CRIT.createInstance(getSequenceLevel(), 0, 15, true);
             eff.setValues(attacker.getId(), event.getAmount());
-            victimCap.getEffectsManager().addOrReplaceEffect(eff, victimCap, victim);
+            victimCap.getEffectsManager().addOrRefreshEffect(eff, victimCap, victim);
         }
         return false;
     }

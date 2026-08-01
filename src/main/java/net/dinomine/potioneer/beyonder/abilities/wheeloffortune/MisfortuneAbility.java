@@ -33,7 +33,7 @@ public class MisfortuneAbility extends Ability {
             Optional<LivingEntityBeyonderCapability> optCap = misfortuneTarget.get().getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve();
             if(optCap.isEmpty()) return false;
             LivingEntityBeyonderCapability targetCap = optCap.get();
-            targetCap.getEffectsManager().addOrReplaceEffect(BeyonderEffects.WHEEL_INSTANT_BAD_LUCK.createInstance(getSequenceLevel(), 0, 5, true), targetCap, misfortuneTarget.get());
+            targetCap.getEffectsManager().addOrRefreshEffect(BeyonderEffects.WHEEL_INSTANT_BAD_LUCK.createInstance(getSequenceLevel(), 0, 5, true), targetCap, misfortuneTarget.get());
             cap.getLuckManager().consumeLuck(50);
             cap.requestActiveSpiritualityCost(cost());
             ParticleMaker.createDiceEffectForEntity(target.level(), misfortuneTarget.get());
@@ -50,7 +50,7 @@ public class MisfortuneAbility extends Ability {
             Optional<LivingEntityBeyonderCapability> optCap = misfortuneTarget.get().getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve();
             if(optCap.isEmpty()) return false;
             LivingEntityBeyonderCapability targetCap = optCap.get();
-            targetCap.getEffectsManager().addOrReplaceEffect(BeyonderEffects.WHEEL_BAD_LUCK.createInstance(getSequenceLevel(), 0, 5, true), targetCap, misfortuneTarget.get());
+            targetCap.getEffectsManager().addOrRefreshEffect(BeyonderEffects.WHEEL_BAD_LUCK.createInstance(getSequenceLevel(), 0, 5, true), targetCap, misfortuneTarget.get());
             cap.getLuckManager().consumeLuck(50);
             ParticleMaker.createDiceEffectForEntity(target.level(), misfortuneTarget.get());
             cap.getCharacteristicManager().progressActing(WheelOfFortunePathway.MISFORTUNE_ACTING_INC, 5);

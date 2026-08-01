@@ -43,7 +43,7 @@ public class DurabilityRegenAbility extends PassiveAbility {
 
     @Override
     public void activate(LivingEntityBeyonderCapability cap, LivingEntity target) {
-        cap.getEffectsManager().addOrReplaceEffect(effect.createInstance(sequenceLevel, getEffectCost.get(), getEffectDuration.get(), true), cap, target);
+        cap.getEffectsManager().addOrRefreshEffect(effect.createInstance(sequenceLevel, getEffectCost.get(), getEffectDuration.get(), true), cap, target);
     }
 
     @Override

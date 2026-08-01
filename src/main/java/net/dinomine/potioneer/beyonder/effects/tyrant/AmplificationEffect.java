@@ -11,6 +11,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class AmplificationEffect extends BeyonderEffect {
@@ -100,5 +101,13 @@ public class AmplificationEffect extends BeyonderEffect {
                 this.affectedInstances.add(key);
             }
         }
+    }
+
+    public void abilityRemoved(AbilityKey ablKey) {
+        affectedInstances.remove(ablKey);
+    }
+
+    public void artifactRemoved(List<AbilityKey> keys) {
+        for(AbilityKey key: keys) abilityRemoved(key);
     }
 }

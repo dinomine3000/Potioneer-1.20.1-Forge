@@ -8,6 +8,6 @@ import net.minecraft.world.entity.LivingEntity;
 public class DodgeLuckEvent extends LuckEvent {
     @Override
     public void triggerEvent(LivingEntityBeyonderCapability cap, PlayerLuckManager luck, LivingEntity target) {
-        cap.getEffectsManager().addOrReplaceEffect(BeyonderEffects.WHEEL_LUCK_EFFECT.createInstance(0, 0, 60*20, true), cap, target);
+        cap.getEffectsManager().addOrRefreshEffect(BeyonderEffects.WHEEL_LUCK_EFFECT.createInstance(0, 0, 60*20, true), cap, target);
     }
 }

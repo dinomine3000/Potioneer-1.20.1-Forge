@@ -11,12 +11,8 @@ import net.dinomine.potioneer.rituals.criteria.*;
 import net.dinomine.potioneer.rituals.responses.DefaultResponse;
 import net.dinomine.potioneer.rituals.spirits.Deity;
 import net.minecraft.network.chat.Component;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 
 import java.util.ArrayList;
@@ -39,7 +35,7 @@ public class TyrantResponse extends Deity {
 
     @Override
     public void onTrueNameSpoken(LivingEntity target, LivingEntityBeyonderCapability cap) {
-        cap.getEffectsManager().addOrReplaceEffect(BeyonderEffects.byId(BeyonderEffects.TYRANT_LIGHTNING_TARGET.getEffectId(), 1, 0, 20*10, true), cap, target);
+        cap.getEffectsManager().addOrRefreshEffect(BeyonderEffects.byId(BeyonderEffects.TYRANT_LIGHTNING_TARGET.getEffectId(), 1, 0, 20*10, true), cap, target);
         cap.requestActiveSpiritualityCost(1000);
         cap.changeSanity(-25);
     }
@@ -65,7 +61,7 @@ public class TyrantResponse extends Deity {
         Player player = getPlayer(inputData, level, true);
         if(player == null) return;
         player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
-            cap.getEffectsManager().addOrReplaceEffect(BeyonderEffects.byId(BeyonderEffects.TYRANT_LIGHTNING_TARGET.getEffectId(), 5, 0, 20*2, true),
+            cap.getEffectsManager().addOrRefreshEffect(BeyonderEffects.byId(BeyonderEffects.TYRANT_LIGHTNING_TARGET.getEffectId(), 5, 0, 20*2, true),
                     cap, player);
         });
     }

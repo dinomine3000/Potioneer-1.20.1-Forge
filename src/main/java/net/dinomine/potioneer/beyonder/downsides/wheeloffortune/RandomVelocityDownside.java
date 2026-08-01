@@ -20,7 +20,7 @@ public class RandomVelocityDownside extends Downside {
                     cap.getLuckManager().getRandomNumber(20*10, 20*120, false, target.getRandom()), true);
             effect.attackSpeed = cap.getLuckManager().getRandomNumber(1, VelocityAbility.levelToMaxAttack.apply(getSequenceLevel()), false, target.getRandom());
             effect.movementSpeed = cap.getLuckManager().getRandomNumber(1, VelocityAbility.levelToMaxMovement.apply(getSequenceLevel()), false, target.getRandom());
-            cap.getEffectsManager().addOrReplaceEffect(effect, cap, target);
+            cap.getEffectsManager().addOrRefreshEffect(effect, cap, target);
         }
     }
 

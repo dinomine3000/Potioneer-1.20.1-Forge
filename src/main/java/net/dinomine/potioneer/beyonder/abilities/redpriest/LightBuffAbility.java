@@ -5,7 +5,6 @@ import net.dinomine.potioneer.beyonder.abilities.AbilityFunctionHelper;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
 import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
 import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraftforge.common.ForgeMod;
 
@@ -33,7 +32,7 @@ public class LightBuffAbility extends Ability {
         for(LivingEntity livingEntity: hits){
             Optional<LivingEntityBeyonderCapability> otherCap = livingEntity.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve();
             if(otherCap.isPresent()){
-                otherCap.get().getEffectsManager().addOrReplaceEffect(BeyonderEffects.byId(BeyonderEffects.RED_LIGHT_BUFF.getEffectId(), getSequenceLevel(), 0, livingEntity != target ? 2*20*60*5 : 2*20*60, true)
+                otherCap.get().getEffectsManager().addOrRefreshEffect(BeyonderEffects.byId(BeyonderEffects.RED_LIGHT_BUFF.getEffectId(), getSequenceLevel(), 0, livingEntity != target ? 2*20*60*5 : 2*20*60, true)
                         , otherCap.get(), livingEntity);
                 cap.requestActiveSpiritualityCost(cost());
                 System.out.println("Applied strength buff to " + livingEntity.getName());

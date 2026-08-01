@@ -6,7 +6,6 @@ import net.dinomine.potioneer.beyonder.abilities.AbilityFunctionHelper;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
 import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
@@ -39,7 +38,7 @@ public class MistBlinkingAbility extends Ability {
         ServerLevel level = (ServerLevel) target.level();
         if(AreaOfJurisdictionAbility.isPosInAOJ(blockPos, cap, 0)){
             cap.getAbilitiesManager().putAbilityOnCooldown(Abilities.MIST.getAblId(), getSequenceLevel(), 20, target);
-            cap.getEffectsManager().addOrReplaceEffect(BeyonderEffects.TYRANT_MIST_EFFECT.createInstance(getSequenceLevel(), 0, 10, true), cap, target);
+            cap.getEffectsManager().addOrRefreshEffect(BeyonderEffects.TYRANT_MIST_EFFECT.createInstance(getSequenceLevel(), 0, 10, true), cap, target);
             Vec3 pos = target.getEyePosition();
             level.sendParticles(ParticleTypes.FALLING_WATER, pos.x, pos.y, pos.z, 50, 1, 0, 1, 0);
             Vec3 motion = target.getDeltaMovement();

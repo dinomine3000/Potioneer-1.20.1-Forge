@@ -113,7 +113,7 @@ public class PassiveAbility extends Ability {
     @Override
     public void passive(LivingEntityBeyonderCapability cap, LivingEntity target) {
         if(isEnabled() && !cap.getEffectsManager().hasEffectOrBetter(effect.createInstance(sequenceLevel, duration, true))){
-            cap.getEffectsManager().addOrReplaceEffect(createEffectInstance(cap, target), cap, target);
+            cap.getEffectsManager().addOrRefreshEffect(createEffectInstance(cap, target), cap, target);
         }
         if(cap.getSpirituality() < cap.getMaxSpirituality()*minimumSpiritualityThreshold
                 || cap.getSpirituality() < minSpiritualityAbsolute) setEnabled(cap, target, false);

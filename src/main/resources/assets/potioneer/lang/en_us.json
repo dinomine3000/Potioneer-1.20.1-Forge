@@ -432,6 +432,7 @@
   "death.attack.potioneer.low_spirituality": "%s drained themselves dry of spirituality.",
   "death.attack.potioneer.asteroid": "%s was eradicated by a meteor.",
   "death.attack.potioneer.arrest": "%s was purified after being arrested by %s.",
+  "death.attack.potioneer.exile": "%s died to %s's exile.",
 
   "short_desc.potioneer.cogitation": "Your essence... your being... this is what makes you",
   "long_desc.potioneer.cogitation": "Concentrate your spirituality and recuperate in a safe place.",

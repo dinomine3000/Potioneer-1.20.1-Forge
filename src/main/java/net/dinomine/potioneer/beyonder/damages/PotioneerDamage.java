@@ -33,6 +33,7 @@ public class PotioneerDamage {
     public static final ResourceKey<DamageType> LOW_SPIRITUALITY = ResourceKey.create(Registries.DAMAGE_TYPE, new ResourceLocation(Potioneer.MOD_ID, "low_spirituality"));
     public static final ResourceKey<DamageType> ASTEROID = ResourceKey.create(Registries.DAMAGE_TYPE, new ResourceLocation(Potioneer.MOD_ID, "asteroid"));
     public static final ResourceKey<DamageType> ARREST = ResourceKey.create(Registries.DAMAGE_TYPE, new ResourceLocation(Potioneer.MOD_ID, "arrest"));
+    public static final ResourceKey<DamageType> EXILE = ResourceKey.create(Registries.DAMAGE_TYPE, new ResourceLocation(Potioneer.MOD_ID, "exile"));
     public static final ResourceKey<DamageType> TYRANT_HEALING = ResourceKey.create(Registries.DAMAGE_TYPE, new ResourceLocation(Potioneer.MOD_ID, "tyrant_healing"));
     public static final ResourceKey<DamageType> WATER_TRAP = ResourceKey.create(Registries.DAMAGE_TYPE, new ResourceLocation(Potioneer.MOD_ID, "water_trap_explosion"));
     public static final ResourceKey<DamageType> WATER_TRAP_ENVIRONMENT = ResourceKey.create(Registries.DAMAGE_TYPE, new ResourceLocation(Potioneer.MOD_ID, "water_trap_explosion_environment"));
@@ -47,9 +48,13 @@ public class PotioneerDamage {
         return getSource(level, TYRANT_HEALING);
     }
 
-    public static DamageSource water_trap(ServerLevel level, @Nullable LivingEntity attacker) {
+    public static DamageSource water_trap(ServerLevel level, @Nullable Entity attacker) {
         if(attacker == null) return water_trap(level);
         return getSource(level, WATER_TRAP, attacker);
+    }
+
+    public static DamageSource exile(ServerLevel level, @Nullable Entity attacker) {
+        return getSource(level, EXILE, attacker);
     }
 
     private static DamageSource water_trap(ServerLevel level) {

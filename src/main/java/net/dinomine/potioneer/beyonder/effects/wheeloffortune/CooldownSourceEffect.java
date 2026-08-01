@@ -34,7 +34,7 @@ public class CooldownSourceEffect extends BeyonderEffect {
         LivingEntityBeyonderCapability attackerCap = optAttackerCap.get();
 
         if(!attackerCap.getLuckManager().passesLuckCheck(1/2f, 0, 0, attacker.getRandom())){
-            attackerCap.getEffectsManager().addOrReplaceEffect(CooldownAbility.createCooldownEffectInstance(
+            attackerCap.getEffectsManager().addOrRefreshEffect(CooldownAbility.createCooldownEffectInstance(
                             getSequenceLevel(), minDefensiveCooldown, maxDefensiveCooldown,20*5),
                     attackerCap, attacker);
             return false;

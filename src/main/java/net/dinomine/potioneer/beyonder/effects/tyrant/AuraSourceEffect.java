@@ -40,7 +40,7 @@ public class AuraSourceEffect extends BeyonderEffect {
         LivingEntityBeyonderCapability cap = optCap.get();
         AuraRecipientEffect eff = (AuraRecipientEffect) BeyonderEffects.TYRANT_AURA_RECIPIENT.createInstance(getSequenceLevel(), 0, -1, true);
         eff.addSourceSilent(enforcer.getUUID());
-        cap.getEffectsManager().addOrReplaceEffect(eff, cap, livingEntity);
+        cap.getEffectsManager().addOrRefreshEffect(eff, cap, livingEntity);
     }
 
     @Override

@@ -4,6 +4,9 @@ import net.dinomine.potioneer.Potioneer;
 import net.dinomine.potioneer.beyonder.abilities.*;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
 import net.dinomine.potioneer.beyonder.pages.Page;
+import net.dinomine.potioneer.event.AbilityCastEvent;
+import net.dinomine.potioneer.event.AbilityPossessionEvent;
+import net.dinomine.potioneer.event.ArtifactPossessionEvent;
 import net.dinomine.potioneer.network.PacketHandler;
 import net.dinomine.potioneer.network.messages.abilityRelevant.AbilitySyncMessage;
 import net.dinomine.potioneer.network.messages.abilityRelevant.PlayerArtifactSyncSTC;
@@ -16,6 +19,7 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.ModList;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -124,6 +128,7 @@ public class PlayerAbilitiesManager {
         if(artifact == null || artifact.isEmpty()) return false;
         if(artifacts.containsKey(artifact.getArtifactId())) return false;
         artifacts.put(artifact.getArtifactId(), artifact);
+        MinecraftForge.EVENT_BUS.post(new ArtifactPossessionEvent.Gained(artifact, player));
         if (runOnAcquire) artifact.onAcquire(cap, player);
         if(sync) updateClientArtifactInfo(player, List.of(artifact), PlayerArtifactSyncSTC.ADD);
         return true;
@@ -132,6 +137,7 @@ public class PlayerAbilitiesManager {
     private boolean removeArtifact(UUID artifactId, LivingEntityBeyonderCapability cap, Player player, boolean sync){
         if(artifactId == null) return false;
         ArtifactHolder artifact = artifacts.remove(artifactId);
+        MinecraftForge.EVENT_BUS.post(new ArtifactPossessionEvent.Lost(artifact, player));
         artifact.onRemove(cap, player);
         if(sync) updateClientArtifactInfo(player, List.of(artifact), PlayerArtifactSyncSTC.REMOVE);
         return true;
@@ -285,6 +291,7 @@ public class PlayerAbilitiesManager {
         if(!key.getGroup().equals(AbilityList.INTRINSIC.name())) return false;
         if(!abilities.containsKey(key)) return false;
         Ability abl = abilities.get(key);
+        MinecraftForge.EVENT_BUS.post(new AbilityPossessionEvent.Lost(abl, key, target));
         abl.deactivate(cap, target);
         abilities.remove(key);
         if(sync && target instanceof Player player) updateClientAbilityInfo(player, List.of(abl.getAbilityInfo()), AbilitySyncMessage.REMOVE);
@@ -590,6 +597,7 @@ public class PlayerAbilitiesManager {
         if(abilities.containsKey(key)) return false;
         ability.setAbilityKey(key.getGroup());
         abilities.put(key, ability);
+        MinecraftForge.EVENT_BUS.post(new AbilityPossessionEvent.Gained(ability, key, target));
         if (runOnAcquire) ability.onAcquire(cap, target);
         if(sync && target instanceof Player player) updateClientAbilityInfo(player, List.of(ability.getAbilityInfo()), AbilitySyncMessage.ADD);
         return true;
@@ -599,6 +607,7 @@ public class PlayerAbilitiesManager {
         if(key.getGroup().equals(AbilityList.INTRINSIC.name())) return false;
         if(!abilities.containsKey(key)) return false;
         Ability abl = abilities.get(key);
+        MinecraftForge.EVENT_BUS.post(new AbilityPossessionEvent.Lost(abl, key, target));
         abl.deactivate(cap, target);
         abilities.remove(key);
         if(sync && target instanceof Player player) updateClientAbilityInfo(player, List.of(abl.getAbilityInfo()), AbilitySyncMessage.REMOVE);
@@ -711,11 +720,6 @@ public class PlayerAbilitiesManager {
 
     private List<Ability> bufferNewAbilities = new ArrayList<>();
     private List<String> bufferAbilityGroups = new ArrayList<>();
-
-    public void bufferAddAbility(String group, Ability abl){
-        bufferNewAbilities.add(abl);
-        bufferAbilityGroups.add(group);
-    }
 
     public void loadNBTData(CompoundTag nbt, LivingEntityBeyonderCapability cap, LivingEntity target){
         for(Ability abl: abilities.values()){

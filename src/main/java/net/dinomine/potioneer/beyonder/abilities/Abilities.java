@@ -192,10 +192,6 @@ public class Abilities {
             1, 1);
 
     //retweaked
-    public static final AbilityFactory TYRANT_WATER_TRAP = registerAbility("water_trap",
-            WaterTrapAbility::new, 2, 1, level -> 40);
-
-    //retweaked
     public static final AbilityFactory TYRANT_WATER_SPELLS = registerAbility("water_spells",
             WaterSpellAbility::new, 3, 1, 0).hasSecondaryFunction();
 
@@ -228,6 +224,9 @@ public class Abilities {
 
     public static final AbilityFactory AMPLIFICATION = registerAbility("amplification",
             AmplificationAbility::new, 0, 1, 100).hasSecondaryFunction();
+
+    public static final AbilityFactory EXILE = registerAbility("exile",
+            ExileAbility::new, 0, 1, 100);
 
 //    public static final AbilityFactory TYRANT_ELECTRIFICATION = registerAbility("electrification",
 //            (Integer sequenceLevel) -> (PassiveAbility.createAbility(sequenceLevel, BeyonderEffects.TYRANT_ELECTRIFICATION,

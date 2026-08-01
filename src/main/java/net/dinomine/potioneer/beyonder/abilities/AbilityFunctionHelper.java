@@ -227,10 +227,14 @@ public class AbilityFunctionHelper {
     }
 
     public static void pushEntity(LivingEntity target, Vec3 pushAngle) {
-        if(target instanceof Player player){
+        target.push(pushAngle.x, pushAngle.y, pushAngle.z);
+        target.hasImpulse = true;
+        target.hurtMarked = true;
+        /*if(target instanceof Player player){
             player.push(pushAngle.x, pushAngle.y, pushAngle.z);
+            target.hasImpulse = true;
             player.hurtMarked = true;
-        } else target.addDeltaMovement(pushAngle);
+        } else target.addDeltaMovement(pushAngle);*/
     }
 
     public static BlockHitResult getBlockLooking(LivingEntity target) {
