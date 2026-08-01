@@ -2,13 +2,12 @@ package net.dinomine.potioneer.beyonder.pathways;
 
 import net.dinomine.potioneer.beyonder.abilities.Abilities;
 import net.dinomine.potioneer.beyonder.abilities.Ability;
+import net.dinomine.potioneer.beyonder.player.BeyonderStats;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 
 public class MysteryPathway extends BeyonderPathway {
@@ -101,15 +100,18 @@ public class MysteryPathway extends BeyonderPathway {
     }
 
     @Override
-    public float[] getStatsFor(int sequence){
-        return switch (sequence%10){
-            case 9 -> new float[]{0, 0, 0, 0, 0};
-            case 8 -> new float[]{0, 0, 0, 0, 1};
-            case 7 -> new float[]{2, 1, 0, 0, 5};
-            case 6 -> new float[]{2, 1, 2, 0, 8};
-            case 5 -> new float[]{4, 1, 2, 0, 8};
-            default -> new float[]{6, 2, 2, 0, 10};
-        };
+    public Map<BeyonderStats.StatType, Float> getStatsFor(int sequence) {
+        Map<BeyonderStats.StatType, Float> stats = new EnumMap<>(BeyonderStats.StatType.class);
+
+        switch (sequence % 10) {
+            case 9 -> setStats(stats, 0, 0, 0, 5);
+            case 8 -> setStats(stats, 2, 0, 0, 4.5f);
+            case 7 -> setStats(stats, 4, 2, 1, 4f);
+            case 6 -> setStats(stats, 6, 4, 2, 3.5f);
+            case 5 -> setStats(stats, 10, 8, 8, 3f);
+            default -> setStats(stats, 12, 12, 10, 2.5f);
+        }
+        return stats;
     }
 
     @Override

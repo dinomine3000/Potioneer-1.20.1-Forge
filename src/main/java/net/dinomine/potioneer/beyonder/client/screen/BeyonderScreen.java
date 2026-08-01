@@ -9,6 +9,7 @@ import net.dinomine.potioneer.beyonder.client.ClientStatsData;
 import net.dinomine.potioneer.beyonder.client.KeyBindings;
 import net.dinomine.potioneer.beyonder.pathways.BeyonderPathway;
 import net.dinomine.potioneer.beyonder.pathways.Pathways;
+import net.dinomine.potioneer.beyonder.player.BeyonderStats;
 import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
 import net.dinomine.potioneer.util.CustomImageButton;
 import net.minecraft.ChatFormatting;
@@ -224,11 +225,11 @@ public class BeyonderScreen extends Screen {
         );
 
         //draw stats
-        pGuiGraphics.drawWordWrap(this.font, Component.translatable("beyonder.potioneer.stat_hp", ClientStatsData.getStat(0)), leftPos + 63, topPos + 67, 100, this.color);
-        pGuiGraphics.drawWordWrap(this.font, Component.translatable("beyonder.potioneer.stat_dmg", ClientStatsData.getStat(1)), leftPos + 63, topPos + 80, 100, this.color);
-        pGuiGraphics.drawWordWrap(this.font, Component.translatable("beyonder.potioneer.stat_defense", ClientStatsData.getStat(2)), leftPos + 63, topPos + 93, 100, this.color);
-        pGuiGraphics.drawWordWrap(this.font, Component.translatable("beyonder.potioneer.stat_resistance", ClientStatsData.getStat(3)), leftPos + 63, topPos + 106, 100, this.color);
-        pGuiGraphics.drawWordWrap(this.font, Component.translatable("beyonder.potioneer.stat_max_sanity", ClientStatsData.getStat(4)), leftPos + 63, topPos + 119, 100, this.color);
+        pGuiGraphics.drawWordWrap(this.font, Component.translatable("beyonder.potioneer.stat_hp", ClientStatsData.getStat(BeyonderStats.StatType.HEALTH)), leftPos + 63, topPos + 67, 100, this.color);
+        pGuiGraphics.drawWordWrap(this.font, Component.translatable("beyonder.potioneer.stat_dmg", ClientStatsData.getStat(BeyonderStats.StatType.DAMAGE)), leftPos + 63, topPos + 80, 100, this.color);
+        pGuiGraphics.drawWordWrap(this.font, Component.translatable("beyonder.potioneer.stat_resistance", ClientStatsData.getStat(BeyonderStats.StatType.RESISTANCE)), leftPos + 63, topPos + 93, 100, this.color);
+        pGuiGraphics.drawWordWrap(this.font, Component.translatable("beyonder.potioneer.stat_stamina", ClientStatsData.getStat(BeyonderStats.StatType.STAMINA)), leftPos + 63, topPos + 106, 100, this.color);
+        pGuiGraphics.drawWordWrap(this.font, Component.translatable("beyonder.potioneer.stat_max_sanity", ClientStatsData.getMaxSanity()), leftPos + 63, topPos + 119, 100, this.color);
     }
 
     public void drawScaledString(GuiGraphics guiGraphics, Font font, String text, int x, int y, float scale, int color) {

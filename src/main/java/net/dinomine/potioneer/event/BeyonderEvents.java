@@ -1,8 +1,6 @@
 package net.dinomine.potioneer.event;
 
-import com.sk89q.worldedit.world.fluid.FluidTypes;
 import net.dinomine.potioneer.Potioneer;
-import net.dinomine.potioneer.beyonder.ModAttributes;
 import net.dinomine.potioneer.beyonder.abilities.Abilities;
 import net.dinomine.potioneer.beyonder.abilities.AbilityFunctionHelper;
 import net.dinomine.potioneer.beyonder.abilities.tyrant.AreaOfJurisdictionAbility;
@@ -14,11 +12,10 @@ import net.dinomine.potioneer.beyonder.effects.wheeloffortune.ZeroDamageBlockEff
 import net.dinomine.potioneer.beyonder.effects.wheeloffortune.ZeroDamageEffect;
 import net.dinomine.potioneer.beyonder.pathways.BeyonderPathway;
 import net.dinomine.potioneer.beyonder.pathways.Pathways;
-import net.dinomine.potioneer.beyonder.player.BeyonderAttributes;
+import net.dinomine.potioneer.beyonder.ModAttributes;
 import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
 import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
 import net.dinomine.potioneer.item.ModItems;
-import net.dinomine.potioneer.network.PacketHandler;
 import net.dinomine.potioneer.network.messages.SequenceSTCSyncRequest;
 import net.dinomine.potioneer.rituals.spirits.Deity;
 import net.dinomine.potioneer.util.ModTags;
@@ -31,25 +28,17 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.server.players.GameProfileCache;
-import net.minecraft.tags.EntityTypeTags;
-import net.minecraft.tags.FluidTags;
-import net.minecraft.tags.TagKey;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityDimensions;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.MobType;
-import net.minecraft.world.entity.monster.Creeper;
 import net.minecraft.world.entity.monster.Zombie;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BowItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.Enchantments;
-import net.minecraftforge.client.event.RenderNameTagEvent;
-import net.minecraftforge.common.ForgeMod;
 import net.minecraftforge.common.Tags;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.ServerChatEvent;
@@ -63,9 +52,7 @@ import net.minecraftforge.event.level.BlockEvent;
 import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fluids.FluidType;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.network.PacketDistributor;
 
 import java.nio.ByteBuffer;
 import java.security.MessageDigest;
@@ -394,7 +381,7 @@ public class BeyonderEvents {
     public static void onDamageProposed(LivingAttackEvent event){
         if(event.getEntity() == null) return;
         LivingEntity ent = event.getEntity();
-        if(BeyonderAttributes.getResistance(ent) >= event.getAmount() && !event.getSource().is(PotioneerDamage.Tags.ABSOLUTE)){
+        if(ModAttributes.getResistance(ent) >= event.getAmount() && !event.getSource().is(PotioneerDamage.Tags.ABSOLUTE)){
             event.setCanceled(event.isCancelable());
             event.setResult(Event.Result.DENY);
             return;
@@ -411,10 +398,6 @@ public class BeyonderEvents {
         if(event.getEntity() == null) return;
         if(event.getEntity().level().isClientSide()) return;
 
-        LivingEntity ent = event.getEntity();
-        if(BeyonderAttributes.getDefense(ent) > 0){
-            event.setAmount((float) (event.getAmount()*BeyonderAttributes.getDefenseMultiplier(ent)));
-        }
         if(event.getEntity().getMobType() == MobType.UNDEAD && event.getSource().is(PotioneerDamage.Tags.PURIFICATION)) event.setAmount(event.getAmount()*2);
         event.getEntity().getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
             cap.getEffectsManager().onAttackDamageCalculation(event, cap);

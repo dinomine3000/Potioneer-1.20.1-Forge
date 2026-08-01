@@ -2,7 +2,7 @@ package net.dinomine.potioneer;
 
 import com.mojang.logging.LogUtils;
 import net.dinomine.potioneer.beyonder.pathways.Pathways;
-import net.dinomine.potioneer.beyonder.player.BeyonderAttributes;
+import net.dinomine.potioneer.beyonder.ModAttributes;
 import net.dinomine.potioneer.block.ModBlocks;
 import net.dinomine.potioneer.block.entity.ModBlockEntities;
 import net.dinomine.potioneer.block.entity.renderer.MinerBlockRenderer;
@@ -15,7 +15,6 @@ import net.dinomine.potioneer.entities.ModEntities;
 import net.dinomine.potioneer.entities.client.*;
 import net.dinomine.potioneer.item.ModCreativeModTabs;
 import net.dinomine.potioneer.item.ModItems;
-import net.dinomine.potioneer.item.custom.BeyonderPotion.BeyonderPotionItem;
 import net.dinomine.potioneer.item.custom.UnshadowedCrucifixItem;
 import net.dinomine.potioneer.loot.ModLootModifiers;
 import net.dinomine.potioneer.menus.CrafterAnvilScreen;
@@ -28,7 +27,6 @@ import net.dinomine.potioneer.particle.ModParticles;
 import net.dinomine.potioneer.recipe.ModRecipes;
 import net.dinomine.potioneer.sound.ModSounds;
 import net.dinomine.potioneer.util.misc.ModCompoundTags;
-import net.dinomine.potioneer.util.misc.MysticalItemHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
@@ -100,7 +98,7 @@ public class Potioneer
 
         Pathways.register(eventBus);
 
-        BeyonderAttributes.register(eventBus);
+        ModAttributes.register(eventBus);
 
 //        ModAttributes.REGISTRY.register(eventBus);
 

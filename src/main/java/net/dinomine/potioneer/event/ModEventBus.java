@@ -1,7 +1,7 @@
 package net.dinomine.potioneer.event;
 
 import net.dinomine.potioneer.Potioneer;
-import net.dinomine.potioneer.beyonder.player.BeyonderAttributes;
+import net.dinomine.potioneer.beyonder.ModAttributes;
 import net.dinomine.potioneer.entities.ModEntities;
 import net.dinomine.potioneer.entities.custom.ChryonEntity;
 import net.dinomine.potioneer.entities.custom.DemonicWolfEntity;
@@ -21,8 +21,8 @@ public class ModEventBus {
 
     @SubscribeEvent
     public static void onEntityAttributeModification(EntityAttributeModificationEvent event) {
-        event.add(EntityType.PLAYER, BeyonderAttributes.DEFENSE.get());
-        event.add(EntityType.PLAYER, BeyonderAttributes.RESISTANCE.get());
+        event.add(EntityType.PLAYER, ModAttributes.RESISTANCE.get());
+        event.add(EntityType.PLAYER, ModAttributes.STAMINA.get());
     }
 
     @SubscribeEvent

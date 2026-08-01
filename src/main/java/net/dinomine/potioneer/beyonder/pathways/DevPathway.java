@@ -9,13 +9,16 @@ import net.dinomine.potioneer.beyonder.abilities.paragon.CraftingGuiAbility;
 import net.dinomine.potioneer.beyonder.abilities.paragon.DurabilityRegenAbility;
 import net.dinomine.potioneer.beyonder.abilities.wheeloffortune.ConjurePickaxeAbility;
 import net.dinomine.potioneer.beyonder.abilities.wheeloffortune.MinerLightAbility;
+import net.dinomine.potioneer.beyonder.player.BeyonderStats;
 import net.dinomine.potioneer.beyonder.player.PlayerAbilitiesManager;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class DevPathway extends BeyonderPathway {
 
@@ -92,9 +95,10 @@ public class DevPathway extends BeyonderPathway {
         return "";
     }
 
+
     @Override
-    public float[] getStatsFor(int sequence) {
-        return new float[0];
+    public Map<BeyonderStats.StatType, Float> getStatsFor(int sequence) {
+        return setStats(new HashMap<>(), 0, 0, 0, 1000);
     }
 
     @Override

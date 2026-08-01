@@ -1,12 +1,14 @@
 package net.dinomine.potioneer.beyonder.pathways;
 
 import net.dinomine.potioneer.beyonder.abilities.Ability;
+import net.dinomine.potioneer.beyonder.player.BeyonderStats;
 import net.dinomine.potioneer.rituals.spirits.Deity;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 
 import java.util.List;
+import java.util.Map;
 
 public abstract class BeyonderPathway {
     /**
@@ -87,25 +89,21 @@ public abstract class BeyonderPathway {
     }
 
     public abstract String getSequenceNameFromId(int sequenceLevel, boolean show);
-//    {
-//        int seq = id % 10;
-//        return switch(Math.floorDiv(id, 10)){
-//            case 0 -> WheelOfFortunePathway.getSequenceName(seq, show);
-//            case 1 -> TyrantPathway.getSequenceName(seq, show);
-//            case 2 -> MysteryPathway.getSequenceName(seq, show);
-//            case 3 -> RedPriestPathway.getSequenceName(seq, show);
-//            case 4 -> ParagonPathway.getSequenceName(seq, show);
-//            case 5 -> DevPathway.getSequenceName(seq, show);
-//            default -> show ? "None" : "none";
-//        };
-//    }
+
+    protected Map<BeyonderStats.StatType, Float> setStats(Map<BeyonderStats.StatType, Float> map, float hp, float atk, float res, float stamina) {
+        map.put(BeyonderStats.StatType.HEALTH, hp);
+        map.put(BeyonderStats.StatType.DAMAGE, atk);
+        map.put(BeyonderStats.StatType.RESISTANCE, res);
+        map.put(BeyonderStats.StatType.STAMINA, stamina);
+        return map;
+    }
 
     /**
      * gets the stats for the specific sequence level
      * @param sequence
-     * @return {hp, dmg, armor, toughness, knocknack resistance}
+     * @return {hp, dmg, resistance, knockback res}
      */
-    public abstract float[] getStatsFor(int sequence);
+    public abstract Map<BeyonderStats.StatType, Float> getStatsFor(int sequence);
 
     public int getIconX() {
         return 0;

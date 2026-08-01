@@ -373,6 +373,7 @@
   "beyonder.potioneer.stat_tough": "Toughness: %s",
   "beyonder.potioneer.stat_defense": "Defense: %s%",
   "beyonder.potioneer.stat_resistance": "Resistance: %s",
+  "beyonder.potioneer.stat_stamina": "Spirit Energy: %s",
   "beyonder.potioneer.stat_knock": "Knockback Resistance: %s",
   "beyonder.potioneer.stat_max_sanity": "Maximum Sanity: %s",
 

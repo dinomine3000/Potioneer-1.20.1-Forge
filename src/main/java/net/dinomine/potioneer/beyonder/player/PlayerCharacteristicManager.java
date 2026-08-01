@@ -154,6 +154,11 @@ public class PlayerCharacteristicManager {
         return getPathwaySequenceId()%10;
     }
 
+    /**
+     * since lastConsumedCharacteristics is a stack where the highest is the most recent of the highest level,
+     * this works.
+     * @return
+     */
     public int getPathwaySequenceId(){
         if(lastConsumedCharacteristics.isEmpty()) return -1;
         Integer res = lastConsumedCharacteristics.get(lastConsumedCharacteristics.size() - 1);
@@ -372,20 +377,25 @@ public class PlayerCharacteristicManager {
         //get best attributes for each stat based on all the characteristics
         //give BeyonderStats that as the stats to update
         //it already deals with removing the old modifiers and applying these new ones
+        beyonderStats.resetStats();
         List<Integer> bestCharacts = closestToLowerTens(lastConsumedCharacteristics);
-        float[] bestStats = new float[5];
-        List<float[]> attributesList = new ArrayList<>();
-        for(int charac: bestCharacts){
-            attributesList.add(Pathways.getPathwayBySequenceId(charac).getStatsFor(charac%10));
-        }
-        for(int i = 0; i < 5; i++){
-            float bestStat = 0;
-            for(float[] attributes: attributesList){
-                if(attributes[i] > bestStat) bestStat = attributes[i];
+        for (BeyonderStats.StatType type : BeyonderStats.StatType.values()) {
+            if(type == BeyonderStats.StatType.STAMINA) continue;
+            float highestStat = 0f;
+            for (int charac : bestCharacts) {
+                Map<BeyonderStats.StatType, Float> pathStats = Pathways.getPathwayBySequenceId(charac).getStatsFor(charac % 10);
+                highestStat = Math.max(highestStat, pathStats.getOrDefault(type, 0f));
             }
-            bestStats[i] = bestStat;
+            beyonderStats.addStat(type, highestStat);
         }
-        beyonderStats.setAttributes(bestStats);
+        int sequenceLevel = getSequenceLevel();
+        float bestStamina = 0;
+        for(int charac: bestCharacts){
+            if(charac%10 != sequenceLevel) continue;
+            Map<BeyonderStats.StatType, Float> pathStats = Pathways.getPathwayBySequenceId(charac).getStatsFor(charac % 10);
+            bestStamina = Math.max(bestStamina, pathStats.get(BeyonderStats.StatType.STAMINA));
+        }
+        beyonderStats.addStamina(bestStamina == 0 ? 5 : bestStamina);
         beyonderStats.applyStats(player, true);
     }
 

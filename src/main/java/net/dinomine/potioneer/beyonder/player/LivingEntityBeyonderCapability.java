@@ -1,5 +1,6 @@
 package net.dinomine.potioneer.beyonder.player;
 
+import net.dinomine.potioneer.beyonder.ModAttributes;
 import net.dinomine.potioneer.beyonder.abilities.AbilityFunctionHelper;
 import net.dinomine.potioneer.beyonder.damages.PotioneerDamage;
 import net.dinomine.potioneer.beyonder.pages.PageRegistry;
@@ -22,11 +23,13 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -37,6 +40,7 @@ import net.minecraftforge.event.entity.living.LivingDeathEvent;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 @AutoRegisterCapability
@@ -59,14 +63,7 @@ public class LivingEntityBeyonderCapability {
     //for instance, using entire spirituality 5 times consumes all sanity for a sequence 9,
     //but for a sequence 1 it might be 2 times instead.
     //https://www.desmos.com/calculator/4idokgotbr
-    private final Supplier<Float> spiritualityToSanityScalar = () ->{
-        if(!isBeyonder()) return 1f;
-        if(getSequenceLevel() > 4){
-            return getSequenceLevel()/2f + 0.5f;
-        } else {
-            return (float) (Math.pow(getSequenceLevel(), 2.6)/90 + 2);
-        }
-    };
+    private final Function<LivingEntity, Float> spiritualityToSanityScalar = (ent) -> (float) ModAttributes.getStamina(ent);
     private int[] reputation = {0, 0, 0, 0, 0};
     private int religion = -1;
     private long timePrayed = -1;
@@ -261,7 +258,7 @@ public class LivingEntityBeyonderCapability {
         this.spiritualityCost = 0;
 
         if(amount < 0){
-            changeSanity(100*amount/(maxSpirituality * spiritualityToSanityScalar.get()));
+            changeSanity(100*amount/(maxSpirituality * spiritualityToSanityScalar.apply(entity)));
         } else {
             changeSanity((float) 100 /SECONDS_TO_MAX_SPIRITUALITY);
         }
@@ -286,9 +283,7 @@ public class LivingEntityBeyonderCapability {
             if(entity.tickCount%40 == entity.getId()%40){
                 if(entity instanceof Player player){
                     abilitiesManager.updateArtifacts(this, player);
-                    PacketHandler.sendMessageSTC(new PlayerSTCStatsSync(this.spirituality, this.maxSpirituality,
-                            (int) this.sanity, getMaxSanity(), (float) characteristicManager.getAdjustedActingPercent(getPathwaySequenceId()),
-                            beyonderStats.getIntStats()), player);
+                    updateStats();
                 }
                 applyCost();
                 lowStatEffects();
@@ -418,10 +413,7 @@ public class LivingEntityBeyonderCapability {
     public boolean addPage(int pageNumber){
         if(!PageRegistry.pageExists(pageNumber) || pageList.contains(pageNumber)) return false;
         pageList.add(pageNumber);
-        if(entity instanceof Player player)
-            PacketHandler.sendMessageSTC(new PlayerSTCStatsSync(this.spirituality, this.maxSpirituality,
-                (int) this.sanity, getMaxSanity(), (float) characteristicManager.getAdjustedActingPercent(getPathwaySequenceId()),
-                beyonderStats.getIntStats(), pageList), player);
+        updateStats(pageList);
         return true;
     }
 
@@ -435,10 +427,25 @@ public class LivingEntityBeyonderCapability {
 
     public void clearPages() {
         this.pageList = new ArrayList<>();
-        if(entity instanceof Player player)
-            PacketHandler.sendMessageSTC(new PlayerSTCStatsSync(this.spirituality, this.maxSpirituality,
-                    (int) this.sanity, getMaxSanity(), (float) characteristicManager.getAdjustedActingPercent(getPathwaySequenceId()),
-                    beyonderStats.getIntStats(), pageList), player);
+        updateStats();
+    }
+    private void updateStats(){
+        updateStats(new ArrayList<>());
+    }
+
+    private void updateStats(ArrayList<Integer> pageList){
+        if(entity instanceof ServerPlayer player){
+            if(pageList.isEmpty())
+                PacketHandler.sendMessageSTC(new PlayerSTCStatsSync(
+                        this.spirituality, this.maxSpirituality, (int) this.sanity, getMaxSanity(),
+                        (float) characteristicManager.getAdjustedActingPercent(getPathwaySequenceId()),
+                        (int) ModAttributes.getAttribute(entity, Attributes.ATTACK_DAMAGE)), player);
+            else
+                PacketHandler.sendMessageSTC(new PlayerSTCStatsSync(
+                        this.spirituality, this.maxSpirituality, (int) this.sanity, getMaxSanity(),
+                        (float) characteristicManager.getAdjustedActingPercent(getPathwaySequenceId()),
+                        pageList, (int) ModAttributes.getAttribute(entity, Attributes.ATTACK_DAMAGE)), player);
+        }
     }
 
     public void copyFrom(LivingEntityBeyonderCapability source, Player player){
@@ -559,9 +566,7 @@ public class LivingEntityBeyonderCapability {
             getAbilitiesManager().updateClientArtifactInfo(player, PlayerArtifactSyncSTC.SET);
             PacketHandler.sendMessageSTC(new PlayerSyncHotbarMessage(getAbilitiesManager().clientHotbar, getAbilitiesManager().quickAbility), player);
             getEffectsManager().syncToClient(player);
-            PacketHandler.sendMessageSTC(new PlayerSTCStatsSync(this.spirituality, this.maxSpirituality,
-                    (int) this.sanity, getMaxSanity(), (float) characteristicManager.getAdjustedActingPercent(getPathwaySequenceId()),
-                    beyonderStats.getIntStats(), pageList), player);
+            updateStats(pageList);
         }
     }
 

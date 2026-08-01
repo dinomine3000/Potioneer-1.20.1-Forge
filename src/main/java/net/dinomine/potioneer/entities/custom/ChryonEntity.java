@@ -1,7 +1,7 @@
 package net.dinomine.potioneer.entities.custom;
 
 import net.dinomine.potioneer.beyonder.damages.PotioneerDamage;
-import net.dinomine.potioneer.beyonder.player.BeyonderAttributes;
+import net.dinomine.potioneer.beyonder.ModAttributes;
 import net.dinomine.potioneer.entities.goals.ChryonPierceGoal;
 import net.dinomine.potioneer.entities.goals.ChryonSwingGoal;
 import net.minecraft.core.BlockPos;
@@ -50,19 +50,19 @@ public class ChryonEntity extends Monster implements GeoEntity {
         this.xpReward = 25;
     }
 
-    public boolean isPiercing(){
+    public boolean isPiercing() {
         return this.entityData.get(IS_PIERCING);
     }
 
-    public void setPiercing(boolean pierc){
+    public void setPiercing(boolean pierc) {
         this.entityData.set(IS_PIERCING, pierc);
     }
 
-    public boolean isSwinging(){
+    public boolean isSwinging() {
         return this.entityData.get(IS_SWINGING);
     }
 
-    public void setSwinging(boolean pierc){
+    public void setSwinging(boolean pierc) {
         this.entityData.set(IS_SWINGING, pierc);
     }
 
@@ -80,20 +80,20 @@ public class ChryonEntity extends Monster implements GeoEntity {
         controllerRegistrar.add(new AnimationController<>(this, "swingController", 0, this::swingPredicate));
     }
 
-    public static boolean canSpawn(EntityType<ChryonEntity> entityType, LevelAccessor level, MobSpawnType spawnType, BlockPos pos, RandomSource random){
+    public static boolean canSpawn(EntityType<ChryonEntity> entityType, LevelAccessor level, MobSpawnType spawnType, BlockPos pos, RandomSource random) {
         return Mob.checkMobSpawnRules(entityType, level, spawnType, pos, random) && pos.getY() > 60;
     }
 
-    private PlayState piercePredicate(AnimationState<ChryonEntity> event){
-        if(!this.isPiercing()){
+    private PlayState piercePredicate(AnimationState<ChryonEntity> event) {
+        if (!this.isPiercing()) {
             return PlayState.STOP;
         }
         event.getController().setAnimation(RawAnimation.begin().thenPlay("pierce_attack"));
         return PlayState.CONTINUE;
     }
 
-    private PlayState swingPredicate(AnimationState<ChryonEntity> event){
-        if(!this.isSwinging()){
+    private PlayState swingPredicate(AnimationState<ChryonEntity> event) {
+        if (!this.isSwinging()) {
             return PlayState.STOP;
         }
         event.getController().setAnimation(RawAnimation.begin().thenPlay("sword_attack"));
@@ -101,10 +101,10 @@ public class ChryonEntity extends Monster implements GeoEntity {
     }
 
     private PlayState predicate(AnimationState<ChryonEntity> chryonEntityAnimationState) {
-        if(this.isPiercing() || this.isSwinging()){
+        if (this.isPiercing() || this.isSwinging()) {
             return PlayState.STOP;
         }
-        if(chryonEntityAnimationState.isMoving()){
+        if (chryonEntityAnimationState.isMoving()) {
             chryonEntityAnimationState.getController().setAnimation(RawAnimation.begin().thenPlay("walk"));
             return PlayState.CONTINUE;
         }
@@ -112,65 +112,63 @@ public class ChryonEntity extends Monster implements GeoEntity {
         return PlayState.CONTINUE;
     }
 
-    public boolean canPierce(){
+    public boolean canPierce() {
         return pierceCooldown < 1 && !this.isSwinging();
     }
 
-    public boolean canSwing(){
+    public boolean canSwing() {
         return !this.isPiercing();
     }
 
     @Override
     public void tick() {
         super.tick();
-        if(!this.level().isClientSide()){
-            if(pierceCooldown > 0) {
+        if (!this.level().isClientSide()) {
+            if (pierceCooldown > 0) {
                 pierceCooldown--;
             }
 
 
-            if(this.isPiercing()){
+            if (this.isPiercing()) {
                 this.pierceTime++;
-                if(this.canPierce() && this.pierceTime > 20 && this.getTarget() != null){
+                if (this.canPierce() && this.pierceTime > 20 && this.getTarget() != null) {
                     double dist = this.getPerceivedTargetDistanceSquareForMeleeAttack(this.getTarget());
                     double reach = this.getAttackReachSqr(this.getTarget());
                     if (dist <= reach && this.isAlive()) {
-                        //TODO
-                        //make custom damage source
-                        //DamageSource dmg = new DamageSource(this.level().registryAccess().registryOrThrow(Registries.DAMAGE_TYPE).getHolderOrThrow(DamageTypesRegistry.CHRYON_PIERCE));
-//                        this.getTarget().hurt(this.damageSources().mobAttack(this), 12);
                         this.getTarget().hurt(PotioneerDamage.chryon_pierce((ServerLevel) level(), this), 12);
                     }
                     this.pierceCooldown = 200;
-                } if (this.pierceTime > 50) {
+                }
+                if (this.pierceTime > 50) {
                     this.setPiercing(false);
                     this.pierceTime = 0;
                 }
             }
 
-            if(this.isSwinging()){
+            if (this.isSwinging()) {
                 this.swingTime++;
-                if(this.canSwing() && this.swingTime == 20 && this.getTarget() != null){
+                if (this.canSwing() && this.swingTime == 20 && this.getTarget() != null) {
                     double dist = this.getPerceivedTargetDistanceSquareForMeleeAttack(this.getTarget());
                     double reach = getAttackReachSqr(this.getTarget());
                     if (dist <= reach && this.isAlive()) {
                         this.doHurtTarget(this.getTarget());
                     }
-                } if (this.swingTime > 50) {
+                }
+                if (this.swingTime > 50) {
                     this.setSwinging(false);
                     this.swingTime = 0;
                 }
             }
         }
-        
+
     }
 
 
     protected double getAttackReachSqr(LivingEntity pAttackTarget) {
-        return 1.6 * (double)(this.getBbWidth() * 2.0F * this.getBbWidth() * 2.0F + pAttackTarget.getBbWidth());
+        return 1.6 * (double) (this.getBbWidth() * 2.0F * this.getBbWidth() * 2.0F + pAttackTarget.getBbWidth());
     }
 
-    public static AttributeSupplier setAttributes(){
+    public static AttributeSupplier setAttributes() {
         return Monster.createMonsterAttributes()
                 .add(Attributes.MAX_HEALTH, 50d)
                 .add(Attributes.ATTACK_DAMAGE, 11)
@@ -178,7 +176,7 @@ public class ChryonEntity extends Monster implements GeoEntity {
                 .add(Attributes.ARMOR, 20f)
                 .add(Attributes.KNOCKBACK_RESISTANCE, 0.7f)
                 .add(Attributes.MOVEMENT_SPEED, 0.2f)
-                .add(BeyonderAttributes.RESISTANCE.get(), 2).build();
+                .add(ModAttributes.RESISTANCE.get(), 2).build();
     }
 
 

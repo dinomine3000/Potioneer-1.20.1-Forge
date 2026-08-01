@@ -44,7 +44,7 @@ public class WeakeningEffect extends BeyonderEffect {
         if(target.level().isClientSide()) return;
         if(weakenAbilities) return;
         cap.getEffectsManager().statsHolder.addDamage(-1 - Math.max(0, 7 - sequenceLevel));
-        cap.getEffectsManager().statsHolder.addDefense(-2 - 2*Math.max(0, 7 - sequenceLevel));
+        //cap.getEffectsManager().statsHolder.addDefense(-2 - 2*Math.max(0, 7 - sequenceLevel));
         cap.getEffectsManager().statsHolder.addHealth(-2 - 4*Math.max(0, 7 - sequenceLevel));
         cap.getEffectsManager().statsHolder.addResistance(-4 - 2*Math.max(0, 7 - sequenceLevel));
     }

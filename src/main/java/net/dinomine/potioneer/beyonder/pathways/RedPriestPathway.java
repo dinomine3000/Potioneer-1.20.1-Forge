@@ -2,13 +2,12 @@ package net.dinomine.potioneer.beyonder.pathways;
 
 import net.dinomine.potioneer.beyonder.abilities.Abilities;
 import net.dinomine.potioneer.beyonder.abilities.Ability;
+import net.dinomine.potioneer.beyonder.player.BeyonderStats;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 public class RedPriestPathway extends BeyonderPathway {
 
@@ -49,17 +48,32 @@ public class RedPriestPathway extends BeyonderPathway {
         return Component.empty();
     }
 
-    @Override
+    /*@Override
     public float[] getStatsFor(int sequence){
         return switch (sequence%10){
-            case 9 -> new float[]{4, 1, 0, 0, 0};
-            case 8 -> new float[]{4, 1, 0, 0, 2};
-            case 7 -> new float[]{6, 3, 3, 0, 4};
-            case 6 -> new float[]{8, 3, 3, 1, 5};
-            case 5 -> new float[]{12, 5, 4, 2, 5};
-            default -> new float[]{0, 0, 0, 0, 0};
+            case 9 -> new float[]{4, 1, 0, 0};
+            case 8 -> new float[]{4, 1, 0, 2};
+            case 7 -> new float[]{6, 3, 0, 4};
+            case 6 -> new float[]{8, 3, 1, 5};
+            case 5 -> new float[]{12, 5, 2, 5};
+            default -> new float[]{0, 0, 0, 0};
         };
+    }*/
+    @Override
+    public Map<BeyonderStats.StatType, Float> getStatsFor(int sequence) {
+        Map<BeyonderStats.StatType, Float> stats = new EnumMap<>(BeyonderStats.StatType.class);
+
+        switch (sequence % 10) {
+            case 9 -> setStats(stats, 2, 2, 0, 4f);
+            case 8 -> setStats(stats, 4, 3, 1, 3.5f);
+            case 7 -> setStats(stats, 12, 7, 2, 3f);
+            case 6 -> setStats(stats, 16, 8, 3, 2.5f);
+            case 5 -> setStats(stats, 20, 12, 8, 2f);
+            default -> setStats(stats, 25, 15, 10, 1.5f);
+        }
+        return stats;
     }
+
 
     @Override
     public List<Ability> getAbilities(int sequence){

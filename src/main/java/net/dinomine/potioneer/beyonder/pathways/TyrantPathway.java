@@ -3,15 +3,14 @@ package net.dinomine.potioneer.beyonder.pathways;
 import net.dinomine.potioneer.beyonder.abilities.Abilities;
 import net.dinomine.potioneer.beyonder.abilities.Ability;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
+import net.dinomine.potioneer.beyonder.player.BeyonderStats;
 import net.dinomine.potioneer.rituals.spirits.Deity;
 import net.dinomine.potioneer.rituals.spirits.defaultGods.TyrantResponse;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 public class TyrantPathway extends BeyonderPathway {
 
@@ -57,17 +56,33 @@ public class TyrantPathway extends BeyonderPathway {
         return Component.empty();
     }
 
-    @Override
+    /*@Override
     public float[] getStatsFor(int sequenceLevel){
         return switch (sequenceLevel%10){
-            case 9 -> new float[]{8, 0, 0, 0, 1};
-            case 8 -> new float[]{8, 0, 0, 0, 2};
-            case 7 -> new float[]{12, 2, 0, 0, 5};
-            case 6 -> new float[]{15, 2, 0, 0, 5};
-            case 5 -> new float[]{20, 3, 0, 0, 7};
-            default -> new float[]{0, 0, 0, 0, 0};
+            case 9 -> new float[]{8, 0, 0, 1};
+            case 8 -> new float[]{8, 0, 0, 2};
+            case 7 -> new float[]{12, 2, 0, 5};
+            case 6 -> new float[]{15, 2, 0, 5};
+            case 5 -> new float[]{20, 3, 0, 7};
+            default -> new float[]{0, 0, 0, 0};
         };
+    }*/
+
+    @Override
+    public Map<BeyonderStats.StatType, Float> getStatsFor(int sequence) {
+        Map<BeyonderStats.StatType, Float> stats = new EnumMap<>(BeyonderStats.StatType.class);
+
+        switch (sequence % 10) {
+            case 9 -> setStats(stats, 4, 1, 1, 4f);
+            case 8 -> setStats(stats, 6, 1, 1, 3.5f);
+            case 7 -> setStats(stats, 16, 4, 3, 3f);
+            case 6 -> setStats(stats, 22, 6, 4, 2.5f);
+            case 5 -> setStats(stats, 28, 10, 9, 2f);
+            default -> setStats(stats, 35, 13, 11, 1.5f);
+        }
+        return stats;
     }
+
 
     @Override
     public List<Ability> getAbilities(int sequence){

@@ -2,22 +2,21 @@ package net.dinomine.potioneer.beyonder.client;
 
 import net.dinomine.potioneer.beyonder.client.screen.AdvancementScreen;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
-import net.dinomine.potioneer.beyonder.player.BeyonderAttributes;
+import net.dinomine.potioneer.beyonder.ModAttributes;
+import net.dinomine.potioneer.beyonder.player.BeyonderStats;
 import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
 import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
 import net.dinomine.potioneer.config.PotioneerClientConfig;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
-import java.util.UUID;
 
 import static net.dinomine.potioneer.util.misc.AdvancementDifficultyHelper.calculateDifficultyClient;
 
@@ -27,6 +26,7 @@ public class ClientStatsData {
 //    private static int[] beyonderStats = new int[]{0, 0, 0, 0, 0};
     private static float actingProgress = 0;
     private static int maxSanity = 100;
+    private static int dmg = 1;
 
     private static int luck = 0;
     private static int minLuck = 0;
@@ -96,15 +96,16 @@ public class ClientStatsData {
         return -1;
     }
 
-    public static int getStat(int idx){
-        if(idx == 4) return maxSanity;
-        if(idx == 2) return (int) BeyonderAttributes.getResistance(Minecraft.getInstance().player);
-        if(idx == 3) return (int)(100*BeyonderAttributes.getDefense(Minecraft.getInstance().player));
-        if(getCapability().isPresent()){
-            return getCapability().get().getBeyonderStats().getIntStats()[idx];
-        }
-        System.out.println("Tried to get spirituality but none was there to be read.");
-        return 0;
+    public static int getMaxSanity(){ return maxSanity;}
+
+    public static double getStat(BeyonderStats.StatType stat){
+        assert Minecraft.getInstance().player != null;
+        return switch(stat){
+            case STAMINA -> Math.round(ModAttributes.getStamina(Minecraft.getInstance().player)*100f)/100f;
+            case HEALTH -> ModAttributes.getAttribute(Minecraft.getInstance().player, Attributes.MAX_HEALTH);
+            case DAMAGE -> dmg;
+            case RESISTANCE -> Math.round(ModAttributes.getResistance(Minecraft.getInstance().player)*100f)/100f;
+        };
     }
 
     public static void setLuck(int newLuck, int newMinLuck, int newMaxLuck) {
@@ -155,5 +156,9 @@ public class ClientStatsData {
 
     public static void setMaxSanity(int inMax) {
         maxSanity = inMax;
+    }
+
+    public static void setDamage(int inDmg) {
+        dmg = inDmg;
     }
 }

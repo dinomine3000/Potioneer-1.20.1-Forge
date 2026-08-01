@@ -22,28 +22,28 @@ public class PlayerSTCStatsSync {
     public int sanity;
     public int maxSanity;
     public float actingProgress;
-    public int[] stats;
+    public int dmg;
     public List<Integer> pages;
 
-    public PlayerSTCStatsSync(float spirituality, int maxSpirituality, int sanity, int maxSanity, float actingProgress, int[] stats, List<Integer> pages) {
+    public PlayerSTCStatsSync(float spirituality, int maxSpirituality, int sanity, int maxSanity, float actingProgress, List<Integer> pages, int dmg) {
         this.spirituality = spirituality;
         this.maxSpirituality = maxSpirituality;
         this.sanity = sanity;
         this.maxSanity = maxSanity;
         this.actingProgress = actingProgress;
-        this.stats = stats;
         if(pages.isEmpty()) pages.add(1);
         this.pages = pages;
+        this.dmg = dmg;
     }
 
-    public PlayerSTCStatsSync(float spirituality, int maxSpirituality, int sanity, int maxSanity, float actingProgress, int[] stats) {
+    public PlayerSTCStatsSync(float spirituality, int maxSpirituality, int sanity, int maxSanity, float actingProgress, int dmg) {
         this.spirituality = spirituality;
         this.maxSpirituality = maxSpirituality;
         this.sanity = sanity;
         this.maxSanity = maxSanity;
         this.actingProgress = actingProgress;
-        this.stats = stats;
         this.pages = new ArrayList<>();
+        this.dmg = dmg;
     }
 
     public static void encode(PlayerSTCStatsSync msg, FriendlyByteBuf buffer){
@@ -52,12 +52,8 @@ public class PlayerSTCStatsSync {
         buffer.writeInt(msg.sanity);
         buffer.writeInt(msg.maxSanity);
         buffer.writeFloat(msg.actingProgress);
-        buffer.writeInt(msg.stats[0]);
-        buffer.writeInt(msg.stats[1]);
-        buffer.writeInt(msg.stats[2]);
-        buffer.writeInt(msg.stats[3]);
-        buffer.writeInt(msg.stats[4]);
         BufferUtils.writeIntListToBuffer(msg.pages, buffer);
+        buffer.writeInt(msg.dmg);
     }
 
     public static PlayerSTCStatsSync decode(FriendlyByteBuf buffer){
@@ -66,14 +62,10 @@ public class PlayerSTCStatsSync {
         int san = buffer.readInt();
         int maxSan = buffer.readInt();
         float acting = buffer.readFloat();
-        int hp = buffer.readInt();
-        int dmg = buffer.readInt();
-        int armor = buffer.readInt();
-        int tough = buffer.readInt();
-        int knockback = buffer.readInt();
         List<Integer> pages = BufferUtils.readIntListFromBuffer(buffer);
-        if(pages.isEmpty()) return new PlayerSTCStatsSync(spir, max, san, maxSan, acting, new int[]{hp, dmg, armor, tough, knockback});
-        return new PlayerSTCStatsSync(spir, max, san, maxSan, acting, new int[]{hp, dmg, armor, tough, knockback}, pages);
+        int dmg = buffer.readInt();
+        if(pages.isEmpty()) return new PlayerSTCStatsSync(spir, max, san, maxSan, acting, dmg);
+        return new PlayerSTCStatsSync(spir, max, san, maxSan, acting, pages, dmg);
     }
 
     public static void handle(PlayerSTCStatsSync msg, Supplier<NetworkEvent.Context> contextSupplier){
@@ -98,6 +90,7 @@ class ClientHudStatsSyncMessage
     {
         ClientStatsData.setActing(msg.actingProgress);
         ClientStatsData.setMaxSanity(msg.maxSanity);
+        ClientStatsData.setDamage(msg.dmg);
 //        ClientStatsData.setLuck(msg.luck, msg.minLuck, msg.maxLuck);
         if(Minecraft.getInstance().player == null) return;
         Minecraft.getInstance().player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
@@ -106,7 +99,6 @@ class ClientHudStatsSyncMessage
             cap.setSpirituality(msg.spirituality);
             cap.setMaxSpirituality(msg.maxSpirituality);
             cap.setSanity(msg.sanity);
-            cap.getBeyonderStats().setAttributes(msg.stats);
             if(!msg.pages.isEmpty()) cap.setPageList(msg.pages);
         });
     }

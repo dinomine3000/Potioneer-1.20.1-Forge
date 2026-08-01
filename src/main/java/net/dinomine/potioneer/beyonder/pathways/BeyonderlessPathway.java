@@ -1,11 +1,14 @@
 package net.dinomine.potioneer.beyonder.pathways;
 
 import net.dinomine.potioneer.beyonder.abilities.Ability;
+import net.dinomine.potioneer.beyonder.player.BeyonderStats;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class BeyonderlessPathway extends BeyonderPathway{
 
@@ -49,8 +52,8 @@ public class BeyonderlessPathway extends BeyonderPathway{
     }
 
     @Override
-    public float[] getStatsFor(int sequence) {
-        return new float[]{0, 0, 0, 0, 0};
+    public Map<BeyonderStats.StatType, Float> getStatsFor(int sequence) {
+        return setStats(new HashMap<>(), 0, 0, 0, 5);
     }
 
     @Override

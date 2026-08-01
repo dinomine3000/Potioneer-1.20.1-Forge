@@ -4,6 +4,7 @@ import net.dinomine.potioneer.beyonder.abilities.Abilities;
 import net.dinomine.potioneer.beyonder.abilities.Ability;
 import net.dinomine.potioneer.beyonder.abilities.AbilityFunctionHelper;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
+import net.dinomine.potioneer.beyonder.player.BeyonderStats;
 import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
 import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
 import net.dinomine.potioneer.network.PacketHandler;
@@ -19,10 +20,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 public class WheelOfFortunePathway extends BeyonderPathway {
     public static final double MINER_ACTING_INC = 1/(64*3f);
@@ -53,16 +51,30 @@ public class WheelOfFortunePathway extends BeyonderPathway {
     public int getAbilityX(){return 5;}
 
     @Override
+    public Map<BeyonderStats.StatType, Float> getStatsFor(int sequence) {
+        Map<BeyonderStats.StatType, Float> stats = new EnumMap<>(BeyonderStats.StatType.class);
+
+        switch (sequence % 10) {
+            case 9 -> setStats(stats, 0, 0, 0, 4);
+            case 8 -> setStats(stats, 2, 0, 0, 3.5f);
+            case 7 -> setStats(stats, 8, 3, 2, 3f);
+            case 6 -> setStats(stats, 10, 4, 3, 2.5f);
+            case 5 -> setStats(stats, 18, 10, 8, 2f);
+            default -> setStats(stats, 20, 12, 10, 1.5f);
+        }
+        return stats;
+    }
+    /*@Override
     public float[] getStatsFor(int sequence){
         return switch (sequence%10){
-            case 9 -> new float[]{0, 0, 2, 0, 0};
-            case 8 -> new float[]{2, 0, 2, 0, 2};
-            case 7 -> new float[]{4, 1, 4, 2, 2};
-            case 6 -> new float[]{6, 1, 4, 2, 4};
-            case 5 -> new float[]{10, 3, 8, 3, 6};
-            default -> new float[]{0, 0, 0, 0, 0};
+            case 9 -> new float[]{0, 0, 0, 0};
+            case 8 -> new float[]{2, 0, 0, 2};
+            case 7 -> new float[]{4, 1, 2, 2};
+            case 6 -> new float[]{6, 1, 2, 4};
+            case 5 -> new float[]{10, 3, 3, 6};
+            default -> new float[]{0, 0, 0, 0};
         };
-    }
+    }*/
 
     @Override
     public int isRitualComplete(int sequenceLevel, Player player, Level pLevel) {
