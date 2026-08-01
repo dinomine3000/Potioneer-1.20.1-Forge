@@ -373,6 +373,8 @@
   "beyonder.potioneer.stat_tough": "Toughness: %s",
   "beyonder.potioneer.stat_defense": "Defense: %s%",
   "beyonder.potioneer.stat_resistance": "Resistance: %s",
+  "beyonder.potioneer.stat_resistance_explanation": "Ignores normal damage under %s hitpoints.",
+  "beyonder.potioneer.stat_stamina_explanation": "You lose 1 sanity point for every %s%% spirituality consumed",
   "beyonder.potioneer.stat_stamina": "Spirit Energy: %s",
   "beyonder.potioneer.stat_knock": "Knockback Resistance: %s",
   "beyonder.potioneer.stat_max_sanity": "Maximum Sanity: %s",
