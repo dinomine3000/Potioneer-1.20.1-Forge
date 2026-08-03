@@ -1,11 +1,13 @@
 package net.dinomine.potioneer.beyonder.effects.tyrant;
 
+import net.dinomine.potioneer.beyonder.abilities.AbilityFunctionHelper;
 import net.dinomine.potioneer.beyonder.abilities.tyrant.AreaOfJurisdictionAbility;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffect;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
 import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
 import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
 import net.dinomine.potioneer.savedata.AllySystemSaveData;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
@@ -32,7 +34,7 @@ public class SenseOfOrderEffect extends BeyonderEffect {
 
     private static void makeVisible(Entity entity, LivingEntity enforcer){
         if(!(entity instanceof LivingEntity livingEntity)) return;
-        if(AllySystemSaveData.isAllies(livingEntity, enforcer)) return;
+        if(AbilityFunctionHelper.areEntitiesAllies(livingEntity, enforcer)) return;
         Optional<LivingEntityBeyonderCapability> optCapEnforcer = enforcer.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve();
         if(optCapEnforcer.isEmpty()) return;
         boolean aoj = AreaOfJurisdictionAbility.isPosInAOJ(livingEntity.getOnPos(), optCapEnforcer.get(), 0);

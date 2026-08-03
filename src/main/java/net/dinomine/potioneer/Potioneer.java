@@ -26,7 +26,7 @@ import net.dinomine.potioneer.network.PacketHandler;
 import net.dinomine.potioneer.particle.ModParticles;
 import net.dinomine.potioneer.recipe.ModRecipes;
 import net.dinomine.potioneer.sound.ModSounds;
-import net.dinomine.potioneer.util.misc.ModCompoundTags;
+import net.dinomine.potioneer.util.misc.ModTags;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
@@ -55,8 +55,8 @@ import software.bernie.geckolib.GeckoLib;
 import software.bernie.geckolib.core.molang.LazyVariable;
 import software.bernie.geckolib.core.molang.MolangParser;
 
-import static net.dinomine.potioneer.util.misc.ModCompoundTags.getTagFromItem;
-import static net.dinomine.potioneer.util.misc.ModCompoundTags.hasTag;
+import static net.dinomine.potioneer.util.misc.ModTags.getTagFromItem;
+import static net.dinomine.potioneer.util.misc.ModTags.hasTag;
 
 // The value here should match an entry in the META-INF/mods.toml file
 @Mod(Potioneer.MOD_ID)
@@ -176,35 +176,35 @@ public class Potioneer
             ItemProperties.register(ModItems.VIAL.get(),
                     new ResourceLocation(Potioneer.MOD_ID, "level"),
                     ((itemStack, clientLevel, livingEntity, i) ->
-                            ModCompoundTags.PotionInfoTag.getPotionAmount(itemStack)));
+                            ModTags.PotionInfoTag.getPotionAmount(itemStack)));
 
             ItemProperties.register(ModItems.FLASK.get(),
                     new ResourceLocation(Potioneer.MOD_ID, "level"),
                     ((itemStack, clientLevel, livingEntity, i) ->
-                            ModCompoundTags.PotionInfoTag.getPotionAmount(itemStack)));
+                            ModTags.PotionInfoTag.getPotionAmount(itemStack)));
 
             ItemProperties.register(ModItems.RING.get(),
                     new ResourceLocation(Potioneer.MOD_ID, "artifact"),
                     ((itemStack, clientLevel, livingEntity, i) ->
-                            hasTag(ModCompoundTags.TAGS.ARTIFACT, itemStack) ?  1f : 0f));
+                            hasTag(ModTags.TAGS.ARTIFACT, itemStack) ?  1f : 0f));
 
             ItemProperties.register(ModItems.CROWN.get(),
                     new ResourceLocation(Potioneer.MOD_ID, "artifact"),
                     ((itemStack, clientLevel, livingEntity, i) ->
-                            hasTag(ModCompoundTags.TAGS.ARTIFACT, itemStack) ?  1f : 0f));
+                            hasTag(ModTags.TAGS.ARTIFACT, itemStack) ?  1f : 0f));
 
             ItemProperties.register(ModItems.UNSHADOWED_CRUCIFIX.get(),
                     new ResourceLocation(Potioneer.MOD_ID, "crucifix_state"),
                     ((itemStack, clientLevel, livingEntity, i) -> {
-                        if(!ModCompoundTags.hasTag(UnshadowedCrucifixItem.CRUCIFIX_TAG_ID, itemStack)) return 2;
+                        if(!ModTags.hasTag(UnshadowedCrucifixItem.CRUCIFIX_TAG_ID, itemStack)) return 2;
                         CompoundTag tag = itemStack.getOrCreateTag().getCompound(UnshadowedCrucifixItem.CRUCIFIX_TAG_ID);
                         return tag.getInt("state");
                     }));
             ItemProperties.register(ModItems.CHARM.get(),
                     new ResourceLocation(Potioneer.MOD_ID, "charm"),
                     ((itemStack, clientLevel, livingEntity, i) -> {
-                        if(ModCompoundTags.hasTag(ModCompoundTags.TAGS.CHARM, itemStack)){
-                            return Math.floorDiv(ModCompoundTags.CharmInfoTag.getPathwaySequenceId(ModCompoundTags.getTagFromItem(ModCompoundTags.TAGS.CHARM, itemStack)), 10);
+                        if(ModTags.hasTag(ModTags.TAGS.CHARM, itemStack)){
+                            return Math.floorDiv(ModTags.CharmInfoTag.getPathwaySequenceId(ModTags.getTagFromItem(ModTags.TAGS.CHARM, itemStack)), 10);
                         }
                         return -1;
                     }));
@@ -212,8 +212,8 @@ public class Potioneer
             ItemProperties.register(ModItems.AMULET.get(),
                     new ResourceLocation(Potioneer.MOD_ID, "enabled"),
                     ((itemStack, clientLevel, livingEntity, i) -> {
-                        if(hasTag(ModCompoundTags.TAGS.ARTIFACT, itemStack)){
-                            return ModCompoundTags.getTagFromItem(ModCompoundTags.TAGS.ARTIFACT, itemStack).getBoolean("enabled") ? 1 : -1;
+                        if(hasTag(ModTags.TAGS.ARTIFACT, itemStack)){
+                            return ModTags.getTagFromItem(ModTags.TAGS.ARTIFACT, itemStack).getBoolean("enabled") ? 1 : -1;
                         }
                         return -1;
                     }));

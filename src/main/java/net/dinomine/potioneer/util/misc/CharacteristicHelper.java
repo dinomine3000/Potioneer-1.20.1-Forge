@@ -39,7 +39,7 @@ public class CharacteristicHelper {
         }
         ItemStack characteristic = new ItemStack(ModItems.CHARACTERISTIC.get());
 
-        ModCompoundTags.BeyonderInfoTag.setTagForItem(characteristic, pathwaySequenceIds);
+        ModTags.BeyonderInfoTag.setTagForItem(characteristic, pathwaySequenceIds);
 
         if(player != null) MysticismHelper.updateOrApplyMysticismTag(characteristic, 20, player);
 

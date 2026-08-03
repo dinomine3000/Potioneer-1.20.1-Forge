@@ -17,7 +17,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
-public abstract class ModCompoundTags {
+public abstract class ModTags {
+
+    public static final String PURIFYING_TAG = "purifying";
 
     private static final String BEYONDER_TAG_ID = "beyonder_info";
     private static final String ARTIFACT_TAG_ID = "artifact_info";
@@ -233,7 +235,7 @@ public abstract class ModCompoundTags {
          */
         public static boolean isArtifactEnabled(ItemStack stack){
             if(!hasTag(ARTIFACT_TAG_ID, stack)) return false;
-            CompoundTag artifactTag = ModCompoundTags.getTagFromItem(ARTIFACT_TAG_ID, stack);
+            CompoundTag artifactTag = ModTags.getTagFromItem(ARTIFACT_TAG_ID, stack);
             for(String key: artifactTag.getAllKeys()){
                 if(key.equals(UUID_KEY)) continue;
                 if(artifactTag.getCompound(key).getBoolean("downside")) continue;

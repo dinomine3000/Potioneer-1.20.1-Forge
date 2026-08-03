@@ -124,11 +124,11 @@ public class ArtifactHolder {
      * @return artifactTag with the data written on it.
      */
     public CompoundTag saveToTag(boolean saveItem){
-        return ModCompoundTags.ArtifactInfoTag.getTagFromArtifactHolder(this, saveItem);
+        return ModTags.ArtifactInfoTag.getTagFromArtifactHolder(this, saveItem);
     }
 
     public static ArtifactHolder loadFromTag(CompoundTag artifactTag, ItemStack stack){
-        ArtifactHolder artifact = ModCompoundTags.ArtifactInfoTag.getArtifactHolderFromTag(artifactTag);
+        ArtifactHolder artifact = ModTags.ArtifactInfoTag.getArtifactHolderFromTag(artifactTag);
         if(artifact == null) return null;
         return artifact.withStack(stack);
     }

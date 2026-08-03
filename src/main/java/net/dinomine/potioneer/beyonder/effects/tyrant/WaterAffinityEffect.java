@@ -30,7 +30,7 @@ public class WaterAffinityEffect extends BeyonderEffect {
     protected void doTick(LivingEntityBeyonderCapability cap, LivingEntity target) {
         if(target instanceof Player player){
             float f = 1f;
-            if(player.isInWater()){
+            if(isInWater(player, sequenceLevel)){
                 if(!player.hasEffect(MobEffects.WATER_BREATHING)){
                     this.waterFlag = true;
                     player.addEffect(new MobEffectInstance(MobEffects.WATER_BREATHING, -1, 0, false, false));
@@ -67,6 +67,10 @@ public class WaterAffinityEffect extends BeyonderEffect {
                 }
             }
         }
+    }
+
+    public static boolean isInWater(LivingEntity player, int level){
+        return player.isInWater() || (player.level().isRaining() && level < 7);
     }
 
     @Override

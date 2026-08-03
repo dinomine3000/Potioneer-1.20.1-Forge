@@ -4,10 +4,8 @@ import com.google.common.collect.Lists;
 import com.google.gson.JsonObject;
 import net.dinomine.potioneer.Potioneer;
 import net.dinomine.potioneer.item.ModItems;
-import net.dinomine.potioneer.item.custom.BeyonderPotion.BeyonderPotionItem;
 import net.dinomine.potioneer.item.custom.CharacteristicItem;
-import net.dinomine.potioneer.util.PotioneerMathHelper;
-import net.dinomine.potioneer.util.misc.ModCompoundTags;
+import net.dinomine.potioneer.util.misc.ModTags;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
@@ -42,8 +40,8 @@ public class CharacteristicRecipe extends CustomRecipe {
         if(list.size() != 1) return false;
 
         ItemStack stack = list.get(0);
-        return stack.is(ModItems.BEYONDER_POTION.get()) && ModCompoundTags.hasTag(ModCompoundTags.TAGS.POTION, stack)
-                && ModCompoundTags.PotionInfoTag.hasSequenceLevel(ModCompoundTags.getTagFromItem(ModCompoundTags.TAGS.POTION, stack));
+        return stack.is(ModItems.BEYONDER_POTION.get()) && ModTags.hasTag(ModTags.TAGS.POTION, stack)
+                && ModTags.PotionInfoTag.hasSequenceLevel(ModTags.getTagFromItem(ModTags.TAGS.POTION, stack));
 
 
     }
@@ -63,10 +61,10 @@ public class CharacteristicRecipe extends CustomRecipe {
 
         if(list.size() != 1) return ItemStack.EMPTY;
         ItemStack stack = list.get(0);
-        if(!stack.is(ModItems.BEYONDER_POTION.get()) || !ModCompoundTags.hasTag(ModCompoundTags.TAGS.POTION, stack)) return ItemStack.EMPTY;
-        CompoundTag potionTag = ModCompoundTags.getTagFromItem(ModCompoundTags.TAGS.POTION, stack);
-        if(ModCompoundTags.PotionInfoTag.hasSequenceLevel(potionTag))
-            return CharacteristicItem.createCharacteristic(ModCompoundTags.PotionInfoTag.getSequenceLevelOrThrow(potionTag));
+        if(!stack.is(ModItems.BEYONDER_POTION.get()) || !ModTags.hasTag(ModTags.TAGS.POTION, stack)) return ItemStack.EMPTY;
+        CompoundTag potionTag = ModTags.getTagFromItem(ModTags.TAGS.POTION, stack);
+        if(ModTags.PotionInfoTag.hasSequenceLevel(potionTag))
+            return CharacteristicItem.createCharacteristic(ModTags.PotionInfoTag.getSequenceLevelOrThrow(potionTag));
 
         return ItemStack.EMPTY;
     }

@@ -36,8 +36,7 @@ public class DrowningAbility extends Ability {
         if(cap.getSpirituality() > cost()){
             double radius = target.getAttributeBaseValue(ForgeMod.ENTITY_REACH.get()) + (10 - getSequenceLevel());
             int duration = 20*10*(10-sequenceLevel);
-            AllySystemSaveData saveData = AllySystemSaveData.from((ServerLevel) target.level());
-            ArrayList<LivingEntity> hits = AbilityFunctionHelper.getLivingEntitiesAround(target, radius, ent -> !saveData.areEntitiesAllies(ent, target));
+            ArrayList<LivingEntity> hits = AbilityFunctionHelper.getNonAllyLivingEntitiesAround((ServerLevel) target.level(), target, radius);
             //hits = AbilityFunctionHelper.getLivingEntitiesAround(target, radius);
             for(LivingEntity entity: hits){
                 if(entity.is(target)) continue;

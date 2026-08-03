@@ -39,8 +39,7 @@ public class AmplificationAbility extends AbilityWithOptions {
         LivingEntity target = AbilityFunctionHelper.getLivingEntityLooking(caster, 2, 1);
         if(target == null) return false;
 
-        AllySystemSaveData data = AllySystemSaveData.from((ServerLevel) caster.level());
-        applyEffectsTo(caster, target, target.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve().get(), data, sequenceLevel, buffAbility);
+        applyEffectsTo(caster, target, target.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve().get(), sequenceLevel, buffAbility);
         cap.requestActiveSpiritualityCost(cost());
         return true;
     }
@@ -50,15 +49,13 @@ public class AmplificationAbility extends AbilityWithOptions {
         if(cap.getSpirituality() < cost()) return false;
         if(caster.level().isClientSide) return false;
         boolean buffAbility = args.equalsIgnoreCase("ability");
-
-        AllySystemSaveData data = AllySystemSaveData.from((ServerLevel) caster.level());
-        applyEffectsTo(caster, caster, cap, data, sequenceLevel, buffAbility);
+        applyEffectsTo(caster, caster, cap, sequenceLevel, buffAbility);
         cap.requestActiveSpiritualityCost(cost());
         return true;
     }
 
-    private static void applyEffectsTo(LivingEntity caster, LivingEntity target, LivingEntityBeyonderCapability targetCap, AllySystemSaveData data, int sequenceLevel, boolean buffAbilities){
-        if(data.areEntitiesAllies(caster, target)){
+    private static void applyEffectsTo(LivingEntity caster, LivingEntity target, LivingEntityBeyonderCapability targetCap, int sequenceLevel, boolean buffAbilities){
+        if(AbilityFunctionHelper.areEntitiesAllies(caster, target)){
             AmplificationEffect amp = (AmplificationEffect) BeyonderEffects.TYRANT_AMPLIFICATION.createInstance(sequenceLevel, 0, EFFECT_DURATION, true);
             if(buffAbilities) amp.setAmplificationsLeft(sequenceLevel > 6 ? 1 : 3);
             targetCap.getEffectsManager().addEffectNoRefresh(amp, targetCap, target);

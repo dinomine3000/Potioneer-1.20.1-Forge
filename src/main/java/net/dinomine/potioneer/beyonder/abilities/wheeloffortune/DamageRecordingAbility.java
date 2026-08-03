@@ -53,8 +53,7 @@ public class DamageRecordingAbility extends PassiveAbility {
             return false;
         }
         if(amount < 1 || effect.isRecording()) return false;
-        AllySystemSaveData allyData = AllySystemSaveData.from(((ServerLevel) target.level()));
-        List<LivingEntity> targets = AbilityFunctionHelper.getLivingEntitiesAround(target, 8, ent -> !allyData.areEntitiesAllies(target, ent));
+        List<LivingEntity> targets = AbilityFunctionHelper.getNonAllyLivingEntitiesAround((ServerLevel) target.level(), target, 8);
         for(LivingEntity victim: targets){
             victim.hurt(PotioneerDamage.crit((ServerLevel) target.level(), target), effect.getRecordedDamage(true));
         }

@@ -156,8 +156,7 @@ public class WaterSpellAbility extends AbilityWithOptions {
         if(cap.getSpirituality() < HEALING_COST) return false;
         if(target.level().isClientSide()) return true;
 
-        AllySystemSaveData data = AllySystemSaveData.from((ServerLevel) target.level());
-        List<LivingEntity> alliesAround = AbilityFunctionHelper.getLivingEntitiesAround(target, HEALING_RADIUS, ent -> data.areEntitiesAllies(ent, target));
+        List<LivingEntity> alliesAround = AbilityFunctionHelper.getAllyLivingEntitiesAround((ServerLevel) target.level(), target, HEALING_RADIUS);
         if(alliesAround.isEmpty()) return false;
 
         boolean healFlag = false;
@@ -194,8 +193,7 @@ public class WaterSpellAbility extends AbilityWithOptions {
         if(target.level().isClientSide()) return true;
         if(cap.getSpirituality() > cost()){
             double radius = target.getAttributeBaseValue(ForgeMod.ENTITY_REACH.get()) + (10 - getSequenceLevel());
-            AllySystemSaveData saveData = AllySystemSaveData.from((ServerLevel) target.level());
-            ArrayList<LivingEntity> hits = AbilityFunctionHelper.getLivingEntitiesAround(target, radius, ent -> !saveData.areEntitiesAllies(ent, target));
+            ArrayList<LivingEntity> hits = AbilityFunctionHelper.getNonAllyLivingEntitiesAround((ServerLevel) target.level(), target, radius);
             for(LivingEntity entity: hits){
                 if(entity.is(target)) continue;
                 entity.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(victimCap ->
@@ -214,8 +212,7 @@ public class WaterSpellAbility extends AbilityWithOptions {
         if(cap.getSpirituality() > DROWNING_COST){
             double radius = target.getAttributeBaseValue(ForgeMod.ENTITY_REACH.get()) + (10 - getSequenceLevel());
             int duration = 20*10*(10-sequenceLevel);
-            AllySystemSaveData saveData = AllySystemSaveData.from((ServerLevel) target.level());
-            ArrayList<LivingEntity> hits = AbilityFunctionHelper.getLivingEntitiesAround(target, radius, ent -> !saveData.areEntitiesAllies(ent, target));
+            ArrayList<LivingEntity> hits = AbilityFunctionHelper.getNonAllyLivingEntitiesAround((ServerLevel) target.level(), target, radius);
             //hits = AbilityFunctionHelper.getLivingEntitiesAround(target, radius);
             for(LivingEntity entity: hits){
                 if(entity.is(target)) continue;

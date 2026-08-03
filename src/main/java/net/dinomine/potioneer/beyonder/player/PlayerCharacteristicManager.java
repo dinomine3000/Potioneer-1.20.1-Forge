@@ -4,7 +4,7 @@ import net.dinomine.potioneer.beyonder.abilities.Ability;
 import net.dinomine.potioneer.beyonder.pathways.BeyonderPathway;
 import net.dinomine.potioneer.beyonder.pathways.Pathways;
 import net.dinomine.potioneer.config.PotioneerCommonConfig;
-import net.dinomine.potioneer.util.misc.ModCompoundTags;
+import net.dinomine.potioneer.util.misc.ModTags;
 import net.minecraft.nbt.*;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -298,7 +298,7 @@ public class PlayerCharacteristicManager {
 
     public void saveNBTData(CompoundTag tag){
         CompoundTag acting = new CompoundTag();
-        acting.put("characteristics", ModCompoundTags.toNumberListTag(lastConsumedCharacteristics));
+        acting.put("characteristics", ModTags.toNumberListTag(lastConsumedCharacteristics));
         ArrayList<Integer> hold = new ArrayList<>();
         ArrayList<Double> finalActing = new ArrayList<>();
         for(int id: lastConsumedCharacteristics){
@@ -307,7 +307,7 @@ public class PlayerCharacteristicManager {
                 finalActing.add(getActing(id));
             }
         }
-        acting.put("acting_progress", ModCompoundTags.toNumberListTag(finalActing));
+        acting.put("acting_progress", ModTags.toNumberListTag(finalActing));
         acting.putInt("aptitude", aptitudePathway);
         tag.put("acting", acting);
     }
@@ -316,11 +316,11 @@ public class PlayerCharacteristicManager {
         if(!tag.contains("acting")) return;
         //build list of consumed characteristics
         CompoundTag acting = tag.getCompound("acting");
-        lastConsumedCharacteristics = ModCompoundTags.fromIntListTag(acting.getList("characteristics", Tag.TAG_INT));
+        lastConsumedCharacteristics = ModTags.fromIntListTag(acting.getList("characteristics", Tag.TAG_INT));
         //build map of acting progress
         //at the same time as i check for repeat, i also build the characteristic counted map
         actingProgress = new HashMap<>();
-        ArrayList<Double> temp_acting_list = ModCompoundTags.fromDoubleListTag(acting.getList("acting_progress", Tag.TAG_DOUBLE));
+        ArrayList<Double> temp_acting_list = ModTags.fromDoubleListTag(acting.getList("acting_progress", Tag.TAG_DOUBLE));
         characteristicCountMap = new HashMap<>();
         int i = 0;
         for(int id: lastConsumedCharacteristics){

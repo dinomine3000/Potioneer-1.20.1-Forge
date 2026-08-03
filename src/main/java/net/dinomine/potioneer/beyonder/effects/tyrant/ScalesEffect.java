@@ -30,7 +30,7 @@ public class ScalesEffect extends BeyonderEffect {
     protected void doTick(LivingEntityBeyonderCapability cap, LivingEntity target) {
         if(target.level().isClientSide()) return;
         //cap.getEffectsManager().statsHolder.addArmor(4 + (9-getSequenceLevel())*2);
-        if(target.isInWater()){
+        if(WaterAffinityEffect.isInWater(target, sequenceLevel)){
             if(target.getHealth() < target.getMaxHealth()){
                 int amplifier = (int)((10 - getSequenceLevel())/2f);
                 if(!target.hasEffect(MobEffects.REGENERATION))

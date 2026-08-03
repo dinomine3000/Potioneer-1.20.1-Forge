@@ -7,7 +7,7 @@ import net.dinomine.potioneer.config.PotioneerCommonConfig;
 import net.dinomine.potioneer.network.PacketHandler;
 import net.dinomine.potioneer.network.messages.advancement.BeginAdvancementMessage;
 import net.dinomine.potioneer.util.GeoTintable;
-import net.dinomine.potioneer.util.misc.ModCompoundTags;
+import net.dinomine.potioneer.util.misc.ModTags;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -33,9 +33,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
-import static net.dinomine.potioneer.util.misc.ModCompoundTags.*;
-import static net.dinomine.potioneer.util.misc.ModCompoundTags.PotionInfoTag.*;
-import static net.dinomine.potioneer.util.misc.ModCompoundTags.TAGS.POTION;
+import static net.dinomine.potioneer.util.misc.ModTags.*;
+import static net.dinomine.potioneer.util.misc.ModTags.PotionInfoTag.*;
+import static net.dinomine.potioneer.util.misc.ModTags.TAGS.POTION;
 
 public class BeyonderPotionItem extends PotionItem implements GeoItem, GeoTintable {
     public static final int DIFF_CHANGE_INVALID_LEVEL = 5;
@@ -63,7 +63,7 @@ public class BeyonderPotionItem extends PotionItem implements GeoItem, GeoTintab
 
     @Override
     public void inventoryTick(ItemStack pStack, Level pLevel, Entity pEntity, int pSlotId, boolean pIsSelected) {
-        ModCompoundTags.PotionInfoTag.tickPotionSpoilTime(pStack, pLevel.getGameTime());
+        ModTags.PotionInfoTag.tickPotionSpoilTime(pStack, pLevel.getGameTime());
         super.inventoryTick(pStack, pLevel, pEntity, pSlotId, pIsSelected);
     }
 
@@ -162,8 +162,8 @@ public class BeyonderPotionItem extends PotionItem implements GeoItem, GeoTintab
     @Override
     public int getHexColor() {
         ItemStack stack = cachedStack.get();
-        if(stack != null && stack.is(this) && ModCompoundTags.hasTag(POTION, stack)){
-            return ModCompoundTags.PotionInfoTag.getPotionColor(ModCompoundTags.getTagFromItem(POTION, stack));
+        if(stack != null && stack.is(this) && ModTags.hasTag(POTION, stack)){
+            return ModTags.PotionInfoTag.getPotionColor(ModTags.getTagFromItem(POTION, stack));
         }
 
         return 16742143;

@@ -13,9 +13,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import static net.dinomine.potioneer.util.misc.ModCompoundTags.*;
-import static net.dinomine.potioneer.util.misc.ModCompoundTags.ArtifactInfoTag.generateArtifactTag;
-import static net.dinomine.potioneer.util.misc.ModCompoundTags.CharmInfoTag.*;
+import static net.dinomine.potioneer.util.misc.ModTags.*;
+import static net.dinomine.potioneer.util.misc.ModTags.ArtifactInfoTag.generateArtifactTag;
+import static net.dinomine.potioneer.util.misc.ModTags.CharmInfoTag.*;
 
 public class MysticalItemHelper {
     public static final String GEM_TAG_ID = "gem_ability_info";
@@ -76,7 +76,7 @@ public class MysticalItemHelper {
     public static ItemStack makeCharm(ItemStack stack, String beyonderEffectId, int pathwaySequenceId, int duration){
         if(!stack.is(ModItems.CHARM.get()) || beyonderEffectId.isEmpty() || hasTag(TAGS.CHARM, stack) ) return stack;
 
-        ModCompoundTags.setItemRootTag(stack, createTag(beyonderEffectId, duration, pathwaySequenceId), TAGS.CHARM);
+        ModTags.setItemRootTag(stack, createTag(beyonderEffectId, duration, pathwaySequenceId), TAGS.CHARM);
         return stack;
     }
 
@@ -113,9 +113,9 @@ public class MysticalItemHelper {
 //        root.put(BEYONDER_TAG_ID, beyonderInfo);
 
         //create beyonder tag
-        CompoundTag beyonderTag = ModCompoundTags.BeyonderInfoTag.setTagForItem(stack, pathwaySequenceId);
+        CompoundTag beyonderTag = ModTags.BeyonderInfoTag.setTagForItem(stack, pathwaySequenceId);
         //create artifact tag
-        generateAbilityTag(stack, ModCompoundTags.BeyonderInfoTag.getAssociatedPathSeqLevel(beyonderTag), random, quantity);
+        generateAbilityTag(stack, ModTags.BeyonderInfoTag.getAssociatedPathSeqLevel(beyonderTag), random, quantity);
     }
 
     private static CompoundTag generateAbilityTag(ItemStack stack, int pathwaySequenceId, RandomSource random, int quantity) {
@@ -158,7 +158,7 @@ public class MysticalItemHelper {
     }
 
     public static boolean isWorkingArtifact(ItemStack stack){
-        return hasTag(ModCompoundTags.TAGS.ARTIFACT, stack);
+        return hasTag(ModTags.TAGS.ARTIFACT, stack);
     }
 
     public static ArtifactHolder getArtifactFromItem(ItemStack itemStack) {
@@ -168,13 +168,13 @@ public class MysticalItemHelper {
     }
 
     public static UUID getArtifactIdFromItem(ItemStack itemStack){
-        return ModCompoundTags.ArtifactInfoTag.getArtifactId(itemStack);
+        return ModTags.ArtifactInfoTag.getArtifactId(itemStack);
     }
 
     public static void updateArtifactTagOnItem(ArtifactHolder artifactHolder, ItemStack itemStack) {
         if(!isWorkingArtifact(itemStack)) return;
-        if(!ModCompoundTags.ArtifactInfoTag.getArtifactId(itemStack).equals(artifactHolder.getArtifactId())) return;
-        ModCompoundTags.ArtifactInfoTag.saveArtifactToItem(artifactHolder, itemStack);
+        if(!ModTags.ArtifactInfoTag.getArtifactId(itemStack).equals(artifactHolder.getArtifactId())) return;
+        ModTags.ArtifactInfoTag.saveArtifactToItem(artifactHolder, itemStack);
     }
 
 //    /**

@@ -15,14 +15,11 @@ import net.dinomine.potioneer.savedata.AllySystemSaveData;
 import net.dinomine.potioneer.server.ServerTokenCache;
 import net.dinomine.potioneer.sound.ModSounds;
 import net.dinomine.potioneer.util.ParticleMaker;
-import net.dinomine.potioneer.util.misc.ModCompoundTags;
-import net.minecraft.ChatFormatting;
+import net.dinomine.potioneer.util.misc.ModTags;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Connection;
-import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
@@ -118,8 +115,7 @@ public class WaterTrapBlockEntity extends BlockEntity implements GeoBlockEntity 
     private boolean isEntityAllyOfOwner(LivingEntity ent){
         if(!(level instanceof ServerLevel serverLevel) || id == null) return false;
         if(ent instanceof Player player){
-            AllySystemSaveData data = AllySystemSaveData.from(serverLevel);
-            return data.isPlayerAllyOf(player.getUUID(), id);
+            return AbilityFunctionHelper.areEntitiesAllies(serverLevel, player.getUUID(), id);
         } return false;
     }
 
@@ -209,8 +205,7 @@ public class WaterTrapBlockEntity extends BlockEntity implements GeoBlockEntity 
             isInAOJ = AreaOfJurisdictionAbility.isPosInAOJ(pos, cap, 0);
 
             //ally group list
-            AllySystemSaveData allyData = AllySystemSaveData.from(sLevel);
-            casterAllyGroups = new ArrayList<>(allyData.getGroupNamesPlayerIsIn(id));
+            casterAllyGroups = new ArrayList<>(AbilityFunctionHelper.getGroupsPlayerIsIn(sLevel, id));
         } else {
             casterAllyGroups = new ArrayList<>();
             isInAOJ = false;
@@ -262,7 +257,7 @@ public class WaterTrapBlockEntity extends BlockEntity implements GeoBlockEntity 
         CompoundTag tag = new CompoundTag();
         tag.putInt("chains", numberOfChainsBelow);
         tag.putBoolean("aoj", isInAOJ);
-        ModCompoundTags.writeStringList(tag, "groups", casterAllyGroups);
+        ModTags.writeStringList(tag, "groups", casterAllyGroups);
         if(id != null) tag.putUUID("casterId", id);
         return tag;
     }
@@ -271,7 +266,7 @@ public class WaterTrapBlockEntity extends BlockEntity implements GeoBlockEntity 
     public void handleUpdateTag(CompoundTag tag) {
         this.numberOfChainsBelow = tag.getInt("chains");
         this.isInAOJ = tag.getBoolean("aoj");
-        this.casterAllyGroups = ModCompoundTags.readStringList(tag, "groups");
+        this.casterAllyGroups = ModTags.readStringList(tag, "groups");
         if(tag.contains("casterId")) id = tag.getUUID("casterId"); else id = null;
     }
 

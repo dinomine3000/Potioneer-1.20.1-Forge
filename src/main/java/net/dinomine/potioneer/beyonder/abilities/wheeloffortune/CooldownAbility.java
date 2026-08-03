@@ -51,7 +51,7 @@ public class CooldownAbility extends PassiveAbility {
         List<LivingEntity> victims = AbilityFunctionHelper.getLivingEntitiesAround(target, effectRadius);
         for(LivingEntity ent: victims){
             if(!PotioneerCommonConfig.COOLDOWN_TARGET_ALLIES.get() && ent instanceof Player playerVictim && target instanceof Player playerCaster && playerVictim != playerCaster){
-                if(AllySystemSaveData.from((ServerLevel) target.level()).isPlayerAllyOf(playerVictim.getUUID(), playerCaster.getUUID())) continue;
+                if(AbilityFunctionHelper.areEntitiesAllies((ServerLevel) target.level(), playerVictim.getUUID(), playerCaster.getUUID())) continue;
             }
             ent.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(victimCap -> {
                 PlayerLuckManager proxyManager = new PlayerLuckManager(cap.getLuckManager().getLuck() - victimCap.getLuckManager().getLuck());

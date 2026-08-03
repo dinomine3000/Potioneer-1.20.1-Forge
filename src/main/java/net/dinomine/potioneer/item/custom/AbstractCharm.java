@@ -5,7 +5,7 @@ import net.dinomine.potioneer.beyonder.effects.BeyonderEffect;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
 import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
 import net.dinomine.potioneer.entities.custom.CharmEntity;
-import net.dinomine.potioneer.util.misc.ModCompoundTags;
+import net.dinomine.potioneer.util.misc.ModTags;
 import net.dinomine.potioneer.util.misc.MysticalItemHelper;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -39,7 +39,7 @@ public class AbstractCharm extends Item {
     }
 
     private boolean isWorkingCharm(ItemStack stack){
-        return ModCompoundTags.hasTag(ModCompoundTags.TAGS.CHARM, stack);
+        return ModTags.hasTag(ModTags.TAGS.CHARM, stack);
     }
 
     private void activateCharmOnSelf(Player player, ItemStack stack, InteractionHand usedHand){

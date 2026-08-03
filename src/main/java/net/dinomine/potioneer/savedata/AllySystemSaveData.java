@@ -14,9 +14,9 @@ import java.util.*;
 
 public class AllySystemSaveData extends SavedData {
 
-    private Map<String, AllyGroup> groups;
+    private final Map<String, AllyGroup> groups;
 
-    public boolean isPlayerAllyOf(UUID testPlayer, UUID playerTarget){
+    public boolean areEntitiesAllies(UUID testPlayer, UUID playerTarget){
         if(testPlayer == null || playerTarget == null) return false;
         if(testPlayer.equals(playerTarget)) return true;
         for (AllyGroup group: groups.values()){
@@ -46,6 +46,17 @@ public class AllySystemSaveData extends SavedData {
     public List<UUID> getPlayersInGroup(String groupName){
         if(!groups.containsKey(groupName)) return new ArrayList<>();
         return groups.get(groupName).playerList;
+    }
+
+    public boolean areEntitiesAllies(LivingEntity target, LivingEntity ent) {
+        if(!(target instanceof Player playerTarget) || !(ent instanceof Player playerEntity)) return false;
+        return areEntitiesAllies(playerTarget.getUUID(), playerEntity.getUUID());
+    }
+
+    public static boolean isAllies(LivingEntity target, LivingEntity ent){
+        if(target.level().isClientSide()) return false;
+        AllySystemSaveData allyData = AllySystemSaveData.from((ServerLevel) target.level());
+        return allyData.areEntitiesAllies(target, ent);
     }
 
     public boolean removePlayer(String groupName, UUID player){
@@ -113,17 +124,6 @@ public class AllySystemSaveData extends SavedData {
 
     public List<String> getGroups() {
         return groups.keySet().stream().toList();
-    }
-
-    public boolean areEntitiesAllies(LivingEntity target, LivingEntity ent) {
-        if(!(target instanceof Player playerTarget) || !(ent instanceof Player playerEntity)) return false;
-        return isPlayerAllyOf(playerTarget.getUUID(), playerEntity.getUUID());
-    }
-
-    public static boolean isAllies(LivingEntity target, LivingEntity ent){
-        if(target.level().isClientSide()) return false;
-        AllySystemSaveData allyData = AllySystemSaveData.from((ServerLevel) target.level());
-        return allyData.areEntitiesAllies(target, ent);
     }
 
     public static class AllyGroup{

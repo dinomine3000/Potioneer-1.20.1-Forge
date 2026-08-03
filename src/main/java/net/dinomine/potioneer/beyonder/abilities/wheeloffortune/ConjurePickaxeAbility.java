@@ -2,7 +2,7 @@ package net.dinomine.potioneer.beyonder.abilities.wheeloffortune;
 
 import net.dinomine.potioneer.beyonder.abilities.Ability;
 import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
-import net.dinomine.potioneer.util.misc.ModCompoundTags;
+import net.dinomine.potioneer.util.misc.ModTags;
 import net.dinomine.potioneer.util.misc.MysticismHelper;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -57,8 +57,8 @@ public class ConjurePickaxeAbility extends Ability {
         CompoundTag tag = getData();
         ItemStack pickaxe = stack.copy();
         if(sequenceLevel > 3){
-            pickaxe.removeTagKey(ModCompoundTags.TAGS.ARTIFACT.getTagId());
-            pickaxe.removeTagKey(ModCompoundTags.TAGS.BEYONDER.getTagId());
+            pickaxe.removeTagKey(ModTags.TAGS.ARTIFACT.getTagId());
+            pickaxe.removeTagKey(ModTags.TAGS.BEYONDER.getTagId());
         }
         target.level().playSound(null, target.getOnPos(), SoundEvents.EXPERIENCE_ORB_PICKUP, SoundSource.PLAYERS, 1, 1);
         tag.put("pickaxe", pickaxe.save(new CompoundTag()));

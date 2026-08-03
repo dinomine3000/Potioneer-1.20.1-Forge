@@ -6,7 +6,7 @@ import net.dinomine.potioneer.beyonder.client.ClientStatsData;
 import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
 import net.dinomine.potioneer.util.Animation;
 import net.dinomine.potioneer.util.AnimationHandler;
-import net.dinomine.potioneer.util.misc.ModCompoundTags;
+import net.dinomine.potioneer.util.misc.ModTags;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
@@ -95,7 +95,7 @@ public class MagicOrbOverlay {
     });
 
     private static boolean isHoldingArtifact() {
-        return Minecraft.getInstance().player != null && ModCompoundTags.ArtifactInfoTag.isItemArtifact(Minecraft.getInstance().player.getMainHandItem());
+        return Minecraft.getInstance().player != null && ModTags.ArtifactInfoTag.isItemArtifact(Minecraft.getInstance().player.getMainHandItem());
     }
 
     public static int getSanityIndex(){

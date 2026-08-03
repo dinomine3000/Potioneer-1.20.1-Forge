@@ -1,8 +1,7 @@
 package net.dinomine.potioneer.item.custom;
 
 import net.dinomine.potioneer.item.ModItems;
-import net.dinomine.potioneer.util.misc.ModCompoundTags;
-import net.dinomine.potioneer.util.misc.MysticalItemHelper;
+import net.dinomine.potioneer.util.misc.ModTags;
 import net.minecraft.client.color.item.ItemColor;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.InteractionHand;
@@ -40,15 +39,15 @@ public class NecklaceItem extends Item {
     }
 
     public static boolean isAmuletEnabled(ItemStack amulet){
-        if(ModCompoundTags.hasTag(ModCompoundTags.TAGS.ARTIFACT, amulet)) return false;
-        return ModCompoundTags.getTagFromItem(ModCompoundTags.TAGS.ARTIFACT, amulet).getBoolean("enabled");
+        if(ModTags.hasTag(ModTags.TAGS.ARTIFACT, amulet)) return false;
+        return ModTags.getTagFromItem(ModTags.TAGS.ARTIFACT, amulet).getBoolean("enabled");
     }
 
     public static void enableAmulet(ItemStack amulet, boolean enable){
         if(!amulet.is(ModItems.AMULET.get())) return;
-        if(ModCompoundTags.hasTag(ModCompoundTags.TAGS.ARTIFACT, amulet)) return;
+        if(ModTags.hasTag(ModTags.TAGS.ARTIFACT, amulet)) return;
 
-        CompoundTag artifactTag = ModCompoundTags.getTagFromItem(ModCompoundTags.TAGS.ARTIFACT, amulet);
+        CompoundTag artifactTag = ModTags.getTagFromItem(ModTags.TAGS.ARTIFACT, amulet);
         artifactTag.putBoolean("enabled", enable);
     }
 

@@ -1,6 +1,7 @@
 package net.dinomine.potioneer.beyonder.abilities.wheeloffortune;
 
 import net.dinomine.potioneer.beyonder.abilities.Ability;
+import net.dinomine.potioneer.beyonder.abilities.AbilityFunctionHelper;
 import net.dinomine.potioneer.beyonder.abilities.AbilityKey;
 import net.dinomine.potioneer.beyonder.pages.PageRegistry;
 import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
@@ -36,7 +37,7 @@ public class HalfCooldownAbility extends Ability {
         if(sequenceLevel > 5 || !(target instanceof Player player)){
             flag = refreshAbilityCooldown(cap, target, sequenceLevel);
         } else {
-            List<UUID> allies = AllySystemSaveData.from((ServerLevel) target.level()).getAlliesOf(player.getUUID());
+            List<UUID> allies = AbilityFunctionHelper.getAlliesOf((ServerLevel) target.level(), player.getUUID());
             for(UUID id: allies){
                 Player ally = target.level().getPlayerByUUID(id);
                 if(ally == null) continue;

@@ -7,11 +7,9 @@ import net.dinomine.potioneer.config.PotioneerCommonConfig;
 import net.dinomine.potioneer.entities.ModEntities;
 import net.dinomine.potioneer.entities.custom.CharacteristicEntity;
 import net.dinomine.potioneer.item.ModItems;
-import net.dinomine.potioneer.util.misc.ModCompoundTags;
+import net.dinomine.potioneer.util.misc.ModTags;
 import net.dinomine.potioneer.util.misc.MysticalItemHelper;
-import net.dinomine.potioneer.util.misc.MysticismHelper;
 import net.minecraft.client.color.item.ItemColor;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -40,7 +38,7 @@ public class CharacteristicItem extends Item {
 
     public static ItemStack createCharacteristic(int sequenceId){
         ItemStack res = new ItemStack(ModItems.CHARACTERISTIC.get());
-        ModCompoundTags.BeyonderInfoTag.setTagForItem(res, sequenceId);
+        ModTags.BeyonderInfoTag.setTagForItem(res, sequenceId);
         return res;
     }
 
@@ -73,7 +71,7 @@ public class CharacteristicItem extends Item {
     public void inventoryTick(ItemStack characteristicStack, Level pLevel, Entity pEntity, int pSlotId, boolean pIsSelected) {
         super.inventoryTick(characteristicStack, pLevel, pEntity, pSlotId, pIsSelected);
         if(pLevel.isClientSide()) return;
-        if(ModCompoundTags.hasTag(ModCompoundTags.TAGS.BEYONDER, characteristicStack)
+        if(ModTags.hasTag(ModTags.TAGS.BEYONDER, characteristicStack)
                 && PotioneerCommonConfig.ARTIFACT_CONVERSION_CHANCE.get() > 0 && pLevel.random.nextInt(PotioneerCommonConfig.ARTIFACT_CONVERSION_CHANCE.get()) == 1){
             if(pEntity instanceof Player player){
                 Optional<LivingEntityBeyonderCapability> cap = player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve();
@@ -102,8 +100,8 @@ public class CharacteristicItem extends Item {
                 for(ItemStack iStack: items){
                     if(MysticalItemHelper.isValidItemForArtifact(iStack)){
                         pLevel.playSound(null, pEntity.getOnPos(), SoundEvents.ENCHANTMENT_TABLE_USE, SoundSource.PLAYERS, 1, 1);
-                        List<Integer> pathwaySequenceIds = ModCompoundTags.BeyonderInfoTag.getCharIds(
-                                ModCompoundTags.getTagFromItem(ModCompoundTags.TAGS.BEYONDER, characteristicStack));
+                        List<Integer> pathwaySequenceIds = ModTags.BeyonderInfoTag.getCharIds(
+                                ModTags.getTagFromItem(ModTags.TAGS.BEYONDER, characteristicStack));
                         MysticalItemHelper.generateSealedArtifact(iStack, pathwaySequenceIds, pLevel.random);
                         copyMysticismTag(iStack, characteristicStack);
                         pEntity.sendSystemMessage(Component.translatable("characteristic.potioneer.corrupt", iStack.getDisplayName().getString()));
@@ -117,8 +115,8 @@ public class CharacteristicItem extends Item {
     }
 
     private static void copyMysticismTag(ItemStack target, ItemStack characteristic){
-        if(!ModCompoundTags.hasTag(ModCompoundTags.TAGS.MYSTICISM, characteristic)) return;
-        ModCompoundTags.setItemRootTag(target, ModCompoundTags.getTagFromItem(ModCompoundTags.TAGS.MYSTICISM, characteristic), ModCompoundTags.TAGS.MYSTICISM);
+        if(!ModTags.hasTag(ModTags.TAGS.MYSTICISM, characteristic)) return;
+        ModTags.setItemRootTag(target, ModTags.getTagFromItem(ModTags.TAGS.MYSTICISM, characteristic), ModTags.TAGS.MYSTICISM);
     }
 
     @OnlyIn(Dist.CLIENT)
@@ -128,8 +126,8 @@ public class CharacteristicItem extends Item {
         public int getColor(ItemStack itemStack, int i) {
             int seq = -1;
             if(i != 1) seq = -1;
-            if(ModCompoundTags.hasTag(ModCompoundTags.TAGS.BEYONDER, itemStack)){
-                seq = ModCompoundTags.BeyonderInfoTag.getAssociatedPathSeqLevel(ModCompoundTags.getTagFromItem(ModCompoundTags.TAGS.BEYONDER, itemStack));
+            if(ModTags.hasTag(ModTags.TAGS.BEYONDER, itemStack)){
+                seq = ModTags.BeyonderInfoTag.getAssociatedPathSeqLevel(ModTags.getTagFromItem(ModTags.TAGS.BEYONDER, itemStack));
             }
             return Pathways.getPathwayBySequenceId(seq).getSequenceColorFromLevel(seq);
         }

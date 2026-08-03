@@ -1,11 +1,13 @@
 package net.dinomine.potioneer.beyonder.effects.tyrant;
 
+import net.dinomine.potioneer.beyonder.abilities.AbilityFunctionHelper;
 import net.dinomine.potioneer.beyonder.abilities.tyrant.AreaOfJurisdictionAbility;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffect;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
 import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
 import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
 import net.dinomine.potioneer.savedata.AllySystemSaveData;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
@@ -32,7 +34,7 @@ public class AuraSourceEffect extends BeyonderEffect {
 
     private void applyAuraEffects(Entity entity, LivingEntity enforcer){
         if(!(entity instanceof LivingEntity livingEntity)) return;
-        if(AllySystemSaveData.isAllies(livingEntity, enforcer)) return;
+        if(AbilityFunctionHelper.areEntitiesAllies(livingEntity, enforcer)) return;
         Optional<LivingEntityBeyonderCapability> optCap = livingEntity.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve();
         Optional<LivingEntityBeyonderCapability> optCapEnforcer = enforcer.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve();
         if(optCap.isEmpty() || optCapEnforcer.isEmpty()) return;

@@ -10,11 +10,10 @@ import net.dinomine.potioneer.config.PotioneerCommonConfig;
 import net.dinomine.potioneer.entities.custom.CharacteristicEntity;
 import net.dinomine.potioneer.network.PacketHandler;
 import net.dinomine.potioneer.network.messages.PlayerSTCStatsSync;
-import net.dinomine.potioneer.network.messages.abilityRelevant.AbilitySyncMessage;
 import net.dinomine.potioneer.network.messages.abilityRelevant.PlayerArtifactSyncSTC;
 import net.dinomine.potioneer.network.messages.abilityRelevant.PlayerSyncHotbarMessage;
 import net.dinomine.potioneer.network.messages.advancement.PlayerAdvanceMessage;
-import net.dinomine.potioneer.util.misc.ModCompoundTags;
+import net.dinomine.potioneer.util.misc.ModTags;
 import net.dinomine.potioneer.util.misc.CharacteristicHelper;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
@@ -336,9 +335,9 @@ public class LivingEntityBeyonderCapability {
     }
 
     private static boolean isItemOfSamePathway(ItemStack stack, int exactPathwayId){
-        CompoundTag beyonderTag = ModCompoundTags.getTagFromItem(ModCompoundTags.TAGS.BEYONDER, stack);
+        CompoundTag beyonderTag = ModTags.getTagFromItem(ModTags.TAGS.BEYONDER, stack);
         return beyonderTag != null
-                && ModCompoundTags.BeyonderInfoTag.isOfSamePathway(exactPathwayId, beyonderTag);
+                && ModTags.BeyonderInfoTag.isOfSamePathway(exactPathwayId, beyonderTag);
     }
 
     private void characteristicXray(Vec3 position, Player player){

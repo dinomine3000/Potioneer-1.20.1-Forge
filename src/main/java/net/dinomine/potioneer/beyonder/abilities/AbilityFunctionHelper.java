@@ -35,6 +35,35 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 public class AbilityFunctionHelper {
+
+    public static boolean areEntitiesAllies(ServerLevel level, LivingEntity ent1, LivingEntity ent2){
+        boolean trueAnswer = areEntitiesAllies(level, ent1.getUUID(), ent2.getUUID());
+        return trueAnswer;
+    }
+
+    public static boolean areEntitiesAllies(LivingEntity ent1, LivingEntity ent2){
+        if(!(ent1.level() instanceof ServerLevel serverLevel)) return false;
+        return areEntitiesAllies(serverLevel, ent1, ent2);
+    }
+
+    public static boolean areEntitiesAllies(ServerLevel level, UUID ent1, UUID ent2){
+        AllySystemSaveData data = AllySystemSaveData.from(level);
+        boolean trueAnswer = data.areEntitiesAllies(ent1, ent2);
+        return trueAnswer;
+    }
+
+    public static List<String> getGroupsPlayerIsIn(ServerLevel level, UUID player){
+        AllySystemSaveData data = AllySystemSaveData.from(level);
+        List<String> trueAnswer = data.getGroupNamesPlayerIsIn(player);
+        return trueAnswer;
+    }
+
+    public static List<UUID> getAlliesOf(ServerLevel level, UUID player){
+        AllySystemSaveData data = AllySystemSaveData.from(level);
+        List<UUID> trueAnswer = data.getAlliesOf(player);
+        return trueAnswer;
+    }
+
     public static void sendCommandMessage(LivingEntity target, String commandToRun, String commandIdentifier){
         sendCommandMessage(target, commandToRun, Component.translatable("message.potioneer.message." + commandIdentifier), Component.translatable("message.potioneer.clickable." + commandIdentifier), Component.translatable("message.potioneer.tooltip." + commandIdentifier));
     }
@@ -141,6 +170,14 @@ public class AbilityFunctionHelper {
         return new ArrayList<>(test.stream().map(ent -> (LivingEntity) ent).filter(pred).toList());
     }
 
+    public static ArrayList<LivingEntity> getAllyLivingEntitiesAround(ServerLevel level, LivingEntity target, double radius){
+        return getLivingEntitiesAround(target, radius, (ent -> areEntitiesAllies(level, target, ent)));
+    }
+
+    public static ArrayList<LivingEntity> getNonAllyLivingEntitiesAround(ServerLevel level, LivingEntity target, double radius){
+        return getLivingEntitiesAround(target, radius, (ent -> !areEntitiesAllies(level, target, ent)));
+    }
+
     public static ArrayList<LivingEntity> getLivingEntitiesAround(BlockPos blockPos, Level level, double radius, Predicate<? super LivingEntity> pred){
         List<Entity> test = getEntitiesAroundPredicate(blockPos, level, radius,
                 entity -> entity instanceof LivingEntity);
@@ -184,8 +221,7 @@ public class AbilityFunctionHelper {
         for (LivingEntity entity : targets) {
             // Ally check guard clause
             if (!looker.level().isClientSide() && !includeAllies && looker instanceof Player lookerPlayer && entity instanceof Player entityPlayer) {
-                AllySystemSaveData allies = AllySystemSaveData.from((ServerLevel) looker.level());
-                if (allies.isPlayerAllyOf(lookerPlayer.getUUID(), entityPlayer.getUUID())) {
+                if (areEntitiesAllies(lookerPlayer, entityPlayer)) {
                     continue;
                 }
             }
@@ -213,8 +249,7 @@ public class AbilityFunctionHelper {
         double smallestDist = Integer.MAX_VALUE;
         for(LivingEntity entity: targets){
             if(!looker.level().isClientSide() && !includeAllies && looker instanceof Player lookerPlayer && entity instanceof Player entityPlayer){
-                AllySystemSaveData allies = AllySystemSaveData.from((ServerLevel) looker.level());
-                if(allies.isPlayerAllyOf(lookerPlayer.getUUID(), entityPlayer.getUUID())) continue;
+                if(areEntitiesAllies(lookerPlayer, entityPlayer)) continue;
             }
             double testDist = looker.position().distanceTo(entity.position());
             if(testDist < smallestDist){

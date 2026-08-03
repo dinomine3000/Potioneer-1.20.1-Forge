@@ -2,6 +2,7 @@ package net.dinomine.potioneer.beyonder.effects.tyrant;
 
 import net.dinomine.potioneer.beyonder.abilities.Abilities;
 import net.dinomine.potioneer.beyonder.abilities.Ability;
+import net.dinomine.potioneer.beyonder.abilities.AbilityFunctionHelper;
 import net.dinomine.potioneer.beyonder.abilities.tyrant.AreaOfJurisdictionAbility;
 import net.dinomine.potioneer.beyonder.abilities.tyrant.IAreaOfJurisdiction;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffect;
@@ -42,16 +43,15 @@ public class AoJSourceEffect extends BeyonderEffect {
             }
         } else {
             if(target.tickCount%20 == target.getId()%20){
-                AllySystemSaveData allySystemSaveData = AllySystemSaveData.from((ServerLevel) target.level());
                 target.level().getEntities(target,
                         new AABB(target.getOnPos().offset(-proximityRadius, 0, -proximityRadius).atY(-500), target.getOnPos().offset(proximityRadius, 0, proximityRadius).atY(500)))
-                        .forEach( entity -> applyAojInfluenceToEntity(entity, target, allySystemSaveData, cap));
+                        .forEach( entity -> applyAojInfluenceToEntity(entity, target, cap));
             }
         }
     }
 
-    private static void applyAojInfluenceToEntity(Entity entity, LivingEntity enforcer, AllySystemSaveData allyData, LivingEntityBeyonderCapability cap){
-        if(entity instanceof LivingEntity livingEntity && !allyData.areEntitiesAllies(livingEntity, enforcer) && AreaOfJurisdictionAbility.isPosInAOJ(livingEntity.getOnPos(), cap, 0)){
+    private static void applyAojInfluenceToEntity(Entity entity, LivingEntity enforcer, LivingEntityBeyonderCapability cap){
+        if(entity instanceof LivingEntity livingEntity && !AbilityFunctionHelper.areEntitiesAllies(livingEntity, enforcer) && AreaOfJurisdictionAbility.isPosInAOJ(livingEntity.getOnPos(), cap, 0)){
             livingEntity.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(victimCap -> {
                 victimCap.getEffectsManager().addOrRefreshEffect(AoJRecipientEffect.getInstance(enforcer.getUUID()),
                         victimCap, livingEntity);
