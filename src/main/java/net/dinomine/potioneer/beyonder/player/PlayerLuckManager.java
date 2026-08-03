@@ -40,6 +40,10 @@ public class PlayerLuckManager {
         this.range = new LuckRange(random.nextInt(20, 50), random.nextInt(20, 50));
     }
 
+    public PlayerLuckManager(PlayerLuckManager luck1, PlayerLuckManager luck2){
+        this.luck = luck1.getLuck() - luck2.getLuck();
+    }
+
     public PlayerLuckManager(int luck){
         this.luck = luck;
     }
@@ -267,6 +271,10 @@ public class PlayerLuckManager {
         float[] res = range.getDataForHud();
         res[9] = luck;
         return res;
+    }
+
+    public PlayerLuckManager getDiffManager(PlayerLuckManager defenseManager) {
+        return new PlayerLuckManager(this, defenseManager);
     }
 
     private static class LuckMath{

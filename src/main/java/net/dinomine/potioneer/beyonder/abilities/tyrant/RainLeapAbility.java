@@ -25,14 +25,6 @@ public class RainLeapAbility extends Ability {
 
     @Override
     protected boolean primary(LivingEntityBeyonderCapability cap, LivingEntity target) {
-        if(cap.getSpirituality() < cost() || (!target.level().isRaining() && !target.level().isThundering() && !target.isInWater())) return false;
-        Vec3 look = target.getLookAngle();
-        double mult = 2 + 1.2*(8-getSequenceLevel());
-        target.addDeltaMovement(look.multiply(mult, mult/2, mult));
-        if(!target.level().isClientSide()){
-            target.level().playSound(null, target, SoundEvents.LIGHTNING_BOLT_IMPACT, SoundSource.PLAYERS, 1, 0.5f);
-            cap.requestActiveSpiritualityCost(cost());
-        }
-        return true;
+        return false;
     }
 }

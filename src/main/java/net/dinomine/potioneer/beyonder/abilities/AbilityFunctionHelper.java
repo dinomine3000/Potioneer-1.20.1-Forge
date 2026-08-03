@@ -3,6 +3,9 @@ package net.dinomine.potioneer.beyonder.abilities;
 import com.google.common.base.Suppliers;
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
+import net.dinomine.potioneer.beyonder.effects.BeyonderEffect;
+import net.dinomine.potioneer.beyonder.effects.tyrant.ContractedEffect;
+import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
 import net.dinomine.potioneer.entities.ModEntities;
 import net.dinomine.potioneer.entities.custom.AsteroidEntity;
 import net.dinomine.potioneer.savedata.AllySystemSaveData;
@@ -35,6 +38,15 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 public class AbilityFunctionHelper {
+    @SuppressWarnings("unchecked")
+    @Nullable
+    public static <T extends BeyonderEffect> T getEffectOnPlayer(String effectId, LivingEntity target) {
+        return target.getCapability(BeyonderStatsProvider.BEYONDER_STATS)
+                .resolve()
+                .map(cap -> cap.getEffectsManager().getEffect(effectId))
+                .map(effect -> (T) effect)
+                .orElse(null);
+    }
 
     public static boolean areEntitiesAllies(ServerLevel level, LivingEntity ent1, LivingEntity ent2){
         boolean trueAnswer = areEntitiesAllies(level, ent1.getUUID(), ent2.getUUID());
@@ -176,6 +188,10 @@ public class AbilityFunctionHelper {
 
     public static ArrayList<LivingEntity> getNonAllyLivingEntitiesAround(ServerLevel level, LivingEntity target, double radius){
         return getLivingEntitiesAround(target, radius, (ent -> !areEntitiesAllies(level, target, ent)));
+    }
+
+    public static ArrayList<LivingEntity> getNonAllyLivingEntitiesAround(LivingEntity target, double radius){
+        return getLivingEntitiesAround(target, radius, (ent -> !areEntitiesAllies(target, ent)));
     }
 
     public static ArrayList<LivingEntity> getLivingEntitiesAround(BlockPos blockPos, Level level, double radius, Predicate<? super LivingEntity> pred){

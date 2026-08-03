@@ -207,7 +207,7 @@ public class Abilities {
 
     //retweaked
     public static final AbilityFactory ARREST = registerAbility("arrest",
-            ArrestAbility::new, 5, 1, 20).hasSecondaryFunction();
+            ArrestAbility::new, 5, 1, 20).hasSecondaryFunction(6);
 
     //retweaked
     public static final AbilityFactory MIST = registerAbility("mist",
@@ -230,28 +230,14 @@ public class Abilities {
             ExileAbility::new, 0, 1, 100);
 
     public static final AbilityFactory CONTRACT = registerAbility("contract",
-            ContractAbility::new, 0, 1, 0);
+            ContractAbility::new, 0, 1, 0).hasSecondaryFunction();
 
     public static final AbilityFactory CONTRACT_VIEW = registerAbility("contract_view",
             ContractViewAbility::new, 0, 1, 0);
 
-//    public static final AbilityFactory TYRANT_ELECTRIFICATION = registerAbility("electrification",
-//            (Integer sequenceLevel) -> (PassiveAbility.createAbility(sequenceLevel, BeyonderEffects.TYRANT_ELECTRIFICATION,
-//                    ignored -> "electrification"))
-//                    .enabledOnAcquire().canFlip().withThreshold(20),
-//            272, 1, 20);
+    public static final AbilityFactory TYRANT_CALAMITY = registerAbility("tyrant_calamity",
+            CalamityAbility::new, 0, 1, 0);
 
-    public static final AbilityFactory TYRANT_RAIN = registerAbility("summon_rain",
-            RainCreateAbility::new, 200, 1, 70);
-
-    public static final AbilityFactory TYRANT_LEAP = registerAbility("rain_leap",
-            RainLeapAbility::new, 176, 1, 25);
-
-    public static final AbilityFactory TYRANT_THUNDER = registerAbility("summon_thunder",
-            ThunderCreateAbility::new, 224, 1, 160);
-
-    public static final AbilityFactory TYRANT_LIGHTNING_STRIKE = registerAbility("thunder_strike",
-            ThunderStrikeAbility::new, 248, 1, 50);
 
 
     // -------------------------- MYSTERY ---------------------------------------------------

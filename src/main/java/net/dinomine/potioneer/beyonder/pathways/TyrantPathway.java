@@ -103,11 +103,8 @@ public class TyrantPathway extends BeyonderPathway {
                 abilities.add(Abilities.AMPLIFICATION.create(atSequenceLevel));
                 abilities.add(Abilities.EXILE.create(atSequenceLevel));
                 abilities.add(Abilities.CONTRACT.create(atSequenceLevel));
+                abilities.add(Abilities.TYRANT_CALAMITY.create(atSequenceLevel));
             case 7:
-//                abilities.add(Abilities.TYRANT_LIGHTNING_STRIKE.create(atSequenceLevel));
-//                abilities.add(Abilities.TYRANT_THUNDER.create(atSequenceLevel));
-//                abilities.add(Abilities.TYRANT_RAIN.create(atSequenceLevel));
-//                abilities.add(Abilities.TYRANT_LEAP.create(atSequenceLevel));
                 abilities.add(Abilities.AOJ.create(atSequenceLevel));
                 abilities.add(Abilities.TYRANT_AURA.create(atSequenceLevel));
                 abilities.add(Abilities.ARREST.create(atSequenceLevel));
@@ -116,10 +113,7 @@ public class TyrantPathway extends BeyonderPathway {
                 abilities.add(Abilities.SENSE_OF_ORDER.create(atSequenceLevel));
             case 8:
                 abilities.add(Abilities.TYRANT_DIVINATION.create(atSequenceLevel));
-                //abilities.add(Abilities.TYRANT_CREATE_WATER.create(atSequenceLevel));
-                //abilities.add(Abilities.TYRANT_WATER_TRAP.create(atSequenceLevel));
                 abilities.add(Abilities.TYRANT_WATER_SPELLS.create(atSequenceLevel));
-                //abilities.add(Abilities.TYRANT_DROWNING.create(atSequenceLevel));
             case 9:
                 abilities.add(Abilities.WATER_AFFINITY.create(atSequenceLevel));
                 abilities.add(Abilities.WATER_SCALES.create(atSequenceLevel));
