@@ -196,6 +196,7 @@ public abstract class Ability {
     public void revoke(int time, LivingEntityBeyonderCapability cap, LivingEntity target){
         if(time == 0) return;
         if(cooldown >= 0){
+            previousState = state;
             onRevoke(cap, target);
             maxCooldown = Math.max(cooldown, 20);
         }
@@ -449,7 +450,6 @@ public abstract class Ability {
      * @param target
      */
     public void onRevoke(LivingEntityBeyonderCapability cap, LivingEntity target){
-        previousState = state;
         setEnabled(cap, target, false);
     }
 

@@ -232,6 +232,13 @@ public class PlayerAbilitiesManager {
         });
 
     }
+    public void unrevokeAll(Set<UUID> disabledInstances, LivingEntityBeyonderCapability cap, LivingEntity target){
+        abilities.values().forEach(ability -> {
+            if(disabledInstances.contains(ability.getInstanceId()) && ability.isRevoked()){
+                ability.undoRevoke(cap, target);
+            }
+        });
+    }
 
     public void unrevokeAll(LivingEntityBeyonderCapability cap, LivingEntity target){
         if(!abilities.isEmpty()){
@@ -582,6 +589,12 @@ public class PlayerAbilitiesManager {
     }
     public List<Ability> getAbilities(String abilityId) {
         return getAbilities().stream().filter(abl -> abl.is(abilityId)).toList();
+    }
+
+    public List<UUID> revokeAll(String abilityId, LivingEntityBeyonderCapability cap, LivingEntity target) {
+        List<Ability> res = getAbilities().stream().filter(abl -> abl.is(abilityId)).toList();
+        res.forEach(abl -> abl.revoke(cap, target));
+        return res.stream().map(Ability::getInstanceId).toList();
     }
 
     public void updateArtifact(@Nullable UUID artifactId, Player player, ItemStack artifactStack) {

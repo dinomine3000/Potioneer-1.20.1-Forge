@@ -84,5 +84,10 @@
     "sounds": [
       "potioneer:water_jet"
     ]
+  },
+  "fail_cast": {
+    "sounds": [
+      "potioneer:fail_cast"
+    ]
   }
 }

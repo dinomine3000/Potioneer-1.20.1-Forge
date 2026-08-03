@@ -104,6 +104,8 @@ public class TyrantPathway extends BeyonderPathway {
                 abilities.add(Abilities.EXILE.create(atSequenceLevel));
                 abilities.add(Abilities.CONTRACT.create(atSequenceLevel));
                 abilities.add(Abilities.TYRANT_CALAMITY.create(atSequenceLevel));
+                abilities.add(Abilities.BERSERK_RAGE.create(atSequenceLevel));
+                abilities.add(Abilities.ANCHOR_BLINKING.create(atSequenceLevel));
             case 7:
                 abilities.add(Abilities.AOJ.create(atSequenceLevel));
                 abilities.add(Abilities.TYRANT_AURA.create(atSequenceLevel));

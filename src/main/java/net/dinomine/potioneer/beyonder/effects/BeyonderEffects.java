@@ -71,6 +71,7 @@ public class BeyonderEffects {
     public static final BeyonderEffectType TYRANT_AMPLIFICATION = registerEffect("amplification", new BeyonderEffectType(AmplificationEffect::new));
     public static final BeyonderEffectType TYRANT_EXILE = registerEffect("exile", new BeyonderEffectType(ExiledEffect::new));
     public static final BeyonderEffectType TYRANT_CONTRACT = registerEffect("contract", new BeyonderEffectType(ContractedEffect::new));
+    public static final BeyonderEffectType TYRANT_BERSERK = registerEffect("berserk", new BeyonderEffectType(BerserkEffect::new));
     public static final BeyonderEffectType RED_FIRE_AURA = registerEffect("fire_aura", new BeyonderEffectType(BeyonderFireAuraEffect::new));
     public static final BeyonderEffectType RED_FIRE_BUFF = registerEffect("fire_buff", new BeyonderEffectType(BeyonderFireBuffEffect::new));
     public static final BeyonderEffectType RED_LIGHT_BUFF = registerEffect("light_buff", new BeyonderEffectType(BeyonderLightBuffEffect::new));

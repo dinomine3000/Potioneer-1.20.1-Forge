@@ -27,6 +27,7 @@ public class ModSounds {
     public static final RegistryObject<SoundEvent> WATER_TRAP = registerSoundEvents("water_trap");
     public static final RegistryObject<SoundEvent> XRAY = registerSoundEvents("xray");
     public static final RegistryObject<SoundEvent> WATER_JET = registerSoundEvents("water_jet");
+    public static final RegistryObject<SoundEvent> FAIL_CAST = registerSoundEvents("fail_castfail_cast");
 
 
 

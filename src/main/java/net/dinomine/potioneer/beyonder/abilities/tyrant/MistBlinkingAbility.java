@@ -1,8 +1,6 @@
 package net.dinomine.potioneer.beyonder.abilities.tyrant;
 
-import net.dinomine.potioneer.beyonder.abilities.Abilities;
-import net.dinomine.potioneer.beyonder.abilities.Ability;
-import net.dinomine.potioneer.beyonder.abilities.AbilityFunctionHelper;
+import net.dinomine.potioneer.beyonder.abilities.*;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
 import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
 import net.minecraft.core.BlockPos;
@@ -54,15 +52,5 @@ public class MistBlinkingAbility extends Ability {
         caster.setDeltaMovement(motion);
         caster.hasImpulse = true;
         cap.requestActiveSpiritualityCost(cost);
-    }
-
-    @Override
-    protected boolean secondary(LivingEntityBeyonderCapability cap, LivingEntity target) {
-        if(getSequenceLevel() >= 7) {
-            if(target.level().isClientSide())
-                target.sendSystemMessage(Component.translatableWithFallback("message.potioneer.outdated_secondary", "It doesn't do anything... yet"));
-            return false;
-        }
-        return true;
     }
 }

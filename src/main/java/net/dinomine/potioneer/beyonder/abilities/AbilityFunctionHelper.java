@@ -4,6 +4,7 @@ import com.google.common.base.Suppliers;
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffect;
+import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
 import net.dinomine.potioneer.beyonder.effects.tyrant.ContractedEffect;
 import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
 import net.dinomine.potioneer.entities.ModEntities;
@@ -30,10 +31,7 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.ForgeMod;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
@@ -50,6 +48,7 @@ public class AbilityFunctionHelper {
 
     public static boolean areEntitiesAllies(ServerLevel level, LivingEntity ent1, LivingEntity ent2){
         boolean trueAnswer = areEntitiesAllies(level, ent1.getUUID(), ent2.getUUID());
+        if(isPlayerBerserk(ent1) || isPlayerBerserk(ent2)) return false;
         return trueAnswer;
     }
 
@@ -58,19 +57,43 @@ public class AbilityFunctionHelper {
         return areEntitiesAllies(serverLevel, ent1, ent2);
     }
 
-    public static boolean areEntitiesAllies(ServerLevel level, UUID ent1, UUID ent2){
-        AllySystemSaveData data = AllySystemSaveData.from(level);
-        boolean trueAnswer = data.areEntitiesAllies(ent1, ent2);
+    public static List<String> getGroupsPlayerIsIn(ServerLevel level, Player player){
+        List<String> trueAnswer = getGroupsPlayerIsIn(level, player.getUUID());
+        if(isPlayerBerserk(player)) return List.of();
         return trueAnswer;
     }
 
-    public static List<String> getGroupsPlayerIsIn(ServerLevel level, UUID player){
-        AllySystemSaveData data = AllySystemSaveData.from(level);
-        List<String> trueAnswer = data.getGroupNamesPlayerIsIn(player);
-        return trueAnswer;
+    public static boolean isEntityInAnyGroup(ServerLevel level, LivingEntity target, List<String> testGroups){
+        if(!(target instanceof Player player)) return false;
+        List<String> realGroups = getGroupsPlayerIsIn(level, player);
+        return !Collections.disjoint(realGroups, testGroups);
     }
 
-    public static List<UUID> getAlliesOf(ServerLevel level, UUID player){
+    public static List<Player> getAlliesOf(ServerLevel level, Player player){
+        if(isPlayerBerserk(player)) return List.of();
+        List<UUID> allyIds = getAlliesOf(level, player.getUUID());
+        List<Player> res = new ArrayList<>();
+        for(UUID id: allyIds){
+            if(level.getEntity(id) instanceof Player player1) res.add(player1);
+        }
+        return res;
+    }
+
+    private static boolean isPlayerBerserk(LivingEntity entity){
+        return entity.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve().get().getEffectsManager().hasEffect(BeyonderEffects.TYRANT_BERSERK);
+    }
+
+    private static boolean areEntitiesAllies(ServerLevel level, UUID ent1, UUID ent2){
+        AllySystemSaveData data = AllySystemSaveData.from(level);
+        return data.areEntitiesAllies(ent1, ent2);
+    }
+
+    private static List<String> getGroupsPlayerIsIn(ServerLevel level, UUID player){
+        AllySystemSaveData data = AllySystemSaveData.from(level);
+        return data.getGroupNamesPlayerIsIn(player);
+    }
+
+    private static List<UUID> getAlliesOf(ServerLevel level, UUID player){
         AllySystemSaveData data = AllySystemSaveData.from(level);
         List<UUID> trueAnswer = data.getAlliesOf(player);
         return trueAnswer;

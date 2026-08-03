@@ -37,10 +37,8 @@ public class HalfCooldownAbility extends Ability {
         if(sequenceLevel > 5 || !(target instanceof Player player)){
             flag = refreshAbilityCooldown(cap, target, sequenceLevel);
         } else {
-            List<UUID> allies = AbilityFunctionHelper.getAlliesOf((ServerLevel) target.level(), player.getUUID());
-            for(UUID id: allies){
-                Player ally = target.level().getPlayerByUUID(id);
-                if(ally == null) continue;
+            List<Player> allies = AbilityFunctionHelper.getAlliesOf((ServerLevel) target.level(), player);
+            for(Player ally: allies){
                 Optional<LivingEntityBeyonderCapability> optCap = ally.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve();
                 if(optCap.isEmpty()) continue;
                 LivingEntityBeyonderCapability allyCap = optCap.get();

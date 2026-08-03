@@ -71,10 +71,12 @@ public class ArrestRecipientEffect extends AbstractSourceRecipientEffect {
         if(victim.level().isClientSide() || !calledOnVictim || !aoj) return false;
         List<Player> playerList = getPlayerList(victim.level());
         if(playerList.isEmpty()) return false;
-        Player enforcer = playerList.get(0);
-        if(enforcer.is(attacker) && aoj){
-            event.setAmount(event.getAmount()*2);
-            victim.level().playSound(null, victim.getOnPos(), ModSounds.CRIT.get(), SoundSource.PLAYERS);
+        for(Player enforcer: playerList){
+            if(enforcer.is(attacker) && aoj){
+                event.setAmount(event.getAmount()*2);
+                victim.level().playSound(null, victim.getOnPos(), ModSounds.CRIT.get(), SoundSource.PLAYERS);
+                break;
+            }
         }
         return false;
     }

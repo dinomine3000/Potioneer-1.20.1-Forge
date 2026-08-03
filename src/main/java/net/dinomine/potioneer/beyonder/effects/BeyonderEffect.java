@@ -99,6 +99,9 @@ public abstract class BeyonderEffect {
     public boolean isOrBetter(String id, int seq){
         return is(id) && this.sequenceLevel <= seq;
     }
+    public boolean isOrBetter(int seq){
+        return this.sequenceLevel <= seq;
+    }
 
     public boolean isOrWorse(String id, int seq){
         return is(id) && this.sequenceLevel >= seq;

@@ -1,16 +1,20 @@
 package net.dinomine.potioneer.beyonder.events;
 
 import net.dinomine.potioneer.beyonder.abilities.Ability;
+import net.dinomine.potioneer.beyonder.abilities.AbilityFunctionHelper;
 import net.dinomine.potioneer.beyonder.abilities.AbilityKey;
 import net.dinomine.potioneer.beyonder.abilities.tyrant.AreaOfJurisdictionAbility;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
 import net.dinomine.potioneer.beyonder.effects.tyrant.AmplificationEffect;
+import net.dinomine.potioneer.beyonder.effects.tyrant.AuraRecipientEffect;
 import net.dinomine.potioneer.beyonder.effects.tyrant.ContractedEffect;
 import net.dinomine.potioneer.beyonder.effects.tyrant.WeakeningEffect;
 import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
 import net.dinomine.potioneer.event.AbilityCastEvent;
 import net.dinomine.potioneer.event.AbilityPossessionEvent;
 import net.dinomine.potioneer.event.ArtifactPossessionEvent;
+import net.dinomine.potioneer.sound.ModSounds;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.event.entity.EntityMobGriefingEvent;
 import net.minecraftforge.eventbus.api.Event;
@@ -79,6 +83,16 @@ public class ServerEventsTyrant {
             ContractedEffect contract = (ContractedEffect) cap.getEffectsManager().getEffect(BeyonderEffects.TYRANT_CONTRACT.getEffectId());
             if(contract != null){
                 contract.testAbilityCast(event.getAbility(), cap, event.getEntity());
+            }
+
+            //aura cancel
+            AuraRecipientEffect aura = AbilityFunctionHelper.getEffectOnPlayer(BeyonderEffects.TYRANT_AURA_RECIPIENT.getEffectId(), event.getEntity());
+            if(aura != null && aura.isOrBetter(6)){
+                if(!cap.getLuckManager().passesLuckCheck(0.5f, 0, 0, event.getEntity().getRandom())){
+                    event.setCanceled(true);
+                    cap.getAbilitiesManager().putAbilityOnCooldown(event.getAbility().getAbilityKey(), 20*5, event.getEntity());
+                    event.getEntity().level().playSound(null, event.getEntity().getOnPos(), ModSounds.FAIL_CAST.get(), SoundSource.PLAYERS, 1, 1);
+                }
             }
         });
     }

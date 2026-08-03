@@ -10,7 +10,7 @@ import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
 import net.dinomine.potioneer.mob_effects.ModEffects;
 import net.minecraft.client.particle.TotemParticle;
 import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.*;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -18,10 +18,9 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.Items;
+import org.checkerframework.checker.units.qual.C;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 public class AreaOfJurisdictionAbility extends PassiveAbility implements IAreaOfJurisdiction {
     public static final int DEFAULT_RADIUS = 16;
@@ -33,7 +32,7 @@ public class AreaOfJurisdictionAbility extends PassiveAbility implements IAreaOf
      * @param sequenceLevel
      */
     public AreaOfJurisdictionAbility(int sequenceLevel) {
-        super(sequenceLevel, BeyonderEffects.TYRANT_AOJ_SOURCE, ignored -> "area_of_jurisdiction");
+        super(sequenceLevel, BeyonderEffects.TYRANT_AOJ_SOURCE, level -> "area_of_jurisdiction" + (level < 7 ? "_2" : ""));
         enabledOnAcquire();
     }
 
@@ -43,17 +42,87 @@ public class AreaOfJurisdictionAbility extends PassiveAbility implements IAreaOf
         if(cap.getSpirituality() < cost()) return false;
         BlockPos center = target.getOnPos();
         CompoundTag tag = getData();
-        tag.putInt("centerX", center.getX());
-        tag.putInt("centerY", center.getY());
-        tag.putInt("centerZ", center.getZ());
-        tag.putLong("timestamp", target.level().getGameTime());
-        tag.putBoolean("aoj_enabled", false);
-        setData(tag, target);
-        target.level().playSound((Entity) null, target.getOnPos(), SoundEvents.BEACON_DEACTIVATE, SoundSource.NEUTRAL, 1F, (float) target.getRandom().triangle(1, 0.2f));
-        target.sendSystemMessage(Component.translatableWithFallback("ability.potioneer.aoj_set", "Area of Jurisdiction centered on: %s, %s", center.getX(), center.getZ()));
-        defaultMaxCooldown = 20*30;
+        placeNewCenter(tag, center, target.level().getGameTime(), target);
+        setNextCooldownAs(20);
         cap.requestActiveSpiritualityCost(cost());
         return true;
+    }
+
+    @Override
+    public void passive(LivingEntityBeyonderCapability cap, LivingEntity target) {
+        super.passive(cap, target);
+        if(target.level().isClientSide()) return;
+        if(target.tickCount%20 == target.getId()%20){
+            if(isPosInAOJ(target.getOnPos(), cap, 0))
+                target.addEffect(new MobEffectInstance(ModEffects.AOJ_INFLUENCE.get(), 250, 0, false, false, true));
+
+            CompoundTag dataTag = getData();
+            List<CompoundTag> centersList = getCentersCompoundTagList(dataTag, false);
+            boolean changedFlag = false;
+            for(CompoundTag centerTag: centersList){
+                if(centerTag.contains("aoj_enabled") && !centerTag.getBoolean("aoj_enabled") && target.level().getGameTime() - centerTag.getLong("timestamp") > 20*2){
+                    changedFlag = true;
+                    centerTag.putBoolean("aoj_enabled", true);
+                    target.level().playSound(null, target.getOnPos(), SoundEvents.BEACON_ACTIVATE, SoundSource.NEUTRAL, 1, 1);
+                    target.sendSystemMessage(Component.translatableWithFallback("ability.potioneer.aoj_active", "Your area of jurisdiction is active."));
+                }
+            }
+            if(changedFlag) setData(createDataTag(centersList, dataTag.getInt("nextIdx")), target);
+        }
+    }
+
+    private void placeNewCenter(CompoundTag dataTag, BlockPos center, long timestamp, LivingEntity target){
+        int idx = getNextAvailableIndex(dataTag, sequenceLevel);
+        List<CompoundTag> centerTags = getCentersCompoundTagList(dataTag, false);
+        CompoundTag newCenter = createAreaTag(center, timestamp, false);
+        if (idx < centerTags.size()) centerTags.set(idx, newCenter);
+        else centerTags.add(newCenter);
+        target.level().playSound((Entity) null, target.getOnPos(), SoundEvents.BEACON_DEACTIVATE, SoundSource.NEUTRAL, 1F, (float) target.getRandom().triangle(1, 0.2f));
+        target.sendSystemMessage(Component.translatableWithFallback("ability.potioneer.aoj_set", "Area of Jurisdiction centered on: %s, %s", center.getX(), center.getZ()));
+        setData(createDataTag(centerTags, idx + 1), target);
+    }
+
+    private static int getMaxCentersAtLevel(int sequenceLevel){
+        return sequenceLevel < 7 ? 2 : 1;
+    }
+
+    private static int getNextAvailableIndex(CompoundTag dataTag, int sequenceLevel){
+        return dataTag.getInt("nextIdx") % getMaxCentersAtLevel(sequenceLevel);
+    }
+
+    private static List<CompoundTag> getCentersCompoundTagList(CompoundTag dataTag, boolean skipDisabled){
+        List<CompoundTag> centerTags = new ArrayList<>();
+        if (dataTag.contains("areas", Tag.TAG_LIST)) {
+            ListTag areasList = dataTag.getList("areas", Tag.TAG_COMPOUND);
+            for (int i = 0; i < areasList.size(); i++) {
+                if(skipDisabled && !areasList.getCompound(i).getBoolean("aoj_enabled")) continue;
+                centerTags.add(areasList.getCompound(i));
+            }
+        }
+        return centerTags;
+    }
+
+    private static BlockPos getCenterFromCompoundTag(CompoundTag centerTag){
+        return new BlockPos(centerTag.getInt("centerX"), centerTag.getInt("centerY"), centerTag.getInt("centerZ"));
+    }
+
+    private CompoundTag createDataTag(List<CompoundTag> centers, int nextIdx){
+        CompoundTag tag = new CompoundTag();
+        ListTag compoundList = new ListTag();
+        compoundList.addAll(centers);
+        tag.put("areas", compoundList);
+        tag.putInt("nextIdx", nextIdx % getMaxCentersAtLevel(sequenceLevel));
+        return tag;
+    }
+
+    private static CompoundTag createAreaTag(BlockPos center, long timestamp, boolean enabled){
+        CompoundTag res = new CompoundTag();
+        res.putInt("centerX", center.getX());
+        res.putInt("centerY", center.getY());
+        res.putInt("centerZ", center.getZ());
+        res.putLong("timestamp", timestamp);
+        res.putBoolean("aoj_enabled", enabled);
+        return res;
     }
 
     public static List<BlockPos> getCentersOfEnforcer(Entity enforcer){
@@ -80,27 +149,20 @@ public class AreaOfJurisdictionAbility extends PassiveAbility implements IAreaOf
     }
 
     @Override
-    public void passive(LivingEntityBeyonderCapability cap, LivingEntity target) {
-        super.passive(cap, target);
-        if(getData().contains("aoj_enabled") && !getData().getBoolean("aoj_enabled") && target.level().getGameTime() - getData().getLong("timestamp") > 20*30){
-            CompoundTag tag = getData();
-            tag.putBoolean("aoj_enabled", true);
-            setData(tag, target);
-            target.level().playSound(null, target.getOnPos(), SoundEvents.BEACON_ACTIVATE, SoundSource.NEUTRAL, 1, 1);
-            target.sendSystemMessage(Component.translatableWithFallback("ability.potioneer.aoj_active", "Your area of jurisdiction is active."));
-        }
-        if(!target.level().isClientSide() && target.tickCount%20 == target.getId()%20){
-            if(isPosInAOJ(target.getOnPos(), cap, 0))
-                target.addEffect(new MobEffectInstance(ModEffects.AOJ_INFLUENCE.get(), 250, 0, false, false, true));
-        }
-    }
-
-    @Override
     protected boolean secondary(LivingEntityBeyonderCapability cap, LivingEntity target) {
         flipEnable(cap, target);
         defaultMaxCooldown = 20;
         return true;
     }
+
+    @Override
+    public void onRevoke(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    }
+
+    @Override
+    public void onUndoRevoke(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    }
+
     public static boolean isPosInAOJ(BlockPos testPos, Entity enforcer){
         if(!(enforcer instanceof LivingEntity lEnforcer)) return false;
         LivingEntityBeyonderCapability cap = lEnforcer.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve().get();
@@ -134,13 +196,12 @@ public class AreaOfJurisdictionAbility extends PassiveAbility implements IAreaOf
 
     @Override
     public List<BlockPos> getCenters() {
-        if(!getData().contains("centerX") || !getData().getBoolean("aoj_enabled")) return List.of();
-        BlockPos center = new BlockPos(getData().getInt("centerX"), getData().getInt("centerY"), getData().getInt("centerZ"));
-        return List.of(center);
+        return getCentersCompoundTagList(getData(), true).stream().map(AreaOfJurisdictionAbility::getCenterFromCompoundTag).toList();
     }
 
     @Override
     public List<Integer> getRadius() {
-        return List.of(8 + (10 - getSequenceLevel())*2);
+        int radius = 8 + (10 - getSequenceLevel())*2;
+        return getCentersCompoundTagList(getData(), true).stream().map(ign -> radius).toList();
     }
 }

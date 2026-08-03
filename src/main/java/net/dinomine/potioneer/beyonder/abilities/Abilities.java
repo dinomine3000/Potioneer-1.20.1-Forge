@@ -216,7 +216,7 @@ public class Abilities {
 
     //retweaked
     public static final AbilityFactory MIST_BLINKING = registerAbility("mist_blinking",
-            MistBlinkingAbility::new, 0, 1, 10).hasSecondaryFunction();
+            MistBlinkingAbility::new, 0, 1, 10);
 
     //retweaked
     public static final AbilityFactory SENSE_OF_ORDER = registerAbility("sense_of_order",
@@ -237,6 +237,13 @@ public class Abilities {
 
     public static final AbilityFactory TYRANT_CALAMITY = registerAbility("tyrant_calamity",
             CalamityAbility::new, 0, 1, 0);
+
+    public static final AbilityFactory BERSERK_RAGE = registerAbility("berserk",
+            level -> PassiveAbility.createAbility(level, BeyonderEffects.TYRANT_BERSERK, ign -> "berserk").canFlip().withDuration(-1),
+            0, 1, 0).passiveAndActive();
+
+    public static final AbilityFactory ANCHOR_BLINKING = registerAbility("mist_blinking_anchors",
+            MistBlinkingAnchorsAbility::new, 0, 1, 20).hasSecondaryFunction();
 
 
 

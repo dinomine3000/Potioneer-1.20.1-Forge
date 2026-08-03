@@ -8,7 +8,7 @@ import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
 import net.minecraft.world.entity.LivingEntity;
 
 public class CogitationAbility extends PassiveAbility {
-    private int pathwaySequenceId;
+    private final int pathwaySequenceId;
 
     public CogitationAbility(int pathwayId){
         super(pathwayId, BeyonderEffects.COGITATION, integer -> "cogitation");

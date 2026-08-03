@@ -114,9 +114,7 @@ public class WaterTrapBlockEntity extends BlockEntity implements GeoBlockEntity 
 
     private boolean isEntityAllyOfOwner(LivingEntity ent){
         if(!(level instanceof ServerLevel serverLevel) || id == null) return false;
-        if(ent instanceof Player player){
-            return AbilityFunctionHelper.areEntitiesAllies(serverLevel, player.getUUID(), id);
-        } return false;
+        return AbilityFunctionHelper.isEntityInAnyGroup(serverLevel, ent, casterAllyGroups);
     }
 
     private void tryToExplode(boolean destroy){
@@ -196,7 +194,7 @@ public class WaterTrapBlockEntity extends BlockEntity implements GeoBlockEntity 
             if(isPassable(level, pos.atY(y))) numberOfChainsBelow++;
             else break;
         }
-        if(id != null && sLevel.getEntity(id) != null){
+        if(id != null && sLevel.getEntity(id) instanceof Player player){
             //sequence level
             LivingEntityBeyonderCapability cap = sLevel.getEntity(id).getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve().get();
             this.sequenceLevel = cap.getSequenceLevel();
@@ -205,7 +203,7 @@ public class WaterTrapBlockEntity extends BlockEntity implements GeoBlockEntity 
             isInAOJ = AreaOfJurisdictionAbility.isPosInAOJ(pos, cap, 0);
 
             //ally group list
-            casterAllyGroups = new ArrayList<>(AbilityFunctionHelper.getGroupsPlayerIsIn(sLevel, id));
+            casterAllyGroups = new ArrayList<>(AbilityFunctionHelper.getGroupsPlayerIsIn(sLevel, player));
         } else {
             casterAllyGroups = new ArrayList<>();
             isInAOJ = false;

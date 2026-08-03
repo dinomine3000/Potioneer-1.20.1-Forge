@@ -8,7 +8,9 @@ import net.dinomine.potioneer.util.ModTags;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingDamageEvent;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
 
@@ -40,13 +42,17 @@ public class ArrestSourceEffect extends BeyonderEffect {
         }
 
         if(victimCap == null) return false;
-        ArrestRecipientEffect eff = (ArrestRecipientEffect) BeyonderEffects.TYRANT_ARREST_RECIPIENT.createInstance(getSequenceLevel(), 0, aoj ? 7*20 : 3*20, true);
-        eff.setEnforcer(attacker.getUUID());
-        victimCap.getEffectsManager().addOrRefreshEffect(eff, victimCap, victim);
+        applyArrestToRecipient(attacker, victimCap, victim, getSequenceLevel(), aoj);
         if(attacker instanceof Player playerAttacker){
             playerAttacker.getCooldowns().addCooldown(weapon.getItem(), 10*20);
         }
         optAttackerCap.ifPresent(cap -> cap.requestActiveSpiritualityCost(cost));
         return false;
+    }
+
+    public static void applyArrestToRecipient(LivingEntity attacker, LivingEntityBeyonderCapability victimCap, LivingEntity victim, int sequenceLevel, boolean aoj){
+        ArrestRecipientEffect eff = (ArrestRecipientEffect) BeyonderEffects.TYRANT_ARREST_RECIPIENT.createInstance(sequenceLevel, 0, aoj ? 7*20 : 3*20, true);
+        eff.setEnforcer(attacker.getUUID());
+        victimCap.getEffectsManager().addOrRefreshEffect(eff, victimCap, victim);
     }
 }
