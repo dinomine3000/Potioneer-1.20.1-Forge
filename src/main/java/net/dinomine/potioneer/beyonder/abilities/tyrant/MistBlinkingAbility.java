@@ -10,6 +10,7 @@ import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 
@@ -37,18 +38,22 @@ public class MistBlinkingAbility extends Ability {
         BlockPos blockPos = res.getBlockPos().relative(res.getDirection());
         ServerLevel level = (ServerLevel) target.level();
         if(AreaOfJurisdictionAbility.isPosInAOJ(blockPos, cap, 0)){
-            cap.getAbilitiesManager().putAbilityOnCooldown(Abilities.MIST.getAblId(), getSequenceLevel(), 20, target);
-            cap.getEffectsManager().addOrRefreshEffect(BeyonderEffects.TYRANT_MIST_EFFECT.createInstance(getSequenceLevel(), 0, 10, true), cap, target);
-            Vec3 pos = target.getEyePosition();
-            level.sendParticles(ParticleTypes.FALLING_WATER, pos.x, pos.y, pos.z, 50, 1, 0, 1, 0);
-            Vec3 motion = target.getDeltaMovement();
-            target.teleportTo(blockPos.getX(), blockPos.getY(), blockPos.getZ());
-            target.setDeltaMovement(motion);
-            target.hasImpulse = true;
-            cap.requestActiveSpiritualityCost(cost());
+            doMistBlinkingTo(target, cap, level, cost(), blockPos, sequenceLevel);
             return true;
         }
         return false;
+    }
+
+    public static void doMistBlinkingTo(LivingEntity caster, LivingEntityBeyonderCapability cap, ServerLevel level, int cost, BlockPos blockPos, int sequenceLevel){
+        cap.getAbilitiesManager().putAbilityOnCooldown(Abilities.MIST.getAblId(), sequenceLevel, 20, caster);
+        cap.getEffectsManager().addOrRefreshEffect(BeyonderEffects.TYRANT_MIST_EFFECT.createInstance(sequenceLevel, 0, 10, true), cap, caster);
+        Vec3 pos = caster.getEyePosition();
+        level.sendParticles(ParticleTypes.FALLING_WATER, pos.x, pos.y, pos.z, 50, 1, 0, 1, 0);
+        Vec3 motion = caster.getDeltaMovement();
+        caster.teleportTo(blockPos.getX() + 0.5f, blockPos.getY(), blockPos.getZ() + 0.5);
+        caster.setDeltaMovement(motion);
+        caster.hasImpulse = true;
+        cap.requestActiveSpiritualityCost(cost);
     }
 
     @Override

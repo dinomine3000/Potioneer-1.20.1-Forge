@@ -12,6 +12,7 @@ import net.dinomine.potioneer.block.ModBlocks;
 import net.dinomine.potioneer.network.PacketHandler;
 import net.dinomine.potioneer.network.messages.effects.GeneralAreaEffectMessage;
 import net.dinomine.potioneer.savedata.AllySystemSaveData;
+import net.dinomine.potioneer.server.ServerTokenCache;
 import net.dinomine.potioneer.sound.ModSounds;
 import net.dinomine.potioneer.util.ParticleMaker;
 import net.dinomine.potioneer.util.misc.ModCompoundTags;
@@ -137,7 +138,13 @@ public class WaterTrapBlockEntity extends BlockEntity implements GeoBlockEntity 
                 if(ent instanceof LivingEntity caster){
                     LivingEntityBeyonderCapability cap = caster.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve().get();
                     if(cap.getAbilitiesManager().hasAbilityOrBetter(Abilities.TYRANT_WATER_SPELLS.getAblId(), 7)){
-                        AbilityFunctionHelper.sendCommandMessage(caster, "/beyonderability teleport", Component.literal("WIP"));
+                        UUID token = UUID.randomUUID();
+                        CompoundTag dataTag = new CompoundTag();
+                        dataTag.putInt("x", getBlockPos().getX());
+                        dataTag.putInt("y", getBlockPos().getY());
+                        dataTag.putInt("z", getBlockPos().getZ());
+                        ServerTokenCache.addToken(token, 20*15, dataTag);
+                        AbilityFunctionHelper.sendCommandMessage(caster, "/beyonderability teleport " + token, Component.translatable("message.potioneer.message.trap", getBlockPos().getX(), getBlockPos().getY(), getBlockPos().getZ()), Component.translatable("message.potioneer.clickable.trap"), Component.translatable("message.potioneer.tooltip.trap"));
                     }
                 }
             }

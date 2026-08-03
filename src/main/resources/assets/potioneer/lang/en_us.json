@@ -386,6 +386,7 @@
   "beyonder.potioneer.stat_tough": "Toughness: %s",
   "beyonder.potioneer.stat_defense": "Defense: %s%",
   "beyonder.potioneer.stat_resistance": "Resistance: %s",
+  "beyonder.potioneer.stat_regeneration": "Regeneration: %s",
   "beyonder.potioneer.stat_resistance_explanation": "Ignores normal damage under %s hitpoints.",
   "beyonder.potioneer.stat_stamina_explanation": "You lose 1 sanity point for every %s%% spirituality consumed",
   "beyonder.potioneer.stat_stamina": "Spirit Energy: %s",
@@ -411,6 +412,14 @@
   "message.potioneer.luck_boost_revoke": "Your luck has been taken back.",
   "message.potioneer.luck_boost_unlucky": "An ominous feeling washes over you.",
   "message.potioneer.effect_already_exists": "Could not give effect: one already exists.",
+  "message.potioneer.contract_message": "A contract has been written for you.",
+  "message.potioneer.contract_clickable": "You have %s seconds to respond.",
+  "message.potioneer.contract_tooltip": "Click here to open the contract.",
+  "message.potioneer.message.trap": "One of your traps activated at %s, %s, %s.",
+  "message.potioneer.clickable.trap": "[Blink to Position].",
+  "message.potioneer.tooltip.trap": "Click here to mist-blink to water trap.",
+
+
   "ability.potioneer.luck_appraisal": "[Luck Appraisal] Luck of %s is at %s",
   "ability.potioneer.luck_appraisal_2": "[Luck Appraisal] Luck of %s is at [%s; %s; %s]",
   "ability.potioneer.target_appraisal": "[Stats Appraisal] %s stats:\nHealth: %s / %s\nSpirituality: %s / %s\nSanity: %s / %s",

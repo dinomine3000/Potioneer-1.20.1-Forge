@@ -48,8 +48,9 @@ public class ContractAbility extends Ability {
             setNextCooldownAs(20*30);
             cap.requestActiveSpiritualityCost(cost());
             UUID token = UUID.randomUUID();
-            ServerTokenCache.addToken(token, 20*60, args);
-            AbilityFunctionHelper.sendCommandMessage(target, "/beyonderability contract " + token, Component.literal("message test"));
+            int duration = 20*60;
+            ServerTokenCache.addToken(token, duration, args);
+            AbilityFunctionHelper.sendCommandMessage(target, "/beyonderability contract " + token, Component.translatable("message.potioneer.contract_message"), Component.translatable("message.potioneer.contract_clickable", duration/20), Component.translatable("message.potioneer.contract_tooltip"));
             return true;
         }
     }
@@ -104,7 +105,23 @@ public class ContractAbility extends Ability {
         public ContractOption markValid(boolean valid){this.valid = valid;return this;}
         public boolean isValid(){return valid;}
 
+        @Override
+        public boolean equals(Object obj) {
+            if(!(obj instanceof ContractOption otherOption)) return false;
+            return otherOption.id.equalsIgnoreCase(this.id);
+        }
+
         // --- Constructors ---
+
+        public ContractOption(ContractOption other, List<String> args, boolean valid) {
+            this.id = other.id;
+            this.type = other.type;
+            this.finalDescription = other.finalDescription;
+            this.previewComponent = other.previewComponent;
+            this.arguments = args.isEmpty() ? other.arguments : List.copyOf(args);
+            this.argumentsToChoose = other.argumentsToChoose;
+            this.valid = valid;
+        }
 
         public ContractOption(String id, OptionType type, String finalComponent, Component previewComponent, List<String> arguments, int argumentsToChoose) {
             this.id = id;
@@ -113,6 +130,7 @@ public class ContractAbility extends Ability {
             this.previewComponent = previewComponent;
             this.arguments = List.copyOf(arguments);
             this.argumentsToChoose = argumentsToChoose;
+            markValid(true);
         }
 
         public ContractOption(String id, OptionType type, Component previewComponent, List<String> arguments, int argumentsToChoose) {
@@ -152,7 +170,7 @@ public class ContractAbility extends Ability {
 
         public static Optional<ContractOption> create(String id, List<String> args, boolean valid) {
             if (REGISTRY.containsKey(id)) {
-                return Optional.of(REGISTRY.get(id).markValid(valid));
+                return Optional.of(new ContractOption(REGISTRY.get(id), args, valid));
             }
             if (FACTORY_REGISTRY.containsKey(id)) {
                 return Optional.of(FACTORY_REGISTRY.get(id).apply(args).markValid(valid));
@@ -178,7 +196,7 @@ public class ContractAbility extends Ability {
         public static final ContractOption UNDEAD_BUFF = register(new ContractOption("undead", OptionType.REWARD, Component.translatable("contract.potioneer.undead_gain")));
 
         public static final ContractOption UNDEAD_COND = register(new ContractOption("undead_cond", OptionType.CONDITION, Component.translatable("contract.potioneer.undead_condition")));
-        public static final ContractOption NETHER_COND = register(new ContractOption("nether_cond", OptionType.CONDITION, Component.translatable("contract.potioneer.nether_condition")));
+        public static final ContractOption NETHER_COND = register(new ContractOption("nether_cond", OptionType.CONDITION, Component.translatable("contract.potioneer.nether_condition")).markValid(true));
         public static final ContractOption HP_COND = register(new ContractOption("hp_cond", OptionType.CONDITION, Component.translatable("contract.potioneer.hp_condition")));
         public static final ContractOption SPIRITUALITY_COND = register(new ContractOption("spir_cond", OptionType.CONDITION, Component.translatable("contract.potioneer.spir_condition")));
 

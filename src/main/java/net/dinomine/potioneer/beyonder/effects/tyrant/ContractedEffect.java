@@ -19,6 +19,7 @@ import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -59,18 +60,18 @@ public class ContractedEffect extends BeyonderEffect {
 
     @Override
     protected void doTick(LivingEntityBeyonderCapability cap, LivingEntity target) {
-        if(condition == ContractOption.HP_COND){
+        if(Objects.equals(condition, ContractOption.HP_COND)){
             if(target.getHealth() < HEALTH_THRESHOLD) invalidate();
         }
-        else if(condition == ContractOption.NETHER_COND && target.level().dimension() == Level.NETHER) invalidate();
-        else if(condition == ContractOption.SPIRITUALITY_COND && cap.getSpirituality() < cap.getMaxSpirituality()*SPIRITUALITY_THRESHOLD) invalidate();
+        else if(Objects.equals(condition, ContractOption.NETHER_COND) && Objects.equals(target.level().dimension(), Level.NETHER)) invalidate();
+        else if(Objects.equals(condition, ContractOption.SPIRITUALITY_COND) && cap.getSpirituality() < cap.getMaxSpirituality()*SPIRITUALITY_THRESHOLD) invalidate();
         if(!condition.isValid()) return;
 
         BeyonderStats statsHolder = cap.getEffectsManager().statsHolder;
-        if(reward == ContractOption.DAMAGE_BUFF) statsHolder.addDamage(DAMAGE_BUFF);
-        else if(reward == ContractOption.REGENERATION_BUFF) statsHolder.addRegeneration(REGENERATION_BUFF);
-        else if(reward == ContractOption.HEALTH_BUFF) statsHolder.addHealth(HEALTH_BUFF);
-        else if(reward == ContractOption.STAMINA_BUFF) statsHolder.addStamina(STAMINA_BUFF);
+        if(Objects.equals(reward, ContractOption.DAMAGE_BUFF)) statsHolder.addDamage(DAMAGE_BUFF);
+        else if(Objects.equals(reward, ContractOption.REGENERATION_BUFF)) statsHolder.addRegeneration(REGENERATION_BUFF);
+        else if(Objects.equals(reward, ContractOption.HEALTH_BUFF)) statsHolder.addHealth(HEALTH_BUFF);
+        else if(Objects.equals(reward, ContractOption.STAMINA_BUFF)) statsHolder.addStamina(STAMINA_BUFF);
     }
 
     @Override
@@ -132,7 +133,7 @@ public class ContractedEffect extends BeyonderEffect {
     @Override
     public boolean onDamageProposal(LivingAttackEvent event, LivingEntity victim, @Nullable LivingEntity attacker, LivingEntityBeyonderCapability victimCap, Optional<LivingEntityBeyonderCapability> attackerCap, boolean calledOnVictim) {
         if(calledOnVictim) return false;
-        if(victim.getMobType() == MobType.UNDEAD && condition == ContractOption.UNDEAD_COND) invalidate();
+        if(Objects.equals(victim.getMobType(), MobType.UNDEAD) && Objects.equals(condition, ContractOption.UNDEAD_COND)) invalidate();
         return false;
     }
 
@@ -140,7 +141,7 @@ public class ContractedEffect extends BeyonderEffect {
     public boolean onDamageCalculation(LivingHurtEvent event, LivingEntity victim, @Nullable LivingEntity attacker, LivingEntityBeyonderCapability victimCap, Optional<LivingEntityBeyonderCapability> attackerCap, boolean calledOnVictim) {
         if(calledOnVictim) return false;
         if(!condition.isValid()) return false;
-        if(condition == ContractOption.UNDEAD_BUFF && victim.getMobType() == MobType.UNDEAD) event.setAmount(event.getAmount()*2);
+        if(Objects.equals(condition, ContractOption.UNDEAD_BUFF) && Objects.equals(victim.getMobType(), MobType.UNDEAD)) event.setAmount(event.getAmount()*2);
         return false;
     }
 

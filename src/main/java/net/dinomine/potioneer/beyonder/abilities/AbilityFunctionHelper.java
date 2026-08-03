@@ -35,14 +35,16 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 public class AbilityFunctionHelper {
-
-    public static void sendCommandMessage(LivingEntity target, String commandToRun, MutableComponent messageComponent){
+    public static void sendCommandMessage(LivingEntity target, String commandToRun, String commandIdentifier){
+        sendCommandMessage(target, commandToRun, Component.translatable("message.potioneer.message." + commandIdentifier), Component.translatable("message.potioneer.clickable." + commandIdentifier), Component.translatable("message.potioneer.tooltip." + commandIdentifier));
+    }
+    public static void sendCommandMessage(LivingEntity target, String commandToRun, MutableComponent messageComponent, MutableComponent clickableComponent, MutableComponent tooltipComponent){
         Component clickableText =
-                Component.literal("[Click to prepare command]")
+                clickableComponent
                 .withStyle(style -> style
                         .withUnderlined(true)
                         .withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, commandToRun))
-                        .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal("Click to follow up")))
+                        .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, tooltipComponent))
                 );
 
         Component message = messageComponent
