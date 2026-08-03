@@ -165,6 +165,7 @@ public class Potioneer
             EntityRenderers.register(ModEntities.SLOT_MACHINE_ENTITY.get(), SlotMachineRenderer::new);
             EntityRenderers.register(ModEntities.CHARM_ENTITY.get(), CharmRenderer::new);
             EntityRenderers.register(ModEntities.WATER_BLOCK_EFFECT_ENTITY.get(), WaterEffectEntityRenderer::new);
+            EntityRenderers.register(ModEntities.WIND_SHEAR_PROJECTILE.get(), WindShearRenderer::new);
 
             MolangParser.INSTANCE.register(new LazyVariable("query.target_x", 0.0F));
 

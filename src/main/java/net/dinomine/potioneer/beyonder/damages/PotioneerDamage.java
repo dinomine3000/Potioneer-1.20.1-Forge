@@ -32,9 +32,11 @@ public class PotioneerDamage {
     public static final ResourceKey<DamageType> LOW_SANITY_KILL = ResourceKey.create(Registries.DAMAGE_TYPE, new ResourceLocation(Potioneer.MOD_ID, "low_sanity_kill"));
     public static final ResourceKey<DamageType> LOW_SPIRITUALITY = ResourceKey.create(Registries.DAMAGE_TYPE, new ResourceLocation(Potioneer.MOD_ID, "low_spirituality"));
     public static final ResourceKey<DamageType> ASTEROID = ResourceKey.create(Registries.DAMAGE_TYPE, new ResourceLocation(Potioneer.MOD_ID, "asteroid"));
+    public static final ResourceKey<DamageType> ASTEROID_ROGUE = ResourceKey.create(Registries.DAMAGE_TYPE, new ResourceLocation(Potioneer.MOD_ID, "asteroid_rogue"));
     public static final ResourceKey<DamageType> ARREST = ResourceKey.create(Registries.DAMAGE_TYPE, new ResourceLocation(Potioneer.MOD_ID, "arrest"));
     public static final ResourceKey<DamageType> EXILE = ResourceKey.create(Registries.DAMAGE_TYPE, new ResourceLocation(Potioneer.MOD_ID, "exile"));
     public static final ResourceKey<DamageType> TYRANT_HEALING = ResourceKey.create(Registries.DAMAGE_TYPE, new ResourceLocation(Potioneer.MOD_ID, "tyrant_healing"));
+    public static final ResourceKey<DamageType> WIND_SHEAR = ResourceKey.create(Registries.DAMAGE_TYPE, new ResourceLocation(Potioneer.MOD_ID, "wind_shear"));
     public static final ResourceKey<DamageType> WATER_TRAP = ResourceKey.create(Registries.DAMAGE_TYPE, new ResourceLocation(Potioneer.MOD_ID, "water_trap_explosion"));
     public static final ResourceKey<DamageType> WATER_TRAP_ENVIRONMENT = ResourceKey.create(Registries.DAMAGE_TYPE, new ResourceLocation(Potioneer.MOD_ID, "water_trap_explosion_environment"));
 //    public static final ResourceKey<DamageType> MENTAL = ResourceKey.create(Registries.DAMAGE_TYPE, new ResourceLocation(Potioneer.MOD_ID, "mental"));
@@ -57,6 +59,10 @@ public class PotioneerDamage {
         return getSource(level, EXILE, attacker);
     }
 
+    public static DamageSource wind_shear(ServerLevel level, @Nullable Entity attacker) {
+        return getSource(level, WIND_SHEAR, attacker);
+    }
+
     private static DamageSource water_trap(ServerLevel level) {
         return getSource(level, WATER_TRAP_ENVIRONMENT);
     }
@@ -71,6 +77,10 @@ public class PotioneerDamage {
 
     public static DamageSource asteroid(ServerLevel level) {
         return getSource(level, ASTEROID);
+    }
+    public static DamageSource asteroid(ServerLevel level, LivingEntity attacker) {
+        if(attacker == null) return asteroid(level);
+        return getSource(level, ASTEROID_ROGUE, attacker);
     }
 
     public static DamageSource chryon_pierce(ServerLevel level, LivingEntity attacker) {

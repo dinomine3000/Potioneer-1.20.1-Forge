@@ -6,6 +6,8 @@ import net.dinomine.potioneer.beyonder.abilities.AbilityWithOptions;
 import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
 import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
 import net.dinomine.potioneer.beyonder.player.PlayerLuckManager;
+import net.dinomine.potioneer.entities.ModEntities;
+import net.dinomine.potioneer.entities.custom.WindShearProjectile;
 import net.dinomine.potioneer.util.misc.ModTags;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
@@ -18,8 +20,10 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.ForgeMod;
+import org.checkerframework.checker.units.qual.A;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class CalamityAbility extends AbilityWithOptions {
 
@@ -27,12 +31,16 @@ public class CalamityAbility extends AbilityWithOptions {
     private static final int THUNDER_COST = 75;
     private static final int LUCK_COST = 100;
     private static final int LEAP_COST = 25;
+    private static final int ASTEROID_COST = 150;
+    private static final int WIND_COST = 50;
     public CalamityAbility(int sequenceLevel) {
         super(sequenceLevel);
         AbilityOptions options = new AbilityOptions()
                 .addEmptyOption("thunder", Component.literal("Thunder Strike"))
                 .addEmptyOption("luck", Component.literal("Bad Luck"))
                 .addEmptyOption("leap", Component.literal("Air Leap"))
+                .addEmptyOption("wind", Component.literal("Wind Shear"))
+                .addEmptyOption("meteor", Component.literal("Meteor"))
                 .addEmptyOption("rain", Component.literal("Rain"));
         setPrimaryOptions(options);
     }
@@ -48,7 +56,37 @@ public class CalamityAbility extends AbilityWithOptions {
         else if(args.equalsIgnoreCase("leap")) return doLeap(cap, target);
         else if(args.equalsIgnoreCase("luck")) return doLuck(cap, target);
         else if(args.equalsIgnoreCase("thunder")) return doThunder(cap, target);
+        else if(args.equalsIgnoreCase("meteor")) return doMeteor(cap, target);
+        else if(args.equalsIgnoreCase("wind")) return doWindShear(cap, target);
         return false;
+    }
+
+    private boolean doWindShear(LivingEntityBeyonderCapability cap, LivingEntity caster){
+        if(cap.getSpirituality() < WIND_COST) return false;
+        if(caster.level().isClientSide()) return true;
+        Vec3 lookVector = caster.getLookAngle();
+        for(int i = 0; i < caster.getRandom().nextInt(5, 8); i++){
+            WindShearProjectile projectile = new WindShearProjectile(ModEntities.WIND_SHEAR_PROJECTILE.get(), caster.level());
+            projectile.setPos(caster.getEyePosition());
+            projectile.setOwner(caster);
+            projectile.shoot(lookVector.x, lookVector.y, lookVector.z, 3, 5);
+            caster.level().addFreshEntity(projectile);
+        }
+        caster.level().playSound(null, caster.getOnPos(), SoundEvents.BLAZE_SHOOT, SoundSource.PLAYERS, 1F, (float) caster.getRandom().triangle(1, 0.2));
+        cap.requestActiveSpiritualityCost(WIND_COST);
+        setNextCooldownAs(20*5);
+        return true;
+    }
+
+    private boolean doMeteor(LivingEntityBeyonderCapability cap, LivingEntity caster){
+        if(cap.getSpirituality() < ASTEROID_COST) return false;
+        if(caster.level().isClientSide()) return true;
+        List<LivingEntity> hits = AbilityFunctionHelper.getNonAllyLivingEntitiesAround(caster, 8);
+        hits.forEach(ent -> AbilityFunctionHelper.summonAsteroid(ent.getOnPos(), ent.level(), caster));
+
+        cap.requestActiveSpiritualityCost(ASTEROID_COST);
+        setNextCooldownAs(20*15);
+        return true;
     }
 
     private boolean doRain(LivingEntityBeyonderCapability cap, LivingEntity target){

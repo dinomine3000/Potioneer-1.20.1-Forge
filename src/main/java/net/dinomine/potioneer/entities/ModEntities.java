@@ -104,6 +104,12 @@ public class ModEntities {
                             .sized(1f, 1f)
                             .build(new ResourceLocation(Potioneer.MOD_ID, "water_block_effect_entity").toString()));
 
+    public static final RegistryObject<EntityType<WindShearProjectile>> WIND_SHEAR_PROJECTILE =
+            ENTITY_TYPES.register("wind_shear",
+                    () -> EntityType.Builder.of(WindShearProjectile::new, MobCategory.MISC)
+                            .sized(0.5f, 0.5f)
+                            .build(new ResourceLocation(Potioneer.MOD_ID, "wind_shear").toString()));
+
     public static void register(IEventBus eventBus){
         ENTITY_TYPES.register(eventBus);
     }

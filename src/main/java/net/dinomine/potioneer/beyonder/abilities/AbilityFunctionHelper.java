@@ -118,10 +118,19 @@ public class AbilityFunctionHelper {
         target.sendSystemMessage(message);
     }
 
-    public static void summonAsteroid(BlockPos pos, Level level){
+    public static void summonAsteroid(BlockPos pos, Level level, LivingEntity attacker){
         AsteroidEntity ent = new AsteroidEntity(ModEntities.ASTEROID.get(), level);
-        ent.setToHit(pos, level.random);
+        ent.setToHit(pos, level.getRandom());
+        if(attacker != null) ent.setAttacker(attacker);
         level.addFreshEntity(ent);
+    }
+
+    public static void summonAsteroid(BlockPos pos, Level level){
+        summonAsteroid(pos, level, null);
+    }
+
+    public static void summonAsteroid(BlockPos pos, LivingEntity attacker){
+        summonAsteroid(pos, attacker.level(), attacker);
     }
 
     public static BlockPos getRandomNearbyBlockPos(BlockPos center, int horizontalRadius, int verticalRadius, RandomSource random) {

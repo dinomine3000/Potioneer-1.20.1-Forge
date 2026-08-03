@@ -14,6 +14,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.MoverType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
@@ -25,6 +26,9 @@ import software.bernie.geckolib.core.animation.RawAnimation;
 import software.bernie.geckolib.core.object.PlayState;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
+import javax.annotation.Nullable;
+import java.util.UUID;
+
 public class AsteroidEntity extends Entity implements GeoEntity {
     private AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
     public static final EntityDataAccessor<Direction> DIRECTION = SynchedEntityData.defineId(AsteroidEntity.class, EntityDataSerializers.DIRECTION);
@@ -32,6 +36,11 @@ public class AsteroidEntity extends Entity implements GeoEntity {
     private static final Vec3 IMPACT_VECTOR = new Vec3(1, -3, 0);
     private static final int SUMMON_HEIGHT = 200;
     private static final float SPEED = 1.2f;
+
+    @Nullable
+    private LivingEntity attacker;
+    @Nullable
+    private UUID attackerUUID;
 
     public AsteroidEntity(EntityType<AsteroidEntity> entityEntityType, Level level) {
         super(entityEntityType, level);
@@ -76,10 +85,21 @@ public class AsteroidEntity extends Entity implements GeoEntity {
     public void tick() {
         super.tick();
 
-        if(onGround()){
-            if(!level().isClientSide())
-                level().explode(this, PotioneerDamage.asteroid((ServerLevel) level()), null, position(), 5, true,
-                        PotioneerCommonConfig.DESTRUCTION_LEVEL_ENUM_VALUE.get() != PotioneerCommonConfig.DestructionLevel.NEVER ? Level.ExplosionInteraction.BLOCK : Level.ExplosionInteraction.NONE);
+        if (onGround()) {
+            if (!level().isClientSide()) {
+                // If your PotioneerDamage.asteroid method accepts the attacker entity, pass getAttacker() here instead of (ServerLevel) level()
+                level().explode(
+                        this,
+                        PotioneerDamage.asteroid((ServerLevel) level(), getAttacker()),
+                        null,
+                        position(),
+                        5,
+                        true,
+                        PotioneerCommonConfig.DESTRUCTION_LEVEL_ENUM_VALUE.get() != PotioneerCommonConfig.DestructionLevel.NEVER
+                                ? Level.ExplosionInteraction.BLOCK
+                                : Level.ExplosionInteraction.NONE
+                );
+            }
             kill();
         } else {
             Vec3 motion = rotateImpactVector(entityData.get(DIRECTION)).scale(SPEED);
@@ -88,8 +108,6 @@ public class AsteroidEntity extends Entity implements GeoEntity {
         }
 
         level().addParticle(ParticleTypes.EXPLOSION, true, xOld + random.nextFloat(), yOld, zOld + random.nextFloat(), 0, 0.5, 0);
-//        level().addParticle(ParticleTypes.EXPLOSION, true, xOld + random.nextFloat(), yOld, zOld + random.nextFloat(), 0, 0.5, 0);
-
     }
 
     @Override
@@ -105,11 +123,33 @@ public class AsteroidEntity extends Entity implements GeoEntity {
     @Override
     protected void readAdditionalSaveData(CompoundTag compoundTag) {
         entityData.set(DIRECTION, Direction.from3DDataValue(compoundTag.getInt("data_val_dir")));
+        if (compoundTag.hasUUID("Attacker")) {
+            this.attackerUUID = compoundTag.getUUID("Attacker");
+        }
     }
 
     @Override
     protected void addAdditionalSaveData(CompoundTag compoundTag) {
         Direction dir = entityData.get(DIRECTION);
         compoundTag.putInt("data_val_dir", dir.get3DDataValue());
+        if (this.attackerUUID != null) {
+            compoundTag.putUUID("Attacker", this.attackerUUID);
+        }
+    }
+
+    public void setAttacker(@Nullable LivingEntity attacker) {
+        this.attacker = attacker;
+        this.attackerUUID = attacker != null ? attacker.getUUID() : null;
+    }
+
+    @Nullable
+    public LivingEntity getAttacker() {
+        if (this.attacker == null && this.attackerUUID != null && this.level() instanceof ServerLevel serverLevel) {
+            Entity entity = serverLevel.getEntity(this.attackerUUID);
+            if (entity instanceof LivingEntity living) {
+                this.attacker = living;
+            }
+        }
+        return this.attacker;
     }
 }

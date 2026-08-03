@@ -29,6 +29,7 @@ public class MistBlinkingAnchorsAbility extends AbilityWithOptions {
         if(anchorTag.isEmpty()) return false;
         if(target.level().isClientSide()) return true;
         BlockPos anchorPos = new BlockPos(anchorTag.getInt("x"), anchorTag.getInt("y"), anchorTag.getInt("z"));
+        if(!AreaOfJurisdictionAbility.isPosInAOJ(anchorPos, target)) return false;
         MistBlinkingAbility.doMistBlinkingTo(target, cap, (ServerLevel) target.level(), cost(), anchorPos.above(), sequenceLevel);
         return true;
     }

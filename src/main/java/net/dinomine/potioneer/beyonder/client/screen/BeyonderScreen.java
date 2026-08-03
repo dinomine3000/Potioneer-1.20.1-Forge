@@ -230,8 +230,8 @@ public class BeyonderScreen extends Screen {
         pGuiGraphics.drawWordWrap(this.font, Component.translatable("beyonder.potioneer.stat_dmg", ClientStatsData.getStat(BeyonderStats.StatType.DAMAGE)), leftPos + 63, topPos + 80, 100, this.color);
         pGuiGraphics.drawWordWrap(this.font, Component.translatable("beyonder.potioneer.stat_resistance", ClientStatsData.getStat(BeyonderStats.StatType.RESISTANCE)), leftPos + 63, topPos + 93, 100, this.color);
         pGuiGraphics.drawWordWrap(this.font, Component.translatable("beyonder.potioneer.stat_stamina", ClientStatsData.getStat(BeyonderStats.StatType.STAMINA)), leftPos + 63, topPos + 106, 100, this.color);
-        pGuiGraphics.drawWordWrap(this.font, Component.translatable("beyonder.potioneer.stat_max_sanity", ClientStatsData.getMaxSanity()), leftPos + 63, topPos + 119, 100, this.color);
         pGuiGraphics.drawWordWrap(this.font, Component.translatable("beyonder.potioneer.stat_regeneration", ClientStatsData.getStat(BeyonderStats.StatType.REGENERATION)), leftPos + 63, topPos + 132, 100, this.color);
+        pGuiGraphics.drawWordWrap(this.font, Component.translatable("beyonder.potioneer.stat_max_sanity", ClientStatsData.getMaxSanity()), leftPos + 63, topPos + 119, 100, this.color);
 
         if(pMouseX > leftPos + 60 && pMouseX < leftPos + 169){
             if(pMouseY > topPos + 90 && pMouseY < topPos + 102)
