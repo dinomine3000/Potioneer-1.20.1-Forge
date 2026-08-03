@@ -8,6 +8,7 @@ import net.minecraft.network.chat.MutableComponent;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.LinkedHashSet;
+import java.util.UUID;
 
 public class AbilityInfo {
     private final int pathwayId;
@@ -21,6 +22,7 @@ public class AbilityInfo {
     private CompoundTag abilityData = new CompoundTag();
     private boolean isDownside = false;
     private int sequenceLevel;
+    private UUID instanceId;
 
     public AbilityInfo(int pathwayId, int cooldown, int maxCooldown, boolean enabled, String descId, LinkedHashSet<String> allDescIds, String innerId, int sequenceLevel) {
         this.pathwayId = pathwayId;
@@ -51,6 +53,12 @@ public class AbilityInfo {
         return this;
     }
 
+    public AbilityInfo withInstanceId(UUID instanceId){this.instanceId = instanceId;return this;}
+
+    public UUID getInstanceId() {
+        return instanceId;
+    }
+
     public AbilityKey getKey(){
         return this.key;
     }
@@ -77,6 +85,7 @@ public class AbilityInfo {
         buffer.writeNbt(abilityData);
         buffer.writeBoolean(isDownside);
         buffer.writeInt(sequenceLevel);
+        buffer.writeUUID(instanceId);
     }
 
     public static AbilityInfo decode(FriendlyByteBuf buffer){
@@ -97,7 +106,8 @@ public class AbilityInfo {
         CompoundTag tag = buffer.readAnySizeNbt();
         boolean downside = buffer.readBoolean();
         int sequenceLevel = buffer.readInt();
-        return new AbilityInfo(pathwayId, cooldown, maxCd, enabled, descId, allDescIds, innerId, sequenceLevel).withKey(key).withData(tag).markDownside(downside);
+        UUID instanceId = buffer.readUUID();
+        return new AbilityInfo(pathwayId, cooldown, maxCd, enabled, descId, allDescIds, innerId, sequenceLevel).withKey(key).withData(tag).withInstanceId(instanceId).markDownside(downside);
     }
     public String innerId(){
         return innerAbilityId;
@@ -110,11 +120,11 @@ public class AbilityInfo {
     public LinkedHashSet<String> allDescIds(){return allDescIds;}
 
     public Component getNameComponent(){
-        return Component.translatableWithFallback("ability.potioneer_name." + descId(), StringUtils.capitalize(descId.replace("_", " ")));
+        return Ability.getNameComponent(descId);
     }
 
     public MutableComponent getMutableNameComponent(){
-        return Component.translatableWithFallback("ability.potioneer_name." + descId(), StringUtils.capitalize(descId.replace("_", " ")));
+        return (MutableComponent) Ability.getNameComponent(descId);
     }
 
     public int maxCooldown() {
@@ -155,4 +165,5 @@ public class AbilityInfo {
     public CompoundTag getData() {
         return abilityData;
     }
+
 }

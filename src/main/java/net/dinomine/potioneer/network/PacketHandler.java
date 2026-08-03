@@ -6,9 +6,7 @@ import net.dinomine.potioneer.network.messages.AllySystem.AllyChangeMessageC2S;
 import net.dinomine.potioneer.network.messages.AllySystem.AllyGroupSyncMessage;
 import net.dinomine.potioneer.network.messages.*;
 import net.dinomine.potioneer.network.messages.abilityRelevant.*;
-import net.dinomine.potioneer.network.messages.abilityRelevant.abilitySpecific.AppraisalDataMessage;
-import net.dinomine.potioneer.network.messages.abilityRelevant.abilitySpecific.AuraEffectMessage;
-import net.dinomine.potioneer.network.messages.abilityRelevant.abilitySpecific.SourceRecipientUpdateMessage;
+import net.dinomine.potioneer.network.messages.abilityRelevant.abilitySpecific.*;
 import net.dinomine.potioneer.network.messages.effects.*;
 import net.dinomine.potioneer.network.messages.advancement.AdvancementFailMessageCTS;
 import net.dinomine.potioneer.network.messages.advancement.BeginAdvancementMessage;
@@ -68,6 +66,8 @@ public class PacketHandler {
         INSTANCE.registerMessage(i++, SequenceSTCSyncRequest.class, SequenceSTCSyncRequest::encode, SequenceSTCSyncRequest::decode, SequenceSTCSyncRequest::handle);
         INSTANCE.registerMessage(i++, PhotonFxMessage.class, PhotonFxMessage::encode, PhotonFxMessage::decode, PhotonFxMessage::handle);
         INSTANCE.registerMessage(i++, EntityEffectVisualMessage.class, EntityEffectVisualMessage::encode, EntityEffectVisualMessage::decode, EntityEffectVisualMessage::handle);
+        INSTANCE.registerMessage(i++, OpenContractScreenMessage.class, OpenContractScreenMessage::encode, OpenContractScreenMessage::decode, OpenContractScreenMessage::handle);
+        INSTANCE.registerMessage(i++, SignContractMessage.class, SignContractMessage::encode, SignContractMessage::decode, SignContractMessage::handle);
     }
     public static <T> void sendToPlayer(T message, ServerPlayer player) {
         if (player.connection == null) return;

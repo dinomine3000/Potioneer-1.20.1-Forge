@@ -1,41 +1,53 @@
 package net.dinomine.potioneer.beyonder.effects.tyrant;
 
 import net.dinomine.potioneer.beyonder.abilities.Ability;
-import net.dinomine.potioneer.beyonder.abilities.AbilityKey;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffect;
 import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
+import net.dinomine.potioneer.beyonder.player.PlayerAbilitiesManager;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class WeakeningEffect extends BeyonderEffect {
     private int weakeningsLeft = 0;
     private boolean weakenAbilities = false;
-    private final Set<AbilityKey> affectedInstances = new HashSet<>();
-    public Set<AbilityKey> getAffectedInstances(){return affectedInstances;}
+    private final Set<UUID> affectedInstances = new HashSet<>();
+    private static final UUID uuid = UUID.fromString("ac1fe831-7d16-4123-9419-12ff970dbe3f");
+
+    public Set<UUID> getAffectedInstances(){return affectedInstances;}
 
     @Override
     public void onAcquire(LivingEntityBeyonderCapability cap, LivingEntity target, boolean fromLoading) {
-        if(!fromLoading) return;
-        for(AbilityKey key: affectedInstances){
-            Ability abl = cap.getAbilitiesManager().getAbility(key);
-            abl.upgradeToLevelSilently(abl.getSequenceLevel() + 1, cap, target);
+        applyExistingWeakening(cap, target);
+    }
+
+    @Override
+    public void onUpdateReceivedOnClient(LivingEntityBeyonderCapability cap, LivingEntity target) {
+        applyExistingWeakening(cap, target);
+    }
+
+    private void applyExistingWeakening(LivingEntityBeyonderCapability cap, LivingEntity target){
+        for(UUID instanceId: new ArrayList<>(affectedInstances)){
+            Ability abl = getAbilityInstance(cap.getAbilitiesManager(), instanceId);
+            if(abl == null) {
+                affectedInstances.remove(instanceId);
+                continue;
+            }
+            abl.applyTemporaryModifier(uuid, 1, cap, target);
         }
     }
 
-    public int canWeaken(AbilityKey ablKey, LivingEntity target){
-        if(weakeningsLeft < 1) return -1;
-        if(affectedInstances.contains(ablKey)) return -1;
-        affectedInstances.add(ablKey);
+    public void tryWeaken(Ability abl, LivingEntityBeyonderCapability cap, LivingEntity target){
+        if(weakeningsLeft < 1) return;
+        if(affectedInstances.contains(abl.getInstanceId())) return;
+        affectedInstances.add(abl.getInstanceId());
         weakeningsLeft--;
+        abl.applyTemporaryModifier(uuid, 1, cap, target);
         if(target instanceof ServerPlayer player) sendDataToClient(player);
-        return sequenceLevel;
     }
 
     public void setWeakeningsLeft(int newMax){this.weakeningsLeft = newMax;weakenAbilities =true;}
@@ -45,18 +57,26 @@ public class WeakeningEffect extends BeyonderEffect {
         if(target.level().isClientSide()) return;
         if(weakenAbilities) return;
         cap.getEffectsManager().statsHolder.addDamage(-1 - Math.max(0, 7 - sequenceLevel));
-        //cap.getEffectsManager().statsHolder.addDefense(-2 - 2*Math.max(0, 7 - sequenceLevel));
         cap.getEffectsManager().statsHolder.addHealth(-2 - 4*Math.max(0, 7 - sequenceLevel));
+        //cap.getEffectsManager().statsHolder.addDefense(-2 - 2*Math.max(0, 7 - sequenceLevel));
         cap.getEffectsManager().statsHolder.addResistance(-4 - 2*Math.max(0, 7 - sequenceLevel));
     }
 
     @Override
     public void stopEffects(LivingEntityBeyonderCapability cap, LivingEntity target) {
         if(!weakenAbilities) return;
-        for(AbilityKey key: affectedInstances){
-            Ability abl = cap.getAbilitiesManager().getAbility(key);
-            abl.upgradeToLevelSilently(abl.getSequenceLevel() - 1, cap, target);
+        for(UUID instanceId: new ArrayList<>(affectedInstances)){
+            Ability abl = getAbilityInstance(cap.getAbilitiesManager(), instanceId);
+            if(abl == null) {
+                affectedInstances.remove(instanceId);
+                continue;
+            }
+            abl.removeTemporaryModifier(uuid, cap, target);
         }
+    }
+
+    public static Ability getAbilityInstance(PlayerAbilitiesManager ablManager, UUID instanceId){
+        return ablManager.getAbilityInstance(instanceId);
     }
 
     @Override
@@ -66,9 +86,9 @@ public class WeakeningEffect extends BeyonderEffect {
         nbt.putBoolean("weakenAbilities", this.weakenAbilities);
 
         ListTag affectedList = new ListTag();
-        for (AbilityKey key : this.affectedInstances) {
+        for (UUID instanceId : this.affectedInstances) {
             CompoundTag keyTag = new CompoundTag();
-            keyTag.putString("key", key.toString());
+            keyTag.putUUID("instanceId", instanceId);
             affectedList.add(keyTag);
         }
         nbt.put("affectedInstances", affectedList);
@@ -88,18 +108,18 @@ public class WeakeningEffect extends BeyonderEffect {
         if (nbt.contains("affectedInstances", Tag.TAG_LIST)) {
             ListTag affectedList = nbt.getList("affectedInstances", Tag.TAG_COMPOUND);
             for (int i = 0; i < affectedList.size(); i++) {
-                CompoundTag keyTag = affectedList.getCompound(i);
-                AbilityKey key = AbilityKey.fromString(keyTag.getString("key"));
-                this.affectedInstances.add(key);
+                CompoundTag idTag = affectedList.getCompound(i);
+                UUID instanceId = idTag.getUUID("instanceId");
+                this.affectedInstances.add(instanceId);
             }
         }
     }
 
-    public void abilityRemoved(AbilityKey ablKey) {
-        affectedInstances.remove(ablKey);
+    public void abilityRemoved(UUID ablId) {
+        affectedInstances.remove(ablId);
     }
 
-    public void artifactRemoved(List<AbilityKey> keys) {
-        for(AbilityKey key: keys) abilityRemoved(key);
+    public void artifactRemoved(List<Ability> abilities) {
+        for(Ability abl: abilities) abilityRemoved(abl.getInstanceId());
     }
 }

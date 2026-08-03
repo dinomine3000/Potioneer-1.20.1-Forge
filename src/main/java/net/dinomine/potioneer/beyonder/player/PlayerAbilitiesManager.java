@@ -4,7 +4,6 @@ import net.dinomine.potioneer.Potioneer;
 import net.dinomine.potioneer.beyonder.abilities.*;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
 import net.dinomine.potioneer.beyonder.pages.Page;
-import net.dinomine.potioneer.event.AbilityCastEvent;
 import net.dinomine.potioneer.event.AbilityPossessionEvent;
 import net.dinomine.potioneer.event.ArtifactPossessionEvent;
 import net.dinomine.potioneer.network.PacketHandler;
@@ -16,6 +15,7 @@ import net.dinomine.potioneer.util.misc.MysticalItemHelper;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -62,6 +62,25 @@ public class PlayerAbilitiesManager {
         if(key.isArtifactKey()) return artifacts.get(key.getArtifactId()).getAbility(key);
         return abilities.get(key);
     }
+
+    public Ability getAbilityInstance(UUID instanceId){
+        for(ArtifactHolder artifact: artifacts.values()){
+            for(Ability abl: artifact.getAbilities()){
+                if(abl.is(instanceId)) return abl;
+            }
+        }
+        for(Ability abl: abilities.values()){
+            if(abl.is(instanceId)) return abl;
+        }
+        return null;
+    }
+
+    /*public Ability getAbility(String abilityId, String abilityGroup){
+        for(Ability abl: abilities.values()){
+            if(abl.is(abilityId) && abl.getType().equals(abilityGroup)) return abl;
+        }
+        return null;
+    }*/
 
     public List<Page> getPagesFromAbilities(){
         List<Page> result = new ArrayList<>();
@@ -406,7 +425,8 @@ public class PlayerAbilitiesManager {
                 System.out.println("Warning: Read an ability with a null key: " + abl.descId());
                 continue;
             }
-            Ability ability = Abilities.getAbilityInstanceByKey(key);
+            Ability ability = Abilities.getAbilityInstanceByKey(key, abl.getInstanceId());
+            ability.setDataSilent(abl.getData());
             if(!addAbility(key, ability, cap, target, runOnAcquire, false)){
                 System.out.println("Warning: Tried to add an ability that already exists on client: " + abl.getKey());
             }
@@ -556,7 +576,12 @@ public class PlayerAbilitiesManager {
     }
 
     public List<Ability> getAbilities() {
-        return new ArrayList<>(abilities.values());
+        List<Ability> res = new ArrayList<>(abilities.values());
+        for(ArtifactHolder art: artifacts.values()) res.addAll(art.getAbilities());
+        return res;
+    }
+    public List<Ability> getAbilities(String abilityId) {
+        return getAbilities().stream().filter(abl -> abl.is(abilityId)).toList();
     }
 
     public void updateArtifact(@Nullable UUID artifactId, Player player, ItemStack artifactStack) {
@@ -599,14 +624,30 @@ public class PlayerAbilitiesManager {
         abilities.put(key, ability);
         MinecraftForge.EVENT_BUS.post(new AbilityPossessionEvent.Gained(ability, key, target));
         if (runOnAcquire) ability.onAcquire(cap, target);
-        if(sync && target instanceof Player player) updateClientAbilityInfo(player, List.of(ability.getAbilityInfo()), AbilitySyncMessage.ADD);
+        if(sync && target instanceof ServerPlayer player) updateClientAbilityInfo(player, List.of(ability.getAbilityInfo()), AbilitySyncMessage.ADD);
         return true;
+    }
+
+    public boolean removeFirstAbilityLike(String abilityId, String abilityGroup, LivingEntityBeyonderCapability cap, LivingEntity target, boolean sync){
+        if(abilityGroup.equals(AbilityList.INTRINSIC.name())) return false;
+        Optional<Ability> optAbl = findAbility(abilityId, abilityGroup);
+        if(optAbl.isEmpty()) return false;
+        Ability abl = optAbl.get();
+        MinecraftForge.EVENT_BUS.post(new AbilityPossessionEvent.Lost(abl, abl.getAbilityKey(), target));
+        abl.deactivate(cap, target);
+        abilities.remove(abl.getAbilityKey());
+        if(sync && target instanceof ServerPlayer player) updateClientAbilityInfo(player, List.of(abl.getAbilityInfo()), AbilitySyncMessage.REMOVE);
+        return true;
+    }
+
+    private Optional<Ability> findAbility(String abilityId, String abilityGroup){
+        return getAbilities().stream().filter(abl -> abl.is(abilityId) && abl.getType().equalsIgnoreCase(abilityGroup)).findFirst();
     }
 
     public boolean removeAbility(AbilityKey key, LivingEntityBeyonderCapability cap, LivingEntity target, boolean sync){
         if(key.getGroup().equals(AbilityList.INTRINSIC.name())) return false;
-        if(!abilities.containsKey(key)) return false;
         Ability abl = abilities.get(key);
+        if(!abilities.containsKey(key)) return false;
         MinecraftForge.EVENT_BUS.post(new AbilityPossessionEvent.Lost(abl, key, target));
         abl.deactivate(cap, target);
         abilities.remove(key);

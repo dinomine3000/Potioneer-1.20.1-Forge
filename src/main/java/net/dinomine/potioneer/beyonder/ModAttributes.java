@@ -19,6 +19,8 @@ public class ModAttributes {
             () -> new RangedAttribute("attribute.potioneer.resistance", 0, 0.0D, 1000.0D).setSyncable(true));
     public static final RegistryObject<Attribute> STAMINA = ATTRIBUTES.register("stamina",
             () -> new RangedAttribute("attribute.potioneer.stamina", 1, 1.0D, 10D).setSyncable(true));
+    public static final RegistryObject<Attribute> REGENERATION = ATTRIBUTES.register("regeneration",
+            () -> new RangedAttribute("attribute.potioneer.regeneration", 1, 0.0D, 10D).setSyncable(true));
 
     public static void register(IEventBus eventBus) {
         ATTRIBUTES.register(eventBus);
@@ -32,6 +34,11 @@ public class ModAttributes {
     public static double getStamina(LivingEntity entity) {
         var attributeInstance = entity.getAttribute(STAMINA.get());
         return attributeInstance != null ? attributeInstance.getValue() : 5.0D;
+    }
+
+    public static double getRegeneration(LivingEntity entity) {
+        var attributeInstance = entity.getAttribute(REGENERATION.get());
+        return attributeInstance != null ? attributeInstance.getValue() : 1.0D;
     }
 
     public static double getAttribute(LivingEntity entity, Attribute attribute) {

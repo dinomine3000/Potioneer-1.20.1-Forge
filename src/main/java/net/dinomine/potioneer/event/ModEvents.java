@@ -33,6 +33,7 @@ public class ModEvents {
         new SpiritDebugCommand(event.getDispatcher());
         new PageManageCommand(event.getDispatcher());
         new LuckCommand(event.getDispatcher());
+        new BeyonderAbilityCommand(event.getDispatcher());
 
         ConfigCommand.register(event.getDispatcher());
     }

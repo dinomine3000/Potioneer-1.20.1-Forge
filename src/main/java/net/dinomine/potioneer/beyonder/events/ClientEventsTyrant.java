@@ -37,6 +37,7 @@ import net.minecraftforge.fml.common.Mod;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Mod.EventBusSubscriber(modid = Potioneer.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
 public class ClientEventsTyrant {
@@ -74,22 +75,22 @@ public class ClientEventsTyrant {
         WeakeningEffect weakening = (WeakeningEffect) cap.getEffectsManager().getEffect(BeyonderEffects.TYRANT_WEAKENING.getEffectId());
         AmplificationEffect amplification = (AmplificationEffect) cap.getEffectsManager().getEffect(BeyonderEffects.TYRANT_AMPLIFICATION.getEffectId());
 
-        List<AbilityKey> weakenedAbls = new ArrayList<>();
-        List<AbilityKey> amplifiedAbls = new ArrayList<>();
+        List<UUID> weakenedAbls = new ArrayList<>();
+        List<UUID> amplifiedAbls = new ArrayList<>();
         if(weakening != null) weakenedAbls = new ArrayList<>(weakening.getAffectedInstances());
         if(amplification != null) amplifiedAbls = new ArrayList<>(amplification.getAffectedInstances());
         int idx = 0;
 
         float scale = (float) (PotioneerClientConfig.HOTBAR_SCALE.get()*1f);
 
-        for(AbilityKey key: weakenedAbls){
-            Ability abl = cap.getAbilitiesManager().getAbility(key);
+        for(UUID instanceId: weakenedAbls){
+            Ability abl = cap.getAbilitiesManager().getAbilityInstance(instanceId);
             AbilitiesHotbarHUD.drawAbility(guiGraphics, abl.getAbilityInfo(), (int)((idx++)*(AbilitiesHotbarHUD.CASE_WIDTH*scale)) + 5 + AbilitiesHotbarHUD.CASE_WIDTH/2, 10, scale);
             //guiGraphics.drawString(Minecraft.getInstance().font, abl.getAbilityInfo().descId(), 0, (int) (Minecraft.getInstance().font.lineHeight*1.5*(idx++)), 0, false);
         }
 
-        for(AbilityKey key: amplifiedAbls){
-            Ability abl = cap.getAbilitiesManager().getAbility(key);
+        for(UUID id: amplifiedAbls){
+            Ability abl = cap.getAbilitiesManager().getAbilityInstance(id);
             AbilitiesHotbarHUD.drawAbility(guiGraphics, abl.getAbilityInfo(), (int)((idx++)*(AbilitiesHotbarHUD.CASE_WIDTH*scale)) + 5 + AbilitiesHotbarHUD.CASE_WIDTH/2, (int) (20 + AbilitiesHotbarHUD.CASE_HEIGHT*scale), scale);
             //guiGraphics.drawString(Minecraft.getInstance().font, abl.getAbilityInfo().descId(), 0, 10 + (int) (Minecraft.getInstance().font.lineHeight*1.5*(idx++)), 0, false);
         }

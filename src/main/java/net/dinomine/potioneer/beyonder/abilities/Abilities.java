@@ -14,6 +14,7 @@ import net.minecraft.world.effect.MobEffects;
 
 import java.util.HashMap;
 import java.util.LinkedHashSet;
+import java.util.UUID;
 import java.util.function.Function;
 
 public class Abilities {
@@ -228,6 +229,12 @@ public class Abilities {
     public static final AbilityFactory EXILE = registerAbility("exile",
             ExileAbility::new, 0, 1, 100);
 
+    public static final AbilityFactory CONTRACT = registerAbility("contract",
+            ContractAbility::new, 0, 1, 0);
+
+    public static final AbilityFactory CONTRACT_VIEW = registerAbility("contract_view",
+            ContractViewAbility::new, 0, 1, 0);
+
 //    public static final AbilityFactory TYRANT_ELECTRIFICATION = registerAbility("electrification",
 //            (Integer sequenceLevel) -> (PassiveAbility.createAbility(sequenceLevel, BeyonderEffects.TYRANT_ELECTRIFICATION,
 //                    ignored -> "electrification"))
@@ -416,12 +423,16 @@ public class Abilities {
         return getAbilityFactory(key.getAbilityId());
     }
 
-    public static Ability getAbilityInstance(String abl_id, int sequenceLevel){
+    public static Ability createAbilityInstance(String abl_id, int sequenceLevel){
         return ABILITIES.get(abl_id).create(sequenceLevel);
     }
 
-    public static Ability getAbilityInstanceByKey(AbilityKey key){
-        return getAbilityInstance(key.getAbilityId(), key.getSequenceLevel());
+    public static Ability createAbilityInstance(AbilityKey key){
+        return createAbilityInstance(key.getAbilityId(), key.getSequenceLevel());
+    }
+
+    public static Ability getAbilityInstanceByKey(AbilityKey key, UUID instanceId){
+        return createAbilityInstance(key.getAbilityId(), key.getSequenceLevel()).withInstanceId(instanceId);
     }
 
     public static AbilityInfo getInfo(String abilityId, int cooldown, int maxCd, boolean enabled, String descId, LinkedHashSet<String> allDescIds, AbilityKey key, int sequenceLevel){

@@ -7,14 +7,13 @@ import net.dinomine.potioneer.beyonder.player.PlayerAbilitiesManager;
 import net.dinomine.potioneer.event.AbilityCastEvent;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.common.MinecraftForge;
+import org.apache.commons.lang3.StringUtils;
 
-import java.util.ArrayList;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.function.Function;
 
 public abstract class Ability {
@@ -34,7 +33,10 @@ public abstract class Ability {
     protected boolean isPassive = false;
     private int temporaryCooldown = -1;
     protected int defaultMaxCooldown = 20;
+    private final Map<UUID, Integer> activeLevelModifiers = new HashMap<>();
+    private UUID instanceId = UUID.randomUUID();
     public boolean isPassive(){return isPassive;}
+    public UUID getInstanceId(){return instanceId;}
 
     public void receiveUpdateOnClient(AbilityInfo info, LivingEntityBeyonderCapability cap, LivingEntity target){
         if(!target.level().isClientSide()) return;
@@ -68,12 +70,14 @@ public abstract class Ability {
             return Abilities.getInfo(abilityId, cooldown, maxCooldown, state,
                     getMainDescId(sequenceLevel), getAllDescId(sequenceLevel),
                     new AbilityKey(abilityId, sequenceLevel), sequenceLevel)
-                    .withData(abilityData);
+                    .withData(abilityData)
+                    .withInstanceId(instanceId);
         }
         return Abilities.getInfo(abilityId, cooldown, maxCooldown, state,
                 getMainDescId(sequenceLevel), getAllDescId(sequenceLevel),
                 abilityKey, sequenceLevel)
-                .withData(abilityData);
+                .withData(abilityData)
+                .withInstanceId(instanceId);
     }
 
     protected abstract String getMainDescId(int sequenceLevel);
@@ -276,20 +280,67 @@ public abstract class Ability {
     }
 
     public final void upgradeToLevel(int level, LivingEntityBeyonderCapability cap, LivingEntity target) {
-        if(sequenceLevel == level) return;
-        onUpgrade(sequenceLevel, level, cap, target);
-        sequenceLevel = level;
-        if(this.abilityKey != null)
-            this.abilityKey = new AbilityKey(abilityKey.getGroup(), abilityKey.getAbilityId(), level);
+        int clampedBaseLevel = Math.max(0, Math.min(9, level));
+
+        // Update the base ability key
+        if (this.abilityKey != null) {
+            this.abilityKey = new AbilityKey(abilityKey.getGroup(), abilityKey.getAbilityId(), clampedBaseLevel);
+        }
+
+        // Recompute effective level using the new base level and existing temporary modifiers
+        recalculateEffectiveLevel(cap, target);
     }
 
-    public void upgradeToLevelSilently(int level, LivingEntityBeyonderCapability cap, LivingEntity target) {
-        if(sequenceLevel == level) return;
-        onUpgrade(sequenceLevel, level, cap, target);
-        sequenceLevel = level;
-        sendUpdateMessageToClient(target);
+    /**
+     * Applies or updates a temporary modifier from a specific source.
+     *
+     * @param sourceId         The UUID applying the modifier (e.g., an Effect, Item, or Ability).
+     *                         This prevents identical magnitude effects from stacking unless they come from different sources/types.
+     * @param levelDifference  The amount to shift level. Level 9 -> 8 is a buff of 1 level.
+     *                         Pass negative values for buffs (lower sequence number), positive for debuffs.
+     */
+    public void applyTemporaryModifier(UUID sourceId, int levelDifference, LivingEntityBeyonderCapability cap, LivingEntity target) {
+        if (levelDifference == 0) return;
+        activeLevelModifiers.put(sourceId, levelDifference);
+        recalculateEffectiveLevel(cap, target);
     }
 
+    public void removeTemporaryModifier(UUID sourceId, LivingEntityBeyonderCapability cap, LivingEntity target) {
+        if (activeLevelModifiers.remove(sourceId) != null) {
+            recalculateEffectiveLevel(cap, target);
+        }
+    }
+
+    private void recalculateEffectiveLevel(LivingEntityBeyonderCapability cap, LivingEntity target) {
+        int baseLevel = abilityKey.getSequenceLevel();
+
+        // Group active modifiers by their direction/type to prevent stacking identical magnitudes.
+        // E.g., two +1 buffs from different sources shouldn't stack, but a +2 and a +1 buff should max out at +2.
+        int maxBuff = 0;   // Buffs lower the sequence number (e.g., 9 -> 8 is -1)
+        int maxDebuff = 0; // Debuffs raise the sequence number (e.g., 8 -> 9 is +1)
+
+        for (int mod : activeLevelModifiers.values()) {
+            if (mod < 0) {
+                // Negative difference = Buff (e.g., Sequence 9 -> 8)
+                maxBuff = Math.min(maxBuff, mod); // Find strongest buff (largest negative value)
+            } else if (mod > 0) {
+                // Positive difference = Debuff (e.g., Sequence 8 -> 9)
+                maxDebuff = Math.max(maxDebuff, mod); // Find strongest debuff
+            }
+        }
+
+        // Combined net difference (e.g., -2 buff + 1 debuff = -1 net shift)
+        int netDifference = maxBuff + maxDebuff;
+        int uncappedLevel = baseLevel + netDifference;
+        int targetLevel = Math.max(0, Math.min(9, uncappedLevel));
+
+        // Apply the actual transition if level changed
+        if (this.sequenceLevel != targetLevel) {
+            onUpgrade(this.sequenceLevel, targetLevel, cap, target);
+            this.sequenceLevel = targetLevel;
+            sendUpdateMessageToClient(target);
+        }
+    }
     /**
      * runs the abilities active methods (that is, primary() or secondary()) if the ability is off cooldown.
      * if an ability wants to run while on cooldown (that is, allow the player to cast the ability primary() or secondary() while on cooldown) it should override this.
@@ -418,6 +469,7 @@ public abstract class Ability {
         tag.putBoolean("enabled", state);
         tag.putBoolean("prevState", previousState);
         tag.put("data", abilityData);
+        tag.putUUID("instanceId", instanceId);
         return tag;
     }
 
@@ -425,19 +477,21 @@ public abstract class Ability {
      * function to load relevant NBT data.
      * generally not to be overwritten, except for abilities that add abilities like Recording or Replicating.
      * To do that, overwrite loadExtraNbtInfo(), and add abilities to a buffer list in AbilityManager
-     * @param tag - the complete nbt tag for the abilities manager. Check if your own ability key is in here, and if so you can load it.
+     * @param parentTag - the complete nbt tag for the abilities manager. Check if your own ability key is in here, and if so you can load it.
      */
-    public void loadNbt(CompoundTag tag){
-        if(tag.contains(abilityKey.toString())){
-            CompoundTag tag2 = tag.getCompound(abilityKey.toString());
-            cooldown = tag2.getInt("cooldown");
-            maxCooldown = Math.max(tag2.getInt("cooldown"), 1);
-            state = tag2.getBoolean("enabled");
-            previousState = tag2.getBoolean("prevState");
-            Tag dataTag = tag2.get("data");
+    public void loadNbt(CompoundTag parentTag){
+        if(parentTag.contains(abilityKey.toString())){
+            CompoundTag abilityTag = parentTag.getCompound(abilityKey.toString());
+            cooldown = abilityTag.getInt("cooldown");
+            maxCooldown = Math.max(abilityTag.getInt("cooldown"), 1);
+            state = abilityTag.getBoolean("enabled");
+            previousState = abilityTag.getBoolean("prevState");
+            if(abilityTag.contains("instanceId"))
+                instanceId = abilityTag.getUUID("instanceId");
+            Tag dataTag = abilityTag.get("data");
             if(dataTag != null)
                 abilityData = (CompoundTag) dataTag;
-            loadExtraNbtInfo(tag2);
+            loadExtraNbtInfo(abilityTag);
         }
     }
 
@@ -487,6 +541,22 @@ public abstract class Ability {
     public boolean is(Ability abl) {
         return this.is(abl.abilityId);
     }
+    public boolean is(UUID testId) {
+        return this.instanceId.equals(testId);
+    }
+
+    public Ability withInstanceId(UUID instanceId){
+        this.instanceId = instanceId;
+        return this;
+    }
 
     public List<Page> getPages(){return List.of();}
+
+    public static Component getNameComponent(String abilityDescId){
+        return Component.translatableWithFallback("ability_name.potioneer." + abilityDescId, StringUtils.capitalize(abilityDescId.replace("_", " ")));
+    }
+    public static Component getNameComponent(AbilityKey ablKey){
+        String descId = Abilities.createAbilityInstance(ablKey).getAbilityInfo().descId();
+        return getNameComponent(descId);
+    }
 }

@@ -269,7 +269,7 @@ public abstract class ModCompoundTags {
                 if(stringKey.equals(UUID_KEY)) continue;
                 AbilityKey key = AbilityKey.fromString(stringKey);
                 if(key.isEmpty()) continue;
-                Ability ability = Abilities.getAbilityInstanceByKey(key);
+                Ability ability = Abilities.createAbilityInstance(key);
                 ability.setArtifactAbilityKey(artifactId);
                 ability.loadNbt(artifactTag);
                 abilities.add(ability);

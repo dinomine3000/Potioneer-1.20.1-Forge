@@ -4,7 +4,6 @@ import net.dinomine.potioneer.beyonder.player.PlayerAbilitiesManager;
 import net.dinomine.potioneer.util.BufferUtils;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
-import org.apache.commons.lang3.StringUtils;
 
 import java.util.Objects;
 import java.util.UUID;
@@ -115,7 +114,7 @@ public class AbilityKey {
     }
 
     public Component getNameComponent(){
-        return Abilities.getAbilityInstance(abilityId, sequenceLevel).getAbilityInfo().getNameComponent();
+        return Abilities.createAbilityInstance(abilityId, sequenceLevel).getAbilityInfo().getNameComponent();
     }
     
     public int getSequenceLevel(){

@@ -303,7 +303,7 @@ public class BeyonderAbilitiesScreen extends Screen {
         if(main){
 
 
-            Component name = Component.translatableWithFallback("ability.potioneer_name." + getAbilityDescriptionId(data, abilityDescOffset), StringUtils.capitalize(data.descId().replace("_", " ")));
+            Component name = Ability.getNameComponent(getAbilityDescriptionId(data, abilityDescOffset));
             pGuiGraphics.drawString(this.font, name, leftPos + 24 + imageWidth/2 - this.font.width(name)/2, topPos + 9, 0, false);
         }
 

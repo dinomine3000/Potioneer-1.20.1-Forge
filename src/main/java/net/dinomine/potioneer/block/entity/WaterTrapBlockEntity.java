@@ -133,29 +133,11 @@ public class WaterTrapBlockEntity extends BlockEntity implements GeoBlockEntity 
                 applyEffectsToEntity(sLevel, getBlockPos(), ent);
             }
             if(id != null){
-                Entity caster = sLevel.getEntity(id);
-                if(caster != null){
+                Entity ent = sLevel.getEntity(id);
+                if(ent instanceof LivingEntity caster){
                     LivingEntityBeyonderCapability cap = caster.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve().get();
                     if(cap.getAbilitiesManager().hasAbilityOrBetter(Abilities.TYRANT_WATER_SPELLS.getAblId(), 7)){
-                        // Define the command you want to autofill into their chat bar
-                        String commandToSuggest = "/t command_name";
-
-                        // Create the clickable text component
-                        Component clickableText = Component.literal("[Click to prepare command]")
-                                .withStyle(style -> style
-                                        .withColor(ChatFormatting.AQUA)
-                                        .withUnderlined(true)
-                                        .withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, commandToSuggest))
-                                        .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal("Click to insert command into chat")))
-                                );
-
-                        // Combine your translatable message with the clickable component
-                        Component message = Component.translatable("message.potioneer.water_trap_activated")
-                                .append(" ")
-                                .append(clickableText);
-
-                        caster.sendSystemMessage(message);
-                        caster.sendSystemMessage(Component.translatable("message.potioneer.water_trap_activated"));
+                        AbilityFunctionHelper.sendCommandMessage(caster, "/beyonderability teleport", Component.literal("WIP"));
                     }
                 }
             }

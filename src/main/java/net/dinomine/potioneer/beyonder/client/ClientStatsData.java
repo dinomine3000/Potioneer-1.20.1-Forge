@@ -105,6 +105,7 @@ public class ClientStatsData {
             case HEALTH -> ModAttributes.getAttribute(Minecraft.getInstance().player, Attributes.MAX_HEALTH);
             case DAMAGE -> dmg;
             case RESISTANCE -> Math.round(ModAttributes.getResistance(Minecraft.getInstance().player)*100f)/100f;
+            case REGENERATION -> Math.round(ModAttributes.getRegeneration(Minecraft.getInstance().player)*100f)/100f;
         };
     }
 

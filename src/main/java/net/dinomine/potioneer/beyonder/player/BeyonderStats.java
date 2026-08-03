@@ -28,7 +28,8 @@ public class BeyonderStats {
         HEALTH(0, "60377805-43e1-4c53-966b-1f279744716b", "potioneer health mod", () -> Attributes.MAX_HEALTH),
         DAMAGE(1, "f73a5318-f269-4a29-900a-51d10838c33c", "potioneer attack mod", () -> Attributes.ATTACK_DAMAGE),
         RESISTANCE(2, "5adc375c-e334-4eba-96a0-52bbc84b5b6c", "potioneer resistance mod", ModAttributes.RESISTANCE::get),
-        STAMINA(3, "d6085650-f859-4600-8af6-357d76104b8c", "potioneer stamina mod", ModAttributes.STAMINA::get);
+        STAMINA(3, "d6085650-f859-4600-8af6-357d76104b8c", "potioneer stamina mod", ModAttributes.STAMINA::get),
+        REGENERATION(4, "dbe90f95-df6e-4d52-8bc6-c5c0499a7356", "potioneer regeneration mod", ModAttributes.REGENERATION::get);
 
         private final int index;
         private final UUID modifierId;
@@ -81,6 +82,10 @@ public class BeyonderStats {
 
     public void addDamage(float dmg) {
         addStat(StatType.DAMAGE, dmg);
+    }
+
+    public void addRegeneration(float reg) {
+        addStat(StatType.REGENERATION, reg);
     }
 
     public void addHealth(float i) {

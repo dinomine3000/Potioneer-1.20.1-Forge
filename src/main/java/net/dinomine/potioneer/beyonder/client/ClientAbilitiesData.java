@@ -1,6 +1,7 @@
 package net.dinomine.potioneer.beyonder.client;
 
 import net.dinomine.potioneer.beyonder.abilities.Abilities;
+import net.dinomine.potioneer.beyonder.abilities.Ability;
 import net.dinomine.potioneer.beyonder.abilities.AbilityInfo;
 import net.dinomine.potioneer.beyonder.abilities.AbilityKey;
 import net.dinomine.potioneer.beyonder.client.HUD.AbilitiesHotbarHUD;
@@ -49,7 +50,7 @@ public class ClientAbilitiesData {
         }
         if(val && !isHotbarVisible()){
             assert Minecraft.getInstance().player != null;
-            Minecraft.getInstance().player.displayClientMessage(Component.translatable("ability.potioneer_name." + abilities.get(hotbar.get(caret)).descId()), true);
+            Minecraft.getInstance().player.displayClientMessage(Ability.getNameComponent(abilities.get(hotbar.get(caret)).descId()), true);
         }
         AbilitiesHotbarHUD.hotbarAnimation.tickInReverse(!val);
     }
@@ -323,7 +324,7 @@ public class ClientAbilitiesData {
         if(!AbilitiesHotbarHUD.scrollAnimation.isFinished()) return;
         caret = Math.floorMod(caret + diff, hotbar.size());
         if(Minecraft.getInstance().player == null) return;
-        Minecraft.getInstance().player.displayClientMessage(Component.translatable("ability.potioneer_name." + abilities.get(hotbar.get(caret)).descId()), true);
+        Minecraft.getInstance().player.displayClientMessage(Ability.getNameComponent(abilities.get(hotbar.get(caret)).descId()), true);
 
         if(diff < 0)
             AbilitiesHotbarHUD.scrollAnimation.startAnimation("scrollRight", false);

@@ -114,7 +114,7 @@ class ClientEffectSyncMessage
                 case ADD -> cap.getEffectsManager().addEffectsOnClient(msg.effects, cap, player);
                 case SET -> cap.getEffectsManager().setEffectsOnClient(msg.effects, cap, player);
                 case REMOVE -> cap.getEffectsManager().removeEffectsOnClient(msg.effects, cap, player);
-                case UPDATE -> cap.getEffectsManager().updateEffectsOnClient(msg.effects);
+                case UPDATE -> cap.getEffectsManager().updateEffectsOnClient(msg.effects, cap, player);
             }
         });
     }

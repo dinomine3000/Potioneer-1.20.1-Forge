@@ -151,8 +151,12 @@ public class PlayerEffectsManager {
         this.passives.clear();
     }
 
-    public boolean hasEffectOrBetter(BeyonderEffect effect){
-        return passives.stream().anyMatch(effect::isBetter);
+    public boolean hasEffectOrBetter(BeyonderEffect testEffect){
+        return passives.stream().anyMatch(iEffect -> iEffect.isSameOrBetter(testEffect));
+    }
+
+    public boolean hasBetterEffect(BeyonderEffect testEffect){
+        return passives.stream().anyMatch(iEffect -> iEffect.isBetter(testEffect));
     }
 
     /**
@@ -175,6 +179,23 @@ public class PlayerEffectsManager {
         } else if(hasEffect(effect.getId(), effect.getSequenceLevel())){
             BeyonderEffect oldEffect = getEffect(effect.getId(), effect.getSequenceLevel());
             oldEffect.refreshTime(cap, target, effect);
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * instantly removes the effect if it already exists. dont call it if it originates from an effect.
+     * @param effect
+     * @param cap
+     * @param target
+     * @return
+     */
+    public boolean addOrReplaceEffect(BeyonderEffect effect, LivingEntityBeyonderCapability cap, LivingEntity target) {
+        if(target.level().isClientSide()) return false;
+        if(!hasBetterEffect(effect)){
+            removeEffectImmediately(effect.getId(), cap, target);
+            addEffect(effect, cap, target, true);
             return true;
         }
         return false;
@@ -259,6 +280,16 @@ public class PlayerEffectsManager {
         });
     }
 
+    public boolean removeEffectImmediately(String effectId, LivingEntityBeyonderCapability cap, LivingEntity target){
+        return passives.removeIf(eff -> {
+            boolean flag = eff.is(effectId);
+            if(flag){
+                eff.stopEffects(cap, target);
+            }
+            return flag;
+        });
+    }
+
     public boolean removeEffect(String effect){
         boolean flag = false;
         for (BeyonderEffect passive : passives) {
@@ -309,7 +340,7 @@ public class PlayerEffectsManager {
         }
     }
 
-    public void updateEffectsOnClient(List<BeyonderEffect> effects) {
+    public void updateEffectsOnClient(List<BeyonderEffect> effects, LivingEntityBeyonderCapability cap, LivingEntity target) {
         outer:
         for(BeyonderEffect incomingEffect: effects){
             for(BeyonderEffect existingEffect: passives){
@@ -317,6 +348,7 @@ public class PlayerEffectsManager {
                     CompoundTag tag = new CompoundTag();
                     incomingEffect.toNbt(tag);
                     existingEffect.loadNBTData(tag);
+                    existingEffect.onUpdateReceivedOnClient(cap, target);
                     continue outer;
                 }
             }

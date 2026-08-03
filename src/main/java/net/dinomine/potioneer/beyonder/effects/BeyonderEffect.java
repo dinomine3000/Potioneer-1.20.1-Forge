@@ -3,13 +3,11 @@ package net.dinomine.potioneer.beyonder.effects;
 import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
 import net.dinomine.potioneer.network.PacketHandler;
 import net.dinomine.potioneer.network.messages.abilityRelevant.BeyonderEffectSyncMessage;
-import net.dinomine.potioneer.util.BufferUtils;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.level.Level;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingDamageEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
@@ -29,6 +27,8 @@ public abstract class BeyonderEffect {
     protected Priority priority = Priority.MEDIUM;
 
     public int getPriority(){return priority.value;}
+
+    public void onUpdateReceivedOnClient(LivingEntityBeyonderCapability cap, LivingEntity target) {}
 
     public enum Priority {
         VERY_HIGH(5),
@@ -173,8 +173,12 @@ public abstract class BeyonderEffect {
      * @param effect
      * @return
      */
+    public boolean isSameOrBetter(BeyonderEffect effect){
+        return this.is(effect) && this.sequenceLevel <= effect.sequenceLevel;
+    }
+
     public boolean isBetter(BeyonderEffect effect){
-        return this.is(effect) && this.sequenceLevel >= effect.sequenceLevel;
+        return this.is(effect) && this.sequenceLevel < effect.sequenceLevel;
     }
 
     public void setActive(boolean active, LivingEntityBeyonderCapability cap, LivingEntity target){

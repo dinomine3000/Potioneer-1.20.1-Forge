@@ -22,6 +22,7 @@ public class ModEventBus {
     @SubscribeEvent
     public static void onEntityAttributeModification(EntityAttributeModificationEvent event) {
         event.add(EntityType.PLAYER, ModAttributes.RESISTANCE.get());
+        event.add(EntityType.PLAYER, ModAttributes.REGENERATION.get());
         event.add(EntityType.PLAYER, ModAttributes.STAMINA.get());
     }
 

@@ -7,6 +7,10 @@ import net.dinomine.potioneer.entities.ModEntities;
 import net.dinomine.potioneer.entities.custom.AsteroidEntity;
 import net.dinomine.potioneer.savedata.AllySystemSaveData;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.ClickEvent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.HoverEvent;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
@@ -31,6 +35,22 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 public class AbilityFunctionHelper {
+
+    public static void sendCommandMessage(LivingEntity target, String commandToRun, MutableComponent messageComponent){
+        Component clickableText =
+                Component.literal("[Click to prepare command]")
+                .withStyle(style -> style
+                        .withUnderlined(true)
+                        .withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, commandToRun))
+                        .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal("Click to follow up")))
+                );
+
+        Component message = messageComponent
+                .append(" ")
+                .append(clickableText);
+
+        target.sendSystemMessage(message);
+    }
 
     public static void summonAsteroid(BlockPos pos, Level level){
         AsteroidEntity ent = new AsteroidEntity(ModEntities.ASTEROID.get(), level);

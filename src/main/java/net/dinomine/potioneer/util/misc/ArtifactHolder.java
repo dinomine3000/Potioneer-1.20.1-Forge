@@ -9,10 +9,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 public class ArtifactHolder {
     protected final HashMap<AbilityKey, Ability> abilities = new HashMap<>();
@@ -147,6 +144,10 @@ public class ArtifactHolder {
     public Ability getAbility(AbilityKey key) {
         if(!key.isArtifactKey() || !key.getArtifactId().equals(artifactId)) return null;
         return abilities.get(key);
+    }
+
+    public Collection<Ability> getAbilities() {
+        return abilities.values();
     }
 
     public void updateOnClient(ArtifactHolder artifact) {

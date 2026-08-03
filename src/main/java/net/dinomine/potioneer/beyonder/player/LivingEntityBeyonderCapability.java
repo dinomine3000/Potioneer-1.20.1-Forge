@@ -253,14 +253,16 @@ public class LivingEntityBeyonderCapability {
 
     private void applyCost(){
         if(maxSpirituality <= 0) return;
-        float amount = Math.round((1000*( - spiritualityCost/20f + (float) maxSpirituality /SECONDS_TO_MAX_SPIRITUALITY))) / 1000f;
-        if(!hasUnlimitedSpirituality()) changeSpirituality(amount);
+        float regenerationAttribute = (float) ModAttributes.getRegeneration(entity);
+        float baseRegeneration = (float) maxSpirituality /SECONDS_TO_MAX_SPIRITUALITY;
+        float deltaSpirituality = Math.round((1000*( -spiritualityCost/20f + baseRegeneration * regenerationAttribute))) / 1000f;
+        if(!hasUnlimitedSpirituality()) changeSpirituality(deltaSpirituality);
         this.spiritualityCost = 0;
 
-        if(amount < 0){
-            changeSanity(100*amount/(maxSpirituality * spiritualityToSanityScalar.apply(entity)));
+        if(deltaSpirituality < 0){
+            changeSanity(100*deltaSpirituality/(maxSpirituality * spiritualityToSanityScalar.apply(entity)));
         } else {
-            changeSanity((float) 100 /SECONDS_TO_MAX_SPIRITUALITY);
+            changeSanity((float) 100 * regenerationAttribute /SECONDS_TO_MAX_SPIRITUALITY);
         }
     }
 
