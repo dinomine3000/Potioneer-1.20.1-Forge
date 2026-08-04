@@ -97,6 +97,14 @@ public abstract class BeyonderPathway {
         map.put(BeyonderStats.StatType.STAMINA, stamina);
         return map;
     }
+    protected Map<BeyonderStats.StatType, Float> setStats(Map<BeyonderStats.StatType, Float> map, float hp, float atk, float res, float stamina, float regeneration) {
+        map.put(BeyonderStats.StatType.HEALTH, hp);
+        map.put(BeyonderStats.StatType.DAMAGE, atk);
+        map.put(BeyonderStats.StatType.RESISTANCE, res);
+        map.put(BeyonderStats.StatType.STAMINA, stamina);
+        map.put(BeyonderStats.StatType.REGENERATION, regeneration);
+        return map;
+    }
 
     /**
      * gets the stats for the specific sequence level

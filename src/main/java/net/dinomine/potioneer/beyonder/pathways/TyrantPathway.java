@@ -53,8 +53,13 @@ public class TyrantPathway extends BeyonderPathway {
 
     @Override
     public Component getRitualDescriptionForSequence(int sequenceLevel) {
-        return Component.empty();
+        if(sequenceLevel > 5) return Component.empty();
+        return switch (sequenceLevel){
+            case 5 -> Component.translatable("ritual.potioneer.source_of_misfortune");
+            default -> Component.translatable("ritual.potioneer.source_of_misfortune");
+        };
     }
+
 
     /*@Override
     public float[] getStatsFor(int sequenceLevel){

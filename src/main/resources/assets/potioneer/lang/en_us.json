@@ -363,6 +363,10 @@
   "beyonder.potioneer.sequence.none": "",
 
   "ritual.potioneer.source_of_misfortune": "Consume the potion while having the lowest amount of luck possible.",
+  "ritual.potioneer.tribunal": "Sign a contract that you find most fair.",
+  "ritual.potioneer.paladin": "Pledge your allegiance to a friendly deity",
+  "ritual.potioneer.traveler": "Traverse from the heavens to the depths in as little time as possible, and survive.",
+  "ritual.potioneer.alchemist": "Consume the potion while being under the influence of as many negative potion effects as possible.",
 
   "creativetab.potioneer_tab": "Potioneer",
   "creativetab.potioneer_ingredients_tab": "Ingredients",
