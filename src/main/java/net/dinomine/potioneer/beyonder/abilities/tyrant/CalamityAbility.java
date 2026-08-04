@@ -130,8 +130,8 @@ public class CalamityAbility extends AbilityWithOptions {
         if(cap.getSpirituality() < LEAP_COST) return false;
         if(target.isInWater()) return false;
         Vec3 look = target.getLookAngle();
-        float scalar = target.level().isRaining() || target.level().isThundering() ? 2f : 1.2f;
-        double mult = 1 + scalar*(6-getSequenceLevel());
+        float scalar = target.level().isRaining() || target.level().isThundering() ? 4f : 2f;
+        double mult = 2 + scalar*(7-getSequenceLevel());
         AbilityFunctionHelper.pushEntity(target, look.multiply(mult, mult/2, mult));
         if(!target.level().isClientSide()){
             target.level().playSound(null, target, SoundEvents.LIGHTNING_BOLT_IMPACT, SoundSource.PLAYERS, 1, 0.5f);

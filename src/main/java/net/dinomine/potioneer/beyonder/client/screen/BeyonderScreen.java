@@ -226,20 +226,24 @@ public class BeyonderScreen extends Screen {
         );
 
         //draw stats
-        pGuiGraphics.drawWordWrap(this.font, Component.translatable("beyonder.potioneer.stat_hp", ClientStatsData.getStat(BeyonderStats.StatType.HEALTH)), leftPos + 63, topPos + 67, 100, this.color);
-        pGuiGraphics.drawWordWrap(this.font, Component.translatable("beyonder.potioneer.stat_dmg", ClientStatsData.getStat(BeyonderStats.StatType.DAMAGE)), leftPos + 63, topPos + 80, 100, this.color);
-        pGuiGraphics.drawWordWrap(this.font, Component.translatable("beyonder.potioneer.stat_resistance", ClientStatsData.getStat(BeyonderStats.StatType.RESISTANCE)), leftPos + 63, topPos + 93, 100, this.color);
-        pGuiGraphics.drawWordWrap(this.font, Component.translatable("beyonder.potioneer.stat_stamina", ClientStatsData.getStat(BeyonderStats.StatType.STAMINA)), leftPos + 63, topPos + 106, 100, this.color);
-        pGuiGraphics.drawWordWrap(this.font, Component.translatable("beyonder.potioneer.stat_regeneration", ClientStatsData.getStat(BeyonderStats.StatType.REGENERATION)), leftPos + 63, topPos + 132, 100, this.color);
-        pGuiGraphics.drawWordWrap(this.font, Component.translatable("beyonder.potioneer.stat_max_sanity", ClientStatsData.getMaxSanity()), leftPos + 63, topPos + 119, 100, this.color);
+        int i = 0;
+        pGuiGraphics.drawWordWrap(this.font, Component.translatable("beyonder.potioneer.stat_hp", ClientStatsData.getStat(BeyonderStats.StatType.HEALTH)), leftPos + 63, topPos + 67 + i++*13, 100, this.color);
+        pGuiGraphics.drawWordWrap(this.font, Component.translatable("beyonder.potioneer.stat_dmg", ClientStatsData.getStat(BeyonderStats.StatType.DAMAGE)), leftPos + 63, topPos + 67 + i++*13, 100, this.color);
+        pGuiGraphics.drawWordWrap(this.font, Component.translatable("beyonder.potioneer.stat_resistance", ClientStatsData.getStat(BeyonderStats.StatType.RESISTANCE)), leftPos + 63, topPos + 67 + i++*13, 100, this.color);
+        pGuiGraphics.drawWordWrap(this.font, Component.translatable("beyonder.potioneer.stat_stamina", ClientStatsData.getStat(BeyonderStats.StatType.STAMINA)), leftPos + 63, topPos + 67 + i++*13, 100, this.color);
+        pGuiGraphics.drawWordWrap(this.font, Component.translatable("beyonder.potioneer.stat_regeneration", ClientStatsData.getStat(BeyonderStats.StatType.REGENERATION)), leftPos + 63, topPos + 67 + i++*13, 100, this.color);
+        pGuiGraphics.drawWordWrap(this.font, Component.translatable("beyonder.potioneer.stat_max_sanity", ClientStatsData.getMaxSanity()), leftPos + 63, topPos + 67 + i++*13, 100, this.color);
 
         if(pMouseX > leftPos + 60 && pMouseX < leftPos + 169){
-            if(pMouseY > topPos + 90 && pMouseY < topPos + 102)
+            if(pMouseY > topPos + 90 && pMouseY <= topPos + 102)
                 TooltipHelper.drawTooltip(pGuiGraphics, pMouseX, pMouseY, 200,
                         this.width, this.height, Component.translatable("beyonder.potioneer.stat_resistance_explanation", ClientStatsData.getStat(BeyonderStats.StatType.RESISTANCE)), 0, this.font);
-            if(pMouseY > topPos + 102 && pMouseY < topPos + 116)
+            if(pMouseY > topPos + 102 && pMouseY <= topPos + 116)
                 TooltipHelper.drawTooltip(pGuiGraphics, pMouseX, pMouseY, 200,
                         this.width, this.height, Component.translatable("beyonder.potioneer.stat_stamina_explanation", ClientStatsData.getStat(BeyonderStats.StatType.STAMINA)), 0, this.font);
+            if(pMouseY > topPos + 116 && pMouseY < topPos + 130)
+                TooltipHelper.drawTooltip(pGuiGraphics, pMouseX, pMouseY, 200,
+                        this.width, this.height, Component.translatable("beyonder.potioneer.stat_regeneration_explanation", ClientStatsData.getStat(BeyonderStats.StatType.STAMINA)), 0, this.font);
         }
     }
 

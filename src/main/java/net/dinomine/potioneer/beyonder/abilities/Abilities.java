@@ -166,7 +166,7 @@ public class Abilities {
 
     //retweaked
     public static final AbilityFactory RECORD_DAMAGE = registerAbility("damage_recording", DamageRecordingAbility::new,
-            4, 0).hasSecondaryFunction().passiveAndActive();
+            24, 0).hasSecondaryFunction().passiveAndActive();
 
     // -------------------------- TYRANT ---------------------------------------------------
 
@@ -179,8 +179,8 @@ public class Abilities {
 
     //retweaked
     public static final AbilityFactory WATER_SCALES = registerAbility("scales",
-            (Integer level) -> PassiveAbility.createAbility(level, BeyonderEffects.TYRANT_SCALES, ignored -> "scales").canFlip().withThreshold(0.1f).withCost(ignored -> 1),
-            0, 1, 10);
+            (Integer level) -> PassiveAbility.createAbility(level, BeyonderEffects.TYRANT_SCALES, lv -> lv < 7 ? "scales_2" : "scales").canFlip().withThreshold(0.1f).withCost(ignored -> 1),
+            16, 1, 10);
 
     //retweaked
     public static final AbilityFactory OCEAN_ORDER = registerAbility("ocean_order",
@@ -190,7 +190,7 @@ public class Abilities {
     //retweaked
     public static final AbilityFactory TYRANT_DIVINATION = registerAbility("tyrant_divination",
             DivinationAbility::new,
-            1, 1);
+            19, 1);
 
     //retweaked
     public static final AbilityFactory TYRANT_WATER_SPELLS = registerAbility("water_spells",
@@ -202,12 +202,12 @@ public class Abilities {
 
     //retweaked
     public static final AbilityFactory TYRANT_AURA = registerAbility("aoj_aura",
-            (Integer level) -> PassiveAbility.createAbility(level, BeyonderEffects.TYRANT_AURA_SOURCE, ignored -> "aoj_aura").canFlip().withThreshold(0.1f),
-            0, 1, 1).passiveAndActive();
+            (Integer level) -> PassiveAbility.createAbility(level, BeyonderEffects.TYRANT_AURA_SOURCE, lv -> lv < 7 ? "aoj_aura_2" : "aoj_aura").canFlip().withThreshold(0.1f),
+            21, 1, 1).passiveAndActive();
 
     //retweaked
     public static final AbilityFactory ARREST = registerAbility("arrest",
-            ArrestAbility::new, 5, 1, 20).hasSecondaryFunction(6);
+            ArrestAbility::new, 18, 1, 20).hasSecondaryFunction(6);
 
     //retweaked
     public static final AbilityFactory MIST = registerAbility("mist",
@@ -221,7 +221,7 @@ public class Abilities {
     //retweaked
     public static final AbilityFactory SENSE_OF_ORDER = registerAbility("sense_of_order",
             (Integer level) -> PassiveAbility.createAbility(level, BeyonderEffects.TYRANT_SENSE_OF_ORDER, ignored -> "sense_of_order").enabledOnAcquire().canFlip(),
-            0, 1, 0).passive();
+            17, 1, 0).passive();
 
     public static final AbilityFactory AMPLIFICATION = registerAbility("amplification",
             AmplificationAbility::new, 0, 1, 100).hasSecondaryFunction();
@@ -230,13 +230,13 @@ public class Abilities {
             ExileAbility::new, 0, 1, 100);
 
     public static final AbilityFactory CONTRACT = registerAbility("contract",
-            ContractAbility::new, 0, 1, 0).hasSecondaryFunction();
+            ContractAbility::new, 15, 1, 0).hasSecondaryFunction();
 
     public static final AbilityFactory CONTRACT_VIEW = registerAbility("contract_view",
-            ContractViewAbility::new, 0, 1, 0);
+            ContractViewAbility::new, 14, 1, 0);
 
     public static final AbilityFactory TYRANT_CALAMITY = registerAbility("tyrant_calamity",
-            CalamityAbility::new, 0, 1, 0);
+            CalamityAbility::new, 20, 1, 0);
 
     public static final AbilityFactory BERSERK_RAGE = registerAbility("berserk",
             level -> PassiveAbility.createAbility(level, BeyonderEffects.TYRANT_BERSERK, ign -> "berserk").canFlip().withDuration(-1),

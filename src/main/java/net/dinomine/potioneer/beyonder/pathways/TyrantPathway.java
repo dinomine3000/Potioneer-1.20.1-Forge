@@ -149,9 +149,11 @@ public class TyrantPathway extends BeyonderPathway {
     @Override
     public int getSequenceColorFromLevel(int seq){
         return switch (seq%10) {
-            case 9 -> 2146549;
-            case 8 -> 8023295;
-            case 7 -> 8167853;
+            case 9 -> 0x8AF6FF;
+            case 8 -> 0x82A1FF;
+            case 7 -> 0x4814FC;
+            case 6 -> 0x910DD4;
+            case 5 -> 0xA6AD05;
             default -> 0;
         };
     }

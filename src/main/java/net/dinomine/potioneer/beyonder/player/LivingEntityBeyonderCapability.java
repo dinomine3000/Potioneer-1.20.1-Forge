@@ -456,7 +456,7 @@ public class LivingEntityBeyonderCapability {
         //setPathway(source.getPathwayId(), false);
         //player.setHealth(player.getMaxHealth());
         this.luckManager.copyFrom(source.luckManager);
-        this.effectsManager.copyFrom(source.effectsManager, this, player);
+        this.effectsManager.copyFrom(source.effectsManager, this, source, player);
         this.abilitiesManager.copyFrom(source.getAbilitiesManager());
         this.conjurerContainers = new ArrayList<>(source.conjurerContainers);
         this.beyonderStats.copyFrom(source.beyonderStats);

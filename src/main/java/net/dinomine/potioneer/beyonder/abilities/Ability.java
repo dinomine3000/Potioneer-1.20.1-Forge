@@ -396,7 +396,8 @@ public abstract class Ability {
     public void onUpgrade(int oldLevel, int newLevel, LivingEntityBeyonderCapability cap, LivingEntity target){}
 
     /**
-     * function that runs when the player acquires the ability
+     * function that runs when the player acquires the ability.
+     * not from loading into the world, but when they logically gain it.
      * @param cap
      * @param target
      */

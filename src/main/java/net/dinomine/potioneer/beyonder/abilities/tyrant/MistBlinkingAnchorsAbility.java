@@ -23,6 +23,12 @@ public class MistBlinkingAnchorsAbility extends AbilityWithOptions {
     }
 
     @Override
+    protected void loadExtraNbtInfo(CompoundTag tag) {
+        super.loadExtraNbtInfo(tag);
+        setPrimaryOptions(createPOptions());
+    }
+
+    @Override
     protected boolean primaryWithArgument(LivingEntityBeyonderCapability cap, LivingEntity target, String args) {
         if(cap.getSpirituality() < cost()) return false;
         CompoundTag anchorTag = getData().getCompound(args);

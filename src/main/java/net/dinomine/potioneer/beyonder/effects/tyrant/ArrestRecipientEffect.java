@@ -68,12 +68,12 @@ public class ArrestRecipientEffect extends AbstractSourceRecipientEffect {
 
     @Override
     public boolean onDamageCalculation(LivingHurtEvent event, LivingEntity victim, LivingEntity attacker, LivingEntityBeyonderCapability victimCap, Optional<LivingEntityBeyonderCapability> attackerCap, boolean calledOnVictim) {
-        if(victim.level().isClientSide() || !calledOnVictim || !aoj) return false;
+        if(victim.level().isClientSide() || !calledOnVictim || !aoj || sequenceLevel > 6) return false;
         List<Player> playerList = getPlayerList(victim.level());
         if(playerList.isEmpty()) return false;
         for(Player enforcer: playerList){
             if(enforcer.is(attacker) && aoj){
-                event.setAmount(event.getAmount()*2);
+                event.setAmount(event.getAmount()*1.5f);
                 victim.level().playSound(null, victim.getOnPos(), ModSounds.CRIT.get(), SoundSource.PLAYERS);
                 break;
             }

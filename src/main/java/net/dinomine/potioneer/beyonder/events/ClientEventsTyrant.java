@@ -4,15 +4,13 @@ import com.eliotlash.mclib.math.functions.limit.Min;
 import com.mojang.blaze3d.shaders.FogShape;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.dinomine.potioneer.Potioneer;
-import net.dinomine.potioneer.beyonder.abilities.Abilities;
-import net.dinomine.potioneer.beyonder.abilities.Ability;
-import net.dinomine.potioneer.beyonder.abilities.AbilityFactory;
-import net.dinomine.potioneer.beyonder.abilities.AbilityKey;
+import net.dinomine.potioneer.beyonder.abilities.*;
 import net.dinomine.potioneer.beyonder.client.ClientAbilitiesData;
 import net.dinomine.potioneer.beyonder.client.ClientStatsData;
 import net.dinomine.potioneer.beyonder.client.HUD.AbilitiesHotbarHUD;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
 import net.dinomine.potioneer.beyonder.effects.tyrant.AmplificationEffect;
+import net.dinomine.potioneer.beyonder.effects.tyrant.MistEffect;
 import net.dinomine.potioneer.beyonder.effects.tyrant.WeakeningEffect;
 import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
 import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
@@ -26,11 +24,13 @@ import net.minecraft.client.renderer.FogRenderer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.client.event.RenderGuiOverlayEvent;
 import net.minecraftforge.client.event.RenderPlayerEvent;
 import net.minecraftforge.client.event.ViewportEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
+import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
@@ -42,6 +42,13 @@ import java.util.UUID;
 @Mod.EventBusSubscriber(modid = Potioneer.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
 public class ClientEventsTyrant {
 
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
+    public static void onMouseDown(InputEvent.MouseButton.Pre event){
+        if(Minecraft.getInstance().level == null) return;
+        MistEffect eff = AbilityFunctionHelper.getEffectOnPlayer(BeyonderEffects.TYRANT_MIST_EFFECT.getEffectId(), Minecraft.getInstance().player);
+        if(eff == null) return;
+        event.setCanceled(true);
+    }
     @SubscribeEvent
     public static void onComputeFogColor(ViewportEvent.ComputeFogColor event) {
         Player player = Minecraft.getInstance().player;

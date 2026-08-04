@@ -26,7 +26,7 @@ import net.minecraft.network.FriendlyByteBuf;
 public class ContractAbility extends Ability {
     public ContractAbility(int sequenceLevel) {
         super(sequenceLevel);
-        withCost(100);
+        withCost(150);
     }
 
     @Override

@@ -420,10 +420,12 @@ public class PlayerEffectsManager {
      * @param cap
      * @param player
      */
-    public void copyFrom(PlayerEffectsManager otherEffects, LivingEntityBeyonderCapability cap, Player player) {
+    public void copyFrom(PlayerEffectsManager otherEffects, LivingEntityBeyonderCapability cap, LivingEntityBeyonderCapability oldCap, Player player) {
         for (BeyonderEffect passive : otherEffects.passives) {
             if(passive.shouldPersistInDeath()){
                 addOrRefreshEffect(passive, cap, player);
+            } else {
+                passive.stopEffects(oldCap, player);
             }
         }
     }

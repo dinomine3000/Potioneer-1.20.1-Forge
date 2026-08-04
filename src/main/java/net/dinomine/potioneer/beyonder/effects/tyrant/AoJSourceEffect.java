@@ -42,6 +42,7 @@ public class AoJSourceEffect extends BeyonderEffect {
                     ParticleMaker.createAreaOfJurisdiction(target.level(), (int)(target.getY()), centers, radii);
             }
         } else {
+            if(AreaOfJurisdictionAbility.isPosInAOJ(target.getOnPos(), target)) cap.getEffectsManager().statsHolder.addRegeneration(1);
             if(target.tickCount%20 == target.getId()%20){
                 target.level().getEntities(target,
                         new AABB(target.getOnPos().offset(-proximityRadius, 0, -proximityRadius).atY(-500), target.getOnPos().offset(proximityRadius, 0, proximityRadius).atY(500)))

@@ -17,7 +17,7 @@ import java.util.List;
 public class ArrestAbility extends PassiveAbility {
     private static final int MANUAL_CAST_COST = 75;
     public ArrestAbility(int sequenceLevel) {
-        super(sequenceLevel, BeyonderEffects.TYRANT_ARREST_SOURCE, ignored -> "arrest");
+        super(sequenceLevel, BeyonderEffects.TYRANT_ARREST_SOURCE, lv -> lv < 7 ? "arrest_2" : "arrest");
         enabledOnAcquire();
         canFlip(sequenceLevel < 7);
         withCost(20);
