@@ -38,7 +38,7 @@ public class AuraSourceEffect extends BeyonderEffect {
         Optional<LivingEntityBeyonderCapability> optCap = livingEntity.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve();
         Optional<LivingEntityBeyonderCapability> optCapEnforcer = enforcer.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve();
         if(optCap.isEmpty() || optCapEnforcer.isEmpty()) return;
-        if(!AreaOfJurisdictionAbility.isPosInAOJ(livingEntity.getOnPos(), optCapEnforcer.get(), 0)) return;
+        if(!AreaOfJurisdictionAbility.isEntityInAOJ(livingEntity, enforcer)) return;
         LivingEntityBeyonderCapability cap = optCap.get();
         AuraRecipientEffect eff = (AuraRecipientEffect) BeyonderEffects.TYRANT_AURA_RECIPIENT.createInstance(getSequenceLevel(), 0, -1, true);
         eff.addSourceSilent(enforcer.getUUID());

@@ -35,25 +35,26 @@ public class AoJSourceEffect extends BeyonderEffect {
                 List<Integer> radii = new ArrayList<>();
                 for(Ability abl: cap.getAbilitiesManager().getAbilities()){
                     if(abl instanceof IAreaOfJurisdiction aojAbl){
-                        centers.addAll(aojAbl.getCenters());
-                        radii.addAll(aojAbl.getRadius());
+                        String dimensionLocation = target.level().dimension().location().toString();
+                        centers.addAll(aojAbl.getCenters(dimensionLocation));
+                        radii.addAll(aojAbl.getRadius(dimensionLocation));
                     }
                 }
                 if(!centers.isEmpty())
                     ParticleMaker.createAreaOfJurisdiction(target.level(), (int)(target.getY()), centers, radii);
             }
         } else {
-            if(AreaOfJurisdictionAbility.isPosInAOJ(target.getOnPos(), target)) cap.getEffectsManager().statsHolder.addRegeneration(1);
+            if(AreaOfJurisdictionAbility.isEntityInAOJ(target, target)) cap.getEffectsManager().statsHolder.addRegeneration(1);
             if(target.tickCount%20 == target.getId()%20){
                 target.level().getEntities(target,
                         new AABB(target.getOnPos().offset(-RADIUS.get(), 0, -RADIUS.get()).atY(-500), target.getOnPos().offset(RADIUS.get(), 0, RADIUS.get()).atY(500)))
-                        .forEach( entity -> applyAojInfluenceToEntity(entity, target, cap));
+                        .forEach( entity -> applyAojInfluenceToEntity(entity, target));
             }
         }
     }
 
-    private static void applyAojInfluenceToEntity(Entity entity, LivingEntity enforcer, LivingEntityBeyonderCapability cap){
-        if(entity instanceof LivingEntity livingEntity && !AbilityFunctionHelper.areEntitiesAllies(livingEntity, enforcer) && AreaOfJurisdictionAbility.isPosInAOJ(livingEntity.getOnPos(), cap, 0)){
+    private static void applyAojInfluenceToEntity(Entity entity, LivingEntity enforcer){
+        if(entity instanceof LivingEntity livingEntity && !AbilityFunctionHelper.areEntitiesAllies(livingEntity, enforcer) && AreaOfJurisdictionAbility.isEntityInAOJ(livingEntity, enforcer)){
             livingEntity.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(victimCap -> {
                 victimCap.getEffectsManager().addOrRefreshEffect(AoJRecipientEffect.getInstance(enforcer.getUUID()),
                         victimCap, livingEntity);

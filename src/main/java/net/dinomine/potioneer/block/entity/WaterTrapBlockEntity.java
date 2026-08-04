@@ -114,7 +114,7 @@ public class WaterTrapBlockEntity extends BlockEntity implements GeoBlockEntity 
 
     private boolean isEntityAllyOfOwner(LivingEntity ent){
         if(!(level instanceof ServerLevel serverLevel) || id == null) return false;
-        return AbilityFunctionHelper.isEntityInAnyGroup(serverLevel, ent, casterAllyGroups);
+        return AbilityFunctionHelper.isEntityInAnyGroup(serverLevel, ent, casterAllyGroups) || ent.getUUID().equals(id);
     }
 
     private void tryToExplode(boolean destroy){
@@ -137,6 +137,7 @@ public class WaterTrapBlockEntity extends BlockEntity implements GeoBlockEntity 
                         dataTag.putInt("x", getBlockPos().getX());
                         dataTag.putInt("y", getBlockPos().getY());
                         dataTag.putInt("z", getBlockPos().getZ());
+                        dataTag.putString("dim", level.dimension().location().toString());
                         ServerTokenCache.addToken(token, 20*15, dataTag);
                         AbilityFunctionHelper.sendCommandMessage(caster, "/beyonderability teleport " + token, Component.translatable("message.potioneer.message.trap", getBlockPos().getX(), getBlockPos().getY(), getBlockPos().getZ()), Component.translatable("message.potioneer.clickable.trap"), Component.translatable("message.potioneer.tooltip.trap"));
                     }
@@ -200,7 +201,7 @@ public class WaterTrapBlockEntity extends BlockEntity implements GeoBlockEntity 
             this.sequenceLevel = cap.getSequenceLevel();
 
             //AOJ status
-            isInAOJ = AreaOfJurisdictionAbility.isPosInAOJ(pos, cap, 0);
+            isInAOJ = AreaOfJurisdictionAbility.isPosInAOJ(pos, player, level.dimension());
 
             //ally group list
             casterAllyGroups = new ArrayList<>(AbilityFunctionHelper.getGroupsPlayerIsIn(sLevel, player));

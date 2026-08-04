@@ -36,7 +36,7 @@ public class ServerEventsTyrant {
             || (!(event.getEntity() instanceof Player) && !PotioneerAbilityConfig.AOJ_MOB_GRIEFING.get())
         ) {
             for(Player player: event.getEntity().level().players()){
-                if(AreaOfJurisdictionAbility.isPosInAOJ(event.getPos(), player)){
+                if(AreaOfJurisdictionAbility.isPosInAOJ(event.getPos(), player, event.getEntity().level().dimension())){
                     event.setCanceled(event.isCancelable());
                     event.setResult(Event.Result.DENY);
                     return;
@@ -50,7 +50,7 @@ public class ServerEventsTyrant {
         if(event.getEntity().level().isClientSide()) return;
         if(!PotioneerAbilityConfig.AOJ_MOB_GRIEFING.get()) return;
         for(Player player: event.getEntity().level().players()){
-            if(AreaOfJurisdictionAbility.isPosInAOJ(event.getEntity().getOnPos(), player)){
+            if(AreaOfJurisdictionAbility.isEntityInAOJ(event.getEntity(), player)){
                 event.setResult(Event.Result.DENY);
                 return;
             }

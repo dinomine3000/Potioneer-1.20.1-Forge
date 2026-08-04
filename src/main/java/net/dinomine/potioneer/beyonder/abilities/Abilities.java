@@ -179,7 +179,7 @@ public class Abilities {
 
     //retweaked
     public static final AbilityFactory WATER_SCALES = registerAbility("scales",
-            (Integer level) -> PassiveAbility.createAbility(level, BeyonderEffects.TYRANT_SCALES, lv -> lv < 7 ? "scales_2" : "scales").canFlip().withThreshold(0.1f).withCost(ignored -> 1),
+            (Integer level) -> PassiveAbility.createAbility(level, BeyonderEffects.TYRANT_SCALES, lv -> lv < 7 ? "scales_2" : "scales").canFlip().withThreshold(0.1f).withCost(2),
             16, 1, 10);
 
     //retweaked
@@ -202,7 +202,7 @@ public class Abilities {
 
     //retweaked
     public static final AbilityFactory TYRANT_AURA = registerAbility("aoj_aura",
-            (Integer level) -> PassiveAbility.createAbility(level, BeyonderEffects.TYRANT_AURA_SOURCE, lv -> lv < 7 ? "aoj_aura_2" : "aoj_aura").canFlip().withThreshold(0.1f),
+            (Integer level) -> PassiveAbility.createAbility(level, BeyonderEffects.TYRANT_AURA_SOURCE, lv -> lv < 7 ? "aoj_aura_2" : "aoj_aura").canFlip().withThreshold(0.1f).withCost(10),
             21, 1, 1).passiveAndActive();
 
     //retweaked
@@ -211,7 +211,7 @@ public class Abilities {
 
     //retweaked
     public static final AbilityFactory MIST = registerAbility("mist",
-            (Integer level) -> PassiveAbility.createAbility(level, BeyonderEffects.TYRANT_MIST_EFFECT, ignored -> "mist").canFlip().withThreshold(25),
+            (Integer level) -> PassiveAbility.createAbility(level, BeyonderEffects.TYRANT_MIST_EFFECT, ignored -> "mist").canFlip().withThreshold(25).withCost(10),
             0, 1, 10).passiveAndActive();
 
     //retweaked

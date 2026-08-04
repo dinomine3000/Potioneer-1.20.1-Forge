@@ -43,7 +43,7 @@ public class ArrestAbility extends PassiveAbility {
         if(target.level().isClientSide()) return true;
         List<LivingEntity> hits = AbilityFunctionHelper.getNonAllyLivingEntitiesAround(target, 4);
         if(hits.isEmpty()) return false;
-        boolean aoj = AreaOfJurisdictionAbility.isPosInAOJ(target.getOnPos(), target);
+        boolean aoj = AreaOfJurisdictionAbility.isEntityInAOJ(target, target);
         PacketHandler.sendMessageToClientsAround(target, 4, new GeneralAreaEffectMessage(ParticleMaker.Preset.AOE_END_ROD, target.getOnPos().getCenter().toVector3f(), 4));
         hits.forEach(ent -> ent.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(victimCap -> ArrestSourceEffect.applyArrestToRecipient(target, victimCap, ent, sequenceLevel, aoj)));
         cap.requestActiveSpiritualityCost(MANUAL_CAST_COST.get());

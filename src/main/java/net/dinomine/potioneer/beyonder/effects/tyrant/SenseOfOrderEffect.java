@@ -37,7 +37,7 @@ public class SenseOfOrderEffect extends BeyonderEffect {
         if(AbilityFunctionHelper.areEntitiesAllies(livingEntity, enforcer)) return;
         Optional<LivingEntityBeyonderCapability> optCapEnforcer = enforcer.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve();
         if(optCapEnforcer.isEmpty()) return;
-        boolean aoj = AreaOfJurisdictionAbility.isPosInAOJ(livingEntity.getOnPos(), optCapEnforcer.get(), 0);
+        boolean aoj = AreaOfJurisdictionAbility.isEntityInAOJ(livingEntity, enforcer);
         if(livingEntity.getMobType() == MobType.UNDEAD || aoj) livingEntity.addEffect(new MobEffectInstance(MobEffects.GLOWING, 40, 0, false, false, true));
     }
 

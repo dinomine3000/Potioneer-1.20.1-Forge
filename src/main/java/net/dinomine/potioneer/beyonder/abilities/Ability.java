@@ -45,6 +45,7 @@ public abstract class Ability {
         }
         putOnCooldown(info.getCooldown(), target);
         setDataSilent(info.getData());
+        onClientUpdate(cap, target);
     }
 
     public boolean isDownside(){
@@ -369,13 +370,13 @@ public abstract class Ability {
         if(primary){
             if(primary(cap, target, args)){
                 MinecraftForge.EVENT_BUS.post(new AbilityCastEvent.Post(this, target, true, args));
-                putOnCooldown(target);
+                if(!target.level().isClientSide()) putOnCooldown(target);
                 return true;
             }
         } else {
             if(secondary(cap, target, args)){
                 MinecraftForge.EVENT_BUS.post(new AbilityCastEvent.Post(this, target, false, args));
-                putOnCooldown(target);
+                if(!target.level().isClientSide()) putOnCooldown(target);
                 return true;
             }
         }
@@ -504,6 +505,8 @@ public abstract class Ability {
     protected void loadExtraNbtInfo(CompoundTag tag){
 
     }
+
+    protected void onClientUpdate(LivingEntityBeyonderCapability cap, LivingEntity target){}
 
     public Ability withAbilityId(String ablId) {
         this.abilityId = ablId;

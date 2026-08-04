@@ -12,11 +12,13 @@ import net.dinomine.potioneer.mob_effects.ModEffects;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.*;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.level.Level;
 
 import java.util.*;
 
@@ -51,11 +53,11 @@ public class AreaOfJurisdictionAbility extends PassiveAbility implements IAreaOf
         super.passive(cap, target);
         if(target.level().isClientSide()) return;
         if(target.tickCount%20 == target.getId()%20){
-            if(isPosInAOJ(target.getOnPos(), cap, 0))
+            if(isEntityInAOJ(target, target))
                 target.addEffect(new MobEffectInstance(ModEffects.AOJ_INFLUENCE.get(), 250, 0, false, false, true));
 
             CompoundTag dataTag = getData();
-            List<CompoundTag> centersList = getCentersCompoundTagList(dataTag, false);
+            List<CompoundTag> centersList = getCentersCompoundTagList(dataTag, false, "");
             boolean changedFlag = false;
             for(CompoundTag centerTag: centersList){
                 if(centerTag.contains("aoj_enabled") && !centerTag.getBoolean("aoj_enabled") && target.level().getGameTime() - centerTag.getLong("timestamp") > 20*2){
@@ -71,8 +73,9 @@ public class AreaOfJurisdictionAbility extends PassiveAbility implements IAreaOf
 
     private void placeNewCenter(CompoundTag dataTag, BlockPos center, long timestamp, LivingEntity target){
         int idx = getNextAvailableIndex(dataTag, sequenceLevel);
-        List<CompoundTag> centerTags = getCentersCompoundTagList(dataTag, false);
-        CompoundTag newCenter = createAreaTag(center, timestamp, false);
+        List<CompoundTag> centerTags = getCentersCompoundTagList(dataTag, false, "");
+        String dimension = target.level().dimension().location().toString();
+        CompoundTag newCenter = createAreaTag(center, dimension, timestamp, false);
         if (idx < centerTags.size()) centerTags.set(idx, newCenter);
         else centerTags.add(newCenter);
         target.level().playSound((Entity) null, target.getOnPos(), SoundEvents.BEACON_DEACTIVATE, SoundSource.NEUTRAL, 1F, (float) target.getRandom().triangle(1, 0.2f));
@@ -88,12 +91,13 @@ public class AreaOfJurisdictionAbility extends PassiveAbility implements IAreaOf
         return dataTag.getInt("nextIdx") % getMaxCentersAtLevel(sequenceLevel);
     }
 
-    private static List<CompoundTag> getCentersCompoundTagList(CompoundTag dataTag, boolean skipDisabled){
+    private static List<CompoundTag> getCentersCompoundTagList(CompoundTag dataTag, boolean skipDisabled, String dimensionId){
         List<CompoundTag> centerTags = new ArrayList<>();
         if (dataTag.contains("areas", Tag.TAG_LIST)) {
             ListTag areasList = dataTag.getList("areas", Tag.TAG_COMPOUND);
             for (int i = 0; i < areasList.size(); i++) {
                 if(skipDisabled && !areasList.getCompound(i).getBoolean("aoj_enabled")) continue;
+                if(!dimensionId.isEmpty() && !dimensionId.equalsIgnoreCase(areasList.getCompound(i).getString("dimension"))) continue;
                 centerTags.add(areasList.getCompound(i));
             }
         }
@@ -102,6 +106,10 @@ public class AreaOfJurisdictionAbility extends PassiveAbility implements IAreaOf
 
     private static BlockPos getCenterFromCompoundTag(CompoundTag centerTag){
         return new BlockPos(centerTag.getInt("centerX"), centerTag.getInt("centerY"), centerTag.getInt("centerZ"));
+    }
+
+    public static String getDimensionFromCompoundTag(CompoundTag centerTag){
+        return centerTag.getString("dimension");
     }
 
     private CompoundTag createDataTag(List<CompoundTag> centers, int nextIdx){
@@ -113,37 +121,15 @@ public class AreaOfJurisdictionAbility extends PassiveAbility implements IAreaOf
         return tag;
     }
 
-    private static CompoundTag createAreaTag(BlockPos center, long timestamp, boolean enabled){
+    private static CompoundTag createAreaTag(BlockPos center, String dimension, long timestamp, boolean enabled){
         CompoundTag res = new CompoundTag();
         res.putInt("centerX", center.getX());
         res.putInt("centerY", center.getY());
         res.putInt("centerZ", center.getZ());
+        res.putString("dimension", dimension);
         res.putLong("timestamp", timestamp);
         res.putBoolean("aoj_enabled", enabled);
         return res;
-    }
-
-    public static List<BlockPos> getCentersOfEnforcer(Entity enforcer){
-        if(!(enforcer instanceof LivingEntity lEnforcer)) return new ArrayList<>();
-        LivingEntityBeyonderCapability cap = lEnforcer.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve().get();
-        List<BlockPos> centers = new ArrayList<>();
-        for(Ability abl: cap.getAbilitiesManager().getAbilities()){
-            if(abl instanceof IAreaOfJurisdiction aojAbl){
-                centers.addAll(aojAbl.getCenters());
-            }
-        }
-        return centers;
-    }
-
-
-    public static boolean isTargetUnderInfluenceOfEnforcer(LivingEntity target, Entity enforcer){
-        if(!(enforcer instanceof LivingEntity)) return false;
-        Optional<LivingEntityBeyonderCapability> optTarget = target.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve();
-        if(optTarget.isEmpty()) return false;
-        LivingEntityBeyonderCapability targetCap = optTarget.get();
-        BeyonderEffect eff = targetCap.getEffectsManager().getEffect(BeyonderEffects.TYRANT_AOJ_RECIPIENT.getEffectId());
-        if(!(eff instanceof AoJRecipientEffect aoJInfluenceEffect)) return false;
-        return aoJInfluenceEffect.isEntityEnforcer(enforcer.getUUID());
     }
 
     @Override
@@ -161,22 +147,52 @@ public class AreaOfJurisdictionAbility extends PassiveAbility implements IAreaOf
     public void onUndoRevoke(LivingEntityBeyonderCapability cap, LivingEntity target) {
     }
 
-    public static boolean isPosInAOJ(BlockPos testPos, Entity enforcer){
-        if(!(enforcer instanceof LivingEntity lEnforcer)) return false;
+    public static List<BlockPos> getCentersOfEnforcer(Entity enforcer, ResourceKey<Level> dimension){
+        if(!(enforcer instanceof LivingEntity lEnforcer)) return new ArrayList<>();
         LivingEntityBeyonderCapability cap = lEnforcer.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve().get();
-        return isPosInAOJ(testPos, cap, 0);
+        List<BlockPos> centers = new ArrayList<>();
+        for(Ability abl: cap.getAbilitiesManager().getAbilities()){
+            if(abl instanceof IAreaOfJurisdiction aojAbl){
+                centers.addAll(aojAbl.getCenters(dimension.location().toString()));
+            }
+        }
+        return centers;
     }
 
-    public static boolean isPosInAOJ(BlockPos testPos, LivingEntityBeyonderCapability enforcerCap, int remove){
+    public static boolean isTargetUnderInfluenceOfEnforcer(LivingEntity target, Entity enforcer){
+        if(!(enforcer instanceof LivingEntity)) return false;
+        Optional<LivingEntityBeyonderCapability> optTarget = target.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve();
+        if(optTarget.isEmpty()) return false;
+        LivingEntityBeyonderCapability targetCap = optTarget.get();
+        BeyonderEffect eff = targetCap.getEffectsManager().getEffect(BeyonderEffects.TYRANT_AOJ_RECIPIENT.getEffectId());
+        if(!(eff instanceof AoJRecipientEffect aoJInfluenceEffect)) return false;
+        return aoJInfluenceEffect.isEntityEnforcer(enforcer.getUUID());
+    }
+
+    public static boolean isPosInAOJ(BlockPos testPos, Entity enforcer, String dimensionLocation){
+        if(!(enforcer instanceof LivingEntity lEnforcer)) return false;
+        LivingEntityBeyonderCapability cap = lEnforcer.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve().get();
+        return isPosInAOJ(testPos, cap, dimensionLocation);
+    }
+
+    public static boolean isPosInAOJ(BlockPos testPos, Entity enforcer, ResourceKey<Level> dimensionLocation){
+        return isPosInAOJ(testPos, enforcer, dimensionLocation.location().toString());
+    }
+
+    public static boolean isEntityInAOJ(Entity target, Entity enforcer){
+        return isPosInAOJ(target.getOnPos(), enforcer, target.level().dimension().location().toString());
+    }
+
+    private static boolean isPosInAOJ(BlockPos testPos, LivingEntityBeyonderCapability enforcerCap, String dimensionLocation){
         List<BlockPos> centers = new ArrayList<>();
         List<Integer> radii = new ArrayList<>();
         for(Ability abl: enforcerCap.getAbilitiesManager().getAbilities()){
             if(abl instanceof IAreaOfJurisdiction aojAbl){
-                centers.addAll(aojAbl.getCenters());
-                radii.addAll(aojAbl.getRadius());
+                centers.addAll(aojAbl.getCenters(dimensionLocation));
+                radii.addAll(aojAbl.getRadius(dimensionLocation));
             }
         }
-        return isPosInAOJ(testPos, centers, radii, remove);
+        return isPosInAOJ(testPos, centers, radii, 0);
     }
 
     public static boolean isPosInAOJ(BlockPos testPos, List<BlockPos> centers, List<Integer> radii, int remove){
@@ -193,13 +209,13 @@ public class AreaOfJurisdictionAbility extends PassiveAbility implements IAreaOf
     }
 
     @Override
-    public List<BlockPos> getCenters() {
-        return getCentersCompoundTagList(getData(), true).stream().map(AreaOfJurisdictionAbility::getCenterFromCompoundTag).toList();
+    public List<BlockPos> getCenters(String dimensionLocation) {
+        return getCentersCompoundTagList(getData(), true, dimensionLocation).stream().map(AreaOfJurisdictionAbility::getCenterFromCompoundTag).toList();
     }
 
     @Override
-    public List<Integer> getRadius() {
+    public List<Integer> getRadius(String dimensionLocation) {
         int radius = 8 + (10 - getSequenceLevel())*2;
-        return getCentersCompoundTagList(getData(), true).stream().map(ign -> radius).toList();
+        return getCentersCompoundTagList(getData(), true, dimensionLocation).stream().map(ign -> radius).toList();
     }
 }

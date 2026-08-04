@@ -14,11 +14,16 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.level.Level;
 
 import java.util.UUID;
 
@@ -42,7 +47,7 @@ public class BeyonderAbilityCommand {
         if (executor == null) return 0;
         CompoundTag trapData = ServerTokenCache.getTokenData(token, true);
         executor.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
-            MistBlinkingAbility.doMistBlinkingTo(executor, cap, (ServerLevel) executor.level(), 0, new BlockPos(trapData.getInt("x"), trapData.getInt("y"), trapData.getInt("z")), 0);
+            MistBlinkingAbility.doMistBlinkingTo(executor, cap, (ServerLevel) executor.level(), trapData.getString("dim"), 0, new BlockPos(trapData.getInt("x"), trapData.getInt("y"), trapData.getInt("z")), 0);
         });
         return 1;
     }

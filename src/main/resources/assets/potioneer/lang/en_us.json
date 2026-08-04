@@ -688,5 +688,6 @@
   "abilityoption.potioneer.amplify_ability": "Amplify/Weaken Abilities",
   "abilityoption.potioneer.amplify_stats": "Amplify/Weaken Stats",
   "message.potioneer.no_pick_saved": "You have no pickaxe saved.",
-  "message.potioneer.saved_pickaxe": "Saved pickaxe %s."
+  "message.potioneer.saved_pickaxe": "Saved pickaxe %s.",
+  "message.potioneer.blocked_ability": "%s has been disabled."
 }

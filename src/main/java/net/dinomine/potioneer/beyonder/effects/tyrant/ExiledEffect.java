@@ -40,7 +40,7 @@ public class ExiledEffect extends AbstractSourceRecipientEffect {
         boolean pushFlag = false;
         for(UUID id: this.sources.keySet()){
             Entity enforcer = serverLevel.getEntity(id);
-            if(!AreaOfJurisdictionAbility.isPosInAOJ(target.getOnPos(), enforcer)) return;
+            if(!AreaOfJurisdictionAbility.isEntityInAOJ(target, enforcer)) return;
             if(!pushFlag){
                 if(timeInAoj-- < 1 && target.tickCount%25 == 0){
                     target.hurt(PotioneerDamage.exile(serverLevel, enforcer), 8);
@@ -53,7 +53,7 @@ public class ExiledEffect extends AbstractSourceRecipientEffect {
 
     private static void addForce(LivingEntity target, Entity enforcer){
         //1. find closest center
-        List<BlockPos> centers = AreaOfJurisdictionAbility.getCentersOfEnforcer(enforcer);
+        List<BlockPos> centers = AreaOfJurisdictionAbility.getCentersOfEnforcer(enforcer, target.level().dimension());
         if(centers.isEmpty()) return;
         BlockPos bestMatch = null;
         double bestDist = Float.MAX_VALUE;

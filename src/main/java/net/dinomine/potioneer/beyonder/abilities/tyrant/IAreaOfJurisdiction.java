@@ -5,6 +5,6 @@ import net.minecraft.core.BlockPos;
 import java.util.List;
 
 public interface IAreaOfJurisdiction {
-    List<BlockPos> getCenters();
-    List<Integer> getRadius();
+    List<BlockPos> getCenters(String dimensionLocation);
+    List<Integer> getRadius(String dimensionLocation);
 }

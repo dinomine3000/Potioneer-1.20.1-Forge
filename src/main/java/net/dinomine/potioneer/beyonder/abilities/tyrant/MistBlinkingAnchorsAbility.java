@@ -5,10 +5,14 @@ import net.dinomine.potioneer.beyonder.abilities.AbilityWithOptions;
 import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
 import net.dinomine.potioneer.config.PotioneerAbilityConfig;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.level.Level;
 
 public class MistBlinkingAnchorsAbility extends AbilityWithOptions {
     public MistBlinkingAnchorsAbility(int sequenceLevel) {
@@ -36,8 +40,12 @@ public class MistBlinkingAnchorsAbility extends AbilityWithOptions {
         if(anchorTag.isEmpty()) return false;
         if(target.level().isClientSide()) return true;
         BlockPos anchorPos = new BlockPos(anchorTag.getInt("x"), anchorTag.getInt("y"), anchorTag.getInt("z"));
-        if(!AreaOfJurisdictionAbility.isPosInAOJ(anchorPos, target)) return false;
-        MistBlinkingAbility.doMistBlinkingTo(target, cap, (ServerLevel) target.level(), cost(), anchorPos.above(), sequenceLevel);
+        String dimKey = anchorTag.getString("dim");
+        if(!AreaOfJurisdictionAbility.isPosInAOJ(anchorPos, target, dimKey)){
+            putOnCooldown(20, target);
+            return false;
+        }
+        MistBlinkingAbility.doMistBlinkingTo(target, cap, (ServerLevel) target.level(), dimKey, cost(), anchorPos.above(), sequenceLevel);
         return true;
     }
 
@@ -53,6 +61,7 @@ public class MistBlinkingAnchorsAbility extends AbilityWithOptions {
         anchorTag.putInt("x", anchor.getX());
         anchorTag.putInt("y", anchor.getY());
         anchorTag.putInt("z", anchor.getZ());
+        anchorTag.putString("dim", target.level().dimension().location().toString());
         CompoundTag dataTag = getData();
         dataTag.put(args, anchorTag);
         setData(dataTag, target);
@@ -73,5 +82,11 @@ public class MistBlinkingAnchorsAbility extends AbilityWithOptions {
     @Override
     protected String getMainDescId(int sequenceLevel) {
         return "mist_blinking_anchors";
+    }
+
+    @Override
+    protected void onClientUpdate(LivingEntityBeyonderCapability cap, LivingEntity target) {
+        super.onClientUpdate(cap, target);
+        setPrimaryOptions(createPOptions());
     }
 }

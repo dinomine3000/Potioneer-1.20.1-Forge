@@ -121,6 +121,11 @@ public class AbilitiesHotbarHUD {
 
     });
 
+    public static AbilityInfo getCurrentSelectedAbility(){
+        if(!shouldDisplayBar()) return null;
+        return ClientAbilitiesData.getCurrentAbility();
+    }
+
     private static void drawCases(GuiGraphics guiGraphics, PotioneerClientConfig.HOTBAR_POS hotbarPos, int caret, int xOffset, int yOffset, float scale){
         if(ClientAbilitiesData.getHotbar().isEmpty()) return;
         int extraCaret = scrollAnimation.getCurrentAnimation().equalsIgnoreCase("scrollLeft") ? caret - 2 : caret + 2;
