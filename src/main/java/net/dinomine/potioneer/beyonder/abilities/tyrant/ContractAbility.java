@@ -6,6 +6,7 @@ import net.dinomine.potioneer.beyonder.abilities.AbilityKey;
 import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
 import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
 import net.dinomine.potioneer.beyonder.player.PlayerAbilitiesManager;
+import net.dinomine.potioneer.config.PotioneerAbilityConfig;
 import net.dinomine.potioneer.network.PacketHandler;
 import net.dinomine.potioneer.network.messages.abilityRelevant.abilitySpecific.OpenContractScreenMessage;
 import net.dinomine.potioneer.server.ServerTokenCache;
@@ -26,7 +27,7 @@ import net.minecraft.network.FriendlyByteBuf;
 public class ContractAbility extends Ability {
     public ContractAbility(int sequenceLevel) {
         super(sequenceLevel);
-        withCost(150);
+        withCost(PotioneerAbilityConfig.CONTRACT_COST.get());
     }
 
     @Override

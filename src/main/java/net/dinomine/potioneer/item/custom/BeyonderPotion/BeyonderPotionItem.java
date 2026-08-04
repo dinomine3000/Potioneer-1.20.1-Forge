@@ -3,7 +3,7 @@ package net.dinomine.potioneer.item.custom.BeyonderPotion;
 import net.dinomine.potioneer.beyonder.pathways.BeyonderPathway;
 import net.dinomine.potioneer.beyonder.pathways.Pathways;
 import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
-import net.dinomine.potioneer.config.PotioneerCommonConfig;
+import net.dinomine.potioneer.config.PotioneerGameplayConfig;
 import net.dinomine.potioneer.network.PacketHandler;
 import net.dinomine.potioneer.network.messages.advancement.BeginAdvancementMessage;
 import net.dinomine.potioneer.util.GeoTintable;
@@ -121,9 +121,9 @@ public class BeyonderPotionItem extends PotionItem implements GeoItem, GeoTintab
             //if changing pathways
             if(cap.isBeyonder() && ogPathway != newPathway){
                 //sequence level for changing check
-                if(pathwaySequenceId%10 >= PotioneerCommonConfig.MIN_SEQUENCE_TO_SWITCH_PATHWAYS.get()) addedDifficulty += DIFF_CHANGE_INVALID_LEVEL;
+                if(pathwaySequenceId%10 >= PotioneerGameplayConfig.MIN_SEQUENCE_TO_SWITCH_PATHWAYS.get()) addedDifficulty += DIFF_CHANGE_INVALID_LEVEL;
                 //pathway group check
-                ArrayList<ArrayList<Integer>> interchangeablePathwayGroups = PotioneerCommonConfig.getPathwayGroups();
+                ArrayList<ArrayList<Integer>> interchangeablePathwayGroups = PotioneerGameplayConfig.getPathwayGroups();
                 boolean matchGroup = false;
                 int ogPathId = Math.floorDiv(originalPathSeqId, 10);
                 int newPathId = Math.floorDiv(pathwaySequenceId, 10);

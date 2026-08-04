@@ -3,6 +3,7 @@ package net.dinomine.potioneer.beyonder.abilities.tyrant;
 import net.dinomine.potioneer.beyonder.abilities.AbilityOptions;
 import net.dinomine.potioneer.beyonder.abilities.AbilityWithOptions;
 import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
+import net.dinomine.potioneer.config.PotioneerAbilityConfig;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -19,7 +20,7 @@ public class MistBlinkingAnchorsAbility extends AbilityWithOptions {
                 .addEmptyOption("anchor3", Component.literal("Set Anchor 3"))
                 .addEmptyOption("anchor4", Component.literal("Set Anchor 4"));
         setSecondaryOptions(sOptions);
-        withCost(10);
+        withCost(PotioneerAbilityConfig.MIST_ANCHOR_BLINK_COST.get());
     }
 
     @Override

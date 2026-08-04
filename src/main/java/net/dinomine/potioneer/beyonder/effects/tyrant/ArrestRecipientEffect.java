@@ -1,19 +1,18 @@
 package net.dinomine.potioneer.beyonder.effects.tyrant;
 
-import net.dinomine.potioneer.beyonder.abilities.AbilityFunctionHelper;
 import net.dinomine.potioneer.beyonder.abilities.tyrant.AreaOfJurisdictionAbility;
 import net.dinomine.potioneer.beyonder.damages.PotioneerDamage;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffect;
 import net.dinomine.potioneer.beyonder.effects.misc.AbstractSourceRecipientEffect;
 import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
 import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
+import net.dinomine.potioneer.config.PotioneerAbilityConfig;
 import net.dinomine.potioneer.sound.ModSounds;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
@@ -21,9 +20,10 @@ import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Supplier;
 
 public class ArrestRecipientEffect extends AbstractSourceRecipientEffect {
-    private static final int spiritualitySap = 50;
+    private static final Supplier<Integer> SPIRITUALITY_SAP = PotioneerAbilityConfig.ARREST_SAP;
     private boolean damaged = false;
     private boolean aoj;
 
@@ -43,8 +43,8 @@ public class ArrestRecipientEffect extends AbstractSourceRecipientEffect {
             aoj = AreaOfJurisdictionAbility.isTargetUnderInfluenceOfEnforcer(target, enforcer);
             if(aoj){
                 enforcer.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(enforcerCap -> {
-                    enforcerCap.requestActiveSpiritualityCost(-spiritualitySap);
-                    cap.requestActiveSpiritualityCost(spiritualitySap);
+                    enforcerCap.requestActiveSpiritualityCost(-SPIRITUALITY_SAP.get());
+                    cap.requestActiveSpiritualityCost(SPIRITUALITY_SAP.get());
                 });
             }
             target.level().playSound(null, target.getOnPos(), ModSounds.ARREST.get(), SoundSource.PLAYERS, 1, (float) target.getRandom().triangle(1f, 0.2f));

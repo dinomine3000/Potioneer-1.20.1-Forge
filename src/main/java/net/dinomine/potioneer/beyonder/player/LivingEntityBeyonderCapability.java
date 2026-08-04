@@ -6,7 +6,7 @@ import net.dinomine.potioneer.beyonder.damages.PotioneerDamage;
 import net.dinomine.potioneer.beyonder.pages.PageRegistry;
 import net.dinomine.potioneer.beyonder.pathways.BeyonderPathway;
 import net.dinomine.potioneer.beyonder.pathways.Pathways;
-import net.dinomine.potioneer.config.PotioneerCommonConfig;
+import net.dinomine.potioneer.config.PotioneerGameplayConfig;
 import net.dinomine.potioneer.entities.custom.CharacteristicEntity;
 import net.dinomine.potioneer.network.PacketHandler;
 import net.dinomine.potioneer.network.messages.PlayerSTCStatsSync;
@@ -47,7 +47,7 @@ public class LivingEntityBeyonderCapability {
     public static final int SANITY_FOR_DAMAGE = 15;
     public static final int SANITY_FOR_DROP = 20;
     public static final int SANITY_MIN_RESPAWN = 40;
-    private static final int SECONDS_TO_MAX_SPIRITUALITY = PotioneerCommonConfig.SECONDS_TO_MAX_SPIRITUALITY.get();
+    private static final int SECONDS_TO_MAX_SPIRITUALITY = PotioneerGameplayConfig.SECONDS_TO_MAX_SPIRITUALITY.get();
     public static int MAX_REP_DEFAULT = 2;
     public static int MAX_REP = 9;
     public static int PRAYING_COOLDOWN = 20*60*18;
@@ -573,10 +573,10 @@ public class LivingEntityBeyonderCapability {
 
     public void onPlayerDie(LivingDeathEvent event) {
         if(!isBeyonder() || !(event.getEntity() instanceof Player player)) return;
-        boolean dropForLowSanity = PotioneerCommonConfig.shouldDropCharacteristic(sanity, player.getRandom());
+        boolean dropForLowSanity = PotioneerGameplayConfig.shouldDropCharacteristic(sanity, player.getRandom());
         boolean doDropActingSafeguard = maxSanity.get() < SANITY_FOR_DAMAGE;
-        boolean switchingPathwaysCheck = PotioneerCommonConfig.ALLOW_CHANGING_PATHWAYS.get() || characteristicManager.hasMoreThanOneCharacteristic();
-        boolean dropEverything = PotioneerCommonConfig.DROP_ALL_CHARACTERISTICS.get();
+        boolean switchingPathwaysCheck = PotioneerGameplayConfig.ALLOW_CHANGING_PATHWAYS.get() || characteristicManager.hasMoreThanOneCharacteristic();
+        boolean dropEverything = PotioneerGameplayConfig.DROP_ALL_CHARACTERISTICS.get();
         if((doDropActingSafeguard || dropForLowSanity) && (switchingPathwaysCheck || dropEverything)){
             if(dropEverything){
                 CharacteristicHelper.addCharacteristicsToLevel(characteristicManager.dropAllCharacteristics(this, entity), player.level(), player, player.position(), player.getRandom());

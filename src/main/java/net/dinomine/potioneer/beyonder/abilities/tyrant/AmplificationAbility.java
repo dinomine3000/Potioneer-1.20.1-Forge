@@ -8,22 +8,23 @@ import net.dinomine.potioneer.beyonder.effects.tyrant.AmplificationEffect;
 import net.dinomine.potioneer.beyonder.effects.tyrant.WeakeningEffect;
 import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
 import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
-import net.dinomine.potioneer.savedata.AllySystemSaveData;
+import net.dinomine.potioneer.config.PotioneerAbilityConfig;
 import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.LivingEntity;
 
+import java.util.function.Supplier;
+
 public class AmplificationAbility extends AbilityWithOptions {
-    private static final int EFFECT_DURATION = 20*60;
+    private static final Supplier<Integer> EFFECT_DURATION = PotioneerAbilityConfig.AMPLIFICATION_DURATION;
     public AmplificationAbility(int sequenceLevel) {
         super(sequenceLevel);
-        defaultMaxCooldown = 20*70;
+        defaultMaxCooldown = EFFECT_DURATION.get() + 20;
         AbilityOptions options = new AbilityOptions()
-                .addEmptyOption("ability", Component.literal("Buff Ability Levels"))
-                .addEmptyOption("stats", Component.literal("Buff Stats"));
+                .addEmptyOption("ability", Component.translatable("abilityoption.potioneer.amplify_ability"))
+                .addEmptyOption("stats", Component.translatable("abilityoption.potioneer.amplify_stats"));
         setPrimaryOptions(options);
         setSecondaryOptions(options);
-        withCost(100);
+        withCost(PotioneerAbilityConfig.AMPLIFICATION_COST.get());
     }
 
     @Override
@@ -56,11 +57,11 @@ public class AmplificationAbility extends AbilityWithOptions {
 
     private static void applyEffectsTo(LivingEntity caster, LivingEntity target, LivingEntityBeyonderCapability targetCap, int sequenceLevel, boolean buffAbilities){
         if(AbilityFunctionHelper.areEntitiesAllies(caster, target)){
-            AmplificationEffect amp = (AmplificationEffect) BeyonderEffects.TYRANT_AMPLIFICATION.createInstance(sequenceLevel, 0, EFFECT_DURATION, true);
+            AmplificationEffect amp = (AmplificationEffect) BeyonderEffects.TYRANT_AMPLIFICATION.createInstance(sequenceLevel, 0, EFFECT_DURATION.get(), true);
             if(buffAbilities) amp.setAmplificationsLeft(sequenceLevel > 6 ? 1 : 3);
             targetCap.getEffectsManager().addEffectNoRefresh(amp, targetCap, target);
         } else {
-            WeakeningEffect weaken = (WeakeningEffect) BeyonderEffects.TYRANT_WEAKENING.createInstance(sequenceLevel, 0, EFFECT_DURATION, true);
+            WeakeningEffect weaken = (WeakeningEffect) BeyonderEffects.TYRANT_WEAKENING.createInstance(sequenceLevel, 0, EFFECT_DURATION.get(), true);
             if(buffAbilities) weaken.setWeakeningsLeft(sequenceLevel > 6 ? 1 : 3);
             targetCap.getEffectsManager().addEffectNoRefresh(weaken, targetCap, target);
         }

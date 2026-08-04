@@ -5,7 +5,6 @@ import net.dinomine.potioneer.beyonder.pathways.Pathways;
 import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -16,12 +15,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class PotioneerCommonConfig {
+public class PotioneerGameplayConfig {
     public static final ForgeConfigSpec.Builder BUILDER = new ForgeConfigSpec.Builder();
     public static final ForgeConfigSpec SPEC;
 
     public static boolean shouldDropCharacteristic(float sanity, RandomSource rnd) {
-        if(PotioneerCommonConfig.CHARACTERISTIC_DROP_CRITERIA_ENUM_VALUE.get() == PotioneerCommonConfig.CharacteristicDropCriteria.CHANCE){
+        if(PotioneerGameplayConfig.CHARACTERISTIC_DROP_CRITERIA_ENUM_VALUE.get() == PotioneerGameplayConfig.CharacteristicDropCriteria.CHANCE){
             int max = DROP_NEVER_SANITY_THRESHOLD.get();
             int min = DROP_GUARANTEED_SANITY_THRESHOLD.get();
             if(sanity >= max) return false;
@@ -29,10 +28,10 @@ public class PotioneerCommonConfig {
             float val = sanity - min;
             float range = max - min;
             return rnd.nextFloat() >= (val / range);
-        } else if (PotioneerCommonConfig.CHARACTERISTIC_DROP_CRITERIA_ENUM_VALUE.get() == PotioneerCommonConfig.CharacteristicDropCriteria.LOW_SANITY){
+        } else if (PotioneerGameplayConfig.CHARACTERISTIC_DROP_CRITERIA_ENUM_VALUE.get() == PotioneerGameplayConfig.CharacteristicDropCriteria.LOW_SANITY){
             return sanity < LivingEntityBeyonderCapability.SANITY_FOR_DROP;
         }
-        return PotioneerCommonConfig.CHARACTERISTIC_DROP_CRITERIA_ENUM_VALUE.get() == CharacteristicDropCriteria.ALWAYS;
+        return PotioneerGameplayConfig.CHARACTERISTIC_DROP_CRITERIA_ENUM_VALUE.get() == CharacteristicDropCriteria.ALWAYS;
     }
 
     public enum DestructionLevel {
@@ -62,15 +61,11 @@ public class PotioneerCommonConfig {
     public static final ForgeConfigSpec.BooleanValue CONSUME_PAGE_ON_USE;
     public static final ForgeConfigSpec.IntValue PRAYER_COOLDOWN;
     public static final ForgeConfigSpec.BooleanValue LOSE_PAGES_ON_DROP_SEQUENCE;
-    public static final ForgeConfigSpec.DoubleValue PATIENCE_TIME_LIMIT;
     public static final ForgeConfigSpec.DoubleValue SAME_PATHWAY_CHANCE;
     public static final ForgeConfigSpec.DoubleValue SEALED_BUNDLE_CHARACTERISTIC_CHANCE;
     public static final ForgeConfigSpec.DoubleValue SEALED_BUNDLE_ARTIFACT_CHANCE;
     public static final ForgeConfigSpec.DoubleValue SEALED_BUNDLE_FORMULA_CHANCE;
     public static final ForgeConfigSpec.DoubleValue SEALED_BUNDLE_MAIN_INGREDIENT_CHANCE;
-    public static final ForgeConfigSpec.BooleanValue COOLDOWN_TARGET_ALLIES;
-    public static final ForgeConfigSpec.BooleanValue COOLDOWN_EFFECT_STACKS;
-    public static final ForgeConfigSpec.BooleanValue COOLDOWN_ABILITY_CAST_COOLDOWN;
     public static final ForgeConfigSpec.BooleanValue USE_ALTERNATE_LUCK_FUNCTION;
     public static final ForgeConfigSpec.IntValue LUCK_LV2_THRESHOLD;
     public static final ForgeConfigSpec.IntValue LUCK_LV3_THRESHOLD;
@@ -79,7 +74,6 @@ public class PotioneerCommonConfig {
     public static final ForgeConfigSpec.IntValue LUCK_EVENT_CAST_CHANCE;
     public static final ForgeConfigSpec.EnumValue<DestructionLevel> DESTRUCTION_LEVEL_ENUM_VALUE;
     public static final ForgeConfigSpec.EnumValue<ITEM_GEN_EVENT> ITEM_GEN_LUCK_EVENT_INCLUDE_ALL_FORMULA;
-    public static final ForgeConfigSpec.BooleanValue UNIVERSAL_OCEAN_ORDER;
 
     public static final ForgeConfigSpec.EnumValue<CharacteristicDropCriteria> CHARACTERISTIC_DROP_CRITERIA_ENUM_VALUE;
     public static final ForgeConfigSpec.IntValue DROP_GUARANTEED_SANITY_THRESHOLD;
@@ -298,48 +292,12 @@ public class PotioneerCommonConfig {
                         "\nSetting this to NONE will make it only generate based on your list defined above, ONE will pick a random formula ingredient and add it to the list, and ALL will add all ingredients to the list.")
                 .defineEnum("luck_event_gen_formula_ingredients", ITEM_GEN_EVENT.ALL, List.of(ITEM_GEN_EVENT.ALL, ITEM_GEN_EVENT.ONE, ITEM_GEN_EVENT.NONE));
 
-        PATIENCE_TIME_LIMIT = BUILDER.comment("\n\n------Ability Configs-----\n" +
-                        "The Patience ability of the Wheel of Fortune pathway will aim to grant you luck up to N luck if you have less than that. " +
-                        "\nThe growth rate is balanced such that, starting with 0 luck, after a certain amount of time, you reach a luck limit for your sequence, after which it takes much longer to get luck." +
-                        "\nBy default, this value is 1, which corresponds to 20 minutes, or 1 minecraft day, to go from 0 luck to (at sequence level 7) 250 luck. at sequence level 6, itll take 20 minutes to go from 0 to 325 luck." +
-                        "\nThey can still get luck after this limit, but it'll grow much slower." +
-                        "\nThis value here will multiply by that time limit - values bigger than 1 will increase the time it takes to get luck, while values between 0 and 1 will decrease it." +
-                        "\nSetting this to 2 means it'll take 2 minecraft days to reach that limit." +
-                        "\nFor more details on how the actual patience effect calculates luck, and how this value affects it, check out this desmos graph: https://www.desmos.com/calculator/3uoitj78qi")
-                .defineInRange("patience_time_multiplier", 1d, 0.05d, 30d);
-
-        COOLDOWN_TARGET_ALLIES = BUILDER.comment("The Cooldown ability of the wheel of fortune. Should it target allies?" +
-                        "\nIf set to True, whether or not an ally has an ability put on cooldown depends on their luck." +
-                        "\nIf set to False, allies are completely exempt from being put on cooldown." +
-                        "\nNote: The caster always runs that chance.")
-                .define("cooldown_targets_allies", false);
-
-        COOLDOWN_EFFECT_STACKS = BUILDER.comment("The Cooldown ability of the Wheel of Fortune Pathway, should it stack?" +
-                        "\nIf set to false, then for a time after someone has their abilities put on cooldown, they can't have abilities put on cooldown again (cooldown for cooldowns lol)" +
-                        "\nIf set to true, it'll happen as many times as the ability/effect is cast (includes charms)" +
-                        "\nThere are exceptions - if person A puts person B on cooldown, and person B was already put on cooldown by someone of a lower level, person A will override that and put more abilities on cooldown." +
-                        "\nAnd vice-versa, if person A were of a lower level than whoever put person B's abilities on cooldown, their attack will never succeed." +
-                        "\nThis setting applies more if person A is the same sequence level as whoever put person B's abilities on cooldown." +
-                        "\nAlso, this only applies to 'defensive cooldowns'. To have the ability cast apply a cooldown, check the next setting.")
-                .define("cooldown_ability_stacks", true);
-
-        COOLDOWN_ABILITY_CAST_COOLDOWN = BUILDER.comment("The Cooldown ability of the Wheel of Fortune pathway, should its cast have a cooldown on its targets?" +
-                        "\nIf set to false, the ability will always disable abilities of everyone hit." +
-                        "\nIf set to true, the cast will share a per-victim cooldown like described above - neither defensive/payback nor cast will put abilities on cooldown unless its of a higher level than the original cast." +
-                        "\nI know this is hard to understand, I can't explain it well either. There's also the part where the caster is just immune to casts of this ability from beyonders of a lower level." +
-                        "\nBasically, imagine the caster could cast the ability multiple times a second. Should each of those casts put abilities on cooldown or just the first one?")
-                .define("cooldown_ability_cooldowns", false);
-
         USE_ALTERNATE_LUCK_FUNCTION = BUILDER.comment("Should the luck manager of everyone be based on the original function or on the alternate one?" +
                         "\nYou can see how these functions transform chances (20% -> 50% if you're luck, for example) in this desmos link: https://www.desmos.com/calculator/91a36c649f" +
                         "\nIn short, the original function plateaus at relatively low values (around 300 luck, positive or negative) growing much slower past this point." +
                         "\nThe alternate function keeps changing consistently at every luck value, so it could be considered fairer but values like -200 luck don't have much of a negative impact on gameplay." +
                         "\nThe way luck itself is gained and lost, however, is not controlled by this config. This just controls how, based on that luck value, the player can have their probabilities changed from 50% to either 20% if they're unlucky or 80% if they are lucky.")
                 .define("use_alternate_luck_function", false);
-
-        UNIVERSAL_OCEAN_ORDER = BUILDER.comment("Should the Ocean Order ability work on any aggressive entity or only underwater ones?" +
-                "\nSetting this to true will make Swimmers not aggro any mobs by default, False will only work with mobs that are considered 'aquatic' (see 'underwater_mobs' below).")
-                .define("universal_ocean_order", false);
 
         BUILDER.pop();
         SPEC = BUILDER.build();

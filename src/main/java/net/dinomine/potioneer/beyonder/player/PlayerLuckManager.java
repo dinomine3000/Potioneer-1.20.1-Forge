@@ -3,7 +3,7 @@ package net.dinomine.potioneer.beyonder.player;
 import net.dinomine.potioneer.beyonder.player.luck.LuckRange;
 import net.dinomine.potioneer.beyonder.player.luck.luckevents.LuckEvent;
 import net.dinomine.potioneer.beyonder.player.luck.luckevents.LuckEvents;
-import net.dinomine.potioneer.config.PotioneerCommonConfig;
+import net.dinomine.potioneer.config.PotioneerGameplayConfig;
 import net.dinomine.potioneer.event.LuckEventCastEvent;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -61,7 +61,7 @@ public class PlayerLuckManager {
                 //System.out.println("Luck Manager ticking..." + luck);
             if(currentEvent == null) {
                 if(target instanceof Player){
-                    int chance = PotioneerCommonConfig.LUCK_EVENT_CAST_CHANCE.get();
+                    int chance = PotioneerGameplayConfig.LUCK_EVENT_CAST_CHANCE.get();
                     int rangeChance = range.getChance();
                     if(target.getRandom().nextInt(chance) <= rangeChance){
                         castEventNoRefresh(target);
@@ -95,7 +95,7 @@ public class PlayerLuckManager {
 
     private LuckEvent castEvent(LivingEntity target){
         LuckEvent proposedEvent = LuckEvents.getRandomEventFromLuck(luck, target.getRandom())
-                .createInstance(getRandomNumber(PotioneerCommonConfig.MINIMUM_LUCK_EVENT_TIMER.get()*20, PotioneerCommonConfig.MAXIMUM_LUCK_EVENT_TIMER.get()*20, luck < 0, target.getRandom()));
+                .createInstance(getRandomNumber(PotioneerGameplayConfig.MINIMUM_LUCK_EVENT_TIMER.get()*20, PotioneerGameplayConfig.MAXIMUM_LUCK_EVENT_TIMER.get()*20, luck < 0, target.getRandom()));
         boolean cancelledCheck = MinecraftForge.EVENT_BUS.post(new LuckEventCastEvent.Pre(target, luck, proposedEvent));
         if(cancelledCheck){
             return null;
@@ -109,7 +109,7 @@ public class PlayerLuckManager {
 
     public void forceCastEvent(LivingEntity target, LivingEntityBeyonderCapability cap, boolean instantCast){
         LuckEvent proposedEvent = LuckEvents.getRandomEventFromLuck(luck, target.getRandom())
-                .createInstance(getRandomNumber(PotioneerCommonConfig.MINIMUM_LUCK_EVENT_TIMER.get()*20, PotioneerCommonConfig.MAXIMUM_LUCK_EVENT_TIMER.get()*20, luck < 0, target.getRandom()));
+                .createInstance(getRandomNumber(PotioneerGameplayConfig.MINIMUM_LUCK_EVENT_TIMER.get()*20, PotioneerGameplayConfig.MAXIMUM_LUCK_EVENT_TIMER.get()*20, luck < 0, target.getRandom()));
         target.sendSystemMessage(Component.translatable("luck.potioneer.event_cast_" + target.getRandom().nextInt(4)));
         MinecraftForge.EVENT_BUS.post(new LuckEventCastEvent.Post(target, luck, proposedEvent));
         if(instantCast) proposedEvent.triggerEvent(cap, this, target);
@@ -317,7 +317,7 @@ public class PlayerLuckManager {
             if(chance >= 1) return 1;
             if(luck == 0) return chance;
             if(chance < 0) return chance;
-            if(PotioneerCommonConfig.USE_ALTERNATE_LUCK_FUNCTION.get()){
+            if(PotioneerGameplayConfig.USE_ALTERNATE_LUCK_FUNCTION.get()){
                 return (float) Math.pow(chance, (6.8*Math.pow(10, -7)*chance*chance - 0.00162d * chance + 1));
             }
             float newChance;

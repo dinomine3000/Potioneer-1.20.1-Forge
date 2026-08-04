@@ -3,7 +3,7 @@ package net.dinomine.potioneer.network.messages.AllySystem;
 import com.google.common.collect.Maps;
 import com.mojang.authlib.GameProfile;
 import net.dinomine.potioneer.beyonder.client.ClientAllyData;
-import net.dinomine.potioneer.config.PotioneerCommonConfig;
+import net.dinomine.potioneer.config.PotioneerGameplayConfig;
 import net.dinomine.potioneer.network.PacketHandler;
 import net.dinomine.potioneer.savedata.AllySystemSaveData;
 import net.dinomine.potioneer.util.BufferUtils;
@@ -111,7 +111,7 @@ public class AllyGroupSyncMessage {
     }
 
     public static void sendGroupsToPlayer(AllySystemSaveData data, ServerPlayer player){
-        if(PotioneerCommonConfig.PUBLIC_GROUPS.get()){
+        if(PotioneerGameplayConfig.PUBLIC_GROUPS.get()){
             PacketHandler.INSTANCE.send(PacketDistributor.PLAYER.with(() -> player),
                     AllyGroupSyncMessage.sendGroupList(
                             data.getGroups(),

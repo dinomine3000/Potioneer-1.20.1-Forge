@@ -11,6 +11,7 @@ import net.dinomine.potioneer.beyonder.effects.BeyonderEffect;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
 import net.dinomine.potioneer.beyonder.player.BeyonderStats;
 import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
+import net.dinomine.potioneer.config.PotioneerAbilityConfig;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.MobType;
@@ -22,15 +23,22 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Supplier;
 
 public class ContractedEffect extends BeyonderEffect {
-    private static final float SPIRITUALITY_THRESHOLD = 0.5f;
-    private static final int HEALTH_THRESHOLD = 10;
+    private static final Supplier<Float> SPIRITUALITY_THRESHOLD =
+            () -> PotioneerAbilityConfig.CONTRACT_SPIRITUALITY_THRESHOLD.get().floatValue();
+    private static final Supplier<Integer> HEALTH_THRESHOLD =
+            PotioneerAbilityConfig.CONTRACT_HEALTH_THRESHOLD;
 
-    private static final int DAMAGE_BUFF = 6;
-    private static final float REGENERATION_BUFF = 0.5f;
-    private static final float STAMINA_BUFF = 1f;
-    private static final int HEALTH_BUFF = 10;
+    private static final Supplier<Integer> DAMAGE_BUFF =
+            PotioneerAbilityConfig.CONTRACT_DAMAGE_BUFF;
+    private static final Supplier<Float> REGENERATION_BUFF =
+            () -> PotioneerAbilityConfig.CONTRACT_REGENERATION_BUFF.get().floatValue();
+    private static final Supplier<Float> STAMINA_BUFF =
+            () -> PotioneerAbilityConfig.CONTRACT_STAMINA_BUFF.get().floatValue();
+    private static final Supplier<Integer> HEALTH_BUFF =
+            PotioneerAbilityConfig.CONTRACT_HEALTH_BUFF;
 
     private static final UUID SEQUENCE_LEVEL_UPGRADE_ID = UUID.fromString("eb93c3f3-9d5b-4c61-9f36-507379ce9e41");
     private static final String VIEWER_GROUP = "contract_view";
@@ -61,17 +69,17 @@ public class ContractedEffect extends BeyonderEffect {
     @Override
     protected void doTick(LivingEntityBeyonderCapability cap, LivingEntity target) {
         if(Objects.equals(condition, ContractOption.HP_COND)){
-            if(target.getHealth() < HEALTH_THRESHOLD) invalidate();
+            if(target.getHealth() < HEALTH_THRESHOLD.get()) invalidate();
         }
         else if(Objects.equals(condition, ContractOption.NETHER_COND) && Objects.equals(target.level().dimension(), Level.NETHER)) invalidate();
-        else if(Objects.equals(condition, ContractOption.SPIRITUALITY_COND) && cap.getSpirituality() < cap.getMaxSpirituality()*SPIRITUALITY_THRESHOLD) invalidate();
+        else if(Objects.equals(condition, ContractOption.SPIRITUALITY_COND) && cap.getSpirituality() < cap.getMaxSpirituality()*SPIRITUALITY_THRESHOLD.get()) invalidate();
         if(!condition.isValid()) return;
 
         BeyonderStats statsHolder = cap.getEffectsManager().statsHolder;
-        if(Objects.equals(reward, ContractOption.DAMAGE_BUFF)) statsHolder.addDamage(DAMAGE_BUFF);
-        else if(Objects.equals(reward, ContractOption.REGENERATION_BUFF)) statsHolder.addRegeneration(REGENERATION_BUFF);
-        else if(Objects.equals(reward, ContractOption.HEALTH_BUFF)) statsHolder.addHealth(HEALTH_BUFF);
-        else if(Objects.equals(reward, ContractOption.STAMINA_BUFF)) statsHolder.addStamina(STAMINA_BUFF);
+        if(Objects.equals(reward, ContractOption.DAMAGE_BUFF)) statsHolder.addDamage(DAMAGE_BUFF.get());
+        else if(Objects.equals(reward, ContractOption.REGENERATION_BUFF)) statsHolder.addRegeneration(REGENERATION_BUFF.get());
+        else if(Objects.equals(reward, ContractOption.HEALTH_BUFF)) statsHolder.addHealth(HEALTH_BUFF.get());
+        else if(Objects.equals(reward, ContractOption.STAMINA_BUFF)) statsHolder.addStamina(STAMINA_BUFF.get());
     }
 
     @Override

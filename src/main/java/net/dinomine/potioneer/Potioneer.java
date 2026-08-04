@@ -9,8 +9,9 @@ import net.dinomine.potioneer.block.entity.renderer.MinerBlockRenderer;
 import net.dinomine.potioneer.block.entity.renderer.PriestBlockRenderer;
 import net.dinomine.potioneer.block.entity.renderer.WaterTrapBlockRenderer;
 import net.dinomine.potioneer.config.PotioneerClientConfig;
-import net.dinomine.potioneer.config.PotioneerCommonConfig;
+import net.dinomine.potioneer.config.PotioneerGameplayConfig;
 import net.dinomine.potioneer.config.PotioneerRitualsConfig;
+import net.dinomine.potioneer.config.PotioneerAbilityConfig;
 import net.dinomine.potioneer.entities.ModEntities;
 import net.dinomine.potioneer.entities.client.*;
 import net.dinomine.potioneer.item.ModCreativeModTabs;
@@ -111,7 +112,8 @@ public class Potioneer
 
         GeckoLib.initialize();
 
-        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, PotioneerCommonConfig.SPEC, "potioneer-common.toml");
+        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, PotioneerGameplayConfig.SPEC, "potioneer-common.toml");
+        ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, PotioneerAbilityConfig.SPEC, "potioneer-balancing.toml");
         ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, PotioneerClientConfig.SPEC, "potioneer-client.toml");
         ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, PotioneerRitualsConfig.SPEC, "potioneer-server-rituals.toml");
        // ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, PotioneerFormulaConfig.SPEC, "potioneer-formula.toml");

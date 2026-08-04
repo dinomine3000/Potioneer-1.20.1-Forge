@@ -8,6 +8,7 @@ import net.dinomine.potioneer.Potioneer;
 import net.dinomine.potioneer.beyonder.abilities.Ability;
 import net.dinomine.potioneer.beyonder.pathways.WheelOfFortunePathway;
 import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
+import net.dinomine.potioneer.config.PotioneerAbilityConfig;
 import net.dinomine.potioneer.sound.ModSounds;
 import net.dinomine.potioneer.util.ParticleMaker;
 import net.minecraft.core.BlockPos;
@@ -35,8 +36,8 @@ public class BlockAppraisalAbility extends Ability {
 
     public BlockAppraisalAbility(int sequence){
         super(sequence);
-        defaultMaxCooldown = 15*20;
-        withCost(level -> 15 + 5*(9-level));
+        defaultMaxCooldown = PotioneerAbilityConfig.BLOCK_AP_COOLDOWN.get();
+        withCost(15);
     }
 
     @Override
@@ -46,7 +47,7 @@ public class BlockAppraisalAbility extends Ability {
 
     @Override
     protected boolean primary(LivingEntityBeyonderCapability cap, LivingEntity target) {
-        int radius = (9 - getSequenceLevel())*3 + 7;
+        int radius = getRadius(sequenceLevel);
         if(cap.getSpirituality() < cost() || !(target instanceof Player player)) return false;
         Level level = player.level();
 
@@ -95,7 +96,7 @@ public class BlockAppraisalAbility extends Ability {
     @Override
     protected boolean secondary(LivingEntityBeyonderCapability cap, LivingEntity target) {
         cap.requestActiveSpiritualityCost(cost()/2f);
-        int radius = (9 - getSequenceLevel())*3 + 7;
+        int radius = getRadius(sequenceLevel);
         if(target.level().isClientSide()){
             //renderParticles(target.level(), radius, target.position().x, target.position().y, target.position().z);
             putOnCooldown(20, target);
@@ -126,6 +127,10 @@ public class BlockAppraisalAbility extends Ability {
         cap.getCharacteristicManager().progressActing(WheelOfFortunePathway.APPRAISER_ACTING_APPRAISE, 8);
 
         return true;
+    }
+
+    private int getRadius(int level){
+        return (9 - getSequenceLevel())* PotioneerAbilityConfig.BLOCK_AP_RANGE_PER_LEVEL.get() + 7;
     }
 
     private void renderParticles(Level level, double radius, double xPos, double yPos, double zPos) {

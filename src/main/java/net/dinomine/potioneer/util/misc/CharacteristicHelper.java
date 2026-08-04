@@ -13,7 +13,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
-import static net.dinomine.potioneer.config.PotioneerCommonConfig.CHANCE_TO_MAKE_ARTIFACT_ON_DEATH;
+import static net.dinomine.potioneer.config.PotioneerGameplayConfig.CHANCE_TO_MAKE_ARTIFACT_ON_DEATH;
 
 public class CharacteristicHelper {
     public static void addCharacteristicToLevel(int pathSeqId, Level level, @Nullable Player player, Vec3 position, RandomSource random){

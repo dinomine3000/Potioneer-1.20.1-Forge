@@ -6,7 +6,7 @@ import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
 import net.dinomine.potioneer.beyonder.pathways.WheelOfFortunePathway;
 import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
 import net.dinomine.potioneer.beyonder.player.PlayerLuckManager;
-import net.dinomine.potioneer.config.PotioneerCommonConfig;
+import net.dinomine.potioneer.config.PotioneerAbilityConfig;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
@@ -41,7 +41,7 @@ public class CooldownRecipientEffect extends BeyonderEffect {
         if(target.level().isClientSide()) return;
         if(target instanceof ServerPlayer player && player.connection == null) return;
         disableAbilities(cap, target, maxLife, minCooldown, maxCooldown);
-        if(PotioneerCommonConfig.COOLDOWN_EFFECT_STACKS.get()){
+        if(PotioneerAbilityConfig.COOLDOWN_EFFECT_STACKS.get()){
            endEffectWhenPossible();
         }
     }
@@ -62,7 +62,7 @@ public class CooldownRecipientEffect extends BeyonderEffect {
      *                       for this time after the method is called, no one of the same level as this effect can put abilities on cooldown.
      */
     private void disableAbilities(LivingEntityBeyonderCapability cap, LivingEntity target, int effectCooldown, int minCooldown, int maxCooldown){
-        if(!PotioneerCommonConfig.COOLDOWN_EFFECT_STACKS.get() && disabledFlag) return;
+        if(!PotioneerAbilityConfig.COOLDOWN_EFFECT_STACKS.get() && disabledFlag) return;
         disableRandomAbilities(cap, cap.getLuckManager(), target, false, minCooldown, maxCooldown);
         disabledFlag = true;
         this.lifetime = 0;

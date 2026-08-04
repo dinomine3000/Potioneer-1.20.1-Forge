@@ -1,8 +1,7 @@
 package net.dinomine.potioneer.entities.custom;
 
-import net.dinomine.potioneer.beyonder.abilities.AbilityFunctionHelper;
 import net.dinomine.potioneer.beyonder.damages.PotioneerDamage;
-import net.dinomine.potioneer.config.PotioneerCommonConfig;
+import net.dinomine.potioneer.config.PotioneerGameplayConfig;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
@@ -95,7 +94,7 @@ public class AsteroidEntity extends Entity implements GeoEntity {
                         position(),
                         5,
                         true,
-                        PotioneerCommonConfig.DESTRUCTION_LEVEL_ENUM_VALUE.get() != PotioneerCommonConfig.DestructionLevel.NEVER
+                        PotioneerGameplayConfig.DESTRUCTION_LEVEL_ENUM_VALUE.get() != PotioneerGameplayConfig.DestructionLevel.NEVER
                                 ? Level.ExplosionInteraction.BLOCK
                                 : Level.ExplosionInteraction.NONE
                 );

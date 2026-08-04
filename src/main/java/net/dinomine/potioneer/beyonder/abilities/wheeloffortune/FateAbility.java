@@ -6,6 +6,7 @@ import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
 import net.dinomine.potioneer.beyonder.pathways.WheelOfFortunePathway;
 import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
 import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
+import net.dinomine.potioneer.config.PotioneerAbilityConfig;
 import net.dinomine.potioneer.util.ParticleMaker;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.LivingEntity;
@@ -17,13 +18,13 @@ import java.util.Optional;
 public class FateAbility extends Ability {
     @Override
     protected String getMainDescId(int sequenceLevel) {
-        return "fate";
+        return sequenceLevel < 6 ? "fate_" : "fate";
     }
 
     public FateAbility(int sequenceLevel) {
         super(sequenceLevel);
-        defaultMaxCooldown = 20*60;
-        withCost(level -> 50 + 20*Math.max(0, 6 - level));
+        defaultMaxCooldown = PotioneerAbilityConfig.FATE_COOLDOWN.get();
+        withCost(PotioneerAbilityConfig.FATE_COST.get());
     }
 
     @Override
@@ -32,7 +33,7 @@ public class FateAbility extends Ability {
         if(target.level().isClientSide()) return true;
         cap.getEffectsManager().addEffectNoCheck(BeyonderEffects.WHEEL_FATE.createInstance(getSequenceLevel(), cost(), 2, true), cap, target);
         cap.getLuckManager().consumeLuck(50);
-        if(getSequenceLevel() < 6) ParticleMaker.createDiceEffectForEntity(target.level(), target);
+        if(getSequenceLevel() < 7) ParticleMaker.createDiceEffectForEntity(target.level(), target);
         return true;
     }
 

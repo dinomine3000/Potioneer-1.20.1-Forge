@@ -3,11 +3,8 @@ package net.dinomine.potioneer.beyonder.effects.tyrant;
 import net.dinomine.potioneer.beyonder.abilities.AbilityFunctionHelper;
 import net.dinomine.potioneer.beyonder.abilities.tyrant.AreaOfJurisdictionAbility;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffect;
-import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
 import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
 import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
-import net.dinomine.potioneer.savedata.AllySystemSaveData;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
@@ -16,9 +13,12 @@ import net.minecraft.world.entity.MobType;
 import net.minecraft.world.entity.player.Player;
 
 import java.util.Optional;
+import java.util.function.Supplier;
+
+import static net.dinomine.potioneer.config.PotioneerAbilityConfig.SENSE_OF_ORDER_RADIUS;
 
 public class SenseOfOrderEffect extends BeyonderEffect {
-    private static final int orderRadius = 16;
+    private static final Supplier<Integer> orderRadius = SENSE_OF_ORDER_RADIUS;
     @Override
     public void onAcquire(LivingEntityBeyonderCapability cap, LivingEntity target) {
 
@@ -29,7 +29,7 @@ public class SenseOfOrderEffect extends BeyonderEffect {
         if(target.level().isClientSide() || !(target instanceof Player player)) return;
         cap.requestPassiveSpiritualityCost(cost);
         if(target.tickCount%20 != target.getId()%20) return;
-        target.level().getEntities(target, target.getBoundingBox().inflate(orderRadius)).forEach(ent -> makeVisible(ent, target));
+        target.level().getEntities(target, target.getBoundingBox().inflate(orderRadius.get())).forEach(ent -> makeVisible(ent, target));
     }
 
     private static void makeVisible(Entity entity, LivingEntity enforcer){

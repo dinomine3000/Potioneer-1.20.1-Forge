@@ -5,14 +5,14 @@ import net.dinomine.potioneer.beyonder.abilities.AbilityFunctionHelper;
 import net.dinomine.potioneer.beyonder.effects.tyrant.ExiledEffect;
 import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
 import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
+import net.dinomine.potioneer.config.PotioneerAbilityConfig;
 import net.minecraft.world.entity.LivingEntity;
 
 public class ExileAbility extends Ability {
-    public static final int EXILE_DURATION = 20*30;
     public ExileAbility(int sequenceLevel) {
         super(sequenceLevel);
-        defaultMaxCooldown = 20*10;
-        withCost(80);
+        defaultMaxCooldown = PotioneerAbilityConfig.EXILE_COOLDOWN.getDefault();
+        withCost(PotioneerAbilityConfig.EXILE_COST.get());
     }
 
     @Override

@@ -7,8 +7,8 @@ import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
 import net.dinomine.potioneer.beyonder.effects.tyrant.AoJRecipientEffect;
 import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
 import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
+import net.dinomine.potioneer.config.PotioneerAbilityConfig;
 import net.dinomine.potioneer.mob_effects.ModEffects;
-import net.minecraft.client.particle.TotemParticle;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.*;
 import net.minecraft.network.chat.Component;
@@ -17,8 +17,6 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.item.Items;
-import org.checkerframework.checker.units.qual.C;
 
 import java.util.*;
 
@@ -43,7 +41,7 @@ public class AreaOfJurisdictionAbility extends PassiveAbility implements IAreaOf
         BlockPos center = target.getOnPos();
         CompoundTag tag = getData();
         placeNewCenter(tag, center, target.level().getGameTime(), target);
-        setNextCooldownAs(20);
+        setNextCooldownAs(PotioneerAbilityConfig.AOJ_COOLDOWN.get());
         cap.requestActiveSpiritualityCost(cost());
         return true;
     }

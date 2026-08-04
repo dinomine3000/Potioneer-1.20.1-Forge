@@ -9,8 +9,7 @@ import net.dinomine.potioneer.beyonder.pathways.WheelOfFortunePathway;
 import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
 import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
 import net.dinomine.potioneer.beyonder.player.PlayerLuckManager;
-import net.dinomine.potioneer.config.PotioneerCommonConfig;
-import net.dinomine.potioneer.savedata.AllySystemSaveData;
+import net.dinomine.potioneer.config.PotioneerAbilityConfig;
 import net.dinomine.potioneer.util.ParticleMaker;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
@@ -50,14 +49,14 @@ public class CooldownAbility extends PassiveAbility {
         cap.requestActiveSpiritualityCost(cost());
         List<LivingEntity> victims = AbilityFunctionHelper.getLivingEntitiesAround(target, effectRadius);
         for(LivingEntity ent: victims){
-            if(!PotioneerCommonConfig.COOLDOWN_TARGET_ALLIES.get() && ent instanceof Player playerVictim && target instanceof Player playerCaster && playerVictim != playerCaster){
+            if(!PotioneerAbilityConfig.COOLDOWN_TARGET_ALLIES.get() && ent instanceof Player playerVictim && target instanceof Player playerCaster && playerVictim != playerCaster){
                 if(AbilityFunctionHelper.areEntitiesAllies((ServerLevel) target.level(), playerVictim, playerCaster)) continue;
             }
             ent.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(victimCap -> {
                 PlayerLuckManager proxyManager = new PlayerLuckManager(cap.getLuckManager().getLuck() - victimCap.getLuckManager().getLuck());
                 if(ent.getId() == target.getId()) proxyManager = cap.getLuckManager();
                 else cap.getCharacteristicManager().progressActing(WheelOfFortunePathway.GAMBLER_ACTING_COOLDOWN, 7);
-                if(PotioneerCommonConfig.COOLDOWN_ABILITY_CAST_COOLDOWN.get()){
+                if(PotioneerAbilityConfig.COOLDOWN_ABILITY_CAST_COOLDOWN.get()){
                     victimCap.getEffectsManager().addOrRefreshEffect(createCooldownEffectInstance(getSequenceLevel(), minCooldown, maxCooldown, 20*20),
                             victimCap, ent);
                 } else {

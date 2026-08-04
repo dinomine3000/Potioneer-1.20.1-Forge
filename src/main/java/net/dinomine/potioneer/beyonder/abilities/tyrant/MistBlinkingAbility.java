@@ -3,12 +3,11 @@ package net.dinomine.potioneer.beyonder.abilities.tyrant;
 import net.dinomine.potioneer.beyonder.abilities.*;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
 import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
+import net.dinomine.potioneer.config.PotioneerAbilityConfig;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 
@@ -22,6 +21,7 @@ public class MistBlinkingAbility extends Ability {
      */
     public MistBlinkingAbility(int sequenceLevel) {
         super(sequenceLevel);
+        withCost(PotioneerAbilityConfig.MIST_BLINK_COST.get());
     }
 
     @Override

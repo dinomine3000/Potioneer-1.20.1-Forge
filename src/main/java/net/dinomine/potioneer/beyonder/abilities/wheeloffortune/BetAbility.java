@@ -4,6 +4,7 @@ import net.dinomine.potioneer.beyonder.abilities.Abilities;
 import net.dinomine.potioneer.beyonder.abilities.Ability;
 import net.dinomine.potioneer.beyonder.effects.wheeloffortune.GamblingEffect;
 import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
+import net.dinomine.potioneer.config.PotioneerAbilityConfig;
 import net.minecraft.world.entity.LivingEntity;
 
 public class BetAbility extends Ability {
@@ -16,7 +17,7 @@ public class BetAbility extends Ability {
      */
     public BetAbility(int sequenceLevel) {
         super(sequenceLevel);
-        defaultMaxCooldown = 20*10;
+        defaultMaxCooldown = PotioneerAbilityConfig.BET_COOLDOWN.get();
     }
 
     @Override

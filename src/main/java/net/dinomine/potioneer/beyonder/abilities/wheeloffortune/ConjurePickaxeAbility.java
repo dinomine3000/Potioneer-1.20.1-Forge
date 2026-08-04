@@ -2,6 +2,7 @@ package net.dinomine.potioneer.beyonder.abilities.wheeloffortune;
 
 import net.dinomine.potioneer.beyonder.abilities.Ability;
 import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
+import net.dinomine.potioneer.config.PotioneerAbilityConfig;
 import net.dinomine.potioneer.util.misc.ModTags;
 import net.dinomine.potioneer.util.misc.MysticismHelper;
 import net.minecraft.nbt.CompoundTag;
@@ -21,8 +22,8 @@ public class ConjurePickaxeAbility extends Ability {
     }
 
     public ConjurePickaxeAbility(int sequence){
-        super(sequence, 20*3);
-        withCost(level -> 45 + 15*(10-level));
+        super(sequence, PotioneerAbilityConfig.CONJURE_PICKAXE_COOLDOWN.get());
+        withCost(PotioneerAbilityConfig.CONJURE_PICKAXE_COST.get());
     }
 
     @Override
@@ -43,8 +44,6 @@ public class ConjurePickaxeAbility extends Ability {
             }
             cap.requestActiveSpiritualityCost(cost());
             return true;
-        } else {
-            target.sendSystemMessage(Component.translatableWithFallback("message.potioneer.insufficient_spirituality", "Not enough spirituality to cast ability.", getMainDescId(sequenceLevel)));
         }
         return false;
     }
@@ -63,7 +62,7 @@ public class ConjurePickaxeAbility extends Ability {
         target.level().playSound(null, target.getOnPos(), SoundEvents.EXPERIENCE_ORB_PICKUP, SoundSource.PLAYERS, 1, 1);
         tag.put("pickaxe", pickaxe.save(new CompoundTag()));
         setData(tag, target);
-        target.sendSystemMessage(Component.translatableWithFallback("message.potioneer.saved_pickaxe", "Saved pickaxe - " + stack.getDisplayName().getString(), stack.getDisplayName().getString()));
+        target.sendSystemMessage(Component.translatable("message.potioneer.saved_pickaxe", stack.getDisplayName().getString()));
         return false;
     }
 }

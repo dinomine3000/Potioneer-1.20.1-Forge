@@ -1,7 +1,6 @@
 package net.dinomine.potioneer.beyonder.player.luck.luckevents;
 
-import net.dinomine.potioneer.config.PotioneerCommonConfig;
-import net.minecraft.nbt.CompoundTag;
+import net.dinomine.potioneer.config.PotioneerGameplayConfig;
 import net.minecraft.util.RandomSource;
 
 import java.util.HashMap;
@@ -32,10 +31,10 @@ public class LuckEvents {
     public static final LuckEventConstructor PHANTOM_EVENT = register("phantom", new LuckEventConstructor(PhantomLuckEvent::new, LuckEvent.Magnitude.VERY_UNLUCKY));
 
     public static LuckEventConstructor getRandomEventFromLuck(int luck, RandomSource randomSource){
-        if(luck < -PotioneerCommonConfig.LUCK_LV3_THRESHOLD.get()) return getRandomEventOfMagnitude(LuckEvent.Magnitude.VERY_UNLUCKY, randomSource);
-        if(luck > PotioneerCommonConfig.LUCK_LV3_THRESHOLD.get()) return getRandomEventOfMagnitude(LuckEvent.Magnitude.VERY_LUCKY, randomSource);
-        if(luck < -PotioneerCommonConfig.LUCK_LV2_THRESHOLD.get()) return getRandomEventOfMagnitude(LuckEvent.Magnitude.MILDLY_UNLUCKY, randomSource);
-        if(luck > PotioneerCommonConfig.LUCK_LV2_THRESHOLD.get()) return getRandomEventOfMagnitude(LuckEvent.Magnitude.MILDLY_LUCKY, randomSource);
+        if(luck < -PotioneerGameplayConfig.LUCK_LV3_THRESHOLD.get()) return getRandomEventOfMagnitude(LuckEvent.Magnitude.VERY_UNLUCKY, randomSource);
+        if(luck > PotioneerGameplayConfig.LUCK_LV3_THRESHOLD.get()) return getRandomEventOfMagnitude(LuckEvent.Magnitude.VERY_LUCKY, randomSource);
+        if(luck < -PotioneerGameplayConfig.LUCK_LV2_THRESHOLD.get()) return getRandomEventOfMagnitude(LuckEvent.Magnitude.MILDLY_UNLUCKY, randomSource);
+        if(luck > PotioneerGameplayConfig.LUCK_LV2_THRESHOLD.get()) return getRandomEventOfMagnitude(LuckEvent.Magnitude.MILDLY_LUCKY, randomSource);
         if(luck < 0) return getRandomEventOfMagnitude(LuckEvent.Magnitude.UNLUCKY, randomSource);
         return getRandomEventOfMagnitude(LuckEvent.Magnitude.LUCKY, randomSource);
     }

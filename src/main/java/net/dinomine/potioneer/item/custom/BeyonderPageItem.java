@@ -3,7 +3,7 @@ package net.dinomine.potioneer.item.custom;
 import net.dinomine.potioneer.beyonder.pages.PageRegistry;
 import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
 import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
-import net.dinomine.potioneer.config.PotioneerCommonConfig;
+import net.dinomine.potioneer.config.PotioneerGameplayConfig;
 import net.dinomine.potioneer.item.ModItems;
 import net.dinomine.potioneer.network.PacketHandler;
 import net.dinomine.potioneer.network.messages.OpenScreenMessage;
@@ -39,7 +39,7 @@ public class BeyonderPageItem extends Item {
             PacketHandler.sendMessageSTC(new OpenScreenMessage(OpenScreenMessage.Screen.Book, pageId), pPlayer);
         });
 
-        if(PotioneerCommonConfig.CONSUME_PAGE_ON_USE.get()){
+        if(PotioneerGameplayConfig.CONSUME_PAGE_ON_USE.get()){
             pPlayer.setItemInHand(pUsedHand, ItemStack.EMPTY);
         }
         return new InteractionResultHolder<>(InteractionResult.SUCCESS, heldItem);

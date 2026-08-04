@@ -11,9 +11,9 @@ import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
 import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
 import net.dinomine.potioneer.block.ModBlocks;
 import net.dinomine.potioneer.block.entity.WaterTrapBlockEntity;
+import net.dinomine.potioneer.config.PotioneerAbilityConfig;
 import net.dinomine.potioneer.network.PacketHandler;
 import net.dinomine.potioneer.network.messages.effects.GeneralAreaEffectMessage;
-import net.dinomine.potioneer.savedata.AllySystemSaveData;
 import net.dinomine.potioneer.sound.ModSounds;
 import net.dinomine.potioneer.util.ParticleMaker;
 import net.minecraft.core.BlockPos;
@@ -43,17 +43,24 @@ import net.minecraftforge.common.ForgeMod;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.function.Supplier;
 
 import static net.dinomine.potioneer.block.custom.BaseLightSourceBlock.WATERLOGGED;
 import static net.minecraft.world.level.block.Block.dropResources;
 
 public class WaterSpellAbility extends AbilityWithOptions {
-    private static final int CONJURE_COST = 5;
-    private static final int ABSORB_COST = 2;
-    private static final int DROWNING_COST = 30;
-    private static final int WATER_TRAP_COST = 30;
-    private static final int WATER_JET_COST = 10;
-    private static final int HEALING_COST = 30;
+
+    private static final Supplier<Integer> CONJURE_COST = PotioneerAbilityConfig.WATER_SPELL_COST_CONJURE;
+    private static final Supplier<Integer> ABSORB_COST = PotioneerAbilityConfig.WATER_SPELL_COST_ABSORB;
+    private static final Supplier<Integer> DROWNING_COST = PotioneerAbilityConfig.WATER_SPELL_COST_DROWNING;
+    private static final Supplier<Integer> WATER_TRAP_COST = PotioneerAbilityConfig.WATER_SPELL_COST_WATER_TRAP;
+    private static final Supplier<Integer> WATER_JET_COST = PotioneerAbilityConfig.WATER_SPELL_COST_WATER_JET;
+    private static final Supplier<Integer> HEALING_COST = PotioneerAbilityConfig.WATER_SPELL_COST_HEALING;
+
+    private static final Supplier<Integer> CONSUME_COOLDOWN = PotioneerAbilityConfig.WATER_SPELL_COOLDOWN_CONSUME;
+    private static final Supplier<Integer> HEALING_COOLDOWN = PotioneerAbilityConfig.WATER_SPELL_COOLDOWN_HEALING;
+    private static final Supplier<Integer> WATER_TRAP_COOLDOWN = PotioneerAbilityConfig.WATER_SPELL_COOLDOWN_WATER_TRAP;
+
     /**
      * pass the sequence level or pathway-sequence id to define the abilities sequence level
      * abilities that depend on changing pathways like Cogitation, that exists for every pathway, need to process their own pathway-sequence id here.
@@ -85,7 +92,6 @@ public class WaterSpellAbility extends AbilityWithOptions {
     public void onUpgrade(int oldLevel, int newLevel, LivingEntityBeyonderCapability cap, LivingEntity target) {
         updateOptions(newLevel);
     }
-
 
     @Override
     protected String getMainDescId(int sequenceLevel) {
@@ -120,12 +126,12 @@ public class WaterSpellAbility extends AbilityWithOptions {
     protected boolean secondaryWithArgument(LivingEntityBeyonderCapability cap, LivingEntity target, String args) {
         if(args.equalsIgnoreCase("create")){
             if(target.level().isClientSide()) return true;
-            if(cap.getSpirituality() > CONJURE_COST && target instanceof Player player){
+            if(cap.getSpirituality() > CONJURE_COST.get() && target instanceof Player player){
                 HitResult res = player.pick(player.getAttributeValue(ForgeMod.BLOCK_REACH.get()) + 0.5f, 0, false);
                 if(res instanceof BlockHitResult){
                     ItemStack waterStack = new ItemStack(Items.WATER_BUCKET);
                     waterStack.use(player.level(), player, InteractionHand.MAIN_HAND);
-                    cap.requestActiveSpiritualityCost(CONJURE_COST);
+                    cap.requestActiveSpiritualityCost(CONJURE_COST.get());
                     return true;
                 }
             }
@@ -139,9 +145,8 @@ public class WaterSpellAbility extends AbilityWithOptions {
                 double radius = target.getAttributeBaseValue(ForgeMod.ENTITY_REACH.get()) + (10 - getSequenceLevel());
                 int blocksRemoved = removeWaterBreadthFirstSearch(level, targetPos, (int) radius);
                 if(blocksRemoved > 0){
-                    cap.requestActiveSpiritualityCost(-ABSORB_COST*blocksRemoved);
-                    //target.addEffect(new MobEffectInstance(MobEffects.REGENERATION, 20, 3, false, false, true));
-                    setNextCooldownAs(50);
+                    cap.requestActiveSpiritualityCost(-ABSORB_COST.get() * blocksRemoved);
+                    setNextCooldownAs(CONSUME_COOLDOWN.get());
                     return true;
                 }
             }
@@ -150,10 +155,9 @@ public class WaterSpellAbility extends AbilityWithOptions {
         return false;
     }
 
-
     private final int HEALING_RADIUS = 16;
     private boolean doHealing(LivingEntityBeyonderCapability cap, LivingEntity target){
-        if(cap.getSpirituality() < HEALING_COST) return false;
+        if(cap.getSpirituality() < HEALING_COST.get()) return false;
         if(target.level().isClientSide()) return true;
 
         List<LivingEntity> alliesAround = AbilityFunctionHelper.getAllyLivingEntitiesAround((ServerLevel) target.level(), target, HEALING_RADIUS);
@@ -169,22 +173,21 @@ public class WaterSpellAbility extends AbilityWithOptions {
         }
         if(!healFlag) return false;
 
-
         target.hurt(PotioneerDamage.tyrantHealing((ServerLevel) target.level()), alliesAround.size());
         if(target instanceof ServerPlayer playerTarget) playerAllies.add(playerTarget);
-        setNextCooldownAs(20*10);
-        cap.requestActiveSpiritualityCost(HEALING_COST);
+        setNextCooldownAs(HEALING_COOLDOWN.get());
+        cap.requestActiveSpiritualityCost(HEALING_COST.get());
         PacketHandler.sendToPlayers(new GeneralAreaEffectMessage(ParticleMaker.Preset.AOE_END_ROD, target.getOnPos().getCenter().toVector3f(), HEALING_RADIUS), playerAllies);
         return true;
     }
 
     private boolean doWaterJet(LivingEntityBeyonderCapability cap, LivingEntity target){
-        if(cap.getSpirituality() < WATER_JET_COST) return false;
+        if(cap.getSpirituality() < WATER_JET_COST.get()) return false;
         if(target.level().isClientSide()) return true;
         if(cap.getEffectsManager().hasEffect(BeyonderEffects.TYRANT_WATER_JET)) return false;
         BeyonderEffect waterJetEffect = BeyonderEffects.TYRANT_WATER_JET.createInstance(getSequenceLevel(), WaterJetEffect.DURATION, false);
         cap.getEffectsManager().addOrRefreshEffect(waterJetEffect, cap, target);
-        cap.requestActiveSpiritualityCost(WATER_JET_COST);
+        cap.requestActiveSpiritualityCost(WATER_JET_COST.get());
         setNextCooldownAs(WaterJetEffect.DURATION);
         return true;
     }
@@ -209,25 +212,21 @@ public class WaterSpellAbility extends AbilityWithOptions {
 
     protected boolean applyDrowning(LivingEntityBeyonderCapability cap, LivingEntity target){
         if(target.level().isClientSide()) return true;
-        if(cap.getSpirituality() > DROWNING_COST){
+        if(cap.getSpirituality() > DROWNING_COST.get()){
             double radius = target.getAttributeBaseValue(ForgeMod.ENTITY_REACH.get()) + (10 - getSequenceLevel());
             int duration = 20*10*(10-sequenceLevel);
             ArrayList<LivingEntity> hits = AbilityFunctionHelper.getNonAllyLivingEntitiesAround((ServerLevel) target.level(), target, radius);
-            //hits = AbilityFunctionHelper.getLivingEntitiesAround(target, radius);
             for(LivingEntity entity: hits){
                 if(entity.is(target)) continue;
                 entity.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(victimCap ->
                         victimCap.getEffectsManager().addOrRefreshEffect(BeyonderEffects.TYRANT_DROWNING.createInstance(getSequenceLevel(), 0, duration, true), victimCap, entity));
             }
             ParticleMaker.summonAOEParticles(target.level(), target.getEyePosition(), (int)(2*radius), radius, ParticleMaker.Preset.AOE_END_ROD);
-            //target.level().playSound(null, target.getOnPos(), SoundEvents.MINECART_INSIDE_UNDERWATER, SoundSource.PLAYERS, 1, 1);
-            //cap.requestActiveSpiritualityCost(DROWNING_COST);
             return true;
         }
         return false;
     }
 
-    //copied from SpongeBlock class
     private static int removeWaterBreadthFirstSearch(Level pLevel, BlockPos pPos, int radius) {
         return BlockPos.breadthFirstTraversal(pPos, radius, 65, (position, consumer) -> {
             for(Direction direction : Direction.values()) {
@@ -265,13 +264,12 @@ public class WaterSpellAbility extends AbilityWithOptions {
         HitResult block = player.pick(player.getAttributeBaseValue(ForgeMod.BLOCK_REACH.get()) + 0.5, 0f, false);
         Level level = player.level();
         if(block instanceof BlockHitResult rayTrace){
-            //if the block youre targeting is a water trap and its yours
             if(level.getBlockState(rayTrace.getBlockPos()).is(ModBlocks.WATER_TRAP_BLOCK.get())){
                 BlockEntity be = level.getBlockEntity(rayTrace.getBlockPos());
                 if(be instanceof WaterTrapBlockEntity waterBe && waterBe.isOwner(player.getUUID())){
                     waterBe.markForAbsorption();
                     level.destroyBlock(rayTrace.getBlockPos(), false, target);
-                    cap.requestActiveSpiritualityCost(-WATER_TRAP_COST/2f);
+                    cap.requestActiveSpiritualityCost(-WATER_TRAP_COST.get() / 2f);
                     return true;
                 }
             }
@@ -286,17 +284,14 @@ public class WaterSpellAbility extends AbilityWithOptions {
         Level level = player.level();
         if(block instanceof BlockHitResult rayTrace){
             BlockPos targetPos = rayTrace.getBlockPos().relative(rayTrace.getDirection());
-            //otherwise, if the block you are targeting can be replaced
-            if(cap.getSpirituality() > WATER_TRAP_COST
+            if(cap.getSpirituality() > WATER_TRAP_COST.get()
                     && !level.getBlockState(rayTrace.getBlockPos()).is(Blocks.AIR)
                     && !level.getBlockState(rayTrace.getBlockPos()).is(Blocks.WATER)
                     && level.getBlockState(rayTrace.getBlockPos()).canBeReplaced()){
                 placeBlock(level, rayTrace.getBlockPos(), cap, player);
                 return true;
-
             }
-            //otherwise, if the block on the side you are targeting can be replaced
-            else if(cap.getSpirituality() > WATER_TRAP_COST
+            else if(cap.getSpirituality() > WATER_TRAP_COST.get()
                     && !level.getBlockState(rayTrace.getBlockPos()).is(Blocks.AIR)
                     && level.getBlockState(targetPos).canBeReplaced())
             {
@@ -305,7 +300,6 @@ public class WaterSpellAbility extends AbilityWithOptions {
             }
         }
 
-        //by this point, normal placement failed, so we use a custom algorithm
         Vec3 eyePos = target.getEyePosition();
         BlockPos headPos = BlockPos.containing(eyePos);
         Vec3 lookDir = target.getLookAngle().normalize();
@@ -330,7 +324,7 @@ public class WaterSpellAbility extends AbilityWithOptions {
                 ModBlocks.WATER_TRAP_BLOCK.get().defaultBlockState().setValue(WATERLOGGED, water));
         WaterTrapBlockEntity be = (WaterTrapBlockEntity) level.getBlockEntity(positionToPlace);
         if(be != null) be.setPlacedByPlayer(player.getUUID(), cap.getSequenceLevel());
-        cap.requestActiveSpiritualityCost(WaterSpellAbility.WATER_TRAP_COST);
-        setNextCooldownAs(20*5);
+        cap.requestActiveSpiritualityCost(WATER_TRAP_COST.get());
+        setNextCooldownAs(WATER_TRAP_COOLDOWN.get());
     }
 }

@@ -6,6 +6,7 @@ import net.dinomine.potioneer.beyonder.damages.PotioneerDamage;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
 import net.dinomine.potioneer.beyonder.effects.misc.AbstractSourceRecipientEffect;
 import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
+import net.dinomine.potioneer.config.PotioneerAbilityConfig;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
@@ -15,8 +16,6 @@ import net.minecraft.world.phys.Vec3;
 
 import java.util.List;
 import java.util.UUID;
-
-import static net.dinomine.potioneer.beyonder.abilities.tyrant.ExileAbility.EXILE_DURATION;
 
 public class ExiledEffect extends AbstractSourceRecipientEffect {
     private static final float PUSH_FORCE = 0.5f;
@@ -31,7 +30,7 @@ public class ExiledEffect extends AbstractSourceRecipientEffect {
     }
 
     private void setEnforcer(UUID enforcer){
-        this.sources.put(enforcer, EXILE_DURATION);
+        this.sources.put(enforcer, PotioneerAbilityConfig.EXILE_DURATION.get());
     }
 
     @Override

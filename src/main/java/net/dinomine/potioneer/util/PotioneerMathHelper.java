@@ -3,10 +3,9 @@ package net.dinomine.potioneer.util;
 import net.dinomine.potioneer.beyonder.pathways.Pathways;
 import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
 import net.dinomine.potioneer.beyonder.player.PlayerLuckManager;
-import net.dinomine.potioneer.config.PotioneerCommonConfig;
+import net.dinomine.potioneer.config.PotioneerGameplayConfig;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.ArrayList;
@@ -81,16 +80,16 @@ public class PotioneerMathHelper {
          */
         public static int getRandomPathwaySequenceId(int playerPathSeqId, PlayerLuckManager luckManager, RandomSource random, int aptitudePathwayId){
             double nextSequenceChance = playerPathSeqId%10 == 0 || playerPathSeqId < 0 ? 0 : sequenceLevelFunction((playerPathSeqId-1)%10);
-            double samePathwayChance = PotioneerCommonConfig.SAME_PATHWAY_CHANCE.get();
+            double samePathwayChance = PotioneerGameplayConfig.SAME_PATHWAY_CHANCE.get();
             if(luckManager.passesLuckCheck((float) nextSequenceChance, 0, 0, random)){
                 if(playerPathSeqId < 0){
-                    if(PotioneerCommonConfig.DO_APTITUDE_PATHWAYS.get()) return 10*aptitudePathwayId + 9;
+                    if(PotioneerGameplayConfig.DO_APTITUDE_PATHWAYS.get()) return 10*aptitudePathwayId + 9;
                     else return 10*Pathways.getRandomPathwayId(random) + 9;
                 }
                 return playerPathSeqId - 1;
             }
             if(playerPathSeqId >= 0 && luckManager.passesLuckCheck((float) samePathwayChance, 0, 0, random)){
-                if(PotioneerCommonConfig.DO_APTITUDE_PATHWAYS.get()) return 10*aptitudePathwayId + getRandomSequenceLevel(luckManager.nextFloat(random));
+                if(PotioneerGameplayConfig.DO_APTITUDE_PATHWAYS.get()) return 10*aptitudePathwayId + getRandomSequenceLevel(luckManager.nextFloat(random));
                 else return 10*(Math.floorDiv(playerPathSeqId, 10)) + getRandomSequenceLevel(luckManager.nextFloat(random));
             }
             int pathwayId = Pathways.getRandomPathwayId(random);

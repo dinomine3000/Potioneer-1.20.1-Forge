@@ -2,7 +2,7 @@ package net.dinomine.potioneer.beyonder.player.luck.luckevents;
 
 import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
 import net.dinomine.potioneer.beyonder.player.PlayerLuckManager;
-import net.dinomine.potioneer.config.PotioneerCommonConfig;
+import net.dinomine.potioneer.config.PotioneerGameplayConfig;
 import net.dinomine.potioneer.savedata.PotionFormulaSaveData;
 import net.dinomine.potioneer.util.PotioneerMathHelper;
 import net.minecraft.resources.ResourceLocation;
@@ -20,7 +20,6 @@ import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 public class ItemGenLuckEvent extends LuckEvent {
     @Override
@@ -36,7 +35,7 @@ public class ItemGenLuckEvent extends LuckEvent {
     }
 
     public static List<Item> getPossibleItems(Level level, LivingEntityBeyonderCapability cap, RandomSource random){
-        List<String> itemKeys = PotioneerCommonConfig.ITEM_GEN_LUCK_EVENT_ITEMS.get();
+        List<String> itemKeys = PotioneerGameplayConfig.ITEM_GEN_LUCK_EVENT_ITEMS.get();
         List<Item> res = new ArrayList<>();
         for(String key: itemKeys){
             ResourceLocation rl = ResourceLocation.tryParse(key);
@@ -47,10 +46,10 @@ public class ItemGenLuckEvent extends LuckEvent {
                 res.add(item);
             }
         }
-        if(PotioneerCommonConfig.ITEM_GEN_LUCK_EVENT_INCLUDE_ALL_FORMULA.get() == PotioneerCommonConfig.ITEM_GEN_EVENT.NONE) return res;
+        if(PotioneerGameplayConfig.ITEM_GEN_LUCK_EVENT_INCLUDE_ALL_FORMULA.get() == PotioneerGameplayConfig.ITEM_GEN_EVENT.NONE) return res;
         if(level instanceof ServerLevel sLevel){
             PotionFormulaSaveData saveData = PotionFormulaSaveData.from(sLevel);
-            if(PotioneerCommonConfig.ITEM_GEN_LUCK_EVENT_INCLUDE_ALL_FORMULA.get() == PotioneerCommonConfig.ITEM_GEN_EVENT.ONE){
+            if(PotioneerGameplayConfig.ITEM_GEN_LUCK_EVENT_INCLUDE_ALL_FORMULA.get() == PotioneerGameplayConfig.ITEM_GEN_EVENT.ONE){
                 res.add(saveData.getRandomItemFromFormulaFor(PotioneerMathHelper.ProbabilityHelper.getRandomPathwaySequenceId(cap.getPathwaySequenceId(), cap.getLuckManager(), random, cap.getCharacteristicManager().getAptitudePathway()), random).getItem());
             } else {
                 res.addAll(saveData.getAllItems());

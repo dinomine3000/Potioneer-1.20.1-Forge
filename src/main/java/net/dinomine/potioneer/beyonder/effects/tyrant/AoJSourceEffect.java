@@ -8,19 +8,20 @@ import net.dinomine.potioneer.beyonder.abilities.tyrant.IAreaOfJurisdiction;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffect;
 import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
 import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
-import net.dinomine.potioneer.savedata.AllySystemSaveData;
 import net.dinomine.potioneer.util.ParticleMaker;
 import net.minecraft.core.BlockPos;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.AABB;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
+
+import static net.dinomine.potioneer.config.PotioneerAbilityConfig.AOJ_RADIUS;
 
 public class AoJSourceEffect extends BeyonderEffect {
-    private static final int proximityRadius = 32;
+    private static final Supplier<Integer> RADIUS = AOJ_RADIUS;
     @Override
     public void onAcquire(LivingEntityBeyonderCapability cap, LivingEntity target) {
 
@@ -45,7 +46,7 @@ public class AoJSourceEffect extends BeyonderEffect {
             if(AreaOfJurisdictionAbility.isPosInAOJ(target.getOnPos(), target)) cap.getEffectsManager().statsHolder.addRegeneration(1);
             if(target.tickCount%20 == target.getId()%20){
                 target.level().getEntities(target,
-                        new AABB(target.getOnPos().offset(-proximityRadius, 0, -proximityRadius).atY(-500), target.getOnPos().offset(proximityRadius, 0, proximityRadius).atY(500)))
+                        new AABB(target.getOnPos().offset(-RADIUS.get(), 0, -RADIUS.get()).atY(-500), target.getOnPos().offset(RADIUS.get(), 0, RADIUS.get()).atY(500)))
                         .forEach( entity -> applyAojInfluenceToEntity(entity, target, cap));
             }
         }

@@ -6,8 +6,7 @@ import net.dinomine.potioneer.beyonder.effects.BeyonderEffect;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
 import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
 import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
-import net.dinomine.potioneer.savedata.AllySystemSaveData;
-import net.minecraft.server.level.ServerLevel;
+import net.dinomine.potioneer.config.PotioneerAbilityConfig;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
@@ -15,9 +14,10 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 
 import java.util.Optional;
+import java.util.function.Supplier;
 
 public class AuraSourceEffect extends BeyonderEffect {
-    private static final int auraRadius = 16;
+    private static final Supplier<Integer> AURA_RADIUS = PotioneerAbilityConfig.AURA_RADIUS;
     @Override
     public void onAcquire(LivingEntityBeyonderCapability cap, LivingEntity target) {
 
@@ -28,7 +28,7 @@ public class AuraSourceEffect extends BeyonderEffect {
         if(target.level().isClientSide() || !(target instanceof Player player)) return;
         cap.requestPassiveSpiritualityCost(cost);
         if(target.tickCount%20 != target.getId()%20) return;
-        target.level().getEntities(target, target.getBoundingBox().inflate(auraRadius)).forEach(ent -> applyAuraEffects(ent, target));
+        target.level().getEntities(target, target.getBoundingBox().inflate(AURA_RADIUS.get())).forEach(ent -> applyAuraEffects(ent, target));
         //applyAuraEffects(target, target);
     }
 

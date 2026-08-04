@@ -3,7 +3,7 @@ package net.dinomine.potioneer.beyonder.effects.wheeloffortune;
 import net.dinomine.potioneer.Potioneer;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffect;
 import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
-import net.dinomine.potioneer.config.PotioneerCommonConfig;
+import net.dinomine.potioneer.config.PotioneerAbilityConfig;
 import net.dinomine.potioneer.sound.ModSounds;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -43,7 +43,7 @@ public class PatienceEffect extends BeyonderEffect {
         //This is calculated such that it reaches this maximum after, at most, 20 minutes
         this.luck_limit = 1000 - 110 * sequenceLevel;
         //change this with sequence too. time in seconds to reach the maximum
-        this.time = (int) ((300 + sequenceLevel * 130) * PotioneerCommonConfig.PATIENCE_TIME_LIMIT.get());
+        this.time = (int) ((300 + sequenceLevel * 130) * PotioneerAbilityConfig.PATIENCE_TIME_LIMIT.get());
         return this;
     }
 

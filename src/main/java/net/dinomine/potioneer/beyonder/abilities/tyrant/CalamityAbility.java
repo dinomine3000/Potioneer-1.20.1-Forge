@@ -6,6 +6,7 @@ import net.dinomine.potioneer.beyonder.abilities.AbilityWithOptions;
 import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
 import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
 import net.dinomine.potioneer.beyonder.player.PlayerLuckManager;
+import net.dinomine.potioneer.config.PotioneerAbilityConfig;
 import net.dinomine.potioneer.entities.ModEntities;
 import net.dinomine.potioneer.entities.custom.WindShearProjectile;
 import net.dinomine.potioneer.util.misc.ModTags;
@@ -17,22 +18,28 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LightningBolt;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.ForgeMod;
-import org.checkerframework.checker.units.qual.A;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 
 public class CalamityAbility extends AbilityWithOptions {
 
-    private static final int RAIN_COST = 50;
-    private static final int THUNDER_COST = 75;
-    private static final int LUCK_COST = 100;
-    private static final int LEAP_COST = 25;
-    private static final int ASTEROID_COST = 150;
-    private static final int WIND_COST = 50;
+    private static final Supplier<Integer> RAIN_COST = PotioneerAbilityConfig.CALAMITY_COST_RAIN;
+    private static final Supplier<Integer> RAIN_COOLDOWN = PotioneerAbilityConfig.CALAMITY_COOLDOWN_RAIN;
+    private static final Supplier<Integer> THUNDER_COST = PotioneerAbilityConfig.CALAMITY_COST_THUNDER;
+    private static final Supplier<Integer> THUNDER_COOLDOWN = PotioneerAbilityConfig.CALAMITY_COOLDOWN_THUNDER;
+    private static final Supplier<Integer> LUCK_COST = PotioneerAbilityConfig.CALAMITY_COST_LUCK;
+    private static final Supplier<Integer> LUCK_COOLDOWN = PotioneerAbilityConfig.CALAMITY_COOLDOWN_LUCK;
+    private static final Supplier<Integer> LEAP_COST = PotioneerAbilityConfig.CALAMITY_COST_LEAP;
+    private static final Supplier<Integer> LEAP_COOLDOWN = PotioneerAbilityConfig.CALAMITY_COOLDOWN_LEAP;
+    private static final Supplier<Integer> ASTEROID_COST = PotioneerAbilityConfig.CALAMITY_COST_ASTEROID;
+    private static final Supplier<Integer> ASTEROID_COOLDOWN = PotioneerAbilityConfig.CALAMITY_COOLDOWN_ASTEROID;
+    private static final Supplier<Integer> WIND_COST = PotioneerAbilityConfig.CALAMITY_COST_WIND;
+    private static final Supplier<Integer> WIND_COOLDOWN = PotioneerAbilityConfig.CALAMITY_COOLDOWN_WIND;
+
     public CalamityAbility(int sequenceLevel) {
         super(sequenceLevel);
         AbilityOptions options = new AbilityOptions()
@@ -62,7 +69,7 @@ public class CalamityAbility extends AbilityWithOptions {
     }
 
     private boolean doWindShear(LivingEntityBeyonderCapability cap, LivingEntity caster){
-        if(cap.getSpirituality() < WIND_COST) return false;
+        if(cap.getSpirituality() < WIND_COST.get()) return false;
         if(caster.level().isClientSide()) return true;
         Vec3 lookVector = caster.getLookAngle();
         for(int i = 0; i < caster.getRandom().nextInt(5, 8); i++){
@@ -73,32 +80,32 @@ public class CalamityAbility extends AbilityWithOptions {
             caster.level().addFreshEntity(projectile);
         }
         caster.level().playSound(null, caster.getOnPos(), SoundEvents.BLAZE_SHOOT, SoundSource.PLAYERS, 1F, (float) caster.getRandom().triangle(1, 0.2));
-        cap.requestActiveSpiritualityCost(WIND_COST);
-        setNextCooldownAs(20*5);
+        cap.requestActiveSpiritualityCost(WIND_COST.get());
+        setNextCooldownAs(WIND_COOLDOWN.get());
         return true;
     }
 
     private boolean doMeteor(LivingEntityBeyonderCapability cap, LivingEntity caster){
-        if(cap.getSpirituality() < ASTEROID_COST) return false;
+        if(cap.getSpirituality() < ASTEROID_COST.get()) return false;
         if(caster.level().isClientSide()) return true;
         List<LivingEntity> hits = AbilityFunctionHelper.getNonAllyLivingEntitiesAround(caster, 8);
         hits.forEach(ent -> AbilityFunctionHelper.summonAsteroid(ent.getOnPos(), ent.level(), caster));
 
-        cap.requestActiveSpiritualityCost(ASTEROID_COST);
-        setNextCooldownAs(20*15);
+        cap.requestActiveSpiritualityCost(ASTEROID_COST.get());
+        setNextCooldownAs(ASTEROID_COOLDOWN.get());
         return true;
     }
 
     private boolean doRain(LivingEntityBeyonderCapability cap, LivingEntity target){
-        if(cap.getSpirituality() < RAIN_COST) return false;
+        if(cap.getSpirituality() < RAIN_COST.get()) return false;
         if(target.level().isClientSide()) return true;
         ((ServerLevel) target.level()).setWeatherParameters(0, 20*60*(1 + 2*(7-getSequenceLevel())), true, false);
-        setNextCooldownAs(20*5);
-        cap.requestActiveSpiritualityCost(RAIN_COST);
+        setNextCooldownAs(RAIN_COOLDOWN.get());
+        cap.requestActiveSpiritualityCost(RAIN_COST.get());
         return true;
     }
     private boolean doThunder(LivingEntityBeyonderCapability cap, LivingEntity target){
-        if(cap.getSpirituality() < THUNDER_COST) return false;
+        if(cap.getSpirituality() < THUNDER_COST.get()) return false;
         if(target.level().isClientSide()) return true;
         ServerLevel level = (ServerLevel) target.level();
         boolean thundering = level.isThundering();
@@ -112,22 +119,22 @@ public class CalamityAbility extends AbilityWithOptions {
             }
         }
         if(!castFlag) return false;
-        cap.requestActiveSpiritualityCost(thundering ? THUNDER_COST / 2f : THUNDER_COST);
-        setNextCooldownAs(20*10);
+        cap.requestActiveSpiritualityCost(thundering ? THUNDER_COST.get() / 2f : THUNDER_COST.get());
+        setNextCooldownAs(THUNDER_COOLDOWN.get());
         return true;
     }
     private boolean doLuck(LivingEntityBeyonderCapability cap, LivingEntity caster) {
-        if (cap.getSpirituality() < LUCK_COST) return false;
+        if (cap.getSpirituality() < LUCK_COST.get()) return false;
         ArrayList<LivingEntity> victims = AbilityFunctionHelper.getNonAllyLivingEntitiesAround(caster, caster.getAttributeValue(ForgeMod.ENTITY_REACH.get()) + 0.5d);
         if (victims.isEmpty()) return false;
         if (caster.level().isClientSide()) return false;
         victims.forEach(ent -> doBadLuckTo(cap, ent));
-        cap.requestActiveSpiritualityCost(LUCK_COST);
-        setNextCooldownAs(20 * 7);
+        cap.requestActiveSpiritualityCost(LUCK_COST.get());
+        setNextCooldownAs(LUCK_COOLDOWN.get());
         return true;
     }
     private boolean doLeap(LivingEntityBeyonderCapability cap, LivingEntity target){
-        if(cap.getSpirituality() < LEAP_COST) return false;
+        if(cap.getSpirituality() < LEAP_COST.get()) return false;
         if(target.isInWater()) return false;
         Vec3 look = target.getLookAngle();
         float scalar = target.level().isRaining() || target.level().isThundering() ? 4f : 2f;
@@ -135,8 +142,8 @@ public class CalamityAbility extends AbilityWithOptions {
         AbilityFunctionHelper.pushEntity(target, look.multiply(mult, mult/2, mult));
         if(!target.level().isClientSide()){
             target.level().playSound(null, target, SoundEvents.LIGHTNING_BOLT_IMPACT, SoundSource.PLAYERS, 1, 0.5f);
-            cap.requestActiveSpiritualityCost(cost());
-            setNextCooldownAs(20);
+            cap.requestActiveSpiritualityCost(LEAP_COST.get());
+            setNextCooldownAs(LEAP_COOLDOWN.get());
         }
         return true;
     }

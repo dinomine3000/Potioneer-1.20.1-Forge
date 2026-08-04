@@ -3,7 +3,7 @@ package net.dinomine.potioneer.beyonder.player;
 import net.dinomine.potioneer.beyonder.abilities.Ability;
 import net.dinomine.potioneer.beyonder.pathways.BeyonderPathway;
 import net.dinomine.potioneer.beyonder.pathways.Pathways;
-import net.dinomine.potioneer.config.PotioneerCommonConfig;
+import net.dinomine.potioneer.config.PotioneerGameplayConfig;
 import net.dinomine.potioneer.util.misc.ModTags;
 import net.minecraft.nbt.*;
 import net.minecraft.network.chat.Component;
@@ -83,7 +83,7 @@ public class PlayerCharacteristicManager {
         if(lastConsumedCharacteristics.isEmpty())
             return List.of(-1);
         //remove from the stack
-        if(!forceDrop && !PotioneerCommonConfig.ALLOW_CHANGING_PATHWAYS.get() && getSequenceLevel() == 9 && lastConsumedCharacteristics.size() == 1){
+        if(!forceDrop && !PotioneerGameplayConfig.ALLOW_CHANGING_PATHWAYS.get() && getSequenceLevel() == 9 && lastConsumedCharacteristics.size() == 1){
             return List.of(-1);
         }
         int droppedCharacteristic = lastConsumedCharacteristics.remove(lastConsumedCharacteristics.size()-1);
@@ -110,7 +110,7 @@ public class PlayerCharacteristicManager {
     public List<List<Integer>> dropAllCharacteristics(LivingEntityBeyonderCapability cap, LivingEntity target){
         List<Integer> characteristicsHolder = new ArrayList<>(lastConsumedCharacteristics);
 
-        if(!PotioneerCommonConfig.ALLOW_CHANGING_PATHWAYS.get()){
+        if(!PotioneerGameplayConfig.ALLOW_CHANGING_PATHWAYS.get()){
             int lockedCharacId = characteristicsHolder.remove(0);
             double digestion = getActing(lockedCharacId);
 
@@ -185,17 +185,17 @@ public class PlayerCharacteristicManager {
     }
 
     public void tick(){
-        if(PotioneerCommonConfig.PASSIVELY_DIGEST_ALL_CHARACTERISTICS.get()){
-            double tickVal = PotioneerCommonConfig.PASSIVE_ACTING_LIMIT.get()/PotioneerCommonConfig.PASSIVE_ACTING_RATE.get()*20d;
+        if(PotioneerGameplayConfig.PASSIVELY_DIGEST_ALL_CHARACTERISTICS.get()){
+            double tickVal = PotioneerGameplayConfig.PASSIVE_ACTING_LIMIT.get()/ PotioneerGameplayConfig.PASSIVE_ACTING_RATE.get()*20d;
             for(Map.Entry<Integer, Double> acting: actingProgress.entrySet()){
-                if(acting.getValue() >= PotioneerCommonConfig.PASSIVE_ACTING_LIMIT.get()) continue;
+                if(acting.getValue() >= PotioneerGameplayConfig.PASSIVE_ACTING_LIMIT.get()) continue;
                 actingProgress.put(acting.getKey(), Mth.clamp(acting.getValue() + tickVal, 0d, 1));
             }
         } else {
             int id = getPathwaySequenceId();
             if(id < 0) return;
-            if(getActing(id) >= PotioneerCommonConfig.PASSIVE_ACTING_LIMIT.get()) return;
-            double tickVal = PotioneerCommonConfig.PASSIVE_ACTING_LIMIT.get()/(PotioneerCommonConfig.PASSIVE_ACTING_RATE.get()*20d);
+            if(getActing(id) >= PotioneerGameplayConfig.PASSIVE_ACTING_LIMIT.get()) return;
+            double tickVal = PotioneerGameplayConfig.PASSIVE_ACTING_LIMIT.get()/(PotioneerGameplayConfig.PASSIVE_ACTING_RATE.get()*20d);
             progressActing(tickVal, id);
         }
     }
@@ -206,13 +206,13 @@ public class PlayerCharacteristicManager {
 
     public void progressActing(double amount, int pathwayId){
         if(!actingProgress.containsKey(pathwayId)) return;
-        double aptitude_mult = PotioneerCommonConfig.DO_APTITUDE_PATHWAYS.get() ? PotioneerCommonConfig.APTITUDE_MULTIPLIER.get() : 1;
+        double aptitude_mult = PotioneerGameplayConfig.DO_APTITUDE_PATHWAYS.get() ? PotioneerGameplayConfig.APTITUDE_MULTIPLIER.get() : 1;
         double newVal = Mth.clamp(
                 getActing(pathwayId)
                         + (
                             amount
                                 *(Math.floorDiv(pathwayId, 10) == aptitudePathway ? aptitude_mult : 1)
-                                * PotioneerCommonConfig.UNIVERSAL_ACTING_MULTIPLIER.get()
+                                * PotioneerGameplayConfig.UNIVERSAL_ACTING_MULTIPLIER.get()
                                 / getCount(pathwayId)
                         ),
                     0, 1);
@@ -230,16 +230,16 @@ public class PlayerCharacteristicManager {
             if(presentPathways.size() == 1)
                 return getAdjustedActingPercent(getPathwaySequenceId());
 
-            ArrayList<ArrayList<Integer>> groups = PotioneerCommonConfig.getPathwayGroups();
+            ArrayList<ArrayList<Integer>> groups = PotioneerGameplayConfig.getPathwayGroups();
             //TODO if this has a significant impact on performance, cache the penalty amount
-            double totalPenalty = PotioneerCommonConfig.PATHWAY_SANITY_PENALTY.get() * (presentPathways.size() - 1);
+            double totalPenalty = PotioneerGameplayConfig.PATHWAY_SANITY_PENALTY.get() * (presentPathways.size() - 1);
             for(ArrayList<Integer> group: groups){
                 if(group.stream().anyMatch(presentPathways::contains))
-                    totalPenalty += PotioneerCommonConfig.GROUP_SANITY_PENALTY.get();
+                    totalPenalty += PotioneerGameplayConfig.GROUP_SANITY_PENALTY.get();
             }
             //remove one because we dont count the original group
             //if youre in 2 groups, penalty should be 1x, if youre in 4 groups, penalty should be 3x
-            totalPenalty -= PotioneerCommonConfig.GROUP_SANITY_PENALTY.get();
+            totalPenalty -= PotioneerGameplayConfig.GROUP_SANITY_PENALTY.get();
 
             return getAdjustedActingPercent(getPathwaySequenceId()) * (1-totalPenalty);
         }
@@ -412,7 +412,7 @@ public class PlayerCharacteristicManager {
             int testSpir = Pathways.getPathwayBySequenceId(i).getMaxSpirituality(i%10);
             if(testSpir > bestSpirituality) bestSpirituality = testSpir;
         }
-        return (int) (bestSpirituality*PotioneerCommonConfig.UNIVERSAL_MAX_SPIRITUALITY_MULTIPLIER.get());
+        return (int) (bestSpirituality* PotioneerGameplayConfig.UNIVERSAL_MAX_SPIRITUALITY_MULTIPLIER.get());
     }
 
     public ArrayList<Integer> getLastConsumedCharacteristics() {
