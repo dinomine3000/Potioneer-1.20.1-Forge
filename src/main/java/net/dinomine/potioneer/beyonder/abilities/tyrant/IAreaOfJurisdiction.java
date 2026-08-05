@@ -31,10 +31,11 @@ public interface IAreaOfJurisdiction {
         }
         return radii;
     }
-
     default CompoundTag getCompoundTag(List<BlockPos> centers, List<Integer> radii){
-        CompoundTag resTag = new CompoundTag();
+        return getCompoundTag(new CompoundTag(), centers, radii);
+    }
 
+    default CompoundTag getCompoundTag(CompoundTag resTag, List<BlockPos> centers, List<Integer> radii){
         ListTag centersTag = new ListTag();
         for (BlockPos pos : centers) {
             centersTag.add(NbtUtils.writeBlockPos(pos));

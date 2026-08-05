@@ -12,10 +12,14 @@ import net.dinomine.potioneer.entities.ModEntities;
 import net.dinomine.potioneer.entities.custom.AsteroidEntity;
 import net.dinomine.potioneer.savedata.AllySystemSaveData;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
@@ -41,6 +45,11 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 public class AbilityFunctionHelper {
+
+    public static ServerLevel getDimensionKey(MinecraftServer server, String dimKey){
+        return server.getLevel(ResourceKey.create(Registries.DIMENSION, new ResourceLocation(dimKey)));
+    }
+
     @SuppressWarnings("unchecked")
     @Nullable
     public static <T extends BeyonderEffect> T getEffectOnPlayer(String effectId, LivingEntity target) {

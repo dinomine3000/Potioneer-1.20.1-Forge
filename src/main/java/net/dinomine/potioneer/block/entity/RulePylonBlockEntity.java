@@ -268,6 +268,18 @@ public class RulePylonBlockEntity extends BlockEntity implements GeoBlockEntity 
         return PlayState.STOP;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        RulePylonBlockEntity that = (RulePylonBlockEntity) o;
+        return Objects.equals(this.worldPosition, that.worldPosition);
+    }
+
+    @Override
+    public int hashCode() {
+        return this.worldPosition != null ? this.worldPosition.hashCode() : 0;
+    }
 
     @Override
     public AnimatableInstanceCache getAnimatableInstanceCache() {

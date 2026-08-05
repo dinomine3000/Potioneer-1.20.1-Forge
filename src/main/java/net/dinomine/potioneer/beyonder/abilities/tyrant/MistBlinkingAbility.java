@@ -53,8 +53,7 @@ public class MistBlinkingAbility extends Ability {
     }
     public static void doMistBlinkingTo(LivingEntity caster, LivingEntityBeyonderCapability cap, ServerLevel fromLevel, String toDimensionId, int cost, BlockPos blockPos, int sequenceLevel){
         MinecraftServer server = caster.getServer();
-        ResourceKey<Level> targetDimKey = ResourceKey.create(Registries.DIMENSION, new ResourceLocation(toDimensionId));
-        ServerLevel targetLevel = server.getLevel(targetDimKey);
+        ServerLevel targetLevel = AbilityFunctionHelper.getDimensionKey(server, toDimensionId);
         doMistBlinkingTo(caster, cap, fromLevel, targetLevel, cost, blockPos, sequenceLevel);
     }
 

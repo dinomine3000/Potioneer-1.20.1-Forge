@@ -9,14 +9,17 @@ import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
 import net.dinomine.potioneer.block.custom.RulePylonBlock;
 import net.dinomine.potioneer.block.entity.RulePylonBlockEntity;
 import net.dinomine.potioneer.savedata.DimensionChunkSavedData;
+import net.dinomine.potioneer.util.misc.ModTags;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.*;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -41,30 +44,45 @@ public class RulePylonAbility extends Ability implements IAreaOfJurisdiction {
         return AbilityFunctionHelper.placeBlockAtReach(target.level(), cap, target, this::placeBlock);
     }
 
+    private int getMaxPylons(){return 1;}
+
     private boolean placeBlock(Level level, BlockPos positionToPlace, LivingEntityBeyonderCapability cap, LivingEntity player){
-        return RulePylonBlock.placePylon((ServerLevel) level, positionToPlace, Set.of(Law.UNDERWATER), player, getSequenceLevel());
+        if(!canAddNewPylon(level.getServer(), player)) return false;
+        return doPlacePylon((ServerLevel) level, positionToPlace, player);
     }
+
+    private boolean doPlacePylon(ServerLevel level, BlockPos pos, LivingEntity target){
+        return RulePylonBlock.placePylon(level, pos, Set.of(Law.UNDERWATER), target, getSequenceLevel());
+    }
+
+    private boolean canAddNewPylon(MinecraftServer server, LivingEntity owner){
+        int max = getMaxPylons();
+        Set<BlockPos> pylons = DimensionChunkSavedData.getAllPylonPositionsOwnedBy(server, owner);
+        return pylons.size() < max;
+    }
+
     @Override
     public void passive(LivingEntityBeyonderCapability cap, LivingEntity target) {
         if(target.level().isClientSide) return;
         if(target.tickCount%(20*3) == target.getId()){
-            List<RulePylonBlockEntity> beList = DimensionChunkSavedData.getBlockEntitiesOwnedBy((ServerLevel) target.level(), target, true, true);
             List<BlockPos> center = new ArrayList<>();
             List<Integer> sides = new ArrayList<>();
-            beList.forEach(be -> center.addAll(be.getCenters()));
-            beList.forEach(be -> sides.addAll(be.getSides()));
-            setData(getCompoundTag(center, sides), target);
+            DimensionChunkSavedData.collectRenderingDataForOwn(target.level().getServer(), target, center, sides);
+            CompoundTag dataTag = getData();
+            CompoundTag aojTag = getCompoundTag(center, sides);
+            dataTag.put("aoj", aojTag);
+            setData(dataTag, target);
         }
     }
 
     @Override
     public List<BlockPos> getCenters(String dimensionLocation) {
-        return getCentersFromTag(getData());
+        return getCentersFromTag(getData().getCompound("aoj"));
     }
 
     @Override
     public List<Integer> getSides(String dimensionLocation) {
-        return getSideFromTag(getData());
+        return getSideFromTag(getData().getCompound("aoj"));
     }
 
     public record Rule(String id, Component title){

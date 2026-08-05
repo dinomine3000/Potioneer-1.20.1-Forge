@@ -66,7 +66,6 @@ public class ParticleMaker {
             entirePerimeter.removeIf(perimeterPos -> crossingTest(perimeterPos, snapshot, areaCenters, sideLengths));
             //add inner corners back in, since they were removed above
             addInnerCorners(entirePerimeter, areaCenters, sideLengths);
-            //clear out awkward blockpos in the middle, with onl
             aojCache = entirePerimeter;
         }
         for(BlockPos perimeterPos: aojCache){

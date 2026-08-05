@@ -5,10 +5,12 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.saveddata.SavedData;
 
 import java.util.*;
@@ -31,14 +33,46 @@ public class DimensionChunkSavedData extends SavedData {
         chunkPylonMap.remove(pos);
         setDirty();
     }
-    public static List<RulePylonBlockEntity> getBlockEntitiesOwnedBy(ServerLevel dimensionLevel, LivingEntity owner, boolean forceLoad, boolean showAoj){
-        DimensionChunkSavedData data = DimensionChunkSavedData.from(dimensionLevel);
-        List<RulePylonBlockEntity> beList = new ArrayList<>();
-        for(Map.Entry<ChunkPos, PylonProxy> claim: data.chunkPylonMap.entrySet()){
-            RulePylonBlockEntity be = data.getBlockEntityOfChunk(dimensionLevel, claim.getValue().pylonPos, forceLoad);
-            if(be != null && be.ownedBy(owner, showAoj)) beList.add(be);
+
+    public static void collectRenderingDataForOwn(MinecraftServer server, LivingEntity owner, List<BlockPos> centers, List<Integer> sideLengths){
+        UUID ownerId = owner.getUUID();
+        for(ServerLevel dimensionLevel: server.getAllLevels()){
+            DimensionChunkSavedData data = DimensionChunkSavedData.from(dimensionLevel);
+            for(Map.Entry<ChunkPos, PylonProxy> claim: data.chunkPylonMap.entrySet()){
+                PylonProxy proxy = claim.getValue();
+                if (ownerId.equals(proxy.ownerId)) {
+                    centers.add(claim.getKey().getMiddleBlockPosition(0));
+                    sideLengths.add(16);
+                }
+            }
         }
-        return beList;
+    }
+    public static Set<BlockPos> getAllPylonPositionsOwnedBy(MinecraftServer server, LivingEntity owner){
+        UUID ownerId = owner.getUUID();
+        Set<BlockPos> res = new HashSet<>();
+        for(ServerLevel dimensionLevel: server.getAllLevels()){
+            DimensionChunkSavedData data = DimensionChunkSavedData.from(dimensionLevel);
+            for(Map.Entry<ChunkPos, PylonProxy> claim: data.chunkPylonMap.entrySet()){
+                PylonProxy proxy = claim.getValue();
+                if (ownerId.equals(proxy.ownerId)) {
+                    res.add(proxy.pylonPos);
+                }
+            }
+        }
+        return res;
+    }
+
+    public static Set<BlockPos> getPylonPositionsInDimensionOwnedBy(ServerLevel dimensionLevel, LivingEntity owner){
+        Set<BlockPos> res = new HashSet<>();
+        UUID ownerId = owner.getUUID();
+        DimensionChunkSavedData data = DimensionChunkSavedData.from(dimensionLevel);
+        for(Map.Entry<ChunkPos, PylonProxy> claim: data.chunkPylonMap.entrySet()){
+            PylonProxy proxy = claim.getValue();
+            if (ownerId.equals(proxy.ownerId)) {
+                res.add(proxy.pylonPos);
+            }
+        }
+        return res;
     }
     public RulePylonBlockEntity getBlockEntityOfChunk(ServerLevel dimensionLevel, BlockPos pylonPos, boolean forceLoad){
         boolean isLoaded = dimensionLevel.isLoaded(pylonPos);

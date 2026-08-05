@@ -53,7 +53,7 @@ public abstract class Ability {
     }
 
     protected CompoundTag getData(){
-        return abilityData;
+        return abilityData.copy();
     }
 
     public void setData(CompoundTag tag, LivingEntity target){
