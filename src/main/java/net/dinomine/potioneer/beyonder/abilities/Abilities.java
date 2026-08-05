@@ -245,6 +245,8 @@ public class Abilities {
     public static final AbilityFactory ANCHOR_BLINKING = registerAbility("mist_blinking_anchors",
             MistBlinkingAnchorsAbility::new, 0, 1, 20).hasSecondaryFunction();
 
+    public static final AbilityFactory RULE_PYLON = registerAbility("rule_pylon",
+            RulePylonAbility::new, 0, 1, 0);
 
 
     // -------------------------- MYSTERY ---------------------------------------------------

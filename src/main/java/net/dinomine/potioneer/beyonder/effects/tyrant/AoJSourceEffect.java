@@ -13,6 +13,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,16 +33,16 @@ public class AoJSourceEffect extends BeyonderEffect {
         if(target.level().isClientSide()){
             if(cap.getAbilitiesManager().isEnabledAtLevelOrLower(Abilities.AOJ.getAblId(), getSequenceLevel()) && target.tickCount%20 == 0){
                 List<BlockPos> centers = new ArrayList<>();
-                List<Integer> radii = new ArrayList<>();
+                List<Integer> sides = new ArrayList<>();
                 for(Ability abl: cap.getAbilitiesManager().getAbilities()){
                     if(abl instanceof IAreaOfJurisdiction aojAbl){
                         String dimensionLocation = target.level().dimension().location().toString();
                         centers.addAll(aojAbl.getCenters(dimensionLocation));
-                        radii.addAll(aojAbl.getRadius(dimensionLocation));
+                        sides.addAll(aojAbl.getSides(dimensionLocation));
                     }
                 }
                 if(!centers.isEmpty())
-                    ParticleMaker.createAreaOfJurisdiction(target.level(), (int)(target.getY()), centers, radii);
+                    ParticleMaker.createAreaOfJurisdiction(target.level(), (int)(target.getY()), centers, sides);
             }
         } else {
             if(AreaOfJurisdictionAbility.isEntityInAOJ(target, target)) cap.getEffectsManager().statsHolder.addRegeneration(1);

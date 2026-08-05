@@ -104,6 +104,7 @@ public class TyrantPathway extends BeyonderPathway {
             case 3:
             case 4:
             case 5:
+                abilities.add(Abilities.RULE_PYLON.create(atSequenceLevel));
             case 6:
                 abilities.add(Abilities.AMPLIFICATION.create(atSequenceLevel));
                 abilities.add(Abilities.EXILE.create(atSequenceLevel));

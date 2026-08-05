@@ -280,25 +280,7 @@ public class WaterSpellAbility extends AbilityWithOptions {
     protected boolean placeWaterTrap(LivingEntityBeyonderCapability cap, LivingEntity target) {
         if(target.level().isClientSide()) return true;
         if(!(target instanceof Player player)) return false;
-        HitResult block = player.pick(player.getAttributeBaseValue(ForgeMod.BLOCK_REACH.get()) + 0.5, 0f, false);
-        Level level = player.level();
-        if(block instanceof BlockHitResult rayTrace){
-            BlockPos targetPos = rayTrace.getBlockPos().relative(rayTrace.getDirection());
-            if(cap.getSpirituality() > WATER_TRAP_COST.get()
-                    && !level.getBlockState(rayTrace.getBlockPos()).is(Blocks.AIR)
-                    && !level.getBlockState(rayTrace.getBlockPos()).is(Blocks.WATER)
-                    && level.getBlockState(rayTrace.getBlockPos()).canBeReplaced()){
-                placeBlock(level, rayTrace.getBlockPos(), cap, player);
-                return true;
-            }
-            else if(cap.getSpirituality() > WATER_TRAP_COST.get()
-                    && !level.getBlockState(rayTrace.getBlockPos()).is(Blocks.AIR)
-                    && level.getBlockState(targetPos).canBeReplaced())
-            {
-                placeBlock(level, targetPos, cap, player);
-                return true;
-            }
-        }
+        if(AbilityFunctionHelper.placeBlockAtReach(player.level(), cap, player, this::placeBlock)) return true;
 
         Vec3 eyePos = target.getEyePosition();
         BlockPos headPos = BlockPos.containing(eyePos);
@@ -314,11 +296,12 @@ public class WaterSpellAbility extends AbilityWithOptions {
             found = testPos;
         }
 
-        placeBlock(level, found, cap, player);
+        placeBlock(target.level(), found, cap, player);
         return true;
     }
 
-    private void placeBlock(Level level, BlockPos positionToPlace, LivingEntityBeyonderCapability cap, Player player){
+    private boolean placeBlock(Level level, BlockPos positionToPlace, LivingEntityBeyonderCapability cap, LivingEntity player){
+        if(cap.getSpirituality() < WATER_TRAP_COST.get()) return false;
         boolean water = level.getFluidState(positionToPlace).getType() == Fluids.WATER;
         level.setBlockAndUpdate(positionToPlace,
                 ModBlocks.WATER_TRAP_BLOCK.get().defaultBlockState().setValue(WATERLOGGED, water));
@@ -326,5 +309,6 @@ public class WaterSpellAbility extends AbilityWithOptions {
         if(be != null) be.setPlacedByPlayer(player.getUUID(), cap.getSequenceLevel());
         cap.requestActiveSpiritualityCost(WATER_TRAP_COST.get());
         setNextCooldownAs(WATER_TRAP_COOLDOWN.get());
+        return true;
     }
 }

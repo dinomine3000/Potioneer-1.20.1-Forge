@@ -43,6 +43,11 @@ public class ModBlockEntities {
                     () -> BlockEntityType.Builder.of(RitualPedestalBlockEntity::new , ModBlocks.RITUAL_PEDESTAL.get())
                             .build(null));
 
+    public static RegistryObject<BlockEntityType<RulePylonBlockEntity>> RULE_PYLON_BLOCK_ENTITY =
+            BLOCK_ENTITIES.register("rule_pylon_block_entity",
+                    () -> BlockEntityType.Builder.of(RulePylonBlockEntity::new , ModBlocks.RULE_PYLON.get())
+                            .build(null));
+
     public static void register(IEventBus eventBus){
         BLOCK_ENTITIES.register(eventBus);
     }

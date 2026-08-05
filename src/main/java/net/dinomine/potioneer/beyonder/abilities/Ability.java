@@ -57,11 +57,13 @@ public abstract class Ability {
     }
 
     public void setData(CompoundTag tag, LivingEntity target){
+        if(this.abilityData.equals(tag)) return;
         this.abilityData = tag;
         if(target instanceof Player player && !player.level().isClientSide())  sendUpdateMessageToClient(target);
     }
 
     public void setDataSilent(CompoundTag tag){
+        if(this.abilityData.equals(tag)) return;
         this.abilityData = tag;
     }
 

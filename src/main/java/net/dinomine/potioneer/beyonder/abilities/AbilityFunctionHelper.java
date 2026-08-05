@@ -7,6 +7,7 @@ import net.dinomine.potioneer.beyonder.effects.BeyonderEffect;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
 import net.dinomine.potioneer.beyonder.effects.tyrant.ContractedEffect;
 import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
+import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
 import net.dinomine.potioneer.entities.ModEntities;
 import net.dinomine.potioneer.entities.custom.AsteroidEntity;
 import net.dinomine.potioneer.savedata.AllySystemSaveData;
@@ -23,10 +24,14 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.ForgeMod;
 
@@ -324,6 +329,38 @@ public class AbilityFunctionHelper {
 
     public static ArrayList<LivingEntity> getLivingEntitiesLooking(LivingEntity looker, double radius){
         return getLivingEntitiesLooking(looker, radius, 0);
+    }
+
+    public interface IBlockPlacer{
+        boolean place(Level level, BlockPos pos, LivingEntityBeyonderCapability cap, LivingEntity target);
+    }
+    public static boolean placeBlockAtReach(Level level, LivingEntityBeyonderCapability cap, LivingEntity player, IBlockPlacer placer){
+        HitResult block = player.pick(player.getAttributeBaseValue(ForgeMod.BLOCK_REACH.get()) + 0.5, 0f, false);
+        if(block instanceof BlockHitResult rayTrace){
+            //first, tries to replace the block youre pointing to
+            BlockPos relativePos = rayTrace.getBlockPos().relative(rayTrace.getDirection());
+            BlockPos hitPos = rayTrace.getBlockPos();
+            BlockState relativeState = level.getBlockState(relativePos);
+            BlockState hitState = level.getBlockState(hitPos);
+            if(hitState.canBeReplaced()
+                    && !hitState.is(Blocks.AIR)
+                    && !hitState.is(Blocks.WATER)){
+                return placer.place(level, hitPos, cap, player);
+            }
+            //otherwise, tries to place it next to it
+            else if(!hitState.is(Blocks.AIR)
+                    && relativeState.canBeReplaced())
+            {
+                return placer.place(level, relativePos, cap, player);
+            }
+        }
+        return false;
+    }
+
+    public static List<LivingEntity> getLivingEntitiesInChunk(Level level, ChunkPos chunk){
+        AABB bb = new AABB(new BlockPos(chunk.getMinBlockX(), level.getMinBuildHeight(), chunk.getMinBlockZ()),
+                new BlockPos(chunk.getMaxBlockX(), level.getMaxBuildHeight(), chunk.getMaxBlockZ()));
+        return level.getEntities((Entity) null, bb, ent -> ent instanceof LivingEntity).stream().map(ent -> (LivingEntity) ent).toList();
     }
 
     public static ArrayList<LivingEntity> getLivingEntitiesLooking(LivingEntity looker, double radius, float inflate){return getLivingEntitiesLooking(looker, radius, inflate, true);}

@@ -31,12 +31,12 @@ import net.minecraftforge.network.PacketDistributor;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class ParticleMaker {
+
+    private static Set<BlockPos> aojCache = new HashSet<>();
+    private static int aojHash = 0;
 
     /**
      * function that gets the perimeter blocks of all of your areas of jurisdiction and draws particles in the perimeter.
@@ -44,33 +44,92 @@ public class ParticleMaker {
      * @param level
      * @param playerYLevel
      * @param areaCenters
-     * @param aojRadius
+     * @param sideLengths
      */
-    public static void createAreaOfJurisdiction(Level level, int playerYLevel, List<BlockPos> areaCenters, List<Integer> aojRadius) {
-        int defaultRadius = 16;
-        Set<BlockPos> entirePerimeter = new HashSet<>();
-        for(int i = 0; i < areaCenters.size(); i++){
-            BlockPos center = areaCenters.get(i);
-            int radius = aojRadius.size() > i ? aojRadius.get(i) : defaultRadius;
-            entirePerimeter.addAll(getPerimeter(center, radius));
+    public static void createAreaOfJurisdiction(Level level, int playerYLevel, List<BlockPos> areaCenters, List<Integer> sideLengths) {
+        if(!level.isClientSide()) return;
+        if(areaCenters.isEmpty()) return;
+        int inHash = Objects.hash(areaCenters, sideLengths);
+        if(inHash != aojHash){
+            aojHash = inHash;
+            int defaultRadius = 32;
+            Set<BlockPos> entirePerimeter = new HashSet<>();
+            for(int i = 0; i < areaCenters.size(); i++){
+                BlockPos center = areaCenters.get(i);
+                int length = sideLengths.size() > i ? sideLengths.get(i) : defaultRadius;
+                entirePerimeter.addAll(getPerimeter(center, length));
+            }
+            //quickly remove blockpos that are too deep in the general AOJ
+            entirePerimeter.removeIf(perimeterPos -> AreaOfJurisdictionAbility.isPosInAOJ(perimeterPos, areaCenters, sideLengths, 1));
+            //perform a crossing test once, to remove blockpos of adjacent areas.
+            Set<BlockPos> snapshot = Set.copyOf(entirePerimeter);
+            entirePerimeter.removeIf(perimeterPos -> crossingTest(perimeterPos, snapshot, areaCenters, sideLengths));
+            //add inner corners back in, since they were removed above
+            addInnerCorners(entirePerimeter, areaCenters, sideLengths);
+            //clear out awkward blockpos in the middle, with onl
+            aojCache = entirePerimeter;
         }
-        entirePerimeter.removeIf(perimeterPos -> AreaOfJurisdictionAbility.isPosInAOJ(perimeterPos, areaCenters, aojRadius, 1));
-        for(BlockPos perimeterPos: entirePerimeter){
+        for(BlockPos perimeterPos: aojCache){
             Vec3 center = perimeterPos.getCenter();
             level.addParticle(ParticleTypes.END_ROD, true, center.x, playerYLevel, center.z, 0, 0.3, 0);
         }
-
     }
 
-    public static List<BlockPos> getPerimeter(BlockPos center, int radius){
-        List<BlockPos> res = new ArrayList<>(List.of(center.atY(0).offset(radius, 0, radius), center.atY(0).offset(-radius, 0, radius), center.atY(0).offset(-radius, 0, -radius), center.atY(0).offset(radius, 0, -radius)));
+    private static void addInnerCorners(Set<BlockPos> perimeter, List<BlockPos> centers, List<Integer> sideLengths){
+        Set<BlockPos> innerCorners = new HashSet<>();
+        for(BlockPos pos1: perimeter){
+            for(BlockPos pos2: perimeter){
+                if(Math.abs(pos1.getX() - pos2.getX()) != 1 || Math.abs(pos1.getZ() - pos2.getZ()) != 1) continue;
+                BlockPos corner1 = new BlockPos(pos1.getX(), 0, pos2.getZ());
+                BlockPos corner2 = new BlockPos(pos2.getX(), 0, pos1.getZ());
+                if(perimeter.contains(corner1)) continue;
+                if(perimeter.contains(corner2)) continue;
+                BlockPos diagonal1 = new BlockPos(pos2.getX(), 0, pos1.getZ());
+                BlockPos diagonal2 = new BlockPos(pos1.getX(), 0, pos2.getZ());
+                if(AreaOfJurisdictionAbility.isPosInAOJ(diagonal1, centers, sideLengths)) innerCorners.add(diagonal1);
+                else innerCorners.add(diagonal2);
+            }
+        }
+        perimeter.addAll(innerCorners);
+    }
+
+    public static void clearCache() {
+        aojCache.clear();
+        aojHash = 0;
+    }
+
+    private static boolean crossingTest(BlockPos testPerimeterPos, Set<BlockPos> perimeter, List<BlockPos> centers, List<Integer> sideLengths){
+        BlockPos fromPos = testPerimeterPos.offset(-1, 0, 0);
+        BlockPos toPos = testPerimeterPos.offset(1, 0, 0);
+        if(AreaOfJurisdictionAbility.isPosInAOJ(fromPos, centers, sideLengths)
+                && AreaOfJurisdictionAbility.isPosInAOJ(toPos, centers, sideLengths)){
+            if(!perimeter.contains(fromPos) || !perimeter.contains(toPos)) return true;
+        }
+
+        fromPos = testPerimeterPos.offset(0, 0, -1);
+        toPos = testPerimeterPos.offset(0, 0, 1);
+        if(AreaOfJurisdictionAbility.isPosInAOJ(fromPos, centers, sideLengths)
+                && AreaOfJurisdictionAbility.isPosInAOJ(toPos, centers, sideLengths)){
+            if(!perimeter.contains(fromPos) || !perimeter.contains(toPos)) return true;
+        }
+        return false;
+    }
+
+    public static Set<BlockPos> getPerimeter(BlockPos center, int sideLength){
+        List<BlockPos> corners;
+        if(sideLength%2==0){
+            int radius = sideLength/2;
+            corners = new ArrayList<>(List.of(center.atY(0).offset(radius-1, 0, radius-1), center.atY(0).offset(-radius, 0, radius-1), center.atY(0).offset(-radius, 0, -radius), center.atY(0).offset(radius-1, 0, -radius)));
+        } else{
+            int radius = (sideLength - 1)/2;
+            corners = new ArrayList<>(List.of(center.atY(0).offset(radius, 0, radius), center.atY(0).offset(-radius, 0, radius), center.atY(0).offset(-radius, 0, -radius), center.atY(0).offset(radius, 0, -radius)));
+        }
+        Set<BlockPos> res = new HashSet<>(corners);
         for(int i = 0; i < 4; i++){
             int east = i%2 == 0 ? (i == 0 ? -1 : 1) : 0;
             int north = i%2 == 1 ? (i == 1 ? -1 : 1) : 0;
-            for(int j = 1; j < 2*radius + 1; j++){
-                BlockPos perimeterTest = res.get(i).offset(east*j, 0, north*j);
-                if(res.contains(perimeterTest)) break;
-                res.add(perimeterTest.atY(0));
+            for(int j = 0; j < sideLength; j++){
+                res.add(corners.get(i).offset(east*j, 0, north*j));
             }
         }
         return res;

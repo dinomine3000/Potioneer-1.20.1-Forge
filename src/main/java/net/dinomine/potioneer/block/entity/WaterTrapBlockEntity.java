@@ -185,35 +185,6 @@ public class WaterTrapBlockEntity extends BlockEntity implements GeoBlockEntity 
         player.sendSystemMessage(Component.translatable("pathway.potioneer.trap_effect_" + effectIndex));
     }
 
-    public void gatherAndSyncData(){
-        if(level != null && level.isClientSide) return;
-        if(!(level instanceof ServerLevel sLevel)) return;
-        //number of chains to render
-        numberOfChainsBelow = 0;
-        BlockPos pos = getBlockPos();
-        for(int y = pos.getY() - 1; y > level.getMinBuildHeight(); y--){
-            if(isPassable(level, pos.atY(y))) numberOfChainsBelow++;
-            else break;
-        }
-        if(id != null && sLevel.getEntity(id) instanceof Player player){
-            //sequence level
-            LivingEntityBeyonderCapability cap = sLevel.getEntity(id).getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve().get();
-            this.sequenceLevel = cap.getSequenceLevel();
-
-            //AOJ status
-            isInAOJ = AreaOfJurisdictionAbility.isPosInAOJ(pos, player, level.dimension());
-
-            //ally group list
-            casterAllyGroups = new ArrayList<>(AbilityFunctionHelper.getGroupsPlayerIsIn(sLevel, player));
-        } else {
-            casterAllyGroups = new ArrayList<>();
-            isInAOJ = false;
-            this.sequenceLevel = 8;
-        }
-        setChanged();
-        level.sendBlockUpdated(getBlockPos(), getBlockState(), getBlockState(), Block.UPDATE_CLIENTS);
-    }
-
     public static boolean isPassable(BlockGetter level, BlockPos pos) {
         BlockState state = level.getBlockState(pos);
         if (state.isAir()) return true;
@@ -249,6 +220,35 @@ public class WaterTrapBlockEntity extends BlockEntity implements GeoBlockEntity 
             level.playSound(null, getBlockPos(), ModSounds.WATER_TRAP.get(), SoundSource.BLOCKS, 1, (float) level.random.triangle(1, 0.2f));
         }
 
+    }
+
+    public void gatherAndSyncData(){
+        if(level != null && level.isClientSide) return;
+        if(!(level instanceof ServerLevel sLevel)) return;
+        //number of chains to render
+        numberOfChainsBelow = 0;
+        BlockPos pos = getBlockPos();
+        for(int y = pos.getY() - 1; y > level.getMinBuildHeight(); y--){
+            if(isPassable(level, pos.atY(y))) numberOfChainsBelow++;
+            else break;
+        }
+        if(id != null && sLevel.getEntity(id) instanceof Player player){
+            //sequence level
+            LivingEntityBeyonderCapability cap = sLevel.getEntity(id).getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve().get();
+            this.sequenceLevel = cap.getSequenceLevel();
+
+            //AOJ status
+            isInAOJ = AreaOfJurisdictionAbility.isPosInAOJ(pos, player, level.dimension());
+
+            //ally group list
+            casterAllyGroups = new ArrayList<>(AbilityFunctionHelper.getGroupsPlayerIsIn(sLevel, player));
+        } else {
+            casterAllyGroups = new ArrayList<>();
+            isInAOJ = false;
+            this.sequenceLevel = 8;
+        }
+        setChanged();
+        level.sendBlockUpdated(getBlockPos(), getBlockState(), getBlockState(), Block.UPDATE_CLIENTS);
     }
 
     @Override

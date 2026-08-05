@@ -23,7 +23,7 @@ import net.minecraft.world.level.Level;
 import java.util.*;
 
 public class AreaOfJurisdictionAbility extends PassiveAbility implements IAreaOfJurisdiction {
-    public static final int DEFAULT_RADIUS = 16;
+    public static final int DEFAULT_SIDE_LENGTH = 16;
     /**
      * pass the sequence level or pathway-sequence id to define the abilities sequence level
      * abilities that depend on changing pathways like Cogitation, that exists for every pathway, need to process their own pathway-sequence id here.
@@ -57,7 +57,7 @@ public class AreaOfJurisdictionAbility extends PassiveAbility implements IAreaOf
                 target.addEffect(new MobEffectInstance(ModEffects.AOJ_INFLUENCE.get(), 250, 0, false, false, true));
 
             CompoundTag dataTag = getData();
-            List<CompoundTag> centersList = getCentersCompoundTagList(dataTag, false, "");
+            List<CompoundTag> centersList = new ArrayList<>(getCentersCompoundTagList(dataTag, false, ""));
             boolean changedFlag = false;
             for(CompoundTag centerTag: centersList){
                 if(centerTag.contains("aoj_enabled") && !centerTag.getBoolean("aoj_enabled") && target.level().getGameTime() - centerTag.getLong("timestamp") > 20*2){
@@ -65,6 +65,7 @@ public class AreaOfJurisdictionAbility extends PassiveAbility implements IAreaOf
                     centerTag.putBoolean("aoj_enabled", true);
                     target.level().playSound(null, target.getOnPos(), SoundEvents.BEACON_ACTIVATE, SoundSource.NEUTRAL, 1, 1);
                     target.sendSystemMessage(Component.translatableWithFallback("ability.potioneer.aoj_active", "Your area of jurisdiction is active."));
+
                 }
             }
             if(changedFlag) setData(createDataTag(centersList, dataTag.getInt("nextIdx")), target);
@@ -98,7 +99,7 @@ public class AreaOfJurisdictionAbility extends PassiveAbility implements IAreaOf
             for (int i = 0; i < areasList.size(); i++) {
                 if(skipDisabled && !areasList.getCompound(i).getBoolean("aoj_enabled")) continue;
                 if(!dimensionId.isEmpty() && !dimensionId.equalsIgnoreCase(areasList.getCompound(i).getString("dimension"))) continue;
-                centerTags.add(areasList.getCompound(i));
+                centerTags.add(areasList.getCompound(i).copy());
             }
         }
         return centerTags;
@@ -153,7 +154,7 @@ public class AreaOfJurisdictionAbility extends PassiveAbility implements IAreaOf
         List<BlockPos> centers = new ArrayList<>();
         for(Ability abl: cap.getAbilitiesManager().getAbilities()){
             if(abl instanceof IAreaOfJurisdiction aojAbl){
-                centers.addAll(aojAbl.getCenters(dimension.location().toString()));
+                centers.addAll(aojAbl.getCenters(dimension.location().toString()).stream().toList());
             }
         }
         return centers;
@@ -171,8 +172,9 @@ public class AreaOfJurisdictionAbility extends PassiveAbility implements IAreaOf
 
     public static boolean isPosInAOJ(BlockPos testPos, Entity enforcer, String dimensionLocation){
         if(!(enforcer instanceof LivingEntity lEnforcer)) return false;
-        LivingEntityBeyonderCapability cap = lEnforcer.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve().get();
-        return isPosInAOJ(testPos, cap, dimensionLocation);
+        Optional<LivingEntityBeyonderCapability> optCap = lEnforcer.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve();
+        if(optCap.isEmpty()) return false;
+        return isPosInAOJ(testPos, optCap.get(), dimensionLocation);
     }
 
     public static boolean isPosInAOJ(BlockPos testPos, Entity enforcer, ResourceKey<Level> dimensionLocation){
@@ -185,27 +187,37 @@ public class AreaOfJurisdictionAbility extends PassiveAbility implements IAreaOf
 
     private static boolean isPosInAOJ(BlockPos testPos, LivingEntityBeyonderCapability enforcerCap, String dimensionLocation){
         List<BlockPos> centers = new ArrayList<>();
-        List<Integer> radii = new ArrayList<>();
+        List<Integer> sides = new ArrayList<>();
         for(Ability abl: enforcerCap.getAbilitiesManager().getAbilities()){
             if(abl instanceof IAreaOfJurisdiction aojAbl){
                 centers.addAll(aojAbl.getCenters(dimensionLocation));
-                radii.addAll(aojAbl.getRadius(dimensionLocation));
+                sides.addAll(aojAbl.getSides(dimensionLocation));
             }
         }
-        return isPosInAOJ(testPos, centers, radii, 0);
+        return isPosInAOJ(testPos, centers, sides);
     }
 
-    public static boolean isPosInAOJ(BlockPos testPos, List<BlockPos> centers, List<Integer> radii, int remove){
+    public static boolean isPosInAOJ(BlockPos testPos, List<BlockPos> centers, List<Integer> sideLengths){
+        return isPosInAOJ(testPos, centers, sideLengths, 0);
+    }
+
+    public static boolean isPosInAOJ(BlockPos testPos, List<BlockPos> centers, List<Integer> sideLengths, int remove){
         for(int k = 0; k < centers.size(); k++){
             BlockPos testCenter = centers.get(k);
-            int testRadius = radii.size() > k ? radii.get(k) : DEFAULT_RADIUS;
-            if(isPosContainedInArea(testPos, testCenter, testRadius - remove)) return true;
+            int testSide = sideLengths.get(k);
+            if(isPosContainedInArea(testPos, testCenter, testSide, remove)) return true;
         }
         return false;
     }
 
-    public static boolean isPosContainedInArea(BlockPos test, BlockPos center, int radius){
-        return Math.max(Math.abs(test.getX() - center.getX()), Math.abs(test.getZ() - center.getZ())) <= radius;
+    public static boolean isPosContainedInArea(BlockPos test, BlockPos center, int sideLengths, int remove){
+        if(sideLengths%2==0){
+            int radius = sideLengths/2;
+            return Math.max(Math.abs(test.getX() - center.getX() + 0.5), Math.abs(test.getZ() - center.getZ() + 0.5)) <= radius - remove;
+        } else {
+            int radius = (sideLengths-1)/2;
+            return Math.max(Math.abs(test.getX() - center.getX()), Math.abs(test.getZ() - center.getZ())) <= radius - remove;
+        }
     }
 
     @Override
@@ -214,8 +226,8 @@ public class AreaOfJurisdictionAbility extends PassiveAbility implements IAreaOf
     }
 
     @Override
-    public List<Integer> getRadius(String dimensionLocation) {
-        int radius = 8 + (10 - getSequenceLevel())*2;
-        return getCentersCompoundTagList(getData(), true, dimensionLocation).stream().map(ign -> radius).toList();
+    public List<Integer> getSides(String dimensionLocation) {
+        int sideLength = 16 + (10 - getSequenceLevel())*4;
+        return getCentersCompoundTagList(getData(), true, dimensionLocation).stream().map(ign -> sideLength).toList();
     }
 }
