@@ -42,9 +42,7 @@ import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraftforge.common.Tags;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.ServerChatEvent;
-import net.minecraftforge.event.entity.EntityEvent;
-import net.minecraftforge.event.entity.EntityJoinLevelEvent;
-import net.minecraftforge.event.entity.EntityStruckByLightningEvent;
+import net.minecraftforge.event.entity.*;
 import net.minecraftforge.event.entity.item.ItemTossEvent;
 import net.minecraftforge.event.entity.living.*;
 import net.minecraftforge.event.entity.player.*;
@@ -138,6 +136,16 @@ public class BeyonderEvents {
     }
 
     @SubscribeEvent
+    public static void onEntityTeleport(EntityTeleportEvent event){
+
+    }
+
+    @SubscribeEvent
+    public static void onTravelToDimension(EntityTravelToDimensionEvent event){
+
+    }
+
+    @SubscribeEvent
     @SuppressWarnings("removal")
     public static void testChangeSize(EntityEvent.Size event){
         /*if(!(event.getEntity() instanceof Player player)) return;
@@ -171,9 +179,15 @@ public class BeyonderEvents {
         event.getEntity().getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(LivingEntityBeyonderCapability::onRespawn);
     }
 
+    @SubscribeEvent
+    public static void onEntityLeaveLevel(EntityLeaveLevelEvent event){
+        if(!(event.getEntity() instanceof ServerPlayer player)) return;
+        System.out.println("left");
+    }
+
     //works best for synching. handles player respawn, logging in and cloning.
     @SubscribeEvent
-    public static void onWorldLoad(EntityJoinLevelEvent event){
+    public static void onEntityJoinLevel(EntityJoinLevelEvent event){
         if(!(event.getEntity() instanceof ServerPlayer player)) return;
         player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(stats -> {
             SequenceSTCSyncRequest.sendUpdateToClient(stats, player);
