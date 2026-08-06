@@ -66,35 +66,7 @@ public class MistBlinkingAbility extends Ability {
         Vec3 pos = caster.getEyePosition();
         fromLevel.sendParticles(ParticleTypes.FALLING_WATER, pos.x, pos.y, pos.z, 50, 1, 0, 1, 0);
 
-        Vec3 motion = caster.getDeltaMovement();
-        Vec3 targetPos = blockPos.getCenter();
-
-        if (fromLevel != toLevel) {
-            // 1. Force the target chunk to load immediately on the target server level
-            toLevel.getChunkSource().addRegionTicket(
-                    net.minecraft.server.level.TicketType.POST_TELEPORT,
-                    new net.minecraft.world.level.ChunkPos(blockPos),
-                    1,
-                    caster.getId()
-            );
-
-            // 2. Perform cross-dimension transfer
-            Entity transferredEntity = caster.changeDimension(toLevel, new SimpleTeleporter(targetPos));
-
-            // 3. If caster is a Player, handle network sync & motion re-application
-            if (transferredEntity instanceof ServerPlayer player) {
-                player.connection.teleport(targetPos.x, targetPos.y, targetPos.z, player.getYRot(), player.getXRot());
-                player.setDeltaMovement(motion);
-                player.hasImpulse = true;
-            } else if (transferredEntity != null) {
-                transferredEntity.setDeltaMovement(motion);
-                transferredEntity.hasImpulse = true;
-            }
-        } else {
-            caster.teleportTo(blockPos.getX() + 0.5f, blockPos.getY(), blockPos.getZ() + 0.5);
-            caster.setDeltaMovement(motion);
-            caster.hasImpulse = true;
-        }
+        AbilityFunctionHelper.teleportEntity(caster, fromLevel, toLevel, blockPos);
 
         cap.requestActiveSpiritualityCost(cost);
     }
