@@ -23,6 +23,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -137,9 +138,27 @@ public class WaterTrapBlockEntity extends BlockEntity implements GeoBlockEntity 
                         dataTag.putInt("x", getBlockPos().getX());
                         dataTag.putInt("y", getBlockPos().getY());
                         dataTag.putInt("z", getBlockPos().getZ());
-                        dataTag.putString("dim", level.dimension().location().toString());
+                        ResourceLocation dimLoc = level.dimension().location();
+                        String dimKey = dimLoc.toString();
+                        dataTag.putString("dim", dimKey);
                         ServerTokenCache.addToken(token, 20*15, dataTag);
-                        AbilityFunctionHelper.sendCommandMessage(caster, "/beyonderability teleport " + token, Component.translatable("message.potioneer.message.trap", getBlockPos().getX(), getBlockPos().getY(), getBlockPos().getZ()), Component.translatable("message.potioneer.clickable.trap"), Component.translatable("message.potioneer.tooltip.trap"));
+                        if(caster.level().dimension().location().toString().equalsIgnoreCase(dimKey)){
+                            AbilityFunctionHelper.sendCommandMessage(caster, "/beyonderability teleport " + token, Component.translatable("message.potioneer.message.trap", getBlockPos().getX(), getBlockPos().getY(), getBlockPos().getZ()), Component.translatable("message.potioneer.clickable.trap"), Component.translatable("message.potioneer.tooltip.trap"));
+
+                        } else {
+                            AbilityFunctionHelper.sendCommandMessage(
+                                    caster,
+                                    "/beyonderability teleport " + token,
+                                    Component.translatable(
+                                            "message.potioneer.message.trap_dimension",
+                                            Component.translatable("dimension." + dimLoc.getNamespace() + "." + dimLoc.getPath()),
+                                            getBlockPos().getX(),
+                                            getBlockPos().getY(),
+                                            getBlockPos().getZ()
+                                    ),
+                                    Component.translatable("message.potioneer.clickable.trap"),
+                                    Component.translatable("message.potioneer.tooltip.trap")
+                            );                        }
                     }
                 }
             }

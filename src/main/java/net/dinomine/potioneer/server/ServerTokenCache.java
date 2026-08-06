@@ -7,9 +7,7 @@ import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 @Mod.EventBusSubscriber
 public class ServerTokenCache {
@@ -34,7 +32,7 @@ public class ServerTokenCache {
     }
     @SubscribeEvent
     public static void tick(TickEvent.ServerTickEvent event){
-        for(UUID token: tokenMap.keySet()){
+        for(UUID token: new HashSet<>(tokenMap.keySet())){
             int ttl = tokenMap.get(token) - 1;
             if(ttl < 1){
                 tokenDataMap.remove(token);

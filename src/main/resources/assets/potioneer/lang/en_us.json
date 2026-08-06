@@ -421,6 +421,7 @@
   "message.potioneer.contract_clickable": "You have %s seconds to respond.",
   "message.potioneer.contract_tooltip": "Click here to open the contract.",
   "message.potioneer.message.trap": "One of your traps activated at %s, %s, %s.",
+  "message.potioneer.message.trap_dimension": "One of your traps activated in %s, at %s, %s, %s.",
   "message.potioneer.clickable.trap": "[Blink to Position].",
   "message.potioneer.tooltip.trap": "Click here to mist-blink to water trap.",
 
