@@ -9,7 +9,6 @@ import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
 import net.dinomine.potioneer.block.custom.RulePylonBlock;
 import net.dinomine.potioneer.block.entity.RulePylonBlockEntity;
 import net.dinomine.potioneer.savedata.DimensionChunkSavedData;
-import net.dinomine.potioneer.util.misc.ModTags;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.*;
 import net.minecraft.network.chat.Component;
@@ -19,7 +18,6 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Block;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -44,7 +42,7 @@ public class RulePylonAbility extends Ability implements IAreaOfJurisdiction {
         return AbilityFunctionHelper.placeBlockAtReach(target.level(), cap, target, this::placeBlock);
     }
 
-    private int getMaxPylons(){return 1;}
+    public static int getMaxPylons(int sequenceLevel){return 1;}
 
     private boolean placeBlock(Level level, BlockPos positionToPlace, LivingEntityBeyonderCapability cap, LivingEntity player){
         if(!canAddNewPylon(level.getServer(), player)) return false;
@@ -56,7 +54,7 @@ public class RulePylonAbility extends Ability implements IAreaOfJurisdiction {
     }
 
     private boolean canAddNewPylon(MinecraftServer server, LivingEntity owner){
-        int max = getMaxPylons();
+        int max = getMaxPylons(sequenceLevel);
         Set<BlockPos> pylons = DimensionChunkSavedData.getAllPylonPositionsOwnedBy(server, owner);
         return pylons.size() < max;
     }
@@ -67,9 +65,10 @@ public class RulePylonAbility extends Ability implements IAreaOfJurisdiction {
         if(target.tickCount%(20*3) == target.getId()){
             List<BlockPos> center = new ArrayList<>();
             List<Integer> sides = new ArrayList<>();
-            DimensionChunkSavedData.collectRenderingDataForOwn(target.level().getServer(), target, center, sides);
+            List<String> dims = new ArrayList<>();
+            DimensionChunkSavedData.collectAojDataForOwner(target.level().getServer(), target, center, sides, dims);
             CompoundTag dataTag = getData();
-            CompoundTag aojTag = getCompoundTag(center, sides);
+            CompoundTag aojTag = getCompoundTag(center, sides, dims);
             dataTag.put("aoj", aojTag);
             setData(dataTag, target);
         }
@@ -77,12 +76,12 @@ public class RulePylonAbility extends Ability implements IAreaOfJurisdiction {
 
     @Override
     public List<BlockPos> getCenters(String dimensionLocation) {
-        return getCentersFromTag(getData().getCompound("aoj"));
+        return getCentersFromTag(getData().getCompound("aoj"), dimensionLocation);
     }
 
     @Override
     public List<Integer> getSides(String dimensionLocation) {
-        return getSideFromTag(getData().getCompound("aoj"));
+        return getSideFromTag(getData().getCompound("aoj"), dimensionLocation);
     }
 
     public record Rule(String id, Component title){

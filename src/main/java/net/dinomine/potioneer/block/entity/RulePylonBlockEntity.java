@@ -1,5 +1,6 @@
 package net.dinomine.potioneer.block.entity;
 
+import net.dinomine.potioneer.beyonder.abilities.AbilityFunctionHelper;
 import net.dinomine.potioneer.beyonder.abilities.tyrant.RulePylonAbility.*;
 import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
 import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
@@ -13,8 +14,10 @@ import net.minecraft.network.Connection;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -52,7 +55,7 @@ public class RulePylonBlockEntity extends BlockEntity implements GeoBlockEntity 
     public void setPlacedByPlayer(ServerLevel level, UUID ownerId, int sequenceLevel){
         this.ownerId = ownerId;
         this.sequenceLevel = sequenceLevel;
-        attemptClaimChunks(level);
+        attemptClaimChunks(level, true, true);
     }
 
     public void setRules(Map<Rule, Punishment> rules){this.rulePunishmentMap = rules;}
@@ -74,7 +77,7 @@ public class RulePylonBlockEntity extends BlockEntity implements GeoBlockEntity 
 
     private int tickCount = 0;
     public void tick(ServerLevel pLevel, BlockPos pPos, BlockState pState) {
-        if(tickCount++ > (20*10)) gatherAndSyncData(pLevel);
+        if(tickCount++ > (20*5)) gatherAndSyncData(pLevel);
         for(Law law: laws) law.execution().execute(this);
     }
 
@@ -86,32 +89,47 @@ public class RulePylonBlockEntity extends BlockEntity implements GeoBlockEntity 
             return;
         }
         tickCount = 0;
-        working = sLevel.canSeeSky(getBlockPos());
-        if(ownerId != null){
-            if(sLevel.getEntity(ownerId) != null){
-                //sequence level
-                LivingEntityBeyonderCapability cap = sLevel.getEntity(ownerId).getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve().get();
-                sequenceLevel = cap.getSequenceLevel();
-            }
-        } else {
-            sequenceLevel = 5;
-        }
-        attemptClaimChunks(sLevel);
+        //sequence level
+        LivingEntityBeyonderCapability cap = sLevel.getEntity(ownerId).getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve().get();
+        sequenceLevel = cap.getSequenceLevel();
+        if(sLevel.getEntity(ownerId) instanceof Player player)
+            casterGroups = new HashSet<>(AbilityFunctionHelper.getGroupsPlayerIsIn(sLevel, player));
+
+        boolean workingO = working;
+        boolean shouldWork = sLevel.canSeeSky(getBlockPos());
+        attemptClaimChunks(sLevel, workingO, shouldWork);
         setChanged();
         level.sendBlockUpdated(getBlockPos(), getBlockState(), getBlockState(), Block.UPDATE_CLIENTS);
     }
 
-    private void attemptClaimChunks(ServerLevel level){
-        claimedChunks.clear();
-        setClaimTo(level, Set.of(new ChunkPos(getBlockPos())));
+    private void setExtendsAoj(ServerLevel serverLevel, boolean extendsAoj){
+        this.extendsAoj = extendsAoj;
+        DimensionChunkSavedData.from(serverLevel).setAojStatus(getBlockPos(), extendsAoj);
     }
 
-    private void setClaimTo(ServerLevel level, Set<ChunkPos> chunksWantsToClaim){
+    private void attemptClaimChunks(ServerLevel level, boolean workingBefore, boolean workingNow){
+        claimedChunks.clear();
+        if(workingBefore && workingNow) setClaimTo(level, Set.of(new ChunkPos(getBlockPos())));
+        else if(workingBefore) {
+            DimensionChunkSavedData.from(level).removePylon(getBlockPos());
+            working = false;
+        }
+        else if(workingNow){
+            if(setClaimTo(level, Set.of(new ChunkPos(getBlockPos())))) working = true;
+        }
+    }
+
+    private boolean setClaimTo(ServerLevel level, Set<ChunkPos> chunksWantsToClaim){
         DimensionChunkSavedData data = DimensionChunkSavedData.from(level);
         data.removePylon(getBlockPos());
+        boolean flag = false;
         for(ChunkPos pos: chunksWantsToClaim){
-            if(data.claimChunk(level, pos, getBlockPos(), ownerId, sequenceLevel)) claimedChunks.add(pos);
+            if(data.claimChunk(level, pos, getBlockPos(), ownerId, sequenceLevel)){
+                claimedChunks.add(pos);
+                flag = true;
+            }
         }
+        return flag;
     }
 
     @Nullable
@@ -266,19 +284,6 @@ public class RulePylonBlockEntity extends BlockEntity implements GeoBlockEntity 
     private PlayState predicate(AnimationState<GeoAnimatable> state) {
         //state.setAnimation(RawAnimation.begin().thenLoop("idle"));
         return PlayState.STOP;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        RulePylonBlockEntity that = (RulePylonBlockEntity) o;
-        return Objects.equals(this.worldPosition, that.worldPosition);
-    }
-
-    @Override
-    public int hashCode() {
-        return this.worldPosition != null ? this.worldPosition.hashCode() : 0;
     }
 
     @Override
