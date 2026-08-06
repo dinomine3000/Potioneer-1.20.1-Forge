@@ -5,7 +5,6 @@ import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffect;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
-import net.dinomine.potioneer.beyonder.effects.tyrant.ContractedEffect;
 import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
 import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
 import net.dinomine.potioneer.entities.ModEntities;
@@ -46,6 +45,21 @@ import java.util.function.Supplier;
 
 public class AbilityFunctionHelper {
 
+    public static @Nullable Entity getEntityAcrossDimensions(ServerLevel level, UUID id){
+        for(ServerLevel lv: level.getServer().getAllLevels()){
+            Entity ent = lv.getEntity(id);
+            if(ent != null) return ent;
+        }
+        return null;
+    }
+    public static @Nullable Entity getEntityAcrossDimensions(ServerLevel level, int id){
+        for(ServerLevel lv: level.getServer().getAllLevels()){
+            Entity ent = lv.getEntity(id);
+            if(ent != null) return ent;
+        }
+        return null;
+    }
+
     public static ServerLevel getDimensionKey(MinecraftServer server, String dimKey){
         return server.getLevel(ResourceKey.create(Registries.DIMENSION, new ResourceLocation(dimKey)));
     }
@@ -76,6 +90,9 @@ public class AbilityFunctionHelper {
         if(isPlayerBerserk(player)) return List.of();
         return trueAnswer;
     }
+    public static List<String> getRealGroupsPlayerIsIn(ServerLevel level, UUID player){
+        return getGroupsPlayerIsIn(level, player);
+    }
 
     public static boolean isEntityInAnyGroup(ServerLevel level, LivingEntity target, List<String> testGroups){
         if(!(target instanceof Player player)) return false;
@@ -83,6 +100,7 @@ public class AbilityFunctionHelper {
         return !Collections.disjoint(realGroups, testGroups);
     }
 
+    @SuppressWarnings("DimensionEntityLookup")
     public static List<Player> getAlliesOf(ServerLevel level, Player player){
         if(isPlayerBerserk(player)) return List.of();
         List<UUID> allyIds = getAlliesOf(level, player.getUUID());
@@ -103,6 +121,7 @@ public class AbilityFunctionHelper {
     }
 
     private static List<String> getGroupsPlayerIsIn(ServerLevel level, UUID player){
+        if(player == null) return List.of();
         AllySystemSaveData data = AllySystemSaveData.from(level);
         return data.getGroupNamesPlayerIsIn(player);
     }

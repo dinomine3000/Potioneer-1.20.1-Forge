@@ -128,7 +128,7 @@ public class WaterTrapBlockEntity extends BlockEntity implements GeoBlockEntity 
                 applyEffectsToEntity(sLevel, getBlockPos(), ent);
             }
             if(id != null){
-                Entity ent = sLevel.getEntity(id);
+                Entity ent = AbilityFunctionHelper.getEntityAcrossDimensions(sLevel, id);
                 if(ent instanceof LivingEntity caster){
                     LivingEntityBeyonderCapability cap = caster.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve().get();
                     if(cap.getAbilitiesManager().hasAbilityOrBetter(Abilities.TYRANT_WATER_SPELLS.getAblId(), 7)){
@@ -232,21 +232,20 @@ public class WaterTrapBlockEntity extends BlockEntity implements GeoBlockEntity 
             if(isPassable(level, pos.atY(y))) numberOfChainsBelow++;
             else break;
         }
-        if(id != null && sLevel.getEntity(id) instanceof Player player){
+        if(id != null && AbilityFunctionHelper.getEntityAcrossDimensions(sLevel, id) instanceof Player player){
             //sequence level
-            LivingEntityBeyonderCapability cap = sLevel.getEntity(id).getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve().get();
+            LivingEntityBeyonderCapability cap = player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve().get();
             this.sequenceLevel = cap.getSequenceLevel();
 
             //AOJ status
             isInAOJ = AreaOfJurisdictionAbility.isPosInAOJ(pos, player, level.dimension());
 
-            //ally group list
-            casterAllyGroups = new ArrayList<>(AbilityFunctionHelper.getGroupsPlayerIsIn(sLevel, player));
         } else {
-            casterAllyGroups = new ArrayList<>();
             isInAOJ = false;
             this.sequenceLevel = 8;
         }
+        //ally group list
+        casterAllyGroups = new ArrayList<>(AbilityFunctionHelper.getRealGroupsPlayerIsIn(sLevel, id));
         setChanged();
         level.sendBlockUpdated(getBlockPos(), getBlockState(), getBlockState(), Block.UPDATE_CLIENTS);
     }

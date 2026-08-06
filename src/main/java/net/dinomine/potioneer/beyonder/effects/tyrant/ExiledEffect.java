@@ -39,7 +39,7 @@ public class ExiledEffect extends AbstractSourceRecipientEffect {
         tickDownTime(target);
         boolean pushFlag = false;
         for(UUID id: this.sources.keySet()){
-            Entity enforcer = serverLevel.getEntity(id);
+            Entity enforcer = AbilityFunctionHelper.getEntityAcrossDimensions(serverLevel, id);
             if(!AreaOfJurisdictionAbility.isEntityInAOJ(target, enforcer)) return;
             if(!pushFlag){
                 if(timeInAoj-- < 1 && target.tickCount%25 == 0){

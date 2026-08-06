@@ -16,6 +16,7 @@ import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.ChunkPos;
@@ -72,7 +73,7 @@ public class RulePylonBlockEntity extends BlockEntity implements GeoBlockEntity 
 
     public void brokeRule(Rule ruleBroken, LivingEntity ruleBreaker, ServerLevel level){
         if(!rulePunishmentMap.containsKey(ruleBroken)) return;
-        rulePunishmentMap.get(ruleBroken).execution().execute(ruleBreaker, ruleBreaker.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve().get(), level.getEntity(ownerId));
+        rulePunishmentMap.get(ruleBroken).execution().execute(ruleBreaker, ruleBreaker.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve().get(), AbilityFunctionHelper.getEntityAcrossDimensions(level, ownerId));
     }
 
     private int tickCount = 0;
@@ -90,11 +91,14 @@ public class RulePylonBlockEntity extends BlockEntity implements GeoBlockEntity 
         }
         tickCount = 0;
         //sequence level
-        LivingEntityBeyonderCapability cap = sLevel.getEntity(ownerId).getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve().get();
-        sequenceLevel = cap.getSequenceLevel();
-        if(sLevel.getEntity(ownerId) instanceof Player player)
-            casterGroups = new HashSet<>(AbilityFunctionHelper.getGroupsPlayerIsIn(sLevel, player));
+        Entity ent = AbilityFunctionHelper.getEntityAcrossDimensions(sLevel, ownerId);
+        if(ent instanceof LivingEntity livingEntity){
+            LivingEntityBeyonderCapability cap = livingEntity.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve().get();
+            sequenceLevel = cap.getSequenceLevel();
+            if(livingEntity instanceof Player player)
+                casterGroups = new HashSet<>(AbilityFunctionHelper.getGroupsPlayerIsIn(sLevel, player));
 
+        }
         boolean workingO = working;
         boolean shouldWork = sLevel.canSeeSky(getBlockPos());
         attemptClaimChunks(sLevel, workingO, shouldWork);
