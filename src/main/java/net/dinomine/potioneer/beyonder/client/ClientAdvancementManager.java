@@ -1,9 +1,10 @@
 package net.dinomine.potioneer.beyonder.client;
 
+import net.dinomine.potioneer.beyonder.client.screen.DefaultAdvancementScreen;
+import net.dinomine.potioneer.beyonder.client.screen.MinigameScreen;
 import net.dinomine.potioneer.network.PacketHandler;
 import net.dinomine.potioneer.network.messages.advancement.AdvancementFailMessageCTS;
 import net.dinomine.potioneer.network.messages.advancement.PlayerAdvanceMessage;
-import net.dinomine.potioneer.sound.ModSounds;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
@@ -16,61 +17,36 @@ import java.util.List;
 
 @OnlyIn(Dist.CLIENT)
 public class ClientAdvancementManager {
-    public static int count = 30;
-    public static int maxCount = 30;
     public static int targetSequence = 9;
-    static float maxTime = 1;
-    public static float progress = 1;
-    public static int x;
-    public static int y;
-    public static int difficulty;
-    public static boolean start;
 
-    public static void setDifficulty(int diff){
-        difficulty = Mth.clamp(diff, 0, 10);
-    }
-
-    public static void render(Screen screen, float partialTick){
-        if(!start){
-            progress -= partialTick*0.05f/maxTime;
-            if(progress < 0){
-                gameOver(screen, false);
-                Minecraft.getInstance().player.sendSystemMessage(Component.literal("Failed advancement"));
-            }
+    /**
+     * Starts a minigame screen and hooks into its result.
+     */
+    public static void startGame(Screen screen, int difficulty) {
+        if (screen instanceof MinigameScreen minigame) {
+            minigame.setCompletionCallback(success -> onGameFinished(screen, success));
+            minigame.setDifficulty(Mth.clamp(difficulty, 0, 10));
+            Minecraft.getInstance().setScreen(screen);
         }
     }
 
-    public static void startGame(Screen screen){
-        count = 4*difficulty+10;
-        maxCount = count;
-        maxTime = 1.5f-difficulty*0.1f;
-        progress = 1;
-        start = true;
-        x = screen.width/2 - 15;
-        y = screen.height/2 + 5;
-        Minecraft.getInstance().player.sendSystemMessage(Component.literal("Difficulty: " + difficulty + "/10."));
+    /**
+     * Convenience method to directly launch the standard AdvancementScreen.
+     */
+    public static void startAdvancementMinigame(int sequence, int diff) {
+        targetSequence = sequence;
+        startGame(new DefaultAdvancementScreen(), diff);
     }
 
-    public static void onButtonSucceed(Screen screen) {
-        start = false;
-        count--;
-        progress = 1;
-        Player player = Minecraft.getInstance().player;
-        if(player != null){
-//            Minecraft.getInstance().level.playSound(player, player, ModSounds.ADVANCEMENT_CLICK.get(), SoundSource.MASTER, 1, 1);
-            Minecraft.getInstance().player.playSound(ModSounds.ADVANCEMENT_CLICK.get(), 1 , 1);
-        }
-        x = (int) (Math.random() * (screen.width - 80) + 40);
-        y = (int) (Math.random() * (screen.height - 80) + 40);
-        if(count < 1) gameOver(screen, true);
-    }
-
-    public static void gameOver(Screen screen, boolean success){
+    private static void onGameFinished(Screen screen, boolean success) {
         screen.onClose();
-        if(success){
+
+        Player player = Minecraft.getInstance().player;
+        if (player == null) return;
+
+        if (success) {
             PacketHandler.sendMessageCTS(new PlayerAdvanceMessage(List.of(targetSequence)));
         } else {
-            Player player = Minecraft.getInstance().player;
             PacketHandler.INSTANCE.sendToServer(new AdvancementFailMessageCTS(targetSequence));
             player.sendSystemMessage(Component.literal("Lost control on the spot. oh well."));
         }

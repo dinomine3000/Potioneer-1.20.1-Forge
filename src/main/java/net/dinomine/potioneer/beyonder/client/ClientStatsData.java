@@ -1,6 +1,6 @@
 package net.dinomine.potioneer.beyonder.client;
 
-import net.dinomine.potioneer.beyonder.client.screen.AdvancementScreen;
+import net.dinomine.potioneer.beyonder.client.screen.DefaultAdvancementScreen;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
 import net.dinomine.potioneer.beyonder.ModAttributes;
 import net.dinomine.potioneer.beyonder.player.BeyonderStats;
@@ -38,10 +38,9 @@ public class ClientStatsData {
         LivingEntityBeyonderCapability cap = capOpt.get();
         int pathwaySequenceId = cap.getPathwaySequenceId();
         int sanity = (int) cap.getSanity();
-        ClientAdvancementManager.setDifficulty(addedDifficulty + calculateDifficultyClient(pathwaySequenceId, newSeq, sanity, actingProgress));
 //        ClientAdvancementManager.difficulty = 10;     //Debug
         ClientAdvancementManager.targetSequence = newSeq;
-        Minecraft.getInstance().setScreen(new AdvancementScreen());
+        ClientAdvancementManager.startGame(new DefaultAdvancementScreen(), addedDifficulty + calculateDifficultyClient(pathwaySequenceId, newSeq, sanity, actingProgress));
     }
 
     public static Optional<LivingEntityBeyonderCapability> getCapability(){
