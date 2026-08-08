@@ -1,20 +1,25 @@
 package net.dinomine.potioneer.beyonder.client.screen;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import net.dinomine.potioneer.Potioneer;
 import net.dinomine.potioneer.beyonder.abilities.tyrant.RulePylonAbility;
 import net.dinomine.potioneer.beyonder.abilities.tyrant.RulePylonAbility.*;
+import net.dinomine.potioneer.block.entity.RulePylonBlockEntity;
 import net.dinomine.potioneer.network.messages.abilityRelevant.abilitySpecific.RulePylonMessage;
+import net.dinomine.potioneer.sound.ModSounds;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.client.gui.components.Renderable;
+import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundEvents;
 
 import java.util.*;
 import java.util.function.Supplier;
@@ -86,10 +91,12 @@ public class RulePylonScreen extends Screen {
         for (UUID lawId : appliedLaws.keySet()) refreshLaw(lawId, lawIdx++);
         for (UUID ruleId : appliedRules.keySet()) refreshRulePair(ruleId, lawIdx++);
 
-        addLawButton = new ImageButton(leftPos + 5, topPos + IMAGE_HEIGHT, 13, 11, 5, IMAGE_HEIGHT, 11, TEXTURE, TEXTURE_WIDTH, TEXTURE_HEIGHT, btn -> addLaw());
+        addLawButton = new ImageButton(leftPos + 5, topPos + IMAGE_HEIGHT, 13, 11, 5, IMAGE_HEIGHT, 11, TEXTURE, TEXTURE_WIDTH, TEXTURE_HEIGHT, btn -> addLaw(), Component.translatable("gui.potioneer.add_law"));
+        addLawButton.setTooltip(Tooltip.create(Component.translatable("gui.potioneer.add_law")));
         addRenderableWidget(addLawButton);
 
-        addRuleButton = new ImageButton(leftPos + 20, topPos + IMAGE_HEIGHT, 13, 11, 5, IMAGE_HEIGHT, 11, TEXTURE, TEXTURE_WIDTH, TEXTURE_HEIGHT, btn -> addRulePair());
+        addRuleButton = new ImageButton(leftPos + 20, topPos + IMAGE_HEIGHT, 13, 11, 5, IMAGE_HEIGHT, 11, TEXTURE, TEXTURE_WIDTH, TEXTURE_HEIGHT, btn -> addRulePair(), Component.translatable("gui.potioneer.add_rule"));
+        addRuleButton.setTooltip(Tooltip.create(Component.translatable("gui.potioneer.add_rule")));
         addRenderableWidget(addRuleButton);
     }
 
@@ -110,17 +117,37 @@ public class RulePylonScreen extends Screen {
         String tx = "owned by: dinomine3000";
         pGuiGraphics.drawString(this.font, tx, leftPos + 5, topPos + 20, 0, false);
 
-        pGuiGraphics.blit(TEXTURE, leftPos + 5, topPos + 35, 176, 70, 7, 7, TEXTURE_WIDTH, TEXTURE_HEIGHT);
-        pGuiGraphics.drawString(this.font, "Pylon can see the sky.", leftPos + 15, topPos + 35, 0, false);
-
+        RulePylonBlockEntity be = (RulePylonBlockEntity) Minecraft.getInstance().level.getBlockEntity(pylonPos);
+        if(be.isWorking()){
+            pGuiGraphics.blit(TEXTURE, leftPos + 5, topPos + 35, 176, 70, 7, 7, TEXTURE_WIDTH, TEXTURE_HEIGHT);
+            pGuiGraphics.drawString(this.font, "Pylon can see the sky.", leftPos + 15, topPos + 35, 0, false);
+        } else {
+            pGuiGraphics.blit(TEXTURE, leftPos + 5, topPos + 35, 176, 78, 7, 7, TEXTURE_WIDTH, TEXTURE_HEIGHT);
+            if(Minecraft.getInstance().level.canSeeSky(pylonPos))
+                pGuiGraphics.drawString(this.font, "Chunk claimed by someone else", leftPos + 15, topPos + 35, 0, false);
+            else
+                pGuiGraphics.drawString(this.font, "Pylon can't see the sky", leftPos + 15, topPos + 35, 0, false);
+        }
         pGuiGraphics.drawString(this.font, "Area: 1 Chunk", leftPos + 5, topPos + 50, 0, false);
 
         pGuiGraphics.blit(TEXTURE, leftPos + 5, topPos + 63, 176, 43, 13, 13, TEXTURE_WIDTH, TEXTURE_HEIGHT);
         pGuiGraphics.drawString(this.font, "Extend area of jurisdiction?", leftPos + 20, topPos + 66, 0, false);
-        if(extendAoj)
-            pGuiGraphics.blit(TEXTURE, leftPos + 6, topPos + 64, 176, 57, 11, 11, TEXTURE_WIDTH, TEXTURE_HEIGHT);
+        if(extendAoj) pGuiGraphics.blit(TEXTURE, leftPos + 6, topPos + 64, 176, 57, 11, 11, TEXTURE_WIDTH, TEXTURE_HEIGHT);
 
         pGuiGraphics.drawString(this.font, "Rules and Laws:", leftPos + 5, topPos + 83, 0, false);
+    }
+
+    @Override
+    public boolean mouseClicked(double pMouseX, double pMouseY, int pButton) {
+        if(pButton == InputConstants.MOUSE_BUTTON_LEFT){
+            if(pMouseX > leftPos + 5 && pMouseX < leftPos + 18
+                    && pMouseY > topPos + 63 && pMouseY < topPos + 76){
+                extendAoj = !extendAoj;
+                Minecraft.getInstance().player.playSound(SoundEvents.UI_BUTTON_CLICK.get());
+                return true;
+            }
+        }
+        return super.mouseClicked(pMouseX, pMouseY, pButton);
     }
 
     @Override
@@ -143,7 +170,7 @@ public class RulePylonScreen extends Screen {
 
     private void refreshLaw(UUID lawId, int previousCount) {
         int yLevel = topPos + 95 + 14 * previousCount;
-        ConfigButton<Law> lawButton = new ConfigButton<>(leftPos + 6, yLevel, 147, 14, 6, 208, 14, TEXTURE, TEXTURE_WIDTH, TEXTURE_HEIGHT, btn -> cycleLaw(lawId), () -> appliedLaws.get(lawId));
+        ConfigButton<Law> lawButton = new ConfigButton<>(leftPos + 6, yLevel, 147, 14, 6, 208, 14, TEXTURE, TEXTURE_WIDTH, TEXTURE_HEIGHT, btn -> cycleLaw(lawId), () -> appliedLaws.get(lawId), "gui.potioneer.law");
         ImageButton removeButton = new ImageButton(leftPos + 153, yLevel, 17, 14, 153, 208, 14, TEXTURE, TEXTURE_WIDTH, TEXTURE_HEIGHT, btn -> removeLaw(lawId, lawButton, btn));
         addRenderableWidget(lawButton);
         addRenderableWidget(removeButton);
@@ -212,9 +239,9 @@ public class RulePylonScreen extends Screen {
     private void refreshRulePair(UUID pairId, int previousCount) {
         int yLevel = topPos + 95 + 14 * previousCount;
 
-        ConfigButton<Rule> ruleButton = new ConfigButton<>(leftPos + 6, yLevel,                         147, 14, 6, 236, 28, TEXTURE, TEXTURE_WIDTH, TEXTURE_HEIGHT, btn -> cycleRule(pairId), () -> appliedRules.get(pairId).rule());
-        ConfigButton<Punishment> punishmentButton = new ConfigButton<>(leftPos + 6, yLevel + 14,    147, 14, 6, 250, 28, TEXTURE, TEXTURE_WIDTH, TEXTURE_HEIGHT, btn ->  cyclePunishment(pairId), () -> appliedRules.get(pairId).punishment());
-        ImageButton removeButton = new ImageButton(leftPos + 153, yLevel, 17, 14, 153, 188, 14, TEXTURE, TEXTURE_WIDTH, TEXTURE_HEIGHT, btn -> removeRulePair(pairId, ruleButton, punishmentButton, btn));
+        ConfigButton<Rule> ruleButton = new ConfigButton<>(leftPos + 6, yLevel,                         147, 14, 6, 236, 28, TEXTURE, TEXTURE_WIDTH, TEXTURE_HEIGHT, btn -> cycleRule(pairId), () -> appliedRules.get(pairId).rule(), "gui.potioneer.rule");
+        ConfigButton<Punishment> punishmentButton = new ConfigButton<>(leftPos + 6, yLevel + 14,    147, 14, 6, 250, 28, TEXTURE, TEXTURE_WIDTH, TEXTURE_HEIGHT, btn ->  cyclePunishment(pairId), () -> appliedRules.get(pairId).punishment(), "gui.potioneer.punishment");
+        ImageButton removeButton = new ImageButton(leftPos + 153, yLevel, 17, 14, 153, 208, 14, TEXTURE, TEXTURE_WIDTH, TEXTURE_HEIGHT, btn -> removeRulePair(pairId, ruleButton, punishmentButton, btn));
 
         addRenderableWidget(ruleButton);
         addRenderableWidget(punishmentButton);
@@ -256,17 +283,19 @@ public class RulePylonScreen extends Screen {
 
     private static class ConfigButton<T extends Displayable> extends ImageButton {
         private final Supplier<T> displaySupplier;
+        private final String componentKey;
 
-        public ConfigButton(int pX, int pY, int pWidth, int pHeight, int pXTexStart, int pYTexStart, int pYDiffTex, ResourceLocation pResourceLocation, int pTextureWidth, int pTextureHeight, OnPress pOnPress, Supplier<T> displaySupplier) {
+        public ConfigButton(int pX, int pY, int pWidth, int pHeight, int pXTexStart, int pYTexStart, int pYDiffTex, ResourceLocation pResourceLocation, int pTextureWidth, int pTextureHeight, OnPress pOnPress, Supplier<T> displaySupplier, String componentKey) {
             super(pX, pY, pWidth, pHeight, pXTexStart, pYTexStart, pYDiffTex, pResourceLocation, pTextureWidth, pTextureHeight, pOnPress);
             this.displaySupplier = displaySupplier;
+            this.componentKey = componentKey;
         }
 
         public void renderTitleAndTooltip(GuiGraphics pGuiGraphics, int mouseX, int mouseY, Font font) {
             T item = displaySupplier.get();
             if (item == null) return;
 
-            pGuiGraphics.drawString(font, item.title(), getX() + 5, getY() + 2, 0, false);
+            pGuiGraphics.drawString(font, Component.translatable(componentKey, item.title()), getX() + 5, getY() + 2, 0, false);
             if (mouseX > getX() && mouseX < getX() + width && mouseY > getY() && mouseY < getY() + height) {
                 pGuiGraphics.renderTooltip(font, item.tooltip(), mouseX, mouseY);
             }

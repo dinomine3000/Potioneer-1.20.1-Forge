@@ -66,6 +66,20 @@ public class WaterTrapBlockEntity extends BlockEntity implements GeoBlockEntity 
     private boolean diffused = false;
     private boolean exploded = false;
 
+    @Override
+    public AABB getRenderBoundingBox() {
+        //return super.getRenderBoundingBox();
+        AABB bb = new AABB(
+                this.worldPosition.getX(),
+                -128,
+                this.worldPosition.getZ(),
+                this.worldPosition.getX() + 1,
+                this.worldPosition.getY() + 1,
+                this.worldPosition.getZ() + 1
+        );
+        return bb;
+    }
+
     public List<String> getCasterAllyGroups(){return casterAllyGroups;}
     public boolean isInAOJ() {return isInAOJ;}
     public int getChains(){return numberOfChainsBelow;}

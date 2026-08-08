@@ -26,6 +26,7 @@ import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.AABB;
 import org.jetbrains.annotations.NotNull;
 import software.bernie.geckolib.animatable.GeoBlockEntity;
 import software.bernie.geckolib.core.animatable.GeoAnimatable;
@@ -49,6 +50,18 @@ public class RulePylonBlockEntity extends BlockEntity implements GeoBlockEntity 
     private Set<String> casterGroups = new HashSet<>();
     private boolean canSeeTheSky = true;
     private boolean working = true;
+
+    @Override
+    public AABB getRenderBoundingBox() {
+        return new AABB(
+                this.worldPosition.getX(),
+                this.worldPosition.getY(),
+                this.worldPosition.getZ(),
+                this.worldPosition.getX() + 1,
+                1024, // Cover up to MAX_RENDER_Y
+                this.worldPosition.getZ() + 1
+        );
+    }
 
     public void setAojExtension(boolean extendsAoj){this.extendsAoj = extendsAoj;setChanged();}
     public int getSequenceLevel(){return sequenceLevel;}
@@ -299,7 +312,7 @@ public class RulePylonBlockEntity extends BlockEntity implements GeoBlockEntity 
 
     private PlayState predicate(AnimationState<GeoAnimatable> state) {
         //state.setAnimation(RawAnimation.begin().thenLoop("idle"));
-        return PlayState.STOP;
+        return PlayState.CONTINUE;
     }
 
     @Override

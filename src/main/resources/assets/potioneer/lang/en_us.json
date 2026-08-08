@@ -378,6 +378,11 @@
   "gui.potioneer.ritual_button": "Ritual.",
   "gui.potioneer.add_to_hotbar": "Add to hotbar",
   "gui.potioneer.remove_from_hotbar": "Remove from hotbar",
+  "gui.potioneer.rule": "Rule: %s",
+  "gui.potioneer.punishment": "Punishment: %s",
+  "gui.potioneer.law": "Law: %s",
+  "gui.potioneer.add_rule": "Add Rule-Punishment pair",
+  "gui.potioneer.add_law": "Add Law",
 
   "pathway.potioneer.trap_effect_0": "Trap effect set to Drowning",
   "pathway.potioneer.trap_effect_1": "Trap effect set to Water Prison",
