@@ -1,6 +1,7 @@
 package net.dinomine.potioneer.beyonder.client;
 
 import net.dinomine.potioneer.beyonder.client.screen.DefaultAdvancementScreen;
+import net.dinomine.potioneer.beyonder.client.screen.RedPriestAdvancementScreen;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
 import net.dinomine.potioneer.beyonder.ModAttributes;
 import net.dinomine.potioneer.beyonder.player.BeyonderStats;
@@ -18,8 +19,6 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 
 import java.util.Optional;
 
-import static net.dinomine.potioneer.util.misc.AdvancementDifficultyHelper.calculateDifficultyClient;
-
 @OnlyIn(Dist.CLIENT)
 public class ClientStatsData {
     public static boolean keyPressed = false;
@@ -32,16 +31,6 @@ public class ClientStatsData {
     private static int minLuck = 0;
     private static int maxLuck = 0;
 
-    public static void attemptAdvancement(int newSeq, int addedDifficulty){
-        Optional<LivingEntityBeyonderCapability> capOpt = getCapability();
-        if(capOpt.isEmpty()) return;
-        LivingEntityBeyonderCapability cap = capOpt.get();
-        int pathwaySequenceId = cap.getPathwaySequenceId();
-        int sanity = (int) cap.getSanity();
-//        ClientAdvancementManager.difficulty = 10;     //Debug
-        ClientAdvancementManager.targetSequence = newSeq;
-        ClientAdvancementManager.startGame(new DefaultAdvancementScreen(), addedDifficulty + calculateDifficultyClient(pathwaySequenceId, newSeq, sanity, actingProgress));
-    }
 
     public static Optional<LivingEntityBeyonderCapability> getCapability(){
         if(Minecraft.getInstance().player == null) return Optional.empty();

@@ -63,7 +63,7 @@ public class BeyonderPotionItem extends PotionItem implements GeoItem, GeoTintab
 
     @Override
     public void inventoryTick(ItemStack pStack, Level pLevel, Entity pEntity, int pSlotId, boolean pIsSelected) {
-        ModTags.PotionInfoTag.tickPotionSpoilTime(pStack, pLevel.getGameTime());
+        //ModTags.PotionInfoTag.tickPotionSpoilTime(pStack, pLevel.getGameTime());
         super.inventoryTick(pStack, pLevel, pEntity, pSlotId, pIsSelected);
     }
 
@@ -104,7 +104,6 @@ public class BeyonderPotionItem extends PotionItem implements GeoItem, GeoTintab
         boolean validPotion = PotionInfoTag.isDrinkablePotion(info);
         if(!validPotion) return super.finishUsingItem(pStack, pLevel, pEntityLiving);
         player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
-            if(pLevel.isClientSide()) return;
             if(isConflictingPotion(info)){
                 if(!player.isCreative()) cap.setSanity(0);
                 player.sendSystemMessage(Component.translatableWithFallback("message.potioneer.lost_control", "Lost control on the spot. oh well."));

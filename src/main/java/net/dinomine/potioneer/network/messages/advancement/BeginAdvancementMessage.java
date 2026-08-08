@@ -1,5 +1,6 @@
 package net.dinomine.potioneer.network.messages.advancement;
 
+import net.dinomine.potioneer.beyonder.client.ClientAdvancementManager;
 import net.dinomine.potioneer.beyonder.client.ClientStatsData;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
@@ -55,7 +56,7 @@ class ClientBeginAdvancementHandler
 
         if (player != null)
         {
-            ClientStatsData.attemptAdvancement(msg.pathwaySequenceId, msg.difficulty);
+            ClientAdvancementManager.attemptAdvancement(msg.pathwaySequenceId, msg.difficulty);
         }
     }
 }

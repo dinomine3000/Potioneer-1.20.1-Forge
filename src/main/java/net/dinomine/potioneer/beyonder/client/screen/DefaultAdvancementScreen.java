@@ -17,6 +17,7 @@ public class DefaultAdvancementScreen extends Screen implements MinigameScreen {
 
     // Minigame Settings & State
     private int difficulty;
+    private Consumer<Boolean> completionCallback;
     private int count;
     private int maxCount;
     private float maxTime;
@@ -24,7 +25,6 @@ public class DefaultAdvancementScreen extends Screen implements MinigameScreen {
     private boolean gameStarted = false;
     private int targetX, targetY;
 
-    private Consumer<Boolean> completionCallback;
     private AdvancementButton button;
     private int leftPos, topPos;
 
