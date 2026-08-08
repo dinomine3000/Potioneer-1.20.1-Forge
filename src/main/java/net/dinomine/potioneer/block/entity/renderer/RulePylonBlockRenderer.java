@@ -37,10 +37,10 @@ public class RulePylonBlockRenderer extends GeoBlockRenderer<RulePylonBlockEntit
 
     @Override
     public void defaultRender(PoseStack poseStack, RulePylonBlockEntity blockEntity, MultiBufferSource bufferSource, @Nullable RenderType renderType, @Nullable VertexConsumer buffer, float yaw, float partialTick, int packedLight) {
+        super.defaultRender(poseStack, blockEntity, bufferSource, renderType, buffer, yaw, partialTick, packedLight);
+        if(!blockEntity.isWorking()) return;
         long gameTime = blockEntity.getLevel().getGameTime();
         renderBeaconBeam(poseStack, bufferSource, partialTick, gameTime, 0, MAX_RENDER_Y);
-        if(!blockEntity.isWorking()) return;
-        super.defaultRender(poseStack, blockEntity, bufferSource, renderType, buffer, yaw, partialTick, packedLight);
     }
 
     @Override
