@@ -23,11 +23,15 @@ public class OpenScreenMessage {
     public Screen screenType;
     public int intId;
     public int reputation;
-    public static enum Screen{
+    public enum Screen{
         Formula,
         Divination,
         Book,
         Reputation
+    }
+
+    public static OpenScreenMessage formula(PotionRecipeData data, boolean error){
+        return new OpenScreenMessage(data, error);
     }
 
     public OpenScreenMessage(PotionRecipeData data, boolean error) {
@@ -73,7 +77,7 @@ public class OpenScreenMessage {
         switch (screenType){
             case Formula:
                 boolean error = buffer.readBoolean();
-                return new OpenScreenMessage(PotionRecipeData.decode(buffer), error);
+                return OpenScreenMessage.formula(PotionRecipeData.decode(buffer), error);
             case Book:
                 int pageId = buffer.readInt();
                 return new OpenScreenMessage(Screen.Book, pageId);

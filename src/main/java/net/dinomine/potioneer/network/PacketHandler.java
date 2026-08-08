@@ -68,6 +68,7 @@ public class PacketHandler {
         INSTANCE.registerMessage(i++, EntityEffectVisualMessage.class, EntityEffectVisualMessage::encode, EntityEffectVisualMessage::decode, EntityEffectVisualMessage::handle);
         INSTANCE.registerMessage(i++, OpenContractScreenMessage.class, OpenContractScreenMessage::encode, OpenContractScreenMessage::decode, OpenContractScreenMessage::handle);
         INSTANCE.registerMessage(i++, SignContractMessage.class, SignContractMessage::encode, SignContractMessage::decode, SignContractMessage::handle);
+        INSTANCE.registerMessage(i++, RulePylonMessage.class, RulePylonMessage::encode, RulePylonMessage::decode, RulePylonMessage::handle);
     }
     public static <T> void sendToPlayer(T message, ServerPlayer player) {
         if (player.connection == null) return;

@@ -36,7 +36,7 @@ public class FormulaItem extends Item {
             boolean error = heldItem.getTag().getBoolean("error");
 
             PacketHandler.INSTANCE.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) pPlayer),
-                    new OpenScreenMessage(result, error));
+                    OpenScreenMessage.formula(result, error));
         });
         return new InteractionResultHolder<>(InteractionResult.SUCCESS, heldItem);
     }

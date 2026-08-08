@@ -114,6 +114,7 @@ public class ContractScreen extends Screen {
     }
     @Override
     public void render(GuiGraphics pGuiGraphics, int pMouseX, int pMouseY, float pPartialTick) {
+        renderBackground(pGuiGraphics);
         //super.render(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
         if(!showOnlyContract()){
             //render boxes for options
@@ -258,4 +259,9 @@ public class ContractScreen extends Screen {
     }
 
     private boolean showOnlyContract(){return key == null;}
+
+    @Override
+    public boolean isPauseScreen() {
+        return false;
+    }
 }

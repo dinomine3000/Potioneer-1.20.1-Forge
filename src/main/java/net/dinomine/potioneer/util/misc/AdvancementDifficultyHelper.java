@@ -33,9 +33,9 @@ public class AdvancementDifficultyHelper {
             int level = newPathSeqId%10;
             //if the target sequence is located between your current sequence and sequence 9,
             //aka, a lower sequence to your current one
-            //add 4 points of difficulty
+            //add 2 points of difficulty
             //this is to prevent ppl from drinking previous potions without consequence
-            if(level >= pathwaySequenceId%10) diff += 4;
+            if(level >= pathwaySequenceId%10) diff += 2;
         }
         // more points for demigod levels. 1 extra for 4 and 3, and 2 extra for above 2
         if(newPathSeqId%10 < 5) diff += newPathSeqId%10 > 2 ? 1 : 2;

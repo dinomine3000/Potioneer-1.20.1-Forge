@@ -4,6 +4,8 @@ import net.dinomine.potioneer.beyonder.abilities.AbilityFunctionHelper;
 import net.dinomine.potioneer.beyonder.abilities.tyrant.RulePylonAbility.*;
 import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
 import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
+import net.dinomine.potioneer.network.PacketHandler;
+import net.dinomine.potioneer.network.messages.abilityRelevant.abilitySpecific.RulePylonMessage;
 import net.dinomine.potioneer.savedata.DimensionChunkSavedData;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -16,6 +18,7 @@ import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -134,6 +137,15 @@ public class RulePylonBlockEntity extends BlockEntity implements GeoBlockEntity 
             }
         }
         return flag;
+    }
+
+    public void openScreen(ServerPlayer pPlayer) {
+        PacketHandler.sendMessageSTC(new RulePylonMessage(
+                rulePunishmentMap,
+                new ArrayList<>(laws),
+                getBlockPos(),
+                extendsAoj
+        ), pPlayer);
     }
 
     @Nullable
@@ -293,5 +305,9 @@ public class RulePylonBlockEntity extends BlockEntity implements GeoBlockEntity 
     @Override
     public AnimatableInstanceCache getAnimatableInstanceCache() {
         return cache;
+    }
+
+    public boolean isOwner(Player pPlayer) {
+        return pPlayer.getUUID().equals(ownerId);
     }
 }

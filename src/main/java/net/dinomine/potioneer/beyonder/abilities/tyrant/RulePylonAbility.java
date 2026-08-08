@@ -20,10 +20,7 @@ import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class RulePylonAbility extends Ability implements IAreaOfJurisdiction {
 
@@ -84,59 +81,108 @@ public class RulePylonAbility extends Ability implements IAreaOfJurisdiction {
         return getSideFromTag(getData().getCompound("aoj"), dimensionLocation);
     }
 
-    public record Rule(String id, Component title){
-        public static final Rule BLOCK_BREAK = new Rule("block_break", Component.literal("Can't break Blocks"));
 
-        public static Rule byId(String id){
-            return switch (id){
-                case "block_break" -> BLOCK_BREAK;
-                default -> throw new IllegalStateException("Unexpected value: " + id);
-            };
+    public interface Displayable {
+        Component title();
+        Component tooltip();
+    }
+    public record Rule(String id, Component title, Component tooltip) implements Displayable{
+        private static final Map<String, Rule> REGISTRY = new LinkedHashMap<>();
+
+        public Rule {
+            REGISTRY.put(id, this);
+        }
+
+        public static final Rule BLOCK_BREAK = new Rule("block_break", Component.literal("Can't break Blocks"), Component.literal("that."));
+
+        public static Rule byId(String id) {
+            Rule rule = REGISTRY.get(id);
+            if (rule == null) {
+                throw new IllegalArgumentException("Unknown Rule ID: " + id);
+            }
+            return rule;
+        }
+
+        public static Collection<Rule> values() {
+            return Collections.unmodifiableCollection(REGISTRY.values());
         }
     }
-    public record Punishment(String id, Component title, Execution execution){
 
-        public static final Punishment STRIKE = new Punishment("strike", Component.literal("Strike"), (target, targetCap, tribunal) -> {
+    public record Punishment(String id, Component title, Component tooltip, Execution execution) implements Displayable {
+        private static final Map<String, Punishment> REGISTRY = new LinkedHashMap<>();
 
-        });
-        public static final Punishment DISABLE = new Punishment("disable", Component.literal("Disable Abilities"), (target, targetCap, tribunal) -> {
-
-        });
-        public static final Punishment IMPRISON = new Punishment("imprison", Component.literal("Imprisonment"), (target, targetCap, tribunal) -> {
-
-        });
-
-        public static Punishment byId(String id){
-            return switch (id){
-                case "strike" -> STRIKE;
-                case "disable" -> DISABLE;
-                case "imprison" -> IMPRISON;
-                default -> throw new IllegalStateException("Unexpected value: " + id);
-            };
+        public Punishment {
+            REGISTRY.put(id, this);
         }
 
-        public interface Execution{
+        public static final Punishment STRIKE = new Punishment("strike", Component.literal("Strike"), Component.literal("Strike."), (target, targetCap, tribunal) -> {
+
+        });
+        public static final Punishment DISABLE = new Punishment("disable", Component.literal("Disable Abilities"), Component.literal("Disabled"), (target, targetCap, tribunal) -> {
+
+        });
+        public static final Punishment IMPRISON = new Punishment("imprison", Component.literal("Imprisonment"), Component.literal("Imprison"), (target, targetCap, tribunal) -> {
+
+        });
+
+        public static Punishment byId(String id) {
+            Punishment punishment = REGISTRY.get(id);
+            if (punishment == null) {
+                throw new IllegalArgumentException("Unknown Punishment ID: " + id);
+            }
+            return punishment;
+        }
+
+        public static Collection<Punishment> values() {
+            return Collections.unmodifiableCollection(REGISTRY.values());
+        }
+
+        @FunctionalInterface
+        public interface Execution {
             void execute(LivingEntity target, LivingEntityBeyonderCapability targetCap, @Nullable Entity tribunal);
         }
     }
-    public record Law(String id, Component title, Execution execution){
-        public static final Law UNDERWATER = new Law("underwater", Component.literal("Breathe Underwater"), be -> {
+
+    public record Law(String id, Component title, Component tooltip, Execution execution) implements Displayable{
+        private static final Map<String, Law> REGISTRY = new LinkedHashMap<>();
+
+        public Law {
+            REGISTRY.put(id, this);
+        }
+
+        public static final Law UNDERWATER = new Law("underwater", Component.literal("Breathe Underwater"), Component.literal("guess"), be -> {
             Set<LivingEntity> hits = new HashSet<>();
-            for(ChunkPos pos: be.getClaimedChunks()) hits.addAll(AbilityFunctionHelper.getLivingEntitiesInChunk(be.getLevel(), pos));
-            hits.forEach(ent ->{
-                WaterAffinityEffect eff = (WaterAffinityEffect) BeyonderEffects.getEffect(BeyonderEffects.TYRANT_WATER_AFFINITY.getEffectId()).createInstance(be.getSequenceLevel(), 0, 20*10, true);
-                ent.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> cap.getEffectsManager().addOrRefreshEffect(eff, cap, ent));
+            for (ChunkPos pos : be.getClaimedChunks()) {
+                hits.addAll(AbilityFunctionHelper.getLivingEntitiesInChunk(be.getLevel(), pos));
+            }
+            hits.forEach(ent -> {
+                WaterAffinityEffect eff = (WaterAffinityEffect) BeyonderEffects.getEffect(BeyonderEffects.TYRANT_WATER_AFFINITY.getEffectId())
+                        .createInstance(be.getSequenceLevel(), 0, 20 * 10, true);
+                ent.getCapability(BeyonderStatsProvider.BEYONDER_STATS)
+                        .ifPresent(cap -> cap.getEffectsManager().addOrRefreshEffect(eff, cap, ent));
             });
         });
 
-        public static Law byId(String id){
-            return switch (id){
-                case "underwater" -> UNDERWATER;
-                default -> throw new IllegalStateException("Unexpected value: " + id);
-            };
+        public static final Law DAMAGE_AMP = new Law("damage_amp", Component.literal("Damage Amplification"), Component.literal("Every instance of damage is amplified"), be -> {});
+        public static final Law DAMAGE_RED = new Law("damage_red", Component.literal("Damage Reduction"), Component.literal("Every instance of damage is weakened"), be -> {});
+        public static final Law HEALING = new Law("healing", Component.literal("Healing"), Component.literal("Every entity is healed"), be -> {});
+        public static final Law DAMAGE = new Law("damage", Component.literal("Constant Damage"), Component.literal("Every entity is constantly taking damage"), be -> {});
+        public static final Law MINING = new Law("mining", Component.literal("Mining Weakness"), Component.literal("Every entity is affected by mining fatigue"), be -> {});
+
+        public static Law byId(String id) {
+            Law law = REGISTRY.get(id);
+            if (law == null) {
+                throw new IllegalArgumentException("Unknown Law ID: " + id);
+            }
+            return law;
         }
 
-        public interface Execution{
+        public static Collection<Law> values() {
+            return Collections.unmodifiableCollection(REGISTRY.values());
+        }
+
+        @FunctionalInterface
+        public interface Execution {
             void execute(RulePylonBlockEntity be);
         }
     }

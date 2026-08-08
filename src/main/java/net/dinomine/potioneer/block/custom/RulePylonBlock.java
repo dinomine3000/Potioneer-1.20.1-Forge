@@ -6,10 +6,13 @@ import net.dinomine.potioneer.block.ModBlocks;
 import net.dinomine.potioneer.block.entity.ModBlockEntities;
 import net.dinomine.potioneer.block.entity.RulePylonBlockEntity;
 import net.dinomine.potioneer.block.entity.WaterTrapBlockEntity;
+import net.dinomine.potioneer.network.PacketHandler;
+import net.dinomine.potioneer.network.messages.abilityRelevant.abilitySpecific.RulePylonMessage;
 import net.dinomine.potioneer.savedata.DimensionChunkSavedData;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.LivingEntity;
@@ -101,11 +104,14 @@ public class RulePylonBlock extends BaseEntityBlock implements SimpleWaterlogged
 
     @Override
     public InteractionResult use(BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, InteractionHand pHand, BlockHitResult pHit) {
-        if(pLevel.isClientSide) return InteractionResult.SUCCESS;
         BlockEntity be = pLevel.getBlockEntity(pPos);
-        if(be instanceof RulePylonBlockEntity pylonEntity && pPlayer.getCapability(BeyonderStatsProvider.BEYONDER_STATS).isPresent()){
-
-            return InteractionResult.PASS;
+        if(be instanceof RulePylonBlockEntity pylonEntity){
+            if(pylonEntity.isOwner(pPlayer)){
+                if(pPlayer instanceof ServerPlayer sPlayer)
+                    pylonEntity.openScreen(sPlayer);
+                return InteractionResult.SUCCESS;
+            }
+            return InteractionResult.FAIL;
         }
         return InteractionResult.PASS;
     }
