@@ -1,6 +1,7 @@
 {
   "values": [
     "potioneer:low_sanity",
-    "potioneer:crit"
+    "potioneer:crit",
+    "potioneer:punishment_strike"
   ]
 }

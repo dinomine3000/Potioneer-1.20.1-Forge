@@ -1,11 +1,13 @@
 package net.dinomine.potioneer.commands;
 
 import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.dinomine.potioneer.beyonder.abilities.tyrant.ContractAbility;
 import net.dinomine.potioneer.beyonder.abilities.tyrant.MistBlinkingAbility;
+import net.dinomine.potioneer.beyonder.pages.PageRegistry;
 import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
 import net.dinomine.potioneer.network.PacketHandler;
 import net.dinomine.potioneer.network.messages.abilityRelevant.abilitySpecific.OpenContractScreenMessage;
@@ -31,6 +33,9 @@ public class BeyonderAbilityCommand {
 
     public BeyonderAbilityCommand(CommandDispatcher<CommandSourceStack> dispatcher){
         dispatcher.register(Commands.literal("beyonderability")
+                .then(Commands.literal("fix")
+                    .then(Commands.argument("target", EntityArgument.entity())
+                            .executes(this::fixDisabledAbilities)))
                 .then(Commands.literal("teleport")
                         .then(Commands.argument("token", StringArgumentType.greedyString())
                                 .executes(this::doWaterTrapTeleport)))
@@ -39,7 +44,18 @@ public class BeyonderAbilityCommand {
                             .executes(this::openContract)))
         );
     }
-
+    private int fixDisabledAbilities(CommandContext<CommandSourceStack> cmd){
+        try {
+            Entity target = EntityArgument.getEntity(cmd, "target");
+            if(!(target instanceof LivingEntity lTarget)) return 0;
+            lTarget.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap ->{
+                cap.getAbilitiesManager().getDisabledAbilitiesManager().reset(cap, lTarget);
+            });
+            return 1;
+        } catch (CommandSyntaxException e) {
+            return 0;
+        }
+    }
     private int doWaterTrapTeleport(CommandContext<CommandSourceStack> cmd){
         UUID token = UUID.fromString(StringArgumentType.getString(cmd, "token"));
         if(!ServerTokenCache.validateToken(token)) return 0;

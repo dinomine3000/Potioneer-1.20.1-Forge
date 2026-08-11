@@ -6,6 +6,7 @@ import net.dinomine.potioneer.sound.ModSounds;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 
@@ -16,7 +17,8 @@ public class ShrinkItemLuckEvent extends LuckEvent {
         if(!luck.passesLuckCheck(0.5f, 50, 50, target.getRandom())){
             int shrinkAmount = luck.getRandomNumber(1, 10, false, target.getRandom());
             stack.shrink(shrinkAmount);
-            luck.grantLuck(shrinkAmount*10);
+            luck.grantLuck(target, shrinkAmount*10, true);
+            target.setItemInHand(InteractionHand.MAIN_HAND, stack);
             target.level().playSound(null, target.getOnPos(), SoundEvents.ITEM_BREAK, SoundSource.NEUTRAL, 1, 1);
         }
     }

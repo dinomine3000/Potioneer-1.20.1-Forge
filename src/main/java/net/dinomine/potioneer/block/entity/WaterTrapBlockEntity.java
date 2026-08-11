@@ -11,11 +11,10 @@ import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
 import net.dinomine.potioneer.block.ModBlocks;
 import net.dinomine.potioneer.network.PacketHandler;
 import net.dinomine.potioneer.network.messages.effects.GeneralAreaEffectMessage;
-import net.dinomine.potioneer.savedata.AllySystemSaveData;
 import net.dinomine.potioneer.server.ServerTokenCache;
 import net.dinomine.potioneer.sound.ModSounds;
 import net.dinomine.potioneer.util.ParticleMaker;
-import net.dinomine.potioneer.util.misc.ModTags;
+import net.dinomine.potioneer.util.misc.ModNbtUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Connection;
@@ -288,7 +287,7 @@ public class WaterTrapBlockEntity extends BlockEntity implements GeoBlockEntity 
         CompoundTag tag = new CompoundTag();
         tag.putInt("chains", numberOfChainsBelow);
         tag.putBoolean("aoj", isInAOJ);
-        ModTags.writeStringList(tag, "groups", casterAllyGroups);
+        ModNbtUtils.writeStringList(tag, "groups", casterAllyGroups);
         if(id != null) tag.putUUID("casterId", id);
         return tag;
     }
@@ -297,7 +296,7 @@ public class WaterTrapBlockEntity extends BlockEntity implements GeoBlockEntity 
     public void handleUpdateTag(CompoundTag tag) {
         this.numberOfChainsBelow = tag.getInt("chains");
         this.isInAOJ = tag.getBoolean("aoj");
-        this.casterAllyGroups = ModTags.readStringList(tag, "groups");
+        this.casterAllyGroups = ModNbtUtils.readStringList(tag, "groups");
         if(tag.contains("casterId")) id = tag.getUUID("casterId"); else id = null;
     }
 

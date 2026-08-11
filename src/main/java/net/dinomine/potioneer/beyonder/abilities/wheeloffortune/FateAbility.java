@@ -32,7 +32,7 @@ public class FateAbility extends Ability {
         if(cap.getSpirituality() < cost()) return false;
         if(target.level().isClientSide()) return true;
         cap.getEffectsManager().addEffectNoCheck(BeyonderEffects.WHEEL_FATE.createInstance(getSequenceLevel(), cost(), 2, true), cap, target);
-        cap.getLuckManager().consumeLuck(50);
+        cap.getLuckManager().consumeLuck(target, 50, false);
         if(getSequenceLevel() < 7) ParticleMaker.createDiceEffectForEntity(target.level(), target);
         return true;
     }
@@ -50,7 +50,7 @@ public class FateAbility extends Ability {
             if(optCap.isEmpty()) return false;
             LivingEntityBeyonderCapability fateCap = optCap.get();
             fateCap.getEffectsManager().addEffectNoCheck(BeyonderEffects.WHEEL_FATE.createInstance(getSequenceLevel(), 0, 2, true), fateCap, eventTarget.get());
-            cap.getLuckManager().consumeLuck(50);
+            cap.getLuckManager().consumeLuck(target, 50, false);
             cap.getCharacteristicManager().progressActing(WheelOfFortunePathway.MISFORTUNE_ACTING_INC, 5);
             ParticleMaker.createDiceEffectForEntity(target.level(), eventTarget.get());
             return true;

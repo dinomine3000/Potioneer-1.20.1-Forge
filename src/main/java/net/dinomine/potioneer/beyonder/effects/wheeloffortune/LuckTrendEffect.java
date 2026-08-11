@@ -12,7 +12,7 @@ public class LuckTrendEffect extends BeyonderEffect {
     @Override
     protected void doTick(LivingEntityBeyonderCapability cap, LivingEntity target) {
         if(target.tickCount%120 == 0){
-            cap.getLuckManager().grantLuck(1);
+            cap.getLuckManager().grantLuck(target, 1, false);
         }
     }
     @Override

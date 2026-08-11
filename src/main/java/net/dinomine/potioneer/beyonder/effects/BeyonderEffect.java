@@ -117,12 +117,9 @@ public abstract class BeyonderEffect {
     }
 
     public void refreshTime(LivingEntityBeyonderCapability cap, LivingEntity target, BeyonderEffect effect){
-        if(maxLife < 0 && effect.maxLife >= 0){
-            maxLife = effect.maxLife;
-            this.lifetime = 0;
-        } else if(maxLife >= 0) {
-            this.maxLife += effect.maxLife;
-        }
+        if(maxLife < 0) return;
+        this.maxLife = Math.max(maxLife, effect.maxLife);
+        this.lifetime = 0;
     }
 
     public void setLifetime(int life){

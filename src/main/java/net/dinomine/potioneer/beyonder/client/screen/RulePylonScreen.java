@@ -4,9 +4,10 @@ import com.mojang.blaze3d.platform.InputConstants;
 import net.dinomine.potioneer.Potioneer;
 import net.dinomine.potioneer.beyonder.abilities.tyrant.RulePylonAbility;
 import net.dinomine.potioneer.beyonder.abilities.tyrant.RulePylonAbility.*;
+import net.dinomine.potioneer.beyonder.client.KeyBindings;
 import net.dinomine.potioneer.block.entity.RulePylonBlockEntity;
+import net.dinomine.potioneer.network.PacketHandler;
 import net.dinomine.potioneer.network.messages.abilityRelevant.abilitySpecific.RulePylonMessage;
-import net.dinomine.potioneer.sound.ModSounds;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -27,12 +28,13 @@ import java.util.function.Supplier;
 public class RulePylonScreen extends Screen {
     private static final ResourceLocation TEXTURE = new ResourceLocation(Potioneer.MOD_ID, "textures/gui/pylon_menu.png");
     private static final int TEXTURE_WIDTH = 215, TEXTURE_HEIGHT = 295;
-    private static final int IMAGE_WIDTH = 176, IMAGE_HEIGHT = 186;
+    private static final int IMAGE_WIDTH = 176, IMAGE_HEIGHT = 161;
 
-    private static final int MAX_COUNT = 6;
+    private static final int MAX_COUNT = 4;
 
     private ImageButton addLawButton;
     private ImageButton addRuleButton;
+    private ImageButton saveButton;
     private int leftPos, topPos;
 
     private static Collection<Law> ALL_LAWS;
@@ -81,29 +83,44 @@ public class RulePylonScreen extends Screen {
     }
 
     @Override
+    public boolean keyPressed(int pKeyCode, int pScanCode, int pModifiers) {
+        if(pKeyCode == 69 || pKeyCode == KeyBindings.INSTANCE.beyonderMenuKey.getKey().getValue()) {
+            this.onClose();
+            return true;
+        }
+        return super.keyPressed(pKeyCode, pScanCode, pModifiers);
+    }
+
+
+    @Override
     protected void init() {
         super.init();
 
         leftPos = (this.width - IMAGE_WIDTH) / 2;
-        topPos = (this.height - IMAGE_HEIGHT) / 2;
+        topPos = (this.height - (IMAGE_HEIGHT - 56 + 14*MAX_COUNT)) / 2;
 
         int lawIdx = 0;
         for (UUID lawId : appliedLaws.keySet()) refreshLaw(lawId, lawIdx++);
         for (UUID ruleId : appliedRules.keySet()) refreshRulePair(ruleId, lawIdx++);
 
-        addLawButton = new ImageButton(leftPos + 5, topPos + IMAGE_HEIGHT, 13, 11, 5, IMAGE_HEIGHT, 11, TEXTURE, TEXTURE_WIDTH, TEXTURE_HEIGHT, btn -> addLaw(), Component.translatable("gui.potioneer.add_law"));
+        addLawButton = new ImageButton(leftPos + 5, topPos + IMAGE_HEIGHT - 56 + MAX_COUNT*14, 13, 11, 5, IMAGE_HEIGHT, 11, TEXTURE, TEXTURE_WIDTH, TEXTURE_HEIGHT, btn -> addLaw(), Component.translatable("gui.potioneer.add_law"));
         addLawButton.setTooltip(Tooltip.create(Component.translatable("gui.potioneer.add_law")));
         addRenderableWidget(addLawButton);
 
-        addRuleButton = new ImageButton(leftPos + 20, topPos + IMAGE_HEIGHT, 13, 11, 5, IMAGE_HEIGHT, 11, TEXTURE, TEXTURE_WIDTH, TEXTURE_HEIGHT, btn -> addRulePair(), Component.translatable("gui.potioneer.add_rule"));
+        addRuleButton = new ImageButton(leftPos + 20, topPos + IMAGE_HEIGHT - 56 + MAX_COUNT*14, 13, 11, 5, IMAGE_HEIGHT, 11, TEXTURE, TEXTURE_WIDTH, TEXTURE_HEIGHT, btn -> addRulePair(), Component.translatable("gui.potioneer.add_rule"));
         addRuleButton.setTooltip(Tooltip.create(Component.translatable("gui.potioneer.add_rule")));
         addRenderableWidget(addRuleButton);
+
+        saveButton = new ImageButton(leftPos + IMAGE_WIDTH - 50, topPos + IMAGE_HEIGHT - 56 + MAX_COUNT*14, 15, 15, 176, 85, 15, TEXTURE, TEXTURE_WIDTH, TEXTURE_HEIGHT, btn -> save());
+        addRenderableWidget(saveButton);
     }
 
     @Override
     public void render(GuiGraphics pGuiGraphics, int pMouseX, int pMouseY, float pPartialTick) {
         renderBackground(pGuiGraphics);
-        pGuiGraphics.blit(TEXTURE, leftPos, topPos, 0, 0, IMAGE_WIDTH, IMAGE_HEIGHT, TEXTURE_WIDTH, TEXTURE_HEIGHT);
+        pGuiGraphics.blit(TEXTURE, leftPos, topPos, 0, 0, IMAGE_WIDTH, 95, TEXTURE_WIDTH, TEXTURE_HEIGHT);
+        pGuiGraphics.blit(TEXTURE, leftPos, topPos + 95, IMAGE_WIDTH, 14*MAX_COUNT, 0, 95, IMAGE_WIDTH, 56, TEXTURE_WIDTH, TEXTURE_HEIGHT);
+        pGuiGraphics.blit(TEXTURE, leftPos, topPos + 95 + 14*MAX_COUNT, 0, 151, IMAGE_WIDTH, 10, TEXTURE_WIDTH, TEXTURE_HEIGHT);
         super.render(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
 
         for (Renderable renderable : renderables) {
@@ -300,5 +317,9 @@ public class RulePylonScreen extends Screen {
                 pGuiGraphics.renderTooltip(font, item.tooltip(), mouseX, mouseY);
             }
         }
+    }
+
+    private void save(){
+        PacketHandler.sendMessageCTS(new RulePylonMessage(getRulesMap(), appliedLaws.values().stream().toList(), pylonPos, extendAoj));
     }
 }

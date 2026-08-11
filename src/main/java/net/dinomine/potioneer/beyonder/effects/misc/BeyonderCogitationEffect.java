@@ -1,6 +1,8 @@
 package net.dinomine.potioneer.beyonder.effects.misc;
 
+import net.dinomine.potioneer.beyonder.abilities.Abilities;
 import net.dinomine.potioneer.beyonder.abilities.AbilityKey;
+import net.dinomine.potioneer.beyonder.abilities.DisabledAbilitiesManager;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffect;
 import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
 import net.minecraft.nbt.CompoundTag;
@@ -23,6 +25,7 @@ public class BeyonderCogitationEffect extends BeyonderEffect {
 //        if(target instanceof Player player && deactivatedAbilities.isEmpty()){
 //            deactivatedAbilities = cap.getAbilitiesManager().disabledAllAbilities(player, "cogitation");
 //        }
+        cap.getAbilitiesManager().getDisabledAbilitiesManager().disableAbility("cogitation", DisabledAbilitiesManager.DisabledAbilityProxy.all(-1, Abilities.COGITATION.getAblId()), cap, target);
     }
 
     @Override
@@ -55,8 +58,7 @@ public class BeyonderCogitationEffect extends BeyonderEffect {
         if(darknessCheck) target.removeEffect(MobEffects.DARKNESS);
         if(weaknessCheck) target.removeEffect(MobEffects.WEAKNESS);
         if(glowingCheck) target.removeEffect(MobEffects.GLOWING);
-
-        cap.getAbilitiesManager().unrevokeAll(cap, target);
+        cap.getAbilitiesManager().getDisabledAbilitiesManager().enableAbility("cogitation", cap, target);
     }
 //
     @Override
@@ -71,7 +73,6 @@ public class BeyonderCogitationEffect extends BeyonderEffect {
     @Override
     public void loadNBTData(CompoundTag nbt) {
         super.loadNBTData(nbt);
-
         darknessCheck = nbt.getBoolean("darkness");
         slownlessCheck = nbt.getBoolean("slowlness");
         weaknessCheck = nbt.getBoolean("weakness");

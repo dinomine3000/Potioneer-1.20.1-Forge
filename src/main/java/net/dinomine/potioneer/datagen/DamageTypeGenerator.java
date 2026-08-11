@@ -22,19 +22,19 @@ public class DamageTypeGenerator extends DamageTypeTagsProvider {
 
     @Override
     protected void addTags(HolderLookup.Provider pProvider) {
-        tag(DamageTypeTags.BYPASSES_ARMOR).add(LOW_SANITY, ASTEROID, CHRYON_PIERCE, CRIT, ARREST);
-        tag(DamageTypeTags.BYPASSES_SHIELD).add(LOW_SANITY, ASTEROID, CHRYON_PIERCE, CRIT);
-        tag(DamageTypeTags.BYPASSES_RESISTANCE).add(LOW_SANITY, ASTEROID, CHRYON_PIERCE, CRIT);
-        tag(DamageTypeTags.BYPASSES_EFFECTS).add(LOW_SANITY, ASTEROID, CHRYON_PIERCE, CRIT);
+        tag(DamageTypeTags.BYPASSES_ARMOR).add(LOW_SANITY, ASTEROID, CHRYON_PIERCE, CRIT, ARREST, STRIKE);
+        tag(DamageTypeTags.BYPASSES_SHIELD).add(LOW_SANITY, ASTEROID, CHRYON_PIERCE, CRIT, STRIKE);
+        tag(DamageTypeTags.BYPASSES_RESISTANCE).add(LOW_SANITY, ASTEROID, CHRYON_PIERCE, CRIT, STRIKE);
+        tag(DamageTypeTags.BYPASSES_EFFECTS).add(LOW_SANITY, ASTEROID, CHRYON_PIERCE, CRIT, STRIKE);
         tag(DamageTypeTags.BYPASSES_ENCHANTMENTS).add(LOW_SANITY, CHRYON_PIERCE, CRIT);
-        tag(DamageTypeTags.BYPASSES_COOLDOWN).add(LOW_SANITY, CHRYON_PIERCE, CRIT);
-        tag(DamageTypeTags.ALWAYS_HURTS_ENDER_DRAGONS).add(LOW_SANITY, CRIT);
+        tag(DamageTypeTags.BYPASSES_COOLDOWN).add(LOW_SANITY, CHRYON_PIERCE, CRIT, STRIKE);
+        tag(DamageTypeTags.ALWAYS_HURTS_ENDER_DRAGONS).add(LOW_SANITY, CRIT, STRIKE);
 //        tag(DamageTypeTags.AVOIDS_GUARDIAN_THORNS).add();
         //eventually add Annihilation-type damage sources to the bypasses invulnerability
-        tag(DamageTypeTags.BYPASSES_INVULNERABILITY).add(LOW_SANITY, LOW_SANITY_KILL);
+        tag(DamageTypeTags.BYPASSES_INVULNERABILITY).add(LOW_SANITY, LOW_SANITY_KILL, STRIKE);
 
-        tag(Tags.ABSOLUTE).add(ARREST, CRIT, LOW_SANITY, LOW_SANITY_KILL, LOW_SPIRITUALITY, EXILE, TYRANT_HEALING);
+        tag(Tags.ABSOLUTE).add(ARREST, CRIT, LOW_SANITY, LOW_SANITY_KILL, LOW_SPIRITUALITY, EXILE, TYRANT_HEALING, STRIKE);
         tag(Tags.MENTAL).add(LOW_SANITY, LOW_SANITY_KILL, LOW_SPIRITUALITY);
-        tag(Tags.PURIFICATION).add(ARREST, EXILE);
+        tag(Tags.PURIFICATION).add(ARREST, EXILE, STRIKE);
     }
 }

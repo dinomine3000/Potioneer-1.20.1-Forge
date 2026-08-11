@@ -468,6 +468,8 @@
   "death.attack.potioneer.wind_shear": "%s was killed by %s's wind shear.",
   "death.attack.potioneer.arrest": "%s was purified after being arrested by %s.",
   "death.attack.potioneer.exile": "%s died to %s's exile.",
+  "death.attack.potioneer.punishment_strike": "%s couldn't handle the punishment from %s",
+  "death.attack.potioneer.tyrant_law": "%s was ruled to die by %s",
 
   "short_desc.potioneer.cogitation": "Your essence... your being... this is what makes you",
   "long_desc.potioneer.cogitation": "Concentrate your spirituality and recuperate in a safe place.",
@@ -695,5 +697,6 @@
   "abilityoption.potioneer.amplify_stats": "Amplify/Weaken Stats",
   "message.potioneer.no_pick_saved": "You have no pickaxe saved.",
   "message.potioneer.saved_pickaxe": "Saved pickaxe %s.",
-  "message.potioneer.blocked_ability": "%s has been disabled."
+  "message.potioneer.blocked_ability": "%s has been disabled.",
+  "message.potioneer.rule_broken": "You broke a rule: %s"
 }

@@ -19,7 +19,7 @@ public class LuckConsumeDownside extends Downside {
     protected boolean primary(LivingEntityBeyonderCapability cap, LivingEntity target) {
         if(target.level().isClientSide()) return false;
         int amount = cap.getLuckManager().getRandomNumber(0, 40 + 10*(10-getSequenceLevel()), false, target.getRandom());
-        cap.getLuckManager().consumeLuck(amount);
+        cap.getLuckManager().consumeLuck(target, amount, false);
         if(amount > 25) ParticleMaker.createDiceEffectForEntity(target.level(), target);
         return true;
     }

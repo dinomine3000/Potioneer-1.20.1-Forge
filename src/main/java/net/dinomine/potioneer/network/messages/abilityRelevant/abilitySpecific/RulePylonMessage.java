@@ -1,6 +1,7 @@
 package net.dinomine.potioneer.network.messages.abilityRelevant.abilitySpecific;
 
 import net.dinomine.potioneer.beyonder.client.screen.RulePylonScreen;
+import net.dinomine.potioneer.block.entity.RulePylonBlockEntity;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
@@ -12,10 +13,7 @@ import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.network.NetworkEvent;
 import net.dinomine.potioneer.beyonder.abilities.tyrant.RulePylonAbility.*;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Supplier;
 
 public class RulePylonMessage {
@@ -68,6 +66,11 @@ public class RulePylonMessage {
                 if (player != null) {
                     ServerLevel level = (ServerLevel) player.level();
                     // Server-side logic here
+                    RulePylonBlockEntity be = (RulePylonBlockEntity) level.getBlockEntity(msg.pylonPos);
+                    if(be == null) return;
+                    be.setRules(msg.rulePunishments);
+                    be.setLaws(new HashSet<>(msg.laws));
+                    be.setAojExtension(msg.aoj);
                 }
             }
         });

@@ -6,7 +6,7 @@ import com.google.gson.JsonParseException;
 import net.dinomine.potioneer.Potioneer;
 import net.dinomine.potioneer.util.PotionIngredient;
 import net.dinomine.potioneer.util.PotioneerMathHelper;
-import net.dinomine.potioneer.util.misc.ModTags;
+import net.dinomine.potioneer.util.misc.ModNbtUtils;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.nbt.CompoundTag;
@@ -52,9 +52,9 @@ public class PotionCauldronRecipe implements Recipe<PotionCauldronContainer> {
         //will return true if it finds a valid characteristic-like item
         //if you use a characteristic with more than 1 levels, itll read it as the highest level.
         for(int i = 0; i < simpleContainer.getContainerSize(); i++){
-            if(ModTags.hasTag(ModTags.TAGS.BEYONDER, simpleContainer.getItem(i))){
-                CompoundTag beyonderTag = ModTags.getTagFromItem(ModTags.TAGS.BEYONDER, simpleContainer.getItem(i));
-                if(ModTags.BeyonderInfoTag.getAssociatedPathSeqLevel(beyonderTag) == this.recipeData.id()) return true;
+            if(ModNbtUtils.hasTag(ModNbtUtils.TAGS.BEYONDER, simpleContainer.getItem(i))){
+                CompoundTag beyonderTag = ModNbtUtils.getTagFromItem(ModNbtUtils.TAGS.BEYONDER, simpleContainer.getItem(i));
+                if(ModNbtUtils.BeyonderInfoTag.getAssociatedPathSeqLevel(beyonderTag) == this.recipeData.id()) return true;
             }
         }
 

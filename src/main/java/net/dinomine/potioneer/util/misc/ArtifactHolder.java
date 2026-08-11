@@ -114,8 +114,8 @@ public class ArtifactHolder {
     public void passives(LivingEntityBeyonderCapability cap, LivingEntity target){
         abilities.values().forEach(abl -> abl.passive(cap, target));
         downsides.values().forEach(downside -> downside.passive(cap, target));
-        abilities.values().forEach(Ability::tickCooldown);
-        downsides.values().forEach(Ability::tickCooldown);
+        abilities.values().forEach(abl -> abl.tickCooldown(target));
+        downsides.values().forEach(downside -> downside.tickCooldown(target));
     }
 
     /**
@@ -124,11 +124,11 @@ public class ArtifactHolder {
      * @return artifactTag with the data written on it.
      */
     public CompoundTag saveToTag(boolean saveItem){
-        return ModTags.ArtifactInfoTag.getTagFromArtifactHolder(this, saveItem);
+        return ModNbtUtils.ArtifactInfoTag.getTagFromArtifactHolder(this, saveItem);
     }
 
     public static ArtifactHolder loadFromTag(CompoundTag artifactTag, ItemStack stack){
-        ArtifactHolder artifact = ModTags.ArtifactInfoTag.getArtifactHolderFromTag(artifactTag);
+        ArtifactHolder artifact = ModNbtUtils.ArtifactInfoTag.getArtifactHolderFromTag(artifactTag);
         if(artifact == null) return null;
         return artifact.withStack(stack);
     }

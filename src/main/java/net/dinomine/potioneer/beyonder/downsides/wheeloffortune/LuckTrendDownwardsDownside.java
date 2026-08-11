@@ -19,7 +19,7 @@ public class LuckTrendDownwardsDownside extends Downside {
     public void passive(LivingEntityBeyonderCapability cap, LivingEntity target) {
         if(target.level().isClientSide()) return;
         if(target.getRandom().nextInt(100) == 0){
-            cap.getLuckManager().consumeLuck(10 - getSequenceLevel());
+            cap.getLuckManager().consumeLuck(target, 10 - getSequenceLevel(), false);
         }
     }
 }

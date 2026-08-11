@@ -5,7 +5,7 @@ import com.google.gson.JsonObject;
 import net.dinomine.potioneer.Potioneer;
 import net.dinomine.potioneer.item.ModItems;
 import net.dinomine.potioneer.item.custom.CharacteristicItem;
-import net.dinomine.potioneer.util.misc.ModTags;
+import net.dinomine.potioneer.util.misc.ModNbtUtils;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
@@ -40,8 +40,8 @@ public class CharacteristicRecipe extends CustomRecipe {
         if(list.size() != 1) return false;
 
         ItemStack stack = list.get(0);
-        return stack.is(ModItems.BEYONDER_POTION.get()) && ModTags.hasTag(ModTags.TAGS.POTION, stack)
-                && ModTags.PotionInfoTag.hasSequenceLevel(ModTags.getTagFromItem(ModTags.TAGS.POTION, stack));
+        return stack.is(ModItems.BEYONDER_POTION.get()) && ModNbtUtils.hasTag(ModNbtUtils.TAGS.POTION, stack)
+                && ModNbtUtils.PotionInfoTag.hasSequenceLevel(ModNbtUtils.getTagFromItem(ModNbtUtils.TAGS.POTION, stack));
 
 
     }
@@ -61,10 +61,10 @@ public class CharacteristicRecipe extends CustomRecipe {
 
         if(list.size() != 1) return ItemStack.EMPTY;
         ItemStack stack = list.get(0);
-        if(!stack.is(ModItems.BEYONDER_POTION.get()) || !ModTags.hasTag(ModTags.TAGS.POTION, stack)) return ItemStack.EMPTY;
-        CompoundTag potionTag = ModTags.getTagFromItem(ModTags.TAGS.POTION, stack);
-        if(ModTags.PotionInfoTag.hasSequenceLevel(potionTag))
-            return CharacteristicItem.createCharacteristic(ModTags.PotionInfoTag.getSequenceLevelOrThrow(potionTag));
+        if(!stack.is(ModItems.BEYONDER_POTION.get()) || !ModNbtUtils.hasTag(ModNbtUtils.TAGS.POTION, stack)) return ItemStack.EMPTY;
+        CompoundTag potionTag = ModNbtUtils.getTagFromItem(ModNbtUtils.TAGS.POTION, stack);
+        if(ModNbtUtils.PotionInfoTag.hasSequenceLevel(potionTag))
+            return CharacteristicItem.createCharacteristic(ModNbtUtils.PotionInfoTag.getSequenceLevelOrThrow(potionTag));
 
         return ItemStack.EMPTY;
     }

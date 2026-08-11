@@ -426,6 +426,10 @@ public class Abilities {
         return createAbilityInstance(key.getAbilityId(), key.getSequenceLevel());
     }
 
+    public static Ability createAbilityInstance(AbilityKey key, int level){
+        return createAbilityInstance(key.getAbilityId(), level);
+    }
+
     public static Ability getAbilityInstanceByKey(AbilityKey key, UUID instanceId){
         return createAbilityInstance(key.getAbilityId(), key.getSequenceLevel()).withInstanceId(instanceId);
     }

@@ -27,8 +27,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import static net.dinomine.potioneer.util.misc.ModTags.*;
-import static net.dinomine.potioneer.util.misc.ModTags.MysticismTag.*;
+import static net.dinomine.potioneer.util.misc.ModNbtUtils.*;
+import static net.dinomine.potioneer.util.misc.ModNbtUtils.MysticismTag.*;
 
 public class MysticismHelper {
     public static final int radius = 16;
@@ -101,11 +101,11 @@ public class MysticismHelper {
             }
         }
 
-        if(item.is(ModItems.CHARACTERISTIC.get()) && hasTag(ModTags.TAGS.BEYONDER, item)){
+        if(item.is(ModItems.CHARACTERISTIC.get()) && hasTag(ModNbtUtils.TAGS.BEYONDER, item)){
             //if the item is mystical...
             CompoundTag mysticalTag = getTagFromItem(TAGS.MYSTICISM, item);
-            CompoundTag beyonderTag = ModTags.getTagFromItem(ModTags.TAGS.BEYONDER, item);
-            int charSequence = ModTags.BeyonderInfoTag.getAssociatedPathSeqLevel(beyonderTag);
+            CompoundTag beyonderTag = ModNbtUtils.getTagFromItem(ModNbtUtils.TAGS.BEYONDER, item);
+            int charSequence = ModNbtUtils.BeyonderInfoTag.getAssociatedPathSeqLevel(beyonderTag);
             boolean yesNo = charSequence == pathwaySequenceId - 1;
             float status = yesNo ? 1f : 0f;
             String clue = "beyonder.potioneer.sequence." + Pathways.getPathwayBySequenceId(charSequence).getSequenceNameFromId(charSequence, false);
@@ -133,17 +133,17 @@ public class MysticismHelper {
         }
 
         if(item.is(ModItems.BEYONDER_POTION.get())){
-            if(hasTag(ModTags.TAGS.POTION, item)){
-                CompoundTag potionTag = ModTags.getTagFromItem(ModTags.TAGS.POTION, item);
-                String name = ModTags.PotionInfoTag.getPotionName(potionTag);
-                boolean complete = ModTags.PotionInfoTag.isPotionComplete(potionTag);
+            if(hasTag(ModNbtUtils.TAGS.POTION, item)){
+                CompoundTag potionTag = ModNbtUtils.getTagFromItem(ModNbtUtils.TAGS.POTION, item);
+                String name = ModNbtUtils.PotionInfoTag.getPotionName(potionTag);
+                boolean complete = ModNbtUtils.PotionInfoTag.isPotionComplete(potionTag);
 
                 boolean yesNo;
                 int potionSequence = -1;
                 String clue;
                 float status = 0.5f;
 
-                if(ModTags.PotionInfoTag.isConflictingPotion(potionTag)){
+                if(ModNbtUtils.PotionInfoTag.isConflictingPotion(potionTag)){
                     yesNo = false;
                     status = 0.0f;
                     clue = "Death";
@@ -272,7 +272,7 @@ public class MysticismHelper {
     }
 
     private static UUID getPlayerIdFromMysticalTag(CompoundTag mysticalTag, Level level, int toConsume){
-        return ModTags.MysticismTag.getPlayerIdFromMysticalTag(mysticalTag, level, toConsume);
+        return ModNbtUtils.MysticismTag.getPlayerIdFromMysticalTag(mysticalTag, level, toConsume);
     }
 
 
@@ -293,8 +293,8 @@ public class MysticismHelper {
     }
 
     public static float getSpiritualityOfItem(ItemStack stack){
-        if(!hasTag(ModTags.TAGS.MYSTICISM, stack)) return 0f;
-        return getSpiritualityOfTag(getTagFromItem(ModTags.TAGS.MYSTICISM, stack));
+        if(!hasTag(ModNbtUtils.TAGS.MYSTICISM, stack)) return 0f;
+        return getSpiritualityOfTag(getTagFromItem(ModNbtUtils.TAGS.MYSTICISM, stack));
     }
 
     /**
@@ -305,7 +305,7 @@ public class MysticismHelper {
      */
     public static void updateOrApplyMysticismTag(ItemStack stack, float spiritualityAmount, Player target) {
         CompoundTag mystTag;
-        if(hasTag(ModTags.TAGS.MYSTICISM, stack)) mystTag = getTagFromItem(ModTags.TAGS.MYSTICISM, stack);
+        if(hasTag(ModNbtUtils.TAGS.MYSTICISM, stack)) mystTag = getTagFromItem(ModNbtUtils.TAGS.MYSTICISM, stack);
         else mystTag = generateNewMysticismTag();
         setItemRootTag(stack, updateOrApplyTagInfluence(mystTag, spiritualityAmount, target), TAGS.MYSTICISM);
     }

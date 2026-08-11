@@ -35,7 +35,7 @@ public class BetAbility extends Ability {
         int maxLevel = 1;
         float multiplier = 1f + Math.max(luck, 0)/150f;
         GamblingEffect.applyPositiveEffect(cap, target, cap.getLuckManager(), getSequenceLevel(), (int)(multiplier*minDuration), (int)(multiplier*maxDuration), (int)(multiplier*maxLevel), target.getRandom());
-        cap.getLuckManager().consumeLuck(Math.max(luck, 100));
+        cap.getLuckManager().consumeLuck(target, Math.max(luck, 100), false);
         return true;
     }
 }

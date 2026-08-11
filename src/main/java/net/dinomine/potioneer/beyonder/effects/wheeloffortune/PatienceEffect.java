@@ -66,7 +66,7 @@ public class PatienceEffect extends BeyonderEffect {
         cap.getLuckManager().getRange().setSuppress(false);
         int currentLuck = cap.getLuckManager().getLuck();
         int amm = Math.max(quantityToLuck(quantity), currentLuck) - currentLuck;
-        cap.getLuckManager().grantLuck(amm);
+        cap.getLuckManager().grantLuck(target, amm, false);
         cap.getCharacteristicManager().progressActing(0.2f*Math.pow(amm/(float)luck_limit, 2.6f), 7);
         cap.getLuckManager().removeLuckEventModifier(uuid);
         target.level().playSound(null, target.getOnPos(), SoundEvents.BOTTLE_EMPTY, SoundSource.PLAYERS, 1, (float)target.getRandom().triangle(1, 0.2));

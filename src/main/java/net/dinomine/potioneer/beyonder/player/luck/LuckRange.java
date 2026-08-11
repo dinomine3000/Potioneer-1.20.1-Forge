@@ -1,9 +1,13 @@
 package net.dinomine.potioneer.beyonder.player.luck;
 
+import net.dinomine.potioneer.event.LuckChangeEvent;
+import net.dinomine.potioneer.event.LuckEventCastEvent;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.util.Mth;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraftforge.common.MinecraftForge;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -136,10 +140,11 @@ public class LuckRange {
         this.posDecay += posDelta;
     }
 
-    public int changeLuck(int oldLuck, int proposedChange){
+    public int changeLuck(int oldLuck, int proposedChange, LivingEntity entity){
         int test = oldLuck + proposedChange;
         if(test > getMaxLuck() && proposedChange > 0) return oldLuck;
         if(test < getMinLuck() && proposedChange < 0) return oldLuck;
+        MinecraftForge.EVENT_BUS.post(new LuckChangeEvent(entity, oldLuck, test, true));
         return test;
     }
 

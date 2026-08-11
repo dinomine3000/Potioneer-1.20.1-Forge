@@ -12,7 +12,7 @@ public class InstantLuckEffect extends BeyonderEffect {
     @Override
     public void onAcquire(LivingEntityBeyonderCapability cap, LivingEntity target) {
         if(acquired || target.level().isClientSide()) return;
-        cap.getLuckManager().grantLuck(50 + 25*(8-sequenceLevel));
+        cap.getLuckManager().grantLuck(target, 50 + 25*(8-sequenceLevel), false);
         target.sendSystemMessage(Component.translatable("message.potioneer.luck_boost_grant"));
         target.playSound(SoundEvents.ENCHANTMENT_TABLE_USE, 1, 1);
         acquired = true;
@@ -25,7 +25,7 @@ public class InstantLuckEffect extends BeyonderEffect {
     @Override
     public void stopEffects(LivingEntityBeyonderCapability cap, LivingEntity target) {
         if(target.level().isClientSide()) return;
-        cap.getLuckManager().consumeLuck(50 + 25*(8-sequenceLevel) + 10);
+        cap.getLuckManager().consumeLuck(target, 50 + 25*(8-sequenceLevel) + 10, false);
         target.sendSystemMessage(Component.translatableWithFallback("message.potioneer.luck_boost_revoke", "All is not without its price. Your luck has been taken back."));
         if (cap.getLuckManager().getLuck() < 0){
             target.sendSystemMessage(Component.translatableWithFallback("message.potioneer.luck_boost_unlucky", "Unlucky..."));

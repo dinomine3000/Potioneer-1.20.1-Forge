@@ -35,7 +35,7 @@ public class LuckAbility extends PassiveAbility {
             RandomSource random = target.getRandom();
             target.level().playSound(null, target.getOnPos(), ModSounds.LUCK.get(), SoundSource.PLAYERS, 2, (float) target.getRandom().triangle(1f, 0.3f));
             cap.getLuckManager().changeLuckTemporary(-random.nextInt(0, 50), -random.nextInt(0, 50), random.nextInt(0, 50));
-            cap.getLuckManager().grantLuck(20);
+            cap.getLuckManager().grantLuck(target, 20, false);
             target.sendSystemMessage(Component.translatable("ability.potioneer.decaying_luck"));
             cap.requestActiveSpiritualityCost(cost());
             return true;

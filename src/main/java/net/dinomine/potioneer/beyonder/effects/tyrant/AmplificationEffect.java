@@ -42,7 +42,7 @@ public class AmplificationEffect extends BeyonderEffect {
                 affectedInstances.remove(instanceId);
                 continue;
             }
-            abl.applyTemporaryModifier( uuid, -1, cap, target);
+            abl.temporarilyUpgradeToLevel( uuid, -1, cap, target);
         }
     }
 
@@ -51,7 +51,7 @@ public class AmplificationEffect extends BeyonderEffect {
         if(affectedInstances.contains(abl.getInstanceId())) return;
         affectedInstances.add(abl.getInstanceId());
         amplificationsLeft--;
-        abl.applyTemporaryModifier(uuid, -1, cap, target);
+        abl.temporarilyUpgradeToLevel(uuid, -1, cap, target);
         if(target instanceof ServerPlayer player) sendDataToClient(player);
     }
 
@@ -76,7 +76,7 @@ public class AmplificationEffect extends BeyonderEffect {
                 affectedInstances.remove(instanceId);
                 continue;
             }
-            abl.removeTemporaryModifier(uuid, cap, target);
+            abl.removeTemporaryUpgrade(uuid, cap, target);
         }
     }
 

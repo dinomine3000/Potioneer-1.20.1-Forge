@@ -2,7 +2,7 @@ package net.dinomine.potioneer.recipe;
 
 import net.dinomine.potioneer.item.ModItems;
 import net.dinomine.potioneer.util.BufferUtils;
-import net.dinomine.potioneer.util.misc.ModTags;
+import net.dinomine.potioneer.util.misc.ModNbtUtils;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.item.Item;
@@ -11,8 +11,8 @@ import net.minecraft.world.item.Items;
 
 import java.util.Objects;
 
-import static net.dinomine.potioneer.util.misc.ModTags.PotionInfoTag.MAX_FLASK_AMOUNT;
-import static net.dinomine.potioneer.util.misc.ModTags.PotionInfoTag.MAX_VIAL_AMOUNT;
+import static net.dinomine.potioneer.util.misc.ModNbtUtils.PotionInfoTag.MAX_FLASK_AMOUNT;
+import static net.dinomine.potioneer.util.misc.ModNbtUtils.PotionInfoTag.MAX_VIAL_AMOUNT;
 
 public class PotionContentData {
 
@@ -81,12 +81,12 @@ public class PotionContentData {
         Item item = stack.getItem();
         if(this.bottle && item != Items.GLASS_BOTTLE) return false;
         if((item == ModItems.VIAL.get() || item == ModItems.FLASK.get()) && !this.bottle) return false;
-        if(!ModTags.hasTag(ModTags.TAGS.POTION, stack)) return true;
+        if(!ModNbtUtils.hasTag(ModNbtUtils.TAGS.POTION, stack)) return true;
 
-        CompoundTag info = ModTags.getTagFromItem(ModTags.TAGS.POTION, stack);
-        int level = ModTags.PotionInfoTag.getPotionAmount(info);
+        CompoundTag info = ModNbtUtils.getTagFromItem(ModNbtUtils.TAGS.POTION, stack);
+        int level = ModNbtUtils.PotionInfoTag.getPotionAmount(info);
         if(item == ModItems.FLASK.get()){
-            return level < MAX_FLASK_AMOUNT && ModTags.PotionInfoTag.getPotionName(info).equals(name);
+            return level < MAX_FLASK_AMOUNT && ModNbtUtils.PotionInfoTag.getPotionName(info).equals(name);
         } else {
             return level < MAX_VIAL_AMOUNT;
         }

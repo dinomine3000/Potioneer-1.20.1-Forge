@@ -11,7 +11,7 @@ import net.dinomine.potioneer.recipe.PotionRecipe;
 import net.dinomine.potioneer.savedata.PotionFormulaSaveData;
 import net.dinomine.potioneer.util.PotioneerMathHelper;
 import net.dinomine.potioneer.util.misc.CharacteristicHelper;
-import net.dinomine.potioneer.util.misc.ModTags;
+import net.dinomine.potioneer.util.misc.ModNbtUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
@@ -135,13 +135,13 @@ public class PotionCauldronBlockEntity extends BlockEntity {
             PotionContentData outputToSet = internalContent.copy();
             if(outputToSet.isValidContainer(heldItemStack)){
                 if(item == ModItems.VIAL.get()){
-                    int lvl = ModTags.PotionInfoTag.MAX_VIAL_AMOUNT;
+                    int lvl = ModNbtUtils.PotionInfoTag.MAX_VIAL_AMOUNT;
                     cauldron.changeWaterLevel(pLevel, pPos, -lvl);
                     internalContent.amount -= lvl;
                 } else {
-                    int level = ModTags.PotionInfoTag.getPotionAmount(heldItemStack);
-                    cauldron.changeWaterLevel(pLevel, pPos, -(ModTags.PotionInfoTag.MAX_FLASK_AMOUNT - level));
-                    internalContent.amount -= (ModTags.PotionInfoTag.MAX_FLASK_AMOUNT - level);
+                    int level = ModNbtUtils.PotionInfoTag.getPotionAmount(heldItemStack);
+                    cauldron.changeWaterLevel(pLevel, pPos, -(ModNbtUtils.PotionInfoTag.MAX_FLASK_AMOUNT - level));
+                    internalContent.amount -= (ModNbtUtils.PotionInfoTag.MAX_FLASK_AMOUNT - level);
                 }
                 //if the cauldron becomes empty then clear the result variable
                 if(internalContent.amount < 1) {
@@ -181,7 +181,7 @@ public class PotionCauldronBlockEntity extends BlockEntity {
     }
 
     private void applyTags(ItemStack stack, PotionContentData data){
-        ModTags.PotionInfoTag.applyTagToItem(data, stack);
+        ModNbtUtils.PotionInfoTag.applyTagToItem(data, stack);
     }
 
     public void addIngredient(ItemStack itemStack, boolean shrink){

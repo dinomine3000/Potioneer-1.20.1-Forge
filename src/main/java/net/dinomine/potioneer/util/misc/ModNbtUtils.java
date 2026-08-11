@@ -17,7 +17,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
-public abstract class ModTags {
+public abstract class ModNbtUtils {
 
     public static final String PURIFYING_TAG = "purifying";
 
@@ -235,7 +235,7 @@ public abstract class ModTags {
          */
         public static boolean isArtifactEnabled(ItemStack stack){
             if(!hasTag(ARTIFACT_TAG_ID, stack)) return false;
-            CompoundTag artifactTag = ModTags.getTagFromItem(ARTIFACT_TAG_ID, stack);
+            CompoundTag artifactTag = ModNbtUtils.getTagFromItem(ARTIFACT_TAG_ID, stack);
             for(String key: artifactTag.getAllKeys()){
                 if(key.equals(UUID_KEY)) continue;
                 if(artifactTag.getCompound(key).getBoolean("downside")) continue;
@@ -271,7 +271,8 @@ public abstract class ModTags {
                 if(stringKey.equals(UUID_KEY)) continue;
                 AbilityKey key = AbilityKey.fromString(stringKey);
                 if(key.isEmpty()) continue;
-                Ability ability = Abilities.createAbilityInstance(key);
+                int savedLevel = artifactTag.getCompound(stringKey).contains("levelState") ? artifactTag.getCompound(stringKey).getInt("level") : key.getSequenceLevel();
+                Ability ability = Abilities.createAbilityInstance(key, savedLevel);
                 ability.setArtifactAbilityKey(artifactId);
                 ability.loadNbt(artifactTag);
                 abilities.add(ability);

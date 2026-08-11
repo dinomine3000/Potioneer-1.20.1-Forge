@@ -86,7 +86,7 @@ public class WheelOfFortuneResponse extends Deity {
         Player target = getPlayer(inputData, level, false);
         if(target == null) return;
         target.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
-            cap.getLuckManager().grantLuck(target.getRandom().nextInt(-10, 100));
+            cap.getLuckManager().grantLuck(target, target.getRandom().nextInt(-10, 100), false);
             level.playSound( null, target, SoundEvents.BEACON_ACTIVATE, SoundSource.PLAYERS, 2, 1);
             for(ItemStack stack: RitualInputData.getLiveItemStacks(inputData, level)){
                 if(stack.is(Items.DIAMOND))
@@ -99,7 +99,7 @@ public class WheelOfFortuneResponse extends Deity {
         Player target = getPlayer(inputData, level, false);
         if(target == null) return;
         target.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
-            cap.getLuckManager().consumeLuck(target.getRandom().nextInt(-10, 100));
+            cap.getLuckManager().consumeLuck(target, target.getRandom().nextInt(-10, 100), true);
             level.playSound( null, target, SoundEvents.BEACON_DEACTIVATE, SoundSource.PLAYERS, 2, 1);
         });
     }

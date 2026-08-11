@@ -28,7 +28,9 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
@@ -46,6 +48,34 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 public class AbilityFunctionHelper {
+    public static ItemEntity dropItem(LivingEntity target, ItemStack stackToDrop, boolean retainInHand) {
+        Level level = target.level();
+        if (level.isClientSide() || stackToDrop.isEmpty()) {
+            return null;
+        }
+
+        ItemEntity itemEntity;
+
+        if (target instanceof Player player) {
+            itemEntity = player.drop(stackToDrop.copy(), false, true);
+        } else {
+            double yPos = target.getY() + 0.5D - 0.3D; // Drop near the entity's waist/hands
+            itemEntity = new ItemEntity(level, target.getX(), yPos, target.getZ(), stackToDrop.copy());
+            itemEntity.setPickUpDelay(40);
+            double speed = 0.2D;
+            double motionX = (level.random.nextFloat() - level.random.nextFloat()) * speed;
+            double motionY = level.random.nextFloat() * speed;
+            double motionZ = (level.random.nextFloat() - level.random.nextFloat()) * speed;
+            itemEntity.setDeltaMovement(motionX, motionY, motionZ);
+            level.addFreshEntity(itemEntity);
+        }
+
+        if (!retainInHand) {
+            stackToDrop.setCount(0);
+        }
+
+        return itemEntity;
+    }
 
     public static void teleportEntity(Entity target, ServerLevel fromLevel, ServerLevel toLevel, BlockPos targetPosition){
         Vec3 motion = target.getDeltaMovement();

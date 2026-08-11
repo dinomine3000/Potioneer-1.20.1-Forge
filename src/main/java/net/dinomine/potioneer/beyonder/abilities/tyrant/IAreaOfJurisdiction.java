@@ -1,6 +1,6 @@
 package net.dinomine.potioneer.beyonder.abilities.tyrant;
 
-import net.dinomine.potioneer.util.misc.ModTags;
+import net.dinomine.potioneer.util.misc.ModNbtUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.*;
 
@@ -38,7 +38,7 @@ public interface IAreaOfJurisdiction {
     }
 
     default List<String> getDimensionsFromTag(CompoundTag tag) {
-        List<String> dimensions = ModTags.readStringList(tag, "dimensions");
+        List<String> dimensions = ModNbtUtils.readStringList(tag, "dimensions");
         return dimensions;
     }
     default CompoundTag getCompoundTag(List<BlockPos> centers, List<Integer> radii, List<String> dimensions){
@@ -58,7 +58,7 @@ public interface IAreaOfJurisdiction {
         }
         resTag.put("sides", radiiTag);
 
-        ModTags.writeStringList(resTag, "dimensions", dimensions);
+        ModNbtUtils.writeStringList(resTag, "dimensions", dimensions);
         return resTag;
     }
 }

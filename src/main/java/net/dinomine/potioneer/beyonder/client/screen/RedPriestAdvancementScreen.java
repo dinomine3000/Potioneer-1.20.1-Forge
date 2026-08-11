@@ -4,22 +4,29 @@ import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screens.advancements.AdvancementsScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.phys.Vec2;
 
+import static net.dinomine.potioneer.beyonder.client.screen.DefaultAdvancementScreen.TEXTURE;
+
 public class RedPriestAdvancementScreen extends Screen implements MinigameScreen {
 
+    private final RandomSource random = RandomSource.create();
     private Vec2 currentPos = new Vec2(0, 0);
     private Vec2 targetPos = new Vec2(0, 0);
+    private float wanderAngle = (float) (this.random.nextFloat() * Math.PI * 2);
 
     private static final int DOT_SIZE = 6;
-    private static final float LERP_SPEED = 12.0f; // Higher = faster tracking, lower = smoother lag
+    private static final float LERP_SPEED = 25.0f; // Higher = faster tracking, lower = smoother lag
+    private static final int SAFE_RADIUS = 25;
+    private static final float WANDER_ANGLE_CHANGE = 0.2f;
+    private static final float WANDER_STRENGTH = 0.4f;
 
     private long renderTimestamp;
     private long lastThrowTime = System.currentTimeMillis();
-    private final RandomSource random = RandomSource.create();
 
     public RedPriestAdvancementScreen() {
         super(Component.literal("Minigame"));
@@ -50,6 +57,7 @@ public class RedPriestAdvancementScreen extends Screen implements MinigameScreen
     public void render(GuiGraphics pGuiGraphics, int pMouseX, int pMouseY, float pPartialTick) {
         this.renderBackground(pGuiGraphics);
         super.render(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
+        pGuiGraphics.blit(TEXTURE, this.width/2 - SAFE_RADIUS, this.height/2 - SAFE_RADIUS, 2*SAFE_RADIUS, 2*SAFE_RADIUS, 0, 30, 50, 50, 256, 256);
 
         long time = System.currentTimeMillis();
         float dt = Math.max(0.001f, (time - this.renderTimestamp) / 1000.0f);
@@ -61,14 +69,26 @@ public class RedPriestAdvancementScreen extends Screen implements MinigameScreen
                 currentPos.y - this.height/2f
         );
         if(gravity.length() > 0.01){
-            float scalar = 2/gravity.length();
+            float scalar = 1f/gravity.length();
             gravity = gravity.scale(scalar);
             this.targetPos = this.targetPos.add(new Vec2(gravity.x, gravity.y));
         }
 
+        // Gradually drift the angle by a small random delta (-maxAngleChange to +maxAngleChange)
+        this.wanderAngle += (this.random.nextFloat() * 2f - 1f) * WANDER_ANGLE_CHANGE;
+
+        // Convert angle to a unit directional vector
+        Vec2 smoothRandomVec = new Vec2(
+                (float) Math.cos(this.wanderAngle) * WANDER_STRENGTH,
+                (float) Math.sin(this.wanderAngle) * WANDER_STRENGTH
+        );
+
+        this.targetPos = this.targetPos.add(smoothRandomVec);
+
         // Throw impulse every 5 seconds by displacing targetPos to a random edge/direction
+        float impulseForce = 1.5f;
         if (time - this.lastThrowTime >= 2000) {
-            this.lastThrowTime = time;
+            this.lastThrowTime = time - random.nextInt(2000);
             int edge = this.random.nextInt(4);
             float targetX;
             float targetY;
@@ -92,7 +112,7 @@ public class RedPriestAdvancementScreen extends Screen implements MinigameScreen
                 }
             }
 
-            this.targetPos = new Vec2(targetX, targetY);
+            this.targetPos = new Vec2(targetX, targetY).scale(impulseForce);
 
             this.targetPos = this.targetPos.add(new Vec2(targetX, targetY));
         }
@@ -100,7 +120,7 @@ public class RedPriestAdvancementScreen extends Screen implements MinigameScreen
         // Frame-rate independent linear interpolation towards targetPos
         float lerpFactor = 1.0f - (float) Math.exp(-LERP_SPEED * dt);
         float interpolatedX = Mth.clamp(Mth.lerp(lerpFactor, this.currentPos.x, this.targetPos.x), DOT_SIZE, this.width - DOT_SIZE);
-        float interpolatedY = Mth.clamp(Mth.lerp(lerpFactor, this.currentPos.y, this.targetPos.y), DOT_SIZE, this.width - DOT_SIZE);
+        float interpolatedY = Mth.clamp(Mth.lerp(lerpFactor, this.currentPos.y, this.targetPos.y), DOT_SIZE, this.height - DOT_SIZE);
 
         this.currentPos = new Vec2(interpolatedX, interpolatedY);
 

@@ -306,11 +306,11 @@ public class BeyonderEvents {
         });
 
     }
-
+/*
     @SubscribeEvent
     public static void livingVisibilityEvent(LivingEvent.LivingVisibilityEvent event){
         if(event.getEntity() instanceof Zombie) event.modifyVisibility(0.8);
-    }
+    }*/
 
     private static long stringToLong(String input) {
         try {

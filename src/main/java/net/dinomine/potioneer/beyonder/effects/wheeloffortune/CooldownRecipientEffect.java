@@ -76,7 +76,7 @@ public class CooldownRecipientEffect extends BeyonderEffect {
         if(numToDisable > 0) WheelOfFortunePathway.playSound(victim.level(), victim.getOnPos(), WheelOfFortunePathway.UNLUCK);
         for(int i = 0; i < numToDisable; i++){
             if(keys.isEmpty()) break;
-            victimCapability.getLuckManager().grantLuck(10);
+            victimCapability.getLuckManager().grantLuck(null, 10, false);
             //bigger is better here because, generally, the last abilities in the list are the higher level sequence ones.
             AbilityKey key = keys.get(luck.getRandomNumber(0, keys.size(), casterPespective, victim.getRandom()));
             victim.sendSystemMessage(Component.translatableWithFallback("ability.potioneer.cooldown_put", "%s has been put on cooldown.", key.getNameComponent()));

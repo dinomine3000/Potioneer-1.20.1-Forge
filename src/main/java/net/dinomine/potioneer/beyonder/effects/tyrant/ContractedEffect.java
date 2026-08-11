@@ -51,6 +51,11 @@ public class ContractedEffect extends BeyonderEffect {
     }
 
     @Override
+    public boolean canBeCleansed() {
+        return false;
+    }
+
+    @Override
     public void onAcquire(LivingEntityBeyonderCapability cap, LivingEntity target) {
         super.onAcquire(cap, target);
         if(reward.getId().equalsIgnoreCase("ability")){
@@ -98,9 +103,9 @@ public class ContractedEffect extends BeyonderEffect {
         String ablId = AbilityKey.fromString(reward.getArguments().get(0)).getAbilityId();
         cap.getAbilitiesManager().getAbilities(ablId).forEach(abl ->  {
             if(doBuff)
-                abl.applyTemporaryModifier(SEQUENCE_LEVEL_UPGRADE_ID, -1, cap, target);
+                abl.temporarilyUpgradeToLevel(SEQUENCE_LEVEL_UPGRADE_ID, -1, cap, target);
             else
-                abl.removeTemporaryModifier(SEQUENCE_LEVEL_UPGRADE_ID, cap, target);
+                abl.removeTemporaryUpgrade(SEQUENCE_LEVEL_UPGRADE_ID, cap, target);
         });
     }
 
@@ -129,7 +134,7 @@ public class ContractedEffect extends BeyonderEffect {
         if(!condition.isValid() || !reward.getId().equalsIgnoreCase("ability")) return;
 
         if(abl.is(reward.getArguments().get(0))){
-            abl.applyTemporaryModifier(SEQUENCE_LEVEL_UPGRADE_ID, -1, cap, target);
+            abl.temporarilyUpgradeToLevel(SEQUENCE_LEVEL_UPGRADE_ID, -1, cap, target);
         }
     }
 

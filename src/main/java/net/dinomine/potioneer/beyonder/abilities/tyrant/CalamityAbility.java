@@ -9,7 +9,7 @@ import net.dinomine.potioneer.beyonder.player.PlayerLuckManager;
 import net.dinomine.potioneer.config.PotioneerAbilityConfig;
 import net.dinomine.potioneer.entities.ModEntities;
 import net.dinomine.potioneer.entities.custom.WindShearProjectile;
-import net.dinomine.potioneer.util.misc.ModTags;
+import net.dinomine.potioneer.util.misc.ModNbtUtils;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -128,7 +128,7 @@ public class CalamityAbility extends AbilityWithOptions {
         ArrayList<LivingEntity> victims = AbilityFunctionHelper.getNonAllyLivingEntitiesAround(caster, caster.getAttributeValue(ForgeMod.ENTITY_REACH.get()) + 0.5d);
         if (victims.isEmpty()) return false;
         if (caster.level().isClientSide()) return false;
-        victims.forEach(ent -> doBadLuckTo(cap, ent));
+        victims.forEach(ent -> doBadLuckTo(caster, cap, ent));
         cap.requestActiveSpiritualityCost(LUCK_COST.get());
         setNextCooldownAs(LUCK_COOLDOWN.get());
         return true;
@@ -151,11 +151,11 @@ public class CalamityAbility extends AbilityWithOptions {
         return false;
     }
 
-    private void doBadLuckTo(LivingEntityBeyonderCapability casterCap, LivingEntity target){
+    private void doBadLuckTo(LivingEntity caster, LivingEntityBeyonderCapability casterCap, LivingEntity target){
         target.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(targetCap -> {
             PlayerLuckManager targetLuck = targetCap.getLuckManager();
             PlayerLuckManager exchangeManager = casterCap.getLuckManager().getDiffManager(targetLuck);
-            targetCap.getLuckManager().consumeLuck(exchangeManager.getRandomNumber(50, 250, true, target.getRandom()));
+            targetCap.getLuckManager().consumeLuck(caster, exchangeManager.getRandomNumber(50, 250, true, target.getRandom()), false);
             targetCap.getLuckManager().castOrHurryEvent(target, targetCap);
         });
     }
@@ -172,7 +172,7 @@ public class CalamityAbility extends AbilityWithOptions {
         if(caster instanceof ServerPlayer player)
             lightning.setCause(player);
         lightning.setDamage(damage);
-        lightning.addTag(ModTags.PURIFYING_TAG);
+        lightning.addTag(ModNbtUtils.PURIFYING_TAG);
         level.addFreshEntity(lightning);
 
     }

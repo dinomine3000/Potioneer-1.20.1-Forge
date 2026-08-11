@@ -13,6 +13,7 @@ import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.saveddata.SavedData;
 
+import javax.annotation.Nullable;
 import java.util.*;
 
 public class DimensionChunkSavedData extends SavedData {
@@ -62,6 +63,12 @@ public class DimensionChunkSavedData extends SavedData {
             }
         }
         return res;
+    }
+    public static @Nullable RulePylonBlockEntity getRulingPylon(ServerLevel dimensionLevel, BlockPos testPosition){
+        ChunkPos pos = new ChunkPos(testPosition);
+        DimensionChunkSavedData data = DimensionChunkSavedData.from(dimensionLevel);
+        if(!data.chunkPylonMap.containsKey(pos)) return null;
+        return (RulePylonBlockEntity) dimensionLevel.getBlockEntity(data.chunkPylonMap.get(pos).pylonPos);
     }
 
     public static Set<BlockPos> getPylonPositionsInDimensionOwnedBy(ServerLevel dimensionLevel, LivingEntity owner){
@@ -204,6 +211,11 @@ public class DimensionChunkSavedData extends SavedData {
     public static DimensionChunkSavedData from(ServerLevel level){
         return level.getDataStorage().computeIfAbsent(DimensionChunkSavedData::loadPylons,
                 DimensionChunkSavedData::new, "potioneer_chunk_data");
+    }
+
+    public void updateAoj(BlockPos pylonPos, boolean newAoj){
+        for(PylonProxy proxy: chunkPylonMap.values())
+            if(proxy.pylonPos.equals(pylonPos)) proxy.extendsAoj = newAoj;
     }
 
     private static class PylonProxy{

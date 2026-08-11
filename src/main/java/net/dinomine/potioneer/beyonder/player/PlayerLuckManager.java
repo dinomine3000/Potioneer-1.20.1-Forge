@@ -4,6 +4,7 @@ import net.dinomine.potioneer.beyonder.player.luck.LuckRange;
 import net.dinomine.potioneer.beyonder.player.luck.luckevents.LuckEvent;
 import net.dinomine.potioneer.beyonder.player.luck.luckevents.LuckEvents;
 import net.dinomine.potioneer.config.PotioneerGameplayConfig;
+import net.dinomine.potioneer.event.LuckChangeEvent;
 import net.dinomine.potioneer.event.LuckEventCastEvent;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -69,7 +70,7 @@ public class PlayerLuckManager {
                 }
             }
             //random walk
-            luck = range.changeLuck(luck, target.getRandom().nextBoolean() ? 1 : -1);
+            luck = range.changeLuck(luck, target.getRandom().nextBoolean() ? 1 : -1, target);
             if(target.tickCount%200 == 0){
                 range.tenSecondTick();
             }
@@ -197,10 +198,10 @@ public class PlayerLuckManager {
 
     public boolean passesLuckCheck(float chance, int luckCostIfSuccess, int luckGainIfFailure, RandomSource random){
         if(passesLuckCheck(luck, chance, random)){
-            consumeLuck(luckCostIfSuccess);
+            consumeLuck(null, luckCostIfSuccess, true);
             return true;
         }
-        grantLuck(luckGainIfFailure);
+        grantLuck(null, luckGainIfFailure, true);
         return false;
     }
 
@@ -232,10 +233,16 @@ public class PlayerLuckManager {
         return new BlockPos(px, incrementY ? py : center.getY(), pz);
     }
 
-    public void consumeLuck(int consume){
+    public void consumeLuck(LivingEntity casterEntity, int consume, boolean natural){
+        int luckO = luck;
         luck = Mth.clamp(luck - consume, MINIMUM_LUCK, MAXIMUM_LUCK);
+        MinecraftForge.EVENT_BUS.post(new LuckChangeEvent(casterEntity, luckO, luck, natural));
     }
-    public void grantLuck(int amm){ luck = Mth.clamp(luck + amm, MINIMUM_LUCK, MAXIMUM_LUCK);}
+    public void grantLuck(LivingEntity entity, int amm, boolean natural){
+        int luckO = luck;
+        luck = Mth.clamp(luck + amm, MINIMUM_LUCK, MAXIMUM_LUCK);
+        MinecraftForge.EVENT_BUS.post(new LuckChangeEvent(entity, luckO, luck, natural));
+    }
 
     public void saveNBTData(CompoundTag nbt){
         CompoundTag luck = new CompoundTag();

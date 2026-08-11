@@ -6,6 +6,7 @@ import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
 import net.dinomine.potioneer.beyonder.player.PlayerAbilitiesManager;
 import net.dinomine.potioneer.event.AbilityCastEvent;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.LivingEntity;
@@ -25,6 +26,7 @@ public abstract class Ability {
      * used when revoking the ability. this stores the previous state to be recovered.
      */
     private boolean previousState = true;
+    private boolean disabled = false;
     protected String abilityId;
     protected AbilityKey abilityKey = new AbilityKey();
     private Function<Integer, Integer> costFunction = null;
@@ -71,14 +73,14 @@ public abstract class Ability {
         if(abilityKey == null){
             System.out.println("Warning: tried to get ability info with a null key");
             return Abilities.getInfo(abilityId, cooldown, maxCooldown, state,
-                    getMainDescId(sequenceLevel), getAllDescId(sequenceLevel),
-                    new AbilityKey(abilityId, sequenceLevel), sequenceLevel)
+                            getMainDescId(sequenceLevel), getAllDescId(sequenceLevel),
+                            new AbilityKey(abilityId, sequenceLevel), sequenceLevel)
                     .withData(abilityData)
                     .withInstanceId(instanceId);
         }
         return Abilities.getInfo(abilityId, cooldown, maxCooldown, state,
-                getMainDescId(sequenceLevel), getAllDescId(sequenceLevel),
-                abilityKey, sequenceLevel)
+                        getMainDescId(sequenceLevel), getAllDescId(sequenceLevel),
+                        abilityKey, sequenceLevel)
                 .withData(abilityData)
                 .withInstanceId(instanceId);
     }
@@ -109,7 +111,7 @@ public abstract class Ability {
     }
 
     protected void setCost(Function<Integer, Integer> costFunction){
-       this.costFunction = costFunction;
+        this.costFunction = costFunction;
     }
 
     protected int cost(){
@@ -190,55 +192,42 @@ public abstract class Ability {
 
 
     /**
-     * Function that will put the ability on a special cooldown
-     * here, the time left will not be shown to the player, instead itll show the disabled/block symbol
-     * -1 will disable it indefinitely
-     * any value below -2 will function like a cooldown, and it will automatically re-enable after the time runs out (once it reaches -2)
-     * @param time - time in ticks until its to be re-enabled. setting this to 0 means removing the ability from cooldown.
+     * Revokes (disables) the ability.
      */
-    public void revoke(int time, LivingEntityBeyonderCapability cap, LivingEntity target){
-        if(time == 0) return;
-        if(cooldown >= 0){
-            previousState = state;
-            onRevoke(cap, target);
-            maxCooldown = Math.max(cooldown, 20);
-        }
-        if(time > 0) time = -time;
-        cooldown = time;
+    protected void revoke(LivingEntityBeyonderCapability cap, LivingEntity target){
+        if(disabled) return;
+        previousState = state;
+        disabled = true;
+        maxCooldown = cooldown;
+        cooldown = -1;
+        onRevoke(cap, target);
         if (target instanceof Player player) updateCooldownClient(player);
     }
 
     /**
-     * revokes the ability indefinitely
+     * Automatically re-enables the ability if it has been revoked.
      */
-    public void revoke(LivingEntityBeyonderCapability cap, LivingEntity target){
-        revoke(-1, cap, target);
-    }
-
-    /**
-     * automatically re-enables the ability if its been revoked. if its on cooldown, it does nothing
-     */
-    public void undoRevoke(LivingEntityBeyonderCapability cap, LivingEntity target){
-        putOnCooldown(maxCooldown, target);
+    protected void undoRevoke(LivingEntityBeyonderCapability cap, LivingEntity target){
+        if(!disabled) return;
+        disabled = false;
+        cooldown = maxCooldown;
+        maxCooldown = Math.max(cooldown, 1);
         onUndoRevoke(cap, target);
+        if(target instanceof Player player) updateCooldownClient(player);
     }
 
     public boolean isRevoked(){
-        return cooldown < 0;
+        return disabled;
     }
 
-    public void tickCooldown(){
+    public void tickCooldown(LivingEntity target){
         /*
          * values for cooldown:
          * >0 -> just tick down
          * = 0 -> its off cooldown
-         * = -1 -> indefinitely disabled
-         * = -2 -> enabled, jump to 0
-         * < -2 -> disabled for a time, just tick up until it reaches -2. wont show to the player how long its left
          */
-        if(cooldown == -2) cooldown = 0;
-        if(cooldown > 0) cooldown--;
-        if(cooldown < -2) cooldown++;
+        if(disabled || cooldown <= 0) return;
+        if(--cooldown == 0 && target instanceof Player player) updateCooldownClient(player);
     }
 
     protected void setNextCooldownAs(int cooldownTicks){
@@ -252,6 +241,7 @@ public abstract class Ability {
      */
     public boolean putOnCooldown(int cooldownTicks, LivingEntity target){
         if(cooldownTicks < 0) return false;
+        if(disabled) return false;
         maxCooldown = Math.max(cooldownTicks, 1);
         cooldown = cooldownTicks;
         if(target instanceof Player player) updateCooldownClient(player);
@@ -283,7 +273,7 @@ public abstract class Ability {
         });
     }
 
-    public final void upgradeToLevel(int level, LivingEntityBeyonderCapability cap, LivingEntity target) {
+    public final void permanentlyUpgradeToLevel(int level, LivingEntityBeyonderCapability cap, LivingEntity target) {
         int clampedBaseLevel = Math.max(0, Math.min(9, level));
 
         // Update the base ability key
@@ -303,13 +293,13 @@ public abstract class Ability {
      * @param levelDifference  The amount to shift level. Level 9 -> 8 is a buff of 1 level.
      *                         Pass negative values for buffs (lower sequence number), positive for debuffs.
      */
-    public void applyTemporaryModifier(UUID sourceId, int levelDifference, LivingEntityBeyonderCapability cap, LivingEntity target) {
+    public void temporarilyUpgradeToLevel(UUID sourceId, int levelDifference, LivingEntityBeyonderCapability cap, LivingEntity target) {
         if (levelDifference == 0) return;
         activeLevelModifiers.put(sourceId, levelDifference);
         recalculateEffectiveLevel(cap, target);
     }
 
-    public void removeTemporaryModifier(UUID sourceId, LivingEntityBeyonderCapability cap, LivingEntity target) {
+    public void removeTemporaryUpgrade(UUID sourceId, LivingEntityBeyonderCapability cap, LivingEntity target) {
         if (activeLevelModifiers.remove(sourceId) != null) {
             recalculateEffectiveLevel(cap, target);
         }
@@ -343,6 +333,7 @@ public abstract class Ability {
             onUpgrade(this.sequenceLevel, targetLevel, cap, target);
             this.sequenceLevel = targetLevel;
             sendUpdateMessageToClient(target);
+            cap.getAbilitiesManager().getDisabledAbilitiesManager().abilityChangedLevel(this, cap, target);
         }
     }
     /**
@@ -365,7 +356,7 @@ public abstract class Ability {
      * @param args CompoundTag arguments for the cast
      */
     public boolean castAbility(LivingEntityBeyonderCapability cap, LivingEntity target, boolean primary, CompoundTag args){
-        if(cooldown != 0) return false;
+        if(cooldown != 0 || disabled) return false;
 
         boolean cancelledCheck = MinecraftForge.EVENT_BUS.post(new AbilityCastEvent.Pre(this, target, primary, args));
         if(cancelledCheck) return false;
@@ -472,8 +463,19 @@ public abstract class Ability {
         tag.putInt("cooldown", cooldown);
         tag.putBoolean("enabled", state);
         tag.putBoolean("prevState", previousState);
+        tag.putBoolean("disabled", disabled);
         tag.put("data", abilityData);
         tag.putUUID("instanceId", instanceId);
+        tag.putInt("savedLevel", sequenceLevel);
+
+        ListTag modifiersTag = new ListTag();
+        for (Map.Entry<UUID, Integer> entry : activeLevelModifiers.entrySet()) {
+            CompoundTag entryTag = new CompoundTag();
+            entryTag.putUUID("source", entry.getKey());
+            entryTag.putInt("mod", entry.getValue());
+            modifiersTag.add(entryTag);
+        }
+        tag.put("activeLevelModifiers", modifiersTag);
         return tag;
     }
 
@@ -483,20 +485,35 @@ public abstract class Ability {
      * To do that, overwrite loadExtraNbtInfo(), and add abilities to a buffer list in AbilityManager
      * @param parentTag - the complete nbt tag for the abilities manager. Check if your own ability key is in here, and if so you can load it.
      */
-    public void loadNbt(CompoundTag parentTag){
+    public final void loadNbt(CompoundTag parentTag){
         if(parentTag.contains(abilityKey.toString())){
             CompoundTag abilityTag = parentTag.getCompound(abilityKey.toString());
             cooldown = abilityTag.getInt("cooldown");
             maxCooldown = Math.max(abilityTag.getInt("cooldown"), 1);
             state = abilityTag.getBoolean("enabled");
             previousState = abilityTag.getBoolean("prevState");
+            disabled = abilityTag.getBoolean("disabled");
             if(abilityTag.contains("instanceId"))
                 instanceId = abilityTag.getUUID("instanceId");
             Tag dataTag = abilityTag.get("data");
-            if(dataTag != null)
-                abilityData = (CompoundTag) dataTag;
+            if(dataTag != null) abilityData = (CompoundTag) dataTag;
+
+            activeLevelModifiers.clear();
+            if (abilityTag.contains("activeLevelModifiers", Tag.TAG_LIST)) {
+                ListTag modifiersTag = abilityTag.getList("activeLevelModifiers", Tag.TAG_COMPOUND);
+                for (int i = 0; i < modifiersTag.size(); i++) {
+                    CompoundTag entryTag = modifiersTag.getCompound(i);
+                    activeLevelModifiers.put(entryTag.getUUID("source"), entryTag.getInt("mod"));
+                }
+            }
+
             loadExtraNbtInfo(abilityTag);
         }
+    }
+
+    public void loadNbtAndRecalculateLevel(CompoundTag parentTag, LivingEntityBeyonderCapability cap, LivingEntity target){
+        loadNbt(parentTag);
+        recalculateEffectiveLevel(cap, target);
     }
 
     /**

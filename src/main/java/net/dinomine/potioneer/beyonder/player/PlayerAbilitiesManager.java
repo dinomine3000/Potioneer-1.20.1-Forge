@@ -33,6 +33,7 @@ import java.util.function.Consumer;
 public class PlayerAbilitiesManager {
     private LinkedHashMap<AbilityKey, Ability> abilities = new LinkedHashMap<>();
     private LinkedHashMap<UUID, ArtifactHolder> artifacts = new LinkedHashMap<>();
+    private DisabledAbilitiesManager disabledManager = new DisabledAbilitiesManager();
 
     public ArrayList<AbilityKey> clientHotbar = new ArrayList<>();
     public AbilityKey quickAbility = new AbilityKey();
@@ -47,7 +48,10 @@ public class PlayerAbilitiesManager {
         this.clientHotbar = mng.clientHotbar;
         this.quickAbility = mng.quickAbility;
         this.abilities = mng.abilities;
+        this.disabledManager = mng.disabledManager;
     }
+
+    public DisabledAbilitiesManager getDisabledAbilitiesManager(){return disabledManager;}
 
     public void castArtifactAbility(UUID artifactKey, LivingEntityBeyonderCapability cap, LivingEntity target){
         if(!target.level().isClientSide() && target instanceof Player player){
@@ -219,36 +223,15 @@ public class PlayerAbilitiesManager {
         if(!abilities.isEmpty()){
             abilities.values().forEach(ability -> {
                 ability.passive(cap, target);
-                if(cap.getEffectsManager().hasEffect(BeyonderEffects.COGITATION.getEffectId())
-                        && !ability.getAbilityId().equals(Abilities.COGITATION.getAblId())
-                        && !ability.isRevoked()){
-                    ability.revoke(cap, target);
-                }
-                ability.tickCooldown();
+                ability.tickCooldown(target);
             });
         }
         artifacts.values().forEach(ability -> {
             ability.passives(cap, target);
         });
-
-    }
-    public void unrevokeAll(Set<UUID> disabledInstances, LivingEntityBeyonderCapability cap, LivingEntity target){
-        abilities.values().forEach(ability -> {
-            if(disabledInstances.contains(ability.getInstanceId()) && ability.isRevoked()){
-                ability.undoRevoke(cap, target);
-            }
-        });
+        disabledManager.tickDisabledAbilities(cap, target);
     }
 
-    public void unrevokeAll(LivingEntityBeyonderCapability cap, LivingEntity target){
-        if(!abilities.isEmpty()){
-            abilities.values().forEach(ability -> {
-                if(ability.isRevoked()){
-                    ability.undoRevoke(cap, target);
-                }
-            });
-        }
-    }
 
     public void clearAbilities(LivingEntityBeyonderCapability cap, LivingEntity target){
         abilities.values().forEach(ability -> ability.deactivate(cap, target));
@@ -306,7 +289,7 @@ public class PlayerAbilitiesManager {
         for(Ability abl: new ArrayList<>(abilities.values())){
             if(abl.getSequenceLevel() != sequenceLevel && abl.getType().equals(AbilityList.INTRINSIC.name())){
                 abilities.remove(abl.getAbilityKey());
-                abl.upgradeToLevel(sequenceLevel, cap, target);
+                abl.permanentlyUpgradeToLevel(sequenceLevel, cap, target);
                 AbilityKey newKey = abl.setAbilityKey(AbilityList.INTRINSIC.name());
                 abilities.put(newKey, abl);
             }
@@ -335,7 +318,7 @@ public class PlayerAbilitiesManager {
      * @param target
      */
     public void setAbilityEnabled(String abilityId, int sequenceLevel, boolean state, LivingEntityBeyonderCapability cap, LivingEntity target) {
-        applyToValidAbilities(abl -> abl.setEnabled(cap, target, state), abilityId, sequenceLevel, false);
+        applyToValidAbilities(abl -> abl.setEnabled(cap, target, state), abilityId, sequenceLevel, true);
         /*for(Map.Entry<AbilityKey, Ability> abilityEntry: abilities.entrySet()){
             AbilityKey iKey = abilityEntry.getKey();
             if(iKey.isSameAbility(abilityId) && abilityEntry.getValue().getSequenceLevel() >= sequenceLevel){
@@ -564,6 +547,13 @@ public class PlayerAbilitiesManager {
                 highest = abl.getSequenceLevel();
             }
         }
+        if(highest != 10) return highest;
+        for(ArtifactHolder artifact: artifacts.values()){
+            for(Ability abl: artifact.getAbilities()){
+                if(abl.is(ablId) && abl.getSequenceLevel() < highest)
+                    highest = abl.getSequenceLevel();
+            }
+        }
         return highest;
     }
 
@@ -578,6 +568,7 @@ public class PlayerAbilitiesManager {
         }
         return false;
     }
+
     public boolean hasAbility(String ablId) {
         return hasAbilityOrBetter(ablId, 9);
     }
@@ -589,12 +580,6 @@ public class PlayerAbilitiesManager {
     }
     public List<Ability> getAbilities(String abilityId) {
         return getAbilities().stream().filter(abl -> abl.is(abilityId)).toList();
-    }
-
-    public List<UUID> revokeAll(String abilityId, LivingEntityBeyonderCapability cap, LivingEntity target) {
-        List<Ability> res = getAbilities().stream().filter(abl -> abl.is(abilityId)).toList();
-        res.forEach(abl -> abl.revoke(cap, target));
-        return res.stream().map(Ability::getInstanceId).toList();
     }
 
     public void updateArtifact(@Nullable UUID artifactId, Player player, ItemStack artifactStack) {
@@ -635,6 +620,7 @@ public class PlayerAbilitiesManager {
         if(abilities.containsKey(key)) return false;
         ability.setAbilityKey(key.getGroup());
         abilities.put(key, ability);
+        disabledManager.onAbilityGained(ability, cap, target);
         MinecraftForge.EVENT_BUS.post(new AbilityPossessionEvent.Gained(ability, key, target));
         if (runOnAcquire) ability.onAcquire(cap, target);
         if(sync && target instanceof ServerPlayer player) updateClientAbilityInfo(player, List.of(ability.getAbilityInfo()), AbilitySyncMessage.ADD);
@@ -730,6 +716,10 @@ public class PlayerAbilitiesManager {
         if(player.level().isClientSide()) return;
         PacketHandler.sendMessageSTC(new AbilitySyncMessage(abilities, operation), player);
     }
+    public void updateClientAbilityInfo(Player player, int operation){
+        if(player.level().isClientSide()) return;
+        PacketHandler.sendMessageSTC(new AbilitySyncMessage(abilities.values().stream().map(Ability::getAbilityInfo).toList(), operation), player);
+    }
 
     public void updateSetClientAbilityInfo(Player player){
         if(player.level().isClientSide()) return;
@@ -770,6 +760,7 @@ public class PlayerAbilitiesManager {
             artifactsTag.add(artifact.saveToTag(true));
         }
         nbt.put("artifacts", artifactsTag);
+        nbt.put("disabledData", disabledManager.saveNbt());
     }
 
     private List<Ability> bufferNewAbilities = new ArrayList<>();
@@ -777,7 +768,7 @@ public class PlayerAbilitiesManager {
 
     public void loadNBTData(CompoundTag nbt, LivingEntityBeyonderCapability cap, LivingEntity target){
         for(Ability abl: abilities.values()){
-            abl.loadNbt(nbt);
+            abl.loadNbtAndRecalculateLevel(nbt, cap, target);
         }
 
         if(!(target instanceof Player player)) return;
@@ -798,7 +789,7 @@ public class PlayerAbilitiesManager {
         for(int i = 0; i < bufferAbilityGroups.size(); i++){
             Ability abl = bufferNewAbilities.get(i);
             addAbility(bufferAbilityGroups.get(i), abl, cap, target, false, false);
-            abl.loadNbt(nbt);
+            abl.loadNbtAndRecalculateLevel(nbt, cap, target);
         }
         bufferNewAbilities.clear();
 
@@ -808,6 +799,7 @@ public class PlayerAbilitiesManager {
                 addArtifact(ArtifactHolder.loadFromTag(artTag), cap, player, false, false);
             }
         }
+        disabledManager.loadNbt(nbt.getCompound("disabledData"), cap, target);
     }
 
 }

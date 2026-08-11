@@ -13,7 +13,7 @@ import java.util.function.Consumer;
 
 public class DefaultAdvancementScreen extends Screen implements MinigameScreen {
     private static final Component TITLE = Component.translatable("gui." + Potioneer.MOD_ID + ".beyonder_menu");
-    private static final ResourceLocation TEXTURE = new ResourceLocation(Potioneer.MOD_ID, "textures/gui/advancement_button.png");
+    public static final ResourceLocation TEXTURE = new ResourceLocation(Potioneer.MOD_ID, "textures/gui/advancement_button.png");
 
     // Minigame Settings & State
     private int difficulty;

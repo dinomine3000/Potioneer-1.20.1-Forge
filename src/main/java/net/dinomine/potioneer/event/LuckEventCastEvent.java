@@ -8,6 +8,7 @@ import net.minecraftforge.eventbus.api.Cancelable;
 public abstract class LuckEventCastEvent extends LivingEvent {
     private final int luck;
     private final LuckEvent luckEvent;
+
     public LuckEventCastEvent(LivingEntity entity, int luck, LuckEvent luckEvent) {
         super(entity);
         this.luck = luck;
