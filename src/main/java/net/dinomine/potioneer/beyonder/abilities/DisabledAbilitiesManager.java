@@ -96,6 +96,10 @@ public class DisabledAbilitiesManager {
         private UUID instanceId = null;
         private int time = -1;
         private boolean all = false;
+        private String group = "";
+        //if true, disables abilities under the above group
+        //if false, disables abilities not under the above group
+        private boolean disableInGroup = false;
         private List<DisabledAbilityProxy> children = Collections.emptyList();
 
         /**
@@ -132,6 +136,12 @@ public class DisabledAbilitiesManager {
             this.time = time;
         }
 
+        public DisabledAbilityProxy(String groupId, boolean belongsToGroup, int time){
+            this.group = groupId;
+            this.disableInGroup = belongsToGroup;
+            this.time = time;
+        }
+
         /**
          * represents a group of multiple proxies
          */
@@ -152,6 +162,7 @@ public class DisabledAbilitiesManager {
             }
             if (instanceId != null) return instanceId.equals(abl.getInstanceId());
             if (all) return !abl.is(ablId);
+            if(!group.isEmpty()) return disableInGroup == abl.getType().equalsIgnoreCase(group);
             return abl.is(ablId) && level >= ablLevel;
         }
         public boolean is(Ability abl){
@@ -190,6 +201,10 @@ public class DisabledAbilitiesManager {
                 }
                 tag.put("children", childrenTag);
             }
+
+            tag.putBoolean("all", all);
+            tag.putBoolean("groupType", disableInGroup);
+            tag.putString("group", group);
             return tag;
         }
 
@@ -212,6 +227,9 @@ public class DisabledAbilitiesManager {
                 }
             }
 
+            proxy.disableInGroup =  tag.getBoolean("groupType");
+            proxy.group = tag.getString("group");
+            proxy.all = tag.getBoolean("all");
             return proxy;
         }
 
@@ -228,6 +246,14 @@ public class DisabledAbilitiesManager {
          */
         public static DisabledAbilityProxy all(int time, String ablIdToIgnore) {
             return new DisabledAbilityProxy(ablIdToIgnore, time);
+        }
+
+        public static DisabledAbilityProxy ofGroup(int time, String groupId) {
+            return new DisabledAbilityProxy(groupId, true, time);
+        }
+
+        public static DisabledAbilityProxy notOfGroup(int time, String groupId) {
+            return new DisabledAbilityProxy(groupId, false, time);
         }
 
         /**

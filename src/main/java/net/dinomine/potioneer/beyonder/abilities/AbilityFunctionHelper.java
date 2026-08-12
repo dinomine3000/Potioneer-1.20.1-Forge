@@ -3,9 +3,9 @@ package net.dinomine.potioneer.beyonder.abilities;
 import com.google.common.base.Suppliers;
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
-import net.dinomine.potioneer.beyonder.abilities.tyrant.MistBlinkingAbility;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffect;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
+import net.dinomine.potioneer.beyonder.effects.tyrant.GeneralProhibitionEffect;
 import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
 import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
 import net.dinomine.potioneer.entities.ModEntities;
@@ -21,7 +21,6 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
@@ -78,6 +77,15 @@ public class AbilityFunctionHelper {
     }
 
     public static void teleportEntity(Entity target, ServerLevel fromLevel, ServerLevel toLevel, BlockPos targetPosition){
+        Optional<LivingEntityBeyonderCapability> optCap = target.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve();
+        if(optCap.isPresent() && target instanceof LivingEntity lTarget){
+            LivingEntityBeyonderCapability cap = optCap.get();
+            GeneralProhibitionEffect eff = getEffectOnTarget(BeyonderEffects.TYRANT_GENERAL_PROHIBITION.getEffectId(), lTarget);
+            if(eff != null && eff.type.equalsIgnoreCase("teleporting")){
+                return;
+            }
+        }
+
         Vec3 motion = target.getDeltaMovement();
         Vec3 targetPos = targetPosition.getCenter();
 
@@ -131,7 +139,7 @@ public class AbilityFunctionHelper {
 
     @SuppressWarnings("unchecked")
     @Nullable
-    public static <T extends BeyonderEffect> T getEffectOnPlayer(String effectId, LivingEntity target) {
+    public static <T extends BeyonderEffect> T getEffectOnTarget(String effectId, LivingEntity target) {
         return target.getCapability(BeyonderStatsProvider.BEYONDER_STATS)
                 .resolve()
                 .map(cap -> cap.getEffectsManager().getEffect(effectId))
@@ -340,8 +348,7 @@ public class AbilityFunctionHelper {
                 pos.x-radius, pos.y-radius, pos.z-radius,
                 pos.x+radius, pos.y+radius, pos.z+radius
         );
-        ArrayList<Entity> res = new ArrayList<>(level.getEntities((Entity) null, box, pred));
-        return res;
+        return new ArrayList<>(level.getEntities((Entity) null, box, pred));
     }
 
     public static Optional<LivingEntity> getTargetEntity(LivingEntity looker, double radius){

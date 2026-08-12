@@ -9,18 +9,15 @@ import net.dinomine.potioneer.beyonder.damages.PotioneerDamage;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
 import net.dinomine.potioneer.beyonder.effects.tyrant.*;
 import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
-import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
 import net.dinomine.potioneer.block.entity.RulePylonBlockEntity;
 import net.dinomine.potioneer.config.PotioneerAbilityConfig;
 import net.dinomine.potioneer.event.*;
-import net.dinomine.potioneer.savedata.AllySystemSaveData;
 import net.dinomine.potioneer.savedata.DimensionChunkSavedData;
 import net.dinomine.potioneer.sound.ModSounds;
 import net.dinomine.potioneer.util.ModTags;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.tags.ItemTags;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -30,16 +27,14 @@ import net.minecraftforge.event.entity.EntityMobGriefingEvent;
 import net.minecraftforge.event.entity.living.LivingDamageEvent;
 import net.minecraftforge.event.entity.living.LivingDestroyBlockEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
-import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.level.BlockEvent;
 import net.minecraftforge.eventbus.api.Event;
+import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
-import javax.swing.text.html.Option;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Mod.EventBusSubscriber
 public class ServerEventsTyrant {
@@ -61,11 +56,19 @@ public class ServerEventsTyrant {
         if(event.getEntity().isSprinting()) ruleBroken(RulePylonAbility.Rule.SPRINT, event.getEntity());
         if(event.getEntity().getMainHandItem().is(ModTags.Items.WEAPON_PROFICIENCY)) ruleBroken(RulePylonAbility.Rule.WEAPONS, event.getEntity());
     }
-
+    @SubscribeEvent
+    public static void onPlayerTick(TickEvent.PlayerTickEvent event) {
+        /*if (event.phase == TickEvent.Phase.START) {
+            Player player = event.player;
+            GeneralProhibitionEffect eff = AbilityFunctionHelper.getEffectOnTarget(BeyonderEffects.TYRANT_GENERAL_PROHIBITION.getEffectId(), player);
+            if(eff == null) return;
+            if(eff.type.equalsIgnoreCase("sprinting") && player.isSprinting())
+                player.setSprinting(false);
+        }*/
+    }
     @SubscribeEvent
     public static void onEntityJump(LivingEvent.LivingJumpEvent event){
         ruleBroken(RulePylonAbility.Rule.JUMP, event.getEntity());
-
     }
 
     public static void ruleBroken(RulePylonAbility.Rule rule, Entity ruleBreaker){
@@ -146,6 +149,20 @@ public class ServerEventsTyrant {
     }
 
     @SubscribeEvent
+    public static void onLuckCastEvent(LuckEventCastEvent.Pre event){
+        GeneralProhibitionEffect eff = AbilityFunctionHelper.getEffectOnTarget(BeyonderEffects.TYRANT_GENERAL_PROHIBITION.getEffectId(), event.getEntity());
+        if(eff == null) return;
+        if(eff.type.equalsIgnoreCase("fate")) event.setCanceled(true);
+    }
+
+    @SubscribeEvent
+    public static void onLuckTriggerEvent(LuckEventCastEvent.TriggeredPre event){
+        GeneralProhibitionEffect eff = AbilityFunctionHelper.getEffectOnTarget(BeyonderEffects.TYRANT_GENERAL_PROHIBITION.getEffectId(), event.getEntity());
+        if(eff == null) return;
+        if(eff.type.equalsIgnoreCase("fate")) event.setCanceled(true);
+    }
+
+    @SubscribeEvent
     public static void onBlockPlaced(BlockEvent.EntityPlaceEvent event){
         ruleBroken(RulePylonAbility.Rule.BLOCK_PLACE, event.getEntity(), event.getPos());
     }
@@ -172,6 +189,16 @@ public class ServerEventsTyrant {
         //rule broken
         ruleBroken(RulePylonAbility.Rule.BEYONDER, event.getEntity(), event.getEntity().getOnPos());
     }
+    //specifically to prevent ability casts from happening if you have the prohibition effect
+    @SubscribeEvent(priority = EventPriority.HIGH)
+    public static void prohibitionCheck(AbilityCastEvent.Pre event){
+        if(event.getEntity().level().isClientSide()) return;
+        Ability abl = event.getAbility();
+        AbilityProhibitionEffect eff = AbilityFunctionHelper.getEffectOnTarget(BeyonderEffects.TYRANT_ABILITY_PROHIBITION.getEffectId(), event.getEntity());
+        if(eff == null) return;
+        if(eff.onAbilityCast(event.getEntity(), abl.getAbilityId())) event.setCanceled(true);
+    }
+
     @SubscribeEvent
     public static void onBeforeAbilityCast(AbilityCastEvent.Pre event){
         if(event.getEntity().level().isClientSide()) return;
@@ -192,7 +219,7 @@ public class ServerEventsTyrant {
             }
 
             //aura cancel
-            AuraRecipientEffect aura = AbilityFunctionHelper.getEffectOnPlayer(BeyonderEffects.TYRANT_AURA_RECIPIENT.getEffectId(), event.getEntity());
+            AuraRecipientEffect aura = AbilityFunctionHelper.getEffectOnTarget(BeyonderEffects.TYRANT_AURA_RECIPIENT.getEffectId(), event.getEntity());
             if(aura != null && aura.isOrBetter(6)){
                 if(!cap.getLuckManager().passesLuckCheck(PotioneerAbilityConfig.AURA_MISCAST_CHANCE.get().floatValue(), 0, 0, event.getEntity().getRandom())){
                     event.setCanceled(true);

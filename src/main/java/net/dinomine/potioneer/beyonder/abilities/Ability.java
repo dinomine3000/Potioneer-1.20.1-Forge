@@ -360,6 +360,7 @@ public abstract class Ability {
 
         boolean cancelledCheck = MinecraftForge.EVENT_BUS.post(new AbilityCastEvent.Pre(this, target, primary, args));
         if(cancelledCheck) return false;
+        if(disabled) return false;
         if(primary){
             if(primary(cap, target, args)){
                 MinecraftForge.EVENT_BUS.post(new AbilityCastEvent.Post(this, target, true, args));

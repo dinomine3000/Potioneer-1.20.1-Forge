@@ -37,16 +37,9 @@ public class ExiledEffect extends AbstractSourceRecipientEffect {
     protected void doTick(LivingEntityBeyonderCapability cap, LivingEntity target) {
         if(!(target.level() instanceof ServerLevel serverLevel)) return;
         tickDownTime(target);
-        boolean pushFlag = false;
         for(UUID id: this.sources.keySet()){
             Entity enforcer = AbilityFunctionHelper.getEntityAcrossDimensions(serverLevel, id);
             if(!AreaOfJurisdictionAbility.isEntityInAOJ(target, enforcer)) return;
-            if(!pushFlag){
-                if(timeInAoj-- < 1 && target.tickCount%25 == 0){
-                    target.hurt(PotioneerDamage.exile(serverLevel, enforcer), 8);
-                }
-            }
-            pushFlag = true;
             addForce(target, enforcer);
         }
     }

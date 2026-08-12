@@ -8,6 +8,7 @@ import net.dinomine.potioneer.beyonder.client.ClientStatsData;
 import net.dinomine.potioneer.beyonder.client.HUD.AbilitiesHotbarHUD;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
 import net.dinomine.potioneer.beyonder.effects.tyrant.AmplificationEffect;
+import net.dinomine.potioneer.beyonder.effects.tyrant.GeneralProhibitionEffect;
 import net.dinomine.potioneer.beyonder.effects.tyrant.MistEffect;
 import net.dinomine.potioneer.beyonder.effects.tyrant.WeakeningEffect;
 import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
@@ -22,6 +23,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.client.event.RenderGuiOverlayEvent;
 import net.minecraftforge.client.event.ViewportEvent;
+import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -37,12 +39,26 @@ public class ClientEventsTyrant {
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public static void onMouseDown(InputEvent.MouseButton.Pre event){
         if(Minecraft.getInstance().level == null) return;
-        MistEffect eff = AbilityFunctionHelper.getEffectOnPlayer(BeyonderEffects.TYRANT_MIST_EFFECT.getEffectId(), Minecraft.getInstance().player);
+        MistEffect eff = AbilityFunctionHelper.getEffectOnTarget(BeyonderEffects.TYRANT_MIST_EFFECT.getEffectId(), Minecraft.getInstance().player);
         if(eff == null) return;
         AbilityInfo currentAbility = AbilitiesHotbarHUD.getCurrentSelectedAbility();
         if(currentAbility != null && Abilities.MIST.getAblId().equalsIgnoreCase(currentAbility.innerId())) return;
         event.setCanceled(true);
     }
+
+    @SubscribeEvent
+    public static void onClientTick(TickEvent.ClientTickEvent event) {
+        if (event.phase == TickEvent.Phase.START) {
+            Minecraft mc = Minecraft.getInstance();
+            if (mc.player != null && mc.player.isSprinting()) {
+                GeneralProhibitionEffect eff = AbilityFunctionHelper.getEffectOnTarget(BeyonderEffects.TYRANT_GENERAL_PROHIBITION.getEffectId(), mc.player);
+                if(eff == null || !eff.type.equalsIgnoreCase("sprinting")) return;
+                mc.player.setSprinting(false);
+                mc.options.keySprint.setDown(false);
+            }
+        }
+    }
+
     @SubscribeEvent
     public static void onComputeFogColor(ViewportEvent.ComputeFogColor event) {
         Player player = Minecraft.getInstance().player;

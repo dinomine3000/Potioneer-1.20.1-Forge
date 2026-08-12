@@ -65,9 +65,18 @@ public class PotioneerAbilityConfig {
     public static final ForgeConfigSpec.DoubleValue CONTRACT_REGENERATION_BUFF;
     public static final ForgeConfigSpec.DoubleValue CONTRACT_STAMINA_BUFF;
     public static final ForgeConfigSpec.IntValue CONTRACT_HEALTH_BUFF;
+    public static final ForgeConfigSpec.IntValue CONTRACT_COST;
+
+    //prohibition
+    public static final ForgeConfigSpec.IntValue PROHIBITION_RADIUS;
+    public static final ForgeConfigSpec.IntValue PROHIBITION_ABILITY_WINDOW;
+    public static final ForgeConfigSpec.IntValue PROHIBITION_COOLDOWN;
+    public static final ForgeConfigSpec.IntValue PROHIBITION_GENERAL_DURATION;
+    public static final ForgeConfigSpec.IntValue PROHIBITION_ABILITY_DURATION;
+    public static final ForgeConfigSpec.IntValue PROHIBITION_COST;
+    public static final ForgeConfigSpec.BooleanValue PROHIBITION_AFFECTS_SELF;
 
     // Other Abilities
-    public static final ForgeConfigSpec.IntValue CONTRACT_COST;
     public static final ForgeConfigSpec.IntValue EXILE_COST;
     public static final ForgeConfigSpec.IntValue EXILE_DURATION;
     public static final ForgeConfigSpec.IntValue EXILE_COOLDOWN;
@@ -269,12 +278,40 @@ public class PotioneerAbilityConfig {
                 .comment("Max health granted by contract rewards.")
                 .defineInRange("health_buff", 10, 0, Integer.MAX_VALUE);
 
+        CONTRACT_COST = BUILDER.comment("Spirituality cost for Contract.")
+                .defineInRange("contract_cost", 150, 0, Integer.MAX_VALUE);
+
+
+
+        PROHIBITION_RADIUS = BUILDER.comment("Radius for the prohibition ability")
+                .defineInRange("prohibition_radius", 16, 0, Integer.MAX_VALUE);
+
+        PROHIBITION_ABILITY_WINDOW = BUILDER.comment("Time window for the prohibition ability to disable abilities." +
+                        "\nWhen cast and applied to other entities, the first ability they cast within this time span (in ticks) will be disabled for everyone" +
+                        "\nIn other words, they can also wait out this time for the ability to do nothing.")
+                .defineInRange("prohibition_window", 20*15, 0, Integer.MAX_VALUE);
+
+        PROHIBITION_COOLDOWN = BUILDER.comment("Cooldown, in ticks, for the prohibition ability")
+                .defineInRange("prohibition_cooldown", 20*15, 0, Integer.MAX_VALUE);
+
+        PROHIBITION_GENERAL_DURATION = BUILDER.comment("Duration, in ticks, for general prohibitions (flying, teleporting, etc...)")
+                .defineInRange("prohibition_duration_general", 20*10, 0, Integer.MAX_VALUE);
+
+        PROHIBITION_ABILITY_DURATION = BUILDER.comment("Duration, in ticks, for ability prohibitions")
+                .defineInRange("prohibition_duration_ability", 20*10, 0, Integer.MAX_VALUE);
+
+        PROHIBITION_COST = BUILDER.comment("Cost for the prohibition ability")
+                .defineInRange("prohibition_cost", 150, 0, Integer.MAX_VALUE);
+
+        PROHIBITION_AFFECTS_SELF = BUILDER.comment("Should the prohibition ability prohibit an ability cast by its caster?" +
+                        "\nIn other words, if a player casts Ability Prohibition, should the next ability they themselves be disabled? Or should this only apply to other entities?")
+                .define("prohibition_affects_caster", true);
+
+
         BUILDER.pop(); // Pop contract_settings
 
         // Miscellaneous Abilities
         BUILDER.push("misc_abilities");
-        CONTRACT_COST = BUILDER.comment("Spirituality cost for Contract.")
-                .defineInRange("contract_cost", 150, 0, Integer.MAX_VALUE);
 
         EXILE_COST = BUILDER.comment("Spirituality cost for Exile.")
                 .defineInRange("exile_cost", 80, 0, Integer.MAX_VALUE);
