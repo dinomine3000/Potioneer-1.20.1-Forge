@@ -7,6 +7,7 @@ import net.dinomine.potioneer.beyonder.abilities.AbilityKey;
 import net.dinomine.potioneer.beyonder.abilities.tyrant.ContractAbility;
 import net.dinomine.potioneer.beyonder.abilities.tyrant.ContractAbility.ContractOption;
 import net.dinomine.potioneer.beyonder.abilities.tyrant.ContractViewAbility;
+import net.dinomine.potioneer.beyonder.abilities.tyrant.RulePylonAbility;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffect;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
 import net.dinomine.potioneer.beyonder.player.BeyonderCapability;
@@ -74,10 +75,10 @@ public class ContractedEffect extends BeyonderEffect {
     @Override
     protected void doTick(BeyonderCapability cap, LivingEntity target) {
         if(Objects.equals(condition, ContractOption.HP_COND)){
-            if(target.getHealth() < HEALTH_THRESHOLD.get()) invalidate();
+            if(target.getHealth() < HEALTH_THRESHOLD.get()) invalidate(target, cap);
         }
-        else if(Objects.equals(condition, ContractOption.NETHER_COND) && Objects.equals(target.level().dimension(), Level.NETHER)) invalidate();
-        else if(Objects.equals(condition, ContractOption.SPIRITUALITY_COND) && cap.getSpirituality() < cap.getMaxSpirituality()*SPIRITUALITY_THRESHOLD.get()) invalidate();
+        else if(Objects.equals(condition, ContractOption.NETHER_COND) && Objects.equals(target.level().dimension(), Level.NETHER)) invalidate(target, cap);
+        else if(Objects.equals(condition, ContractOption.SPIRITUALITY_COND) && cap.getSpirituality() < cap.getMaxSpirituality()*SPIRITUALITY_THRESHOLD.get()) invalidate(target, cap);
         if(!condition.isValid()) return;
 
         BeyonderStats statsHolder = cap.getEffectsManager().statsHolder;
@@ -138,15 +139,16 @@ public class ContractedEffect extends BeyonderEffect {
         }
     }
 
-    private void invalidate(){
+    private void invalidate(LivingEntity target, BeyonderCapability cap){
         condition.markInvalid();
         endEffectWhenPossible();
+        RulePylonAbility.Punishment.STRIKE.execution().execute(target, cap, null, sequenceLevel);
     }
 
     @Override
     public boolean onDamageProposal(LivingAttackEvent event, LivingEntity victim, @Nullable LivingEntity attacker, BeyonderCapability victimCap, Optional<BeyonderCapability> attackerCap, boolean calledOnVictim) {
         if(calledOnVictim) return false;
-        if(Objects.equals(victim.getMobType(), MobType.UNDEAD) && Objects.equals(condition, ContractOption.UNDEAD_COND)) invalidate();
+        if(Objects.equals(victim.getMobType(), MobType.UNDEAD) && Objects.equals(condition, ContractOption.UNDEAD_COND)) invalidate(attacker, attackerCap.orElse(null));
         return false;
     }
 

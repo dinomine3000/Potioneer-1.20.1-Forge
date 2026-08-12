@@ -102,7 +102,7 @@ public class PlayerLuckManager {
             return null;
         }
         else{
-            target.sendSystemMessage(Component.translatable("luck.potioneer.event_cast_" + target.getRandom().nextInt(4)));
+            target.sendSystemMessage(Component.translatable("luck.potioneer.event_cast"));
             MinecraftForge.EVENT_BUS.post(new LuckEventCastEvent.Post(target, luck, proposedEvent));
             return proposedEvent;
         }

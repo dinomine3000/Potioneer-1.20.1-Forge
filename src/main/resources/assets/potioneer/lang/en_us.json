@@ -114,10 +114,6 @@
   "luck.potioneer.trigger_mildly_unlucky": "Fate thinks twice about you",
   "luck.potioneer.trigger_lucky": "Fate notices your actions",
   "luck.potioneer.trigger_unlucky": "Fate notices your actions",
-  "luck.potioneer.event_cast_0": "The wheels of fate turn to you.",
-  "luck.potioneer.event_cast_1": "Churning away, they decide your fate.",
-  "luck.potioneer.event_cast_2": "A calling is heard from the blue.",
-  "luck.potioneer.event_cast_3": "The dice are cast...",
   "luck.potioneer.fortune_event": "You feel much more efficient at mining ores",
   "luckevent.potioneer.asteroid": "[Luck Event] There is an unknown number of asteroids set to strike in %s seconds",
   "luckevent.potioneer.digest": "[Luck Event] A characteristic will gain digestion in %s seconds",
@@ -470,6 +466,8 @@
   "death.attack.potioneer.exile": "%s died to %s's exile.",
   "death.attack.potioneer.punishment_strike": "%s couldn't handle the punishment from %s",
   "death.attack.potioneer.tyrant_law": "%s was ruled to die by %s",
+  "death.attack.potioneer.execution": "%s was ordered for execution by %s",
+  "death.attack.potioneer.tyrant_purification": "%s was forcefully purified by %s",
 
   "short_desc.potioneer.cogitation": "Your essence... your being... this is what makes you",
   "long_desc.potioneer.cogitation": "Concentrate your spirituality and recuperate in a safe place.",
@@ -715,5 +713,6 @@
   "message.potioneer.prohibit_sprinting": "%s: Sprinting is prohibited here!",
   "message.potioneer.bribe_set_weakening": "Bribe set to Weakening",
   "message.potioneer.bribe_set_truce": "Bribe set to Truce",
-  "message.potioneer.bribe_set_disorder": "Bribe set to Disorder"
+  "message.potioneer.bribe_set_disorder": "Bribe set to Disorder",
+  "luck.potioneer.event_cast": "You feel a dire omen..."
 }

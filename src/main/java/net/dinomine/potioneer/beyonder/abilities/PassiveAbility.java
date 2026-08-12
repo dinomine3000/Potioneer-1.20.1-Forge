@@ -5,6 +5,8 @@ import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
 import net.dinomine.potioneer.beyonder.player.BeyonderCapability;
 import net.minecraft.world.entity.LivingEntity;
 
+import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.function.Function;
 
 /**
@@ -28,17 +30,22 @@ public class PassiveAbility extends Ability {
     protected float minimumSpiritualityThreshold = 0f;
     protected int minSpiritualityAbsolute = 0;
     private final Function<Integer, String> descId;
+    private final Function<Integer, LinkedHashSet<String>> otherDescIds;
     private int duration = -1;
 
     private int cooldownTicks = 0;
     private CooldownTrigger cooldownTrigger = CooldownTrigger.ON_REMOVE;
 
     protected PassiveAbility(int sequenceLevel, BeyonderEffects.BeyonderEffectType effect, Function<Integer, String> descId){
+        this(sequenceLevel, effect, descId, null);
+    }
+    protected PassiveAbility(int sequenceLevel, BeyonderEffects.BeyonderEffectType effect, Function<Integer, String> descId, Function<Integer, LinkedHashSet<String>> otherDescs){
         super(sequenceLevel);
         this.effect = effect;
         this.descId = descId;
         this.isPassive = true;
         this.isActive = false;
+        this.otherDescIds = otherDescs;
     }
 
     public PassiveAbility withDuration(int duration){
@@ -58,6 +65,10 @@ public class PassiveAbility extends Ability {
 
     public static PassiveAbility createAbility(int level, BeyonderEffects.BeyonderEffectType effect, Function<Integer, String> descId){
         return new PassiveAbility(level, effect, descId);
+    }
+
+    public static PassiveAbility createAbility(int level, BeyonderEffects.BeyonderEffectType effect, Function<Integer, String> descId, Function<Integer, LinkedHashSet<String>> otherIds){
+        return new PassiveAbility(level, effect, descId, otherIds);
     }
 
     /**
@@ -110,6 +121,11 @@ public class PassiveAbility extends Ability {
     @Override
     protected String getMainDescId(int sequenceLevel) {
         return descId.apply(sequenceLevel);
+    }
+
+    @Override
+    protected LinkedHashSet<String> getAllDescId(int sequenceLevel) {
+        return otherDescIds == null ? super.getAllDescId(sequenceLevel) : otherDescIds.apply(sequenceLevel);
     }
 
     @Override

@@ -14,6 +14,7 @@ import net.minecraft.world.effect.MobEffects;
 
 import java.util.HashMap;
 import java.util.LinkedHashSet;
+import java.util.Set;
 import java.util.UUID;
 import java.util.function.Function;
 
@@ -202,7 +203,7 @@ public class Abilities {
 
     //retweaked
     public static final AbilityFactory TYRANT_AURA = registerAbility("aoj_aura",
-            (Integer level) -> PassiveAbility.createAbility(level, BeyonderEffects.TYRANT_AURA_SOURCE, lv -> lv < 7 ? "aoj_aura_2" : "aoj_aura").canFlip().withThreshold(0.1f).withCost(10),
+            AuraAbility::new,
             21, 1, 1).passiveAndActive();
 
     //retweaked

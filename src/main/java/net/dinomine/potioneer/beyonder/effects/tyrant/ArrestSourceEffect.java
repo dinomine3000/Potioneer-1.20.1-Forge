@@ -4,6 +4,7 @@ import net.dinomine.potioneer.beyonder.abilities.tyrant.AreaOfJurisdictionAbilit
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffect;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
 import net.dinomine.potioneer.beyonder.player.BeyonderCapability;
+import net.dinomine.potioneer.beyonder.player.CapProvider;
 import net.dinomine.potioneer.util.ModTags;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -52,5 +53,10 @@ public class ArrestSourceEffect extends BeyonderEffect {
         ArrestRecipientEffect eff = (ArrestRecipientEffect) BeyonderEffects.TYRANT_ARREST_RECIPIENT.createInstance(sequenceLevel, 0, aoj ? 7*20 : 3*20, true);
         eff.setEnforcer(attacker.getUUID());
         victimCap.getEffectsManager().addOrRefreshEffect(eff, victimCap, victim);
+    }
+
+    public static void applyArrestToRecipient(LivingEntity attacker, LivingEntity victim, int sequenceLevel, boolean aoj){
+        if(CapProvider.beyonder(victim).isEmpty()) return;
+        applyArrestToRecipient(attacker, CapProvider.beyonder(victim).get(), victim, sequenceLevel, aoj);
     }
 }

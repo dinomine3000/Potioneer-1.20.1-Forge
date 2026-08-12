@@ -18,11 +18,13 @@ import net.dinomine.potioneer.sound.ModSounds;
 import net.dinomine.potioneer.util.ModTags;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.ChunkPos;
+import net.minecraftforge.event.ServerChatEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.EntityMobGriefingEvent;
 import net.minecraftforge.event.entity.item.ItemTossEvent;
@@ -39,6 +41,7 @@ import net.minecraftforge.fml.common.Mod;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static net.dinomine.potioneer.config.PotioneerAbilityConfig.BRIBE_CANCEL_CHANCE;
 import static net.dinomine.potioneer.config.PotioneerAbilityConfig.BRIBE_MISCAST_RADIUS;
@@ -63,15 +66,21 @@ public class ServerEventsTyrant {
         if(event.getEntity().isSprinting()) ruleBroken(RulePylonAbility.Rule.SPRINT, event.getEntity());
         if(event.getEntity().getMainHandItem().is(ModTags.Items.WEAPON_PROFICIENCY)) ruleBroken(RulePylonAbility.Rule.WEAPONS, event.getEntity());
     }
+
+
     @SubscribeEvent
-    public static void onPlayerTick(TickEvent.PlayerTickEvent event) {
-        /*if (event.phase == TickEvent.Phase.START) {
-            Player player = event.player;
-            GeneralProhibitionEffect eff = AbilityFunctionHelper.getEffectOnTarget(BeyonderEffects.TYRANT_GENERAL_PROHIBITION.getEffectId(), player);
-            if(eff == null) return;
-            if(eff.type.equalsIgnoreCase("sprinting") && player.isSprinting())
-                player.setSprinting(false);
-        }*/
+    public static void onPlayerChat(ServerChatEvent event){
+        ServerPlayer player = event.getPlayer();
+        if(event.getPlayer() == null) return;
+        AuraSourceEffect eff = AbilityFunctionHelper.getEffectOnTarget(BeyonderEffects.TYRANT_AURA_SOURCE.getEffectId(), player);
+        if(eff == null || eff.getSequenceLevel() > 5) return;
+        if(!eff.validateMessage(event.getRawText())) return;
+        Optional<BeyonderCapability> optCap = CapProvider.beyonder(player);
+        if(optCap.isEmpty()) return;
+        BeyonderCapability cap = optCap.get();
+        if(eff.getWordCooldown(player.getRandom().nextInt(20*45, 20*60), player, cap)){
+            eff.execute(event.getRawText(), player, cap);
+        }
     }
 
     //called to propose item pickup. can be cancelled
@@ -84,6 +93,7 @@ public class ServerEventsTyrant {
         if(!(owner instanceof LivingEntity livingEntity)) return;
         BribeSourceEffect eff = AbilityFunctionHelper.getEffectOnTarget(BeyonderEffects.TYRANT_BRIBE.getEffectId(), livingEntity);
         if(eff == null) return;
+        if(livingEntity.is(event.getEntity()) || AbilityFunctionHelper.areEntitiesAllies(livingEntity, event.getEntity())) return;
         event.getEntity().getCapability(CapProvider.BEYONDER_STATS).ifPresent(cap -> {
             cap.getEffectsManager().addOrReplaceEffect(eff.createRecipientEffect(owner.getUUID()), cap, event.getEntity());
         });

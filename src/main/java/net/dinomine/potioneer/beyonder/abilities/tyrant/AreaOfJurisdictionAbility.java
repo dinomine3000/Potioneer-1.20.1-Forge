@@ -23,7 +23,6 @@ import net.minecraft.world.level.Level;
 import java.util.*;
 
 public class AreaOfJurisdictionAbility extends PassiveAbility implements IAreaOfJurisdiction {
-    public static final int DEFAULT_SIDE_LENGTH = 16;
     /**
      * pass the sequence level or pathway-sequence id to define the abilities sequence level
      * abilities that depend on changing pathways like Cogitation, that exists for every pathway, need to process their own pathway-sequence id here.
@@ -43,7 +42,8 @@ public class AreaOfJurisdictionAbility extends PassiveAbility implements IAreaOf
         BlockPos center = target.getOnPos();
         CompoundTag tag = getData();
         placeNewCenter(tag, center, target.level().getGameTime(), target);
-        setNextCooldownAs(PotioneerAbilityConfig.AOJ_COOLDOWN.get());
+        int cd = PotioneerAbilityConfig.AOJ_COOLDOWN.get();
+        setNextCooldownAs(sequenceLevel < 6 ? (int) (cd * 0.7f) : cd);
         cap.requestActiveSpiritualityCost(cost());
         return true;
     }
@@ -59,8 +59,9 @@ public class AreaOfJurisdictionAbility extends PassiveAbility implements IAreaOf
             CompoundTag dataTag = getData();
             List<CompoundTag> centersList = new ArrayList<>(getCentersCompoundTagList(dataTag, false, ""));
             boolean changedFlag = false;
+            int setupTime = sequenceLevel < 6 ? 20*2 : 20*30;
             for(CompoundTag centerTag: centersList){
-                if(centerTag.contains("aoj_enabled") && !centerTag.getBoolean("aoj_enabled") && target.level().getGameTime() - centerTag.getLong("timestamp") > 20*2){
+                if(centerTag.contains("aoj_enabled") && !centerTag.getBoolean("aoj_enabled") && target.level().getGameTime() - centerTag.getLong("timestamp") > setupTime){
                     changedFlag = true;
                     centerTag.putBoolean("aoj_enabled", true);
                     target.level().playSound(null, target.getOnPos(), SoundEvents.BEACON_ACTIVATE, SoundSource.NEUTRAL, 1, 1);

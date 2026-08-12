@@ -34,11 +34,7 @@ public class ArrestAbility extends PassiveAbility {
 
     @Override
     protected boolean secondary(BeyonderCapability cap, LivingEntity target) {
-        if(getSequenceLevel() >= 7) {
-            if(target.level().isClientSide())
-                target.sendSystemMessage(Component.translatableWithFallback("message.potioneer.outdated_secondary", "It doesn't do anything... yet"));
-            return false;
-        }
+        if(getSequenceLevel() >= 7) return false;
         if(cap.getSpirituality() < MANUAL_CAST_COST.get()) return false;
         if(target.level().isClientSide()) return true;
         List<LivingEntity> hits = AbilityFunctionHelper.getNonAllyLivingEntitiesAround(target, 4);
