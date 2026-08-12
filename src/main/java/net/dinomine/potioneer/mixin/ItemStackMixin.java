@@ -1,6 +1,6 @@
 package net.dinomine.potioneer.mixin;
 
-import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
+import net.dinomine.potioneer.beyonder.player.CapProvider;
 import net.dinomine.potioneer.event.DurabilityHurtEvent;
 import net.dinomine.potioneer.item.ModItems;
 import net.dinomine.potioneer.util.misc.ModNbtUtils;
@@ -129,7 +129,7 @@ public abstract class ItemStackMixin {
                 player.drop(broken, false, true);
             }
 
-            player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
+            player.getCapability(CapProvider.BEYONDER_STATS).ifPresent(cap -> {
                 cap.getAbilitiesManager().updateArtifact(ModNbtUtils.ArtifactInfoTag.getArtifactId(artifactTag), player, broken);
             });
         }

@@ -2,7 +2,7 @@ package net.dinomine.potioneer.beyonder.effects.wheeloffortune;
 
 import net.dinomine.potioneer.beyonder.abilities.wheeloffortune.MiningSpeedAbility;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffect;
-import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
+import net.dinomine.potioneer.beyonder.player.BeyonderCapability;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.LivingEntity;
 
@@ -13,20 +13,20 @@ public class MiningSpeedEffect extends BeyonderEffect {
         super();
     }
     @Override
-    public void onAcquire(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    public void onAcquire(BeyonderCapability cap, LivingEntity target) {
         if(miningSpeed == -1)
             miningSpeed = MiningSpeedAbility.levelToMaxSpeed.apply(sequenceLevel);
     }
 
     @Override
-    protected void doTick(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    protected void doTick(BeyonderCapability cap, LivingEntity target) {
         if(target.level().isClientSide()) return;
         if(sequenceLevel > 7) miningSpeed = MiningSpeedAbility.levelToMaxSpeed.apply(sequenceLevel);
         cap.getEffectsManager().statsHolder.multMiningSpeed(miningSpeed);
     }
 
     @Override
-    public void stopEffects(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    public void stopEffects(BeyonderCapability cap, LivingEntity target) {
 
     }
 

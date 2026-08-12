@@ -1,12 +1,10 @@
 package net.dinomine.potioneer.beyonder.client;
 
-import net.dinomine.potioneer.beyonder.client.screen.DefaultAdvancementScreen;
-import net.dinomine.potioneer.beyonder.client.screen.RedPriestAdvancementScreen;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
 import net.dinomine.potioneer.beyonder.ModAttributes;
+import net.dinomine.potioneer.beyonder.player.BeyonderCapability;
 import net.dinomine.potioneer.beyonder.player.BeyonderStats;
-import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
-import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
+import net.dinomine.potioneer.beyonder.player.CapProvider;
 import net.dinomine.potioneer.config.PotioneerClientConfig;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
@@ -32,10 +30,10 @@ public class ClientStatsData {
     private static int maxLuck = 0;
 
 
-    public static Optional<LivingEntityBeyonderCapability> getCapability(){
+    public static Optional<BeyonderCapability> getCapability(){
         if(Minecraft.getInstance().player == null) return Optional.empty();
-        if(!Minecraft.getInstance().player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).isPresent()) return Optional.empty();
-        return Minecraft.getInstance().player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve();
+        if(!Minecraft.getInstance().player.getCapability(CapProvider.BEYONDER_STATS).isPresent()) return Optional.empty();
+        return Minecraft.getInstance().player.getCapability(CapProvider.BEYONDER_STATS).resolve();
     }
 
     public static float getPlayerSpirituality(){
@@ -76,9 +74,9 @@ public class ClientStatsData {
             return -1;
         }
 
-        Optional<LivingEntityBeyonderCapability> optCap = getCapability();
+        Optional<BeyonderCapability> optCap = getCapability();
         if(optCap.isPresent()){
-            LivingEntityBeyonderCapability cap = optCap.get();
+            BeyonderCapability cap = optCap.get();
             return cap.getPathwaySequenceId();
         }
         return -1;

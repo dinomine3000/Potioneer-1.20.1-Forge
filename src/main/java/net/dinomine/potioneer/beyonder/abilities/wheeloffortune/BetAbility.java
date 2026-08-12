@@ -1,9 +1,8 @@
 package net.dinomine.potioneer.beyonder.abilities.wheeloffortune;
 
-import net.dinomine.potioneer.beyonder.abilities.Abilities;
 import net.dinomine.potioneer.beyonder.abilities.Ability;
 import net.dinomine.potioneer.beyonder.effects.wheeloffortune.GamblingEffect;
-import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
+import net.dinomine.potioneer.beyonder.player.BeyonderCapability;
 import net.dinomine.potioneer.config.PotioneerAbilityConfig;
 import net.minecraft.world.entity.LivingEntity;
 
@@ -26,7 +25,7 @@ public class BetAbility extends Ability {
     }
 
     @Override
-    protected boolean primary(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    protected boolean primary(BeyonderCapability cap, LivingEntity target) {
         if(cap.getSpirituality() < cost() || target.level().isClientSide()) return false;
         cap.requestActiveSpiritualityCost(cost());
         int luck = cap.getLuckManager().getLuck();

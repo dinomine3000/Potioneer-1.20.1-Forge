@@ -4,7 +4,7 @@ import net.dinomine.potioneer.beyonder.abilities.Ability;
 import net.dinomine.potioneer.beyonder.abilities.AbilityInfo;
 import net.dinomine.potioneer.beyonder.abilities.AbilityKey;
 import net.dinomine.potioneer.beyonder.downsides.Downside;
-import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
+import net.dinomine.potioneer.beyonder.player.BeyonderCapability;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
@@ -75,7 +75,7 @@ public class ArtifactHolder {
     }
 
 
-    public boolean castAbility(AbilityKey key, boolean primary, LivingEntityBeyonderCapability cap, LivingEntity target){
+    public boolean castAbility(AbilityKey key, boolean primary, BeyonderCapability cap, LivingEntity target){
         Ability abl = abilities.get(key);
         if(abl == null) return false;
         if(!abl.castAbility(cap, target, primary)) return false;
@@ -85,21 +85,21 @@ public class ArtifactHolder {
         return true;
     }
 
-    public void onAcquire(LivingEntityBeyonderCapability cap, LivingEntity target){
+    public void onAcquire(BeyonderCapability cap, LivingEntity target){
         abilities.values().stream().filter(abl -> !abl.isPassive() || abl.isEnabled()).forEach(abl -> abl.onAcquire(cap, target));
         downsides.values().forEach(downside -> downside.onAcquire(cap, target));
     }
 
-    public void onRemove(LivingEntityBeyonderCapability cap, LivingEntity target){
+    public void onRemove(BeyonderCapability cap, LivingEntity target){
         abilities.values().forEach(abl -> abl.deactivate(cap, target));
         downsides.values().forEach(downside -> downside.deactivate(cap, target));
     }
 
-    public void revokeAbilities(List<AbilityKey> abilitiesToRevoke, LivingEntityBeyonderCapability cap, LivingEntity target){
+    public void revokeAbilities(List<AbilityKey> abilitiesToRevoke, BeyonderCapability cap, LivingEntity target){
 
     }
 
-    public void castDefaultAbilities(LivingEntityBeyonderCapability cap, LivingEntity target){
+    public void castDefaultAbilities(BeyonderCapability cap, LivingEntity target){
         if(abilitiesToActivateOnItemInteract.isEmpty()) return;
         boolean flag = false;
         for(AbilityKey key: abilitiesToActivateOnItemInteract.keySet()){
@@ -111,7 +111,7 @@ public class ArtifactHolder {
         }
     }
 
-    public void passives(LivingEntityBeyonderCapability cap, LivingEntity target){
+    public void passives(BeyonderCapability cap, LivingEntity target){
         abilities.values().forEach(abl -> abl.passive(cap, target));
         downsides.values().forEach(downside -> downside.passive(cap, target));
         abilities.values().forEach(abl -> abl.tickCooldown(target));

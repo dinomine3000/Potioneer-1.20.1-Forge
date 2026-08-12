@@ -13,8 +13,8 @@ import net.dinomine.potioneer.beyonder.effects.wheeloffortune.ZeroDamageEffect;
 import net.dinomine.potioneer.beyonder.pathways.BeyonderPathway;
 import net.dinomine.potioneer.beyonder.pathways.Pathways;
 import net.dinomine.potioneer.beyonder.ModAttributes;
-import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
-import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
+import net.dinomine.potioneer.beyonder.player.BeyonderCapability;
+import net.dinomine.potioneer.beyonder.player.CapProvider;
 import net.dinomine.potioneer.item.ModItems;
 import net.dinomine.potioneer.network.messages.SequenceSTCSyncRequest;
 import net.dinomine.potioneer.rituals.spirits.Deity;
@@ -26,14 +26,12 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.MobType;
-import net.minecraft.world.entity.monster.Zombie;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BowItem;
 import net.minecraft.world.item.ItemStack;
@@ -63,9 +61,10 @@ public class BeyonderEvents {
     @SubscribeEvent
     public static void onAttachCapabilitiesPlayer(AttachCapabilitiesEvent<Entity> event){
         if(event.getObject() instanceof LivingEntity){
-            if(!event.getObject().getCapability(BeyonderStatsProvider.BEYONDER_STATS).isPresent()){
-                event.addCapability(new ResourceLocation(Potioneer.MOD_ID, "properties"), new BeyonderStatsProvider((LivingEntity) event.getObject()));
-            }
+            event.addCapability(
+                    new ResourceLocation(Potioneer.MOD_ID, "properties"),
+                    new CapProvider((LivingEntity) event.getObject())
+            );
         }
     }
 
@@ -73,7 +72,7 @@ public class BeyonderEvents {
     public static void onRightClickItem(PlayerInteractEvent.RightClickItem event){
         if(!event.getEntity().level().isClientSide()){
             if(MysticalItemHelper.isWorkingArtifact(event.getItemStack())){
-                event.getEntity().getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
+                event.getEntity().getCapability(CapProvider.BEYONDER_STATS).ifPresent(cap -> {
                     cap.getAbilitiesManager().castArtifactAbility(MysticalItemHelper.getArtifactIdFromItem(event.getItemStack()), cap, event.getEntity());
                 });
             }
@@ -81,16 +80,8 @@ public class BeyonderEvents {
     }
 
     @SubscribeEvent
-    public static void abilityCastPre(AbilityCastEvent.Pre event){
-    }
-
-    @SubscribeEvent
-    public static void abilityCastPost(AbilityCastEvent.Post event){
-    }
-
-    @SubscribeEvent
     public static void onItemHurt(DurabilityHurtEvent event){
-        event.getEntity().getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
+        event.getEntity().getCapability(CapProvider.BEYONDER_STATS).ifPresent(cap -> {
             BeyonderEffect zeroEffect = cap.getEffectsManager().getEffect(BeyonderEffects.WHEEL_ZERO_DAMAGE.getEffectId());
             if(zeroEffect != null){
                 int level = zeroEffect.getSequenceLevel();
@@ -109,7 +100,7 @@ public class BeyonderEvents {
     public static void livingBreathEvent(LivingBreatheEvent event){
         LivingEntity entity = event.getEntity();
         if(entity.hasEffect(MobEffects.WATER_BREATHING)) return;
-        entity.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
+        entity.getCapability(CapProvider.BEYONDER_STATS).ifPresent(cap -> {
             if(cap.getEffectsManager().hasEffect(BeyonderEffects.TYRANT_WATER_AFFINITY)) return;
             if(cap.getEffectsManager().hasEffect(BeyonderEffects.TYRANT_DROWNING.getEffectId())){
                 int sequenceLevel = cap.getEffectsManager().getEffect(BeyonderEffects.TYRANT_DROWNING.getEffectId()).getSequenceLevel();
@@ -130,7 +121,7 @@ public class BeyonderEvents {
 
     @SubscribeEvent
     public static void onPlayerDie(LivingDeathEvent event){
-        event.getEntity().getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
+        event.getEntity().getCapability(CapProvider.BEYONDER_STATS).ifPresent(cap -> {
             cap.onPlayerDie(event);
         });
     }
@@ -159,9 +150,9 @@ public class BeyonderEvents {
     @SubscribeEvent
     public static void onPlayerCloned(PlayerEvent.Clone event){
         if(event.getOriginal().level().isClientSide()) return;
-        event.getEntity().getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(newStore -> {
+        event.getEntity().getCapability(CapProvider.BEYONDER_STATS).ifPresent(newStore -> {
             event.getOriginal().reviveCaps();
-            event.getOriginal().getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(oldStore -> {
+            event.getOriginal().getCapability(CapProvider.BEYONDER_STATS).ifPresent(oldStore -> {
                 newStore.copyFrom(oldStore, event.getEntity());
             });
             event.getOriginal().invalidateCaps();
@@ -176,7 +167,7 @@ public class BeyonderEvents {
     //best for updating stats on respawning.
     @SubscribeEvent
     public static void onPlayerRespawn(PlayerEvent.PlayerRespawnEvent event){
-        event.getEntity().getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(LivingEntityBeyonderCapability::onRespawn);
+        event.getEntity().getCapability(CapProvider.BEYONDER_STATS).ifPresent(BeyonderCapability::onRespawn);
     }
 
     @SubscribeEvent
@@ -189,8 +180,8 @@ public class BeyonderEvents {
     @SubscribeEvent
     public static void onEntityJoinLevel(EntityJoinLevelEvent event){
         if(!(event.getEntity() instanceof ServerPlayer player)) return;
-        player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(stats -> {
-            SequenceSTCSyncRequest.sendUpdateToClient(stats, player);
+        CapProvider.beyonder(player).ifPresent(cap -> {
+            SequenceSTCSyncRequest.sendUpdateToClient(cap, player);
         });
     }
 
@@ -203,12 +194,12 @@ public class BeyonderEvents {
                 if(deity == null) continue;
                 String raw = event.getRawText();
                 if(raw.toLowerCase().contains(deity.getTrueName().toLowerCase())){
-                    event.getPlayer().getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
+                    event.getPlayer().getCapability(CapProvider.BEYONDER_STATS).ifPresent(cap -> {
                         deity.onTrueNameSpoken(event.getPlayer(), cap);
                     });
                     matchedTrueNames.add(deity.getTrueName());
                 } else if(deity.matchPrayer(event.getRawText())){
-                    event.getPlayer().getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
+                    event.getPlayer().getCapability(CapProvider.BEYONDER_STATS).ifPresent(cap -> {
                         if(cap.changeReputation(pathway.getId(), 1, event.getPlayer().level())){
                            cap.putPrayerCooldown(event.getPlayer().level());
                            event.getPlayer().sendSystemMessage(Component.translatableWithFallback("reputation.potioneer.prayer", "You feel a presence acknowledge your prayer..."));
@@ -271,7 +262,7 @@ public class BeyonderEvents {
 
     @SubscribeEvent
     public static void onPlayerSleep(PlayerWakeUpEvent event){
-        event.getEntity().getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
+        event.getEntity().getCapability(CapProvider.BEYONDER_STATS).ifPresent(cap -> {
             if(event.getEntity().level().isClientSide()) return;
             if(!event.updateLevel()) cap.onPlayerSleep();
 
@@ -327,7 +318,7 @@ public class BeyonderEvents {
     @SubscribeEvent
     public static void playerFinishInteraction(LivingEntityUseItemEvent.Finish event){
         if(event.getItem().isEdible()){
-            event.getEntity().getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
+            event.getEntity().getCapability(CapProvider.BEYONDER_STATS).ifPresent(cap -> {
                 cap.onFoodEat(event.getItem(), event.getEntity());
             });
         }
@@ -335,7 +326,7 @@ public class BeyonderEvents {
 
     @SubscribeEvent
     public static void onEntityTick(LivingEvent.LivingTickEvent event){
-        event.getEntity().getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
+        event.getEntity().getCapability(CapProvider.BEYONDER_STATS).ifPresent(cap -> {
             cap.onTick(event.getEntity(), !event.getEntity().level().isClientSide());
         });
     }
@@ -343,7 +334,7 @@ public class BeyonderEvents {
     @SubscribeEvent
     public static void livingTarget(LivingChangeTargetEvent event){
         if(event.getNewTarget() instanceof Player player){
-            player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
+            player.getCapability(CapProvider.BEYONDER_STATS).ifPresent(cap -> {
                 if(cap.getEffectsManager().hasEffect(BeyonderEffects.MYSTERY_INVISIBLE.getEffectId())){
                     event.setCanceled(true);
                 }
@@ -369,7 +360,7 @@ public class BeyonderEvents {
     @SubscribeEvent
     public static void onCraft(PlayerEvent.ItemCraftedEvent event){
         if(event.getEntity().level().isClientSide()) return;
-        event.getEntity().getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
+        event.getEntity().getCapability(CapProvider.BEYONDER_STATS).ifPresent(cap -> {
             cap.getEffectsManager().onCraft(event, cap);
         });
     }
@@ -386,7 +377,7 @@ public class BeyonderEvents {
             return;
         }
         if(ent.level().isClientSide()) return;
-        ent.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
+        ent.getCapability(CapProvider.BEYONDER_STATS).ifPresent(cap -> {
             cap.getEffectsManager().onAttackProposal(event, cap);
         });
     }
@@ -398,7 +389,7 @@ public class BeyonderEvents {
         if(event.getEntity().level().isClientSide()) return;
 
         if(event.getEntity().getMobType() == MobType.UNDEAD && event.getSource().is(PotioneerDamage.Tags.PURIFICATION)) event.setAmount(event.getAmount()*2);
-        event.getEntity().getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
+        event.getEntity().getCapability(CapProvider.BEYONDER_STATS).ifPresent(cap -> {
             cap.getEffectsManager().onAttackDamageCalculation(event, cap);
         });
     }
@@ -408,7 +399,7 @@ public class BeyonderEvents {
     @SubscribeEvent
     public static void onEntityTakeDamage(LivingDamageEvent event){
         if(event.getEntity() == null) return;
-        event.getEntity().getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
+        event.getEntity().getCapability(CapProvider.BEYONDER_STATS).ifPresent(cap -> {
             if(event.getSource().is(PotioneerDamage.Tags.MENTAL)){
                 cap.changeSanity(-event.getAmount()/2f);
             }
@@ -419,7 +410,7 @@ public class BeyonderEvents {
     @SubscribeEvent
     public static void onLuckEventCastConfirmed(LuckEventCastEvent.Post event){
         LivingEntity target = event.getEntity();
-        target.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
+        target.getCapability(CapProvider.BEYONDER_STATS).ifPresent(cap -> {
             if(cap.getAbilitiesManager().hasAbility(Abilities.FATE.getAblId())){
                 target.sendSystemMessage(event.getLuckEvent().getForecast());
             }
@@ -430,13 +421,13 @@ public class BeyonderEvents {
     public static void onArrowLoose(ArrowLooseEvent event){
         if(event.getEntity().level().isClientSide) return;
         Player player = event.getEntity();
-        player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
+        player.getCapability(CapProvider.BEYONDER_STATS).ifPresent(cap -> {
             if(event.getCharge() < 5) return;
             Optional<LivingEntity> optional = AbilityFunctionHelper.getTargetEntityClosestToCrosshair(player, 32, 3, false);
             if(optional.isEmpty()) return;
             LivingEntity target = optional.get();
-            if(target.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve().isPresent()){
-                LivingEntityBeyonderCapability tarCap = target.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve().get();
+            if(target.getCapability(CapProvider.BEYONDER_STATS).resolve().isPresent()){
+                BeyonderCapability tarCap = target.getCapability(CapProvider.BEYONDER_STATS).resolve().get();
                 //if the desired target has the luck effect, then we dont aim towards them since itll miss.
                 if(tarCap.getEffectsManager().hasEffect(BeyonderEffects.WHEEL_LUCK_EFFECT)) return;
             }
@@ -454,7 +445,7 @@ public class BeyonderEvents {
     @SubscribeEvent
     public static void onExperienceChange(PlayerXpEvent.LevelChange event){
         //event.setLevels(Math.max(event.getLevels(), (int) Math.floor(event.getLevels() / 2f)));
-        event.getEntity().getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent( cap -> {
+        event.getEntity().getCapability(CapProvider.BEYONDER_STATS).ifPresent(cap -> {
            if(cap.getEffectsManager().hasEffect(BeyonderEffects.PARAGON_XP.getEffectId())){
                BeyonderEffect eff = cap.getEffectsManager().getEffect(BeyonderEffects.PARAGON_XP.getEffectId());
                event.setLevels(Math.max(event.getLevels(),
@@ -471,7 +462,7 @@ public class BeyonderEvents {
         if (!(event.getEntity() instanceof ServerPlayer player)) return;
         if(player.isCreative() || player.isSpectator()) return;
 
-        player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent( cap -> {
+        player.getCapability(CapProvider.BEYONDER_STATS).ifPresent(cap -> {
             ZeroDamageEffect zeroEff = (ZeroDamageEffect) cap.getEffectsManager().getEffect(BeyonderEffects.WHEEL_ZERO_DAMAGE.getEffectId());
             if(zeroEff == null || zeroEff.getSequenceLevel() > 6 || !zeroEff.doBlocks()) return;
             int level = zeroEff.getSequenceLevel();
@@ -487,7 +478,7 @@ public class BeyonderEvents {
 
     @SubscribeEvent
     public static void onFall(LivingFallEvent event){
-        event.getEntity().getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
+        event.getEntity().getCapability(CapProvider.BEYONDER_STATS).ifPresent(cap -> {
             if(cap.getEffectsManager().hasEffect(BeyonderEffects.MYSTERY_FALL_NEGATE.getEffectId())){
                 event.setDamageMultiplier(0);
 //                cap.getEffectsManager().removeEffect(BeyonderEffects.MYSTERY_FALL_NEGATE.getEffectId());
@@ -500,7 +491,7 @@ public class BeyonderEvents {
         Player player = event.getPlayer();
         if(player.isCreative() || player.isSpectator()) return;
         if(player.level().isClientSide()) return;
-        player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
+        player.getCapability(CapProvider.BEYONDER_STATS).ifPresent(cap -> {
             int i = 1;
             ItemStack pick = player.getMainHandItem().copy();
             if(pick.isEmpty()) pick = new ItemStack(Items.COMPASS);
@@ -541,7 +532,7 @@ public class BeyonderEvents {
 
     @SubscribeEvent
     public static void mine(PlayerEvent.BreakSpeed event){
-        event.getEntity().getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(stats -> {
+        event.getEntity().getCapability(CapProvider.BEYONDER_STATS).ifPresent(stats -> {
             stats.getBeyonderStats().getMiningSpeed(event);
         });
     }

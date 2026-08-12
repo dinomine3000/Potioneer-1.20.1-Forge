@@ -1,7 +1,7 @@
 package net.dinomine.potioneer.beyonder.effects.wheeloffortune;
 
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffect;
-import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
+import net.dinomine.potioneer.beyonder.player.BeyonderCapability;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
@@ -10,7 +10,7 @@ import net.minecraft.world.entity.LivingEntity;
 public class InstantLuckEffect extends BeyonderEffect {
     private boolean acquired = false;
     @Override
-    public void onAcquire(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    public void onAcquire(BeyonderCapability cap, LivingEntity target) {
         if(acquired || target.level().isClientSide()) return;
         cap.getLuckManager().grantLuck(target, 50 + 25*(8-sequenceLevel), false);
         target.sendSystemMessage(Component.translatable("message.potioneer.luck_boost_grant"));
@@ -19,11 +19,11 @@ public class InstantLuckEffect extends BeyonderEffect {
     }
 
     @Override
-    protected void doTick(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    protected void doTick(BeyonderCapability cap, LivingEntity target) {
     }
 
     @Override
-    public void stopEffects(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    public void stopEffects(BeyonderCapability cap, LivingEntity target) {
         if(target.level().isClientSide()) return;
         cap.getLuckManager().consumeLuck(target, 50 + 25*(8-sequenceLevel) + 10, false);
         target.sendSystemMessage(Component.translatableWithFallback("message.potioneer.luck_boost_revoke", "All is not without its price. Your luck has been taken back."));

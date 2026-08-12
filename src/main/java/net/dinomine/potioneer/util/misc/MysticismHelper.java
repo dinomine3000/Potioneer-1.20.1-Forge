@@ -2,8 +2,8 @@ package net.dinomine.potioneer.util.misc;
 
 import com.mojang.datafixers.util.Pair;
 import net.dinomine.potioneer.beyonder.pathways.Pathways;
-import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
-import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
+import net.dinomine.potioneer.beyonder.player.BeyonderCapability;
+import net.dinomine.potioneer.beyonder.player.CapProvider;
 import net.dinomine.potioneer.item.ModItems;
 import net.dinomine.potioneer.item.custom.FormulaItem;
 import net.dinomine.potioneer.recipe.PotionRecipeData;
@@ -50,7 +50,7 @@ public class MysticismHelper {
         if(seer.level().isClientSide()) return new DivinationResult(false, new ArrayList<>(), -1, 0f, "", ItemStack.EMPTY);
         ServerLevel level = (ServerLevel) seer.level();
         PotionFormulaSaveData savedData = PotionFormulaSaveData.from(level);
-        Optional<LivingEntityBeyonderCapability> capability = seer.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve();
+        Optional<BeyonderCapability> capability = seer.getCapability(CapProvider.BEYONDER_STATS).resolve();
         //progress acting for hydro shaman by 0.25% per divination
         capability.ifPresent(cap -> cap.getCharacteristicManager().progressActing(1 / 400f, 18));
         if(item.isEmpty()){
@@ -84,7 +84,7 @@ public class MysticismHelper {
             CompoundTag mysticalTag = getTagFromItem(TAGS.MYSTICISM, item);
             Player target = getPlayerFromMysticismTag(mysticalTag, level, 0);
             if(target != null) {
-                Optional<LivingEntityBeyonderCapability> cap = target.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve();
+                Optional<BeyonderCapability> cap = target.getCapability(CapProvider.BEYONDER_STATS).resolve();
                 if(cap.isPresent()){
                     int targetSequence = cap.get().getPathwaySequenceId();
                     float hp = target.getHealth() / target.getMaxHealth();
@@ -114,7 +114,7 @@ public class MysticismHelper {
 
             Player target = getPlayerFromMysticismTag(mysticalTag, level, 0);
             if(target != null) {
-                Optional<LivingEntityBeyonderCapability> cap = target.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve();
+                Optional<BeyonderCapability> cap = target.getCapability(CapProvider.BEYONDER_STATS).resolve();
                 if(cap.isPresent()){
                     int targetSequence = cap.get().getPathwaySequenceId();
                     float hp = target.getHealth() / target.getMaxHealth();
@@ -161,7 +161,7 @@ public class MysticismHelper {
             }
         }
         else if(item.is(ModItems.FORMULA.get())) {
-            Optional<LivingEntityBeyonderCapability> cap = seer.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve();
+            Optional<BeyonderCapability> cap = seer.getCapability(CapProvider.BEYONDER_STATS).resolve();
             if(cap.isPresent()){
                 PotionRecipeData data = FormulaItem.applyOrReadFormulaNbt(item, level, pathwaySequenceId, cap.get());
                 boolean yesNo = savedData.isFormulaCorrect(data);

@@ -1,7 +1,7 @@
 package net.dinomine.potioneer.network.messages.abilityRelevant;
 
 import net.dinomine.potioneer.beyonder.abilities.AbilityKey;
-import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
+import net.dinomine.potioneer.beyonder.player.CapProvider;
 import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
@@ -64,7 +64,7 @@ public class PlayerCastAbilityMessageCTS {
             if(!context.getDirection().getReceptionSide().isClient()){
                 //on server side
                 Player player = context.getSender();
-                player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
+                player.getCapability(CapProvider.BEYONDER_STATS).ifPresent(cap -> {
                     cap.getAbilitiesManager().useAbility(cap, player, msg.key, false, msg.primary, msg.args);
                 });
             } else {
@@ -82,7 +82,7 @@ class ClientCastAbilityMessage
     public static void handlePacket(PlayerCastAbilityMessageCTS msg, Supplier<NetworkEvent.Context> contextSupplier)
     {
         Player player = Minecraft.getInstance().player;
-        player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
+        player.getCapability(CapProvider.BEYONDER_STATS).ifPresent(cap -> {
             cap.getAbilitiesManager().castArtifactAbility(msg.artifactId, cap, player);
         });
     }

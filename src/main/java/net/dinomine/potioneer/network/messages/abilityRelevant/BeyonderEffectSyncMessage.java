@@ -1,7 +1,7 @@
 package net.dinomine.potioneer.network.messages.abilityRelevant;
 
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffect;
-import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
+import net.dinomine.potioneer.beyonder.player.CapProvider;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Player;
@@ -109,7 +109,7 @@ class ClientEffectSyncMessage
         System.out.println("Receiving effect info on client side: " + msg);
         Player player = Minecraft.getInstance().player;
         if(player == null) return;
-        player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
+        player.getCapability(CapProvider.BEYONDER_STATS).ifPresent(cap -> {
             switch (msg.operation){
                 case ADD -> cap.getEffectsManager().addEffectsOnClient(msg.effects, cap, player);
                 case SET -> cap.getEffectsManager().setEffectsOnClient(msg.effects, cap, player);

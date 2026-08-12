@@ -3,7 +3,7 @@ package net.dinomine.potioneer.beyonder.effects.wheeloffortune;
 import net.dinomine.potioneer.beyonder.abilities.AbilityFunctionHelper;
 import net.dinomine.potioneer.beyonder.abilities.wheeloffortune.VelocityAbility;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffect;
-import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
+import net.dinomine.potioneer.beyonder.player.BeyonderCapability;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
@@ -19,7 +19,7 @@ public class VelocityEffect extends BeyonderEffect {
     public int attackSpeed = -1;
 
     @Override
-    public void onAcquire(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    public void onAcquire(BeyonderCapability cap, LivingEntity target) {
         if(movementSpeed == -1)
             movementSpeed = cap.getLuckManager().getRandomNumber(1, VelocityAbility.levelToMaxMovement.apply(getSequenceLevel()), true, target.getRandom());
         if(attackSpeed == -1)
@@ -27,7 +27,7 @@ public class VelocityEffect extends BeyonderEffect {
     }
 
     @Override
-    protected void doTick(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    protected void doTick(BeyonderCapability cap, LivingEntity target) {
         if(target.level().isClientSide()) return;
         if(!(target instanceof Player player)) return;
         AbilityFunctionHelper.addAttributeTo(player, movementId, "velocity movement speed modifier", movementSpeed-1, AttributeModifier.Operation.MULTIPLY_BASE, Attributes.MOVEMENT_SPEED);
@@ -37,7 +37,7 @@ public class VelocityEffect extends BeyonderEffect {
     }
 
     @Override
-    public void stopEffects(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    public void stopEffects(BeyonderCapability cap, LivingEntity target) {
         if(target.level().isClientSide()) return;
         if(!(target instanceof Player player)) return;
         AbilityFunctionHelper.removeAttribute(player, movementId, "velocity movement modifier", movementSpeed, AttributeModifier.Operation.MULTIPLY_TOTAL, Attributes.MOVEMENT_SPEED);

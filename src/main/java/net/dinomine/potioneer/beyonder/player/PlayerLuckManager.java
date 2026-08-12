@@ -49,7 +49,7 @@ public class PlayerLuckManager {
         this.luck = luck;
     }
 
-    public void onTick(LivingEntityBeyonderCapability cap, LivingEntity target){
+    public void onTick(BeyonderCapability cap, LivingEntity target){
         //ticks once every 2 seconds
         if(target.level().isClientSide()) return;
         if(currentEvent != null){
@@ -108,7 +108,7 @@ public class PlayerLuckManager {
         }
     }
 
-    public void forceCastEvent(LivingEntity target, LivingEntityBeyonderCapability cap, boolean instantCast){
+    public void forceCastEvent(LivingEntity target, BeyonderCapability cap, boolean instantCast){
         LuckEvent proposedEvent = LuckEvents.getRandomEventFromLuck(luck, target.getRandom())
                 .createInstance(getRandomNumber(PotioneerGameplayConfig.MINIMUM_LUCK_EVENT_TIMER.get()*20, PotioneerGameplayConfig.MAXIMUM_LUCK_EVENT_TIMER.get()*20, luck < 0, target.getRandom()));
         target.sendSystemMessage(Component.translatable("luck.potioneer.event_cast_" + target.getRandom().nextInt(4)));
@@ -121,7 +121,7 @@ public class PlayerLuckManager {
      * @param target
      * @return
      */
-    public boolean castOrHurryEvent(LivingEntity target, LivingEntityBeyonderCapability cap){
+    public boolean castOrHurryEvent(LivingEntity target, BeyonderCapability cap){
         if(currentEvent != null) currentEvent.triggerEvent(cap, this, target);
         return castOrReplaceEvent(target);
     }

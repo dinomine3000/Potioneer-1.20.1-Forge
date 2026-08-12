@@ -89,6 +89,10 @@ public class PotioneerAbilityConfig {
     public static final ForgeConfigSpec.IntValue AURA_RADIUS;
     public static final ForgeConfigSpec.IntValue SENSE_OF_ORDER_RADIUS;
     public static final ForgeConfigSpec.DoubleValue AURA_MISCAST_CHANCE;
+    public static final ForgeConfigSpec.DoubleValue BRIBE_CANCEL_CHANCE;
+    public static final ForgeConfigSpec.IntValue BRIBE_MISCAST_RADIUS;
+    public static final ForgeConfigSpec.IntValue BRIBE_DURATION;
+    public static final ForgeConfigSpec.DoubleValue BRIBE_DAMAGE_MULTIPLIER;
 
 
 
@@ -352,6 +356,19 @@ public class PotioneerAbilityConfig {
         UNIVERSAL_OCEAN_ORDER = BUILDER.comment("Should the Ocean Order ability work on any aggressive entity or only underwater ones?" +
                         "\nSetting this to true will make Swimmers not aggro any mobs by default, False will only work with mobs that are considered 'aquatic' (see 'underwater_mobs' below).")
                 .define("universal_ocean_order", false);
+
+        BRIBE_CANCEL_CHANCE = BUILDER.comment("Chance for entities affected by Bribe - Disorder to CAST abilities." +
+                        "\nIn other words, one minus this value is the chance they don't cast abilities while affected by Bribe - Disorder")
+                .defineInRange("bribe_chance", 1/3f, 0f, 1f);
+
+        BRIBE_MISCAST_RADIUS = BUILDER.comment("Radius to test for Bribe - Disorder miscasts.")
+                .defineInRange("bribe_radius", 10, 0, Integer.MAX_VALUE);
+
+        BRIBE_DURATION = BUILDER.comment("Duration for the Bribe effect (on entities that have been bribed, not on the briber)")
+                .defineInRange("bribe_duration", 20*30, 0, Integer.MAX_VALUE);
+
+        BRIBE_DAMAGE_MULTIPLIER = BUILDER.comment("Damage Multiplier for victims of Bribe - Weakening")
+                .defineInRange("bribe_multiplier", 0.5f, 0f, 1f);
 
         BUILDER.pop();
 

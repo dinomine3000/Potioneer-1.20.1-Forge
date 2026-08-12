@@ -3,7 +3,7 @@ package net.dinomine.potioneer.beyonder.abilities.misc;
 import net.dinomine.potioneer.beyonder.abilities.Ability;
 import net.dinomine.potioneer.beyonder.pages.Page;
 import net.dinomine.potioneer.beyonder.pages.PageRegistry;
-import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
+import net.dinomine.potioneer.beyonder.player.BeyonderCapability;
 import net.dinomine.potioneer.config.PotioneerGameplayConfig;
 import net.dinomine.potioneer.network.PacketHandler;
 import net.dinomine.potioneer.network.messages.OpenScreenMessage;
@@ -27,7 +27,7 @@ public abstract class MysticalKnowledgeAbility extends Ability {
     }
 
     @Override
-    protected boolean primary(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    protected boolean primary(BeyonderCapability cap, LivingEntity target) {
         if(target.level().isClientSide()) return false;
         List<Page> pages = getPages();
         if(pages.isEmpty()) return false;
@@ -36,7 +36,7 @@ public abstract class MysticalKnowledgeAbility extends Ability {
     }
 
     @Override
-    public void onUpgrade(int oldLevel, int newLevel, LivingEntityBeyonderCapability cap, LivingEntity target) {
+    public void onUpgrade(int oldLevel, int newLevel, BeyonderCapability cap, LivingEntity target) {
         if(!PotioneerGameplayConfig.LOSE_PAGES_ON_DROP_SEQUENCE.get()){
             cap.addPages(getPageIds());
         }
@@ -56,7 +56,7 @@ public abstract class MysticalKnowledgeAbility extends Ability {
     }
 
     @Override
-    public void onAcquire(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    public void onAcquire(BeyonderCapability cap, LivingEntity target) {
         if(target.level().isClientSide()) return;
         if(!PotioneerGameplayConfig.LOSE_PAGES_ON_DROP_SEQUENCE.get()){
             cap.addPages(getPageIds());

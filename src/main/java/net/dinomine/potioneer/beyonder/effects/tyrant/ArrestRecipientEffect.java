@@ -4,8 +4,8 @@ import net.dinomine.potioneer.beyonder.abilities.tyrant.AreaOfJurisdictionAbilit
 import net.dinomine.potioneer.beyonder.damages.PotioneerDamage;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffect;
 import net.dinomine.potioneer.beyonder.effects.misc.AbstractSourceRecipientEffect;
-import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
-import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
+import net.dinomine.potioneer.beyonder.player.BeyonderCapability;
+import net.dinomine.potioneer.beyonder.player.CapProvider;
 import net.dinomine.potioneer.config.PotioneerAbilityConfig;
 import net.dinomine.potioneer.sound.ModSounds;
 import net.minecraft.nbt.CompoundTag;
@@ -28,12 +28,12 @@ public class ArrestRecipientEffect extends AbstractSourceRecipientEffect {
     private boolean aoj;
 
     @Override
-    public void refreshTime(LivingEntityBeyonderCapability cap, LivingEntity target, BeyonderEffect effect) {}
+    public void refreshTime(BeyonderCapability cap, LivingEntity target, BeyonderEffect effect) {}
 
     public void setEnforcer(UUID enforcerId){this.sources.put(enforcerId, 10);}
 
     @Override
-    public void onAcquire(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    public void onAcquire(BeyonderCapability cap, LivingEntity target) {
         List<Player> playerList = getPlayerList(target.level());
         if(playerList.isEmpty()) return;
         Player enforcer = playerList.get(0);
@@ -42,7 +42,7 @@ public class ArrestRecipientEffect extends AbstractSourceRecipientEffect {
             target.hurt(PotioneerDamage.arrest((ServerLevel) enforcer.level(), enforcer), 5 + Math.max(5*(7-getSequenceLevel()), 0));
             aoj = AreaOfJurisdictionAbility.isTargetUnderInfluenceOfEnforcer(target, enforcer);
             if(aoj){
-                enforcer.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(enforcerCap -> {
+                enforcer.getCapability(CapProvider.BEYONDER_STATS).ifPresent(enforcerCap -> {
                     enforcerCap.requestActiveSpiritualityCost(-SPIRITUALITY_SAP.get());
                     cap.requestActiveSpiritualityCost(SPIRITUALITY_SAP.get());
                 });
@@ -53,7 +53,7 @@ public class ArrestRecipientEffect extends AbstractSourceRecipientEffect {
     }
 
     @Override
-    protected void doTick(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    protected void doTick(BeyonderCapability cap, LivingEntity target) {
         if(target.level().isClientSide()) return;
         target.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, maxLife-lifetime, 255, false, false, true));
         if(target.isPassenger()){
@@ -63,11 +63,11 @@ public class ArrestRecipientEffect extends AbstractSourceRecipientEffect {
     }
 
     @Override
-    public void stopEffects(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    public void stopEffects(BeyonderCapability cap, LivingEntity target) {
     }
 
     @Override
-    public boolean onDamageCalculation(LivingHurtEvent event, LivingEntity victim, LivingEntity attacker, LivingEntityBeyonderCapability victimCap, Optional<LivingEntityBeyonderCapability> attackerCap, boolean calledOnVictim) {
+    public boolean onDamageCalculation(LivingHurtEvent event, LivingEntity victim, LivingEntity attacker, BeyonderCapability victimCap, Optional<BeyonderCapability> attackerCap, boolean calledOnVictim) {
         if(victim.level().isClientSide() || !calledOnVictim || !aoj || sequenceLevel > 6) return false;
         List<Player> playerList = getPlayerList(victim.level());
         if(playerList.isEmpty()) return false;

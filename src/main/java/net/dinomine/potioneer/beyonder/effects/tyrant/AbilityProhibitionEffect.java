@@ -7,8 +7,8 @@ import net.dinomine.potioneer.beyonder.abilities.tyrant.ProhibitionAbility;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffect;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
 import net.dinomine.potioneer.beyonder.effects.misc.AbstractSourceRecipientEffect;
-import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
-import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
+import net.dinomine.potioneer.beyonder.player.BeyonderCapability;
+import net.dinomine.potioneer.beyonder.player.CapProvider;
 import net.dinomine.potioneer.block.entity.RulePylonBlockEntity;
 import net.dinomine.potioneer.config.PotioneerAbilityConfig;
 import net.dinomine.potioneer.network.PacketHandler;
@@ -56,7 +56,7 @@ public class AbilityProhibitionEffect extends AbstractSourceRecipientEffect {
             if(be != null && be.isOwner(player)) hits.addAll(be.getEntities());
 
             //3. clear other instances of this effect, as created by the sources
-            player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
+            player.getCapability(CapProvider.BEYONDER_STATS).ifPresent(cap -> {
                 cap.getAbilitiesManager().getAbilities(Abilities.PROHIBITION.getAblId()).stream()
                         .map(abl -> (ProhibitionAbility) abl)
                         .forEach(prohibitionAbility -> prohibitionAbility.clearEffectForEveryone(level, player));
@@ -69,7 +69,7 @@ public class AbilityProhibitionEffect extends AbstractSourceRecipientEffect {
         //4. disable the given ability to everyone in that area
         for(LivingEntity hit: hits){
             DisabledAbilitiesManager.DisabledAbilityProxy proxy = DisabledAbilitiesManager.DisabledAbilityProxy.byId(abilityId, ProhibitionAbility.ABILITY_PROHIBITION_DURATION.get());
-            hit.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
+            hit.getCapability(CapProvider.BEYONDER_STATS).ifPresent(cap -> {
                 cap.getAbilitiesManager().getDisabledAbilitiesManager().disableAbility(UUID.randomUUID().toString(), proxy, cap, hit);
             });
         }
@@ -77,7 +77,7 @@ public class AbilityProhibitionEffect extends AbstractSourceRecipientEffect {
     }
 
     @Override
-    public void refreshTime(LivingEntityBeyonderCapability cap, LivingEntity target, BeyonderEffect effect) {
+    public void refreshTime(BeyonderCapability cap, LivingEntity target, BeyonderEffect effect) {
         if(!(effect instanceof AbilityProhibitionEffect incomingEffect)) return;
         for(Map.Entry<UUID, Integer> entry: incomingEffect.sources.entrySet()){
             addSource(entry.getKey(), entry.getValue(), target);
@@ -85,12 +85,12 @@ public class AbilityProhibitionEffect extends AbstractSourceRecipientEffect {
     }
 
     @Override
-    protected void doTick(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    protected void doTick(BeyonderCapability cap, LivingEntity target) {
         tickDownTime(target);
     }
 
     @Override
-    public void stopEffects(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    public void stopEffects(BeyonderCapability cap, LivingEntity target) {
 
     }
 }

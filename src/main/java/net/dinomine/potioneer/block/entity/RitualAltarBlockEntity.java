@@ -1,8 +1,8 @@
 package net.dinomine.potioneer.block.entity;
 
 import net.dinomine.potioneer.beyonder.abilities.AbilityFunctionHelper;
-import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
-import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
+import net.dinomine.potioneer.beyonder.player.CapProvider;
+import net.dinomine.potioneer.beyonder.player.BeyonderCapability;
 import net.dinomine.potioneer.block.ModBlocks;
 import net.dinomine.potioneer.block.custom.RitualAltarBlock;
 import net.dinomine.potioneer.item.ModItems;
@@ -235,7 +235,7 @@ public class RitualAltarBlockEntity extends BlockEntity implements MenuProvider 
         }
         List<ItemStack> offerings = getOfferingsIn(ritualArea);
         Player target = getPlayerTargetInRitual(caster, ritualArea, offerings, caster.getInventory());
-        Optional<LivingEntityBeyonderCapability> cap = caster.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve();
+        Optional<BeyonderCapability> cap = caster.getCapability(CapProvider.BEYONDER_STATS).resolve();
         int cost = FLAT_COST + offerings.size()*OFFERING_COST;
         int pathwaySequenceId = -1;
         if(cap.isPresent()){

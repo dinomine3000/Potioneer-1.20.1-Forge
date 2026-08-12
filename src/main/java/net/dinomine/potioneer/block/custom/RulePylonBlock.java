@@ -1,13 +1,9 @@
 package net.dinomine.potioneer.block.custom;
 
 import net.dinomine.potioneer.beyonder.abilities.tyrant.RulePylonAbility;
-import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
 import net.dinomine.potioneer.block.ModBlocks;
 import net.dinomine.potioneer.block.entity.ModBlockEntities;
 import net.dinomine.potioneer.block.entity.RulePylonBlockEntity;
-import net.dinomine.potioneer.block.entity.WaterTrapBlockEntity;
-import net.dinomine.potioneer.network.PacketHandler;
-import net.dinomine.potioneer.network.messages.abilityRelevant.abilitySpecific.RulePylonMessage;
 import net.dinomine.potioneer.savedata.DimensionChunkSavedData;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -31,7 +27,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
-import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.BlockHitResult;
@@ -42,8 +37,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
 import java.util.Set;
-
-import static net.dinomine.potioneer.block.custom.BaseLightSourceBlock.WATERLOGGED;
 
 public class RulePylonBlock extends BaseEntityBlock implements SimpleWaterloggedBlock {
     private static final VoxelShape SHAPE = Block.box(2, 2, 2, 14, 14, 14);

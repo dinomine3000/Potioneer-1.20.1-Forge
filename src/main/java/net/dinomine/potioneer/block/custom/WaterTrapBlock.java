@@ -1,6 +1,6 @@
 package net.dinomine.potioneer.block.custom;
 
-import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
+import net.dinomine.potioneer.beyonder.player.CapProvider;
 import net.dinomine.potioneer.block.entity.ModBlockEntities;
 import net.dinomine.potioneer.block.entity.WaterTrapBlockEntity;
 import net.minecraft.core.BlockPos;
@@ -113,7 +113,7 @@ public class WaterTrapBlock extends BaseEntityBlock implements SimpleWaterlogged
     public InteractionResult use(BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, InteractionHand pHand, BlockHitResult pHit) {
         if(pLevel.isClientSide) return InteractionResult.SUCCESS;
         BlockEntity be = pLevel.getBlockEntity(pPos);
-        if(be instanceof WaterTrapBlockEntity trapEntity && pPlayer.getCapability(BeyonderStatsProvider.BEYONDER_STATS).isPresent()){
+        if(be instanceof WaterTrapBlockEntity trapEntity && pPlayer.getCapability(CapProvider.BEYONDER_STATS).isPresent()){
             trapEntity.incrementIndex(pPlayer);
             return InteractionResult.SUCCESS;
         }

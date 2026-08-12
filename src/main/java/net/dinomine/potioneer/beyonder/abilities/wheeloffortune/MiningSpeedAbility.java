@@ -7,7 +7,7 @@ import net.dinomine.potioneer.beyonder.abilities.PassiveAbility;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffect;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
 import net.dinomine.potioneer.beyonder.effects.wheeloffortune.MiningSpeedEffect;
-import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
+import net.dinomine.potioneer.beyonder.player.BeyonderCapability;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.LivingEntity;
@@ -32,7 +32,7 @@ public class MiningSpeedAbility extends PassiveAbility {
     }
 
     @Override
-    public void onUpgrade(int oldLevel, int newLevel, LivingEntityBeyonderCapability cap, LivingEntity target) {
+    public void onUpgrade(int oldLevel, int newLevel, BeyonderCapability cap, LivingEntity target) {
         float maxSpeed = levelToMaxSpeed.apply(newLevel);
         if(newLevel > 7 && oldLevel != newLevel){
             CompoundTag tag = getData();
@@ -43,7 +43,7 @@ public class MiningSpeedAbility extends PassiveAbility {
     }
 
     @Override
-    protected BeyonderEffect createEffectInstance(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    protected BeyonderEffect createEffectInstance(BeyonderCapability cap, LivingEntity target) {
         MiningSpeedEffect eff = (MiningSpeedEffect) effect.createInstance(sequenceLevel, cost(), -1, true);
         CompoundTag tag = getData();
         if(!tag.contains("speed")){
@@ -55,7 +55,7 @@ public class MiningSpeedAbility extends PassiveAbility {
     }
 
     @Override
-    protected boolean secondary(LivingEntityBeyonderCapability cap, LivingEntity target, CompoundTag args) {
+    protected boolean secondary(BeyonderCapability cap, LivingEntity target, CompoundTag args) {
         if(getSequenceLevel() >= 8) {
             if(target.level().isClientSide())
                 target.sendSystemMessage(Component.translatableWithFallback("message.potioneer.outdated_secondary", "It doesn't do anything... yet"));

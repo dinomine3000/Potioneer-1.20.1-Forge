@@ -3,7 +3,7 @@ package net.dinomine.potioneer.beyonder.effects.wheeloffortune;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffect;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
 import net.dinomine.potioneer.beyonder.pathways.WheelOfFortunePathway;
-import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
+import net.dinomine.potioneer.beyonder.player.BeyonderCapability;
 import net.dinomine.potioneer.beyonder.player.PlayerLuckManager;
 import net.dinomine.potioneer.util.ParticleMaker;
 import net.minecraft.util.RandomSource;
@@ -25,7 +25,7 @@ public class GamblingEffect extends BeyonderEffect {
     }
 
     @Override
-    public void onAcquire(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    public void onAcquire(BeyonderCapability cap, LivingEntity target) {
         if(target.level().isClientSide()) return;
         int minDuration = 60*20;
         int maxDuration = 4*60*20;
@@ -48,7 +48,7 @@ public class GamblingEffect extends BeyonderEffect {
         endEffectWhenPossible();
     }
 
-    public static void applyPositiveEffect(LivingEntityBeyonderCapability cap, LivingEntity target, PlayerLuckManager luck, int sequenceLevel, int minDuration, int maxDuration, int maxLevel, RandomSource random){
+    public static void applyPositiveEffect(BeyonderCapability cap, LivingEntity target, PlayerLuckManager luck, int sequenceLevel, int minDuration, int maxDuration, int maxLevel, RandomSource random){
         if(maxLevel > 1){
             for(MobEffectInstance effectInstance: target.getActiveEffects()){
                 if(effectInstance.getEffect().isBeneficial()) continue;
@@ -71,7 +71,7 @@ public class GamblingEffect extends BeyonderEffect {
             ParticleMaker.createSlotMachineForEntity(target.level(), target, true);
     }
 
-    public static void applyNegativeEffect(LivingEntityBeyonderCapability cap, LivingEntity target, PlayerLuckManager luck, int sequenceLevel, int minDuration, int maxDuration, int maxLevel, RandomSource random) {
+    public static void applyNegativeEffect(BeyonderCapability cap, LivingEntity target, PlayerLuckManager luck, int sequenceLevel, int minDuration, int maxDuration, int maxLevel, RandomSource random) {
         for(MobEffect effect: NEGATIVE_EFFECTS){
             target.addEffect(new MobEffectInstance(effect, luck.getRandomNumber(minDuration, maxDuration/2, false, random),
                     luck.getRandomNumber(0, maxLevel, false, random), false, true, true));
@@ -83,12 +83,12 @@ public class GamblingEffect extends BeyonderEffect {
     }
 
         @Override
-    protected void doTick(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    protected void doTick(BeyonderCapability cap, LivingEntity target) {
         endEffectWhenPossible();
     }
 
     @Override
-    public void stopEffects(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    public void stopEffects(BeyonderCapability cap, LivingEntity target) {
 
     }
 }

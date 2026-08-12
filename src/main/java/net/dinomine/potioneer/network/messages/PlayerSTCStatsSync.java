@@ -2,7 +2,7 @@ package net.dinomine.potioneer.network.messages;
 
 import net.dinomine.potioneer.beyonder.client.ClientStatsData;
 import net.dinomine.potioneer.beyonder.client.HUD.MagicOrbOverlay;
-import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
+import net.dinomine.potioneer.beyonder.player.CapProvider;
 import net.dinomine.potioneer.util.BufferUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
@@ -93,7 +93,7 @@ class ClientHudStatsSyncMessage
         ClientStatsData.setDamage(msg.dmg);
 //        ClientStatsData.setLuck(msg.luck, msg.minLuck, msg.maxLuck);
         if(Minecraft.getInstance().player == null) return;
-        Minecraft.getInstance().player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
+        Minecraft.getInstance().player.getCapability(CapProvider.BEYONDER_STATS).ifPresent(cap -> {
             if(msg.spirituality < cap.getSpirituality())
                 MagicOrbOverlay.playSpiritualityDown();
             cap.setSpirituality(msg.spirituality);

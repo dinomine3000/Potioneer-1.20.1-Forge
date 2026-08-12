@@ -3,7 +3,7 @@ package net.dinomine.potioneer.beyonder.effects.tyrant;
 import net.dinomine.potioneer.beyonder.abilities.Abilities;
 import net.dinomine.potioneer.beyonder.abilities.DisabledAbilitiesManager.DisabledAbilityProxy;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffect;
-import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
+import net.dinomine.potioneer.beyonder.player.BeyonderCapability;
 import net.minecraft.nbt.*;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -11,14 +11,12 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
 
-import java.util.*;
-
 public class BerserkEffect extends BeyonderEffect {
     private boolean scales = false;
     private boolean aura = false;
     private boolean soo = false;
     @Override
-    public void onAcquire(LivingEntityBeyonderCapability cap, LivingEntity target, boolean fromLoading) {
+    public void onAcquire(BeyonderCapability cap, LivingEntity target, boolean fromLoading) {
         if(fromLoading) return;
         scales = cap.getAbilitiesManager().isEnabledExactLevel(Abilities.WATER_SCALES.getAblId(), sequenceLevel);
         aura = cap.getAbilitiesManager().isEnabledExactLevel(Abilities.TYRANT_AURA.getAblId(), sequenceLevel);
@@ -36,7 +34,7 @@ public class BerserkEffect extends BeyonderEffect {
     }
 
     @Override
-    protected void doTick(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    protected void doTick(BeyonderCapability cap, LivingEntity target) {
         if(!target.hasEffect(MobEffects.DARKNESS))
             target.addEffect(new MobEffectInstance(MobEffects.DARKNESS, -1, 2, false, true));
 
@@ -46,7 +44,7 @@ public class BerserkEffect extends BeyonderEffect {
         if(target.tickCount%20 == 0){
             cap.changeSanity(-1);
         }
-        if(cap.getSanity() < LivingEntityBeyonderCapability.SANITY_FOR_DROP && target.tickCount%10==0)
+        if(cap.getSanity() < BeyonderCapability.SANITY_FOR_DROP && target.tickCount%10==0)
             target.level().playSound(target, target.getOnPos(), SoundEvents.WARDEN_HEARTBEAT, SoundSource.NEUTRAL, 2, 1);
     }
 
@@ -67,7 +65,7 @@ public class BerserkEffect extends BeyonderEffect {
     }
 
     @Override
-    public void stopEffects(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    public void stopEffects(BeyonderCapability cap, LivingEntity target) {
         target.removeEffect(MobEffects.DARKNESS);
         cap.getAbilitiesManager().getDisabledAbilitiesManager().enableAbility("berserk", cap, target);
 

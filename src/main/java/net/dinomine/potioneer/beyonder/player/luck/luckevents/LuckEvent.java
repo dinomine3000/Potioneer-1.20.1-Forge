@@ -1,6 +1,6 @@
 package net.dinomine.potioneer.beyonder.player.luck.luckevents;
 
-import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
+import net.dinomine.potioneer.beyonder.player.BeyonderCapability;
 import net.dinomine.potioneer.beyonder.player.PlayerLuckManager;
 import net.dinomine.potioneer.event.LuckEventCastEvent;
 import net.dinomine.potioneer.sound.ModSounds;
@@ -53,7 +53,7 @@ public abstract class LuckEvent {
         return this;
     }
 
-    public boolean timeUp(LivingEntityBeyonderCapability cap, LivingEntity target){
+    public boolean timeUp(BeyonderCapability cap, LivingEntity target){
         if(this.timer-- < 1){
             boolean cancelledCheck = MinecraftForge.EVENT_BUS.post(new LuckEventCastEvent.TriggeredPre(target, cap.getLuckManager().getLuck(), this));
             if(cancelledCheck) return true;
@@ -79,5 +79,5 @@ public abstract class LuckEvent {
     public Component getForecast(){
         return Component.translatable("luckevent.potioneer." + getId(), timer/20);
     }
-    public abstract void triggerEvent(LivingEntityBeyonderCapability cap, PlayerLuckManager luck, LivingEntity target);
+    public abstract void triggerEvent(BeyonderCapability cap, PlayerLuckManager luck, LivingEntity target);
 }

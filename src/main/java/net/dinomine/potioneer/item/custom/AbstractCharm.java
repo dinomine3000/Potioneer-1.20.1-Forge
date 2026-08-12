@@ -3,7 +3,7 @@ package net.dinomine.potioneer.item.custom;
 import net.dinomine.potioneer.beyonder.abilities.AbilityFunctionHelper;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffect;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
-import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
+import net.dinomine.potioneer.beyonder.player.CapProvider;
 import net.dinomine.potioneer.entities.custom.CharmEntity;
 import net.dinomine.potioneer.util.misc.ModNbtUtils;
 import net.dinomine.potioneer.util.misc.MysticalItemHelper;
@@ -44,7 +44,7 @@ public class AbstractCharm extends Item {
 
     private void activateCharmOnSelf(Player player, ItemStack stack, InteractionHand usedHand){
         BeyonderEffect eff = MysticalItemHelper.getEffectFromCharm(stack);
-        player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
+        player.getCapability(CapProvider.BEYONDER_STATS).ifPresent(cap -> {
             if(cap.getEffectsManager().addOrRefreshEffect(eff, cap, player)){
                 player.setItemInHand(usedHand, ItemStack.EMPTY);
             }

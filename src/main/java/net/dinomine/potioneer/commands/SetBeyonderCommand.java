@@ -4,18 +4,14 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import net.dinomine.potioneer.beyonder.pages.Page;
 import net.dinomine.potioneer.beyonder.pages.PageRegistry;
-import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
-import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
+import net.dinomine.potioneer.beyonder.player.CapProvider;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-
-import java.util.ArrayList;
 
 public class SetBeyonderCommand {
 
@@ -44,7 +40,7 @@ public class SetBeyonderCommand {
             int pathSeqId = IntegerArgumentType.getInteger(cmd, "id");
             int pathwayId = pathSeqId / 10;
             int level = pathSeqId%10;
-            lTarget.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap ->{
+            lTarget.getCapability(CapProvider.BEYONDER_STATS).ifPresent(cap ->{
                 cap.resetBeyonder(false);
                 for(int i = 9; i > level; i--){
                     cap.advance(10*pathwayId + i, true);
@@ -66,7 +62,7 @@ public class SetBeyonderCommand {
         try {
             Entity target = EntityArgument.getEntity(cmd, "target");
             if(!(target instanceof LivingEntity lTarget)) return 0;
-            lTarget.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap ->{
+            lTarget.getCapability(CapProvider.BEYONDER_STATS).ifPresent(cap ->{
                 cap.resetBeyonder(true);
             });
             return 1;
@@ -79,7 +75,7 @@ public class SetBeyonderCommand {
         try {
             Entity target = EntityArgument.getEntity(cmd, "target");
             if(!(target instanceof LivingEntity lTarget)) return 0;
-            lTarget.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap ->{
+            lTarget.getCapability(CapProvider.BEYONDER_STATS).ifPresent(cap ->{
                 cap.advance(IntegerArgumentType.getInteger(cmd, "id"), false);
             });
             return 1;
@@ -93,7 +89,7 @@ public class SetBeyonderCommand {
         try {
             Entity target = EntityArgument.getEntity(cmd, "target");
             if(!(target instanceof LivingEntity lTarget)) return 0;
-            lTarget.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
+            lTarget.getCapability(CapProvider.BEYONDER_STATS).ifPresent(cap -> {
                 cap.dropSequenceLevel();
                 if(lTarget instanceof Player player) cap.syncSequenceData(player);
             });

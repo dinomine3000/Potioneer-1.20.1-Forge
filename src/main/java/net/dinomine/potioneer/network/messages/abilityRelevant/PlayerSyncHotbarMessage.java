@@ -2,7 +2,7 @@ package net.dinomine.potioneer.network.messages.abilityRelevant;
 
 import net.dinomine.potioneer.beyonder.abilities.AbilityKey;
 import net.dinomine.potioneer.beyonder.client.ClientAbilitiesData;
-import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
+import net.dinomine.potioneer.beyonder.player.CapProvider;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.api.distmarker.Dist;
@@ -50,7 +50,7 @@ public class PlayerSyncHotbarMessage {
             if(!context.getDirection().getReceptionSide().isClient()){
 //                System.out.println("Receiving ability cast on server side");
                 Player player = context.getSender();
-                player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
+                player.getCapability(CapProvider.BEYONDER_STATS).ifPresent(cap -> {
                     cap.getAbilitiesManager().clientHotbar = msg.hotbar;
                     cap.getAbilitiesManager().quickAbility = msg.quick;
                 });

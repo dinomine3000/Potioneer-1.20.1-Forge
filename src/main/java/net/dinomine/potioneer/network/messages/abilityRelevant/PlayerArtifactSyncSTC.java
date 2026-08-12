@@ -1,8 +1,8 @@
 package net.dinomine.potioneer.network.messages.abilityRelevant;
 
+import net.dinomine.potioneer.beyonder.player.CapProvider;
 import net.dinomine.potioneer.util.misc.ArtifactHolder;
 import net.dinomine.potioneer.beyonder.client.ClientAbilitiesData;
-import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
 import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
@@ -85,7 +85,7 @@ class ClientArtifactSyncHandler
                 ClientAbilitiesData.updateArtifacts(msg.artifacts);
                 break;
         }
-        player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
+        player.getCapability(CapProvider.BEYONDER_STATS).ifPresent(cap -> {
         });
         contextSupplier.get().setPacketHandled(true);
     }

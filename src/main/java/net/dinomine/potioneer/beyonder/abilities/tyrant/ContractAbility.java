@@ -3,8 +3,8 @@ package net.dinomine.potioneer.beyonder.abilities.tyrant;
 import net.dinomine.potioneer.beyonder.abilities.Ability;
 import net.dinomine.potioneer.beyonder.abilities.AbilityFunctionHelper;
 import net.dinomine.potioneer.beyonder.abilities.AbilityKey;
-import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
-import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
+import net.dinomine.potioneer.beyonder.player.BeyonderCapability;
+import net.dinomine.potioneer.beyonder.player.CapProvider;
 import net.dinomine.potioneer.beyonder.player.PlayerAbilitiesManager;
 import net.dinomine.potioneer.config.PotioneerAbilityConfig;
 import net.dinomine.potioneer.network.PacketHandler;
@@ -36,7 +36,7 @@ public class ContractAbility extends Ability {
     }
 
     @Override
-    protected boolean primary(LivingEntityBeyonderCapability cap, LivingEntity caster, CompoundTag args) {
+    protected boolean primary(BeyonderCapability cap, LivingEntity caster, CompoundTag args) {
         if(args.isEmpty()){
             LivingEntity target = AbilityFunctionHelper.getLivingEntityLooking(caster, 2, 1);
             return startWritingContract(target, caster);
@@ -57,7 +57,7 @@ public class ContractAbility extends Ability {
     }
 
     @Override
-    protected boolean secondary(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    protected boolean secondary(BeyonderCapability cap, LivingEntity target) {
         return startWritingContract(target, target);
     }
 
@@ -71,7 +71,7 @@ public class ContractAbility extends Ability {
 
     private List<ContractOption> buildOptions(int sequenceLevel, LivingEntity targetEntity){
         List<String> keys = new ArrayList<>(List.of());
-        targetEntity.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
+        targetEntity.getCapability(CapProvider.BEYONDER_STATS).ifPresent(cap -> {
             cap.getAbilitiesManager().getAbilities().forEach(abl -> {
                 if(!abl.getType().equalsIgnoreCase(PlayerAbilitiesManager.AbilityList.INTRINSIC.name())) return;
                 keys.add(abl.getAbilityKey().toString());

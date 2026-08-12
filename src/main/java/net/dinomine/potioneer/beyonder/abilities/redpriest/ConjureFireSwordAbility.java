@@ -1,7 +1,7 @@
 package net.dinomine.potioneer.beyonder.abilities.redpriest;
 
 import net.dinomine.potioneer.beyonder.abilities.Ability;
-import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
+import net.dinomine.potioneer.beyonder.player.BeyonderCapability;
 import net.dinomine.potioneer.item.ModItems;
 import net.dinomine.potioneer.util.misc.MysticismHelper;
 import net.minecraft.network.chat.Component;
@@ -24,7 +24,7 @@ public class ConjureFireSwordAbility extends Ability {
     }
 
     @Override
-    protected boolean primary(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    protected boolean primary(BeyonderCapability cap, LivingEntity target) {
         if(target.level().isClientSide() && cap.getSpirituality() >= cost()) return true;
         if(cap.getSpirituality() >= cost()){
             if(target instanceof Player player){

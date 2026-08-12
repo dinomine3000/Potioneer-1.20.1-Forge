@@ -3,8 +3,8 @@ package net.dinomine.potioneer.beyonder.abilities.tyrant;
 import net.dinomine.potioneer.beyonder.abilities.AbilityFunctionHelper;
 import net.dinomine.potioneer.beyonder.abilities.AbilityOptions;
 import net.dinomine.potioneer.beyonder.abilities.AbilityWithOptions;
-import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
-import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
+import net.dinomine.potioneer.beyonder.player.BeyonderCapability;
+import net.dinomine.potioneer.beyonder.player.CapProvider;
 import net.dinomine.potioneer.beyonder.player.PlayerLuckManager;
 import net.dinomine.potioneer.config.PotioneerAbilityConfig;
 import net.dinomine.potioneer.entities.ModEntities;
@@ -58,7 +58,7 @@ public class CalamityAbility extends AbilityWithOptions {
     }
 
     @Override
-    protected boolean primaryWithArgument(LivingEntityBeyonderCapability cap, LivingEntity target, String args) {
+    protected boolean primaryWithArgument(BeyonderCapability cap, LivingEntity target, String args) {
         if(args.equalsIgnoreCase("rain")) return doRain(cap, target);
         else if(args.equalsIgnoreCase("leap")) return doLeap(cap, target);
         else if(args.equalsIgnoreCase("luck")) return doLuck(cap, target);
@@ -68,7 +68,7 @@ public class CalamityAbility extends AbilityWithOptions {
         return false;
     }
 
-    private boolean doWindShear(LivingEntityBeyonderCapability cap, LivingEntity caster){
+    private boolean doWindShear(BeyonderCapability cap, LivingEntity caster){
         if(cap.getSpirituality() < WIND_COST.get()) return false;
         if(caster.level().isClientSide()) return true;
         Vec3 lookVector = caster.getLookAngle();
@@ -85,7 +85,7 @@ public class CalamityAbility extends AbilityWithOptions {
         return true;
     }
 
-    private boolean doMeteor(LivingEntityBeyonderCapability cap, LivingEntity caster){
+    private boolean doMeteor(BeyonderCapability cap, LivingEntity caster){
         if(cap.getSpirituality() < ASTEROID_COST.get()) return false;
         if(caster.level().isClientSide()) return true;
         List<LivingEntity> hits = AbilityFunctionHelper.getNonAllyLivingEntitiesAround(caster, 8);
@@ -96,7 +96,7 @@ public class CalamityAbility extends AbilityWithOptions {
         return true;
     }
 
-    private boolean doRain(LivingEntityBeyonderCapability cap, LivingEntity target){
+    private boolean doRain(BeyonderCapability cap, LivingEntity target){
         if(cap.getSpirituality() < RAIN_COST.get()) return false;
         if(target.level().isClientSide()) return true;
         ((ServerLevel) target.level()).setWeatherParameters(0, 20*60*(1 + 2*(7-getSequenceLevel())), true, false);
@@ -104,7 +104,7 @@ public class CalamityAbility extends AbilityWithOptions {
         cap.requestActiveSpiritualityCost(RAIN_COST.get());
         return true;
     }
-    private boolean doThunder(LivingEntityBeyonderCapability cap, LivingEntity target){
+    private boolean doThunder(BeyonderCapability cap, LivingEntity target){
         if(cap.getSpirituality() < THUNDER_COST.get()) return false;
         if(target.level().isClientSide()) return true;
         ServerLevel level = (ServerLevel) target.level();
@@ -123,7 +123,7 @@ public class CalamityAbility extends AbilityWithOptions {
         setNextCooldownAs(THUNDER_COOLDOWN.get());
         return true;
     }
-    private boolean doLuck(LivingEntityBeyonderCapability cap, LivingEntity caster) {
+    private boolean doLuck(BeyonderCapability cap, LivingEntity caster) {
         if (cap.getSpirituality() < LUCK_COST.get()) return false;
         ArrayList<LivingEntity> victims = AbilityFunctionHelper.getNonAllyLivingEntitiesAround(caster, caster.getAttributeValue(ForgeMod.ENTITY_REACH.get()) + 0.5d);
         if (victims.isEmpty()) return false;
@@ -133,7 +133,7 @@ public class CalamityAbility extends AbilityWithOptions {
         setNextCooldownAs(LUCK_COOLDOWN.get());
         return true;
     }
-    private boolean doLeap(LivingEntityBeyonderCapability cap, LivingEntity target){
+    private boolean doLeap(BeyonderCapability cap, LivingEntity target){
         if(cap.getSpirituality() < LEAP_COST.get()) return false;
         if(target.isInWater()) return false;
         Vec3 look = target.getLookAngle();
@@ -151,15 +151,15 @@ public class CalamityAbility extends AbilityWithOptions {
         return false;
     }
 
-    private void doBadLuckTo(LivingEntity caster, LivingEntityBeyonderCapability casterCap, LivingEntity target){
-        target.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(targetCap -> {
+    private void doBadLuckTo(LivingEntity caster, BeyonderCapability casterCap, LivingEntity target){
+        target.getCapability(CapProvider.BEYONDER_STATS).ifPresent(targetCap -> {
             PlayerLuckManager targetLuck = targetCap.getLuckManager();
             PlayerLuckManager exchangeManager = casterCap.getLuckManager().getDiffManager(targetLuck);
             targetCap.getLuckManager().consumeLuck(caster, exchangeManager.getRandomNumber(50, 250, true, target.getRandom()), false);
             targetCap.getLuckManager().castOrHurryEvent(target, targetCap);
         });
     }
-    private void summonLightning(LivingEntityBeyonderCapability cap, Vec3 position, ServerLevel level, boolean thundering, LivingEntity caster){
+    private void summonLightning(BeyonderCapability cap, Vec3 position, ServerLevel level, boolean thundering, LivingEntity caster){
         LightningBolt lightning = new LightningBolt(EntityType.LIGHTNING_BOLT, level);
         lightning.setPos(position);
         int damage;

@@ -3,7 +3,7 @@ package net.dinomine.potioneer.beyonder.abilities.misc;
 import net.dinomine.potioneer.Potioneer;
 import net.dinomine.potioneer.beyonder.abilities.AbilityOptions;
 import net.dinomine.potioneer.beyonder.abilities.AbilityWithOptions;
-import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
+import net.dinomine.potioneer.beyonder.player.BeyonderCapability;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
@@ -33,7 +33,7 @@ public class BlankOptionsAbility extends AbilityWithOptions {
     }
 
     @Override
-    protected boolean primaryWithArgument(LivingEntityBeyonderCapability cap, LivingEntity target, String option) {
+    protected boolean primaryWithArgument(BeyonderCapability cap, LivingEntity target, String option) {
         //args now contains, guaranteed, an option defined above
         System.out.println("Cast ability with option " + option);
         return true;

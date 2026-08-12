@@ -1,7 +1,7 @@
 package net.dinomine.potioneer.util;
 
 import net.dinomine.potioneer.beyonder.pathways.Pathways;
-import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
+import net.dinomine.potioneer.beyonder.player.BeyonderCapability;
 import net.dinomine.potioneer.beyonder.player.PlayerLuckManager;
 import net.dinomine.potioneer.config.PotioneerGameplayConfig;
 import net.minecraft.util.Mth;
@@ -97,7 +97,7 @@ public class PotioneerMathHelper {
             return 10*pathwayId + sequenceLevel;
         }
 
-        public static int getRandomPathwaySequenceId(LivingEntityBeyonderCapability cap, RandomSource random){
+        public static int getRandomPathwaySequenceId(BeyonderCapability cap, RandomSource random){
             return getRandomPathwaySequenceId(cap.getPathwaySequenceId(), cap.getLuckManager(), random, cap.getCharacteristicManager().getAptitudePathway());
         }
 

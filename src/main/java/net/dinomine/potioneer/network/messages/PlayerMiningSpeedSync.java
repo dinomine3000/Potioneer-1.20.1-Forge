@@ -1,6 +1,6 @@
 package net.dinomine.potioneer.network.messages;
 
-import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
+import net.dinomine.potioneer.beyonder.player.CapProvider;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Player;
@@ -50,7 +50,7 @@ class ClientStatsSyncMessage
 //        Player player = contextSupplier.get().getSender();
         Player player = Minecraft.getInstance().player;
         if(player != null){
-            player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
+            player.getCapability(CapProvider.BEYONDER_STATS).ifPresent(cap -> {
                 cap.getBeyonderStats().setMiningSpeed(msg.miningSpeed);
             });
         }

@@ -2,8 +2,8 @@ package net.dinomine.potioneer.rituals.spirits;
 
 import net.dinomine.potioneer.beyonder.pages.Page;
 import net.dinomine.potioneer.beyonder.pathways.Pathways;
-import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
-import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
+import net.dinomine.potioneer.beyonder.player.CapProvider;
+import net.dinomine.potioneer.beyonder.player.BeyonderCapability;
 import net.dinomine.potioneer.block.entity.RitualPedestalBlockEntity;
 import net.dinomine.potioneer.recipe.CharmRecipe;
 import net.dinomine.potioneer.recipe.RitualContainer;
@@ -19,7 +19,6 @@ import net.minecraft.world.level.Level;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.regex.Pattern;
 
 public abstract class Deity extends EvilSpirit {
 
@@ -60,7 +59,7 @@ public abstract class Deity extends EvilSpirit {
         return trueName;
     }
 
-    public void onTrueNameSpoken(LivingEntity target, LivingEntityBeyonderCapability cap){}
+    public void onTrueNameSpoken(LivingEntity target, BeyonderCapability cap){}
 
     protected abstract void setupLogic();
 
@@ -75,14 +74,14 @@ public abstract class Deity extends EvilSpirit {
         Player targetPlayer = getPlayer(inputData, level, false);
         int inputPathway = pathwayId;
         int reputation = 0; // stand in for the actual reputation calculation
-        if(targetPlayer.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve().isPresent()){
-            reputation = targetPlayer.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve().get().getReputation(inputPathway);
+        if(targetPlayer.getCapability(CapProvider.BEYONDER_STATS).resolve().isPresent()){
+            reputation = targetPlayer.getCapability(CapProvider.BEYONDER_STATS).resolve().get().getReputation(inputPathway);
         }
         //if targeting someone else in the ritual, make a charm based on their level
         if(targetPlayer.getUUID().compareTo(inputData.caster()) != 0){
-            if(targetPlayer.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve().isPresent()){
-                inputPathway = targetPlayer.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve().get().getCharacteristicManager().getPathwayId();
-                reputation = (int) ((9 - targetPlayer.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve().get().getSequenceLevel())/2f);
+            if(targetPlayer.getCapability(CapProvider.BEYONDER_STATS).resolve().isPresent()){
+                inputPathway = targetPlayer.getCapability(CapProvider.BEYONDER_STATS).resolve().get().getCharacteristicManager().getPathwayId();
+                reputation = (int) ((9 - targetPlayer.getCapability(CapProvider.BEYONDER_STATS).resolve().get().getSequenceLevel())/2f);
             }
         }
         RitualContainer container = new RitualContainer(inputPathway, reputation, inputData.offerings()).withDesiredLevel(getDesiredLevel(inputData.thirdVerse()));

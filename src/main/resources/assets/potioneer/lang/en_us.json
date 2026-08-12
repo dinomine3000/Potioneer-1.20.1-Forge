@@ -677,6 +677,18 @@
   "ability_name.potioneer.contract_view": "Check the Fine Print",
   "short_desc.potioneer.contract_view": "A look into the contract you signed.",
   "long_desc.potioneer.contract_view": "View the details of the contract applied to you",
+  "ability_name.potioneer.bribe": "Bribe",
+  "short_desc.potioneer.bribe": "Bribe",
+  "long_desc.potioneer.bribe": "Bribe",
+  "ability_name.potioneer.bribe_weakening": "Bribe - Weakening",
+  "short_desc.potioneer.bribe_weakening": "A look into the contract you signed.",
+  "long_desc.potioneer.bribe_weakening": "View the details of the contract applied to you",
+  "ability_name.potioneer.bribe_truce": "Bribe - Truce",
+  "short_desc.potioneer.bribe_truce": "A look into the contract you signed.",
+  "long_desc.potioneer.bribe_truce": "View the details of the contract applied to you",
+  "ability_name.potioneer.bribe_disorder": "Bribe - Disorder",
+  "short_desc.potioneer.bribe_disorder": "A look into the contract you signed.",
+  "long_desc.potioneer.bribe_disorder": "View the details of the contract applied to you",
 
   "ability_name.potioneer.d_dummy": "Hurt",
   "ability_name.potioneer.d_cooldown": "Random Cooldown",
@@ -700,5 +712,8 @@
   "message.potioneer.blocked_ability": "%s has been disabled.",
   "message.potioneer.rule_broken": "You broke a rule: %s",
   "message.potioneer.prohibit_flying": "%s: Flying is prohibited here!",
-  "message.potioneer.prohibit_sprinting": "%s: Sprinting is prohibited here!"
+  "message.potioneer.prohibit_sprinting": "%s: Sprinting is prohibited here!",
+  "message.potioneer.bribe_set_weakening": "Bribe set to Weakening",
+  "message.potioneer.bribe_set_truce": "Bribe set to Truce",
+  "message.potioneer.bribe_set_disorder": "Bribe set to Disorder"
 }

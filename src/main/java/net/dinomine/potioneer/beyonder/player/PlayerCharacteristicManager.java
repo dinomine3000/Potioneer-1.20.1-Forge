@@ -57,7 +57,7 @@ public class PlayerCharacteristicManager {
         return 0;
     }
 
-    public void consumeCharacteristic(LivingEntityBeyonderCapability cap, LivingEntity entity, int characId){
+    public void consumeCharacteristic(BeyonderCapability cap, LivingEntity entity, int characId){
         //add characteristic to the stack
         int idx = findCharacteristicOfLevel(characId%10);
         lastConsumedCharacteristics.add(idx, characId);
@@ -79,7 +79,7 @@ public class PlayerCharacteristicManager {
      * To drop all of them at once, use another method
      * @return the pathway-sequence id of the dropped characteristic
      */
-    public List<Integer> dropLevel(LivingEntityBeyonderCapability cap, LivingEntity target, boolean forceDrop){
+    public List<Integer> dropLevel(BeyonderCapability cap, LivingEntity target, boolean forceDrop){
         if(lastConsumedCharacteristics.isEmpty())
             return List.of(-1);
         //remove from the stack
@@ -107,7 +107,7 @@ public class PlayerCharacteristicManager {
         return List.of(droppedCharacteristic);
     }
 
-    public List<List<Integer>> dropAllCharacteristics(LivingEntityBeyonderCapability cap, LivingEntity target){
+    public List<List<Integer>> dropAllCharacteristics(BeyonderCapability cap, LivingEntity target){
         List<Integer> characteristicsHolder = new ArrayList<>(lastConsumedCharacteristics);
 
         if(!PotioneerGameplayConfig.ALLOW_CHANGING_PATHWAYS.get()){
@@ -312,7 +312,7 @@ public class PlayerCharacteristicManager {
         tag.put("acting", acting);
     }
 
-    public void loadNBTData(CompoundTag tag, LivingEntityBeyonderCapability cap, LivingEntity target) {
+    public void loadNBTData(CompoundTag tag, BeyonderCapability cap, LivingEntity target) {
         if(!tag.contains("acting")) return;
         //build list of consumed characteristics
         CompoundTag acting = tag.getCompound("acting");
@@ -346,7 +346,7 @@ public class PlayerCharacteristicManager {
         }
     }
 
-    private void setAllAbilities(LivingEntityBeyonderCapability cap, LivingEntity target, boolean fromLoading) {
+    private void setAllAbilities(BeyonderCapability cap, LivingEntity target, boolean fromLoading) {
         List<Ability> allAbilities = getAbilitiesFromCharacteristics();
         cap.getAbilitiesManager().grantIntrinsicAbilities(allAbilities, getPathwaySequenceId(), !fromLoading, cap, target);
     }

@@ -2,7 +2,7 @@ package net.dinomine.potioneer.rituals.responses;
 
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffect;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
-import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
+import net.dinomine.potioneer.beyonder.player.CapProvider;
 import net.dinomine.potioneer.rituals.RandomizableResponse;
 import net.dinomine.potioneer.rituals.RitualInputData;
 import net.minecraft.nbt.CompoundTag;
@@ -28,7 +28,7 @@ public class AidResponse extends SpiritResponse implements RandomizableResponse<
     public void enactResponse(RitualInputData inputData, Level level) {
         Player effectTarget = getPlayer(inputData, level, targetCaster);
         if(effectTarget == null) return;
-        effectTarget.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
+        effectTarget.getCapability(CapProvider.BEYONDER_STATS).ifPresent(cap -> {
             cap.getEffectsManager().addOrRefreshEffect(getRandomEffectByPathway(pathwayId), cap, effectTarget);
         });
     }

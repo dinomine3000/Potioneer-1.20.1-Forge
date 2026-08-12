@@ -9,8 +9,8 @@ import net.dinomine.potioneer.beyonder.abilities.tyrant.ContractAbility.Contract
 import net.dinomine.potioneer.beyonder.abilities.tyrant.ContractViewAbility;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffect;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
+import net.dinomine.potioneer.beyonder.player.BeyonderCapability;
 import net.dinomine.potioneer.beyonder.player.BeyonderStats;
-import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
 import net.dinomine.potioneer.config.PotioneerAbilityConfig;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.LivingEntity;
@@ -56,7 +56,7 @@ public class ContractedEffect extends BeyonderEffect {
     }
 
     @Override
-    public void onAcquire(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    public void onAcquire(BeyonderCapability cap, LivingEntity target) {
         super.onAcquire(cap, target);
         if(reward.getId().equalsIgnoreCase("ability")){
             manageAbilityBuffs(cap, target, true);
@@ -72,7 +72,7 @@ public class ContractedEffect extends BeyonderEffect {
     }
 
     @Override
-    protected void doTick(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    protected void doTick(BeyonderCapability cap, LivingEntity target) {
         if(Objects.equals(condition, ContractOption.HP_COND)){
             if(target.getHealth() < HEALTH_THRESHOLD.get()) invalidate();
         }
@@ -88,7 +88,7 @@ public class ContractedEffect extends BeyonderEffect {
     }
 
     @Override
-    public void stopEffects(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    public void stopEffects(BeyonderCapability cap, LivingEntity target) {
         if(reward.getId().equalsIgnoreCase("ability")) manageAbilityBuffs(cap, target, false);
 
         //we filter to server side to make sure nothing weird happens, since ability management is mainly handled by server.
@@ -97,7 +97,7 @@ public class ContractedEffect extends BeyonderEffect {
         //cap.getAbilitiesManager().removeFirstAbilityLike(Abilities.CONTRACT_VIEW.getAblId(), VIEWER_GROUP, cap, target, true);
     }
 
-    private void manageAbilityBuffs(LivingEntityBeyonderCapability cap, LivingEntity target, boolean doBuff){
+    private void manageAbilityBuffs(BeyonderCapability cap, LivingEntity target, boolean doBuff){
         if(!reward.getId().equalsIgnoreCase("ability")) return;
 
         String ablId = AbilityKey.fromString(reward.getArguments().get(0)).getAbilityId();
@@ -120,7 +120,7 @@ public class ContractedEffect extends BeyonderEffect {
         this.reward = reward;
     }
 
-    public void testAbilityCast(Ability abl, LivingEntityBeyonderCapability cap, LivingEntity target){
+    public void testAbilityCast(Ability abl, BeyonderCapability cap, LivingEntity target){
         if(condition.getId().equalsIgnoreCase("ability_cond")){
             if(!condition.isValid()) return;
             for(String ablArg: condition.getArguments()){
@@ -144,14 +144,14 @@ public class ContractedEffect extends BeyonderEffect {
     }
 
     @Override
-    public boolean onDamageProposal(LivingAttackEvent event, LivingEntity victim, @Nullable LivingEntity attacker, LivingEntityBeyonderCapability victimCap, Optional<LivingEntityBeyonderCapability> attackerCap, boolean calledOnVictim) {
+    public boolean onDamageProposal(LivingAttackEvent event, LivingEntity victim, @Nullable LivingEntity attacker, BeyonderCapability victimCap, Optional<BeyonderCapability> attackerCap, boolean calledOnVictim) {
         if(calledOnVictim) return false;
         if(Objects.equals(victim.getMobType(), MobType.UNDEAD) && Objects.equals(condition, ContractOption.UNDEAD_COND)) invalidate();
         return false;
     }
 
     @Override
-    public boolean onDamageCalculation(LivingHurtEvent event, LivingEntity victim, @Nullable LivingEntity attacker, LivingEntityBeyonderCapability victimCap, Optional<LivingEntityBeyonderCapability> attackerCap, boolean calledOnVictim) {
+    public boolean onDamageCalculation(LivingHurtEvent event, LivingEntity victim, @Nullable LivingEntity attacker, BeyonderCapability victimCap, Optional<BeyonderCapability> attackerCap, boolean calledOnVictim) {
         if(calledOnVictim) return false;
         if(!condition.isValid()) return false;
         if(Objects.equals(condition, ContractOption.UNDEAD_BUFF) && Objects.equals(victim.getMobType(), MobType.UNDEAD)) event.setAmount(event.getAmount()*2);

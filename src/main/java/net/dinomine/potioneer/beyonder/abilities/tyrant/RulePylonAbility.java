@@ -5,8 +5,8 @@ import net.dinomine.potioneer.beyonder.abilities.AbilityFunctionHelper;
 import net.dinomine.potioneer.beyonder.damages.PotioneerDamage;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
 import net.dinomine.potioneer.beyonder.effects.tyrant.WaterAffinityEffect;
-import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
-import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
+import net.dinomine.potioneer.beyonder.player.CapProvider;
+import net.dinomine.potioneer.beyonder.player.BeyonderCapability;
 import net.dinomine.potioneer.block.custom.RulePylonBlock;
 import net.dinomine.potioneer.block.entity.RulePylonBlockEntity;
 import net.dinomine.potioneer.savedata.DimensionChunkSavedData;
@@ -38,14 +38,14 @@ public class RulePylonAbility extends Ability implements IAreaOfJurisdiction {
     }
 
     @Override
-    protected boolean primary(LivingEntityBeyonderCapability cap, LivingEntity target, CompoundTag args) {
+    protected boolean primary(BeyonderCapability cap, LivingEntity target, CompoundTag args) {
         if(target.level().isClientSide) return true;
         return AbilityFunctionHelper.placeBlockAtReach(target.level(), cap, target, this::placeBlock);
     }
 
     public static int getMaxPylons(int sequenceLevel){return 1;}
 
-    private boolean placeBlock(Level level, BlockPos positionToPlace, LivingEntityBeyonderCapability cap, LivingEntity player){
+    private boolean placeBlock(Level level, BlockPos positionToPlace, BeyonderCapability cap, LivingEntity player){
         if(!canAddNewPylon(level.getServer(), player)) return false;
         return doPlacePylon((ServerLevel) level, positionToPlace, player);
     }
@@ -61,7 +61,7 @@ public class RulePylonAbility extends Ability implements IAreaOfJurisdiction {
     }
 
     @Override
-    public void passive(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    public void passive(BeyonderCapability cap, LivingEntity target) {
         if(target.level().isClientSide) return;
         if(target.tickCount%(20*3) == target.getId()){
             List<BlockPos> center = new ArrayList<>();
@@ -142,7 +142,7 @@ public class RulePylonAbility extends Ability implements IAreaOfJurisdiction {
             targetItems.add(target.getMainHandItem());
             targetItems.add(target.getOffhandItem());
             target.getArmorSlots().forEach(targetItems::add);
-            targetItems.forEach(stack -> AbilityFunctionHelper.dropItem(target, stack, false));
+            targetItems.forEach(stack -> AbilityFunctionHelper.dropItem(target, stack, false, true));
         });
         public static final Punishment GLOWING = new Punishment("glowing", Component.literal("Glow"), Component.literal("Apply glowing"), (target, targetCap, tribunal, lvl) -> {
             target.addEffect(new MobEffectInstance(MobEffects.GLOWING, 20*30, 1, true, true, true));
@@ -166,7 +166,7 @@ public class RulePylonAbility extends Ability implements IAreaOfJurisdiction {
 
         @FunctionalInterface
         public interface Execution {
-            void execute(LivingEntity target, LivingEntityBeyonderCapability targetCap, @Nullable Entity tribunal, int sequenceLevel);
+            void execute(LivingEntity target, BeyonderCapability targetCap, @Nullable Entity tribunal, int sequenceLevel);
         }
     }
 
@@ -185,7 +185,7 @@ public class RulePylonAbility extends Ability implements IAreaOfJurisdiction {
             hits.forEach(ent -> {
                 WaterAffinityEffect eff = (WaterAffinityEffect) BeyonderEffects.getEffect(BeyonderEffects.TYRANT_WATER_AFFINITY.getEffectId())
                         .createInstance(be.getSequenceLevel(), 0, 20, true);
-                ent.getCapability(BeyonderStatsProvider.BEYONDER_STATS)
+                ent.getCapability(CapProvider.BEYONDER_STATS)
                         .ifPresent(cap -> cap.getEffectsManager().addOrRefreshEffect(eff, cap, ent));
             });
         });

@@ -2,7 +2,7 @@ package net.dinomine.potioneer.beyonder.effects.tyrant;
 
 import net.dinomine.potioneer.beyonder.abilities.Ability;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffect;
-import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
+import net.dinomine.potioneer.beyonder.player.BeyonderCapability;
 import net.dinomine.potioneer.beyonder.player.PlayerAbilitiesManager;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -21,16 +21,16 @@ public class WeakeningEffect extends BeyonderEffect {
     public Set<UUID> getAffectedInstances(){return affectedInstances;}
 
     @Override
-    public void onAcquire(LivingEntityBeyonderCapability cap, LivingEntity target, boolean fromLoading) {
+    public void onAcquire(BeyonderCapability cap, LivingEntity target, boolean fromLoading) {
         applyExistingWeakening(cap, target);
     }
 
     @Override
-    public void onUpdateReceivedOnClient(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    public void onUpdateReceivedOnClient(BeyonderCapability cap, LivingEntity target) {
         applyExistingWeakening(cap, target);
     }
 
-    private void applyExistingWeakening(LivingEntityBeyonderCapability cap, LivingEntity target){
+    private void applyExistingWeakening(BeyonderCapability cap, LivingEntity target){
         for(UUID instanceId: new ArrayList<>(affectedInstances)){
             Ability abl = getAbilityInstance(cap.getAbilitiesManager(), instanceId);
             if(abl == null) {
@@ -41,7 +41,7 @@ public class WeakeningEffect extends BeyonderEffect {
         }
     }
 
-    public void tryWeaken(Ability abl, LivingEntityBeyonderCapability cap, LivingEntity target){
+    public void tryWeaken(Ability abl, BeyonderCapability cap, LivingEntity target){
         if(weakeningsLeft < 1) return;
         if(affectedInstances.contains(abl.getInstanceId())) return;
         affectedInstances.add(abl.getInstanceId());
@@ -53,7 +53,7 @@ public class WeakeningEffect extends BeyonderEffect {
     public void setWeakeningsLeft(int newMax){this.weakeningsLeft = newMax;weakenAbilities =true;}
 
     @Override
-    protected void doTick(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    protected void doTick(BeyonderCapability cap, LivingEntity target) {
         if(target.level().isClientSide()) return;
         if(weakenAbilities) return;
         cap.getEffectsManager().statsHolder.addDamage(-1 - Math.max(0, 7 - sequenceLevel));
@@ -63,7 +63,7 @@ public class WeakeningEffect extends BeyonderEffect {
     }
 
     @Override
-    public void stopEffects(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    public void stopEffects(BeyonderCapability cap, LivingEntity target) {
         if(!weakenAbilities) return;
         for(UUID instanceId: new ArrayList<>(affectedInstances)){
             Ability abl = getAbilityInstance(cap.getAbilitiesManager(), instanceId);

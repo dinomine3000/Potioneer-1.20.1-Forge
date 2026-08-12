@@ -2,7 +2,7 @@ package net.dinomine.potioneer.beyonder.effects.tyrant;
 
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffect;
 import net.dinomine.potioneer.beyonder.effects.misc.AbstractSourceRecipientEffect;
-import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
+import net.dinomine.potioneer.beyonder.player.BeyonderCapability;
 import net.dinomine.potioneer.util.ParticleMaker;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -16,7 +16,7 @@ import java.util.UUID;
 
 public class AuraRecipientEffect extends AbstractSourceRecipientEffect {
     @Override
-    public void onAcquire(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    public void onAcquire(BeyonderCapability cap, LivingEntity target) {
         if(sources.keySet().stream().findFirst().isEmpty()) return;
         clearTarget(target, sources.keySet().stream().findFirst().get());
     }
@@ -26,7 +26,7 @@ public class AuraRecipientEffect extends AbstractSourceRecipientEffect {
     }
 
     @Override
-    public void refreshTime(LivingEntityBeyonderCapability cap, LivingEntity target, BeyonderEffect effect) {
+    public void refreshTime(BeyonderCapability cap, LivingEntity target, BeyonderEffect effect) {
         if(!(effect instanceof AuraRecipientEffect aojEffect)) return;
         for(Map.Entry<UUID, Integer> entry: aojEffect.sources.entrySet()){
             addSource(entry.getKey(), entry.getValue(), target);
@@ -35,7 +35,7 @@ public class AuraRecipientEffect extends AbstractSourceRecipientEffect {
     }
 
     @Override
-    protected void doTick(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    protected void doTick(BeyonderCapability cap, LivingEntity target) {
         for(UUID id: sources.keySet()){
             Player playerEnforcer = target.level().getPlayerByUUID(id);
             if(playerEnforcer == null) continue;
@@ -47,14 +47,14 @@ public class AuraRecipientEffect extends AbstractSourceRecipientEffect {
         }
     }
 
-    private void applyAuraEffects(LivingEntity livingEntity, LivingEntityBeyonderCapability cap, Player enforcer){
+    private void applyAuraEffects(LivingEntity livingEntity, BeyonderCapability cap, Player enforcer){
         if(!sources.containsKey(enforcer.getUUID())) return;
         livingEntity.addEffect(new MobEffectInstance(MobEffects.DARKNESS, 20*2, 0, false, false, true));
         ParticleMaker.createAuraParticles(enforcer, livingEntity);
     }
 
     @Override
-    public void stopEffects(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    public void stopEffects(BeyonderCapability cap, LivingEntity target) {
 
     }
 

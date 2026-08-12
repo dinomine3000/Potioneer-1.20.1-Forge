@@ -6,8 +6,8 @@ import net.dinomine.potioneer.beyonder.abilities.AbilityWithOptions;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
 import net.dinomine.potioneer.beyonder.effects.tyrant.AmplificationEffect;
 import net.dinomine.potioneer.beyonder.effects.tyrant.WeakeningEffect;
-import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
-import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
+import net.dinomine.potioneer.beyonder.player.BeyonderCapability;
+import net.dinomine.potioneer.beyonder.player.CapProvider;
 import net.dinomine.potioneer.config.PotioneerAbilityConfig;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.LivingEntity;
@@ -33,20 +33,20 @@ public class AmplificationAbility extends AbilityWithOptions {
     }
 
     @Override
-    protected boolean primaryWithArgument(LivingEntityBeyonderCapability cap, LivingEntity caster, String args){
+    protected boolean primaryWithArgument(BeyonderCapability cap, LivingEntity caster, String args){
         if(cap.getSpirituality() < cost()) return false;
         if(caster.level().isClientSide) return false;
         boolean buffAbility = args.equalsIgnoreCase("ability");
         LivingEntity target = AbilityFunctionHelper.getLivingEntityLooking(caster, 2, 1);
         if(target == null) return false;
 
-        applyEffectsTo(caster, target, target.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve().get(), sequenceLevel, buffAbility);
+        applyEffectsTo(caster, target, target.getCapability(CapProvider.BEYONDER_STATS).resolve().get(), sequenceLevel, buffAbility);
         cap.requestActiveSpiritualityCost(cost());
         return true;
     }
 
     @Override
-    protected boolean secondaryWithArgument(LivingEntityBeyonderCapability cap, LivingEntity caster, String args) {
+    protected boolean secondaryWithArgument(BeyonderCapability cap, LivingEntity caster, String args) {
         if(cap.getSpirituality() < cost()) return false;
         if(caster.level().isClientSide) return false;
         boolean buffAbility = args.equalsIgnoreCase("ability");
@@ -55,7 +55,7 @@ public class AmplificationAbility extends AbilityWithOptions {
         return true;
     }
 
-    private static void applyEffectsTo(LivingEntity caster, LivingEntity target, LivingEntityBeyonderCapability targetCap, int sequenceLevel, boolean buffAbilities){
+    private static void applyEffectsTo(LivingEntity caster, LivingEntity target, BeyonderCapability targetCap, int sequenceLevel, boolean buffAbilities){
         if(AbilityFunctionHelper.areEntitiesAllies(caster, target)){
             AmplificationEffect amp = (AmplificationEffect) BeyonderEffects.TYRANT_AMPLIFICATION.createInstance(sequenceLevel, 0, EFFECT_DURATION.get(), true);
             if(buffAbilities) amp.setAmplificationsLeft(sequenceLevel > 6 ? 1 : 3);

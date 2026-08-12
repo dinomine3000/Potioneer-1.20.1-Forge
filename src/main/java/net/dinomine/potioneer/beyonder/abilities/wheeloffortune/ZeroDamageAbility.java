@@ -4,7 +4,7 @@ import net.dinomine.potioneer.beyonder.abilities.PassiveAbility;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffect;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
 import net.dinomine.potioneer.beyonder.effects.wheeloffortune.ZeroDamageEffect;
-import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
+import net.dinomine.potioneer.beyonder.player.BeyonderCapability;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.LivingEntity;
@@ -20,7 +20,7 @@ public class ZeroDamageAbility extends PassiveAbility {
     }
 
     @Override
-    protected BeyonderEffect createEffectInstance(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    protected BeyonderEffect createEffectInstance(BeyonderCapability cap, LivingEntity target) {
         if(sequenceLevel > 6) return super.createEffectInstance(cap, target);
         ZeroDamageEffect eff = (ZeroDamageEffect) BeyonderEffects.WHEEL_ZERO_DAMAGE.createInstance(getSequenceLevel(), cost(), -1, true);
         CompoundTag tag = getData();
@@ -33,7 +33,7 @@ public class ZeroDamageAbility extends PassiveAbility {
     }
 
     @Override
-    protected boolean secondary(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    protected boolean secondary(BeyonderCapability cap, LivingEntity target) {
         if(sequenceLevel > 6){
             if(target.level().isClientSide())
                 target.sendSystemMessage(Component.translatableWithFallback("message.potioneer.outdated_secondary", "It doesn't do anything... yet"));

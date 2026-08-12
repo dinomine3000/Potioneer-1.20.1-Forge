@@ -5,8 +5,8 @@ import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.dinomine.potioneer.beyonder.pages.PageRegistry;
-import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
-import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
+import net.dinomine.potioneer.beyonder.player.CapProvider;
+import net.dinomine.potioneer.beyonder.player.BeyonderCapability;
 import net.dinomine.potioneer.item.custom.BeyonderPageItem;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -43,7 +43,7 @@ public class PageManageCommand {
             Entity target = EntityArgument.getEntity(cmd, "target");
             int pageNum = IntegerArgumentType.getInteger(cmd, "pageNumber");
             if(!(target instanceof LivingEntity lTarget)) return 0;
-            lTarget.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap ->{
+            lTarget.getCapability(CapProvider.BEYONDER_STATS).ifPresent(cap ->{
                 cap.addPage(pageNum);
             });
             return 1;
@@ -72,7 +72,7 @@ public class PageManageCommand {
         try {
             Entity target = EntityArgument.getEntity(cmd, "target");
             if(!(target instanceof LivingEntity lTarget)) return 0;
-            lTarget.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap ->{
+            lTarget.getCapability(CapProvider.BEYONDER_STATS).ifPresent(cap ->{
                 PageRegistry.getAllKeys().forEach(cap::addPage);
             });
             return 1;
@@ -87,7 +87,7 @@ public class PageManageCommand {
             if(!(target instanceof LivingEntity lTarget)) return 0;
             ServerPlayer executor = cmd.getSource().getPlayer();
             if(executor == null) return 0;
-            lTarget.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(LivingEntityBeyonderCapability::clearPages);
+            lTarget.getCapability(CapProvider.BEYONDER_STATS).ifPresent(BeyonderCapability::clearPages);
             return 1;
 
         } catch (CommandSyntaxException e) {

@@ -2,7 +2,7 @@ package net.dinomine.potioneer.config;
 
 import net.dinomine.potioneer.beyonder.pathways.BeyonderPathway;
 import net.dinomine.potioneer.beyonder.pathways.Pathways;
-import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
+import net.dinomine.potioneer.beyonder.player.BeyonderCapability;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.RandomSource;
@@ -29,7 +29,7 @@ public class PotioneerGameplayConfig {
             float range = max - min;
             return rnd.nextFloat() >= (val / range);
         } else if (PotioneerGameplayConfig.CHARACTERISTIC_DROP_CRITERIA_ENUM_VALUE.get() == PotioneerGameplayConfig.CharacteristicDropCriteria.LOW_SANITY){
-            return sanity < LivingEntityBeyonderCapability.SANITY_FOR_DROP;
+            return sanity < BeyonderCapability.SANITY_FOR_DROP;
         }
         return PotioneerGameplayConfig.CHARACTERISTIC_DROP_CRITERIA_ENUM_VALUE.get() == CharacteristicDropCriteria.ALWAYS;
     }

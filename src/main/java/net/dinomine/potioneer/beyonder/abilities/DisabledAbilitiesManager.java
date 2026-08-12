@@ -1,7 +1,6 @@
 package net.dinomine.potioneer.beyonder.abilities;
 
-import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
-import net.dinomine.potioneer.beyonder.player.PlayerAbilitiesManager;
+import net.dinomine.potioneer.beyonder.player.BeyonderCapability;
 import net.dinomine.potioneer.network.messages.abilityRelevant.AbilitySyncMessage;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -14,15 +13,15 @@ import java.util.*;
 public class DisabledAbilitiesManager {
     private final Map<String, DisabledAbilityProxy> disabledAbilities = new HashMap<>();
 
-    public void disableAbility(String responsibilityKey, DisabledAbilityProxy proxy, LivingEntityBeyonderCapability cap, LivingEntity target){
+    public void disableAbility(String responsibilityKey, DisabledAbilityProxy proxy, BeyonderCapability cap, LivingEntity target){
         disabledAbilities.put(responsibilityKey, proxy);
         ensureDisabledAbilities(cap, target);
     }
-    public void enableAbility(String responsibilityKey, LivingEntityBeyonderCapability cap, LivingEntity target){
+    public void enableAbility(String responsibilityKey, BeyonderCapability cap, LivingEntity target){
         if(disabledAbilities.remove(responsibilityKey) == null) return;
         ensureDisabledAbilities(cap, target);
     }
-    public void tickDisabledAbilities(LivingEntityBeyonderCapability cap, LivingEntity target){
+    public void tickDisabledAbilities(BeyonderCapability cap, LivingEntity target){
         if(disabledAbilities.isEmpty()) return;
         List<String> toRemove = new ArrayList<>();
         for(Map.Entry<String, DisabledAbilityProxy> entry: disabledAbilities.entrySet())
@@ -31,21 +30,21 @@ public class DisabledAbilitiesManager {
         for(String key: toRemove) if(disabledAbilities.get(key).shouldRemoveFromTicking()) disabledAbilities.remove(key);
         ensureDisabledAbilities(cap, target);
     }
-    public void onAbilityGained(Ability abl, LivingEntityBeyonderCapability cap, LivingEntity target){
+    public void onAbilityGained(Ability abl, BeyonderCapability cap, LivingEntity target){
         ensureDisabledAbility(abl, cap, target);
     }
-    public void abilityChangedLevel(Ability abl, LivingEntityBeyonderCapability cap, LivingEntity target){
+    public void abilityChangedLevel(Ability abl, BeyonderCapability cap, LivingEntity target){
         ensureDisabledAbility(abl, cap, target);
     }
 
-    private void ensureDisabledAbilities(LivingEntityBeyonderCapability cap, LivingEntity target){
+    private void ensureDisabledAbilities(BeyonderCapability cap, LivingEntity target){
         for(Ability abl: cap.getAbilitiesManager().getAbilities()){
             ensureDisabledAbility(abl, cap, target);
         }
         if(target instanceof Player player) cap.getAbilitiesManager().updateClientAbilityInfo(player, AbilitySyncMessage.UPDATE);
     }
 
-    private void ensureDisabledAbility(Ability abl, LivingEntityBeyonderCapability cap, LivingEntity target){
+    private void ensureDisabledAbility(Ability abl, BeyonderCapability cap, LivingEntity target){
         boolean disableFlag = false;
         for(DisabledAbilityProxy proxy: disabledAbilities.values()){
             if(!proxy.is(abl)) continue;
@@ -71,7 +70,7 @@ public class DisabledAbilitiesManager {
         return tag;
     }
 
-    public void loadNbt(CompoundTag ownTag, LivingEntityBeyonderCapability cap, LivingEntity target) {
+    public void loadNbt(CompoundTag ownTag, BeyonderCapability cap, LivingEntity target) {
         disabledAbilities.clear();
         if (ownTag.contains("disabledAbilities", Tag.TAG_LIST)) {
             ListTag entries = ownTag.getList("disabledAbilities", Tag.TAG_COMPOUND);
@@ -85,7 +84,7 @@ public class DisabledAbilitiesManager {
         ensureDisabledAbilities(cap, target);
     }
 
-    public void reset(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    public void reset(BeyonderCapability cap, LivingEntity target) {
         this.disabledAbilities.clear();
         ensureDisabledAbilities(cap, target);
     }

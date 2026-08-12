@@ -5,8 +5,8 @@ import net.dinomine.potioneer.beyonder.abilities.PassiveAbility;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffect;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
 import net.dinomine.potioneer.beyonder.effects.tyrant.AoJRecipientEffect;
-import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
-import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
+import net.dinomine.potioneer.beyonder.player.BeyonderCapability;
+import net.dinomine.potioneer.beyonder.player.CapProvider;
 import net.dinomine.potioneer.config.PotioneerAbilityConfig;
 import net.dinomine.potioneer.mob_effects.ModEffects;
 import net.minecraft.core.BlockPos;
@@ -37,7 +37,7 @@ public class AreaOfJurisdictionAbility extends PassiveAbility implements IAreaOf
     }
 
     @Override
-    protected boolean primary(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    protected boolean primary(BeyonderCapability cap, LivingEntity target) {
         if(target.level().isClientSide()) return true;
         if(cap.getSpirituality() < cost()) return false;
         BlockPos center = target.getOnPos();
@@ -49,7 +49,7 @@ public class AreaOfJurisdictionAbility extends PassiveAbility implements IAreaOf
     }
 
     @Override
-    public void passive(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    public void passive(BeyonderCapability cap, LivingEntity target) {
         super.passive(cap, target);
         if(target.level().isClientSide()) return;
         if(target.tickCount%20 == target.getId()%20){
@@ -134,23 +134,23 @@ public class AreaOfJurisdictionAbility extends PassiveAbility implements IAreaOf
     }
 
     @Override
-    protected boolean secondary(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    protected boolean secondary(BeyonderCapability cap, LivingEntity target) {
         flipEnable(cap, target);
         defaultMaxCooldown = 20;
         return true;
     }
 
     @Override
-    public void onRevoke(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    public void onRevoke(BeyonderCapability cap, LivingEntity target) {
     }
 
     @Override
-    public void onUndoRevoke(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    public void onUndoRevoke(BeyonderCapability cap, LivingEntity target) {
     }
 
     public static List<BlockPos> getCentersOfEnforcer(Entity enforcer, ResourceKey<Level> dimension){
         if(!(enforcer instanceof LivingEntity lEnforcer)) return new ArrayList<>();
-        LivingEntityBeyonderCapability cap = lEnforcer.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve().get();
+        BeyonderCapability cap = lEnforcer.getCapability(CapProvider.BEYONDER_STATS).resolve().get();
         List<BlockPos> centers = new ArrayList<>();
         for(Ability abl: cap.getAbilitiesManager().getAbilities()){
             if(abl instanceof IAreaOfJurisdiction aojAbl){
@@ -162,9 +162,9 @@ public class AreaOfJurisdictionAbility extends PassiveAbility implements IAreaOf
 
     public static boolean isTargetUnderInfluenceOfEnforcer(LivingEntity target, Entity enforcer){
         if(!(enforcer instanceof LivingEntity)) return false;
-        Optional<LivingEntityBeyonderCapability> optTarget = target.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve();
+        Optional<BeyonderCapability> optTarget = target.getCapability(CapProvider.BEYONDER_STATS).resolve();
         if(optTarget.isEmpty()) return false;
-        LivingEntityBeyonderCapability targetCap = optTarget.get();
+        BeyonderCapability targetCap = optTarget.get();
         BeyonderEffect eff = targetCap.getEffectsManager().getEffect(BeyonderEffects.TYRANT_AOJ_RECIPIENT.getEffectId());
         if(!(eff instanceof AoJRecipientEffect aoJInfluenceEffect)) return false;
         return aoJInfluenceEffect.isEntityEnforcer(enforcer.getUUID());
@@ -172,7 +172,7 @@ public class AreaOfJurisdictionAbility extends PassiveAbility implements IAreaOf
 
     public static boolean isPosInAOJ(BlockPos testPos, Entity enforcer, String dimensionLocation){
         if(!(enforcer instanceof LivingEntity lEnforcer)) return false;
-        Optional<LivingEntityBeyonderCapability> optCap = lEnforcer.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve();
+        Optional<BeyonderCapability> optCap = lEnforcer.getCapability(CapProvider.BEYONDER_STATS).resolve();
         if(optCap.isEmpty()) return false;
         return isPosInAOJ(testPos, optCap.get(), dimensionLocation);
     }
@@ -185,7 +185,7 @@ public class AreaOfJurisdictionAbility extends PassiveAbility implements IAreaOf
         return isPosInAOJ(target.getOnPos(), enforcer, target.level().dimension().location().toString());
     }
 
-    private static boolean isPosInAOJ(BlockPos testPos, LivingEntityBeyonderCapability enforcerCap, String dimensionLocation){
+    private static boolean isPosInAOJ(BlockPos testPos, BeyonderCapability enforcerCap, String dimensionLocation){
         List<BlockPos> centers = new ArrayList<>();
         List<Integer> sides = new ArrayList<>();
         for(Ability abl: enforcerCap.getAbilitiesManager().getAbilities()){

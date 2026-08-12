@@ -2,7 +2,7 @@ package net.dinomine.potioneer.item.custom.BeyonderPotion;
 
 import net.dinomine.potioneer.beyonder.pathways.BeyonderPathway;
 import net.dinomine.potioneer.beyonder.pathways.Pathways;
-import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
+import net.dinomine.potioneer.beyonder.player.CapProvider;
 import net.dinomine.potioneer.config.PotioneerGameplayConfig;
 import net.dinomine.potioneer.network.PacketHandler;
 import net.dinomine.potioneer.network.messages.advancement.BeginAdvancementMessage;
@@ -103,7 +103,7 @@ public class BeyonderPotionItem extends PotionItem implements GeoItem, GeoTintab
 
         boolean validPotion = PotionInfoTag.isDrinkablePotion(info);
         if(!validPotion) return super.finishUsingItem(pStack, pLevel, pEntityLiving);
-        player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
+        player.getCapability(CapProvider.BEYONDER_STATS).ifPresent(cap -> {
             if(isConflictingPotion(info)){
                 if(!player.isCreative()) cap.setSanity(0);
                 player.sendSystemMessage(Component.translatableWithFallback("message.potioneer.lost_control", "Lost control on the spot. oh well."));

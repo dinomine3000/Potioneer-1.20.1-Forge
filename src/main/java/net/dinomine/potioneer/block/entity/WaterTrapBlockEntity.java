@@ -6,8 +6,8 @@ import net.dinomine.potioneer.beyonder.abilities.AbilityFunctionHelper;
 import net.dinomine.potioneer.beyonder.abilities.tyrant.AreaOfJurisdictionAbility;
 import net.dinomine.potioneer.beyonder.damages.PotioneerDamage;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
-import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
-import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
+import net.dinomine.potioneer.beyonder.player.BeyonderCapability;
+import net.dinomine.potioneer.beyonder.player.CapProvider;
 import net.dinomine.potioneer.block.ModBlocks;
 import net.dinomine.potioneer.network.PacketHandler;
 import net.dinomine.potioneer.network.messages.effects.GeneralAreaEffectMessage;
@@ -52,6 +52,7 @@ import software.bernie.geckolib.core.object.PlayState;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 public class WaterTrapBlockEntity extends BlockEntity implements GeoBlockEntity {
@@ -144,7 +145,7 @@ public class WaterTrapBlockEntity extends BlockEntity implements GeoBlockEntity 
             if(id != null){
                 Entity ent = AbilityFunctionHelper.getEntityAcrossDimensions(sLevel, id);
                 if(ent instanceof LivingEntity caster){
-                    LivingEntityBeyonderCapability cap = caster.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve().get();
+                    BeyonderCapability cap = caster.getCapability(CapProvider.BEYONDER_STATS).resolve().get();
                     if(cap.getAbilitiesManager().hasAbilityOrBetter(Abilities.TYRANT_WATER_SPELLS.getAblId(), 7)){
                         UUID token = UUID.randomUUID();
                         CompoundTag dataTag = new CompoundTag();
@@ -183,13 +184,13 @@ public class WaterTrapBlockEntity extends BlockEntity implements GeoBlockEntity 
     private void applyEffectsToEntity(ServerLevel level, BlockPos pos, LivingEntity entity){
         switch (effectIndex){
             case 0:
-                entity.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
+                entity.getCapability(CapProvider.BEYONDER_STATS).ifPresent(cap -> {
                     int duration = 20*10*(10-sequenceLevel)/2;
                     cap.getEffectsManager().addOrRefreshEffect(BeyonderEffects.TYRANT_DROWNING.createInstance(sequenceLevel, 0, duration, true), cap, entity);
                 });
                 break;
             case 1:
-                entity.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
+                entity.getCapability(CapProvider.BEYONDER_STATS).ifPresent(cap -> {
                     cap.getEffectsManager().addOrRefreshEffect(BeyonderEffects.TYRANT_WATER_PRISON.createInstance(sequenceLevel, 0, 20*30, true), cap, entity);
                 });
                 break;
@@ -266,9 +267,8 @@ public class WaterTrapBlockEntity extends BlockEntity implements GeoBlockEntity 
         }
         if(id != null && AbilityFunctionHelper.getEntityAcrossDimensions(sLevel, id) instanceof Player player){
             //sequence level
-            LivingEntityBeyonderCapability cap = player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve().get();
-            this.sequenceLevel = cap.getSequenceLevel();
-
+            Optional<BeyonderCapability> optCap = player.getCapability(CapProvider.BEYONDER_STATS).resolve();
+            this.sequenceLevel = optCap.map(BeyonderCapability::getSequenceLevel).orElse(8);
             //AOJ status
             isInAOJ = AreaOfJurisdictionAbility.isPosInAOJ(pos, player, level.dimension());
 

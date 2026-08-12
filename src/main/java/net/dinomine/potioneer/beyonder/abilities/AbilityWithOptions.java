@@ -1,6 +1,6 @@
 package net.dinomine.potioneer.beyonder.abilities;
 
-import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
+import net.dinomine.potioneer.beyonder.player.BeyonderCapability;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.LivingEntity;
 
@@ -34,7 +34,7 @@ public abstract class AbilityWithOptions extends Ability {
     }
 
     @Override
-    protected boolean primary(LivingEntityBeyonderCapability cap, LivingEntity target, CompoundTag args) {
+    protected boolean primary(BeyonderCapability cap, LivingEntity target, CompoundTag args) {
         if(primaryOptions == null) return primary(cap, target);
 
         String choice = validadeArguments(args, this, primaryOptions, target.level().isClientSide, true);
@@ -43,13 +43,13 @@ public abstract class AbilityWithOptions extends Ability {
     }
 
     @Override
-    protected boolean secondary(LivingEntityBeyonderCapability cap, LivingEntity target, CompoundTag args) {
+    protected boolean secondary(BeyonderCapability cap, LivingEntity target, CompoundTag args) {
         if(secondaryOptions == null) return secondary(cap, target);
 
         String choice = validadeArguments(args, this, secondaryOptions, target.level().isClientSide, false);
         if(choice.isEmpty()) return false;
         return secondaryWithArgument(cap, target, choice);
     }
-    protected boolean secondaryWithArgument(LivingEntityBeyonderCapability cap, LivingEntity target, String args){return false;};
-    protected boolean primaryWithArgument(LivingEntityBeyonderCapability cap, LivingEntity target, String args){return false;};
+    protected boolean secondaryWithArgument(BeyonderCapability cap, LivingEntity target, String args){return false;};
+    protected boolean primaryWithArgument(BeyonderCapability cap, LivingEntity target, String args){return false;};
 }

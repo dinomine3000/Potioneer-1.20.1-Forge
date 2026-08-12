@@ -1,7 +1,7 @@
 package net.dinomine.potioneer.beyonder.player.luck.luckevents;
 
 import net.dinomine.potioneer.beyonder.abilities.AbilityFunctionHelper;
-import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
+import net.dinomine.potioneer.beyonder.player.BeyonderCapability;
 import net.dinomine.potioneer.beyonder.player.PlayerLuckManager;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.LivingEntity;
@@ -13,7 +13,7 @@ public class AsteroidLuckEvent extends LuckEvent {
     }
 
     @Override
-    public void triggerEvent(LivingEntityBeyonderCapability cap, PlayerLuckManager luck, LivingEntity target) {
+    public void triggerEvent(BeyonderCapability cap, PlayerLuckManager luck, LivingEntity target) {
         for(int i = luck.getRandomNumber(1, 3, false, target.getRandom()); i > 0; i--){
             boolean miss = luck.passesLuckCheck(0.6f, 20, 10, target.getRandom());
             BlockPos pos = target.getOnPos();

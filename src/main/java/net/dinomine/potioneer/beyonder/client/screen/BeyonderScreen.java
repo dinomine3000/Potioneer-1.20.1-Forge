@@ -10,8 +10,8 @@ import net.dinomine.potioneer.beyonder.client.KeyBindings;
 import net.dinomine.potioneer.beyonder.client.TooltipHelper;
 import net.dinomine.potioneer.beyonder.pathways.BeyonderPathway;
 import net.dinomine.potioneer.beyonder.pathways.Pathways;
+import net.dinomine.potioneer.beyonder.player.BeyonderCapability;
 import net.dinomine.potioneer.beyonder.player.BeyonderStats;
-import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
 import net.dinomine.potioneer.util.CustomImageButton;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
@@ -201,7 +201,7 @@ public class BeyonderScreen extends Screen {
             if(sanityPercent < 45){
                 warning = Component.translatable("message.potioneer.sanity.warning2").withStyle(ChatFormatting.DARK_RED);
             }
-            if(sanityPercent < LivingEntityBeyonderCapability.SANITY_FOR_DROP){
+            if(sanityPercent < BeyonderCapability.SANITY_FOR_DROP){
                 warning = Component.translatable("message.potioneer.sanity.warning3").withStyle(ChatFormatting.RED);
             }
 

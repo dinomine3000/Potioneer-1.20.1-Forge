@@ -1,7 +1,7 @@
 package net.dinomine.potioneer.beyonder.abilities.paragon;
 
 import net.dinomine.potioneer.beyonder.abilities.Ability;
-import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
+import net.dinomine.potioneer.beyonder.player.BeyonderCapability;
 import net.dinomine.potioneer.item.ModItems;
 import net.dinomine.potioneer.util.misc.MysticismHelper;
 import net.minecraft.world.entity.LivingEntity;
@@ -30,7 +30,7 @@ public class FuelAbility extends Ability {
     }
 
     @Override
-    public boolean primary(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    public boolean primary(BeyonderCapability cap, LivingEntity target) {
         float adjustedPercent = percentCost - ((float) (9 - getSequenceLevel()) / 9 * percentDelta);
         if(target.level().isClientSide()) {
             if(cap.getSpirituality() > cap.getMaxSpirituality() * adjustedPercent){

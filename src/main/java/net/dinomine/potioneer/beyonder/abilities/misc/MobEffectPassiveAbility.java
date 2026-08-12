@@ -1,7 +1,7 @@
 package net.dinomine.potioneer.beyonder.abilities.misc;
 
 import net.dinomine.potioneer.beyonder.abilities.Ability;
-import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
+import net.dinomine.potioneer.beyonder.player.BeyonderCapability;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
@@ -61,7 +61,7 @@ public class MobEffectPassiveAbility extends Ability {
     }
 
     @Override
-    protected boolean primary(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    protected boolean primary(BeyonderCapability cap, LivingEntity target) {
         if(target.level().isClientSide()) return false;
         if(!isEnabled() && cap.getSpirituality() < spiritualityThreshold) return false;
         boolean newState = flipEnable(cap, target);
@@ -73,17 +73,17 @@ public class MobEffectPassiveAbility extends Ability {
     }
 
     @Override
-    protected boolean secondary(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    protected boolean secondary(BeyonderCapability cap, LivingEntity target) {
         return false;
     }
 
     @Override
-    public void onAcquire(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    public void onAcquire(BeyonderCapability cap, LivingEntity target) {
         setEnabled(cap, target, enabledOnAcquire);
     }
 
     @Override
-    public void passive(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    public void passive(BeyonderCapability cap, LivingEntity target) {
         if(isEnabled()){
             if(cap.getSpirituality() < spiritualityThreshold){
                 flipEnable(cap, target);
@@ -96,14 +96,14 @@ public class MobEffectPassiveAbility extends Ability {
     }
 
     @Override
-    public void activate(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    public void activate(BeyonderCapability cap, LivingEntity target) {
         if(duration > -1){
             target.addEffect(new MobEffectInstance(effect, duration, amplifier, false, false, false));
         }
     }
 
     @Override
-    public void deactivate(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    public void deactivate(BeyonderCapability cap, LivingEntity target) {
         target.removeEffect(effect);
     }
 

@@ -1,8 +1,8 @@
 package net.dinomine.potioneer.rituals.spirits.defaultGods;
 
 import net.dinomine.potioneer.beyonder.pages.PageRegistry;
-import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
-import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
+import net.dinomine.potioneer.beyonder.player.CapProvider;
+import net.dinomine.potioneer.beyonder.player.BeyonderCapability;
 import net.dinomine.potioneer.config.PotioneerRitualsConfig;
 import net.dinomine.potioneer.rituals.RitualInputData;
 import net.dinomine.potioneer.rituals.RitualResponseLogic;
@@ -34,7 +34,7 @@ public class WheelOfFortuneResponse extends Deity {
     }
 
     @Override
-    public void onTrueNameSpoken(LivingEntity target, LivingEntityBeyonderCapability cap) {
+    public void onTrueNameSpoken(LivingEntity target, BeyonderCapability cap) {
         punishPlayer(target, cap);
     }
 
@@ -60,7 +60,7 @@ public class WheelOfFortuneResponse extends Deity {
         setLogic(logic);
     }
 
-    private static void punishPlayer(LivingEntity target, LivingEntityBeyonderCapability cap){
+    private static void punishPlayer(LivingEntity target, BeyonderCapability cap){
         cap.getLuckManager().setLuck(-1000);
         cap.getLuckManager().forceCastEvent(target, cap, true);
         cap.getLuckManager().forceCastEvent(target, cap, true);
@@ -71,7 +71,7 @@ public class WheelOfFortuneResponse extends Deity {
 
     private void punishmentLogic(RitualInputData inputData, Level level){
         Player player = getPlayer(inputData, level, true);
-        player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> punishPlayer(player, cap));
+        player.getCapability(CapProvider.BEYONDER_STATS).ifPresent(cap -> punishPlayer(player, cap));
     }
 
     private void responseLogic(RitualInputData inputData, Level level){
@@ -85,7 +85,7 @@ public class WheelOfFortuneResponse extends Deity {
     private void giveLuck(RitualInputData inputData, Level level){
         Player target = getPlayer(inputData, level, false);
         if(target == null) return;
-        target.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
+        target.getCapability(CapProvider.BEYONDER_STATS).ifPresent(cap -> {
             cap.getLuckManager().grantLuck(target, target.getRandom().nextInt(-10, 100), false);
             level.playSound( null, target, SoundEvents.BEACON_ACTIVATE, SoundSource.PLAYERS, 2, 1);
             for(ItemStack stack: RitualInputData.getLiveItemStacks(inputData, level)){
@@ -98,7 +98,7 @@ public class WheelOfFortuneResponse extends Deity {
     private void giveUnluck(RitualInputData inputData, Level level){
         Player target = getPlayer(inputData, level, false);
         if(target == null) return;
-        target.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
+        target.getCapability(CapProvider.BEYONDER_STATS).ifPresent(cap -> {
             cap.getLuckManager().consumeLuck(target, target.getRandom().nextInt(-10, 100), true);
             level.playSound( null, target, SoundEvents.BEACON_DEACTIVATE, SoundSource.PLAYERS, 2, 1);
         });
@@ -106,7 +106,7 @@ public class WheelOfFortuneResponse extends Deity {
     private void triggerLuck(RitualInputData inputData, Level level){
         Player target = getPlayer(inputData, level, false);
         if(target == null) return;
-        target.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
+        target.getCapability(CapProvider.BEYONDER_STATS).ifPresent(cap -> {
             cap.getLuckManager().castOrHurryEvent(target, cap);
             level.playSound( null, target, SoundEvents.BEACON_ACTIVATE, SoundSource.PLAYERS, 2, 1);
         });

@@ -1,9 +1,8 @@
 package net.dinomine.potioneer.beyonder.client;
 
-import net.dinomine.potioneer.beyonder.client.screen.DefaultAdvancementScreen;
 import net.dinomine.potioneer.beyonder.client.screen.MinigameScreen;
 import net.dinomine.potioneer.beyonder.client.screen.RedPriestAdvancementScreen;
-import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
+import net.dinomine.potioneer.beyonder.player.BeyonderCapability;
 import net.dinomine.potioneer.network.PacketHandler;
 import net.dinomine.potioneer.network.messages.advancement.AdvancementFailMessageCTS;
 import net.dinomine.potioneer.network.messages.advancement.PlayerAdvanceMessage;
@@ -23,9 +22,9 @@ public class ClientAdvancementManager {
     public static int targetSequence = 9;
 
     public static void attemptAdvancement(int newSeq, int addedDifficulty){
-        Optional<LivingEntityBeyonderCapability> capOpt = ClientStatsData.getCapability();
+        Optional<BeyonderCapability> capOpt = ClientStatsData.getCapability();
         if(capOpt.isEmpty()) return;
-        LivingEntityBeyonderCapability cap = capOpt.get();
+        BeyonderCapability cap = capOpt.get();
         int pathwaySequenceId = cap.getPathwaySequenceId();
         int sanity = (int) cap.getSanity();
 //        ClientAdvancementManager.difficulty = 10;     //Debug

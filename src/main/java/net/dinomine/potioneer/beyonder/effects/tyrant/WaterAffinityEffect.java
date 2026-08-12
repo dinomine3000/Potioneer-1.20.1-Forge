@@ -2,7 +2,7 @@ package net.dinomine.potioneer.beyonder.effects.tyrant;
 
 import net.dinomine.potioneer.beyonder.abilities.AbilityFunctionHelper;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffect;
-import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
+import net.dinomine.potioneer.beyonder.player.BeyonderCapability;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
@@ -19,7 +19,7 @@ public class WaterAffinityEffect extends BeyonderEffect {
     private boolean nightFlag = false, waterFlag = false;
 
     @Override
-    public void onAcquire(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    public void onAcquire(BeyonderCapability cap, LivingEntity target) {
         if(target instanceof Player player){
             AbilityFunctionHelper.addAttributeTo(player, attributeId, "swim speed affinity modifier",
                     (int)((sequenceLevel-8.7-8.5)*(sequenceLevel-3.6-8.5)*0.08), AttributeModifier.Operation.MULTIPLY_BASE, ForgeMod.SWIM_SPEED.get());
@@ -27,7 +27,7 @@ public class WaterAffinityEffect extends BeyonderEffect {
     }
 
     @Override
-    protected void doTick(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    protected void doTick(BeyonderCapability cap, LivingEntity target) {
         if(target instanceof Player player){
             float f = 1f;
             if(isInWater(player, sequenceLevel)){
@@ -88,7 +88,7 @@ public class WaterAffinityEffect extends BeyonderEffect {
     }
 
     @Override
-    public void stopEffects(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    public void stopEffects(BeyonderCapability cap, LivingEntity target) {
         if(waterFlag){
             target.removeEffect(MobEffects.WATER_BREATHING);
             waterFlag = false;

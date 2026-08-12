@@ -1,8 +1,8 @@
 package net.dinomine.potioneer.item.custom;
 
 import net.dinomine.potioneer.beyonder.pathways.Pathways;
-import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
-import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
+import net.dinomine.potioneer.beyonder.player.CapProvider;
+import net.dinomine.potioneer.beyonder.player.BeyonderCapability;
 import net.dinomine.potioneer.config.PotioneerGameplayConfig;
 import net.dinomine.potioneer.entities.ModEntities;
 import net.dinomine.potioneer.entities.custom.CharacteristicEntity;
@@ -74,7 +74,7 @@ public class CharacteristicItem extends Item {
         if(ModNbtUtils.hasTag(ModNbtUtils.TAGS.BEYONDER, characteristicStack)
                 && PotioneerGameplayConfig.ARTIFACT_CONVERSION_CHANCE.get() > 0 && pLevel.random.nextInt(PotioneerGameplayConfig.ARTIFACT_CONVERSION_CHANCE.get()) == 1){
             if(pEntity instanceof Player player){
-                Optional<LivingEntityBeyonderCapability> cap = player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve();
+                Optional<BeyonderCapability> cap = player.getCapability(CapProvider.BEYONDER_STATS).resolve();
                 if(cap.isEmpty()) return;
                 if(cap.get().getArtifactCooldown() > 0) return;
 

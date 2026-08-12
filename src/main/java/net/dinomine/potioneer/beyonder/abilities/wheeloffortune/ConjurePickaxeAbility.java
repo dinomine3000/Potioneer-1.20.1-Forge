@@ -1,7 +1,7 @@
 package net.dinomine.potioneer.beyonder.abilities.wheeloffortune;
 
 import net.dinomine.potioneer.beyonder.abilities.Ability;
-import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
+import net.dinomine.potioneer.beyonder.player.BeyonderCapability;
 import net.dinomine.potioneer.config.PotioneerAbilityConfig;
 import net.dinomine.potioneer.util.misc.ModNbtUtils;
 import net.dinomine.potioneer.util.misc.MysticismHelper;
@@ -27,7 +27,7 @@ public class ConjurePickaxeAbility extends Ability {
     }
 
     @Override
-    protected boolean primary(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    protected boolean primary(BeyonderCapability cap, LivingEntity target) {
         if(target.level().isClientSide()) return cap.getSpiritualityPercent() >= cost();
         if(!(target instanceof Player player)) return false;
         CompoundTag tag = getData();
@@ -49,7 +49,7 @@ public class ConjurePickaxeAbility extends Ability {
     }
 
     @Override
-    protected boolean secondary(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    protected boolean secondary(BeyonderCapability cap, LivingEntity target) {
         if(target.level().isClientSide()) return false;
         ItemStack stack = target.getMainHandItem();
         if(stack.isEmpty() || !stack.is(ItemTags.PICKAXES)) return false;

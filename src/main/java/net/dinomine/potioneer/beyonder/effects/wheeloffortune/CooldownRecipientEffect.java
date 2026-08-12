@@ -4,7 +4,7 @@ import net.dinomine.potioneer.beyonder.abilities.AbilityKey;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffect;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
 import net.dinomine.potioneer.beyonder.pathways.WheelOfFortunePathway;
-import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
+import net.dinomine.potioneer.beyonder.player.BeyonderCapability;
 import net.dinomine.potioneer.beyonder.player.PlayerLuckManager;
 import net.dinomine.potioneer.config.PotioneerAbilityConfig;
 import net.minecraft.nbt.CompoundTag;
@@ -26,7 +26,7 @@ public class CooldownRecipientEffect extends BeyonderEffect {
     }
 
     @Override
-    public boolean canAdd(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    public boolean canAdd(BeyonderCapability cap, LivingEntity target) {
         if(cap.getEffectsManager().hasEffect(BeyonderEffects.WHEEL_COOLDOWN_DEFENCE.getEffectId())){
             if(cap.getEffectsManager().getEffect(BeyonderEffects.WHEEL_COOLDOWN_DEFENCE.getEffectId()).getSequenceLevel() < getSequenceLevel()){
                 endEffectWhenPossible();
@@ -37,7 +37,7 @@ public class CooldownRecipientEffect extends BeyonderEffect {
     }
 
     @Override
-    public void onAcquire(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    public void onAcquire(BeyonderCapability cap, LivingEntity target) {
         if(target.level().isClientSide()) return;
         if(target instanceof ServerPlayer player && player.connection == null) return;
         disableAbilities(cap, target, maxLife, minCooldown, maxCooldown);
@@ -47,7 +47,7 @@ public class CooldownRecipientEffect extends BeyonderEffect {
     }
 
     @Override
-    public void refreshTime(LivingEntityBeyonderCapability cap, LivingEntity target, BeyonderEffect effect) {
+    public void refreshTime(BeyonderCapability cap, LivingEntity target, BeyonderEffect effect) {
         if(!(effect instanceof CooldownRecipientEffect cdEffect))
             super.refreshTime(cap, target, effect);
         else
@@ -61,7 +61,7 @@ public class CooldownRecipientEffect extends BeyonderEffect {
      * @param effectCooldown - the cooldown for applying this effect again, in ticks.
      *                       for this time after the method is called, no one of the same level as this effect can put abilities on cooldown.
      */
-    private void disableAbilities(LivingEntityBeyonderCapability cap, LivingEntity target, int effectCooldown, int minCooldown, int maxCooldown){
+    private void disableAbilities(BeyonderCapability cap, LivingEntity target, int effectCooldown, int minCooldown, int maxCooldown){
         if(!PotioneerAbilityConfig.COOLDOWN_EFFECT_STACKS.get() && disabledFlag) return;
         disableRandomAbilities(cap, cap.getLuckManager(), target, false, minCooldown, maxCooldown);
         disabledFlag = true;
@@ -69,7 +69,7 @@ public class CooldownRecipientEffect extends BeyonderEffect {
         this.maxLife = effectCooldown;
     }
 
-    public static void disableRandomAbilities(LivingEntityBeyonderCapability victimCapability, PlayerLuckManager luck, LivingEntity victim, boolean casterPespective, int minCooldown, int maxCooldown){
+    public static void disableRandomAbilities(BeyonderCapability victimCapability, PlayerLuckManager luck, LivingEntity victim, boolean casterPespective, int minCooldown, int maxCooldown){
         int numToDisable = luck.getRandomNumber(0, 4, casterPespective, victim.getRandom());
         List<AbilityKey> keys = new ArrayList<>(victimCapability.getAbilitiesManager().getAbilityKeys());
         if(keys.isEmpty()) return;
@@ -86,11 +86,11 @@ public class CooldownRecipientEffect extends BeyonderEffect {
     }
 
     @Override
-    protected void doTick(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    protected void doTick(BeyonderCapability cap, LivingEntity target) {
     }
 
     @Override
-    public void stopEffects(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    public void stopEffects(BeyonderCapability cap, LivingEntity target) {
     }
 
     @Override

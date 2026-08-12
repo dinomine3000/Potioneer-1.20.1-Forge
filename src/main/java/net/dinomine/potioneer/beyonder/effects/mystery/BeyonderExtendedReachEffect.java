@@ -4,7 +4,7 @@ import com.google.common.base.Suppliers;
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffect;
-import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
+import net.dinomine.potioneer.beyonder.player.BeyonderCapability;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
@@ -18,7 +18,7 @@ public class BeyonderExtendedReachEffect extends BeyonderEffect {
     private static UUID entityId = UUID.fromString("d7f8685b-fda0-4c4f-862d-088bad3a8983");
     private static UUID blockId = UUID.fromString("a513a95f-5433-49ae-a928-e500cd0e8a84");
     @Override
-    public void onAcquire(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    public void onAcquire(BeyonderCapability cap, LivingEntity target) {
         if(target instanceof Player player){
             player.getAttributes()
                     .addTransientAttributeModifiers(getBlockReachModifier(sequenceLevel));
@@ -28,11 +28,11 @@ public class BeyonderExtendedReachEffect extends BeyonderEffect {
     }
 
     @Override
-    protected void doTick(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    protected void doTick(BeyonderCapability cap, LivingEntity target) {
     }
 
     @Override
-    public void stopEffects(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    public void stopEffects(BeyonderCapability cap, LivingEntity target) {
         if(target instanceof Player player){
             player.getAttributes()
                     .removeAttributeModifiers(getBlockReachModifier(sequenceLevel));

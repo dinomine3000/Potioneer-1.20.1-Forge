@@ -1,9 +1,8 @@
 package net.dinomine.potioneer.block.custom;
 
-import com.mojang.math.Constants;
 import net.dinomine.potioneer.beyonder.pages.PageRegistry;
 import net.dinomine.potioneer.beyonder.pathways.Pathways;
-import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
+import net.dinomine.potioneer.beyonder.player.CapProvider;
 import net.dinomine.potioneer.block.ModBlocks;
 import net.dinomine.potioneer.network.PacketHandler;
 import net.dinomine.potioneer.network.messages.OpenScreenMessage;
@@ -17,7 +16,6 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
@@ -97,7 +95,7 @@ public class ScriptureStandBlock extends Block {
         int pathwayId = getPathwayId(pState);
         Deity deity = Pathways.getPathwayById(pathwayId).getDefaultDeity();
         if(deity == null) return InteractionResult.SUCCESS;
-        pPlayer.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
+        pPlayer.getCapability(CapProvider.BEYONDER_STATS).ifPresent(cap -> {
             if(!pPlayer.isCrouching()){
                 pPlayer.sendSystemMessage(Component.translatable("reputation.potioneer.show", deity.getTitle(), cap.getReputation(pathwayId)));
                 if(cap.getReligion() != pathwayId){

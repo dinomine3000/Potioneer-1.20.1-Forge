@@ -5,9 +5,10 @@ import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffect;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
+import net.dinomine.potioneer.beyonder.effects.tyrant.BribeRecipientEffect;
 import net.dinomine.potioneer.beyonder.effects.tyrant.GeneralProhibitionEffect;
-import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
-import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
+import net.dinomine.potioneer.beyonder.player.BeyonderCapability;
+import net.dinomine.potioneer.beyonder.player.CapProvider;
 import net.dinomine.potioneer.entities.ModEntities;
 import net.dinomine.potioneer.entities.custom.AsteroidEntity;
 import net.dinomine.potioneer.savedata.AllySystemSaveData;
@@ -47,7 +48,7 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 public class AbilityFunctionHelper {
-    public static ItemEntity dropItem(LivingEntity target, ItemStack stackToDrop, boolean retainInHand) {
+    public static ItemEntity dropItem(LivingEntity target, ItemStack stackToDrop, boolean retainInHand, boolean force) {
         Level level = target.level();
         if (level.isClientSide() || stackToDrop.isEmpty()) {
             return null;
@@ -56,7 +57,8 @@ public class AbilityFunctionHelper {
         ItemEntity itemEntity;
 
         if (target instanceof Player player) {
-            itemEntity = player.drop(stackToDrop.copy(), false, true);
+            if(force) itemEntity = player.drop(stackToDrop.copy(), false,true);
+            else itemEntity = player.drop(stackToDrop.copy(), true);
         } else {
             double yPos = target.getY() + 0.5D - 0.3D; // Drop near the entity's waist/hands
             itemEntity = new ItemEntity(level, target.getX(), yPos, target.getZ(), stackToDrop.copy());
@@ -77,9 +79,9 @@ public class AbilityFunctionHelper {
     }
 
     public static void teleportEntity(Entity target, ServerLevel fromLevel, ServerLevel toLevel, BlockPos targetPosition){
-        Optional<LivingEntityBeyonderCapability> optCap = target.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve();
+        Optional<BeyonderCapability> optCap = target.getCapability(CapProvider.BEYONDER_STATS).resolve();
         if(optCap.isPresent() && target instanceof LivingEntity lTarget){
-            LivingEntityBeyonderCapability cap = optCap.get();
+            BeyonderCapability cap = optCap.get();
             GeneralProhibitionEffect eff = getEffectOnTarget(BeyonderEffects.TYRANT_GENERAL_PROHIBITION.getEffectId(), lTarget);
             if(eff != null && eff.type.equalsIgnoreCase("teleporting")){
                 return;
@@ -140,7 +142,7 @@ public class AbilityFunctionHelper {
     @SuppressWarnings("unchecked")
     @Nullable
     public static <T extends BeyonderEffect> T getEffectOnTarget(String effectId, LivingEntity target) {
-        return target.getCapability(BeyonderStatsProvider.BEYONDER_STATS)
+        return target.getCapability(CapProvider.BEYONDER_STATS)
                 .resolve()
                 .map(cap -> cap.getEffectsManager().getEffect(effectId))
                 .map(effect -> (T) effect)
@@ -148,6 +150,7 @@ public class AbilityFunctionHelper {
     }
 
     public static boolean areEntitiesAllies(ServerLevel level, LivingEntity ent1, LivingEntity ent2){
+        if(isTruce(ent1, ent2)) return true;
         boolean trueAnswer = areEntitiesAllies(level, ent1.getUUID(), ent2.getUUID());
         if(isPlayerBerserk(ent1) || isPlayerBerserk(ent2)) return false;
         return trueAnswer;
@@ -185,7 +188,14 @@ public class AbilityFunctionHelper {
     }
 
     private static boolean isPlayerBerserk(LivingEntity entity){
-        return entity.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve().get().getEffectsManager().hasEffect(BeyonderEffects.TYRANT_BERSERK);
+        return entity.getCapability(CapProvider.BEYONDER_STATS).resolve().get().getEffectsManager().hasEffect(BeyonderEffects.TYRANT_BERSERK);
+    }
+
+    private static boolean isTruce(LivingEntity ent1, LivingEntity ent2){
+        BribeRecipientEffect eff1 = getEffectOnTarget(BeyonderEffects.TYRANT_BRIBE_RECIPIENT.getEffectId(), ent1);
+        BribeRecipientEffect eff2 = getEffectOnTarget(BeyonderEffects.TYRANT_BRIBE_RECIPIENT.getEffectId(), ent2);
+        if(eff1 == null && eff2 == null) return false;
+        return (eff1 != null && eff1.isTruce(ent2)) || (eff2 != null && eff2.isTruce(ent1));
     }
 
     private static boolean areEntitiesAllies(ServerLevel level, UUID ent1, UUID ent2){
@@ -432,9 +442,9 @@ public class AbilityFunctionHelper {
     }
 
     public interface IBlockPlacer{
-        boolean place(Level level, BlockPos pos, LivingEntityBeyonderCapability cap, LivingEntity target);
+        boolean place(Level level, BlockPos pos, BeyonderCapability cap, LivingEntity target);
     }
-    public static boolean placeBlockAtReach(Level level, LivingEntityBeyonderCapability cap, LivingEntity player, IBlockPlacer placer){
+    public static boolean placeBlockAtReach(Level level, BeyonderCapability cap, LivingEntity player, IBlockPlacer placer){
         HitResult block = player.pick(player.getAttributeBaseValue(ForgeMod.BLOCK_REACH.get()) + 0.5, 0f, false);
         if(block instanceof BlockHitResult rayTrace){
             //first, tries to replace the block youre pointing to

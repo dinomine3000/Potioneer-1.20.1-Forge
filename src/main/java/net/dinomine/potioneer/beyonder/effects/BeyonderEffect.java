@@ -1,6 +1,6 @@
 package net.dinomine.potioneer.beyonder.effects;
 
-import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
+import net.dinomine.potioneer.beyonder.player.BeyonderCapability;
 import net.dinomine.potioneer.network.PacketHandler;
 import net.dinomine.potioneer.network.messages.abilityRelevant.BeyonderEffectSyncMessage;
 import net.minecraft.nbt.CompoundTag;
@@ -28,7 +28,7 @@ public abstract class BeyonderEffect {
 
     public int getPriority(){return priority.value;}
 
-    public void onUpdateReceivedOnClient(LivingEntityBeyonderCapability cap, LivingEntity target) {}
+    public void onUpdateReceivedOnClient(BeyonderCapability cap, LivingEntity target) {}
 
     public enum Priority {
         VERY_HIGH(5),
@@ -42,7 +42,7 @@ public abstract class BeyonderEffect {
             this.value = value;
         }
     }
-    public boolean canAdd(LivingEntityBeyonderCapability cap, LivingEntity target){return true;}
+    public boolean canAdd(BeyonderCapability cap, LivingEntity target){return true;}
 
     public int getMaxLife(){
         return maxLife;
@@ -116,7 +116,7 @@ public abstract class BeyonderEffect {
         return this.maxLife - this.lifetime < time;
     }
 
-    public void refreshTime(LivingEntityBeyonderCapability cap, LivingEntity target, BeyonderEffect effect){
+    public void refreshTime(BeyonderCapability cap, LivingEntity target, BeyonderEffect effect){
         if(maxLife < 0) return;
         this.maxLife = Math.max(maxLife, effect.maxLife);
         this.lifetime = 0;
@@ -142,7 +142,7 @@ public abstract class BeyonderEffect {
      * @param attacker
      * @return whether it should cancel the event or not
      */
-    public boolean onTakeDamage(LivingDamageEvent event, LivingEntity victim, @Nullable LivingEntity attacker, LivingEntityBeyonderCapability victimCap, Optional<LivingEntityBeyonderCapability>  attackerCap, boolean calledOnVictim){return false;}
+    public boolean onTakeDamage(LivingDamageEvent event, LivingEntity victim, @Nullable LivingEntity attacker, BeyonderCapability victimCap, Optional<BeyonderCapability>  attackerCap, boolean calledOnVictim){return false;}
 
     /**
      * runs when the damage has been approved and the amount is being calculated (reduced, increased)
@@ -154,7 +154,7 @@ public abstract class BeyonderEffect {
      * @param calledOnVictim
      * @return
      */
-    public boolean onDamageCalculation(LivingHurtEvent event, LivingEntity victim,  @Nullable LivingEntity attacker, LivingEntityBeyonderCapability victimCap, Optional<LivingEntityBeyonderCapability>  attackerCap, boolean calledOnVictim){return false;}
+    public boolean onDamageCalculation(LivingHurtEvent event, LivingEntity victim, @Nullable LivingEntity attacker, BeyonderCapability victimCap, Optional<BeyonderCapability>  attackerCap, boolean calledOnVictim){return false;}
 
     /**
      * runs when verifying a damage proposal. here is where you cancel it.
@@ -166,7 +166,7 @@ public abstract class BeyonderEffect {
      * @param calledOnVictim
      * @return
      */
-    public boolean onDamageProposal(LivingAttackEvent event, LivingEntity victim, @Nullable LivingEntity attacker, LivingEntityBeyonderCapability victimCap, Optional<LivingEntityBeyonderCapability>  attackerCap, boolean calledOnVictim) {return false;}
+    public boolean onDamageProposal(LivingAttackEvent event, LivingEntity victim, @Nullable LivingEntity attacker, BeyonderCapability victimCap, Optional<BeyonderCapability>  attackerCap, boolean calledOnVictim) {return false;}
     /**
      * used for replacement purposes. will return true if theyre the same effect but the argument is of a higher sequence
      * aka, will return true if the argument should replace this
@@ -181,7 +181,7 @@ public abstract class BeyonderEffect {
         return this.is(effect) && this.sequenceLevel < effect.sequenceLevel;
     }
 
-    public void setActive(boolean active, LivingEntityBeyonderCapability cap, LivingEntity target){
+    public void setActive(boolean active, BeyonderCapability cap, LivingEntity target){
         this.visible = active;
         if(!active){
             stopEffects(cap, target);
@@ -192,7 +192,7 @@ public abstract class BeyonderEffect {
         return this.cost;
     }
 
-    public void effectTick(LivingEntityBeyonderCapability cap, LivingEntity target){
+    public void effectTick(BeyonderCapability cap, LivingEntity target){
         doTick(cap, target);
         if(maxLife > 0){
             this.lifetime++;
@@ -207,7 +207,7 @@ public abstract class BeyonderEffect {
      * @param cap
      * @param target
      */
-    public void onAcquire(LivingEntityBeyonderCapability cap, LivingEntity target){};
+    public void onAcquire(BeyonderCapability cap, LivingEntity target){};
 
     /**
      * same as onAcquire, but you also get information of whether its from loading into the world or not
@@ -215,9 +215,9 @@ public abstract class BeyonderEffect {
      * @param target
      * @param fromLoading
      */
-    public void onAcquire(LivingEntityBeyonderCapability cap, LivingEntity target, boolean fromLoading){onAcquire(cap, target);};
-    protected abstract void doTick(LivingEntityBeyonderCapability cap, LivingEntity target);
-    public abstract void stopEffects(LivingEntityBeyonderCapability cap, LivingEntity target);
+    public void onAcquire(BeyonderCapability cap, LivingEntity target, boolean fromLoading){onAcquire(cap, target);};
+    protected abstract void doTick(BeyonderCapability cap, LivingEntity target);
+    public abstract void stopEffects(BeyonderCapability cap, LivingEntity target);
 
     public void toNbt(CompoundTag nbt){
         nbt.putInt("level", sequenceLevel);

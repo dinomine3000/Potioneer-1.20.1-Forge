@@ -3,7 +3,7 @@ package net.dinomine.potioneer.beyonder.effects.tyrant;
 import net.dinomine.potioneer.beyonder.abilities.AbilityFunctionHelper;
 import net.dinomine.potioneer.beyonder.abilities.DisabledAbilitiesManager;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffect;
-import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
+import net.dinomine.potioneer.beyonder.player.BeyonderCapability;
 import net.dinomine.potioneer.beyonder.player.PlayerAbilitiesManager;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -17,7 +17,7 @@ public class GeneralProhibitionEffect extends BeyonderEffect {
     public String type = "";
 
     @Override
-    public void onAcquire(LivingEntityBeyonderCapability cap, LivingEntity target, boolean fromLoading) {
+    public void onAcquire(BeyonderCapability cap, LivingEntity target, boolean fromLoading) {
         if(fromLoading) return;
         if(target instanceof Player player && !target.level().isClientSide()){
             player.displayClientMessage(Component.translatable("message.potioneer.prohibit_" + type), true);
@@ -32,7 +32,7 @@ public class GeneralProhibitionEffect extends BeyonderEffect {
     }
 
     @Override
-    protected void doTick(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    protected void doTick(BeyonderCapability cap, LivingEntity target) {
         if (type.equals("flying")) {
             VoxelShape blockBelow = target.level().getBlockState(target.getOnPos().below()).getCollisionShape(target.level(), target.getOnPos().below(), CollisionContext.of(target));
             if (blockBelow.isEmpty() && target.mainSupportingBlockPos.isEmpty() && !target.isInWater() && !target.isInLava()) {
@@ -58,7 +58,7 @@ public class GeneralProhibitionEffect extends BeyonderEffect {
     }
 
     @Override
-    public void stopEffects(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    public void stopEffects(BeyonderCapability cap, LivingEntity target) {
         cap.getAbilitiesManager().getDisabledAbilitiesManager().enableAbility("prohibition", cap, target);
     }
 }

@@ -4,7 +4,7 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
+import net.dinomine.potioneer.beyonder.player.CapProvider;
 import net.dinomine.potioneer.beyonder.player.PlayerCharacteristicManager;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -32,7 +32,7 @@ public class ChangeActingCommand {
         try {
             Entity target = EntityArgument.getEntity(cmd, "target");
             if(!(target instanceof LivingEntity lTarget)) return 0;
-            lTarget.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap ->{
+            lTarget.getCapability(CapProvider.BEYONDER_STATS).ifPresent(cap ->{
                 cap.getCharacteristicManager().setActing(IntegerArgumentType.getInteger(cmd, "percent")/100d, IntegerArgumentType.getInteger(cmd, "sequence"));
             });
             return 1;
@@ -45,7 +45,7 @@ public class ChangeActingCommand {
         try {
             Entity target = EntityArgument.getEntity(cmd, "target");
             if(!(target instanceof LivingEntity livingEntity)) return 0;
-            livingEntity.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap ->{
+            livingEntity.getCapability(CapProvider.BEYONDER_STATS).ifPresent(cap ->{
                 PlayerCharacteristicManager mng = cap.getCharacteristicManager();
                 Component message = mng.getDescComponent();
                 cmd.getSource().getPlayer().sendSystemMessage(message);

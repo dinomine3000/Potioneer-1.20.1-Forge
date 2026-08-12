@@ -5,8 +5,8 @@ import net.dinomine.potioneer.beyonder.abilities.Ability;
 import net.dinomine.potioneer.beyonder.abilities.AbilityFunctionHelper;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
 import net.dinomine.potioneer.beyonder.player.BeyonderStats;
-import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
-import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
+import net.dinomine.potioneer.beyonder.player.CapProvider;
+import net.dinomine.potioneer.beyonder.player.BeyonderCapability;
 import net.dinomine.potioneer.network.PacketHandler;
 import net.dinomine.potioneer.network.messages.effects.GeneralAreaEffectMessage;
 import net.dinomine.potioneer.rituals.spirits.Deity;
@@ -81,9 +81,9 @@ public class WheelOfFortunePathway extends BeyonderPathway {
         if(sequenceLevel > 5) return 0;
         int diff = 0;
 
-        Optional<LivingEntityBeyonderCapability> optCap = player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve();
+        Optional<BeyonderCapability> optCap = player.getCapability(CapProvider.BEYONDER_STATS).resolve();
         if(optCap.isEmpty()) return 0;
-        LivingEntityBeyonderCapability cap = optCap.get();
+        BeyonderCapability cap = optCap.get();
         switch (sequenceLevel){
             case 5:
                 int luck = cap.getLuckManager().getLuck();
@@ -101,7 +101,7 @@ public class WheelOfFortunePathway extends BeyonderPathway {
             case 5:
                 List<LivingEntity> entitiesAround = AbilityFunctionHelper.getLivingEntitiesAround(player, 16);
                 for(LivingEntity ent: entitiesAround){
-                    ent.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
+                    ent.getCapability(CapProvider.BEYONDER_STATS).ifPresent(cap -> {
                         if(ent.is(player) && cap.getLuckManager().getLuck() < -50) cap.getLuckManager().setLuck(-cap.getLuckManager().getLuck());
                         else cap.getLuckManager().setLuck(cap.getLuckManager().getLuck() * 10);
                         cap.getLuckManager().instantlyCastEvent(ent);

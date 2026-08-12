@@ -3,14 +3,12 @@ package net.dinomine.potioneer.beyonder.abilities.tyrant;
 import net.dinomine.potioneer.beyonder.abilities.AbilityFunctionHelper;
 import net.dinomine.potioneer.beyonder.abilities.AbilityOptions;
 import net.dinomine.potioneer.beyonder.abilities.AbilityWithOptions;
-import net.dinomine.potioneer.beyonder.abilities.DisabledAbilitiesManager;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
 import net.dinomine.potioneer.beyonder.effects.tyrant.AbilityProhibitionEffect;
 import net.dinomine.potioneer.beyonder.effects.tyrant.GeneralProhibitionEffect;
-import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
-import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
+import net.dinomine.potioneer.beyonder.player.CapProvider;
+import net.dinomine.potioneer.beyonder.player.BeyonderCapability;
 import net.dinomine.potioneer.config.PotioneerAbilityConfig;
-import net.dinomine.potioneer.util.ModTags;
 import net.dinomine.potioneer.util.misc.ModNbtUtils;
 import net.minecraft.nbt.*;
 import net.minecraft.network.chat.Component;
@@ -18,9 +16,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 import java.util.function.Supplier;
 
 public class ProhibitionAbility extends AbilityWithOptions {
@@ -49,7 +45,7 @@ public class ProhibitionAbility extends AbilityWithOptions {
         List<Integer> ids = ModNbtUtils.fromIntListTag(dataTag.getList("ids", Tag.TAG_INT));
         for(int id: ids){
             if(level.getEntity(id) instanceof LivingEntity ent){
-                ent.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
+                ent.getCapability(CapProvider.BEYONDER_STATS).ifPresent(cap -> {
                     cap.getEffectsManager().removeEffect(BeyonderEffects.TYRANT_ABILITY_PROHIBITION.getEffectId());
                 });
             }
@@ -58,12 +54,12 @@ public class ProhibitionAbility extends AbilityWithOptions {
     }
 
     @Override
-    protected boolean primary(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    protected boolean primary(BeyonderCapability cap, LivingEntity target) {
         if(target.level().isClientSide) return true;
         List<LivingEntity> hits = AbilityFunctionHelper.getLivingEntitiesAround(target, PROHIBITION_RADIUS.get());
         for(LivingEntity hit: hits){
             AbilityProhibitionEffect eff = AbilityProhibitionEffect.createInstance(0, target.getUUID());
-            hit.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(hitCap -> {
+            hit.getCapability(CapProvider.BEYONDER_STATS).ifPresent(hitCap -> {
                 hitCap.getEffectsManager().addOrRefreshEffect(eff, hitCap, hit);
             });
         }
@@ -75,13 +71,13 @@ public class ProhibitionAbility extends AbilityWithOptions {
     }
 
     @Override
-    protected boolean secondaryWithArgument(LivingEntityBeyonderCapability cap, LivingEntity target, String args) {
+    protected boolean secondaryWithArgument(BeyonderCapability cap, LivingEntity target, String args) {
         //apply other prohibition types
         //prohibit flying, teleporting, fate manipulation, artifacts, non-intrinsic abilities, sprinting
         if(target.level().isClientSide()) return true;
         List<LivingEntity> hits = AbilityFunctionHelper.getLivingEntitiesAround(target, PROHIBITION_RADIUS.get());
         for(LivingEntity ent: hits){
-            ent.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(entCap -> {
+            ent.getCapability(CapProvider.BEYONDER_STATS).ifPresent(entCap -> {
                 GeneralProhibitionEffect eff = (GeneralProhibitionEffect) BeyonderEffects.TYRANT_GENERAL_PROHIBITION.createInstance(sequenceLevel, 0, GENERAL_DURATION.get(), true);
                 eff.type = args;
                 entCap.getEffectsManager().addOrReplaceEffect(eff, entCap, ent);

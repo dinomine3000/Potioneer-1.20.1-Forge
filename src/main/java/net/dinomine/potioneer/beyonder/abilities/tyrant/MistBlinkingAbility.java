@@ -2,19 +2,14 @@ package net.dinomine.potioneer.beyonder.abilities.tyrant;
 
 import net.dinomine.potioneer.beyonder.abilities.*;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
-import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
+import net.dinomine.potioneer.beyonder.player.BeyonderCapability;
 import net.dinomine.potioneer.config.PotioneerAbilityConfig;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.util.ITeleporter;
@@ -40,7 +35,7 @@ public class MistBlinkingAbility extends Ability {
     }
 
     @Override
-    protected boolean primary(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    protected boolean primary(BeyonderCapability cap, LivingEntity target) {
         if(target.level().isClientSide()) return cap.getSpirituality() > cost();
         BlockHitResult res = AbilityFunctionHelper.getBlockLooking(target);
         BlockPos blockPos = res.getBlockPos().relative(res.getDirection());
@@ -51,13 +46,13 @@ public class MistBlinkingAbility extends Ability {
         }
         return false;
     }
-    public static void doMistBlinkingTo(LivingEntity caster, LivingEntityBeyonderCapability cap, ServerLevel fromLevel, String toDimensionId, int cost, BlockPos blockPos, int sequenceLevel){
+    public static void doMistBlinkingTo(LivingEntity caster, BeyonderCapability cap, ServerLevel fromLevel, String toDimensionId, int cost, BlockPos blockPos, int sequenceLevel){
         MinecraftServer server = caster.getServer();
         ServerLevel targetLevel = AbilityFunctionHelper.getDimensionKey(server, toDimensionId);
         doMistBlinkingTo(caster, cap, fromLevel, targetLevel, cost, blockPos, sequenceLevel);
     }
 
-    public static void doMistBlinkingTo(LivingEntity caster, LivingEntityBeyonderCapability cap, ServerLevel fromLevel, ServerLevel toLevel, int cost, BlockPos blockPos, int sequenceLevel){
+    public static void doMistBlinkingTo(LivingEntity caster, BeyonderCapability cap, ServerLevel fromLevel, ServerLevel toLevel, int cost, BlockPos blockPos, int sequenceLevel){
         if (toLevel == null) return;
 
         cap.getAbilitiesManager().putAbilityOnCooldown(Abilities.MIST.getAblId(), sequenceLevel, 20, caster);

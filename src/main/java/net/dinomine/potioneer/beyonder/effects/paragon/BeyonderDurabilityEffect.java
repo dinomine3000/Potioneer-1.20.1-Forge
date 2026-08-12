@@ -2,7 +2,7 @@ package net.dinomine.potioneer.beyonder.effects.paragon;
 
 import net.dinomine.potioneer.beyonder.abilities.Abilities;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffect;
-import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
+import net.dinomine.potioneer.beyonder.player.BeyonderCapability;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -10,11 +10,11 @@ import net.minecraft.world.item.ItemStack;
 
 public class BeyonderDurabilityEffect extends BeyonderEffect {
     @Override
-    public void onAcquire(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    public void onAcquire(BeyonderCapability cap, LivingEntity target) {
     }
 
     @Override
-    protected void doTick(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    protected void doTick(BeyonderCapability cap, LivingEntity target) {
         if(target.tickCount%29 == 0){
             if(sequenceLevel <= 7){
                 if(target instanceof Player player){
@@ -45,7 +45,7 @@ public class BeyonderDurabilityEffect extends BeyonderEffect {
     }
 
     @Override
-    public void stopEffects(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    public void stopEffects(BeyonderCapability cap, LivingEntity target) {
         if(target.level().isClientSide) return;
         if(cap.getAbilitiesManager().isEnabledAtLevelOrLower(Abilities.DURABILITY_REGEN.getAblId(), sequenceLevel%10)){
             cap.getAbilitiesManager().setAbilityEnabled(Abilities.DURABILITY_REGEN.getAblId(), sequenceLevel%10, false, cap, target);

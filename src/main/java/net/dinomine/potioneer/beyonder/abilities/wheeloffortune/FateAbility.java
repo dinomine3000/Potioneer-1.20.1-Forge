@@ -4,8 +4,8 @@ import net.dinomine.potioneer.beyonder.abilities.Ability;
 import net.dinomine.potioneer.beyonder.abilities.AbilityFunctionHelper;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
 import net.dinomine.potioneer.beyonder.pathways.WheelOfFortunePathway;
-import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
-import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
+import net.dinomine.potioneer.beyonder.player.BeyonderCapability;
+import net.dinomine.potioneer.beyonder.player.CapProvider;
 import net.dinomine.potioneer.config.PotioneerAbilityConfig;
 import net.dinomine.potioneer.util.ParticleMaker;
 import net.minecraft.network.chat.Component;
@@ -28,7 +28,7 @@ public class FateAbility extends Ability {
     }
 
     @Override
-    protected boolean primary(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    protected boolean primary(BeyonderCapability cap, LivingEntity target) {
         if(cap.getSpirituality() < cost()) return false;
         if(target.level().isClientSide()) return true;
         cap.getEffectsManager().addEffectNoCheck(BeyonderEffects.WHEEL_FATE.createInstance(getSequenceLevel(), cost(), 2, true), cap, target);
@@ -38,7 +38,7 @@ public class FateAbility extends Ability {
     }
 
     @Override
-    protected boolean secondary(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    protected boolean secondary(BeyonderCapability cap, LivingEntity target) {
         if(getSequenceLevel() > 5) {
             if(target.level().isClientSide())
                 target.sendSystemMessage(Component.translatableWithFallback("message.potioneer.outdated_secondary", "It doesn't do anything... yet"));
@@ -46,9 +46,9 @@ public class FateAbility extends Ability {
         }
         Optional<LivingEntity> eventTarget = AbilityFunctionHelper.getTargetEntity(target, target.getAttributeBaseValue(ForgeMod.ENTITY_REACH.get()) + 1, true);
         if(eventTarget.isPresent()){
-            Optional<LivingEntityBeyonderCapability> optCap = eventTarget.get().getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve();
+            Optional<BeyonderCapability> optCap = eventTarget.get().getCapability(CapProvider.BEYONDER_STATS).resolve();
             if(optCap.isEmpty()) return false;
-            LivingEntityBeyonderCapability fateCap = optCap.get();
+            BeyonderCapability fateCap = optCap.get();
             fateCap.getEffectsManager().addEffectNoCheck(BeyonderEffects.WHEEL_FATE.createInstance(getSequenceLevel(), 0, 2, true), fateCap, eventTarget.get());
             cap.getLuckManager().consumeLuck(target, 50, false);
             cap.getCharacteristicManager().progressActing(WheelOfFortunePathway.MISFORTUNE_ACTING_INC, 5);

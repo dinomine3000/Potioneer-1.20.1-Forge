@@ -4,8 +4,8 @@ import net.dinomine.potioneer.beyonder.abilities.Abilities;
 import net.dinomine.potioneer.beyonder.abilities.AbilityFunctionHelper;
 import net.dinomine.potioneer.beyonder.abilities.tyrant.RulePylonAbility.*;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
-import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
-import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
+import net.dinomine.potioneer.beyonder.player.BeyonderCapability;
+import net.dinomine.potioneer.beyonder.player.CapProvider;
 import net.dinomine.potioneer.network.PacketHandler;
 import net.dinomine.potioneer.network.messages.abilityRelevant.abilitySpecific.RulePylonMessage;
 import net.dinomine.potioneer.savedata.DimensionChunkSavedData;
@@ -19,8 +19,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.level.ChunkLevel;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
@@ -51,7 +49,6 @@ public class RulePylonBlockEntity extends BlockEntity implements GeoBlockEntity 
     private int sequenceLevel = 10;
     private boolean extendsAoj = true;
     private UUID ownerId = null;
-    private Set<String> casterGroups = new HashSet<>();
     private boolean canSeeTheSky = true;
     private boolean working = true;
 
@@ -101,7 +98,7 @@ public class RulePylonBlockEntity extends BlockEntity implements GeoBlockEntity 
     }
     public void brokeRule(Rule ruleBroken, LivingEntity ruleBreaker, ServerLevel level){
         if(!rulePunishmentMap.containsKey(ruleBroken)) return;
-        rulePunishmentMap.get(ruleBroken).execution().execute(ruleBreaker, ruleBreaker.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve().get(), AbilityFunctionHelper.getEntityAcrossDimensions(level, ownerId), sequenceLevel);
+        rulePunishmentMap.get(ruleBroken).execution().execute(ruleBreaker, ruleBreaker.getCapability(CapProvider.BEYONDER_STATS).resolve().get(), AbilityFunctionHelper.getEntityAcrossDimensions(level, ownerId), sequenceLevel);
         if(ruleBreaker instanceof Player player)
             player.displayClientMessage(Component.translatable("message.potioneer.rule_broken", ruleBroken.title()), true);
     }
@@ -113,7 +110,7 @@ public class RulePylonBlockEntity extends BlockEntity implements GeoBlockEntity 
         for(Law law: laws) law.execution().execute(this);
         //add an effect to help keep track of rule breaking.
         AbilityFunctionHelper.getLivingEntitiesAround(getBlockPos(), level, 9).forEach(ent -> {
-            ent.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> cap.getEffectsManager().addOrRefreshEffect(BeyonderEffects.TYRANT_MAIN_HAND_RULE.createInstance(0, 20, false), cap, ent));
+            ent.getCapability(CapProvider.BEYONDER_STATS).ifPresent(cap -> cap.getEffectsManager().addOrRefreshEffect(BeyonderEffects.TYRANT_MAIN_HAND_RULE.createInstance(0, 20, false), cap, ent));
         });
     }
 
@@ -128,11 +125,9 @@ public class RulePylonBlockEntity extends BlockEntity implements GeoBlockEntity 
         //sequence level
         Entity ent = AbilityFunctionHelper.getEntityAcrossDimensions(sLevel, ownerId);
         if(ent instanceof LivingEntity livingEntity){
-            LivingEntityBeyonderCapability cap = livingEntity.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve().get();
+            BeyonderCapability cap = livingEntity.getCapability(CapProvider.BEYONDER_STATS).resolve().get();
             sequenceLevel = cap.getAbilitiesManager().getSequenceLevelOfAbility(Abilities.RULE_PYLON.getAblId());
             if(sequenceLevel < 0 || sequenceLevel == 10) sequenceLevel = 9;
-            if(livingEntity instanceof Player player)
-                casterGroups = new HashSet<>(AbilityFunctionHelper.getGroupsPlayerIsIn(sLevel, player));
 
         }
         boolean workingO = working;
@@ -199,9 +194,6 @@ public class RulePylonBlockEntity extends BlockEntity implements GeoBlockEntity 
         tag.putBoolean("isWorking", working);
 
         ListTag groupsTag = new ListTag();
-        for (String group : casterGroups) {
-            groupsTag.add(StringTag.valueOf(group));
-        }
         tag.put("groups", groupsTag);
 
         ListTag rulesTag = new ListTag();
@@ -235,14 +227,6 @@ public class RulePylonBlockEntity extends BlockEntity implements GeoBlockEntity 
         this.ownerId = tag.getUUID("ownerId");
         this.extendsAoj = tag.getBoolean("extendsAoJ");
         this.working = tag.getBoolean("isWorking");
-
-        this.casterGroups.clear();
-        if (tag.contains("groups", Tag.TAG_LIST)) {
-            ListTag groupsTag = tag.getList("groups", Tag.TAG_STRING);
-            for (int i = 0; i < groupsTag.size(); i++) {
-                this.casterGroups.add(groupsTag.getString(i));
-            }
-        }
 
         this.rulePunishmentMap.clear();
         if (tag.contains("rules", Tag.TAG_LIST)) {

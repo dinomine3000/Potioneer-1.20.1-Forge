@@ -1,13 +1,11 @@
 package net.dinomine.potioneer.recipe;
 
-import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
+import net.dinomine.potioneer.beyonder.player.BeyonderCapability;
 import net.minecraft.util.Mth;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.item.ItemStack;
 
-import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Stream;
 
 public class RitualContainer extends SimpleContainer {
     public int getPathwayId() {
@@ -19,7 +17,7 @@ public class RitualContainer extends SimpleContainer {
     }
 
     public float getReputationPercent(){
-        return Mth.clamp(reputationLevel/ LivingEntityBeyonderCapability.MAX_REP, 0, 1);
+        return Mth.clamp(reputationLevel/ BeyonderCapability.MAX_REP, 0, 1);
     }
 
     public int getDesiredLevel(){return desiredLevel;}

@@ -43,7 +43,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 @AutoRegisterCapability
-public class LivingEntityBeyonderCapability {
+public class BeyonderCapability {
     public static final int SANITY_FOR_DAMAGE = 15;
     public static final int SANITY_FOR_DROP = 20;
     public static final int SANITY_MIN_RESPAWN = 40;
@@ -72,7 +72,6 @@ public class LivingEntityBeyonderCapability {
     }
 
     public boolean canPray(Level level) {
-        long gameTime = level.getGameTime();
         return timePrayed < 0 || level.getGameTime() - timePrayed > PRAYING_COOLDOWN;
     }
 
@@ -122,7 +121,7 @@ public class LivingEntityBeyonderCapability {
     private final LivingEntity entity;
 
 
-    public LivingEntityBeyonderCapability(LivingEntity entity){
+    public BeyonderCapability(LivingEntity entity){
         beyonderStats = new BeyonderStats();
         abilitiesManager = new PlayerAbilitiesManager();
         effectsManager = new PlayerEffectsManager();
@@ -449,7 +448,7 @@ public class LivingEntityBeyonderCapability {
         }
     }
 
-    public void copyFrom(LivingEntityBeyonderCapability source, Player player){
+    public void copyFrom(BeyonderCapability source, Player player){
         //TODO have this account for everything
         this.spirituality = source.getSpirituality();
         //advance(source.getPathwayId(), player, true, false);
@@ -478,6 +477,7 @@ public class LivingEntityBeyonderCapability {
 
     public void saveNBTData(CompoundTag nbt){
 //        System.out.println("saving nbt data for beyonder capability...");
+        if(entity instanceof Player) System.out.println("[DEBUG-SAVE] Saving capability data for player");
         nbt.putFloat("spirituality", spirituality);
         nbt.putFloat("sanity", sanity);
         nbt.putInt("containers_amount", conjurerContainers.size());
@@ -510,6 +510,7 @@ public class LivingEntityBeyonderCapability {
     }
 
     public void loadNBTData(CompoundTag nbt){
+        if(entity instanceof Player) System.out.println("[DEBUG-LOAD] Loading capability data from NBT: " + nbt);
 //        System.out.println("-------------loading capability nbt-------------------");
 //        System.out.println("loading nbt data for beyonder capability...");
         this.spirituality = nbt.getFloat("spirituality");
@@ -553,9 +554,6 @@ public class LivingEntityBeyonderCapability {
         maxSpirituality = characteristicManager.getMaxSpirituality();
         this.abilitiesManager.loadNBTData(nbt, this, entity);
         this.effectsManager.loadNBTData(nbt, this, entity);
-        //this.abilitiesManager.onAcquireAbilities(this, entity);
-        //TODO make abilities manager actually save and load item abilities.
-        //this.abilitiesManager.loadNBTData(nbt);
     }
 
     //server side to client. messages are sent when client joins world and when he advanced by means controlled by the server

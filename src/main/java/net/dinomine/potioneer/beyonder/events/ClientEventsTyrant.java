@@ -11,8 +11,8 @@ import net.dinomine.potioneer.beyonder.effects.tyrant.AmplificationEffect;
 import net.dinomine.potioneer.beyonder.effects.tyrant.GeneralProhibitionEffect;
 import net.dinomine.potioneer.beyonder.effects.tyrant.MistEffect;
 import net.dinomine.potioneer.beyonder.effects.tyrant.WeakeningEffect;
-import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
-import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
+import net.dinomine.potioneer.beyonder.player.BeyonderCapability;
+import net.dinomine.potioneer.beyonder.player.CapProvider;
 import net.dinomine.potioneer.config.PotioneerClientConfig;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -86,9 +86,9 @@ public class ClientEventsTyrant {
     @SubscribeEvent
     public static void renderAmplifyWeaken(RenderGuiOverlayEvent.Post event){
         GuiGraphics guiGraphics = event.getGuiGraphics();
-        Optional<LivingEntityBeyonderCapability> optCap = ClientStatsData.getCapability();
+        Optional<BeyonderCapability> optCap = ClientStatsData.getCapability();
         if(optCap.isEmpty()) return;
-        LivingEntityBeyonderCapability cap = optCap.get();
+        BeyonderCapability cap = optCap.get();
         WeakeningEffect weakening = (WeakeningEffect) cap.getEffectsManager().getEffect(BeyonderEffects.TYRANT_WEAKENING.getEffectId());
         AmplificationEffect amplification = (AmplificationEffect) cap.getEffectsManager().getEffect(BeyonderEffects.TYRANT_AMPLIFICATION.getEffectId());
 
@@ -128,7 +128,7 @@ public class ClientEventsTyrant {
     }
 
     private static boolean isDrowning(Player player){
-        Optional<LivingEntityBeyonderCapability> opt = player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve();
+        Optional<BeyonderCapability> opt = player.getCapability(CapProvider.BEYONDER_STATS).resolve();
         return opt.isPresent() && opt.get().getEffectsManager().hasEffect(BeyonderEffects.TYRANT_DROWNING);
     }
 
