@@ -2,17 +2,36 @@ package net.dinomine.potioneer.beyonder.pathways;
 
 import net.dinomine.potioneer.beyonder.abilities.Abilities;
 import net.dinomine.potioneer.beyonder.abilities.Ability;
+import net.dinomine.potioneer.beyonder.abilities.AbilityFunctionHelper;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
+import net.dinomine.potioneer.beyonder.effects.tyrant.ContractedEffect;
+import net.dinomine.potioneer.beyonder.player.BeyonderCapability;
 import net.dinomine.potioneer.beyonder.player.BeyonderStats;
+import net.dinomine.potioneer.beyonder.player.CapProvider;
+import net.dinomine.potioneer.config.PotioneerAbilityConfig;
 import net.dinomine.potioneer.rituals.spirits.Deity;
 import net.dinomine.potioneer.rituals.spirits.defaultGods.TyrantResponse;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 
 import java.util.*;
 
 public class TyrantPathway extends BeyonderPathway {
+    public static final double SWIMMER_ACTING = 1d/(20*20*60);
+    public static final double WATER_MAGE_ACTING_SPELLS = 1/128d;
+    public static final double WATER_MAGE_ACTING_DIVINATION = 1/64d;
+    public static final double ENFORCER_ACTING_DAMAGE = 1/256d;
+    public static final double ENFORCER_ACTING_ARREST = 1/128d;
+    public static final double ENFORCER_ACTING_MIST = 1d/(20*60*30);
+    public static final double MAGISTRATE_ACTING_BRIBE = 1/256d;
+    public static final double MAGISTRATE_ACTING_BERSERK = 1/(20*60d*15);
+    public static final double MAGISTRATE_ACTING_CONTRACT = 1/256d;
+    public static final double MAGISTRATE_ACTING_CALAMITY = 1/256d;
+    public static final double TRIBUNAL_ACTING_PYLON_RULE = 1/256d;
+    public static final double TRIBUNAL_ACTING_PYLON_LAW = 1/(20*60*120d);
+    public static final double TRIBUNAL_ACTING_PROHIBITION = 1/256d;
 
     public TyrantPathway(){
         super("Tyrant", 0x404080, new int[]{3400, 2500, 1800, 1300, 1000, 700, 425, 300, 140, 100});
@@ -45,6 +64,22 @@ public class TyrantPathway extends BeyonderPathway {
     @Override
     public int isRitualComplete(int sequenceLevel, Player player, Level pLevel) {
         if(sequenceLevel > 5) return 0;
+        int diff = 0;
+
+        Optional<BeyonderCapability> optCap = player.getCapability(CapProvider.BEYONDER_STATS).resolve();
+        if(optCap.isEmpty()) return 0;
+        BeyonderCapability cap = optCap.get();
+        switch (sequenceLevel){
+            case 5:
+                diff = 5;
+                List<LivingEntity> hits = AbilityFunctionHelper.getLivingEntitiesAround(player, 16);
+                for(LivingEntity ent: hits){
+                    ContractedEffect eff = AbilityFunctionHelper.getEffectOnTarget(BeyonderEffects.TYRANT_CONTRACT.getEffectId(), ent);
+                    if(eff == null) continue;
+                    if(player.getUUID().equals(eff.getCasterId()) && eff.getTime() >= 20*60*60) diff--;
+                }
+                return Math.max(diff, 0);
+        }
         return 0;
     }
 
@@ -55,7 +90,9 @@ public class TyrantPathway extends BeyonderPathway {
     public Component getRitualDescriptionForSequence(int sequenceLevel) {
         if(sequenceLevel > 5) return Component.empty();
         return switch (sequenceLevel){
-            case 5 -> Component.translatable("ritual.potioneer.source_of_misfortune");
+            case 5 -> PotioneerAbilityConfig.TYRANT_CAN_DO_CONTRACTS_TO_NON_ALLIES.get() ?
+                    Component.translatable("ritual.potioneer.tribunal")
+                    : Component.translatable("ritual.potioneer.tribunal_players");
             default -> Component.translatable("ritual.potioneer.source_of_misfortune");
         };
     }
@@ -105,10 +142,10 @@ public class TyrantPathway extends BeyonderPathway {
             case 4:
             case 5:
                 abilities.add(Abilities.RULE_PYLON.create(atSequenceLevel));
-                abilities.add(Abilities.BRIBE.create(atSequenceLevel));
                 abilities.add(Abilities.PROHIBITION.create(atSequenceLevel));
-            case 6:
                 abilities.add(Abilities.AMPLIFICATION.create(atSequenceLevel));
+            case 6:
+                abilities.add(Abilities.BRIBE.create(atSequenceLevel));
                 abilities.add(Abilities.EXILE.create(atSequenceLevel));
                 abilities.add(Abilities.CONTRACT.create(atSequenceLevel));
                 abilities.add(Abilities.TYRANT_CALAMITY.create(atSequenceLevel));

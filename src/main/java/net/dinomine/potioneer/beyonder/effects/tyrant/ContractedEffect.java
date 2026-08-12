@@ -46,6 +46,9 @@ public class ContractedEffect extends BeyonderEffect {
 
     private ContractOption condition;
     private ContractOption reward;
+    private UUID casterId = null;
+    private int time = 0;
+    public int getTime(){return time;}
 
     private AbilityKey generateKeyForViewerAbility(){
         return new AbilityKey(VIEWER_GROUP, Abilities.CONTRACT_VIEW.getAblId(), 0);
@@ -81,6 +84,7 @@ public class ContractedEffect extends BeyonderEffect {
         else if(Objects.equals(condition, ContractOption.SPIRITUALITY_COND) && cap.getSpirituality() < cap.getMaxSpirituality()*SPIRITUALITY_THRESHOLD.get()) invalidate(target, cap);
         if(!condition.isValid()) return;
 
+        if(time <= 20*60*60) time++;
         BeyonderStats statsHolder = cap.getEffectsManager().statsHolder;
         if(Objects.equals(reward, ContractOption.DAMAGE_BUFF)) statsHolder.addDamage(DAMAGE_BUFF.get());
         else if(Objects.equals(reward, ContractOption.REGENERATION_BUFF)) statsHolder.addRegeneration(REGENERATION_BUFF.get());
@@ -110,15 +114,24 @@ public class ContractedEffect extends BeyonderEffect {
         });
     }
 
-    public static ContractedEffect getInstance(ContractOption condition, ContractOption reward){
+    public static ContractedEffect getInstance(ContractOption condition, ContractOption reward, UUID casterId){
         ContractedEffect eff = (ContractedEffect) BeyonderEffects.TYRANT_CONTRACT.createInstance(0, 0, -1, true);
         eff.setConditions(condition, reward);
+        eff.setCasterId(casterId);
         return eff;
     }
 
     public void setConditions(ContractOption condition, ContractOption reward){
         this.condition = condition;
         this.reward = reward;
+    }
+
+    public UUID getCasterId() {
+        return casterId;
+    }
+
+    public void setCasterId(UUID casterId) {
+        this.casterId = casterId;
     }
 
     public void testAbilityCast(Ability abl, BeyonderCapability cap, LivingEntity target){
@@ -165,6 +178,10 @@ public class ContractedEffect extends BeyonderEffect {
         super.toNbt(nbt);
         nbt.put("condition", condition.saveToNbt());
         nbt.put("reward", reward.saveToNbt());
+        nbt.putInt("time", time);
+        if (this.casterId != null) {
+            nbt.putUUID("casterId", this.casterId);
+        }
     }
 
     @Override
@@ -172,5 +189,9 @@ public class ContractedEffect extends BeyonderEffect {
         super.loadNBTData(nbt);
         this.condition = ContractAbility.ContractOption.loadFromNbt(nbt.getCompound("condition")).get();
         this.reward = ContractAbility.ContractOption.loadFromNbt(nbt.getCompound("reward")).get();
+        this.time = nbt.getInt("time");
+        if (nbt.hasUUID("casterId")) {
+            this.casterId = nbt.getUUID("casterId");
+        }
     }
 }

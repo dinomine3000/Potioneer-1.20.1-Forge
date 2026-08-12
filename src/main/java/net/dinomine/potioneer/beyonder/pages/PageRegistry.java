@@ -47,6 +47,10 @@ public class PageRegistry {
     public static Page CHARM_FATE = register(i++, () -> new RitualRecipePage(Page.Chapter.CHARMS, "fate"));
     public static Page CHARM_WATER_AFFINITY = register(i++, () -> new RitualRecipePage(Page.Chapter.CHARMS, "water_affinity"));
     public static Page CHARM_WATER_PRISON = register(i++, () -> new RitualRecipePage(Page.Chapter.CHARMS, "water_prison"));
+    public static Page CHARM_BERSERK = register(i++, () -> new RitualRecipePage(Page.Chapter.CHARMS, "berserk"));
+    public static Page CHARM_MIST = register(i++, () -> new RitualRecipePage(Page.Chapter.CHARMS, "mist"));
+    public static Page CHARM_SENSE_OF_ORDER = register(i++, () -> new RitualRecipePage(Page.Chapter.CHARMS, "sense_of_order"));
+    public static Page CHARM_OCEAN_ORDER = register(i++, () -> new RitualRecipePage(Page.Chapter.CHARMS, "ocean_order"));
     public static Page RITUALS_CANDLES = register(i++, () -> new ItemPage(Page.Chapter.RITUALS, "rituals_candles", Items.CANDLE).withOffset(10));
     public static Page RITUALS_INK = register(i++, () -> new ItemPage(Page.Chapter.RITUALS, "rituals_ink", ModItems.INK_BOTTLE.get()).withOffset(10));
     public static Page RITUALS_DAGGER = register(i++, () -> new CraftingTableRecipePage(Page.Chapter.RITUALS, "rituals_dagger", new ResourceLocation(Potioneer.MOD_ID, "ritualistic_dagger")));

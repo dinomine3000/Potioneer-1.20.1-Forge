@@ -43,7 +43,7 @@ public class RulePylonAbility extends Ability implements IAreaOfJurisdiction {
         return AbilityFunctionHelper.placeBlockAtReach(target.level(), cap, target, this::placeBlock);
     }
 
-    public static int getMaxPylons(int sequenceLevel){return 1;}
+    public static int getMaxPylons(int sequenceLevel){return 9;}
 
     private boolean placeBlock(Level level, BlockPos positionToPlace, BeyonderCapability cap, LivingEntity player){
         if(!canAddNewPylon(level.getServer(), player)) return false;

@@ -496,8 +496,8 @@ public abstract class Ability {
             CompoundTag abilityTag = parentTag.getCompound(abilityKey.toString());
             cooldown = abilityTag.getInt("cooldown");
             maxCooldown = Math.max(abilityTag.getInt("cooldown"), 1);
-            state = abilityTag.getBoolean("enabled");
-            previousState = abilityTag.getBoolean("prevState");
+            state = abilityTag.contains("enabled") ? abilityTag.getBoolean("enabled") : true;
+            previousState = abilityTag.contains("prevState") ? abilityTag.getBoolean("prevState") : state;
             disabled = abilityTag.getBoolean("disabled");
             if(abilityTag.contains("instanceId"))
                 instanceId = abilityTag.getUUID("instanceId");

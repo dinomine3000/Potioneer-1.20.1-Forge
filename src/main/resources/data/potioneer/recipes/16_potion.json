@@ -1,0 +1,33 @@
+{
+  "type": "potioneer:potion_cauldron_brew",
+  "main_ingredients": [
+    {
+      "item": "minecraft:tnt"
+    },
+    {
+      "item": "potioneer:star_flower_block"
+    },
+    {
+      "item": "minecraft:iron_sword"
+    }
+  ],
+  "supplementary_ingredients": [
+    {
+      "item": "minecraft:gold_ingot",
+      "count": 3
+    },
+    {
+      "item": "minecraft:gold_nugget",
+      "count": 2
+    }
+  ],
+  "water_level": 3,
+  "needs_fire": true,
+  "output": {
+    "name": "16",
+    "amount": 2,
+    "bottle": true,
+    "color": 9506260,
+    "can_conflict": true
+  }
+}

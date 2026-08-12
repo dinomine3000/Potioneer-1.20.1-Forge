@@ -6,6 +6,7 @@ import net.dinomine.potioneer.beyonder.abilities.AbilityWithOptions;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
 import net.dinomine.potioneer.beyonder.effects.tyrant.AbilityProhibitionEffect;
 import net.dinomine.potioneer.beyonder.effects.tyrant.GeneralProhibitionEffect;
+import net.dinomine.potioneer.beyonder.pathways.TyrantPathway;
 import net.dinomine.potioneer.beyonder.player.CapProvider;
 import net.dinomine.potioneer.beyonder.player.BeyonderCapability;
 import net.dinomine.potioneer.config.PotioneerAbilityConfig;
@@ -83,6 +84,7 @@ public class ProhibitionAbility extends AbilityWithOptions {
                 entCap.getEffectsManager().addOrReplaceEffect(eff, entCap, ent);
             });
         }
+        if(!hits.isEmpty()) cap.getCharacteristicManager().progressActing(TyrantPathway.TRIBUNAL_ACTING_PROHIBITION, 15);
         return false;
     }
 

@@ -35,7 +35,17 @@ public class MysticalItemHelper {
         abilityMap.add(new MetaArtifactAbility(0, 9, Abilities.BLOCK_APPRAISAL.getAblId()));
         abilityMap.add(new MetaArtifactAbility(0, 10, Abilities.MINING_SPEED.getAblId()));
         abilityMap.add(new MetaArtifactAbility(0, 10, Abilities.VOID_VISION.getAblId()));
-        abilityMap.add(new MetaArtifactAbility(10, 20, Abilities.WATER_AFFINITY.getAblId()));
+        abilityMap.add(new MetaArtifactAbility(18, 20, Abilities.WATER_AFFINITY.getAblId()));
+        abilityMap.add(new MetaArtifactAbility(17, 20, Abilities.WATER_SCALES.getAblId()));
+        abilityMap.add(new MetaArtifactAbility(10, 19, Abilities.TYRANT_WATER_SPELLS.getAblId()));
+        abilityMap.add(new MetaArtifactAbility(17, 19, Abilities.TYRANT_DIVINATION.getAblId()));
+        abilityMap.add(new MetaArtifactAbility(10, 18, Abilities.ARREST.getAblId()));
+        abilityMap.add(new MetaArtifactAbility(10, 17, Abilities.CONTRACT.getAblId()));
+        abilityMap.add(new MetaArtifactAbility(10, 17, Abilities.BERSERK_RAGE.getAblId()));
+        abilityMap.add(new MetaArtifactAbility(10, 17, Abilities.TYRANT_CALAMITY.getAblId()));
+        abilityMap.add(new MetaArtifactAbility(10, 16, Abilities.AMPLIFICATION.getAblId()));
+        abilityMap.add(new MetaArtifactAbility(10, 16, Abilities.PROHIBITION.getAblId()));
+        abilityMap.add(new MetaArtifactAbility(10, 16, Abilities.RULE_PYLON.getAblId()));
 //        abilityMap.put("water_affinity", new MetaAbilityEntry(10, 20, WaterAffinityAbility::new));
         abilityMap.add(new MetaArtifactAbility(20, 30, Abilities.AIR_BULLET.getAblId()));
         abilityMap.add(new MetaArtifactAbility(30, 40, Abilities.MELT_ABILITY.getAblId()));
@@ -44,7 +54,10 @@ public class MysticalItemHelper {
         //abilities for gems and amulets
 //        abilityMap.put("lucky_trend", new MetaArtifactAbility(-1, -1, level -> Abilities.LUCK_TREND.create(level%10)));
 
+        downsideMap.add(new MetaArtifactAbility(0, 50, Abilities.NOISES_DOWNSIDE.getAblId()));
+        downsideMap.add(new MetaArtifactAbility(0, 50, Abilities.SLOWNESS_DOWNSIDE.getAblId()));
         downsideMap.add(new MetaArtifactAbility(0, 50, Abilities.DUMMY_DOWNSIDE.getAblId()));
+
         downsideMap.add(new MetaArtifactAbility(7, 10, Abilities.CHAOS_LUCK_DOWNSIDE.getAblId()));
         downsideMap.add(new MetaArtifactAbility(0, 8, Abilities.COOLDOWN_DOWNSIDE.getAblId()));
         downsideMap.add(new MetaArtifactAbility(0, 8, Abilities.FAKE_LAG_DOWNSIDE.getAblId()));
@@ -52,6 +65,12 @@ public class MysticalItemHelper {
         downsideMap.add(new MetaArtifactAbility(0, 8, Abilities.LUCK_CONSUME_DOWNSIDE.getAblId()));
         downsideMap.add(new MetaArtifactAbility(0, 10, Abilities.LUCK_TREND_DOWNWARDS_DOWNSIDE.getAblId()));
         downsideMap.add(new MetaArtifactAbility(0, 7, Abilities.RANDOM_VELOCITY_DOWNSIDE.getAblId()));
+
+        downsideMap.add(new MetaArtifactAbility(16, 20, Abilities.WATER_DOWNSIDE.getAblId()));
+        downsideMap.add(new MetaArtifactAbility(15, 19, Abilities.AURA_DOWNSIDE.getAblId()));
+        downsideMap.add(new MetaArtifactAbility(15, 19, Abilities.AXIS_DOWNSIDE.getAblId()));
+        downsideMap.add(new MetaArtifactAbility(15, 18, Abilities.MIST_DOWNSIDE.getAblId()));
+        downsideMap.add(new MetaArtifactAbility(15, 17, Abilities.CALAMITY_DOWNSIDE.getAblId()));
 
 //        effectMap.put("silk", new MetaEffectEntry(0, 8, dur -> BeyonderEffects.byId(BeyonderEffects.EFFECT.WHEEL_SILK_TOUCH, 8, 0, dur, true)));
 //        effectMap.put("water_affinity", new MetaEffectEntry(10, 9, dur -> BeyonderEffects.byId(BeyonderEffects.EFFECT.TYRANT_WATER_AFFINITY, 9, 5, dur, true)));

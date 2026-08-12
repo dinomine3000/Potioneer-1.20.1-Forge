@@ -20,7 +20,7 @@ import java.util.List;
 
 public class TyrantResponse extends Deity {
 
-    public static final String PRAYER = "You are the Order born among Chaos, the great conqueror of the Golden World, My ruler for all time, The tyrant over all mongrels";
+    public static final String PRAYER = "You are the Order born among Chaos, The Chaos that rules over all Order, My ruler for all time, The tyrant over all mongrels";
 
     public TyrantResponse(){
         super(0, PotioneerRitualsConfig.TYRANT_INGREDIENTS.get(), PotioneerRitualsConfig.TYRANT_INCENSE.get(),

@@ -20,6 +20,7 @@ import net.minecraft.util.FormattedCharSequence;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 public class ContractScreen extends Screen {
     private static final ResourceLocation TEXTURE = new ResourceLocation(Potioneer.MOD_ID, "textures/gui/contract_menu.png");
@@ -32,6 +33,7 @@ public class ContractScreen extends Screen {
     private final List<ContractAbility.ContractOption> conditions = new ArrayList<>();
     private final List<ContractAbility.ContractOption> rewards = new ArrayList<>();
     private final int targetId;
+    private UUID casterId = null;
     private static final int MAX_ARGUMENTS = 5;
     private static final int CONDITION_Y = 0;
     private static final int REWARD_Y = 100;
@@ -64,7 +66,7 @@ public class ContractScreen extends Screen {
         entityName = Minecraft.getInstance().level.getEntity(targetId).getDisplayName();
     }
 
-    public ContractScreen(ContractOption condition, ContractOption reward, int targetId, boolean signingContract) {
+    public ContractScreen(ContractOption condition, ContractOption reward, int targetId, boolean signingContract, UUID casterId) {
         super(Component.literal("Contract"));
         chosenCondition = condition;
         chosenReward = reward;
@@ -72,6 +74,7 @@ public class ContractScreen extends Screen {
         this.key = null;
         entityName = Minecraft.getInstance().level.getEntity(targetId).getDisplayName();
         this.isPlayerSigningContract = signingContract;
+        this.casterId = casterId;
     }
 
     @Override
@@ -220,7 +223,7 @@ public class ContractScreen extends Screen {
 
     private void cast(){
         if(isPlayerSigningContract){
-            PacketHandler.sendMessageCTS(new SignContractMessage(chosenCondition, chosenReward, targetId));
+            PacketHandler.sendMessageCTS(new SignContractMessage(chosenCondition, chosenReward, targetId, casterId));
             this.onClose();
             return;
         }
@@ -252,10 +255,10 @@ public class ContractScreen extends Screen {
     }
 
     public static void viewExistingContract(ContractOption condition, ContractOption reward, int targetId){
-        Minecraft.getInstance().setScreen(new ContractScreen(condition, reward, targetId, false));
+        Minecraft.getInstance().setScreen(new ContractScreen(condition, reward, targetId, false, null));
     }
-    public static void openContractToSign(ContractOption condition, ContractOption reward, int targetId){
-        Minecraft.getInstance().setScreen(new ContractScreen(condition, reward, targetId, true));
+    public static void openContractToSign(ContractOption condition, ContractOption reward, int targetId, UUID casterId){
+        Minecraft.getInstance().setScreen(new ContractScreen(condition, reward, targetId, true, casterId));
     }
 
     private boolean showOnlyContract(){return key == null;}

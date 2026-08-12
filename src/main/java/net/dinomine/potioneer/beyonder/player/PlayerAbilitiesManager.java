@@ -657,7 +657,7 @@ public class PlayerAbilitiesManager {
         if(key.isArtifactKey()){
             ArtifactHolder artifact = artifacts.get(key.getArtifactId());
             if(artifact != null){
-                artifact.castAbility(key, primary, cap, tar);
+                artifact.castAbility(key, primary, cap, tar, args);
             }
             if(sync && tar.level().isClientSide()){
                 PacketHandler.sendMessageCTS(new PlayerCastAbilityMessageCTS(key, primary, args));

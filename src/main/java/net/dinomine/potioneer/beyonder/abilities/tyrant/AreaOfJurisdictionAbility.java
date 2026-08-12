@@ -31,7 +31,7 @@ public class AreaOfJurisdictionAbility extends PassiveAbility implements IAreaOf
      * @param sequenceLevel
      */
     public AreaOfJurisdictionAbility(int sequenceLevel) {
-        super(sequenceLevel, BeyonderEffects.TYRANT_AOJ_SOURCE, level -> "area_of_jurisdiction" + (level < 7 ? "_2" : ""));
+        super(sequenceLevel, BeyonderEffects.TYRANT_AOJ_SOURCE, level -> "area_of_jurisdiction" + (level < 7 ? (level < 6 ? "_3" : "_2") : ""));
         enabledOnAcquire();
     }
 
@@ -86,7 +86,7 @@ public class AreaOfJurisdictionAbility extends PassiveAbility implements IAreaOf
     }
 
     private static int getMaxCentersAtLevel(int sequenceLevel){
-        return sequenceLevel < 7 ? 2 : 1;
+        return sequenceLevel < 7 ? (sequenceLevel < 6 ? 3 : 2) : 1;
     }
 
     private static int getNextAvailableIndex(CompoundTag dataTag, int sequenceLevel){

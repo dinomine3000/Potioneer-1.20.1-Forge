@@ -4,6 +4,7 @@ import net.dinomine.potioneer.beyonder.abilities.Abilities;
 import net.dinomine.potioneer.beyonder.abilities.AbilityFunctionHelper;
 import net.dinomine.potioneer.beyonder.abilities.tyrant.RulePylonAbility.*;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
+import net.dinomine.potioneer.beyonder.pathways.TyrantPathway;
 import net.dinomine.potioneer.beyonder.player.BeyonderCapability;
 import net.dinomine.potioneer.beyonder.player.CapProvider;
 import net.dinomine.potioneer.network.PacketHandler;
@@ -101,13 +102,20 @@ public class RulePylonBlockEntity extends BlockEntity implements GeoBlockEntity 
         rulePunishmentMap.get(ruleBroken).execution().execute(ruleBreaker, ruleBreaker.getCapability(CapProvider.BEYONDER_STATS).resolve().get(), AbilityFunctionHelper.getEntityAcrossDimensions(level, ownerId), sequenceLevel);
         if(ruleBreaker instanceof Player player)
             player.displayClientMessage(Component.translatable("message.potioneer.rule_broken", ruleBroken.title()), true);
+        LivingEntity owner = getOwner();
+        if(owner == null) return;
+        CapProvider.beyonder(owner).ifPresent(cap -> cap.getCharacteristicManager().progressActing(TyrantPathway.TRIBUNAL_ACTING_PYLON_RULE, 15));
     }
 
     public int tickCount = 0;
     public void tick(ServerLevel pLevel, BlockPos pPos, BlockState pState) {
         if(tickCount++ >= (20*5)) gatherAndSyncData(pLevel);
         if(!working) return;
-        for(Law law: laws) law.execution().execute(this);
+        for(Law law: laws) {
+            law.execution().execute(this);
+            LivingEntity owner = getOwner();
+            if(owner != null) CapProvider.beyonder(owner).ifPresent(cap -> cap.getCharacteristicManager().progressActing(TyrantPathway.TRIBUNAL_ACTING_PYLON_LAW, 15));
+        }
         //add an effect to help keep track of rule breaking.
         AbilityFunctionHelper.getLivingEntitiesAround(getBlockPos(), level, 9).forEach(ent -> {
             ent.getCapability(CapProvider.BEYONDER_STATS).ifPresent(cap -> cap.getEffectsManager().addOrRefreshEffect(BeyonderEffects.TYRANT_MAIN_HAND_RULE.createInstance(0, 20, false), cap, ent));
@@ -144,7 +152,17 @@ public class RulePylonBlockEntity extends BlockEntity implements GeoBlockEntity 
 
     private void attemptClaimChunks(ServerLevel level, boolean workingBefore, boolean workingNow){
         claimedChunks.clear();
-        if(workingBefore && workingNow) setClaimTo(level, Set.of(new ChunkPos(getBlockPos())));
+        ChunkPos centerChunk = new ChunkPos(getBlockPos());
+        Set<ChunkPos> surroundingChunks = new HashSet<>();
+
+        for (int dx = -1; dx <= 1; dx++) {
+            for (int dz = -1; dz <= 1; dz++) {
+                surroundingChunks.add(new ChunkPos(centerChunk.x + dx, centerChunk.z + dz));
+            }
+        }
+        if (workingBefore && workingNow) {
+            setClaimTo(level, surroundingChunks);
+        }
         else if(workingBefore) {
             DimensionChunkSavedData.from(level).removePylon(getBlockPos());
             working = false;
@@ -160,10 +178,11 @@ public class RulePylonBlockEntity extends BlockEntity implements GeoBlockEntity 
         boolean flag = false;
         for(ChunkPos pos: chunksWantsToClaim){
             if(data.claimChunk(level, pos, getBlockPos(), ownerId, sequenceLevel)){
-                claimedChunks.add(pos);
+                claimedChunks.add(new ChunkPos(pos.x, pos.z));
                 flag = true;
             }
         }
+        if(flag) data.updateAoj(getBlockPos(), extendsAoj);
         return flag;
     }
 

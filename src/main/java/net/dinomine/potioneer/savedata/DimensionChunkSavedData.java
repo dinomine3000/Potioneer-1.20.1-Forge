@@ -18,29 +18,35 @@ import java.util.*;
 
 public class DimensionChunkSavedData extends SavedData {
     private final HashMap<ChunkPos, PylonProxy> chunkPylonMap = new HashMap<>();
-    private final HashMap<UUID, Integer> playerMaxPylons = new HashMap<>();
 
-    private int getPylonLevel(ChunkPos chunk, Level level){
-        if(!chunkPylonMap.containsKey(chunk)) return 10;
+    private int getPylonLevel(ChunkPos chunk, Level level) {
+        PylonProxy proxy = chunkPylonMap.get(chunk);
+        if (proxy == null) return 10;
 
-        RulePylonBlockEntity be = (RulePylonBlockEntity) level.getBlockEntity(chunkPylonMap.get(chunk).pylonPos);
-        if(be == null){
-            removePylon(chunk);
-            return 10;
+        if (level instanceof ServerLevel serverLevel) {
+            RulePylonBlockEntity be = getBlockEntityOfChunk(serverLevel, chunk, false);
+            if (be != null) {
+                return be.getSequenceLevel();
+            }
+            if (serverLevel.isLoaded(proxy.pylonPos) && !(serverLevel.getBlockEntity(proxy.pylonPos) instanceof RulePylonBlockEntity)) {
+                removePylon(chunk);
+                return 10;
+            }
         }
-        return be.getSequenceLevel();
+        return proxy.sequenceLevel;
     }
 
-    public void removePylon(ChunkPos pos){
-        chunkPylonMap.remove(pos);
-        setDirty();
+    public void removePylon(ChunkPos pos) {
+        if (chunkPylonMap.remove(pos) != null) {
+            setDirty();
+        }
     }
 
-    public static void collectAojDataForOwner(MinecraftServer server, LivingEntity owner, List<BlockPos> centers, List<Integer> sideLengths, List<String> dimensions){
+    public static void collectAojDataForOwner(MinecraftServer server, LivingEntity owner, List<BlockPos> centers, List<Integer> sideLengths, List<String> dimensions) {
         UUID ownerId = owner.getUUID();
-        for(ServerLevel dimensionLevel: server.getAllLevels()){
+        for (ServerLevel dimensionLevel : server.getAllLevels()) {
             DimensionChunkSavedData data = DimensionChunkSavedData.from(dimensionLevel);
-            for(Map.Entry<ChunkPos, PylonProxy> claim: data.chunkPylonMap.entrySet()){
+            for (Map.Entry<ChunkPos, PylonProxy> claim : data.chunkPylonMap.entrySet()) {
                 PylonProxy proxy = claim.getValue();
                 if (ownerId.equals(proxy.ownerId) && proxy.extendsAoj) {
                     centers.add(claim.getKey().getMiddleBlockPosition(0));
@@ -50,12 +56,13 @@ public class DimensionChunkSavedData extends SavedData {
             }
         }
     }
-    public static Set<BlockPos> getAllPylonPositionsOwnedBy(MinecraftServer server, LivingEntity owner){
+
+    public static Set<BlockPos> getAllPylonPositionsOwnedBy(MinecraftServer server, LivingEntity owner) {
         UUID ownerId = owner.getUUID();
         Set<BlockPos> res = new HashSet<>();
-        for(ServerLevel dimensionLevel: server.getAllLevels()){
+        for (ServerLevel dimensionLevel : server.getAllLevels()) {
             DimensionChunkSavedData data = DimensionChunkSavedData.from(dimensionLevel);
-            for(Map.Entry<ChunkPos, PylonProxy> claim: data.chunkPylonMap.entrySet()){
+            for (Map.Entry<ChunkPos, PylonProxy> claim : data.chunkPylonMap.entrySet()) {
                 PylonProxy proxy = claim.getValue();
                 if (ownerId.equals(proxy.ownerId)) {
                     res.add(proxy.pylonPos);
@@ -64,18 +71,19 @@ public class DimensionChunkSavedData extends SavedData {
         }
         return res;
     }
-    public static @Nullable RulePylonBlockEntity getRulingPylon(ServerLevel dimensionLevel, BlockPos testPosition){
+
+    public static @Nullable RulePylonBlockEntity getRulingPylon(ServerLevel dimensionLevel, BlockPos testPosition) {
         ChunkPos pos = new ChunkPos(testPosition);
         DimensionChunkSavedData data = DimensionChunkSavedData.from(dimensionLevel);
-        if(!data.chunkPylonMap.containsKey(pos)) return null;
-        return (RulePylonBlockEntity) dimensionLevel.getBlockEntity(data.chunkPylonMap.get(pos).pylonPos);
+        if (!data.chunkPylonMap.containsKey(pos)) return null;
+        return data.getBlockEntityOfChunk(dimensionLevel, pos, false);
     }
 
-    public static Set<BlockPos> getPylonPositionsInDimensionOwnedBy(ServerLevel dimensionLevel, LivingEntity owner){
+    public static Set<BlockPos> getPylonPositionsInDimensionOwnedBy(ServerLevel dimensionLevel, LivingEntity owner) {
         Set<BlockPos> res = new HashSet<>();
         UUID ownerId = owner.getUUID();
         DimensionChunkSavedData data = DimensionChunkSavedData.from(dimensionLevel);
-        for(Map.Entry<ChunkPos, PylonProxy> claim: data.chunkPylonMap.entrySet()){
+        for (Map.Entry<ChunkPos, PylonProxy> claim : data.chunkPylonMap.entrySet()) {
             PylonProxy proxy = claim.getValue();
             if (ownerId.equals(proxy.ownerId)) {
                 res.add(proxy.pylonPos);
@@ -83,7 +91,9 @@ public class DimensionChunkSavedData extends SavedData {
         }
         return res;
     }
-    public RulePylonBlockEntity getBlockEntityOfChunk(ServerLevel dimensionLevel, BlockPos pylonPos, boolean forceLoad){
+
+    public RulePylonBlockEntity getBlockEntityOfChunk(ServerLevel dimensionLevel, BlockPos pylonPos, boolean forceLoad) {
+        if (dimensionLevel == null || pylonPos == null) return null;
         boolean isLoaded = dimensionLevel.isLoaded(pylonPos);
         if (!isLoaded) {
             if (forceLoad) dimensionLevel.getChunk(pylonPos);
@@ -92,7 +102,8 @@ public class DimensionChunkSavedData extends SavedData {
         if (dimensionLevel.getBlockEntity(pylonPos) instanceof RulePylonBlockEntity be) return be;
         return null;
     }
-    public RulePylonBlockEntity getBlockEntityOfChunk(ServerLevel dimensionLevel, ChunkPos pos, boolean forceLoad){
+
+    public RulePylonBlockEntity getBlockEntityOfChunk(ServerLevel dimensionLevel, ChunkPos pos, boolean forceLoad) {
         if (dimensionLevel == null || pos == null) return null;
         var pylonEntry = chunkPylonMap.get(pos);
         if (pylonEntry == null || pylonEntry.pylonPos == null) return null;
@@ -112,60 +123,65 @@ public class DimensionChunkSavedData extends SavedData {
         return null;
     }
 
-    public void setAojStatus(BlockPos pylonPos, boolean aojStatus){
-        List<ChunkPos> toRemove = new ArrayList<>();
-        for(Map.Entry<ChunkPos, PylonProxy> claim: chunkPylonMap.entrySet()){
-            if(pylonPos.equals(claim.getValue().pylonPos)) claim.getValue().setExtendsAoj(aojStatus);
+    public void setAojStatus(BlockPos pylonPos, boolean aojStatus) {
+        for (Map.Entry<ChunkPos, PylonProxy> claim : chunkPylonMap.entrySet()) {
+            if (pylonPos.equals(claim.getValue().pylonPos)) claim.getValue().setExtendsAoj(aojStatus);
         }
         setDirty();
     }
 
-    public void removePylon(BlockPos pylonPos){
+    public void removePylon(BlockPos pylonPos) {
         List<ChunkPos> toRemove = new ArrayList<>();
-        for(Map.Entry<ChunkPos, PylonProxy> claim: chunkPylonMap.entrySet()){
-            if(pylonPos.equals(claim.getValue().pylonPos)) toRemove.add(claim.getKey());
+        for (Map.Entry<ChunkPos, PylonProxy> claim : chunkPylonMap.entrySet()) {
+            if (pylonPos.equals(claim.getValue().pylonPos)) toRemove.add(claim.getKey());
         }
-        for(ChunkPos pos: toRemove) chunkPylonMap.remove(pos);
-        setDirty();
+        for (ChunkPos pos : toRemove) chunkPylonMap.remove(pos);
+        if (!toRemove.isEmpty()) setDirty();
     }
 
-    public int getChunkClaimLevel(Level level, ChunkPos pos){
+    public int getChunkClaimLevel(Level level, ChunkPos pos) {
         return chunkPylonMap.containsKey(pos) ? getPylonLevel(pos, level) : 10;
     }
 
-    public boolean canClaimChunk(ServerLevel level, ChunkPos chunk, int sequenceLevel){
+    public boolean canClaimChunk(ServerLevel level, ChunkPos chunk, int sequenceLevel) {
         int lvl = getPylonLevel(chunk, level);
-        if(lvl <= sequenceLevel) return false;
-        return true;
+        return lvl > sequenceLevel;
     }
 
-    //returns the number of pylons that owner owns at the given sequence level or lower (between the given value and 9)
-    private List<PylonProxy> getPylonList(UUID ownerId, int sequenceLevelToTest){
-        return chunkPylonMap.values().stream().filter(pylon -> pylon.ownerId.equals(ownerId) && pylon.sequenceLevel>=sequenceLevelToTest).toList();
+    private List<PylonProxy> getPylonList(UUID ownerId, int sequenceLevelToTest) {
+        return chunkPylonMap.values().stream()
+                .filter(pylon -> ownerId.equals(pylon.ownerId) && pylon.sequenceLevel >= sequenceLevelToTest)
+                .toList();
     }
 
-    //if the owner has more pylons than is allowed by the given sequence level, clear out the extra ones, starting with the lowest level ones (level9)
-    private void unclaimExtraChunks(UUID ownerId, int sequenceLevelToClear){
+    private void unclaimExtraChunks(UUID ownerId, int sequenceLevelToClear) {
         List<PylonProxy> relevantPylons = new ArrayList<>(getPylonList(ownerId, sequenceLevelToClear));
         int count = relevantPylons.size();
         int max = RulePylonAbility.getMaxPylons(sequenceLevelToClear);
-        if(count <= max) return;
+        if (count <= max) return;
+
         relevantPylons.sort(Comparator.comparingInt(p -> p.sequenceLevel));
         Collections.reverse(relevantPylons);
-        for(int i = 0; i < count - max; i++){
+
+        for (int i = 0; i < count - max; i++) {
             removePylon(relevantPylons.get(i).pylonPos);
         }
     }
 
-    public boolean claimChunk(ServerLevel level, ChunkPos chunk, BlockPos blockPos, UUID ownerId, int sequenceLevel){
+    public boolean claimChunk(ServerLevel level, ChunkPos chunk, BlockPos blockPos, UUID ownerId, int sequenceLevel) {
         int lvl = getPylonLevel(chunk, level);
-        if(lvl <= sequenceLevel) return false;
-        if(getPylonList(ownerId, sequenceLevel).size() >= RulePylonAbility.getMaxPylons(sequenceLevel)) return false;
+        if (lvl <= sequenceLevel) return false;
+        if (getPylonList(ownerId, sequenceLevel).size() >= RulePylonAbility.getMaxPylons(sequenceLevel)) return false;
+
         unclaimExtraChunks(ownerId, sequenceLevel);
-        if(chunkPylonMap.containsKey(chunk)){
+
+        if (chunkPylonMap.containsKey(chunk)) {
             RulePylonBlockEntity be = getBlockEntityOfChunk(level, chunk, true);
-            be.invalidate(chunk);
+            if (be != null) {
+                be.invalidate(chunk);
+            }
         }
+
         chunkPylonMap.put(chunk, new PylonProxy(blockPos, ownerId, sequenceLevel));
         setDirty();
         return true;
@@ -174,14 +190,18 @@ public class DimensionChunkSavedData extends SavedData {
     @Override
     public CompoundTag save(CompoundTag compoundTag) {
         ListTag list = new ListTag();
-        chunkPylonMap.forEach((chunkPos, blockPos) -> {
+        new HashMap<>(chunkPylonMap).forEach((chunkPos, blockPos) -> {
             CompoundTag entry = new CompoundTag();
             entry.putInt("cx", chunkPos.x);
             entry.putInt("cz", chunkPos.z);
             entry.putInt("px", blockPos.pylonPos.getX());
             entry.putInt("py", blockPos.pylonPos.getY());
             entry.putInt("pz", blockPos.pylonPos.getZ());
-            entry.putUUID("id", blockPos.ownerId);
+
+            if (blockPos.ownerId != null) {
+                entry.putUUID("id", blockPos.ownerId);
+            }
+
             entry.putBoolean("aoj", blockPos.extendsAoj);
             entry.putInt("level", blockPos.sequenceLevel);
             list.add(entry);
@@ -190,43 +210,55 @@ public class DimensionChunkSavedData extends SavedData {
         return compoundTag;
     }
 
-    public static DimensionChunkSavedData loadPylons(CompoundTag nbt){
+    public static DimensionChunkSavedData loadPylons(CompoundTag nbt) {
         DimensionChunkSavedData data = new DimensionChunkSavedData();
         ListTag list = nbt.getList("pylons", Tag.TAG_COMPOUND);
         for (int i = 0; i < list.size(); i++) {
             CompoundTag entry = list.getCompound(i);
             ChunkPos chunkPos = new ChunkPos(entry.getInt("cx"), entry.getInt("cz"));
             BlockPos blockPos = new BlockPos(entry.getInt("px"), entry.getInt("py"), entry.getInt("pz"));
-            UUID ownerId = entry.getUUID("id");
+
+            UUID ownerId = entry.hasUUID("id") ? entry.getUUID("id") : null;
             boolean aoj = entry.getBoolean("aoj");
             int level = entry.getInt("level");
+
             data.chunkPylonMap.put(chunkPos, new PylonProxy(blockPos, ownerId, level, aoj));
         }
         return data;
     }
 
-    private DimensionChunkSavedData(){
+    private DimensionChunkSavedData() {
     }
 
-    public static DimensionChunkSavedData from(ServerLevel level){
-        return level.getDataStorage().computeIfAbsent(DimensionChunkSavedData::loadPylons,
-                DimensionChunkSavedData::new, "potioneer_chunk_data");
+    public static DimensionChunkSavedData from(ServerLevel level) {
+        return level.getDataStorage().computeIfAbsent(
+                DimensionChunkSavedData::loadPylons,
+                DimensionChunkSavedData::new,
+                "potioneer_chunk_data"
+        );
     }
 
-    public void updateAoj(BlockPos pylonPos, boolean newAoj){
-        for(PylonProxy proxy: chunkPylonMap.values())
-            if(proxy.pylonPos.equals(pylonPos)) proxy.extendsAoj = newAoj;
+    public void updateAoj(BlockPos pylonPos, boolean newAoj) {
+        for (PylonProxy proxy : chunkPylonMap.values()) {
+            if (proxy.pylonPos.equals(pylonPos)) {
+                proxy.extendsAoj = newAoj;
+            }
+        }
+        setDirty();
     }
 
-    private static class PylonProxy{
+    private static class PylonProxy {
         public BlockPos pylonPos;
         public UUID ownerId;
-        public boolean extendsAoj = true;
+        private boolean extendsAoj;
+        public boolean extendsAoj() { return extendsAoj; }
         public int sequenceLevel;
-        public PylonProxy(BlockPos pylonPos, UUID ownerId, int sequenceLevel){
+
+        public PylonProxy(BlockPos pylonPos, UUID ownerId, int sequenceLevel) {
             this(pylonPos, ownerId, sequenceLevel, true);
         }
-        public PylonProxy(BlockPos pylonPos, UUID ownerId, int sequenceLevel, boolean aoj){
+
+        public PylonProxy(BlockPos pylonPos, UUID ownerId, int sequenceLevel, boolean aoj) {
             this.pylonPos = pylonPos;
             this.ownerId = ownerId;
             this.sequenceLevel = sequenceLevel;
@@ -237,7 +269,6 @@ public class DimensionChunkSavedData extends SavedData {
             this.sequenceLevel = sequenceLevel;
         }
 
-        public void setExtendsAoj(boolean extendsAoj){this.extendsAoj = extendsAoj;}
+        public void setExtendsAoj(boolean extendsAoj) { this.extendsAoj = extendsAoj; }
     }
-
 }

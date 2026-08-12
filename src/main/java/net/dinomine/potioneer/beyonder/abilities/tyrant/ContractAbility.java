@@ -3,9 +3,11 @@ package net.dinomine.potioneer.beyonder.abilities.tyrant;
 import net.dinomine.potioneer.beyonder.abilities.Ability;
 import net.dinomine.potioneer.beyonder.abilities.AbilityFunctionHelper;
 import net.dinomine.potioneer.beyonder.abilities.AbilityKey;
+import net.dinomine.potioneer.beyonder.effects.tyrant.ContractedEffect;
 import net.dinomine.potioneer.beyonder.player.BeyonderCapability;
 import net.dinomine.potioneer.beyonder.player.CapProvider;
 import net.dinomine.potioneer.beyonder.player.PlayerAbilitiesManager;
+import net.dinomine.potioneer.beyonder.player.PlayerEffectsManager;
 import net.dinomine.potioneer.config.PotioneerAbilityConfig;
 import net.dinomine.potioneer.network.PacketHandler;
 import net.dinomine.potioneer.network.messages.abilityRelevant.abilitySpecific.OpenContractScreenMessage;
@@ -23,6 +25,9 @@ import java.util.List;
 import java.util.*;
 import java.util.function.Function;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.monster.Monster;
+import net.minecraft.world.entity.player.Player;
 
 public class ContractAbility extends Ability {
     public ContractAbility(int sequenceLevel) {
@@ -46,12 +51,30 @@ public class ContractAbility extends Ability {
             if(!(ent instanceof LivingEntity target)) return false;
             if(caster.level().isClientSide()) return true;
 
+            boolean nonAlly = PotioneerAbilityConfig.TYRANT_CAN_DO_CONTRACTS_TO_NON_ALLIES.get();
+            if(!nonAlly && !AbilityFunctionHelper.areEntitiesAllies(caster, target)) return false;
+            if(target instanceof Monster) return false;
+
             setNextCooldownAs(20*30);
             cap.requestActiveSpiritualityCost(cost());
-            UUID token = UUID.randomUUID();
-            int duration = 20*60;
-            ServerTokenCache.addToken(token, duration, args);
-            AbilityFunctionHelper.sendCommandMessage(target, "/beyonderability contract " + token, Component.translatable("message.potioneer.contract_message"), Component.translatable("message.potioneer.contract_clickable", duration/20), Component.translatable("message.potioneer.contract_tooltip"));
+            if(target instanceof Player){
+                UUID token = UUID.randomUUID();
+                int duration = 20*60;
+                args.putUUID("casterId", caster.getUUID());
+                ServerTokenCache.addToken(token, duration, args);
+                AbilityFunctionHelper.sendCommandMessage(target, "/beyonderability contract " + token, Component.translatable("message.potioneer.contract_message"), Component.translatable("message.potioneer.contract_clickable", duration/20), Component.translatable("message.potioneer.contract_tooltip"));
+            } else {
+                ContractAbility.ContractOption condition = ContractAbility.ContractOption.loadFromNbt(args.getCompound("condition")).get();
+                ContractAbility.ContractOption reward = ContractAbility.ContractOption.loadFromNbt(args.getCompound("reward")).get();
+                ContractedEffect eff = ContractedEffect.getInstance(condition, reward, caster.getUUID());
+                Optional<BeyonderCapability> optCap = CapProvider.beyonder(target);
+                boolean isPresent = optCap.isPresent();
+                if(isPresent){
+                    BeyonderCapability targetCap = optCap.get();
+                    PlayerEffectsManager manager = targetCap.getEffectsManager();
+                    manager.addOrReplaceEffect(eff, targetCap, target);
+                }
+            }
             return true;
         }
     }

@@ -1,6 +1,7 @@
 package net.dinomine.potioneer.item.custom.coin;
 
 import net.dinomine.potioneer.beyonder.abilities.Abilities;
+import net.dinomine.potioneer.beyonder.pathways.TyrantPathway;
 import net.dinomine.potioneer.beyonder.player.CapProvider;
 import net.dinomine.potioneer.beyonder.player.BeyonderCapability;
 import net.dinomine.potioneer.item.ModItems;
@@ -139,6 +140,7 @@ public class CoinItem extends Item implements GeoItem {
         }
         triggerAnim(player, id, "toss_controller", "coin_toss_" + (newState ? "heads" : "tails"));
         player.getCooldowns().addCooldown(this, 20);
+        CapProvider.beyonder(player).ifPresent(cap -> cap.getCharacteristicManager().progressActing(TyrantPathway.WATER_MAGE_ACTING_DIVINATION, 18));
         return InteractionResult.CONSUME_PARTIAL;
     }
 

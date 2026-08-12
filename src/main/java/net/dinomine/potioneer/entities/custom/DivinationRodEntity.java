@@ -1,6 +1,7 @@
 package net.dinomine.potioneer.entities.custom;
 
 import net.dinomine.potioneer.beyonder.abilities.Abilities;
+import net.dinomine.potioneer.beyonder.pathways.TyrantPathway;
 import net.dinomine.potioneer.beyonder.player.BeyonderCapability;
 import net.dinomine.potioneer.beyonder.player.CapProvider;
 import net.dinomine.potioneer.util.misc.DivinationResult;
@@ -120,6 +121,7 @@ public class DivinationRodEntity extends PlaceableItemEntity implements GeoEntit
             if(positions.isEmpty()) positions = new ArrayList<>(result.positions());
 //            System.out.println("Found positions: " + positions);
             if(seer || lucky){
+                cap.getCharacteristicManager().progressActing(TyrantPathway.WATER_MAGE_ACTING_DIVINATION, 18);
                 this.entityData.set(INTENDED_YAW, getYawFromPosToPos(this.getOnPos(), positions.get(0)));
 //                System.out.println("Telling you the way");
             }

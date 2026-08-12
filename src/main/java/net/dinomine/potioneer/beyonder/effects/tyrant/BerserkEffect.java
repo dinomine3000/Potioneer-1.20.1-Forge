@@ -3,6 +3,7 @@ package net.dinomine.potioneer.beyonder.effects.tyrant;
 import net.dinomine.potioneer.beyonder.abilities.Abilities;
 import net.dinomine.potioneer.beyonder.abilities.DisabledAbilitiesManager.DisabledAbilityProxy;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffect;
+import net.dinomine.potioneer.beyonder.pathways.TyrantPathway;
 import net.dinomine.potioneer.beyonder.player.BeyonderCapability;
 import net.minecraft.nbt.*;
 import net.minecraft.sounds.SoundEvents;
@@ -44,6 +45,7 @@ public class BerserkEffect extends BeyonderEffect {
         if(target.tickCount%20 == 0){
             cap.changeSanity(-1);
         }
+        cap.getCharacteristicManager().progressActing(TyrantPathway.MAGISTRATE_ACTING_BERSERK, 16);
         if(cap.getSanity() < BeyonderCapability.SANITY_FOR_DROP && target.tickCount%10==0)
             target.level().playSound(target, target.getOnPos(), SoundEvents.WARDEN_HEARTBEAT, SoundSource.NEUTRAL, 2, 1);
     }

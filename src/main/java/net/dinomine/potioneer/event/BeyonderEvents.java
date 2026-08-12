@@ -28,6 +28,9 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.damagesource.DamageSources;
+import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -371,7 +374,8 @@ public class BeyonderEvents {
     public static void onDamageProposed(LivingAttackEvent event){
         if(event.getEntity() == null) return;
         LivingEntity ent = event.getEntity();
-        if(ModAttributes.getResistance(ent) >= event.getAmount() && !event.getSource().is(PotioneerDamage.Tags.ABSOLUTE)){
+
+        if(!event.getSource().is(DamageTypes.DROWN) && ModAttributes.getResistance(ent) >= event.getAmount() && !event.getSource().is(PotioneerDamage.Tags.ABSOLUTE)){
             event.setCanceled(event.isCancelable());
             event.setResult(Event.Result.DENY);
             return;

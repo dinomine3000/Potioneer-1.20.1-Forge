@@ -59,6 +59,7 @@ public class PotioneerAbilityConfig {
     public static final ForgeConfigSpec.IntValue WATER_SPELL_COOLDOWN_WATER_TRAP;
 
     //contract
+    public static final ForgeConfigSpec.BooleanValue TYRANT_CAN_DO_CONTRACTS_TO_NON_ALLIES;
     public static final ForgeConfigSpec.DoubleValue CONTRACT_SPIRITUALITY_THRESHOLD;
     public static final ForgeConfigSpec.IntValue CONTRACT_HEALTH_THRESHOLD;
     public static final ForgeConfigSpec.IntValue CONTRACT_DAMAGE_BUFF;
@@ -258,6 +259,11 @@ public class PotioneerAbilityConfig {
         BUILDER.pop();
 
         BUILDER.push("contract_settings");
+        TYRANT_CAN_DO_CONTRACTS_TO_NON_ALLIES = BUILDER
+                .comment("Should a tyrant beyonder be able to apply a contract to non-players?" +
+                        "\nIf set to true, they can apply a contract to any animal or non-ally player (basically, excludes mobs), which will be automatically signed if its not for a player." +
+                        "\nIf set to false, they can only do so with allies.")
+                .define("contract_non_allies", true);
         CONTRACT_SPIRITUALITY_THRESHOLD = BUILDER
                 .comment("Spirituality percentage threshold for contract conditions.")
                 .defineInRange("spirituality_threshold", 0.5d, 0.0d, 1.0d);

@@ -4,6 +4,7 @@ import net.dinomine.potioneer.beyonder.abilities.AbilityFunctionHelper;
 import net.dinomine.potioneer.beyonder.abilities.PassiveAbility;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
 import net.dinomine.potioneer.beyonder.effects.tyrant.ArrestSourceEffect;
+import net.dinomine.potioneer.beyonder.pathways.TyrantPathway;
 import net.dinomine.potioneer.beyonder.player.BeyonderCapability;
 import net.dinomine.potioneer.beyonder.player.CapProvider;
 import net.dinomine.potioneer.config.PotioneerAbilityConfig;
@@ -44,6 +45,7 @@ public class ArrestAbility extends PassiveAbility {
         hits.forEach(ent -> ent.getCapability(CapProvider.BEYONDER_STATS).ifPresent(victimCap -> ArrestSourceEffect.applyArrestToRecipient(target, victimCap, ent, sequenceLevel, aoj)));
         cap.requestActiveSpiritualityCost(MANUAL_CAST_COST.get());
         setNextCooldownAs(20*5);
+        cap.getCharacteristicManager().progressActing(TyrantPathway.ENFORCER_ACTING_ARREST, 17);
         return true;
     }
 }

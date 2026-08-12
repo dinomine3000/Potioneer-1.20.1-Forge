@@ -7,6 +7,7 @@ import net.dinomine.potioneer.beyonder.damages.PotioneerDamage;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffect;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
 import net.dinomine.potioneer.beyonder.effects.tyrant.WaterJetEffect;
+import net.dinomine.potioneer.beyonder.pathways.TyrantPathway;
 import net.dinomine.potioneer.beyonder.player.BeyonderCapability;
 import net.dinomine.potioneer.beyonder.player.CapProvider;
 import net.dinomine.potioneer.block.ModBlocks;
@@ -73,6 +74,14 @@ public class WaterSpellAbility extends AbilityWithOptions {
         updateOptions(sequenceLevel);
     }
 
+    private void digest(BeyonderCapability cap){
+        digest(cap, TyrantPathway.WATER_MAGE_ACTING_SPELLS);
+    }
+
+    private void digest(BeyonderCapability cap, double amm){
+        cap.getCharacteristicManager().progressActing(amm, 18);
+    }
+
     private void updateOptions(int sequenceLevel){
         AbilityOptions pOption = new AbilityOptions()
                 .addEmptyOption("drowning", Component.literal("Drowning"))
@@ -132,6 +141,7 @@ public class WaterSpellAbility extends AbilityWithOptions {
                     ItemStack waterStack = new ItemStack(Items.WATER_BUCKET);
                     waterStack.use(player.level(), player, InteractionHand.MAIN_HAND);
                     cap.requestActiveSpiritualityCost(CONJURE_COST.get());
+                    digest(cap, TyrantPathway.WATER_MAGE_ACTING_SPELLS/2);
                     return true;
                 }
             }
@@ -147,6 +157,7 @@ public class WaterSpellAbility extends AbilityWithOptions {
                 if(blocksRemoved > 0){
                     cap.requestActiveSpiritualityCost(-ABSORB_COST.get() * blocksRemoved);
                     setNextCooldownAs(CONSUME_COOLDOWN.get());
+                    digest(cap, TyrantPathway.WATER_MAGE_ACTING_SPELLS/2);
                     return true;
                 }
             }
@@ -173,6 +184,7 @@ public class WaterSpellAbility extends AbilityWithOptions {
         }
         if(!healFlag) return false;
 
+        digest(cap);
         target.hurt(PotioneerDamage.tyrantHealing((ServerLevel) target.level()), alliesAround.size());
         if(target instanceof ServerPlayer playerTarget) playerAllies.add(playerTarget);
         setNextCooldownAs(HEALING_COOLDOWN.get());
@@ -189,6 +201,7 @@ public class WaterSpellAbility extends AbilityWithOptions {
         cap.getEffectsManager().addOrRefreshEffect(waterJetEffect, cap, target);
         cap.requestActiveSpiritualityCost(WATER_JET_COST.get());
         setNextCooldownAs(WaterJetEffect.DURATION);
+        digest(cap);
         return true;
     }
 
@@ -197,14 +210,19 @@ public class WaterSpellAbility extends AbilityWithOptions {
         if(cap.getSpirituality() > cost()){
             double radius = target.getAttributeBaseValue(ForgeMod.ENTITY_REACH.get()) + (10 - getSequenceLevel());
             ArrayList<LivingEntity> hits = AbilityFunctionHelper.getNonAllyLivingEntitiesAround((ServerLevel) target.level(), target, radius);
+            boolean flag = false;
             for(LivingEntity entity: hits){
                 if(entity.is(target)) continue;
+                flag = true;
                 entity.getCapability(CapProvider.BEYONDER_STATS).ifPresent(victimCap ->
                         victimCap.getEffectsManager().addOrRefreshEffect(BeyonderEffects.TYRANT_WATER_PRISON.createInstance(getSequenceLevel(), 0, 20*30, true), victimCap, entity));
             }
             ParticleMaker.summonAOEParticles(target.level(), target.getEyePosition(), (int)(2*radius), radius, ParticleMaker.Preset.AOE_END_ROD);
             target.level().playSound(null, target.getOnPos(), ModSounds.WATER_PRISON.get(), SoundSource.PLAYERS, 1, 1);
-            cap.requestActiveSpiritualityCost(cost());
+            if(flag){
+                cap.requestActiveSpiritualityCost(cost());
+                digest(cap);
+            }
             return true;
         }
         return false;
@@ -216,12 +234,18 @@ public class WaterSpellAbility extends AbilityWithOptions {
             double radius = target.getAttributeBaseValue(ForgeMod.ENTITY_REACH.get()) + (10 - getSequenceLevel());
             int duration = 20*10*(10-sequenceLevel);
             ArrayList<LivingEntity> hits = AbilityFunctionHelper.getNonAllyLivingEntitiesAround((ServerLevel) target.level(), target, radius);
+            boolean flag = false;
             for(LivingEntity entity: hits){
                 if(entity.is(target)) continue;
+                flag = true;
                 entity.getCapability(CapProvider.BEYONDER_STATS).ifPresent(victimCap ->
                         victimCap.getEffectsManager().addOrRefreshEffect(BeyonderEffects.TYRANT_DROWNING.createInstance(getSequenceLevel(), 0, duration, true), victimCap, entity));
             }
             ParticleMaker.summonAOEParticles(target.level(), target.getEyePosition(), (int)(2*radius), radius, ParticleMaker.Preset.AOE_END_ROD);
+            if(flag){
+                cap.requestActiveSpiritualityCost(DROWNING_COST.get());
+                digest(cap);
+            }
             return true;
         }
         return false;
@@ -297,6 +321,7 @@ public class WaterSpellAbility extends AbilityWithOptions {
         }
 
         placeBlock(target.level(), found, cap, player);
+        digest(cap);
         return true;
     }
 

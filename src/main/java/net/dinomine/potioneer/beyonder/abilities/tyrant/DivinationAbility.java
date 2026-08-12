@@ -39,7 +39,18 @@ public class DivinationAbility extends MysticalKnowledgeAbility {
 
     @Override
     protected List<Page> getPages(int sequenceLevel) {
-        return List.of(PageRegistry.DREAM_DIVINATION, PageRegistry.ROD_DIVINATION, PageRegistry.MAP_DIVINATION, PageRegistry.COIN_DIVINATION, PageRegistry.CHARMS_CRAFTING, PageRegistry.CHARM_WATER_AFFINITY, PageRegistry.CHARM_WATER_PRISON, PageRegistry.RITUALS_CANDLES, PageRegistry.RITUALS_INK, PageRegistry.RITUALS_DAGGER, PageRegistry.RITUALS_OFFERINGS);
+        List<Page> res = new ArrayList<>();
+        switch (sequenceLevel){
+            case 6:
+                res.addAll(List.of(PageRegistry.CHARM_BERSERK));
+            case 7:
+                res.addAll(List.of(PageRegistry.CHARM_MIST, PageRegistry.CHARM_SENSE_OF_ORDER));
+            case 8:
+                res.addAll(List.of(PageRegistry.DREAM_DIVINATION, PageRegistry.ROD_DIVINATION, PageRegistry.COIN_DIVINATION,
+                        PageRegistry.CHARMS_CRAFTING, PageRegistry.CHARM_OCEAN_ORDER,
+                        PageRegistry.CHARM_WATER_AFFINITY, PageRegistry.CHARM_WATER_PRISON, PageRegistry.RITUALS_CANDLES, PageRegistry.RITUALS_INK, PageRegistry.RITUALS_DAGGER, PageRegistry.RITUALS_OFFERINGS));
+        }
+        return res;
     }
 
     @Override

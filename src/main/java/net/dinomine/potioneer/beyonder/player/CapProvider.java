@@ -2,6 +2,7 @@ package net.dinomine.potioneer.beyonder.player;
 
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityManager;
@@ -29,7 +30,7 @@ public class CapProvider implements ICapabilityProvider, INBTSerializable<Compou
     private final LazyOptional<BeyonderCapability> beyonderOptional = LazyOptional.of(this::createBeyonderStats);
     private final LazyOptional<EffectEntityCapability> effectEntityOptional = LazyOptional.of(this::createEffectEntity);
 
-    public static Optional<BeyonderCapability> beyonder(LivingEntity target){return target.getCapability(BEYONDER_STATS).resolve();}
+    public static Optional<BeyonderCapability> beyonder(Entity target){return target.getCapability(BEYONDER_STATS).resolve();}
 
     private BeyonderCapability createBeyonderStats() {
         if(this.beyonderStats == null){

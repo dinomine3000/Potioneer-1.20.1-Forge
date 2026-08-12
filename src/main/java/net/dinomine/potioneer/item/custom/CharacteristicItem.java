@@ -72,11 +72,11 @@ public class CharacteristicItem extends Item {
         super.inventoryTick(characteristicStack, pLevel, pEntity, pSlotId, pIsSelected);
         if(pLevel.isClientSide()) return;
         if(ModNbtUtils.hasTag(ModNbtUtils.TAGS.BEYONDER, characteristicStack)
-                && PotioneerGameplayConfig.ARTIFACT_CONVERSION_CHANCE.get() > 0 && pLevel.random.nextInt(PotioneerGameplayConfig.ARTIFACT_CONVERSION_CHANCE.get()) == 1){
+                && PotioneerGameplayConfig.ARTIFACT_CONVERSION_CHANCE.get() > 0 && true){
             if(pEntity instanceof Player player){
                 Optional<BeyonderCapability> cap = player.getCapability(CapProvider.BEYONDER_STATS).resolve();
                 if(cap.isEmpty()) return;
-                if(cap.get().getArtifactCooldown() > 0) return;
+                //if(cap.get().getArtifactCooldown() > 0) return;
 
                 ArrayList<ItemStack> items = new ArrayList(player.getInventory().items.stream().toList());
                 items.addAll(StreamSupport.stream(player.getArmorSlots().spliterator(), false).toList());

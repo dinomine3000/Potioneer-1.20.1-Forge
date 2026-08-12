@@ -31,7 +31,7 @@ public class WheelOfFortunePathway extends BeyonderPathway {
     public static final double GAMBLER_ACTING_COOLDOWN = 1/256d;
     public static final double LUCK_ACTING_INC = 1/256d;
     public static final double LUCK_ACTING_EVENT = 1/128d;
-        public static final double MISFORTUNE_ACTING_INC = 1/100d;
+    public static final double MISFORTUNE_ACTING_INC = 1/100d;
 
     public WheelOfFortunePathway() {
         super("Wheel_of_Fortune", 0x808080, new int[]{2500, 1500, 1200, 900, 600, 500, 400, 250, 200, 100});

@@ -2,6 +2,7 @@ package net.dinomine.potioneer.beyonder.effects.tyrant;
 
 import net.dinomine.potioneer.beyonder.damages.PotioneerDamage;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffect;
+import net.dinomine.potioneer.beyonder.pathways.TyrantPathway;
 import net.dinomine.potioneer.beyonder.player.BeyonderCapability;
 import net.dinomine.potioneer.mob_effects.ModEffects;
 import net.dinomine.potioneer.mob_effects.ServerEffectVisualHandling;
@@ -32,6 +33,7 @@ public class MistEffect extends BeyonderEffect {
     @Override
     protected void doTick(BeyonderCapability cap, LivingEntity target) {
         cap.requestPassiveSpiritualityCost(cost);
+        cap.getCharacteristicManager().progressActing(TyrantPathway.ENFORCER_ACTING_MIST, 17);
         target.addEffect(new MobEffectInstance(ModEffects.MIST_EFFECT.get(), -1, 1, false, false, true));
         target.addEffect(new MobEffectInstance(MobEffects.INVISIBILITY, -1, 1, false, false, true));
         if(target instanceof Player player){

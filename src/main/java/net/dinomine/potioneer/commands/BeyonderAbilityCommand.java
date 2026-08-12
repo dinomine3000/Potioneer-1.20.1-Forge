@@ -73,7 +73,8 @@ public class BeyonderAbilityCommand {
         ServerTokenCache.invalidateToken(token);
         ContractAbility.ContractOption condition = ContractAbility.ContractOption.loadFromNbt(contractData.getCompound("condition")).get();
         ContractAbility.ContractOption reward = ContractAbility.ContractOption.loadFromNbt(contractData.getCompound("reward")).get();
-        PacketHandler.sendMessageSTC(new OpenContractScreenMessage(condition, reward, contractData.getInt("target")), executor);
+        UUID casterId = contractData.getUUID("casterId");
+        PacketHandler.sendMessageSTC(new OpenContractScreenMessage(condition, reward, contractData.getInt("target"), casterId), executor);
         return 1;
     }
 

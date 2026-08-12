@@ -75,10 +75,10 @@ public class ArtifactHolder {
     }
 
 
-    public boolean castAbility(AbilityKey key, boolean primary, BeyonderCapability cap, LivingEntity target){
+    public boolean castAbility(AbilityKey key, boolean primary, BeyonderCapability cap, LivingEntity target, CompoundTag args){
         Ability abl = abilities.get(key);
         if(abl == null) return false;
-        if(!abl.castAbility(cap, target, primary)) return false;
+        if(!abl.castAbility(cap, target, primary, args)) return false;
         for(Downside ds: downsides.values()){
             ds.castAbility(cap, target, true);
         }

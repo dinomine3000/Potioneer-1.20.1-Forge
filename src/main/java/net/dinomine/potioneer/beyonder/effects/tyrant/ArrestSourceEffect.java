@@ -3,6 +3,7 @@ package net.dinomine.potioneer.beyonder.effects.tyrant;
 import net.dinomine.potioneer.beyonder.abilities.tyrant.AreaOfJurisdictionAbility;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffect;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
+import net.dinomine.potioneer.beyonder.pathways.TyrantPathway;
 import net.dinomine.potioneer.beyonder.player.BeyonderCapability;
 import net.dinomine.potioneer.beyonder.player.CapProvider;
 import net.dinomine.potioneer.util.ModTags;
@@ -45,7 +46,11 @@ public class ArrestSourceEffect extends BeyonderEffect {
         if(attacker instanceof Player playerAttacker){
             playerAttacker.getCooldowns().addCooldown(weapon.getItem(), 10*20);
         }
-        optAttackerCap.ifPresent(cap -> cap.requestActiveSpiritualityCost(cost));
+        optAttackerCap.ifPresent(cap -> {
+            cap.requestActiveSpiritualityCost(cost);
+            cap.getCharacteristicManager().progressActing(TyrantPathway.ENFORCER_ACTING_ARREST, 17);
+            }
+        );
         return false;
     }
 

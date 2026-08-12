@@ -17,8 +17,8 @@ import java.util.UUID;
 public class AuraRecipientEffect extends AbstractSourceRecipientEffect {
     @Override
     public void onAcquire(BeyonderCapability cap, LivingEntity target) {
-        if(sources.keySet().stream().findFirst().isEmpty()) return;
-        clearTarget(target, sources.keySet().stream().findFirst().get());
+        /*if(sources.keySet().stream().findFirst().isEmpty()) return;
+        clearTarget(target, sources.keySet().stream().findFirst().get());*/
     }
 
     public void addSourceSilent(UUID enforcerId){
@@ -39,7 +39,7 @@ public class AuraRecipientEffect extends AbstractSourceRecipientEffect {
         for(UUID id: sources.keySet()){
             Player playerEnforcer = target.level().getPlayerByUUID(id);
             if(playerEnforcer == null) continue;
-            applyAuraEffects(target, cap, playerEnforcer);
+            applyAuraEffects(target, playerEnforcer);
         }
         tickDownTime(target);
         if(target.level().isClientSide() && target.tickCount%20 == 0){
@@ -47,7 +47,7 @@ public class AuraRecipientEffect extends AbstractSourceRecipientEffect {
         }
     }
 
-    private void applyAuraEffects(LivingEntity livingEntity, BeyonderCapability cap, Player enforcer){
+    private void applyAuraEffects(LivingEntity livingEntity, Player enforcer){
         if(!sources.containsKey(enforcer.getUUID())) return;
         livingEntity.addEffect(new MobEffectInstance(MobEffects.DARKNESS, 20*2, 0, false, false, true));
         ParticleMaker.createAuraParticles(enforcer, livingEntity);

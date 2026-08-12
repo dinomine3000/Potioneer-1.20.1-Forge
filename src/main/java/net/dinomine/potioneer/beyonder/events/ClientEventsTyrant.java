@@ -39,6 +39,7 @@ public class ClientEventsTyrant {
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public static void onMouseDown(InputEvent.MouseButton.Pre event){
         if(Minecraft.getInstance().level == null) return;
+        if(Minecraft.getInstance().screen != null) return;
         MistEffect eff = AbilityFunctionHelper.getEffectOnTarget(BeyonderEffects.TYRANT_MIST_EFFECT.getEffectId(), Minecraft.getInstance().player);
         if(eff == null) return;
         AbilityInfo currentAbility = AbilitiesHotbarHUD.getCurrentSelectedAbility();
@@ -129,7 +130,8 @@ public class ClientEventsTyrant {
 
     private static boolean isDrowning(Player player){
         Optional<BeyonderCapability> opt = player.getCapability(CapProvider.BEYONDER_STATS).resolve();
-        return opt.isPresent() && opt.get().getEffectsManager().hasEffect(BeyonderEffects.TYRANT_DROWNING);
+        return opt.isPresent() &&
+                (opt.get().getEffectsManager().hasEffect(BeyonderEffects.TYRANT_DROWNING) || opt.get().getEffectsManager().hasEffect(BeyonderEffects.TYRANT_MIST_DOWNSIDE));
     }
 
 }

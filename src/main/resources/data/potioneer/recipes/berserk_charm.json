@@ -1,0 +1,24 @@
+{
+  "type": "potioneer:ritual_charm_crafting",
+  "effectId": "water_affinity",
+  "ingredients": [
+    {
+      "item": "minecraft:redstone",
+      "count": 1
+    },
+    {
+      "item": "minecraft:rotten_flesh",
+      "count": 2
+    },
+    {
+      "item": "minecraft:gold_ingot",
+      "count": 2
+    }
+  ],
+  "base": {
+    "item": "minecraft:prismarine_shard"
+  },
+  "pathwayId": 1,
+  "levelScaling": 9,
+  "durationScaling": 10
+}

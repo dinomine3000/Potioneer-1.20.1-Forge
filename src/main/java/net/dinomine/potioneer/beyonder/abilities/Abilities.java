@@ -7,6 +7,9 @@ import net.dinomine.potioneer.beyonder.abilities.redpriest.*;
 import net.dinomine.potioneer.beyonder.abilities.tyrant.*;
 import net.dinomine.potioneer.beyonder.abilities.wheeloffortune.*;
 import net.dinomine.potioneer.beyonder.downsides.DummyDownside;
+import net.dinomine.potioneer.beyonder.downsides.MobNoisesDownside;
+import net.dinomine.potioneer.beyonder.downsides.SlownessDownside;
+import net.dinomine.potioneer.beyonder.downsides.tyrant.*;
 import net.dinomine.potioneer.beyonder.downsides.wheeloffortune.*;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
 import net.minecraft.resources.ResourceLocation;
@@ -27,6 +30,10 @@ public class Abilities {
 
     public static final AbilityFactory DUMMY_DOWNSIDE = registerAbility("d_dummy",
             DummyDownside::new, 0, 0, 0);
+    public static final AbilityFactory SLOWNESS_DOWNSIDE = registerAbility("d_slowness",
+            SlownessDownside::new, 0, 0, 0);
+    public static final AbilityFactory NOISES_DOWNSIDE = registerAbility("d_noises",
+            MobNoisesDownside::new, 0, 0, 0);
 
     public static final AbilityFactory CHAOS_LUCK_DOWNSIDE = registerAbility("d_chaos",
             ChaosLuckDownside::new, 0, 0, 0);
@@ -42,6 +49,17 @@ public class Abilities {
             RandomVelocityDownside::new, 0, 0, 0);
     public static final AbilityFactory FATE_CAST_DOWNSIDE = registerAbility("d_fate",
             FateCastDownside::new, 0, 0, 0);
+
+    public static final AbilityFactory AXIS_DOWNSIDE = registerAbility("d_axis",
+            AxisDownside::new, 0, 0, 0);
+    public static final AbilityFactory CALAMITY_DOWNSIDE = registerAbility("d_calamity",
+            CalamityDownside::new, 0, 0, 0);
+    public static final AbilityFactory WATER_DOWNSIDE = registerAbility("d_water",
+            WaterDownside::new, 0, 0, 0);
+    public static final AbilityFactory AURA_DOWNSIDE = registerAbility("d_aura",
+            AuraDownside::new, 0, 0, 0);
+    public static final AbilityFactory MIST_DOWNSIDE = registerAbility("d_mist",
+            MistDownside::new, 0, 0, 0);
 
 
     public static final AbilityFactory BLANK_OPTIONS = registerAbility("blank_options",

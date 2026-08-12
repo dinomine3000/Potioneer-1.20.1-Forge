@@ -9,7 +9,6 @@ import net.minecraft.world.entity.LivingEntity;
 import java.util.UUID;
 
 public class ChaosLuckDownside extends Downside {
-    private static final UUID CHAOS_ID = UUID.fromString("bb709883-6910-489a-9c5a-86552b439c54");
     public ChaosLuckDownside(int sequenceLevel) {
         super(sequenceLevel);
     }

@@ -25,7 +25,6 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraftforge.event.ServerChatEvent;
-import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.EntityMobGriefingEvent;
 import net.minecraftforge.event.entity.item.ItemTossEvent;
 import net.minecraftforge.event.entity.living.LivingDamageEvent;
@@ -243,7 +242,7 @@ public class ServerEventsTyrant {
     private static void bribeCheck(AbilityCastEvent.Pre event){
         BribeRecipientEffect bribe = AbilityFunctionHelper.getEffectOnTarget(BeyonderEffects.TYRANT_BRIBE_RECIPIENT.getEffectId(), event.getEntity());
         if(bribe == null) return;
-        Entity tribunal = bribe.getTribunal((ServerLevel) event.getEntity().level());
+        Entity tribunal = bribe.getMagistrate((ServerLevel) event.getEntity().level());
         if(tribunal == null) return;
         BeyonderCapability cap = event.getEntity().getCapability(CapProvider.BEYONDER_STATS).resolve().get();
         if(tribunal.distanceTo(event.getEntity()) < BRIBE_MISCAST_RADIUS.get() &&
@@ -272,6 +271,16 @@ public class ServerEventsTyrant {
             //aura cancel
             AuraRecipientEffect aura = AbilityFunctionHelper.getEffectOnTarget(BeyonderEffects.TYRANT_AURA_RECIPIENT.getEffectId(), event.getEntity());
             if(aura != null && aura.isOrBetter(6)){
+                if(!cap.getLuckManager().passesLuckCheck(PotioneerAbilityConfig.AURA_MISCAST_CHANCE.get().floatValue(), 0, 0, event.getEntity().getRandom())){
+                    event.setCanceled(true);
+                    cap.getAbilitiesManager().putAbilityOnCooldown(event.getAbility().getAbilityKey(), 20*5, event.getEntity());
+                    event.getEntity().level().playSound(null, event.getEntity().getOnPos(), ModSounds.FAIL_CAST.get(), SoundSource.PLAYERS, 1, 1);
+                }
+            }
+
+            //aura downside cancel
+            AuraDownsideEffect auraDownside = AbilityFunctionHelper.getEffectOnTarget(BeyonderEffects.TYRANT_AURA_DOWNSIDE.getEffectId(), event.getEntity());
+            if(auraDownside != null){
                 if(!cap.getLuckManager().passesLuckCheck(PotioneerAbilityConfig.AURA_MISCAST_CHANCE.get().floatValue(), 0, 0, event.getEntity().getRandom())){
                     event.setCanceled(true);
                     cap.getAbilitiesManager().putAbilityOnCooldown(event.getAbility().getAbilityKey(), 20*5, event.getEntity());

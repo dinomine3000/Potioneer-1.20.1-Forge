@@ -7,6 +7,7 @@ import net.dinomine.potioneer.beyonder.abilities.tyrant.ProhibitionAbility;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffect;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
 import net.dinomine.potioneer.beyonder.effects.misc.AbstractSourceRecipientEffect;
+import net.dinomine.potioneer.beyonder.pathways.TyrantPathway;
 import net.dinomine.potioneer.beyonder.player.BeyonderCapability;
 import net.dinomine.potioneer.beyonder.player.CapProvider;
 import net.dinomine.potioneer.block.entity.RulePylonBlockEntity;
@@ -60,6 +61,7 @@ public class AbilityProhibitionEffect extends AbstractSourceRecipientEffect {
                 cap.getAbilitiesManager().getAbilities(Abilities.PROHIBITION.getAblId()).stream()
                         .map(abl -> (ProhibitionAbility) abl)
                         .forEach(prohibitionAbility -> prohibitionAbility.clearEffectForEveryone(level, player));
+                cap.getCharacteristicManager().progressActing(TyrantPathway.TRIBUNAL_ACTING_PROHIBITION, 15);
             });
 
             PacketHandler.sendMessageToClientsAround(player, radius,
