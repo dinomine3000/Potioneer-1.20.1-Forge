@@ -2,6 +2,7 @@ package net.dinomine.potioneer.beyonder.player;
 
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityManager;
@@ -12,24 +13,28 @@ import net.minecraftforge.common.util.LazyOptional;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class BeyonderStatsProvider implements ICapabilityProvider, INBTSerializable<CompoundTag> {
+import java.util.Optional;
+
+public class CapProvider implements ICapabilityProvider, INBTSerializable<CompoundTag> {
     private final LivingEntity ent;
 
-    public BeyonderStatsProvider(LivingEntity ent){
+    public CapProvider(LivingEntity ent){
         this.ent = ent;
     }
 
-    public static Capability<LivingEntityBeyonderCapability> BEYONDER_STATS = CapabilityManager.get(new CapabilityToken<>() {});
+    public static Capability<BeyonderCapability> BEYONDER_STATS = CapabilityManager.get(new CapabilityToken<>() {});
     public static Capability<EffectEntityCapability> EFFECT_ENTITIES = CapabilityManager.get(new CapabilityToken<>() {});
 
-    private LivingEntityBeyonderCapability beyonderStats = null;
+    private BeyonderCapability beyonderStats = null;
     private EffectEntityCapability effectEntity = null;
-    private final LazyOptional<LivingEntityBeyonderCapability> beyonderOptional = LazyOptional.of(this::createBeyonderStats);
+    private final LazyOptional<BeyonderCapability> beyonderOptional = LazyOptional.of(this::createBeyonderStats);
     private final LazyOptional<EffectEntityCapability> effectEntityOptional = LazyOptional.of(this::createEffectEntity);
 
-    private LivingEntityBeyonderCapability createBeyonderStats() {
+    public static Optional<BeyonderCapability> beyonder(Entity target){return target.getCapability(BEYONDER_STATS).resolve();}
+
+    private BeyonderCapability createBeyonderStats() {
         if(this.beyonderStats == null){
-            this.beyonderStats = new LivingEntityBeyonderCapability(ent);
+            this.beyonderStats = new BeyonderCapability(ent);
         }
         return this.beyonderStats;
     }
@@ -55,14 +60,31 @@ public class BeyonderStatsProvider implements ICapabilityProvider, INBTSerializa
     @Override
     public CompoundTag serializeNBT() {
         CompoundTag nbt = new CompoundTag();
-        createBeyonderStats().saveNBTData(nbt);
-        createEffectEntity().saveNBTData(nbt);
+
+        // Use distinct nested tags to prevent key collisions between capabilities
+        CompoundTag beyonderTag = new CompoundTag();
+        createBeyonderStats().saveNBTData(beyonderTag);
+        nbt.put("BeyonderStats", beyonderTag);
+
+        CompoundTag effectEntityTag = new CompoundTag();
+        createEffectEntity().saveNBTData(effectEntityTag);
+        nbt.put("EffectEntities", effectEntityTag);
+
         return nbt;
     }
 
     @Override
     public void deserializeNBT(CompoundTag compoundTag) {
-        createBeyonderStats().loadNBTData(compoundTag);
-        createEffectEntity().loadNBTData(compoundTag);
+        if (compoundTag.contains("BeyonderStats", CompoundTag.TAG_COMPOUND)) {
+            createBeyonderStats().loadNBTData(compoundTag.getCompound("BeyonderStats"));
+        } else {
+            createBeyonderStats().loadNBTData(compoundTag);
+        }
+
+        if (compoundTag.contains("EffectEntities", CompoundTag.TAG_COMPOUND)) {
+            createEffectEntity().loadNBTData(compoundTag.getCompound("EffectEntities"));
+        } else {
+            createEffectEntity().loadNBTData(compoundTag);
+        }
     }
 }

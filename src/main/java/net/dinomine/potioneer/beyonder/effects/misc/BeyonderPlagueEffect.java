@@ -1,8 +1,8 @@
 package net.dinomine.potioneer.beyonder.effects.misc;
 
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffect;
-import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
-import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
+import net.dinomine.potioneer.beyonder.player.CapProvider;
+import net.dinomine.potioneer.beyonder.player.BeyonderCapability;
 import net.dinomine.potioneer.mob_effects.ModEffects;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -27,11 +27,11 @@ public class BeyonderPlagueEffect extends BeyonderEffect {
 
 
     @Override
-    public void onAcquire(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    public void onAcquire(BeyonderCapability cap, LivingEntity target) {
     }
 
     @Override
-    protected void doTick(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    protected void doTick(BeyonderCapability cap, LivingEntity target) {
         if(!target.hasEffect(ModEffects.PLAGUE_EFFECT.get())){
             target.addEffect(new MobEffectInstance(ModEffects.PLAGUE_EFFECT.get(), -1, lives--, true, true));
             if(lives < -1){
@@ -45,7 +45,7 @@ public class BeyonderPlagueEffect extends BeyonderEffect {
             if(casterId != null){
                 Player caster = target.level().getPlayerByUUID(casterId);
                 if(caster != null)
-                    caster.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(casterCap -> {
+                    caster.getCapability(CapProvider.BEYONDER_STATS).ifPresent(casterCap -> {
                         if(Math.floorDiv(casterCap.getPathwaySequenceId(), 10) == 2)
                             casterCap.requestActiveSpiritualityCost(-cost);
                     });
@@ -54,7 +54,7 @@ public class BeyonderPlagueEffect extends BeyonderEffect {
             for(Entity ent: spreadTargets){
                 if(ent instanceof LivingEntity entity){
                     if(casterId != null && ent instanceof Player testPlayer && testPlayer.getUUID().compareTo(casterId) == 0) continue;
-                    entity.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(newCap -> {
+                    entity.getCapability(CapProvider.BEYONDER_STATS).ifPresent(newCap -> {
 //                        if(!newCap.getEffectsManager().hasEffect(BeyonderEffects.EFFECT.MISC_PLAGUE)){
 //                            BeyonderPlagueEffect eff = new BeyonderPlagueEffect(sequenceLevel, cost, -1, true, BeyonderEffects.EFFECT.MISC_PLAGUE);
 //                            eff.setCasterId(casterId);
@@ -67,7 +67,7 @@ public class BeyonderPlagueEffect extends BeyonderEffect {
     }
 
     @Override
-    public void stopEffects(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    public void stopEffects(BeyonderCapability cap, LivingEntity target) {
         if(target.hasEffect(ModEffects.PLAGUE_EFFECT.get())){
             target.removeEffect(ModEffects.PLAGUE_EFFECT.get());
         }

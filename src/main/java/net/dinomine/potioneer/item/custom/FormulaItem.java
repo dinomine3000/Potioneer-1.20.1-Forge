@@ -1,8 +1,7 @@
 package net.dinomine.potioneer.item.custom;
 
-import net.dinomine.potioneer.beyonder.pathways.Pathways;
-import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
-import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
+import net.dinomine.potioneer.beyonder.player.BeyonderCapability;
+import net.dinomine.potioneer.beyonder.player.CapProvider;
 import net.dinomine.potioneer.network.PacketHandler;
 import net.dinomine.potioneer.network.messages.OpenScreenMessage;
 import net.dinomine.potioneer.recipe.PotionRecipeData;
@@ -17,7 +16,6 @@ import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.network.PacketDistributor;
 
@@ -31,17 +29,17 @@ public class FormulaItem extends Item {
         ItemStack heldItem = pPlayer.getItemInHand(pUsedHand);
         if(pLevel.isClientSide()) return new InteractionResultHolder<>(InteractionResult.SUCCESS, heldItem);
 
-        pPlayer.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
+        pPlayer.getCapability(CapProvider.BEYONDER_STATS).ifPresent(cap -> {
             PotionRecipeData result = applyOrReadFormulaNbt(heldItem, (ServerLevel) pLevel, cap.getPathwaySequenceId(), cap);
             boolean error = heldItem.getTag().getBoolean("error");
 
             PacketHandler.INSTANCE.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) pPlayer),
-                    new OpenScreenMessage(result, error));
+                    OpenScreenMessage.formula(result, error));
         });
         return new InteractionResultHolder<>(InteractionResult.SUCCESS, heldItem);
     }
 
-    public static PotionRecipeData applyOrReadFormulaNbt(ItemStack stack, ServerLevel pLevel, int id, LivingEntityBeyonderCapability cap){
+    public static PotionRecipeData applyOrReadFormulaNbt(ItemStack stack, ServerLevel pLevel, int id, BeyonderCapability cap){
         PotionRecipeData result;
         if(stack.hasTag() && stack.getTag().get("recipe_data") != null){
             result = PotionRecipeData.load(stack.getTag().getCompound("recipe_data"));

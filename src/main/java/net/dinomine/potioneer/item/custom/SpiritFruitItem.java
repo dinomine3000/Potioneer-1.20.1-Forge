@@ -1,6 +1,6 @@
 package net.dinomine.potioneer.item.custom;
 
-import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
+import net.dinomine.potioneer.beyonder.player.CapProvider;
 import net.dinomine.potioneer.beyonder.player.PlayerLuckManager;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -19,7 +19,7 @@ public class SpiritFruitItem extends Item {
     public ItemStack finishUsingItem(ItemStack pStack, Level pLevel, LivingEntity pEntityLiving) {
         ItemStack itemstack = super.finishUsingItem(pStack, pLevel, pEntityLiving);
         if(!pLevel.isClientSide()){
-            pEntityLiving.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
+            pEntityLiving.getCapability(CapProvider.BEYONDER_STATS).ifPresent(cap -> {
                 int maxSpir = cap.getMaxSpirituality();
                 cap.requestActiveSpiritualityCost(-1*maxSpir*0.1f);
                 PlayerLuckManager lck = cap.getLuckManager();

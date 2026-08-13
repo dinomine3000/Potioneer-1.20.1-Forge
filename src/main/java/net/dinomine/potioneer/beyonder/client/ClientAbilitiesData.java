@@ -7,7 +7,7 @@ import net.dinomine.potioneer.beyonder.abilities.AbilityKey;
 import net.dinomine.potioneer.beyonder.client.HUD.AbilitiesHotbarHUD;
 import net.dinomine.potioneer.util.misc.ArtifactHolder;
 import net.dinomine.potioneer.beyonder.client.screen.BeyonderAbilitiesScreen;
-import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
+import net.dinomine.potioneer.beyonder.player.CapProvider;
 import net.dinomine.potioneer.beyonder.player.PlayerAbilitiesManager;
 import net.dinomine.potioneer.network.PacketHandler;
 import net.dinomine.potioneer.network.messages.abilityRelevant.PlayerSyncHotbarMessage;
@@ -389,7 +389,7 @@ public class ClientAbilitiesData {
         }
         if(Abilities.getAbilityFactory(key).getHasSecondaryFunction(abl.getSequenceLevel())) beginCastAnimation(primary);
         else if(ClientConfigData.getHotbarOutlines() && primary) beginCastAnimation(true);
-        player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
+        player.getCapability(CapProvider.BEYONDER_STATS).ifPresent(cap -> {
             cap.getAbilitiesManager().useAbility(cap, player, key, true, primary, args);
         });
         return true;

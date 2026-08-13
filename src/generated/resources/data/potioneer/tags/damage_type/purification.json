@@ -1,6 +1,7 @@
 {
   "values": [
     "potioneer:arrest",
-    "potioneer:exile"
+    "potioneer:exile",
+    "potioneer:punishment_strike"
   ]
 }

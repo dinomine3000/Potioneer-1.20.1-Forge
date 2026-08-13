@@ -1,7 +1,7 @@
 package net.dinomine.potioneer.beyonder.effects.wheeloffortune;
 
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffect;
-import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
+import net.dinomine.potioneer.beyonder.player.BeyonderCapability;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.LivingEntity;
@@ -34,12 +34,12 @@ public class DamageRecordingEffect extends BeyonderEffect {
     }
 
     @Override
-    public void onAcquire(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    public void onAcquire(BeyonderCapability cap, LivingEntity target) {
 
     }
 
     @Override
-    protected void doTick(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    protected void doTick(BeyonderCapability cap, LivingEntity target) {
         if(recording && target.level().getGameTime() - recordingTimeStamp > recordingMaxTime){
             target.sendSystemMessage(Component.translatable("ability.potioneer.damage_recording_over", recordedDamage));
             recording = false;
@@ -63,12 +63,12 @@ public class DamageRecordingEffect extends BeyonderEffect {
     }
 
     @Override
-    public void stopEffects(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    public void stopEffects(BeyonderCapability cap, LivingEntity target) {
 
     }
 
     @Override
-    public boolean onTakeDamage(LivingDamageEvent event, LivingEntity victim, LivingEntity attacker, LivingEntityBeyonderCapability victimCap, Optional<LivingEntityBeyonderCapability> optAttackerCap, boolean calledOnVictim) {
+    public boolean onTakeDamage(LivingDamageEvent event, LivingEntity victim, LivingEntity attacker, BeyonderCapability victimCap, Optional<BeyonderCapability> optAttackerCap, boolean calledOnVictim) {
         if(!calledOnVictim) return false;
 
         if(victim.level().getGameTime() - recordingTimeStamp < recordingMaxTime){

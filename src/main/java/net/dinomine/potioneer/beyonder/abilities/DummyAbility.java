@@ -1,6 +1,6 @@
 package net.dinomine.potioneer.beyonder.abilities;
 
-import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
+import net.dinomine.potioneer.beyonder.player.BeyonderCapability;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
@@ -18,7 +18,7 @@ public class DummyAbility extends Ability{
     }
 
     @Override
-    public boolean primary(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    public boolean primary(BeyonderCapability cap, LivingEntity target) {
         if(target.level().isClientSide()) return false;
         target.addEffect(new MobEffectInstance(MobEffects.NIGHT_VISION, 100, 1, false, false));
         target.sendSystemMessage(Component.literal("Night vision granted"));

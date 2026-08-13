@@ -7,10 +7,11 @@ import net.dinomine.potioneer.beyonder.abilities.AbilityKey;
 import net.dinomine.potioneer.beyonder.abilities.tyrant.ContractAbility;
 import net.dinomine.potioneer.beyonder.abilities.tyrant.ContractAbility.ContractOption;
 import net.dinomine.potioneer.beyonder.abilities.tyrant.ContractViewAbility;
+import net.dinomine.potioneer.beyonder.abilities.tyrant.RulePylonAbility;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffect;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
+import net.dinomine.potioneer.beyonder.player.BeyonderCapability;
 import net.dinomine.potioneer.beyonder.player.BeyonderStats;
-import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
 import net.dinomine.potioneer.config.PotioneerAbilityConfig;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.LivingEntity;
@@ -45,13 +46,21 @@ public class ContractedEffect extends BeyonderEffect {
 
     private ContractOption condition;
     private ContractOption reward;
+    private UUID casterId = null;
+    private int time = 0;
+    public int getTime(){return time;}
 
     private AbilityKey generateKeyForViewerAbility(){
         return new AbilityKey(VIEWER_GROUP, Abilities.CONTRACT_VIEW.getAblId(), 0);
     }
 
     @Override
-    public void onAcquire(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    public boolean canBeCleansed() {
+        return false;
+    }
+
+    @Override
+    public void onAcquire(BeyonderCapability cap, LivingEntity target) {
         super.onAcquire(cap, target);
         if(reward.getId().equalsIgnoreCase("ability")){
             manageAbilityBuffs(cap, target, true);
@@ -67,14 +76,15 @@ public class ContractedEffect extends BeyonderEffect {
     }
 
     @Override
-    protected void doTick(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    protected void doTick(BeyonderCapability cap, LivingEntity target) {
         if(Objects.equals(condition, ContractOption.HP_COND)){
-            if(target.getHealth() < HEALTH_THRESHOLD.get()) invalidate();
+            if(target.getHealth() < HEALTH_THRESHOLD.get()) invalidate(target, cap);
         }
-        else if(Objects.equals(condition, ContractOption.NETHER_COND) && Objects.equals(target.level().dimension(), Level.NETHER)) invalidate();
-        else if(Objects.equals(condition, ContractOption.SPIRITUALITY_COND) && cap.getSpirituality() < cap.getMaxSpirituality()*SPIRITUALITY_THRESHOLD.get()) invalidate();
+        else if(Objects.equals(condition, ContractOption.NETHER_COND) && Objects.equals(target.level().dimension(), Level.NETHER)) invalidate(target, cap);
+        else if(Objects.equals(condition, ContractOption.SPIRITUALITY_COND) && cap.getSpirituality() < cap.getMaxSpirituality()*SPIRITUALITY_THRESHOLD.get()) invalidate(target, cap);
         if(!condition.isValid()) return;
 
+        if(time <= 20*60*60) time++;
         BeyonderStats statsHolder = cap.getEffectsManager().statsHolder;
         if(Objects.equals(reward, ContractOption.DAMAGE_BUFF)) statsHolder.addDamage(DAMAGE_BUFF.get());
         else if(Objects.equals(reward, ContractOption.REGENERATION_BUFF)) statsHolder.addRegeneration(REGENERATION_BUFF.get());
@@ -83,7 +93,7 @@ public class ContractedEffect extends BeyonderEffect {
     }
 
     @Override
-    public void stopEffects(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    public void stopEffects(BeyonderCapability cap, LivingEntity target) {
         if(reward.getId().equalsIgnoreCase("ability")) manageAbilityBuffs(cap, target, false);
 
         //we filter to server side to make sure nothing weird happens, since ability management is mainly handled by server.
@@ -92,21 +102,22 @@ public class ContractedEffect extends BeyonderEffect {
         //cap.getAbilitiesManager().removeFirstAbilityLike(Abilities.CONTRACT_VIEW.getAblId(), VIEWER_GROUP, cap, target, true);
     }
 
-    private void manageAbilityBuffs(LivingEntityBeyonderCapability cap, LivingEntity target, boolean doBuff){
+    private void manageAbilityBuffs(BeyonderCapability cap, LivingEntity target, boolean doBuff){
         if(!reward.getId().equalsIgnoreCase("ability")) return;
 
         String ablId = AbilityKey.fromString(reward.getArguments().get(0)).getAbilityId();
         cap.getAbilitiesManager().getAbilities(ablId).forEach(abl ->  {
             if(doBuff)
-                abl.applyTemporaryModifier(SEQUENCE_LEVEL_UPGRADE_ID, -1, cap, target);
+                abl.temporarilyUpgradeToLevel(SEQUENCE_LEVEL_UPGRADE_ID, -1, cap, target);
             else
-                abl.removeTemporaryModifier(SEQUENCE_LEVEL_UPGRADE_ID, cap, target);
+                abl.removeTemporaryUpgrade(SEQUENCE_LEVEL_UPGRADE_ID, cap, target);
         });
     }
 
-    public static ContractedEffect getInstance(ContractOption condition, ContractOption reward){
+    public static ContractedEffect getInstance(ContractOption condition, ContractOption reward, UUID casterId){
         ContractedEffect eff = (ContractedEffect) BeyonderEffects.TYRANT_CONTRACT.createInstance(0, 0, -1, true);
         eff.setConditions(condition, reward);
+        eff.setCasterId(casterId);
         return eff;
     }
 
@@ -115,7 +126,15 @@ public class ContractedEffect extends BeyonderEffect {
         this.reward = reward;
     }
 
-    public void testAbilityCast(Ability abl, LivingEntityBeyonderCapability cap, LivingEntity target){
+    public UUID getCasterId() {
+        return casterId;
+    }
+
+    public void setCasterId(UUID casterId) {
+        this.casterId = casterId;
+    }
+
+    public void testAbilityCast(Ability abl, BeyonderCapability cap, LivingEntity target){
         if(condition.getId().equalsIgnoreCase("ability_cond")){
             if(!condition.isValid()) return;
             for(String ablArg: condition.getArguments()){
@@ -129,24 +148,25 @@ public class ContractedEffect extends BeyonderEffect {
         if(!condition.isValid() || !reward.getId().equalsIgnoreCase("ability")) return;
 
         if(abl.is(reward.getArguments().get(0))){
-            abl.applyTemporaryModifier(SEQUENCE_LEVEL_UPGRADE_ID, -1, cap, target);
+            abl.temporarilyUpgradeToLevel(SEQUENCE_LEVEL_UPGRADE_ID, -1, cap, target);
         }
     }
 
-    private void invalidate(){
+    private void invalidate(LivingEntity target, BeyonderCapability cap){
         condition.markInvalid();
         endEffectWhenPossible();
+        RulePylonAbility.Punishment.STRIKE.execution().execute(target, cap, null, sequenceLevel);
     }
 
     @Override
-    public boolean onDamageProposal(LivingAttackEvent event, LivingEntity victim, @Nullable LivingEntity attacker, LivingEntityBeyonderCapability victimCap, Optional<LivingEntityBeyonderCapability> attackerCap, boolean calledOnVictim) {
+    public boolean onDamageProposal(LivingAttackEvent event, LivingEntity victim, @Nullable LivingEntity attacker, BeyonderCapability victimCap, Optional<BeyonderCapability> attackerCap, boolean calledOnVictim) {
         if(calledOnVictim) return false;
-        if(Objects.equals(victim.getMobType(), MobType.UNDEAD) && Objects.equals(condition, ContractOption.UNDEAD_COND)) invalidate();
+        if(Objects.equals(victim.getMobType(), MobType.UNDEAD) && Objects.equals(condition, ContractOption.UNDEAD_COND)) invalidate(attacker, attackerCap.orElse(null));
         return false;
     }
 
     @Override
-    public boolean onDamageCalculation(LivingHurtEvent event, LivingEntity victim, @Nullable LivingEntity attacker, LivingEntityBeyonderCapability victimCap, Optional<LivingEntityBeyonderCapability> attackerCap, boolean calledOnVictim) {
+    public boolean onDamageCalculation(LivingHurtEvent event, LivingEntity victim, @Nullable LivingEntity attacker, BeyonderCapability victimCap, Optional<BeyonderCapability> attackerCap, boolean calledOnVictim) {
         if(calledOnVictim) return false;
         if(!condition.isValid()) return false;
         if(Objects.equals(condition, ContractOption.UNDEAD_BUFF) && Objects.equals(victim.getMobType(), MobType.UNDEAD)) event.setAmount(event.getAmount()*2);
@@ -158,6 +178,10 @@ public class ContractedEffect extends BeyonderEffect {
         super.toNbt(nbt);
         nbt.put("condition", condition.saveToNbt());
         nbt.put("reward", reward.saveToNbt());
+        nbt.putInt("time", time);
+        if (this.casterId != null) {
+            nbt.putUUID("casterId", this.casterId);
+        }
     }
 
     @Override
@@ -165,5 +189,9 @@ public class ContractedEffect extends BeyonderEffect {
         super.loadNBTData(nbt);
         this.condition = ContractAbility.ContractOption.loadFromNbt(nbt.getCompound("condition")).get();
         this.reward = ContractAbility.ContractOption.loadFromNbt(nbt.getCompound("reward")).get();
+        this.time = nbt.getInt("time");
+        if (nbt.hasUUID("casterId")) {
+            this.casterId = nbt.getUUID("casterId");
+        }
     }
 }

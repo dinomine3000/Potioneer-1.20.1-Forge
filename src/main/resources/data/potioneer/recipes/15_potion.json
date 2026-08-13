@@ -1,0 +1,35 @@
+{
+  "type": "potioneer:potion_cauldron_brew",
+  "main_ingredients": [
+    {
+      "item": "minecraft:netherite_sword",
+      "count": 2
+    },
+    {
+      "item": "minecraft:wooden_sword",
+      "count": 2
+    },
+    {
+      "item": "minecraft:diamond"
+    }
+  ],
+  "supplementary_ingredients": [
+    {
+      "item": "minecraft:magma_block",
+      "count": 2
+    },
+    {
+      "item": "minecraft:soul_sand",
+      "count": 2
+    }
+  ],
+  "water_level": 3,
+  "needs_fire": true,
+  "output": {
+    "name": "15",
+    "amount": 2,
+    "bottle": true,
+    "color": 10923269,
+    "can_conflict": true
+  }
+}

@@ -2,7 +2,7 @@ package net.dinomine.potioneer.beyonder.effects.tyrant;
 
 import net.dinomine.potioneer.beyonder.abilities.Ability;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffect;
-import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
+import net.dinomine.potioneer.beyonder.player.BeyonderCapability;
 import net.dinomine.potioneer.beyonder.player.PlayerAbilitiesManager;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -26,39 +26,39 @@ public class AmplificationEffect extends BeyonderEffect {
     public Set<UUID> getAffectedInstances(){return affectedInstances;}
 
     @Override
-    public void onAcquire(LivingEntityBeyonderCapability cap, LivingEntity target, boolean fromLoading) {
+    public void onAcquire(BeyonderCapability cap, LivingEntity target, boolean fromLoading) {
         applyExistingAmplifications(cap, target);
     }
 
     @Override
-    public void onUpdateReceivedOnClient(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    public void onUpdateReceivedOnClient(BeyonderCapability cap, LivingEntity target) {
         applyExistingAmplifications(cap, target);
     }
 
-    private void applyExistingAmplifications(LivingEntityBeyonderCapability cap, LivingEntity target){
+    private void applyExistingAmplifications(BeyonderCapability cap, LivingEntity target){
         for(UUID instanceId: new ArrayList<>(affectedInstances)){
             Ability abl = getAbilityInstance(cap.getAbilitiesManager(), instanceId);
             if(abl == null) {
                 affectedInstances.remove(instanceId);
                 continue;
             }
-            abl.applyTemporaryModifier( uuid, -1, cap, target);
+            abl.temporarilyUpgradeToLevel( uuid, -1, cap, target);
         }
     }
 
-    public void tryAmplify(Ability abl, LivingEntityBeyonderCapability cap, LivingEntity target){
+    public void tryAmplify(Ability abl, BeyonderCapability cap, LivingEntity target){
         if(amplificationsLeft < 1) return;
         if(affectedInstances.contains(abl.getInstanceId())) return;
         affectedInstances.add(abl.getInstanceId());
         amplificationsLeft--;
-        abl.applyTemporaryModifier(uuid, -1, cap, target);
+        abl.temporarilyUpgradeToLevel(uuid, -1, cap, target);
         if(target instanceof ServerPlayer player) sendDataToClient(player);
     }
 
     public void setAmplificationsLeft(int newMax){this.amplificationsLeft = newMax;amplifyAbilities =true;}
 
     @Override
-    protected void doTick(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    protected void doTick(BeyonderCapability cap, LivingEntity target) {
         if(target.level().isClientSide()) return;
         if(amplifyAbilities) return;
         cap.getEffectsManager().statsHolder.addDamage(1 + Math.max(0, 7 - sequenceLevel));
@@ -68,7 +68,7 @@ public class AmplificationEffect extends BeyonderEffect {
     }
 
     @Override
-    public void stopEffects(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    public void stopEffects(BeyonderCapability cap, LivingEntity target) {
         if(!amplifyAbilities) return;
         for(UUID instanceId: new ArrayList<>(affectedInstances)){
             Ability abl = getAbilityInstance(cap.getAbilitiesManager(), instanceId);
@@ -76,7 +76,7 @@ public class AmplificationEffect extends BeyonderEffect {
                 affectedInstances.remove(instanceId);
                 continue;
             }
-            abl.removeTemporaryModifier(uuid, cap, target);
+            abl.removeTemporaryUpgrade(uuid, cap, target);
         }
     }
 

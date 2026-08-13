@@ -2,7 +2,7 @@ package net.dinomine.potioneer.entities.custom;
 
 import net.dinomine.potioneer.beyonder.pathways.Pathways;
 import net.dinomine.potioneer.util.GeoTintable;
-import net.dinomine.potioneer.util.misc.ModTags;
+import net.dinomine.potioneer.util.misc.ModNbtUtils;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
@@ -26,9 +26,9 @@ public class CharacteristicEntity extends PlaceableItemEntity implements GeoEnti
 
     public CharacteristicEntity(EntityType<CharacteristicEntity> pEntityType, Level pLevel, ItemStack item) {
         super(pEntityType, pLevel, false, true, true, item);
-        CompoundTag itemTag = ModTags.getTagFromItem(ModTags.TAGS.BEYONDER, item);
+        CompoundTag itemTag = ModNbtUtils.getTagFromItem(ModNbtUtils.TAGS.BEYONDER, item);
         if(itemTag != null)
-            entityData.set(BEYONDER_ID, ModTags.BeyonderInfoTag.getAssociatedPathSeqLevel(itemTag));
+            entityData.set(BEYONDER_ID, ModNbtUtils.BeyonderInfoTag.getAssociatedPathSeqLevel(itemTag));
         else entityData.set(BEYONDER_ID, -1);
         setNoGravity(false);
     }

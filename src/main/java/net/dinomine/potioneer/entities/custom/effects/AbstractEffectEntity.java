@@ -1,11 +1,10 @@
 package net.dinomine.potioneer.entities.custom.effects;
 
-import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
+import net.dinomine.potioneer.beyonder.player.CapProvider;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
-import net.minecraft.server.commands.KillCommand;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
@@ -30,7 +29,7 @@ public abstract class AbstractEffectEntity extends Entity {
             this.targetEntity = targetEntity;
             this.targetUUID = targetEntity.getUUID();
             getEntityData().set(TARGET_INT_ID, targetEntity.getId());
-            targetEntity.getCapability(BeyonderStatsProvider.EFFECT_ENTITIES).ifPresent(cap -> {
+            targetEntity.getCapability(CapProvider.EFFECT_ENTITIES).ifPresent(cap -> {
                 cap.addEffect(this);
             });
         }
@@ -124,7 +123,7 @@ public abstract class AbstractEffectEntity extends Entity {
     public void remove(RemovalReason pReason) {
         super.remove(pReason);
         if(targetEntity == null) return;
-        targetEntity.getCapability(BeyonderStatsProvider.EFFECT_ENTITIES).ifPresent(cap -> cap.stopEffect(this));
+        targetEntity.getCapability(CapProvider.EFFECT_ENTITIES).ifPresent(cap -> cap.stopEffect(this));
     }
 
     @Override

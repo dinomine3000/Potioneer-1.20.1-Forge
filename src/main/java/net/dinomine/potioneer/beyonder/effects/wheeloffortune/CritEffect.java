@@ -2,7 +2,7 @@ package net.dinomine.potioneer.beyonder.effects.wheeloffortune;
 
 import net.dinomine.potioneer.beyonder.damages.PotioneerDamage;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffect;
-import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
+import net.dinomine.potioneer.beyonder.player.BeyonderCapability;
 import net.dinomine.potioneer.particle.ModParticles;
 import net.dinomine.potioneer.sound.ModSounds;
 import net.minecraft.nbt.CompoundTag;
@@ -21,7 +21,7 @@ public class CritEffect extends BeyonderEffect {
     }
 
     @Override
-    public void refreshTime(LivingEntityBeyonderCapability cap, LivingEntity target, BeyonderEffect effect) {
+    public void refreshTime(BeyonderCapability cap, LivingEntity target, BeyonderEffect effect) {
         if(!(effect instanceof CritEffect critEffect)) return;
         if(critEffect.amount > this.amount){
             setValues(critEffect.casterId, critEffect.amount);
@@ -33,11 +33,11 @@ public class CritEffect extends BeyonderEffect {
     }
 
     @Override
-    public void onAcquire(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    public void onAcquire(BeyonderCapability cap, LivingEntity target) {
     }
 
     @Override
-    protected void doTick(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    protected void doTick(BeyonderCapability cap, LivingEntity target) {
         if(target.level().isClientSide()) return;
         if(lifetime == 10){
             LivingEntity caster = (LivingEntity) target.level().getEntity(casterId);
@@ -66,6 +66,6 @@ public class CritEffect extends BeyonderEffect {
     }
 
     @Override
-    public void stopEffects(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    public void stopEffects(BeyonderCapability cap, LivingEntity target) {
     }
 }

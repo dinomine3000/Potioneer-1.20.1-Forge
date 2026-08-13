@@ -59,15 +59,25 @@ public class PotioneerAbilityConfig {
     public static final ForgeConfigSpec.IntValue WATER_SPELL_COOLDOWN_WATER_TRAP;
 
     //contract
+    public static final ForgeConfigSpec.BooleanValue TYRANT_CAN_DO_CONTRACTS_TO_NON_ALLIES;
     public static final ForgeConfigSpec.DoubleValue CONTRACT_SPIRITUALITY_THRESHOLD;
     public static final ForgeConfigSpec.IntValue CONTRACT_HEALTH_THRESHOLD;
     public static final ForgeConfigSpec.IntValue CONTRACT_DAMAGE_BUFF;
     public static final ForgeConfigSpec.DoubleValue CONTRACT_REGENERATION_BUFF;
     public static final ForgeConfigSpec.DoubleValue CONTRACT_STAMINA_BUFF;
     public static final ForgeConfigSpec.IntValue CONTRACT_HEALTH_BUFF;
+    public static final ForgeConfigSpec.IntValue CONTRACT_COST;
+
+    //prohibition
+    public static final ForgeConfigSpec.IntValue PROHIBITION_RADIUS;
+    public static final ForgeConfigSpec.IntValue PROHIBITION_ABILITY_WINDOW;
+    public static final ForgeConfigSpec.IntValue PROHIBITION_COOLDOWN;
+    public static final ForgeConfigSpec.IntValue PROHIBITION_GENERAL_DURATION;
+    public static final ForgeConfigSpec.IntValue PROHIBITION_ABILITY_DURATION;
+    public static final ForgeConfigSpec.IntValue PROHIBITION_COST;
+    public static final ForgeConfigSpec.BooleanValue PROHIBITION_AFFECTS_SELF;
 
     // Other Abilities
-    public static final ForgeConfigSpec.IntValue CONTRACT_COST;
     public static final ForgeConfigSpec.IntValue EXILE_COST;
     public static final ForgeConfigSpec.IntValue EXILE_DURATION;
     public static final ForgeConfigSpec.IntValue EXILE_COOLDOWN;
@@ -80,6 +90,10 @@ public class PotioneerAbilityConfig {
     public static final ForgeConfigSpec.IntValue AURA_RADIUS;
     public static final ForgeConfigSpec.IntValue SENSE_OF_ORDER_RADIUS;
     public static final ForgeConfigSpec.DoubleValue AURA_MISCAST_CHANCE;
+    public static final ForgeConfigSpec.DoubleValue BRIBE_CANCEL_CHANCE;
+    public static final ForgeConfigSpec.IntValue BRIBE_MISCAST_RADIUS;
+    public static final ForgeConfigSpec.IntValue BRIBE_DURATION;
+    public static final ForgeConfigSpec.DoubleValue BRIBE_DAMAGE_MULTIPLIER;
 
 
 
@@ -245,6 +259,11 @@ public class PotioneerAbilityConfig {
         BUILDER.pop();
 
         BUILDER.push("contract_settings");
+        TYRANT_CAN_DO_CONTRACTS_TO_NON_ALLIES = BUILDER
+                .comment("Should a tyrant beyonder be able to apply a contract to non-players?" +
+                        "\nIf set to true, they can apply a contract to any animal or non-ally player (basically, excludes mobs), which will be automatically signed if its not for a player." +
+                        "\nIf set to false, they can only do so with allies.")
+                .define("contract_non_allies", true);
         CONTRACT_SPIRITUALITY_THRESHOLD = BUILDER
                 .comment("Spirituality percentage threshold for contract conditions.")
                 .defineInRange("spirituality_threshold", 0.5d, 0.0d, 1.0d);
@@ -269,12 +288,40 @@ public class PotioneerAbilityConfig {
                 .comment("Max health granted by contract rewards.")
                 .defineInRange("health_buff", 10, 0, Integer.MAX_VALUE);
 
+        CONTRACT_COST = BUILDER.comment("Spirituality cost for Contract.")
+                .defineInRange("contract_cost", 150, 0, Integer.MAX_VALUE);
+
+
+
+        PROHIBITION_RADIUS = BUILDER.comment("Radius for the prohibition ability")
+                .defineInRange("prohibition_radius", 16, 0, Integer.MAX_VALUE);
+
+        PROHIBITION_ABILITY_WINDOW = BUILDER.comment("Time window for the prohibition ability to disable abilities." +
+                        "\nWhen cast and applied to other entities, the first ability they cast within this time span (in ticks) will be disabled for everyone" +
+                        "\nIn other words, they can also wait out this time for the ability to do nothing.")
+                .defineInRange("prohibition_window", 20*15, 0, Integer.MAX_VALUE);
+
+        PROHIBITION_COOLDOWN = BUILDER.comment("Cooldown, in ticks, for the prohibition ability")
+                .defineInRange("prohibition_cooldown", 20*15, 0, Integer.MAX_VALUE);
+
+        PROHIBITION_GENERAL_DURATION = BUILDER.comment("Duration, in ticks, for general prohibitions (flying, teleporting, etc...)")
+                .defineInRange("prohibition_duration_general", 20*10, 0, Integer.MAX_VALUE);
+
+        PROHIBITION_ABILITY_DURATION = BUILDER.comment("Duration, in ticks, for ability prohibitions")
+                .defineInRange("prohibition_duration_ability", 20*10, 0, Integer.MAX_VALUE);
+
+        PROHIBITION_COST = BUILDER.comment("Cost for the prohibition ability")
+                .defineInRange("prohibition_cost", 150, 0, Integer.MAX_VALUE);
+
+        PROHIBITION_AFFECTS_SELF = BUILDER.comment("Should the prohibition ability prohibit an ability cast by its caster?" +
+                        "\nIn other words, if a player casts Ability Prohibition, should the next ability they themselves be disabled? Or should this only apply to other entities?")
+                .define("prohibition_affects_caster", true);
+
+
         BUILDER.pop(); // Pop contract_settings
 
         // Miscellaneous Abilities
         BUILDER.push("misc_abilities");
-        CONTRACT_COST = BUILDER.comment("Spirituality cost for Contract.")
-                .defineInRange("contract_cost", 150, 0, Integer.MAX_VALUE);
 
         EXILE_COST = BUILDER.comment("Spirituality cost for Exile.")
                 .defineInRange("exile_cost", 80, 0, Integer.MAX_VALUE);
@@ -315,6 +362,19 @@ public class PotioneerAbilityConfig {
         UNIVERSAL_OCEAN_ORDER = BUILDER.comment("Should the Ocean Order ability work on any aggressive entity or only underwater ones?" +
                         "\nSetting this to true will make Swimmers not aggro any mobs by default, False will only work with mobs that are considered 'aquatic' (see 'underwater_mobs' below).")
                 .define("universal_ocean_order", false);
+
+        BRIBE_CANCEL_CHANCE = BUILDER.comment("Chance for entities affected by Bribe - Disorder to CAST abilities." +
+                        "\nIn other words, one minus this value is the chance they don't cast abilities while affected by Bribe - Disorder")
+                .defineInRange("bribe_chance", 1/3f, 0f, 1f);
+
+        BRIBE_MISCAST_RADIUS = BUILDER.comment("Radius to test for Bribe - Disorder miscasts.")
+                .defineInRange("bribe_radius", 10, 0, Integer.MAX_VALUE);
+
+        BRIBE_DURATION = BUILDER.comment("Duration for the Bribe effect (on entities that have been bribed, not on the briber)")
+                .defineInRange("bribe_duration", 20*30, 0, Integer.MAX_VALUE);
+
+        BRIBE_DAMAGE_MULTIPLIER = BUILDER.comment("Damage Multiplier for victims of Bribe - Weakening")
+                .defineInRange("bribe_multiplier", 0.5f, 0f, 1f);
 
         BUILDER.pop();
 

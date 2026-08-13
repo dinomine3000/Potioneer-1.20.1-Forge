@@ -3,19 +3,14 @@ package net.dinomine.potioneer.beyonder.abilities.wheeloffortune;
 import net.dinomine.potioneer.beyonder.abilities.Ability;
 import net.dinomine.potioneer.beyonder.abilities.AbilityFunctionHelper;
 import net.dinomine.potioneer.beyonder.abilities.AbilityKey;
-import net.dinomine.potioneer.beyonder.pages.PageRegistry;
-import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
-import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
-import net.dinomine.potioneer.network.PacketHandler;
-import net.dinomine.potioneer.network.messages.OpenScreenMessage;
-import net.dinomine.potioneer.savedata.AllySystemSaveData;
+import net.dinomine.potioneer.beyonder.player.BeyonderCapability;
+import net.dinomine.potioneer.beyonder.player.CapProvider;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 public class HalfCooldownAbility extends Ability {
 
@@ -31,7 +26,7 @@ public class HalfCooldownAbility extends Ability {
     }
 
     @Override
-    protected boolean primary(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    protected boolean primary(BeyonderCapability cap, LivingEntity target) {
         if(target.level().isClientSide()) return cap.getSpirituality() > cost();
         boolean flag = false;
         if(sequenceLevel > 5 || !(target instanceof Player player)){
@@ -39,9 +34,9 @@ public class HalfCooldownAbility extends Ability {
         } else {
             List<Player> allies = AbilityFunctionHelper.getAlliesOf((ServerLevel) target.level(), player);
             for(Player ally: allies){
-                Optional<LivingEntityBeyonderCapability> optCap = ally.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve();
+                Optional<BeyonderCapability> optCap = ally.getCapability(CapProvider.BEYONDER_STATS).resolve();
                 if(optCap.isEmpty()) continue;
-                LivingEntityBeyonderCapability allyCap = optCap.get();
+                BeyonderCapability allyCap = optCap.get();
                 flag = flag || refreshAbilityCooldown(allyCap, ally, sequenceLevel);
             }
         }
@@ -49,7 +44,7 @@ public class HalfCooldownAbility extends Ability {
         return flag;
     }
 
-    private static boolean refreshAbilityCooldown(LivingEntityBeyonderCapability cap, LivingEntity target, int sequenceLevel){
+    private static boolean refreshAbilityCooldown(BeyonderCapability cap, LivingEntity target, int sequenceLevel){
         List<AbilityKey> keys = cap.getAbilitiesManager().getAbilityKeys();
         boolean flag = false;
         for(AbilityKey key: keys){

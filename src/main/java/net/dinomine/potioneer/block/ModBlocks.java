@@ -99,8 +99,11 @@ public class ModBlocks {
             () -> new ScriptureStandBlock(BlockBehaviour.Properties.copy(Blocks.OAK_PLANKS)
                     .mapColor(MapColor.WOOD).noOcclusion()));
 
-        public static final RegistryObject<Block> SPIRIT_FRUIT_CROP = BLOCKS.register("spirit_fruit",
+    public static final RegistryObject<Block> SPIRIT_FRUIT_CROP = BLOCKS.register("spirit_fruit",
             () -> new SpiritFruitCropBlock(BlockBehaviour.Properties.copy(Blocks.WHEAT).noOcclusion().noCollission()));
+
+    public static final RegistryObject<Block> RULE_PYLON = BLOCKS.register("rule_pylon",
+            () -> new RulePylonBlock(BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK)));
 
     private static <T extends Block> RegistryObject<T> registerOnlyBlock(String name, Supplier<T> block){
         return BLOCKS.register(name, block);

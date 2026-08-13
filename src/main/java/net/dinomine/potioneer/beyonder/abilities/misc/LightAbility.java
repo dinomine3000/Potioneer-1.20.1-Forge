@@ -1,7 +1,7 @@
 package net.dinomine.potioneer.beyonder.abilities.misc;
 
 import net.dinomine.potioneer.beyonder.abilities.Ability;
-import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
+import net.dinomine.potioneer.beyonder.player.BeyonderCapability;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
@@ -30,7 +30,7 @@ public abstract class LightAbility extends Ability {
     }
 
     @Override
-    protected boolean primary(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    protected boolean primary(BeyonderCapability cap, LivingEntity target) {
         if(target.level().isClientSide()) return true;
         if(cap.getSpirituality() > cost()){
             HitResult block = target.pick(target.getAttributeBaseValue(ForgeMod.BLOCK_REACH.get()) + 0.5, 0f, false);

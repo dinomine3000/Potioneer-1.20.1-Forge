@@ -1,8 +1,8 @@
 package net.dinomine.potioneer.item.custom;
 
 import net.dinomine.potioneer.beyonder.pages.PageRegistry;
-import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
-import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
+import net.dinomine.potioneer.beyonder.player.CapProvider;
+import net.dinomine.potioneer.beyonder.player.BeyonderCapability;
 import net.dinomine.potioneer.config.PotioneerGameplayConfig;
 import net.dinomine.potioneer.item.ModItems;
 import net.dinomine.potioneer.network.PacketHandler;
@@ -33,7 +33,7 @@ public class BeyonderPageItem extends Item {
         if(!heldItem.is(ModItems.BEYONDER_PAGE.get())) return new InteractionResultHolder<>(InteractionResult.FAIL, heldItem);
         if(pLevel.isClientSide()) return new InteractionResultHolder<>(InteractionResult.SUCCESS, heldItem);
 
-        pPlayer.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
+        pPlayer.getCapability(CapProvider.BEYONDER_STATS).ifPresent(cap -> {
             int pageId = applyOrReadPageId(heldItem, (ServerLevel) pLevel, cap);
             cap.addPage(pageId);
             PacketHandler.sendMessageSTC(new OpenScreenMessage(OpenScreenMessage.Screen.Book, pageId), pPlayer);
@@ -52,7 +52,7 @@ public class BeyonderPageItem extends Item {
         return super.getName(pStack);
     }
 
-    private static int applyOrReadPageId(ItemStack heldItem, ServerLevel pLevel, @NotNull LivingEntityBeyonderCapability cap) {
+    private static int applyOrReadPageId(ItemStack heldItem, ServerLevel pLevel, @NotNull BeyonderCapability cap) {
         if(heldItem.hasTag() && heldItem.getTag().contains("pageId")) return heldItem.getTag().getInt("pageId");
         List<Integer> pages = cap.getPageList();
         List<Integer> newPages = PageRegistry.getNewKeys(pages);

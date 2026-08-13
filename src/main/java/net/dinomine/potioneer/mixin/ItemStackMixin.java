@@ -1,9 +1,9 @@
 package net.dinomine.potioneer.mixin;
 
-import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
+import net.dinomine.potioneer.beyonder.player.CapProvider;
 import net.dinomine.potioneer.event.DurabilityHurtEvent;
 import net.dinomine.potioneer.item.ModItems;
-import net.dinomine.potioneer.util.misc.ModTags;
+import net.dinomine.potioneer.util.misc.ModNbtUtils;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
@@ -111,16 +111,16 @@ public abstract class ItemStackMixin {
         if(stack.getCount() <= 1){
             //give player mock item with same relevant tags
             ItemStack broken = new ItemStack(ModItems.BROKEN_ARTIFACT.get());
-            CompoundTag artifactTag = ModTags.getTagFromItem(ModTags.TAGS.ARTIFACT, stack);
-            CompoundTag beyonderTag = ModTags.getTagFromItem(ModTags.TAGS.BEYONDER, stack);
-            CompoundTag mystTag = ModTags.getTagFromItem(ModTags.TAGS.MYSTICISM, stack);
+            CompoundTag artifactTag = ModNbtUtils.getTagFromItem(ModNbtUtils.TAGS.ARTIFACT, stack);
+            CompoundTag beyonderTag = ModNbtUtils.getTagFromItem(ModNbtUtils.TAGS.BEYONDER, stack);
+            CompoundTag mystTag = ModNbtUtils.getTagFromItem(ModNbtUtils.TAGS.MYSTICISM, stack);
 
             //dont check myst tag, that one doesnt really matter here. other tools with spirituality can be destroyed without issue.
             if(artifactTag == null && beyonderTag == null) return;
 
-            ModTags.setItemRootTag(broken, artifactTag, ModTags.TAGS.ARTIFACT);
-            ModTags.setItemRootTag(broken, beyonderTag, ModTags.TAGS.BEYONDER);
-            ModTags.setItemRootTag(broken, mystTag, ModTags.TAGS.MYSTICISM);
+            ModNbtUtils.setItemRootTag(broken, artifactTag, ModNbtUtils.TAGS.ARTIFACT);
+            ModNbtUtils.setItemRootTag(broken, beyonderTag, ModNbtUtils.TAGS.BEYONDER);
+            ModNbtUtils.setItemRootTag(broken, mystTag, ModNbtUtils.TAGS.MYSTICISM);
 
             if(stack.hasCustomHoverName())
                 broken.setHoverName(stack.getHoverName());
@@ -129,8 +129,8 @@ public abstract class ItemStackMixin {
                 player.drop(broken, false, true);
             }
 
-            player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
-                cap.getAbilitiesManager().updateArtifact(ModTags.ArtifactInfoTag.getArtifactId(artifactTag), player, broken);
+            player.getCapability(CapProvider.BEYONDER_STATS).ifPresent(cap -> {
+                cap.getAbilitiesManager().updateArtifact(ModNbtUtils.ArtifactInfoTag.getArtifactId(artifactTag), player, broken);
             });
         }
     }

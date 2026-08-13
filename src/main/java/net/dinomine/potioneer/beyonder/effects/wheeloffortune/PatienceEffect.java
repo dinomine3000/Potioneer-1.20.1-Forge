@@ -2,7 +2,7 @@ package net.dinomine.potioneer.beyonder.effects.wheeloffortune;
 
 import net.dinomine.potioneer.Potioneer;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffect;
-import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
+import net.dinomine.potioneer.beyonder.player.BeyonderCapability;
 import net.dinomine.potioneer.config.PotioneerAbilityConfig;
 import net.dinomine.potioneer.sound.ModSounds;
 import net.minecraft.nbt.CompoundTag;
@@ -22,7 +22,7 @@ public class PatienceEffect extends BeyonderEffect {
     private boolean acquired = false;
 
     @Override
-    public void onAcquire(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    public void onAcquire(BeyonderCapability cap, LivingEntity target) {
         if (target.level().isClientSide) return;
         cap.getLuckManager().getRange().setSuppress(true);
         cap.getLuckManager().chanceLuckEventChange(uuid, 9 - sequenceLevel);
@@ -48,25 +48,25 @@ public class PatienceEffect extends BeyonderEffect {
     }
 
     @Override
-    protected void doTick(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    protected void doTick(BeyonderCapability cap, LivingEntity target) {
         if(target.level().isClientSide) return;
         if(target.tickCount%20 == target.getId()%20){
             if(quantity < time) quantity += 1;
         }
     }
 
-    public int getProjectedLuck(LivingEntityBeyonderCapability cap) {
+    public int getProjectedLuck(BeyonderCapability cap) {
         int currentLuck = cap.getLuckManager().getLuck();
         return Math.max(quantityToLuck(quantity), currentLuck) - currentLuck;
     }
 
     @Override
-    public void stopEffects(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    public void stopEffects(BeyonderCapability cap, LivingEntity target) {
         if(target.level().isClientSide) return;
         cap.getLuckManager().getRange().setSuppress(false);
         int currentLuck = cap.getLuckManager().getLuck();
         int amm = Math.max(quantityToLuck(quantity), currentLuck) - currentLuck;
-        cap.getLuckManager().grantLuck(amm);
+        cap.getLuckManager().grantLuck(target, amm, false);
         cap.getCharacteristicManager().progressActing(0.2f*Math.pow(amm/(float)luck_limit, 2.6f), 7);
         cap.getLuckManager().removeLuckEventModifier(uuid);
         target.level().playSound(null, target.getOnPos(), SoundEvents.BOTTLE_EMPTY, SoundSource.PLAYERS, 1, (float)target.getRandom().triangle(1, 0.2));

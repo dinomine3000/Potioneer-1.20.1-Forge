@@ -5,8 +5,7 @@ import net.dinomine.potioneer.beyonder.abilities.PassiveAbility;
 import net.dinomine.potioneer.beyonder.damages.PotioneerDamage;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
 import net.dinomine.potioneer.beyonder.effects.wheeloffortune.DamageRecordingEffect;
-import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
-import net.dinomine.potioneer.savedata.AllySystemSaveData;
+import net.dinomine.potioneer.beyonder.player.BeyonderCapability;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.LivingEntity;
@@ -27,7 +26,7 @@ public class DamageRecordingAbility extends PassiveAbility {
     }
 
     @Override
-    protected boolean primary(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    protected boolean primary(BeyonderCapability cap, LivingEntity target) {
         if(target.level().isClientSide()) return false;
         DamageRecordingEffect effect = (DamageRecordingEffect) cap.getEffectsManager().getEffect(BeyonderEffects.WHEEL_DAMAGE_RECORDING.getEffectId(), getSequenceLevel());
         if(effect == null || effect.isRecording()) return false;
@@ -42,7 +41,7 @@ public class DamageRecordingAbility extends PassiveAbility {
     }
 
     @Override
-    protected boolean secondary(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    protected boolean secondary(BeyonderCapability cap, LivingEntity target) {
         if(target.level().isClientSide()) return false;
         if(cap.getSpirituality() < cost()) return false;
         DamageRecordingEffect effect = (DamageRecordingEffect) cap.getEffectsManager().getEffect(BeyonderEffects.WHEEL_DAMAGE_RECORDING.getEffectId(), getSequenceLevel());

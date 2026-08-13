@@ -2,7 +2,7 @@ package net.dinomine.potioneer.beyonder.downsides.wheeloffortune;
 
 import net.dinomine.potioneer.beyonder.abilities.AbilityKey;
 import net.dinomine.potioneer.beyonder.downsides.Downside;
-import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
+import net.dinomine.potioneer.beyonder.player.BeyonderCapability;
 import net.minecraft.world.entity.LivingEntity;
 
 import java.util.List;
@@ -18,7 +18,7 @@ public class CooldownDownside extends Downside {
     }
 
     @Override
-    protected boolean primary(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    protected boolean primary(BeyonderCapability cap, LivingEntity target) {
         if(target.level().isClientSide()) return false;
         List<AbilityKey> keys = cap.getAbilitiesManager().getAbilityKeys();
         int maxCount = 10 - getSequenceLevel();

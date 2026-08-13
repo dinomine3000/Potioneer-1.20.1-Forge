@@ -2,7 +2,7 @@ package net.dinomine.potioneer.beyonder.abilities.paragon;
 
 import net.dinomine.potioneer.beyonder.abilities.PassiveAbility;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
-import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
+import net.dinomine.potioneer.beyonder.player.BeyonderCapability;
 import net.minecraft.world.entity.LivingEntity;
 
 import java.util.function.Supplier;
@@ -19,17 +19,17 @@ public class DurabilityRegenAbility extends PassiveAbility {
     }
 
     @Override
-    public void onUpgrade(int oldLevel, int newLevel, LivingEntityBeyonderCapability cap, LivingEntity target) {
+    public void onUpgrade(int oldLevel, int newLevel, BeyonderCapability cap, LivingEntity target) {
         levelUp = newLevel <= 7;
     }
 
     @Override
-    public void onAcquire(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    public void onAcquire(BeyonderCapability cap, LivingEntity target) {
         setEnabled(cap, target, levelUp);
     }
 
     @Override
-    protected boolean primary(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    protected boolean primary(BeyonderCapability cap, LivingEntity target) {
         if(target.level().isClientSide()) return false;
         flipEnable(cap, target);
 
@@ -42,12 +42,12 @@ public class DurabilityRegenAbility extends PassiveAbility {
     }
 
     @Override
-    public void activate(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    public void activate(BeyonderCapability cap, LivingEntity target) {
         cap.getEffectsManager().addOrRefreshEffect(effect.createInstance(sequenceLevel, getEffectCost.get(), getEffectDuration.get(), true), cap, target);
     }
 
     @Override
-    public void passive(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    public void passive(BeyonderCapability cap, LivingEntity target) {
         if(isEnabled()){
             if(cap.getSpirituality() < cap.getMaxSpirituality()*minimumSpiritualityThreshold
                     || cap.getSpirituality() < minSpiritualityAbsolute) setEnabled(cap, target, false);

@@ -3,7 +3,7 @@ package net.dinomine.potioneer.beyonder.effects.tyrant;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffect;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
 import net.dinomine.potioneer.beyonder.effects.misc.AbstractSourceRecipientEffect;
-import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
+import net.dinomine.potioneer.beyonder.player.BeyonderCapability;
 import net.dinomine.potioneer.mob_effects.ModEffects;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
@@ -19,7 +19,7 @@ public class AoJRecipientEffect extends AbstractSourceRecipientEffect {
     }
 
     @Override
-    public void refreshTime(LivingEntityBeyonderCapability cap, LivingEntity target, BeyonderEffect effect) {
+    public void refreshTime(BeyonderCapability cap, LivingEntity target, BeyonderEffect effect) {
         if(!(effect instanceof AoJRecipientEffect aojEffect)) return;
         this.sources.putAll(aojEffect.sources);
     }
@@ -29,18 +29,18 @@ public class AoJRecipientEffect extends AbstractSourceRecipientEffect {
     }
 
     @Override
-    public void onAcquire(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    public void onAcquire(BeyonderCapability cap, LivingEntity target) {
 
     }
 
     @Override
-    protected void doTick(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    protected void doTick(BeyonderCapability cap, LivingEntity target) {
         target.addEffect(new MobEffectInstance(ModEffects.AOJ_INFLUENCE.get(), 20, 0, false, false, true));
         tickDownTime(target);
     }
 
     @Override
-    public void stopEffects(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    public void stopEffects(BeyonderCapability cap, LivingEntity target) {
 
     }
 

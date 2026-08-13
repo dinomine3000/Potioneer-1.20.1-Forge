@@ -4,8 +4,9 @@ import net.dinomine.potioneer.beyonder.abilities.AbilityFunctionHelper;
 import net.dinomine.potioneer.beyonder.abilities.PassiveAbility;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
 import net.dinomine.potioneer.beyonder.effects.tyrant.ArrestSourceEffect;
-import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
-import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
+import net.dinomine.potioneer.beyonder.pathways.TyrantPathway;
+import net.dinomine.potioneer.beyonder.player.BeyonderCapability;
+import net.dinomine.potioneer.beyonder.player.CapProvider;
 import net.dinomine.potioneer.config.PotioneerAbilityConfig;
 import net.dinomine.potioneer.network.PacketHandler;
 import net.dinomine.potioneer.network.messages.effects.GeneralAreaEffectMessage;
@@ -27,27 +28,24 @@ public class ArrestAbility extends PassiveAbility {
     }
 
     @Override
-    public void onUpgrade(int oldLevel, int newLevel, LivingEntityBeyonderCapability cap, LivingEntity target) {
+    public void onUpgrade(int oldLevel, int newLevel, BeyonderCapability cap, LivingEntity target) {
         canFlip(newLevel < 7);
         if(newLevel > 6) setEnabled(cap, target, true);
     }
 
     @Override
-    protected boolean secondary(LivingEntityBeyonderCapability cap, LivingEntity target) {
-        if(getSequenceLevel() >= 7) {
-            if(target.level().isClientSide())
-                target.sendSystemMessage(Component.translatableWithFallback("message.potioneer.outdated_secondary", "It doesn't do anything... yet"));
-            return false;
-        }
+    protected boolean secondary(BeyonderCapability cap, LivingEntity target) {
+        if(getSequenceLevel() >= 7) return false;
         if(cap.getSpirituality() < MANUAL_CAST_COST.get()) return false;
         if(target.level().isClientSide()) return true;
         List<LivingEntity> hits = AbilityFunctionHelper.getNonAllyLivingEntitiesAround(target, 4);
         if(hits.isEmpty()) return false;
         boolean aoj = AreaOfJurisdictionAbility.isEntityInAOJ(target, target);
         PacketHandler.sendMessageToClientsAround(target, 4, new GeneralAreaEffectMessage(ParticleMaker.Preset.AOE_END_ROD, target.getOnPos().getCenter().toVector3f(), 4));
-        hits.forEach(ent -> ent.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(victimCap -> ArrestSourceEffect.applyArrestToRecipient(target, victimCap, ent, sequenceLevel, aoj)));
+        hits.forEach(ent -> ent.getCapability(CapProvider.BEYONDER_STATS).ifPresent(victimCap -> ArrestSourceEffect.applyArrestToRecipient(target, victimCap, ent, sequenceLevel, aoj)));
         cap.requestActiveSpiritualityCost(MANUAL_CAST_COST.get());
         setNextCooldownAs(20*5);
+        cap.getCharacteristicManager().progressActing(TyrantPathway.ENFORCER_ACTING_ARREST, 17);
         return true;
     }
 }

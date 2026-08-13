@@ -1,7 +1,7 @@
 package net.dinomine.potioneer.beyonder.abilities.paragon;
 
 import net.dinomine.potioneer.beyonder.abilities.Ability;
-import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
+import net.dinomine.potioneer.beyonder.player.BeyonderCapability;
 import net.dinomine.potioneer.item.ModItems;
 import net.dinomine.potioneer.menus.CrafterAnvilMenu;
 import net.minecraft.advancements.CriteriaTriggers;
@@ -42,7 +42,7 @@ public class AnvilGuiAbility extends Ability {
     }
 
     @Override
-    public boolean primary(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    public boolean primary(BeyonderCapability cap, LivingEntity target) {
         if(target.level().isClientSide()) return true;
         if(cap.getSpirituality() > cost() && target instanceof ServerPlayer player){
             if(levelUp.get()) {

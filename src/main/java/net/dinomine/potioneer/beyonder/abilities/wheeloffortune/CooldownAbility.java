@@ -6,8 +6,8 @@ import net.dinomine.potioneer.beyonder.effects.BeyonderEffect;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
 import net.dinomine.potioneer.beyonder.effects.wheeloffortune.CooldownRecipientEffect;
 import net.dinomine.potioneer.beyonder.pathways.WheelOfFortunePathway;
-import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
-import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
+import net.dinomine.potioneer.beyonder.player.BeyonderCapability;
+import net.dinomine.potioneer.beyonder.player.CapProvider;
 import net.dinomine.potioneer.beyonder.player.PlayerLuckManager;
 import net.dinomine.potioneer.config.PotioneerAbilityConfig;
 import net.dinomine.potioneer.util.ParticleMaker;
@@ -31,7 +31,7 @@ public class CooldownAbility extends PassiveAbility {
     }
 
     @Override
-    protected BeyonderEffect createEffectInstance(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    protected BeyonderEffect createEffectInstance(BeyonderCapability cap, LivingEntity target) {
         return effect.createInstance(sequenceLevel, 0, -1, true);
     }
 
@@ -42,7 +42,7 @@ public class CooldownAbility extends PassiveAbility {
     }
 
     @Override
-    protected boolean primary(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    protected boolean primary(BeyonderCapability cap, LivingEntity target) {
         if(cap.getSpirituality() < cost()) return false;
         ParticleMaker.summonAOEParticles(target.level(), target.position(), 2*effectRadius, effectRadius, ParticleMaker.Preset.AOE_END_ROD);
         if(target.level().isClientSide()) return true;
@@ -52,7 +52,7 @@ public class CooldownAbility extends PassiveAbility {
             if(!PotioneerAbilityConfig.COOLDOWN_TARGET_ALLIES.get() && ent instanceof Player playerVictim && target instanceof Player playerCaster && playerVictim != playerCaster){
                 if(AbilityFunctionHelper.areEntitiesAllies((ServerLevel) target.level(), playerVictim, playerCaster)) continue;
             }
-            ent.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(victimCap -> {
+            ent.getCapability(CapProvider.BEYONDER_STATS).ifPresent(victimCap -> {
                 PlayerLuckManager proxyManager = new PlayerLuckManager(cap.getLuckManager().getLuck() - victimCap.getLuckManager().getLuck());
                 if(ent.getId() == target.getId()) proxyManager = cap.getLuckManager();
                 else cap.getCharacteristicManager().progressActing(WheelOfFortunePathway.GAMBLER_ACTING_COOLDOWN, 7);
@@ -68,7 +68,7 @@ public class CooldownAbility extends PassiveAbility {
     }
 
     @Override
-    protected boolean secondary(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    protected boolean secondary(BeyonderCapability cap, LivingEntity target) {
         super.primary(cap, target);
         putOnCooldown(20, target);
         if(!target.level().isClientSide())

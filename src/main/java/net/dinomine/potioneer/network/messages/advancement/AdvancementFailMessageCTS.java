@@ -1,6 +1,6 @@
 package net.dinomine.potioneer.network.messages.advancement;
 
-import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
+import net.dinomine.potioneer.beyonder.player.CapProvider;
 import net.dinomine.potioneer.util.misc.CharacteristicHelper;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
@@ -32,7 +32,7 @@ public class AdvancementFailMessageCTS {
         context.enqueueWork(() -> {
             int sequence = msg.sequence;
             if(!player.isCreative()){
-                player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> cap.setSanity(0));
+                player.getCapability(CapProvider.BEYONDER_STATS).ifPresent(cap -> cap.setSanity(0));
                 CharacteristicHelper.addCharacteristicToLevel(sequence, player.level(), player, player.position(), player.getRandom());
             }
         });

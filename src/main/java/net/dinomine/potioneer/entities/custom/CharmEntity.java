@@ -2,7 +2,7 @@ package net.dinomine.potioneer.entities.custom;
 
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffect;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
-import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
+import net.dinomine.potioneer.beyonder.player.CapProvider;
 import net.dinomine.potioneer.entities.ModEntities;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
@@ -179,7 +179,7 @@ public class CharmEntity extends Entity implements GeoEntity {
             System.out.println("Warning: Charm entity target is null when tried to apply effect!");
             return;
         }
-        target.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
+        target.getCapability(CapProvider.BEYONDER_STATS).ifPresent(cap -> {
             if(cap.getEffectsManager().addOrRefreshEffect(this.effect, cap, target))
                 level().playSound(null, target, SoundEvents.BEACON_POWER_SELECT, SoundSource.PLAYERS, 2, 1);
             else

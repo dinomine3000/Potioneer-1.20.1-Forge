@@ -4,7 +4,7 @@ import net.dinomine.potioneer.beyonder.abilities.Ability;
 import net.dinomine.potioneer.beyonder.pathways.BeyonderPathway;
 import net.dinomine.potioneer.beyonder.pathways.Pathways;
 import net.dinomine.potioneer.config.PotioneerGameplayConfig;
-import net.dinomine.potioneer.util.misc.ModTags;
+import net.dinomine.potioneer.util.misc.ModNbtUtils;
 import net.minecraft.nbt.*;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -57,7 +57,7 @@ public class PlayerCharacteristicManager {
         return 0;
     }
 
-    public void consumeCharacteristic(LivingEntityBeyonderCapability cap, LivingEntity entity, int characId){
+    public void consumeCharacteristic(BeyonderCapability cap, LivingEntity entity, int characId){
         //add characteristic to the stack
         int idx = findCharacteristicOfLevel(characId%10);
         lastConsumedCharacteristics.add(idx, characId);
@@ -79,7 +79,7 @@ public class PlayerCharacteristicManager {
      * To drop all of them at once, use another method
      * @return the pathway-sequence id of the dropped characteristic
      */
-    public List<Integer> dropLevel(LivingEntityBeyonderCapability cap, LivingEntity target, boolean forceDrop){
+    public List<Integer> dropLevel(BeyonderCapability cap, LivingEntity target, boolean forceDrop){
         if(lastConsumedCharacteristics.isEmpty())
             return List.of(-1);
         //remove from the stack
@@ -107,7 +107,7 @@ public class PlayerCharacteristicManager {
         return List.of(droppedCharacteristic);
     }
 
-    public List<List<Integer>> dropAllCharacteristics(LivingEntityBeyonderCapability cap, LivingEntity target){
+    public List<List<Integer>> dropAllCharacteristics(BeyonderCapability cap, LivingEntity target){
         List<Integer> characteristicsHolder = new ArrayList<>(lastConsumedCharacteristics);
 
         if(!PotioneerGameplayConfig.ALLOW_CHANGING_PATHWAYS.get()){
@@ -298,7 +298,7 @@ public class PlayerCharacteristicManager {
 
     public void saveNBTData(CompoundTag tag){
         CompoundTag acting = new CompoundTag();
-        acting.put("characteristics", ModTags.toNumberListTag(lastConsumedCharacteristics));
+        acting.put("characteristics", ModNbtUtils.toNumberListTag(lastConsumedCharacteristics));
         ArrayList<Integer> hold = new ArrayList<>();
         ArrayList<Double> finalActing = new ArrayList<>();
         for(int id: lastConsumedCharacteristics){
@@ -307,20 +307,20 @@ public class PlayerCharacteristicManager {
                 finalActing.add(getActing(id));
             }
         }
-        acting.put("acting_progress", ModTags.toNumberListTag(finalActing));
+        acting.put("acting_progress", ModNbtUtils.toNumberListTag(finalActing));
         acting.putInt("aptitude", aptitudePathway);
         tag.put("acting", acting);
     }
 
-    public void loadNBTData(CompoundTag tag, LivingEntityBeyonderCapability cap, LivingEntity target) {
+    public void loadNBTData(CompoundTag tag, BeyonderCapability cap, LivingEntity target) {
         if(!tag.contains("acting")) return;
         //build list of consumed characteristics
         CompoundTag acting = tag.getCompound("acting");
-        lastConsumedCharacteristics = ModTags.fromIntListTag(acting.getList("characteristics", Tag.TAG_INT));
+        lastConsumedCharacteristics = ModNbtUtils.fromIntListTag(acting.getList("characteristics", Tag.TAG_INT));
         //build map of acting progress
         //at the same time as i check for repeat, i also build the characteristic counted map
         actingProgress = new HashMap<>();
-        ArrayList<Double> temp_acting_list = ModTags.fromDoubleListTag(acting.getList("acting_progress", Tag.TAG_DOUBLE));
+        ArrayList<Double> temp_acting_list = ModNbtUtils.fromDoubleListTag(acting.getList("acting_progress", Tag.TAG_DOUBLE));
         characteristicCountMap = new HashMap<>();
         int i = 0;
         for(int id: lastConsumedCharacteristics){
@@ -346,7 +346,7 @@ public class PlayerCharacteristicManager {
         }
     }
 
-    private void setAllAbilities(LivingEntityBeyonderCapability cap, LivingEntity target, boolean fromLoading) {
+    private void setAllAbilities(BeyonderCapability cap, LivingEntity target, boolean fromLoading) {
         List<Ability> allAbilities = getAbilitiesFromCharacteristics();
         cap.getAbilitiesManager().grantIntrinsicAbilities(allAbilities, getPathwaySequenceId(), !fromLoading, cap, target);
     }

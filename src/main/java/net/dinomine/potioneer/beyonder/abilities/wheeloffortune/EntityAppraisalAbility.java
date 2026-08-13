@@ -3,8 +3,8 @@ package net.dinomine.potioneer.beyonder.abilities.wheeloffortune;
 import net.dinomine.potioneer.beyonder.abilities.Ability;
 import net.dinomine.potioneer.beyonder.abilities.AbilityFunctionHelper;
 import net.dinomine.potioneer.beyonder.pathways.WheelOfFortunePathway;
-import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
-import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
+import net.dinomine.potioneer.beyonder.player.BeyonderCapability;
+import net.dinomine.potioneer.beyonder.player.CapProvider;
 import net.dinomine.potioneer.beyonder.player.PlayerLuckManager;
 import net.dinomine.potioneer.network.PacketHandler;
 import net.dinomine.potioneer.network.messages.abilityRelevant.abilitySpecific.AppraisalDataMessage;
@@ -45,14 +45,14 @@ public class EntityAppraisalAbility extends Ability {
     }
 
     @Override
-    protected boolean primary(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    protected boolean primary(BeyonderCapability cap, LivingEntity target) {
         if(cap.getSpirituality() < cost()) return false;
         cap.requestActiveSpiritualityCost(cost());
         if(target.level().isClientSide()) return true;
         LivingEntity statAppraisalTarget = getTarget(target);
         if(statAppraisalTarget.getId() != target.getId())
             cap.getCharacteristicManager().progressActing(WheelOfFortunePathway.APPRAISER_ACTING_APPRAISE, 8);
-        statAppraisalTarget.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(targetCap -> {
+        statAppraisalTarget.getCapability(CapProvider.BEYONDER_STATS).ifPresent(targetCap -> {
             if(sequenceLevel > 6){
                 target.sendSystemMessage(Component.translatable("ability.potioneer.target_appraisal",
                         statAppraisalTarget.getDisplayName(), Math.ceil(statAppraisalTarget.getHealth()), Math.ceil(statAppraisalTarget.getMaxHealth()),
@@ -66,7 +66,7 @@ public class EntityAppraisalAbility extends Ability {
     }
 
     @Override
-    protected boolean secondary(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    protected boolean secondary(BeyonderCapability cap, LivingEntity target) {
         if(cap.getSpirituality() < cost()) return false;
         cap.requestActiveSpiritualityCost(cost());
         if(target.level().isClientSide()) return true;
@@ -74,9 +74,9 @@ public class EntityAppraisalAbility extends Ability {
         LivingEntity luckAppraisalTarget = getTarget(target);
         if(luckAppraisalTarget.getId() != target.getId())
             cap.getCharacteristicManager().progressActing(WheelOfFortunePathway.APPRAISER_ACTING_APPRAISE, 8);
-        Optional<LivingEntityBeyonderCapability> optCap = luckAppraisalTarget.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve();
+        Optional<BeyonderCapability> optCap = luckAppraisalTarget.getCapability(CapProvider.BEYONDER_STATS).resolve();
         if(optCap.isEmpty()) return false;
-        LivingEntityBeyonderCapability targetCap = optCap.get();
+        BeyonderCapability targetCap = optCap.get();
         PlayerLuckManager luckMng = targetCap.getLuckManager();
 
         if(getSequenceLevel() > 7){

@@ -3,10 +3,10 @@ package net.dinomine.potioneer.beyonder.client.HUD;
 import net.dinomine.potioneer.Potioneer;
 import net.dinomine.potioneer.beyonder.client.ClientConfigData;
 import net.dinomine.potioneer.beyonder.client.ClientStatsData;
-import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
+import net.dinomine.potioneer.beyonder.player.BeyonderCapability;
 import net.dinomine.potioneer.util.Animation;
 import net.dinomine.potioneer.util.AnimationHandler;
-import net.dinomine.potioneer.util.misc.ModTags;
+import net.dinomine.potioneer.util.misc.ModNbtUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
@@ -95,7 +95,7 @@ public class MagicOrbOverlay {
     });
 
     private static boolean isHoldingArtifact() {
-        return Minecraft.getInstance().player != null && ModTags.ArtifactInfoTag.isItemArtifact(Minecraft.getInstance().player.getMainHandItem());
+        return Minecraft.getInstance().player != null && ModNbtUtils.ArtifactInfoTag.isItemArtifact(Minecraft.getInstance().player.getMainHandItem());
     }
 
     public static int getSanityIndex(){
@@ -103,7 +103,7 @@ public class MagicOrbOverlay {
         int sanity_percent = 0;
         if(sanity < 87.5) sanity_percent++;
         if(sanity < 45) sanity_percent++;
-        if(sanity < LivingEntityBeyonderCapability.SANITY_FOR_DROP) sanity_percent++;
+        if(sanity < BeyonderCapability.SANITY_FOR_DROP) sanity_percent++;
         return sanity_percent;
     }
 

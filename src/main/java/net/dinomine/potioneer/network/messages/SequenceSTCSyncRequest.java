@@ -1,18 +1,12 @@
 package net.dinomine.potioneer.network.messages;
 
-import com.mojang.authlib.GameProfile;
-import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
-import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
-import net.dinomine.potioneer.network.PacketHandler;
+import net.dinomine.potioneer.beyonder.player.CapProvider;
+import net.dinomine.potioneer.beyonder.player.BeyonderCapability;
 import net.dinomine.potioneer.network.messages.AllySystem.AllyGroupSyncMessage;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.server.players.GameProfileCache;
 import net.minecraftforge.network.NetworkEvent;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
 import java.util.function.Supplier;
 
 //sent from client to server on world join to request a STC sync
@@ -34,7 +28,7 @@ public class SequenceSTCSyncRequest {
         ServerPlayer player = (ServerPlayer) context.getSender();
         //Server receives message
         context.enqueueWork(() -> {
-            player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
+            player.getCapability(CapProvider.BEYONDER_STATS).ifPresent(cap -> {
                 if(!context.getDirection().getReceptionSide().isClient()){
                     sendUpdateToClient(cap, player);
                 }
@@ -44,7 +38,7 @@ public class SequenceSTCSyncRequest {
         context.setPacketHandled(true);
     }
 
-    public static void sendUpdateToClient(LivingEntityBeyonderCapability cap, ServerPlayer player){
+    public static void sendUpdateToClient(BeyonderCapability cap, ServerPlayer player){
         cap.syncSequenceData(player);
         AllyGroupSyncMessage.sendGroupList(player);
         /*Map<UUID, GameProfileCache.GameProfileInfo> profileMap = player.level().getServer().getProfileCache().profilesByUUID;

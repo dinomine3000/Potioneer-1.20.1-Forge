@@ -81,6 +81,9 @@ class GeneralAreaEffectClient
                 case WATER_IMPLOSION:
                     ParticleMaker.implosion(waterTrap, 0.10f, level, msg.radius, msg.centerPos);
                     break;
+                case SMALL_MIST:
+                    ParticleMaker.waterMist(level, new Vec3(msg.centerPos), (int) msg.radius);
+                    break;
             }
         }
     }

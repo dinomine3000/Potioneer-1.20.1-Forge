@@ -1,9 +1,8 @@
 package net.dinomine.potioneer.rituals.criteria;
 
-import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
+import net.dinomine.potioneer.beyonder.player.CapProvider;
 import net.dinomine.potioneer.rituals.RitualInputData;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 
@@ -20,8 +19,8 @@ public class ReputationCriteria extends ResponseCriteria{
     @Override
     public boolean checkCondition(RitualInputData input, Level level) {
         Player player = level.getPlayerByUUID(input.caster());
-        if(player != null && player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve().isPresent()){
-            return player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve().get().getReputation(pathwayId) >= minimumReputation;
+        if(player != null && player.getCapability(CapProvider.BEYONDER_STATS).resolve().isPresent()){
+            return player.getCapability(CapProvider.BEYONDER_STATS).resolve().get().getReputation(pathwayId) >= minimumReputation;
         }
         return false;
     }

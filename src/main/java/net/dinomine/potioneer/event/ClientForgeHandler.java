@@ -13,7 +13,8 @@ import net.dinomine.potioneer.beyonder.pathways.BeyonderPathway;
 import net.dinomine.potioneer.beyonder.pathways.Pathways;
 import net.dinomine.potioneer.item.ModItems;
 import net.dinomine.potioneer.recipe.PotionRecipeData;
-import net.dinomine.potioneer.util.misc.ModTags;
+import net.dinomine.potioneer.util.ParticleMaker;
+import net.dinomine.potioneer.util.misc.ModNbtUtils;
 import net.dinomine.potioneer.util.PotioneerMathHelper;
 import net.dinomine.potioneer.util.misc.MysticalItemHelper;
 import net.dinomine.potioneer.util.misc.MysticismHelper;
@@ -27,6 +28,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
+import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
@@ -34,6 +36,11 @@ import java.util.List;
 
 @Mod.EventBusSubscriber(modid = Potioneer.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
 public class ClientForgeHandler {
+
+    @SubscribeEvent
+    public static void playerLoggedOut(PlayerEvent.PlayerLoggedOutEvent event){
+        ParticleMaker.clearCache();
+    }
 
     @SubscribeEvent
     public static void onTooltip(ItemTooltipEvent event) {
@@ -48,13 +55,13 @@ public class ClientForgeHandler {
                 if (spirituality > 0){
                     tooltip.add(Component.translatable("tooltip.potioneer.spirituality", spirituality).withStyle(ChatFormatting.GRAY));
                     if(appraiser){
-                        String name = "PLACEHOLDER!! if you see this, let the dev know he fckd up";
+                        String name = MysticismHelper.getPlayerNameOfItem(stack);
                         tooltip.add(Component.translatable("tooltip.potioneer.spirituality_player", name));
                     }
                 }
             }
-            if(ModTags.hasTag(ModTags.TAGS.BEYONDER, stack)){
-                int pathSeq = ModTags.BeyonderInfoTag.getAssociatedPathSeqLevel(ModTags.getTagFromItem(ModTags.TAGS.BEYONDER, stack));
+            if(ModNbtUtils.hasTag(ModNbtUtils.TAGS.BEYONDER, stack)){
+                int pathSeq = ModNbtUtils.BeyonderInfoTag.getAssociatedPathSeqLevel(ModNbtUtils.getTagFromItem(ModNbtUtils.TAGS.BEYONDER, stack));
                 if(appraiser){
                     BeyonderPathway pathway = Pathways.getPathwayById(Math.floorDiv(pathSeq, 10));
                     tooltip.add(Component.empty()
@@ -72,14 +79,14 @@ public class ClientForgeHandler {
                     tooltip.add(info.getMutableNameComponent().withStyle(ChatFormatting.ITALIC));
                 }
             }
-            if(appraiser && ModTags.hasTag(ModTags.TAGS.POTION, stack)){
-                CompoundTag potionTag = ModTags.getTagFromItem(ModTags.TAGS.POTION, stack);
-                String name = ModTags.PotionInfoTag.getPotionName(potionTag);
-                boolean conflict = ModTags.PotionInfoTag.isConflict(name);
+            if(appraiser && ModNbtUtils.hasTag(ModNbtUtils.TAGS.POTION, stack)){
+                CompoundTag potionTag = ModNbtUtils.getTagFromItem(ModNbtUtils.TAGS.POTION, stack);
+                String name = ModNbtUtils.PotionInfoTag.getPotionName(potionTag);
+                boolean conflict = ModNbtUtils.PotionInfoTag.isConflict(name);
                 if(conflict){
                     tooltip.add(Component.translatable("tooltip.potioneer.conflicting_potion").withStyle(ChatFormatting.RED));
                 } else if(PotioneerMathHelper.isInteger(name)){
-                    boolean isComplete = ModTags.PotionInfoTag.isPotionComplete(potionTag);
+                    boolean isComplete = ModNbtUtils.PotionInfoTag.isPotionComplete(potionTag);
                     int pathwaySequenceId = Integer.parseInt(name);
                     tooltip.add(Component.translatable("tooltip.potioneer." + (isComplete ? "valid_potion" : "incomplete_potion")).withStyle(ChatFormatting.AQUA));
 
@@ -90,8 +97,8 @@ public class ClientForgeHandler {
                 }
             }
             if(stack.is(ModItems.CHARM.get())){
-                if(ModTags.hasTag(ModTags.TAGS.CHARM, stack)){
-                    tooltip.add(Component.translatable("beyondereffect.potioneer." + ModTags.CharmInfoTag.getEffectId(ModTags.getTagFromItem(ModTags.TAGS.CHARM, stack))));
+                if(ModNbtUtils.hasTag(ModNbtUtils.TAGS.CHARM, stack)){
+                    tooltip.add(Component.translatable("beyondereffect.potioneer." + ModNbtUtils.CharmInfoTag.getEffectId(ModNbtUtils.getTagFromItem(ModNbtUtils.TAGS.CHARM, stack))));
                 } else {
                     tooltip.add(Component.translatable("charm.potioneer.no_effect"));
                 }

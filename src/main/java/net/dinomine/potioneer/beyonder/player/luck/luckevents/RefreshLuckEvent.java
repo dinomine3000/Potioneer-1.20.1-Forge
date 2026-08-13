@@ -1,6 +1,6 @@
 package net.dinomine.potioneer.beyonder.player.luck.luckevents;
 
-import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
+import net.dinomine.potioneer.beyonder.player.BeyonderCapability;
 import net.dinomine.potioneer.beyonder.player.PlayerLuckManager;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
@@ -8,7 +8,7 @@ import net.minecraft.world.entity.player.Player;
 
 public class RefreshLuckEvent extends LuckEvent {
     @Override
-    public void triggerEvent(LivingEntityBeyonderCapability cap, PlayerLuckManager luck, LivingEntity target) {
+    public void triggerEvent(BeyonderCapability cap, PlayerLuckManager luck, LivingEntity target) {
         cap.setSanity(-1);
         cap.setSpirituality(-1);
         target.setHealth(target.getMaxHealth());

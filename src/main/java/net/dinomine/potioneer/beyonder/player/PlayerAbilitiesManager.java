@@ -2,7 +2,6 @@ package net.dinomine.potioneer.beyonder.player;
 
 import net.dinomine.potioneer.Potioneer;
 import net.dinomine.potioneer.beyonder.abilities.*;
-import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
 import net.dinomine.potioneer.beyonder.pages.Page;
 import net.dinomine.potioneer.event.AbilityPossessionEvent;
 import net.dinomine.potioneer.event.ArtifactPossessionEvent;
@@ -33,6 +32,7 @@ import java.util.function.Consumer;
 public class PlayerAbilitiesManager {
     private LinkedHashMap<AbilityKey, Ability> abilities = new LinkedHashMap<>();
     private LinkedHashMap<UUID, ArtifactHolder> artifacts = new LinkedHashMap<>();
+    private DisabledAbilitiesManager disabledManager = new DisabledAbilitiesManager();
 
     public ArrayList<AbilityKey> clientHotbar = new ArrayList<>();
     public AbilityKey quickAbility = new AbilityKey();
@@ -47,9 +47,12 @@ public class PlayerAbilitiesManager {
         this.clientHotbar = mng.clientHotbar;
         this.quickAbility = mng.quickAbility;
         this.abilities = mng.abilities;
+        this.disabledManager = mng.disabledManager;
     }
 
-    public void castArtifactAbility(UUID artifactKey, LivingEntityBeyonderCapability cap, LivingEntity target){
+    public DisabledAbilitiesManager getDisabledAbilitiesManager(){return disabledManager;}
+
+    public void castArtifactAbility(UUID artifactKey, BeyonderCapability cap, LivingEntity target){
         if(!target.level().isClientSide() && target instanceof Player player){
             PacketHandler.sendMessageSTC(new PlayerCastAbilityMessageCTS(artifactKey), player);
         }
@@ -96,7 +99,7 @@ public class PlayerAbilitiesManager {
      * @param cap
      * @param player
      */
-    public void updateArtifacts(LivingEntityBeyonderCapability cap, Player player) {
+    public void updateArtifacts(BeyonderCapability cap, Player player) {
         //because artifacts depend on NBT data, it makes no sense to try to update them on client side.
         //use messages to update the client.
         if(player.level().isClientSide()) return;
@@ -143,7 +146,7 @@ public class PlayerAbilitiesManager {
         return resMap;
     }
 
-    private boolean addArtifact(ArtifactHolder artifact, LivingEntityBeyonderCapability cap, Player player, boolean runOnAcquire, boolean sync){
+    private boolean addArtifact(ArtifactHolder artifact, BeyonderCapability cap, Player player, boolean runOnAcquire, boolean sync){
         if(artifact == null || artifact.isEmpty()) return false;
         if(artifacts.containsKey(artifact.getArtifactId())) return false;
         artifacts.put(artifact.getArtifactId(), artifact);
@@ -153,7 +156,7 @@ public class PlayerAbilitiesManager {
         return true;
     }
 
-    private boolean removeArtifact(UUID artifactId, LivingEntityBeyonderCapability cap, Player player, boolean sync){
+    private boolean removeArtifact(UUID artifactId, BeyonderCapability cap, Player player, boolean sync){
         if(artifactId == null) return false;
         ArtifactHolder artifact = artifacts.remove(artifactId);
         MinecraftForge.EVENT_BUS.post(new ArtifactPossessionEvent.Lost(artifact, player));
@@ -215,52 +218,31 @@ public class PlayerAbilitiesManager {
         }
     }
 
-    public void onTick(LivingEntityBeyonderCapability cap, LivingEntity target){
+    public void onTick(BeyonderCapability cap, LivingEntity target){
         if(!abilities.isEmpty()){
             abilities.values().forEach(ability -> {
                 ability.passive(cap, target);
-                if(cap.getEffectsManager().hasEffect(BeyonderEffects.COGITATION.getEffectId())
-                        && !ability.getAbilityId().equals(Abilities.COGITATION.getAblId())
-                        && !ability.isRevoked()){
-                    ability.revoke(cap, target);
-                }
-                ability.tickCooldown();
+                ability.tickCooldown(target);
             });
         }
         artifacts.values().forEach(ability -> {
             ability.passives(cap, target);
         });
-
-    }
-    public void unrevokeAll(Set<UUID> disabledInstances, LivingEntityBeyonderCapability cap, LivingEntity target){
-        abilities.values().forEach(ability -> {
-            if(disabledInstances.contains(ability.getInstanceId()) && ability.isRevoked()){
-                ability.undoRevoke(cap, target);
-            }
-        });
+        disabledManager.tickDisabledAbilities(cap, target);
     }
 
-    public void unrevokeAll(LivingEntityBeyonderCapability cap, LivingEntity target){
-        if(!abilities.isEmpty()){
-            abilities.values().forEach(ability -> {
-                if(ability.isRevoked()){
-                    ability.undoRevoke(cap, target);
-                }
-            });
-        }
-    }
 
-    public void clearAbilities(LivingEntityBeyonderCapability cap, LivingEntity target){
+    public void clearAbilities(BeyonderCapability cap, LivingEntity target){
         abilities.values().forEach(ability -> ability.deactivate(cap, target));
         abilities = new LinkedHashMap<>();
     }
 
-    public void clearArtifacts(LivingEntityBeyonderCapability cap, LivingEntity target){
+    public void clearArtifacts(BeyonderCapability cap, LivingEntity target){
         artifacts.values().forEach(ability -> ability.onRemove(cap, target));
         artifacts = new LinkedHashMap<>();
     }
 
-    public void grantIntrinsicAbilities(List<Ability> abilitiesToSet, int pathwaySequenceId, boolean runOnAcquire, LivingEntityBeyonderCapability cap, LivingEntity target) {
+    public void grantIntrinsicAbilities(List<Ability> abilitiesToSet, int pathwaySequenceId, boolean runOnAcquire, BeyonderCapability cap, LivingEntity target) {
         if(abilitiesToSet.isEmpty()){
             cap.getAbilitiesManager().clearAbilities(cap, target);
             return;
@@ -291,7 +273,7 @@ public class PlayerAbilitiesManager {
         if(target instanceof Player player) updateSetClientAbilityInfo(player);
     }
 
-    public void replaceCogitation(int pathwaySequenceId, LivingEntityBeyonderCapability cap, LivingEntity target, boolean runOnAcquire) {
+    public void replaceCogitation(int pathwaySequenceId, BeyonderCapability cap, LivingEntity target, boolean runOnAcquire) {
         if(abilities.isEmpty()) return;
         for(AbilityKey key: new ArrayList<>(abilities.keySet())){
             if(key.isSameAbility(Abilities.COGITATION.getAblId())){
@@ -302,18 +284,18 @@ public class PlayerAbilitiesManager {
         addAbility(AbilityList.INTRINSIC.name(), Abilities.COGITATION.create(pathwaySequenceId), cap, target, runOnAcquire, false);
     }
 
-    private void upgradeAbilitiesToLevel(int sequenceLevel, LivingEntityBeyonderCapability cap, LivingEntity target){
+    private void upgradeAbilitiesToLevel(int sequenceLevel, BeyonderCapability cap, LivingEntity target){
         for(Ability abl: new ArrayList<>(abilities.values())){
             if(abl.getSequenceLevel() != sequenceLevel && abl.getType().equals(AbilityList.INTRINSIC.name())){
                 abilities.remove(abl.getAbilityKey());
-                abl.upgradeToLevel(sequenceLevel, cap, target);
+                abl.permanentlyUpgradeToLevel(sequenceLevel, cap, target);
                 AbilityKey newKey = abl.setAbilityKey(AbilityList.INTRINSIC.name());
                 abilities.put(newKey, abl);
             }
         }
     }
 
-    private boolean removeIntrinsicAbility(AbilityKey key, LivingEntityBeyonderCapability cap, LivingEntity target, boolean sync){
+    private boolean removeIntrinsicAbility(AbilityKey key, BeyonderCapability cap, LivingEntity target, boolean sync){
         if(!key.getGroup().equals(AbilityList.INTRINSIC.name())) return false;
         if(!abilities.containsKey(key)) return false;
         Ability abl = abilities.get(key);
@@ -334,8 +316,8 @@ public class PlayerAbilitiesManager {
      * @param cap
      * @param target
      */
-    public void setAbilityEnabled(String abilityId, int sequenceLevel, boolean state, LivingEntityBeyonderCapability cap, LivingEntity target) {
-        applyToValidAbilities(abl -> abl.setEnabled(cap, target, state), abilityId, sequenceLevel, false);
+    public void setAbilityEnabled(String abilityId, int sequenceLevel, boolean state, BeyonderCapability cap, LivingEntity target) {
+        applyToValidAbilities(abl -> abl.setEnabled(cap, target, state), abilityId, sequenceLevel, true);
         /*for(Map.Entry<AbilityKey, Ability> abilityEntry: abilities.entrySet()){
             AbilityKey iKey = abilityEntry.getKey();
             if(iKey.isSameAbility(abilityId) && abilityEntry.getValue().getSequenceLevel() >= sequenceLevel){
@@ -402,20 +384,20 @@ public class PlayerAbilitiesManager {
      * method to set the abilities on the client-side manager to match with server-side, based on the corresponding ability infos
      * @param abilities
      */
-    public void setAbilitiesOnClient(List<AbilityInfo> abilities, LivingEntityBeyonderCapability cap, LivingEntity target) {
+    public void setAbilitiesOnClient(List<AbilityInfo> abilities, BeyonderCapability cap, LivingEntity target) {
         if(!target.level().isClientSide()) return;
         clearAbilities(cap, target);
         addAbilitiesOnClient(abilities, cap, target, true);
         updateAbilitiesOnClient(abilities, cap, target);
     }
 
-    public void setArtifactsOnClient(List<ArtifactHolder> artifacts, LivingEntityBeyonderCapability cap, Player player) {
+    public void setArtifactsOnClient(List<ArtifactHolder> artifacts, BeyonderCapability cap, Player player) {
         if(!player.level().isClientSide()) return;
         clearArtifacts(cap, player);
         addArtifactsOnClient(artifacts, cap, player, false);
     }
 
-    public void updateArtifactsOnClient(List<ArtifactHolder> artifacts, LivingEntityBeyonderCapability cap, Player player){
+    public void updateArtifactsOnClient(List<ArtifactHolder> artifacts, BeyonderCapability cap, Player player){
         if(!player.level().isClientSide()) return;
         for(ArtifactHolder artifact: artifacts){
             ArtifactHolder oldArtifact = this.artifacts.getOrDefault(artifact.getArtifactId(), null);
@@ -424,7 +406,7 @@ public class PlayerAbilitiesManager {
         }
     }
 
-    public void addAbilitiesOnClient(List<AbilityInfo> abilities, @NotNull LivingEntityBeyonderCapability cap, LivingEntity target, boolean runOnAcquire) {
+    public void addAbilitiesOnClient(List<AbilityInfo> abilities, @NotNull BeyonderCapability cap, LivingEntity target, boolean runOnAcquire) {
         if(!target.level().isClientSide()) return;
         for(AbilityInfo abl: abilities){
             AbilityKey key = abl.getKey();
@@ -440,7 +422,7 @@ public class PlayerAbilitiesManager {
         }
     }
 
-    public void addArtifactsOnClient(List<ArtifactHolder> artifacts, @NotNull LivingEntityBeyonderCapability cap, Player player, boolean runOnAcquire) {
+    public void addArtifactsOnClient(List<ArtifactHolder> artifacts, @NotNull BeyonderCapability cap, Player player, boolean runOnAcquire) {
         if(!player.level().isClientSide()) return;
         for(ArtifactHolder artifact: artifacts){
             UUID artifactId = artifact.getArtifactId();
@@ -454,7 +436,7 @@ public class PlayerAbilitiesManager {
         }
     }
 
-    public void removeAbilitiesOnClient(List<AbilityInfo> abilities, @NotNull LivingEntityBeyonderCapability cap, LivingEntity target) {
+    public void removeAbilitiesOnClient(List<AbilityInfo> abilities, @NotNull BeyonderCapability cap, LivingEntity target) {
         if(!target.level().isClientSide()) return;
         for(AbilityInfo abl: abilities){
             AbilityKey key = abl.getKey();
@@ -468,7 +450,7 @@ public class PlayerAbilitiesManager {
         }
     }
 
-    public void removeArtifactsOnClient(List<ArtifactHolder> artifacts, @NotNull LivingEntityBeyonderCapability cap, Player player) {
+    public void removeArtifactsOnClient(List<ArtifactHolder> artifacts, @NotNull BeyonderCapability cap, Player player) {
         if(!player.level().isClientSide()) return;
         for(ArtifactHolder artifact: artifacts){
             UUID uuid = artifact.getArtifactId();
@@ -482,7 +464,7 @@ public class PlayerAbilitiesManager {
         }
     }
 
-    public void updateAbilitiesOnClient(List<AbilityInfo> abilities2, @NotNull LivingEntityBeyonderCapability cap, LivingEntity target) {
+    public void updateAbilitiesOnClient(List<AbilityInfo> abilities2, @NotNull BeyonderCapability cap, LivingEntity target) {
         if(!target.level().isClientSide()) return;
         for(AbilityInfo info: abilities2){
             AbilityKey key = info.getKey();
@@ -504,7 +486,7 @@ public class PlayerAbilitiesManager {
         }
     }
 
-    public void onAbilityUpdateData(AbilityInfo abilityInfo, LivingEntityBeyonderCapability cap, LivingEntity target) {
+    public void onAbilityUpdateData(AbilityInfo abilityInfo, BeyonderCapability cap, LivingEntity target) {
         if(!(target instanceof Player player)) return;
         if(player.level().isClientSide()) return;
         PacketHandler.sendMessageSTC(new AbilitySyncMessage(abilityInfo, AbilitySyncMessage.UPDATE), player);
@@ -564,6 +546,13 @@ public class PlayerAbilitiesManager {
                 highest = abl.getSequenceLevel();
             }
         }
+        if(highest != 10) return highest;
+        for(ArtifactHolder artifact: artifacts.values()){
+            for(Ability abl: artifact.getAbilities()){
+                if(abl.is(ablId) && abl.getSequenceLevel() < highest)
+                    highest = abl.getSequenceLevel();
+            }
+        }
         return highest;
     }
 
@@ -578,6 +567,7 @@ public class PlayerAbilitiesManager {
         }
         return false;
     }
+
     public boolean hasAbility(String ablId) {
         return hasAbilityOrBetter(ablId, 9);
     }
@@ -589,12 +579,6 @@ public class PlayerAbilitiesManager {
     }
     public List<Ability> getAbilities(String abilityId) {
         return getAbilities().stream().filter(abl -> abl.is(abilityId)).toList();
-    }
-
-    public List<UUID> revokeAll(String abilityId, LivingEntityBeyonderCapability cap, LivingEntity target) {
-        List<Ability> res = getAbilities().stream().filter(abl -> abl.is(abilityId)).toList();
-        res.forEach(abl -> abl.revoke(cap, target));
-        return res.stream().map(Ability::getInstanceId).toList();
     }
 
     public void updateArtifact(@Nullable UUID artifactId, Player player, ItemStack artifactStack) {
@@ -627,21 +611,22 @@ public class PlayerAbilitiesManager {
         ARTIFACT,
     }
 
-    public boolean addAbility(String abilityGroup, Ability ability, LivingEntityBeyonderCapability cap, LivingEntity target, boolean runOnAcquire, boolean sync){
+    public boolean addAbility(String abilityGroup, Ability ability, BeyonderCapability cap, LivingEntity target, boolean runOnAcquire, boolean sync){
         return addAbility(new AbilityKey(abilityGroup, ability.getAbilityId(), ability.getSequenceLevel()), ability, cap, target, runOnAcquire, sync);
     }
 
-    public boolean addAbility(AbilityKey key, Ability ability, LivingEntityBeyonderCapability cap, LivingEntity target, boolean runOnAcquire, boolean sync){
+    public boolean addAbility(AbilityKey key, Ability ability, BeyonderCapability cap, LivingEntity target, boolean runOnAcquire, boolean sync){
         if(abilities.containsKey(key)) return false;
         ability.setAbilityKey(key.getGroup());
         abilities.put(key, ability);
+        disabledManager.onAbilityGained(ability, cap, target);
         MinecraftForge.EVENT_BUS.post(new AbilityPossessionEvent.Gained(ability, key, target));
         if (runOnAcquire) ability.onAcquire(cap, target);
         if(sync && target instanceof ServerPlayer player) updateClientAbilityInfo(player, List.of(ability.getAbilityInfo()), AbilitySyncMessage.ADD);
         return true;
     }
 
-    public boolean removeFirstAbilityLike(String abilityId, String abilityGroup, LivingEntityBeyonderCapability cap, LivingEntity target, boolean sync){
+    public boolean removeFirstAbilityLike(String abilityId, String abilityGroup, BeyonderCapability cap, LivingEntity target, boolean sync){
         if(abilityGroup.equals(AbilityList.INTRINSIC.name())) return false;
         Optional<Ability> optAbl = findAbility(abilityId, abilityGroup);
         if(optAbl.isEmpty()) return false;
@@ -657,7 +642,7 @@ public class PlayerAbilitiesManager {
         return getAbilities().stream().filter(abl -> abl.is(abilityId) && abl.getType().equalsIgnoreCase(abilityGroup)).findFirst();
     }
 
-    public boolean removeAbility(AbilityKey key, LivingEntityBeyonderCapability cap, LivingEntity target, boolean sync){
+    public boolean removeAbility(AbilityKey key, BeyonderCapability cap, LivingEntity target, boolean sync){
         if(key.getGroup().equals(AbilityList.INTRINSIC.name())) return false;
         Ability abl = abilities.get(key);
         if(!abilities.containsKey(key)) return false;
@@ -668,11 +653,11 @@ public class PlayerAbilitiesManager {
         return true;
     }
 
-    public void useAbility(LivingEntityBeyonderCapability cap, LivingEntity tar, AbilityKey key, boolean sync, boolean primary, CompoundTag args){
+    public void useAbility(BeyonderCapability cap, LivingEntity tar, AbilityKey key, boolean sync, boolean primary, CompoundTag args){
         if(key.isArtifactKey()){
             ArtifactHolder artifact = artifacts.get(key.getArtifactId());
             if(artifact != null){
-                artifact.castAbility(key, primary, cap, tar);
+                artifact.castAbility(key, primary, cap, tar, args);
             }
             if(sync && tar.level().isClientSide()){
                 PacketHandler.sendMessageCTS(new PlayerCastAbilityMessageCTS(key, primary, args));
@@ -689,7 +674,7 @@ public class PlayerAbilitiesManager {
 //        if(ability != null && cap.getSpirituality() >= Abilities.getAbilityById(key.getAbilityId()).getCostSpirituality()){
     }
 
-    public void setEnabledAtLevel(String ablId, int sequenceLevel, boolean enabling, LivingEntityBeyonderCapability cap, LivingEntity target){
+    public void setEnabledAtLevel(String ablId, int sequenceLevel, boolean enabling, BeyonderCapability cap, LivingEntity target){
         applyToValidAbilities(abl -> abl.setEnabled(cap, target, enabling), ablId, sequenceLevel, true);
         /*for(Map.Entry<AbilityKey, Ability> entry: abilities.entrySet()){
             AbilityKey iKey = entry.getKey();
@@ -699,7 +684,7 @@ public class PlayerAbilitiesManager {
         }*/
     }
 
-    public void setEnabledAtLevelOrLower(String ablId, int sequenceLevel, boolean enabling, LivingEntityBeyonderCapability cap, LivingEntity target){
+    public void setEnabledAtLevelOrLower(String ablId, int sequenceLevel, boolean enabling, BeyonderCapability cap, LivingEntity target){
         applyToValidAbilities(abl -> abl.setEnabled(cap, target, enabling), ablId, sequenceLevel, false);
         /*for(Map.Entry<AbilityKey, Ability> entry: abilities.entrySet()){
             AbilityKey iKey = entry.getKey();
@@ -717,7 +702,7 @@ public class PlayerAbilitiesManager {
      * @param target
      * @return the new enabled state for that ability
      */
-    public boolean setEnabled(AbilityKey key, boolean enabling, LivingEntityBeyonderCapability cap, LivingEntity target){
+    public boolean setEnabled(AbilityKey key, boolean enabling, BeyonderCapability cap, LivingEntity target){
         //cAblId example: Artifact:23:water_affinity:9
         // Intrinsic:water_affinity:8
         // artifact abilities point to the specific artifact, intrinsic and other abilities just point to that ability.
@@ -729,6 +714,10 @@ public class PlayerAbilitiesManager {
     public void updateClientAbilityInfo(Player player, List<AbilityInfo> abilities, int operation){
         if(player.level().isClientSide()) return;
         PacketHandler.sendMessageSTC(new AbilitySyncMessage(abilities, operation), player);
+    }
+    public void updateClientAbilityInfo(Player player, int operation){
+        if(player.level().isClientSide()) return;
+        PacketHandler.sendMessageSTC(new AbilitySyncMessage(abilities.values().stream().map(Ability::getAbilityInfo).toList(), operation), player);
     }
 
     public void updateSetClientAbilityInfo(Player player){
@@ -770,14 +759,15 @@ public class PlayerAbilitiesManager {
             artifactsTag.add(artifact.saveToTag(true));
         }
         nbt.put("artifacts", artifactsTag);
+        nbt.put("disabledData", disabledManager.saveNbt());
     }
 
     private List<Ability> bufferNewAbilities = new ArrayList<>();
     private List<String> bufferAbilityGroups = new ArrayList<>();
 
-    public void loadNBTData(CompoundTag nbt, LivingEntityBeyonderCapability cap, LivingEntity target){
+    public void loadNBTData(CompoundTag nbt, BeyonderCapability cap, LivingEntity target){
         for(Ability abl: abilities.values()){
-            abl.loadNbt(nbt);
+            abl.loadNbtAndRecalculateLevel(nbt, cap, target);
         }
 
         if(!(target instanceof Player player)) return;
@@ -798,7 +788,7 @@ public class PlayerAbilitiesManager {
         for(int i = 0; i < bufferAbilityGroups.size(); i++){
             Ability abl = bufferNewAbilities.get(i);
             addAbility(bufferAbilityGroups.get(i), abl, cap, target, false, false);
-            abl.loadNbt(nbt);
+            abl.loadNbtAndRecalculateLevel(nbt, cap, target);
         }
         bufferNewAbilities.clear();
 
@@ -808,6 +798,7 @@ public class PlayerAbilitiesManager {
                 addArtifact(ArtifactHolder.loadFromTag(artTag), cap, player, false, false);
             }
         }
+        disabledManager.loadNbt(nbt.getCompound("disabledData"), cap, target);
     }
 
 }

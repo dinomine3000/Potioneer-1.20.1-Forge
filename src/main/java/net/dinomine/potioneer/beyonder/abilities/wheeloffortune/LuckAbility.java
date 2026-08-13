@@ -4,7 +4,7 @@ import net.dinomine.potioneer.beyonder.abilities.PassiveAbility;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffect;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
 import net.dinomine.potioneer.beyonder.effects.wheeloffortune.LuckEffect;
-import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
+import net.dinomine.potioneer.beyonder.player.BeyonderCapability;
 import net.dinomine.potioneer.sound.ModSounds;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundSource;
@@ -22,20 +22,20 @@ public class LuckAbility extends PassiveAbility {
     }
 
     @Override
-    protected BeyonderEffect createEffectInstance(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    protected BeyonderEffect createEffectInstance(BeyonderCapability cap, LivingEntity target) {
         LuckEffect eff = (LuckEffect) BeyonderEffects.WHEEL_LUCK_EFFECT.createInstance(sequenceLevel, 0, -1, true);
         return eff.withCrit();
     }
 
     @Override
-    protected boolean primary(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    protected boolean primary(BeyonderCapability cap, LivingEntity target) {
         if(target.level().isClientSide() && cap.getSpirituality() >= cost()) return true;
 
         if(cap.getSpirituality() >= cost()){
             RandomSource random = target.getRandom();
             target.level().playSound(null, target.getOnPos(), ModSounds.LUCK.get(), SoundSource.PLAYERS, 2, (float) target.getRandom().triangle(1f, 0.3f));
             cap.getLuckManager().changeLuckTemporary(-random.nextInt(0, 50), -random.nextInt(0, 50), random.nextInt(0, 50));
-            cap.getLuckManager().grantLuck(20);
+            cap.getLuckManager().grantLuck(target, 20, false);
             target.sendSystemMessage(Component.translatable("ability.potioneer.decaying_luck"));
             cap.requestActiveSpiritualityCost(cost());
             return true;

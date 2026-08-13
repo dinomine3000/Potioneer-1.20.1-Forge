@@ -1,8 +1,8 @@
 package net.dinomine.potioneer.block.entity;
 
 import net.dinomine.potioneer.beyonder.abilities.AbilityFunctionHelper;
-import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
-import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
+import net.dinomine.potioneer.beyonder.player.CapProvider;
+import net.dinomine.potioneer.beyonder.player.BeyonderCapability;
 import net.dinomine.potioneer.block.ModBlocks;
 import net.dinomine.potioneer.block.custom.RitualAltarBlock;
 import net.dinomine.potioneer.item.ModItems;
@@ -11,7 +11,7 @@ import net.dinomine.potioneer.particle.custom.IncenseSmokeParticleOptions;
 import net.dinomine.potioneer.rituals.RitualInputData;
 import net.dinomine.potioneer.rituals.spirits.EvilSpirit;
 import net.dinomine.potioneer.savedata.RitualSpiritsSaveData;
-import net.dinomine.potioneer.util.misc.ModTags;
+import net.dinomine.potioneer.util.misc.ModNbtUtils;
 import net.dinomine.potioneer.util.misc.MysticismHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -235,7 +235,7 @@ public class RitualAltarBlockEntity extends BlockEntity implements MenuProvider 
         }
         List<ItemStack> offerings = getOfferingsIn(ritualArea);
         Player target = getPlayerTargetInRitual(caster, ritualArea, offerings, caster.getInventory());
-        Optional<LivingEntityBeyonderCapability> cap = caster.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve();
+        Optional<BeyonderCapability> cap = caster.getCapability(CapProvider.BEYONDER_STATS).resolve();
         int cost = FLAT_COST + offerings.size()*OFFERING_COST;
         int pathwaySequenceId = -1;
         if(cap.isPresent()){
@@ -329,7 +329,7 @@ public class RitualAltarBlockEntity extends BlockEntity implements MenuProvider 
 
     private String getIncenseString(){
         ItemStack stack = incenseItemHandler.getStackInSlot(0);
-        return ModTags.PotionInfoTag.getPotionName(ModTags.getTagFromItem(ModTags.TAGS.POTION, stack));
+        return ModNbtUtils.PotionInfoTag.getPotionName(ModNbtUtils.getTagFromItem(ModNbtUtils.TAGS.POTION, stack));
     }
 
     private final int CONSUME_SPIRITUALITY = 20;
@@ -416,11 +416,11 @@ public class RitualAltarBlockEntity extends BlockEntity implements MenuProvider 
             case SOUTH -> blockPos.getCenter().add(-0.3, 0, -0.1);
             default ->  blockPos.getCenter();
         };
-        if(ModTags.hasTag(ModTags.TAGS.POTION, stack)){
+        if(ModNbtUtils.hasTag(ModNbtUtils.TAGS.POTION, stack)){
             if(level.random.nextInt(40) == 1){
 //                if(stack.isDamageableItem()) stack.setDamageValue(stack.getDamageValue() + 1);
 //                if(stack.getDamageValue() > stack.getMaxDamage()) incenseItemHandler.setStackInSlot(0, ItemStack.EMPTY);
-                level.addParticle(new IncenseSmokeParticleOptions(ModTags.PotionInfoTag.getPotionColor(ModTags.getTagFromItem(ModTags.TAGS.POTION, stack))),
+                level.addParticle(new IncenseSmokeParticleOptions(ModNbtUtils.PotionInfoTag.getPotionColor(ModNbtUtils.getTagFromItem(ModNbtUtils.TAGS.POTION, stack))),
                         spawnPos.x, spawnPos.y, spawnPos.z, 0, 0.05, 0);
             }
         }

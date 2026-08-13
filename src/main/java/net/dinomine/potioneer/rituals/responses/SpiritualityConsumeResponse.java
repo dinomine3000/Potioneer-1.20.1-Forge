@@ -1,6 +1,6 @@
 package net.dinomine.potioneer.rituals.responses;
 
-import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
+import net.dinomine.potioneer.beyonder.player.CapProvider;
 import net.dinomine.potioneer.rituals.RandomizableResponse;
 import net.dinomine.potioneer.rituals.RitualInputData;
 import net.dinomine.potioneer.savedata.RitualSpiritsSaveData;
@@ -28,7 +28,7 @@ public class SpiritualityConsumeResponse extends SpiritResponse implements Rando
     public void enactResponse(RitualInputData inputData, Level level) {
         Player player = getPlayer(inputData, level, true);
         if(player != null){
-            player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
+            player.getCapability(CapProvider.BEYONDER_STATS).ifPresent(cap -> {
                 cap.requestActiveSpiritualityCost(level.random.nextInt(minSpir, maxSpir));
             });
             defaultResponse.enactResponse(inputData, level);

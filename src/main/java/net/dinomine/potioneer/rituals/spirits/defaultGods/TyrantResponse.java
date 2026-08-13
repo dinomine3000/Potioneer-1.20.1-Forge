@@ -2,8 +2,8 @@ package net.dinomine.potioneer.rituals.spirits.defaultGods;
 
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
 import net.dinomine.potioneer.beyonder.pages.PageRegistry;
-import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
-import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
+import net.dinomine.potioneer.beyonder.player.CapProvider;
+import net.dinomine.potioneer.beyonder.player.BeyonderCapability;
 import net.dinomine.potioneer.config.PotioneerRitualsConfig;
 import net.dinomine.potioneer.rituals.RitualInputData;
 import net.dinomine.potioneer.rituals.RitualResponseLogic;
@@ -20,7 +20,7 @@ import java.util.List;
 
 public class TyrantResponse extends Deity {
 
-    public static final String PRAYER = "You are the Order born among Chaos, the great conqueror of the Golden World, My ruler for all time, The tyrant over all mongrels";
+    public static final String PRAYER = "You are the Order born among Chaos, The Chaos that rules over all Order, My ruler for all time, The tyrant over all mongrels";
 
     public TyrantResponse(){
         super(0, PotioneerRitualsConfig.TYRANT_INGREDIENTS.get(), PotioneerRitualsConfig.TYRANT_INCENSE.get(),
@@ -34,7 +34,7 @@ public class TyrantResponse extends Deity {
     }
 
     @Override
-    public void onTrueNameSpoken(LivingEntity target, LivingEntityBeyonderCapability cap) {
+    public void onTrueNameSpoken(LivingEntity target, BeyonderCapability cap) {
         cap.getEffectsManager().addOrRefreshEffect(BeyonderEffects.byId(BeyonderEffects.TYRANT_LIGHTNING_TARGET.getEffectId(), 1, 0, 20*10, true), cap, target);
         cap.requestActiveSpiritualityCost(1000);
         cap.changeSanity(-25);
@@ -60,7 +60,7 @@ public class TyrantResponse extends Deity {
     private void punishmentLogic(RitualInputData inputData, Level level){
         Player player = getPlayer(inputData, level, true);
         if(player == null) return;
-        player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
+        player.getCapability(CapProvider.BEYONDER_STATS).ifPresent(cap -> {
             cap.getEffectsManager().addOrRefreshEffect(BeyonderEffects.byId(BeyonderEffects.TYRANT_LIGHTNING_TARGET.getEffectId(), 5, 0, 20*2, true),
                     cap, player);
         });

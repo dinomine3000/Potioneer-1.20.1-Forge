@@ -31,12 +31,12 @@ import net.minecraftforge.network.PacketDistributor;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class ParticleMaker {
+
+    private static Set<BlockPos> aojCache = new HashSet<>();
+    private static int aojHash = 0;
 
     /**
      * function that gets the perimeter blocks of all of your areas of jurisdiction and draws particles in the perimeter.
@@ -44,39 +44,129 @@ public class ParticleMaker {
      * @param level
      * @param playerYLevel
      * @param areaCenters
-     * @param aojRadius
+     * @param sideLengths
      */
-    public static void createAreaOfJurisdiction(Level level, int playerYLevel, List<BlockPos> areaCenters, List<Integer> aojRadius) {
-        int defaultRadius = 16;
-        Set<BlockPos> entirePerimeter = new HashSet<>();
-        for(int i = 0; i < areaCenters.size(); i++){
-            BlockPos center = areaCenters.get(i);
-            int radius = aojRadius.size() > i ? aojRadius.get(i) : defaultRadius;
-            entirePerimeter.addAll(getPerimeter(center, radius));
-        }
-        entirePerimeter.removeIf(perimeterPos -> AreaOfJurisdictionAbility.isPosInAOJ(perimeterPos, areaCenters, aojRadius, 1));
-        for(BlockPos perimeterPos: entirePerimeter){
-            Vec3 center = perimeterPos.getCenter();
-            level.addParticle(ParticleTypes.END_ROD, true, center.x, playerYLevel, center.z, 0, 0.3, 0);
+    public static void createAreaOfJurisdiction(Level level, double playerYLevel, List<BlockPos> areaCenters, List<Integer> sideLengths) {
+        // MUST run on client side only (Level#isClientSide returns true on Client)
+        if (!level.isClientSide()) return;
+        if (areaCenters.isEmpty()) return;
+
+        int inHash = Objects.hash(areaCenters, sideLengths);
+        if (inHash != aojHash) {
+            aojHash = inHash;
+            aojCache = computeOuterPerimeter(areaCenters, sideLengths);
         }
 
+        // Render cached perimeter
+        for (BlockPos perimeterPos : aojCache) {
+            level.addParticle(
+                    ParticleTypes.END_ROD,
+                    true,
+                    perimeterPos.getX() + 0.5,
+                    playerYLevel,
+                    perimeterPos.getZ() + 0.5,
+                    0, 0.3, 0
+            );
+        }
     }
 
-    public static List<BlockPos> getPerimeter(BlockPos center, int radius){
-        List<BlockPos> res = new ArrayList<>(List.of(center.atY(0).offset(radius, 0, radius), center.atY(0).offset(-radius, 0, radius), center.atY(0).offset(-radius, 0, -radius), center.atY(0).offset(radius, 0, -radius)));
-        for(int i = 0; i < 4; i++){
-            int east = i%2 == 0 ? (i == 0 ? -1 : 1) : 0;
-            int north = i%2 == 1 ? (i == 1 ? -1 : 1) : 0;
-            for(int j = 1; j < 2*radius + 1; j++){
-                BlockPos perimeterTest = res.get(i).offset(east*j, 0, north*j);
-                if(res.contains(perimeterTest)) break;
-                res.add(perimeterTest.atY(0));
+
+    private static void addInnerCorners(Set<BlockPos> perimeter, List<BlockPos> centers, List<Integer> sideLengths){
+        Set<BlockPos> innerCorners = new HashSet<>();
+        for(BlockPos pos1: perimeter){
+            for(BlockPos pos2: perimeter){
+                if(Math.abs(pos1.getX() - pos2.getX()) != 1 || Math.abs(pos1.getZ() - pos2.getZ()) != 1) continue;
+                BlockPos corner1 = new BlockPos(pos1.getX(), 0, pos2.getZ());
+                BlockPos corner2 = new BlockPos(pos2.getX(), 0, pos1.getZ());
+                if(perimeter.contains(corner1)) continue;
+                if(perimeter.contains(corner2)) continue;
+
+                BlockPos diagonal1 = new BlockPos(pos2.getX(), 0, pos1.getZ());
+                BlockPos diagonal2 = new BlockPos(pos1.getX(), 0, pos2.getZ());
+                if(AreaOfJurisdictionAbility.isPosInAOJ(diagonal1, centers, sideLengths)) innerCorners.add(diagonal1);
+                else innerCorners.add(diagonal2);
             }
         }
-        return res;
+        perimeter.addAll(innerCorners);
+
     }
 
-    public static void createAuraParticles(Player enforcer, LivingEntity victim) {
+    private static Set<BlockPos> computeOuterPerimeter(List<BlockPos> areaCenters, List<Integer> sideLengths) {
+        int defaultRadius = 32;
+        Set<BlockPos> rawPerimeter = new HashSet<>();
+
+        // 1. Generate base perimeters for all zones
+        for (int i = 0; i < areaCenters.size(); i++) {
+            BlockPos center = areaCenters.get(i);
+            int length = (sideLengths.size() > i) ? sideLengths.get(i) : defaultRadius;
+            addSquarePerimeter(rawPerimeter, center, length);
+        }
+
+        // 2. Filter out positions strictly inside the combined AOJ region
+        Set<BlockPos> outerPerimeter = new HashSet<>();
+        for (BlockPos pos : rawPerimeter) {
+            // Keep block if it is on the outer boundary (adjacent to at least one position outside AOJ)
+            if (isBoundaryPos(pos, areaCenters, sideLengths)) {
+                outerPerimeter.add(pos);
+            }
+        }
+        //add inner corners
+        addInnerCorners(outerPerimeter, areaCenters, sideLengths);
+
+        return outerPerimeter;
+    }
+
+    /**
+     * Efficiently adds a square perimeter at Y=0 to the destination set.
+     */
+    private static void addSquarePerimeter(Set<BlockPos> dest, BlockPos center, int sideLength) {
+        int minX, maxX, minZ, maxZ;
+
+        if (sideLength % 2 == 0) {
+            int radius = sideLength / 2;
+            minX = center.getX() - radius;
+            maxX = center.getX() + radius - 1;
+            minZ = center.getZ() - radius;
+            maxZ = center.getZ() + radius - 1;
+        } else {
+            int radius = (sideLength - 1) / 2;
+            minX = center.getX() - radius;
+            maxX = center.getX() + radius;
+            minZ = center.getZ() - radius;
+            maxZ = center.getZ() + radius;
+        }
+
+        for (int x = minX; x <= maxX; x++) {
+            dest.add(new BlockPos(x, 0, minZ));
+            dest.add(new BlockPos(x, 0, maxZ));
+        }
+        for (int z = minZ + 1; z < maxZ; z++) {
+            dest.add(new BlockPos(minX, 0, z));
+            dest.add(new BlockPos(maxX, 0, z));
+        }
+    }
+
+    /**
+     * A position is part of the visual perimeter if it is INSIDE the AOJ,
+     * but has at least one direct cardinal/diagonal neighbor OUTSIDE the AOJ.
+     */
+    private static boolean isBoundaryPos(BlockPos pos, List<BlockPos> centers, List<Integer> sideLengths) {
+        if (!AreaOfJurisdictionAbility.isPosInAOJ(pos, centers, sideLengths)) {
+            return false;
+        }
+
+        // Check 4 cardinal neighbors
+        return !AreaOfJurisdictionAbility.isPosInAOJ(pos.west(), centers, sideLengths)  ||
+                !AreaOfJurisdictionAbility.isPosInAOJ(pos.east(), centers, sideLengths)  ||
+                !AreaOfJurisdictionAbility.isPosInAOJ(pos.north(), centers, sideLengths) ||
+                !AreaOfJurisdictionAbility.isPosInAOJ(pos.south(), centers, sideLengths);
+    }
+
+    public static void clearCache() {
+        aojCache = Collections.emptySet();
+        aojHash = 0;
+    }
+    public static void createAuraParticles(LivingEntity enforcer, LivingEntity victim) {
         if(!(victim instanceof Player)) return;
         if(!victim.level().isClientSide()) return;
         Level level = victim.level();
@@ -103,9 +193,18 @@ public class ParticleMaker {
     public enum Preset{
         AOE_END_ROD,
         AOE_GRAVITY,
+        SMALL_MIST,
         WATER_TRAP,
         WATER_IMPLOSION,
         WATER_JET
+    }
+
+    public static void waterMist(Level level, Vec3 centerPos, int radius){
+        RandomSource random = RandomSource.create();
+        for(int i = 0; i < random.nextInt(10, 30); i++){
+            Vec3 pos = centerPos.offsetRandom(random, radius);
+            level.addParticle(ParticleTypes.FALLING_WATER, pos.x, pos.y, pos.z, 0, 0, 0);
+        }
     }
     public static void createWaterJet(int targetId, Level level){createWaterJet(level.getEntity(targetId));}
     public static void createWaterJet(Entity target){
@@ -121,12 +220,13 @@ public class ParticleMaker {
         jetEffect.start();
     }
 
-    public static void createWaterBlockEffectForPlayer(LivingEntity target, Level level, int duration){
+    public static int createWaterBlockEffectForPlayer(LivingEntity target, Level level, int duration){
         WaterBlockEffectEntity effect = new WaterBlockEffectEntity(ModEntities.WATER_BLOCK_EFFECT_ENTITY.get(), level);
-        effect.setOffset(new Vector3f(-0.5f, target.getEyeHeight() - 0.5f, -0.5f));
+        effect.setOffset(new Vector3f(-0.5f, - 0.5f, -0.5f));
         effect.setTarget(target);
         effect.setDuration(duration);
         level.addFreshEntity(effect);
+        return effect.getId();
     }
 
     public static void createSlotMachineForEntity(Level level, LivingEntity target, boolean success){

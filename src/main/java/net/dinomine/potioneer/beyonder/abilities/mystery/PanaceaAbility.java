@@ -1,7 +1,7 @@
 package net.dinomine.potioneer.beyonder.abilities.mystery;
 
 import net.dinomine.potioneer.beyonder.abilities.Ability;
-import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
+import net.dinomine.potioneer.beyonder.player.BeyonderCapability;
 import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
@@ -23,7 +23,7 @@ public class PanaceaAbility extends Ability {
     }
 
     @Override
-    protected boolean primary(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    protected boolean primary(BeyonderCapability cap, LivingEntity target) {
         if(target.level().isClientSide()) return true;
         if(cap.getSpirituality() > cost() && !target.getActiveEffects().isEmpty()){
             boolean flag = false;

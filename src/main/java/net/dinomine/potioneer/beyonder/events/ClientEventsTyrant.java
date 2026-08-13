@@ -8,10 +8,11 @@ import net.dinomine.potioneer.beyonder.client.ClientStatsData;
 import net.dinomine.potioneer.beyonder.client.HUD.AbilitiesHotbarHUD;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
 import net.dinomine.potioneer.beyonder.effects.tyrant.AmplificationEffect;
+import net.dinomine.potioneer.beyonder.effects.tyrant.GeneralProhibitionEffect;
 import net.dinomine.potioneer.beyonder.effects.tyrant.MistEffect;
 import net.dinomine.potioneer.beyonder.effects.tyrant.WeakeningEffect;
-import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
-import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
+import net.dinomine.potioneer.beyonder.player.BeyonderCapability;
+import net.dinomine.potioneer.beyonder.player.CapProvider;
 import net.dinomine.potioneer.config.PotioneerClientConfig;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -22,6 +23,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.client.event.RenderGuiOverlayEvent;
 import net.minecraftforge.client.event.ViewportEvent;
+import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -37,12 +39,27 @@ public class ClientEventsTyrant {
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public static void onMouseDown(InputEvent.MouseButton.Pre event){
         if(Minecraft.getInstance().level == null) return;
-        MistEffect eff = AbilityFunctionHelper.getEffectOnPlayer(BeyonderEffects.TYRANT_MIST_EFFECT.getEffectId(), Minecraft.getInstance().player);
+        if(Minecraft.getInstance().screen != null) return;
+        MistEffect eff = AbilityFunctionHelper.getEffectOnTarget(BeyonderEffects.TYRANT_MIST_EFFECT.getEffectId(), Minecraft.getInstance().player);
         if(eff == null) return;
         AbilityInfo currentAbility = AbilitiesHotbarHUD.getCurrentSelectedAbility();
         if(currentAbility != null && Abilities.MIST.getAblId().equalsIgnoreCase(currentAbility.innerId())) return;
         event.setCanceled(true);
     }
+
+    @SubscribeEvent
+    public static void onClientTick(TickEvent.ClientTickEvent event) {
+        if (event.phase == TickEvent.Phase.START) {
+            Minecraft mc = Minecraft.getInstance();
+            if (mc.player != null && mc.player.isSprinting()) {
+                GeneralProhibitionEffect eff = AbilityFunctionHelper.getEffectOnTarget(BeyonderEffects.TYRANT_GENERAL_PROHIBITION.getEffectId(), mc.player);
+                if(eff == null || !eff.type.equalsIgnoreCase("sprinting")) return;
+                mc.player.setSprinting(false);
+                mc.options.keySprint.setDown(false);
+            }
+        }
+    }
+
     @SubscribeEvent
     public static void onComputeFogColor(ViewportEvent.ComputeFogColor event) {
         Player player = Minecraft.getInstance().player;
@@ -70,9 +87,9 @@ public class ClientEventsTyrant {
     @SubscribeEvent
     public static void renderAmplifyWeaken(RenderGuiOverlayEvent.Post event){
         GuiGraphics guiGraphics = event.getGuiGraphics();
-        Optional<LivingEntityBeyonderCapability> optCap = ClientStatsData.getCapability();
+        Optional<BeyonderCapability> optCap = ClientStatsData.getCapability();
         if(optCap.isEmpty()) return;
-        LivingEntityBeyonderCapability cap = optCap.get();
+        BeyonderCapability cap = optCap.get();
         WeakeningEffect weakening = (WeakeningEffect) cap.getEffectsManager().getEffect(BeyonderEffects.TYRANT_WEAKENING.getEffectId());
         AmplificationEffect amplification = (AmplificationEffect) cap.getEffectsManager().getEffect(BeyonderEffects.TYRANT_AMPLIFICATION.getEffectId());
 
@@ -112,8 +129,9 @@ public class ClientEventsTyrant {
     }
 
     private static boolean isDrowning(Player player){
-        Optional<LivingEntityBeyonderCapability> opt = player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve();
-        return opt.isPresent() && opt.get().getEffectsManager().hasEffect(BeyonderEffects.TYRANT_DROWNING);
+        Optional<BeyonderCapability> opt = player.getCapability(CapProvider.BEYONDER_STATS).resolve();
+        return opt.isPresent() &&
+                (opt.get().getEffectsManager().hasEffect(BeyonderEffects.TYRANT_DROWNING) || opt.get().getEffectsManager().hasEffect(BeyonderEffects.TYRANT_MIST_DOWNSIDE));
     }
 
 }

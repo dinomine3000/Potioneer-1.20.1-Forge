@@ -1,6 +1,6 @@
 package net.dinomine.potioneer.item.custom;
 
-import net.dinomine.potioneer.util.misc.ModTags;
+import net.dinomine.potioneer.util.misc.ModNbtUtils;
 import net.minecraft.client.color.item.ItemColor;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
@@ -23,8 +23,8 @@ public abstract class AbstractLiquidContainer extends Item {
 
     @Override
     public Component getName(ItemStack pStack) {
-        if(!ModTags.hasTag(ModTags.TAGS.POTION, pStack)) return super.getName(pStack);
-        String name = ModTags.PotionInfoTag.getPotionName(ModTags.getTagFromItem(ModTags.TAGS.POTION, pStack));
+        if(!ModNbtUtils.hasTag(ModNbtUtils.TAGS.POTION, pStack)) return super.getName(pStack);
+        String name = ModNbtUtils.PotionInfoTag.getPotionName(ModNbtUtils.getTagFromItem(ModNbtUtils.TAGS.POTION, pStack));
         String key = this.getDescriptionId() + "." + name;
         Component comp;
         if(I18n.exists(key))
@@ -48,9 +48,9 @@ public abstract class AbstractLiquidContainer extends Item {
         @Override
         public int getColor(ItemStack itemStack, int i) {
             if(i != 1) return -1;
-            if(!ModTags.hasTag(ModTags.TAGS.POTION, itemStack))
+            if(!ModNbtUtils.hasTag(ModNbtUtils.TAGS.POTION, itemStack))
                 return 0x00000000;
-            return ModTags.PotionInfoTag.getPotionColor(ModTags.getTagFromItem(ModTags.TAGS.POTION, itemStack));
+            return ModNbtUtils.PotionInfoTag.getPotionColor(ModNbtUtils.getTagFromItem(ModNbtUtils.TAGS.POTION, itemStack));
         }
     }
 }

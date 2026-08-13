@@ -1,15 +1,13 @@
 package net.dinomine.potioneer.beyonder.effects.misc;
 
-import net.dinomine.potioneer.beyonder.abilities.AbilityKey;
+import net.dinomine.potioneer.beyonder.abilities.Abilities;
+import net.dinomine.potioneer.beyonder.abilities.DisabledAbilitiesManager;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffect;
-import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
+import net.dinomine.potioneer.beyonder.player.BeyonderCapability;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class BeyonderCogitationEffect extends BeyonderEffect {
     private boolean slownlessCheck = false;
@@ -18,15 +16,16 @@ public class BeyonderCogitationEffect extends BeyonderEffect {
     private boolean glowingCheck = false;
 
     @Override
-    public void onAcquire(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    public void onAcquire(BeyonderCapability cap, LivingEntity target) {
 //        this.name = "Cogitation Effect";
 //        if(target instanceof Player player && deactivatedAbilities.isEmpty()){
 //            deactivatedAbilities = cap.getAbilitiesManager().disabledAllAbilities(player, "cogitation");
 //        }
+        cap.getAbilitiesManager().getDisabledAbilitiesManager().disableAbility("cogitation", DisabledAbilitiesManager.DisabledAbilityProxy.all(-1, Abilities.COGITATION.getAblId()), cap, target);
     }
 
     @Override
-    protected void doTick(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    protected void doTick(BeyonderCapability cap, LivingEntity target) {
         cap.requestPassiveSpiritualityCost(-(cap.getMaxSpirituality()/60f));
         if(!target.hasEffect(MobEffects.MOVEMENT_SLOWDOWN)){
             slownlessCheck = true;
@@ -50,13 +49,12 @@ public class BeyonderCogitationEffect extends BeyonderEffect {
     }
 
     @Override
-    public void stopEffects(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    public void stopEffects(BeyonderCapability cap, LivingEntity target) {
         if(slownlessCheck) target.removeEffect(MobEffects.MOVEMENT_SLOWDOWN);
         if(darknessCheck) target.removeEffect(MobEffects.DARKNESS);
         if(weaknessCheck) target.removeEffect(MobEffects.WEAKNESS);
         if(glowingCheck) target.removeEffect(MobEffects.GLOWING);
-
-        cap.getAbilitiesManager().unrevokeAll(cap, target);
+        cap.getAbilitiesManager().getDisabledAbilitiesManager().enableAbility("cogitation", cap, target);
     }
 //
     @Override
@@ -71,7 +69,6 @@ public class BeyonderCogitationEffect extends BeyonderEffect {
     @Override
     public void loadNBTData(CompoundTag nbt) {
         super.loadNBTData(nbt);
-
         darknessCheck = nbt.getBoolean("darkness");
         slownlessCheck = nbt.getBoolean("slowlness");
         weaknessCheck = nbt.getBoolean("weakness");

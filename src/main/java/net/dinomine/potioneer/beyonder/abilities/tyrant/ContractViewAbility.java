@@ -2,7 +2,7 @@ package net.dinomine.potioneer.beyonder.abilities.tyrant;
 
 import net.dinomine.potioneer.beyonder.abilities.Ability;
 import net.dinomine.potioneer.beyonder.client.screen.ContractScreen;
-import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
+import net.dinomine.potioneer.beyonder.player.BeyonderCapability;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.LivingEntity;
 
@@ -24,7 +24,7 @@ public class ContractViewAbility extends Ability {
     }
 
     @Override
-    protected boolean primary(LivingEntityBeyonderCapability cap, LivingEntity target, CompoundTag args) {
+    protected boolean primary(BeyonderCapability cap, LivingEntity target, CompoundTag args) {
         if(!target.level().isClientSide()) return false;
         condition = ContractAbility.ContractOption.loadFromNbt(getData().getCompound("condition")).get();
         reward = ContractAbility.ContractOption.loadFromNbt(getData().getCompound("reward")).get();

@@ -1,5 +1,6 @@
 package net.dinomine.potioneer.entities.custom;
 
+import net.dinomine.potioneer.beyonder.abilities.AbilityFunctionHelper;
 import net.dinomine.potioneer.beyonder.damages.PotioneerDamage;
 import net.dinomine.potioneer.config.PotioneerGameplayConfig;
 import net.minecraft.core.BlockPos;
@@ -144,7 +145,7 @@ public class AsteroidEntity extends Entity implements GeoEntity {
     @Nullable
     public LivingEntity getAttacker() {
         if (this.attacker == null && this.attackerUUID != null && this.level() instanceof ServerLevel serverLevel) {
-            Entity entity = serverLevel.getEntity(this.attackerUUID);
+            Entity entity = AbilityFunctionHelper.getEntityAcrossDimensions(serverLevel, attackerUUID);
             if (entity instanceof LivingEntity living) {
                 this.attacker = living;
             }

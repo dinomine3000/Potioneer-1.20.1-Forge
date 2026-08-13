@@ -1,19 +1,13 @@
 package net.dinomine.potioneer.entities.custom.effects;
 
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
-import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
+import net.dinomine.potioneer.beyonder.player.CapProvider;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.Level;
-import org.joml.Vector3f;
-import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
-import software.bernie.geckolib.core.animation.AnimatableManager;
-
-import java.util.Optional;
-import java.util.UUID;
 
 public class WaterBlockEffectEntity extends AbstractEffectEntity {
     public static final EntityDataAccessor<Integer> DURATION = SynchedEntityData.defineId(WaterBlockEffectEntity.class, EntityDataSerializers.INT);
@@ -37,7 +31,7 @@ public class WaterBlockEffectEntity extends AbstractEffectEntity {
             return;
         }
         if(!level().isClientSide && getTargetEntity() != null){
-            getTargetEntity().getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
+            getTargetEntity().getCapability(CapProvider.BEYONDER_STATS).ifPresent(cap -> {
                 if(!cap.getEffectsManager().hasEffect(BeyonderEffects.TYRANT_DROWNING)) kill();
             });
         }

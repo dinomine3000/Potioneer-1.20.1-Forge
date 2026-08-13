@@ -3,7 +3,7 @@ package net.dinomine.potioneer.beyonder.effects.wheeloffortune;
 import net.dinomine.potioneer.beyonder.damages.PotioneerDamage;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffect;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
-import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
+import net.dinomine.potioneer.beyonder.player.BeyonderCapability;
 import net.dinomine.potioneer.sound.ModSounds;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundSource;
@@ -19,11 +19,11 @@ public class CalamityEffect extends BeyonderEffect {
     private static final UUID luckAttributeUUID = UUID.fromString("3aa8f6cd-4039-427b-98f1-a52c0825a5f9");
 
     @Override
-    public void onAcquire(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    public void onAcquire(BeyonderCapability cap, LivingEntity target) {
     }
 
     @Override
-    protected void doTick(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    protected void doTick(BeyonderCapability cap, LivingEntity target) {
         int numArtifacts = cap.getAbilitiesManager().getNumArtifacts();
         if(sequenceLevel <= 7){
             cap.getLuckManager().chanceLuckEventChange(luckAttributeUUID, addedChance.apply(getSequenceLevel()));
@@ -34,15 +34,15 @@ public class CalamityEffect extends BeyonderEffect {
     }
 
     @Override
-    public void stopEffects(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    public void stopEffects(BeyonderCapability cap, LivingEntity target) {
         cap.getLuckManager().removeModifier(luckAttributeUUID);
         cap.getLuckManager().removeLuckEventModifier(luckAttributeUUID);
     }
 
     @Override
-    public boolean onTakeDamage(LivingDamageEvent event, LivingEntity victim, LivingEntity attacker, LivingEntityBeyonderCapability victimCap, Optional<LivingEntityBeyonderCapability> optAttackerCap, boolean calledOnVictim) {
+    public boolean onTakeDamage(LivingDamageEvent event, LivingEntity victim, LivingEntity attacker, BeyonderCapability victimCap, Optional<BeyonderCapability> optAttackerCap, boolean calledOnVictim) {
         if(attacker == null || victim.level().isClientSide() || optAttackerCap.isEmpty() || !calledOnVictim) return false;
-        LivingEntityBeyonderCapability attackerCap = optAttackerCap.get();
+        BeyonderCapability attackerCap = optAttackerCap.get();
 
         if(sequenceLevel < 6){
             if(!attackerCap.getLuckManager().passesLuckCheck(9/10f, (int) (event.getAmount()*5), 0, attacker.getRandom())){

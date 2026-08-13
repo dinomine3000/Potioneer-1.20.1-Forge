@@ -7,7 +7,7 @@ import com.lowdragmc.photon.client.fx.FXHelper;
 import net.dinomine.potioneer.Potioneer;
 import net.dinomine.potioneer.beyonder.abilities.Ability;
 import net.dinomine.potioneer.beyonder.pathways.WheelOfFortunePathway;
-import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
+import net.dinomine.potioneer.beyonder.player.BeyonderCapability;
 import net.dinomine.potioneer.config.PotioneerAbilityConfig;
 import net.dinomine.potioneer.sound.ModSounds;
 import net.dinomine.potioneer.util.ParticleMaker;
@@ -46,7 +46,7 @@ public class BlockAppraisalAbility extends Ability {
     }
 
     @Override
-    protected boolean primary(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    protected boolean primary(BeyonderCapability cap, LivingEntity target) {
         int radius = getRadius(sequenceLevel);
         if(cap.getSpirituality() < cost() || !(target instanceof Player player)) return false;
         Level level = player.level();
@@ -94,7 +94,7 @@ public class BlockAppraisalAbility extends Ability {
     }
 
     @Override
-    protected boolean secondary(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    protected boolean secondary(BeyonderCapability cap, LivingEntity target) {
         cap.requestActiveSpiritualityCost(cost()/2f);
         int radius = getRadius(sequenceLevel);
         if(target.level().isClientSide()){

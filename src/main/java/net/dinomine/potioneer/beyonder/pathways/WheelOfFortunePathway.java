@@ -5,8 +5,8 @@ import net.dinomine.potioneer.beyonder.abilities.Ability;
 import net.dinomine.potioneer.beyonder.abilities.AbilityFunctionHelper;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
 import net.dinomine.potioneer.beyonder.player.BeyonderStats;
-import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
-import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
+import net.dinomine.potioneer.beyonder.player.CapProvider;
+import net.dinomine.potioneer.beyonder.player.BeyonderCapability;
 import net.dinomine.potioneer.network.PacketHandler;
 import net.dinomine.potioneer.network.messages.effects.GeneralAreaEffectMessage;
 import net.dinomine.potioneer.rituals.spirits.Deity;
@@ -31,7 +31,7 @@ public class WheelOfFortunePathway extends BeyonderPathway {
     public static final double GAMBLER_ACTING_COOLDOWN = 1/256d;
     public static final double LUCK_ACTING_INC = 1/256d;
     public static final double LUCK_ACTING_EVENT = 1/128d;
-        public static final double MISFORTUNE_ACTING_INC = 1/100d;
+    public static final double MISFORTUNE_ACTING_INC = 1/100d;
 
     public WheelOfFortunePathway() {
         super("Wheel_of_Fortune", 0x808080, new int[]{2500, 1500, 1200, 900, 600, 500, 400, 250, 200, 100});
@@ -81,9 +81,9 @@ public class WheelOfFortunePathway extends BeyonderPathway {
         if(sequenceLevel > 5) return 0;
         int diff = 0;
 
-        Optional<LivingEntityBeyonderCapability> optCap = player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve();
+        Optional<BeyonderCapability> optCap = player.getCapability(CapProvider.BEYONDER_STATS).resolve();
         if(optCap.isEmpty()) return 0;
-        LivingEntityBeyonderCapability cap = optCap.get();
+        BeyonderCapability cap = optCap.get();
         switch (sequenceLevel){
             case 5:
                 int luck = cap.getLuckManager().getLuck();
@@ -101,7 +101,7 @@ public class WheelOfFortunePathway extends BeyonderPathway {
             case 5:
                 List<LivingEntity> entitiesAround = AbilityFunctionHelper.getLivingEntitiesAround(player, 16);
                 for(LivingEntity ent: entitiesAround){
-                    ent.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
+                    ent.getCapability(CapProvider.BEYONDER_STATS).ifPresent(cap -> {
                         if(ent.is(player) && cap.getLuckManager().getLuck() < -50) cap.getLuckManager().setLuck(-cap.getLuckManager().getLuck());
                         else cap.getLuckManager().setLuck(cap.getLuckManager().getLuck() * 10);
                         cap.getLuckManager().instantlyCastEvent(ent);

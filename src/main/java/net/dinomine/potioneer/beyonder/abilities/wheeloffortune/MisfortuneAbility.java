@@ -4,8 +4,8 @@ import net.dinomine.potioneer.beyonder.abilities.Ability;
 import net.dinomine.potioneer.beyonder.abilities.AbilityFunctionHelper;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
 import net.dinomine.potioneer.beyonder.pathways.WheelOfFortunePathway;
-import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
-import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
+import net.dinomine.potioneer.beyonder.player.BeyonderCapability;
+import net.dinomine.potioneer.beyonder.player.CapProvider;
 import net.dinomine.potioneer.util.ParticleMaker;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraftforge.common.ForgeMod;
@@ -26,15 +26,15 @@ public class MisfortuneAbility extends Ability {
     }
 
     @Override
-    protected boolean primary(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    protected boolean primary(BeyonderCapability cap, LivingEntity target) {
         if(target.level().isClientSide() || cap.getSpirituality() < cost()) return false;
         Optional<LivingEntity> misfortuneTarget = AbilityFunctionHelper.getTargetEntity(target, target.getAttributeBaseValue(ForgeMod.ENTITY_REACH.get()) + 1, false);
         if(misfortuneTarget.isPresent()){
-            Optional<LivingEntityBeyonderCapability> optCap = misfortuneTarget.get().getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve();
+            Optional<BeyonderCapability> optCap = misfortuneTarget.get().getCapability(CapProvider.BEYONDER_STATS).resolve();
             if(optCap.isEmpty()) return false;
-            LivingEntityBeyonderCapability targetCap = optCap.get();
+            BeyonderCapability targetCap = optCap.get();
             targetCap.getEffectsManager().addOrRefreshEffect(BeyonderEffects.WHEEL_INSTANT_BAD_LUCK.createInstance(getSequenceLevel(), 0, 5, true), targetCap, misfortuneTarget.get());
-            cap.getLuckManager().consumeLuck(50);
+            cap.getLuckManager().consumeLuck(target, 50, false);
             cap.requestActiveSpiritualityCost(cost());
             ParticleMaker.createDiceEffectForEntity(target.level(), misfortuneTarget.get());
             cap.getCharacteristicManager().progressActing(WheelOfFortunePathway.MISFORTUNE_ACTING_INC, 5);
@@ -43,16 +43,16 @@ public class MisfortuneAbility extends Ability {
     }
 
     @Override
-    protected boolean secondary(LivingEntityBeyonderCapability cap, LivingEntity target) {
-        if(target.level().isClientSide() || cap.getSpirituality() < cost()) return false;
-        Optional<LivingEntity> misfortuneTarget = AbilityFunctionHelper.getTargetEntity(target, target.getAttributeBaseValue(ForgeMod.ENTITY_REACH.get()) + 1, false);
-        if(misfortuneTarget.isPresent()){
-            Optional<LivingEntityBeyonderCapability> optCap = misfortuneTarget.get().getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve();
+    protected boolean secondary(BeyonderCapability cap, LivingEntity caster) {
+        if(caster.level().isClientSide() || cap.getSpirituality() < cost()) return false;
+        Optional<LivingEntity> target = AbilityFunctionHelper.getTargetEntity(caster, caster.getAttributeBaseValue(ForgeMod.ENTITY_REACH.get()) + 1, false);
+        if(target.isPresent()){
+            Optional<BeyonderCapability> optCap = target.get().getCapability(CapProvider.BEYONDER_STATS).resolve();
             if(optCap.isEmpty()) return false;
-            LivingEntityBeyonderCapability targetCap = optCap.get();
-            targetCap.getEffectsManager().addOrRefreshEffect(BeyonderEffects.WHEEL_BAD_LUCK.createInstance(getSequenceLevel(), 0, 5, true), targetCap, misfortuneTarget.get());
-            cap.getLuckManager().consumeLuck(50);
-            ParticleMaker.createDiceEffectForEntity(target.level(), misfortuneTarget.get());
+            BeyonderCapability targetCap = optCap.get();
+            targetCap.getEffectsManager().addOrRefreshEffect(BeyonderEffects.WHEEL_BAD_LUCK.createInstance(getSequenceLevel(), 0, 5, true), targetCap, target.get());
+            cap.getLuckManager().consumeLuck(caster, 50, false);
+            ParticleMaker.createDiceEffectForEntity(caster.level(), target.get());
             cap.getCharacteristicManager().progressActing(WheelOfFortunePathway.MISFORTUNE_ACTING_INC, 5);
             cap.requestActiveSpiritualityCost(cost());
         }

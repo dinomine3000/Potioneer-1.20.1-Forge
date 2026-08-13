@@ -60,7 +60,6 @@ public class PacketHandler {
         INSTANCE.registerMessage(i++, AllyGroupSyncMessage.class, AllyGroupSyncMessage::encode, AllyGroupSyncMessage::decode, AllyGroupSyncMessage::handle);
 
         INSTANCE.registerMessage(i++, OpenScreenMessage.class, OpenScreenMessage::encode, OpenScreenMessage::decode, OpenScreenMessage::handle);
-        INSTANCE.registerMessage(i++, PlayerMiningSpeedSync.class, PlayerMiningSpeedSync::encode, PlayerMiningSpeedSync::decode, PlayerMiningSpeedSync::handle);
         INSTANCE.registerMessage(i++, PlayerSTCStatsSync.class, PlayerSTCStatsSync::encode, PlayerSTCStatsSync::decode, PlayerSTCStatsSync::handle);
         INSTANCE.registerMessage(i++, RitualC2STextSync.class, RitualC2STextSync::encode, RitualC2STextSync::decode, RitualC2STextSync::handle);
         INSTANCE.registerMessage(i++, SequenceSTCSyncRequest.class, SequenceSTCSyncRequest::encode, SequenceSTCSyncRequest::decode, SequenceSTCSyncRequest::handle);
@@ -68,6 +67,7 @@ public class PacketHandler {
         INSTANCE.registerMessage(i++, EntityEffectVisualMessage.class, EntityEffectVisualMessage::encode, EntityEffectVisualMessage::decode, EntityEffectVisualMessage::handle);
         INSTANCE.registerMessage(i++, OpenContractScreenMessage.class, OpenContractScreenMessage::encode, OpenContractScreenMessage::decode, OpenContractScreenMessage::handle);
         INSTANCE.registerMessage(i++, SignContractMessage.class, SignContractMessage::encode, SignContractMessage::decode, SignContractMessage::handle);
+        INSTANCE.registerMessage(i++, RulePylonMessage.class, RulePylonMessage::encode, RulePylonMessage::decode, RulePylonMessage::handle);
     }
     public static <T> void sendToPlayer(T message, ServerPlayer player) {
         if (player.connection == null) return;

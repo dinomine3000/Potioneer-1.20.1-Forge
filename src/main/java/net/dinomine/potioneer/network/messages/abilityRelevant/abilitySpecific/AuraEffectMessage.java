@@ -1,15 +1,7 @@
 package net.dinomine.potioneer.network.messages.abilityRelevant.abilitySpecific;
 
 import net.dinomine.potioneer.beyonder.client.ClientAbilitiesData;
-import net.dinomine.potioneer.beyonder.client.ClientHudData;
-import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
-import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
-import net.dinomine.potioneer.network.PacketHandler;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fml.DistExecutor;

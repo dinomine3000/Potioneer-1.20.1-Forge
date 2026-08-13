@@ -3,7 +3,7 @@ package net.dinomine.potioneer.beyonder.abilities.wheeloffortune;
 import net.dinomine.potioneer.beyonder.abilities.PassiveAbility;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
 import net.dinomine.potioneer.beyonder.effects.wheeloffortune.PatienceEffect;
-import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
+import net.dinomine.potioneer.beyonder.player.BeyonderCapability;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.LivingEntity;
 
@@ -16,7 +16,7 @@ public class PatienceAbility extends PassiveAbility {
     }
 
     @Override
-    public boolean flipEnable(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    public boolean flipEnable(BeyonderCapability cap, LivingEntity target) {
         boolean enabled = super.flipEnable(cap, target);
         if(enabled){
             putOnCooldown(20*60, target);
@@ -25,7 +25,7 @@ public class PatienceAbility extends PassiveAbility {
     }
 
     @Override
-    protected boolean secondary(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    protected boolean secondary(BeyonderCapability cap, LivingEntity target) {
         if(target.level().isClientSide()) return false;
         PatienceEffect effect = (PatienceEffect) cap.getEffectsManager().getEffect(BeyonderEffects.WHEEL_PATIENCE.getEffectId(), getSequenceLevel());
         if(effect == null) return false;

@@ -2,12 +2,12 @@ package net.dinomine.potioneer.item.custom.BeyonderPotion;
 
 import net.dinomine.potioneer.beyonder.pathways.BeyonderPathway;
 import net.dinomine.potioneer.beyonder.pathways.Pathways;
-import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
+import net.dinomine.potioneer.beyonder.player.CapProvider;
 import net.dinomine.potioneer.config.PotioneerGameplayConfig;
 import net.dinomine.potioneer.network.PacketHandler;
 import net.dinomine.potioneer.network.messages.advancement.BeginAdvancementMessage;
 import net.dinomine.potioneer.util.GeoTintable;
-import net.dinomine.potioneer.util.misc.ModTags;
+import net.dinomine.potioneer.util.misc.ModNbtUtils;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -33,9 +33,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
-import static net.dinomine.potioneer.util.misc.ModTags.*;
-import static net.dinomine.potioneer.util.misc.ModTags.PotionInfoTag.*;
-import static net.dinomine.potioneer.util.misc.ModTags.TAGS.POTION;
+import static net.dinomine.potioneer.util.misc.ModNbtUtils.*;
+import static net.dinomine.potioneer.util.misc.ModNbtUtils.PotionInfoTag.*;
+import static net.dinomine.potioneer.util.misc.ModNbtUtils.TAGS.POTION;
 
 public class BeyonderPotionItem extends PotionItem implements GeoItem, GeoTintable {
     public static final int DIFF_CHANGE_INVALID_LEVEL = 5;
@@ -63,7 +63,7 @@ public class BeyonderPotionItem extends PotionItem implements GeoItem, GeoTintab
 
     @Override
     public void inventoryTick(ItemStack pStack, Level pLevel, Entity pEntity, int pSlotId, boolean pIsSelected) {
-        ModTags.PotionInfoTag.tickPotionSpoilTime(pStack, pLevel.getGameTime());
+        //ModTags.PotionInfoTag.tickPotionSpoilTime(pStack, pLevel.getGameTime());
         super.inventoryTick(pStack, pLevel, pEntity, pSlotId, pIsSelected);
     }
 
@@ -103,8 +103,7 @@ public class BeyonderPotionItem extends PotionItem implements GeoItem, GeoTintab
 
         boolean validPotion = PotionInfoTag.isDrinkablePotion(info);
         if(!validPotion) return super.finishUsingItem(pStack, pLevel, pEntityLiving);
-        player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
-            if(pLevel.isClientSide()) return;
+        player.getCapability(CapProvider.BEYONDER_STATS).ifPresent(cap -> {
             if(isConflictingPotion(info)){
                 if(!player.isCreative()) cap.setSanity(0);
                 player.sendSystemMessage(Component.translatableWithFallback("message.potioneer.lost_control", "Lost control on the spot. oh well."));
@@ -162,8 +161,8 @@ public class BeyonderPotionItem extends PotionItem implements GeoItem, GeoTintab
     @Override
     public int getHexColor() {
         ItemStack stack = cachedStack.get();
-        if(stack != null && stack.is(this) && ModTags.hasTag(POTION, stack)){
-            return ModTags.PotionInfoTag.getPotionColor(ModTags.getTagFromItem(POTION, stack));
+        if(stack != null && stack.is(this) && ModNbtUtils.hasTag(POTION, stack)){
+            return ModNbtUtils.PotionInfoTag.getPotionColor(ModNbtUtils.getTagFromItem(POTION, stack));
         }
 
         return 16742143;

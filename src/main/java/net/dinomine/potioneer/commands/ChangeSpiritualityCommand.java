@@ -4,7 +4,7 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
+import net.dinomine.potioneer.beyonder.player.CapProvider;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
@@ -30,7 +30,7 @@ public class ChangeSpiritualityCommand {
         try {
             Entity target = EntityArgument.getEntity(cmd, "target");
             if(!(target instanceof LivingEntity lTarget)) return 0;
-            lTarget.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap ->{
+            lTarget.getCapability(CapProvider.BEYONDER_STATS).ifPresent(cap ->{
                 cap.setSpirituality(IntegerArgumentType.getInteger(cmd, "value"));
             });
             return 1;
@@ -43,7 +43,7 @@ public class ChangeSpiritualityCommand {
         try {
             Entity target = EntityArgument.getEntity(cmd, "target");
             if(!(target instanceof LivingEntity lTarget)) return 0;
-            lTarget.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap ->{
+            lTarget.getCapability(CapProvider.BEYONDER_STATS).ifPresent(cap ->{
                 cap.setSpirituality(cap.getSpirituality() + IntegerArgumentType.getInteger(cmd, "value"));
             });
             return 1;

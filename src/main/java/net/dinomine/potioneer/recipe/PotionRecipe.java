@@ -1,6 +1,6 @@
 package net.dinomine.potioneer.recipe;
 
-import net.dinomine.potioneer.util.misc.ModTags;
+import net.dinomine.potioneer.util.misc.ModNbtUtils;
 import net.dinomine.potioneer.util.PotionIngredient;
 import net.minecraft.nbt.CompoundTag;
 
@@ -16,7 +16,7 @@ public record PotionRecipe(PotionRecipeData input, PotionContentData output) {
         if (input.id() > -1) {
             //will return true if it finds a valid characteristic-like item
             for (int i = 0; i < container.getContainerSize(); i++) {
-                CompoundTag charTag = ModTags.getTagFromItem(ModTags.TAGS.BEYONDER, container.getItem(i));
+                CompoundTag charTag = ModNbtUtils.getTagFromItem(ModNbtUtils.TAGS.BEYONDER, container.getItem(i));
                 if (charTag != null) {
                     if (charTag.getInt("id") == input.id()) return true;
                 }

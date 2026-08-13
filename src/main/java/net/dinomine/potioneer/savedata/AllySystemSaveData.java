@@ -34,13 +34,13 @@ public class AllySystemSaveData extends SavedData {
     }
 
     public List<UUID> getAlliesOf(UUID player){
-        List<UUID> res = new ArrayList<>();
+        Set<UUID> res = new HashSet<>();
         for(AllyGroup group: groups.values()){
             if(group.isPlayerInGroup(player)){
                 res.addAll(group.playerList);
             }
         }
-        return res;
+        return new ArrayList<>(res);
     }
 
     public List<UUID> getPlayersInGroup(String groupName){

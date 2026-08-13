@@ -3,14 +3,13 @@ package net.dinomine.potioneer.beyonder.effects.tyrant;
 import com.google.common.collect.Multimap;
 import net.dinomine.potioneer.beyonder.abilities.AbilityFunctionHelper;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffect;
-import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
+import net.dinomine.potioneer.beyonder.player.BeyonderCapability;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.entity.player.Player;
 
 import java.util.UUID;
 
@@ -19,7 +18,7 @@ public class ScalesEffect extends BeyonderEffect {
     private static final UUID armorId = UUID.fromString("302bfe17-c1b7-4add-9be2-505d1be51ac6");
 
     @Override
-    public void onAcquire(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    public void onAcquire(BeyonderCapability cap, LivingEntity target) {
         if(sequenceLevel < 8){
             AbilityFunctionHelper.addAttributeTo(target, getKnockbackMod());
         }
@@ -27,7 +26,7 @@ public class ScalesEffect extends BeyonderEffect {
     }
 
     @Override
-    protected void doTick(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    protected void doTick(BeyonderCapability cap, LivingEntity target) {
         if(target.level().isClientSide()) return;
         //cap.getEffectsManager().statsHolder.addArmor(4 + (9-getSequenceLevel())*2);
         if(WaterAffinityEffect.isInWater(target, sequenceLevel)){
@@ -41,7 +40,7 @@ public class ScalesEffect extends BeyonderEffect {
     }
 
     @Override
-    public void stopEffects(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    public void stopEffects(BeyonderCapability cap, LivingEntity target) {
         AbilityFunctionHelper.removeAttribute(target, getKnockbackMod());
         AbilityFunctionHelper.removeAttribute(target, getArmorMod(sequenceLevel));
     }

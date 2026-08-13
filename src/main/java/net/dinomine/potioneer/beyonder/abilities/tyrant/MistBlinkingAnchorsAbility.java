@@ -2,17 +2,13 @@ package net.dinomine.potioneer.beyonder.abilities.tyrant;
 
 import net.dinomine.potioneer.beyonder.abilities.AbilityOptions;
 import net.dinomine.potioneer.beyonder.abilities.AbilityWithOptions;
-import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
+import net.dinomine.potioneer.beyonder.player.BeyonderCapability;
 import net.dinomine.potioneer.config.PotioneerAbilityConfig;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.level.Level;
 
 public class MistBlinkingAnchorsAbility extends AbilityWithOptions {
     public MistBlinkingAnchorsAbility(int sequenceLevel) {
@@ -34,7 +30,7 @@ public class MistBlinkingAnchorsAbility extends AbilityWithOptions {
     }
 
     @Override
-    protected boolean primaryWithArgument(LivingEntityBeyonderCapability cap, LivingEntity target, String args) {
+    protected boolean primaryWithArgument(BeyonderCapability cap, LivingEntity target, String args) {
         if(cap.getSpirituality() < cost()) return false;
         CompoundTag anchorTag = getData().getCompound(args);
         if(anchorTag.isEmpty()) return false;
@@ -50,7 +46,7 @@ public class MistBlinkingAnchorsAbility extends AbilityWithOptions {
     }
 
     @Override
-    protected boolean secondaryWithArgument(LivingEntityBeyonderCapability cap, LivingEntity target, String args) {
+    protected boolean secondaryWithArgument(BeyonderCapability cap, LivingEntity target, String args) {
         if(args.equalsIgnoreCase("clear")) {
             setData(new CompoundTag(), target);
             setPrimaryOptions(createPOptions());
@@ -85,7 +81,7 @@ public class MistBlinkingAnchorsAbility extends AbilityWithOptions {
     }
 
     @Override
-    protected void onClientUpdate(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    protected void onClientUpdate(BeyonderCapability cap, LivingEntity target) {
         super.onClientUpdate(cap, target);
         setPrimaryOptions(createPOptions());
     }

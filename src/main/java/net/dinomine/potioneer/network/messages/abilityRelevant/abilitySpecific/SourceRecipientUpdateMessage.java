@@ -1,9 +1,8 @@
 package net.dinomine.potioneer.network.messages.abilityRelevant.abilitySpecific;
 
-import net.dinomine.potioneer.beyonder.client.ClientAbilitiesData;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffect;
 import net.dinomine.potioneer.beyonder.effects.misc.AbstractSourceRecipientEffect;
-import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
+import net.dinomine.potioneer.beyonder.player.CapProvider;
 import net.dinomine.potioneer.util.BufferUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
@@ -14,7 +13,6 @@ import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.network.NetworkEvent;
 
 import java.util.HashMap;
-import java.util.Map;
 import java.util.UUID;
 import java.util.function.Supplier;
 
@@ -68,7 +66,7 @@ class ClientSourceRecipient
     public static void handlePacket(SourceRecipientUpdateMessage msg)
     {
         Player player = Minecraft.getInstance().player;
-        player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
+        player.getCapability(CapProvider.BEYONDER_STATS).ifPresent(cap -> {
             BeyonderEffect eff = cap.getEffectsManager().getEffect(msg.id);
             if(!(eff instanceof AbstractSourceRecipientEffect sourceEffect)) return;
             sourceEffect.setSourceOnClient(msg.sources);

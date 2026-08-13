@@ -2,7 +2,9 @@ package net.dinomine.potioneer.beyonder.effects.tyrant;
 
 import net.dinomine.potioneer.beyonder.abilities.AbilityFunctionHelper;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffect;
-import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
+import net.dinomine.potioneer.beyonder.player.BeyonderCapability;
+import net.dinomine.potioneer.mob_effects.ModEffects;
+import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.material.Fluids;
@@ -10,12 +12,12 @@ import net.minecraft.world.phys.Vec3;
 
 public class WaterPrisonEffect extends BeyonderEffect {
     @Override
-    public void onAcquire(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    public void onAcquire(BeyonderCapability cap, LivingEntity target) {
 
     }
 
     @Override
-    protected void doTick(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    protected void doTick(BeyonderCapability cap, LivingEntity target) {
         if(target instanceof Player player && (player.isCreative() || player.isSpectator())) return;
         if(target.isInWater()){
             float mult = Math.max((int)Math.floorDiv(10 - sequenceLevel, 2), 1);
@@ -27,7 +29,7 @@ public class WaterPrisonEffect extends BeyonderEffect {
     }
 
     @Override
-    public void stopEffects(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    public void stopEffects(BeyonderCapability cap, LivingEntity target) {
 
     }
 }

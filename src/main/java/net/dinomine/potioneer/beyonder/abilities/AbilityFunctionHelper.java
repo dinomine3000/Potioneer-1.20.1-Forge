@@ -5,16 +5,22 @@ import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffect;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
-import net.dinomine.potioneer.beyonder.effects.tyrant.ContractedEffect;
-import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
+import net.dinomine.potioneer.beyonder.effects.tyrant.BribeRecipientEffect;
+import net.dinomine.potioneer.beyonder.effects.tyrant.GeneralProhibitionEffect;
+import net.dinomine.potioneer.beyonder.player.BeyonderCapability;
+import net.dinomine.potioneer.beyonder.player.CapProvider;
 import net.dinomine.potioneer.entities.ModEntities;
 import net.dinomine.potioneer.entities.custom.AsteroidEntity;
 import net.dinomine.potioneer.savedata.AllySystemSaveData;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
@@ -22,11 +28,17 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.ForgeMod;
 
@@ -36,10 +48,101 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 public class AbilityFunctionHelper {
+    public static ItemEntity dropItem(LivingEntity target, ItemStack stackToDrop, boolean retainInHand, boolean force) {
+        Level level = target.level();
+        if (level.isClientSide() || stackToDrop.isEmpty()) {
+            return null;
+        }
+
+        ItemEntity itemEntity;
+
+        if (target instanceof Player player) {
+            if(force) itemEntity = player.drop(stackToDrop.copy(), false,true);
+            else itemEntity = player.drop(stackToDrop.copy(), true);
+        } else {
+            double yPos = target.getY() + 0.5D - 0.3D; // Drop near the entity's waist/hands
+            itemEntity = new ItemEntity(level, target.getX(), yPos, target.getZ(), stackToDrop.copy());
+            itemEntity.setPickUpDelay(40);
+            double speed = 0.2D;
+            double motionX = (level.random.nextFloat() - level.random.nextFloat()) * speed;
+            double motionY = level.random.nextFloat() * speed;
+            double motionZ = (level.random.nextFloat() - level.random.nextFloat()) * speed;
+            itemEntity.setDeltaMovement(motionX, motionY, motionZ);
+            level.addFreshEntity(itemEntity);
+        }
+
+        if (!retainInHand) {
+            stackToDrop.setCount(0);
+        }
+
+        return itemEntity;
+    }
+
+    public static void teleportEntity(Entity target, ServerLevel fromLevel, ServerLevel toLevel, BlockPos targetPosition){
+        Optional<BeyonderCapability> optCap = target.getCapability(CapProvider.BEYONDER_STATS).resolve();
+        if(optCap.isPresent() && target instanceof LivingEntity lTarget){
+            BeyonderCapability cap = optCap.get();
+            GeneralProhibitionEffect eff = getEffectOnTarget(BeyonderEffects.TYRANT_GENERAL_PROHIBITION.getEffectId(), lTarget);
+            if(eff != null && eff.type.equalsIgnoreCase("teleporting")){
+                return;
+            }
+        }
+
+        Vec3 motion = target.getDeltaMovement();
+        Vec3 targetPos = targetPosition.getCenter();
+
+        if (fromLevel != toLevel) {
+            /*// 1. Force the target chunk to load immediately on the target server level
+            toLevel.getChunkSource().addRegionTicket(
+                    net.minecraft.server.level.TicketType.POST_TELEPORT,
+                    new net.minecraft.world.level.ChunkPos(BlockPos.containing(targetPos)),
+                    1,
+                    target.getId()
+            );
+
+            // 2. Perform cross-dimension transfer
+            Entity transferredEntity = target.changeDimension(toLevel, new MistBlinkingAbility.SimpleTeleporter(targetPos));
+
+            // 3. If caster is a Player, handle network sync & motion re-application
+            if (transferredEntity instanceof ServerPlayer player) {
+                player.connection.teleport(targetPos.x, targetPos.y, targetPos.z, player.getYRot(), player.getXRot());
+                player.setDeltaMovement(motion);
+                player.hasImpulse = true;
+            } else if (transferredEntity != null) {
+                transferredEntity.setDeltaMovement(motion);
+                transferredEntity.hasImpulse = true;
+            }*/
+            target.teleportTo(toLevel, targetPos.x, targetPos.y, targetPos.z, Set.of(), target.getYRot(), target.getXRot());
+        } else {
+            target.teleportToWithTicket(targetPosition.getX() + 0.5f, targetPosition.getY(), targetPosition.getZ() + 0.5);
+            target.setDeltaMovement(motion);
+            target.hasImpulse = true;
+        }
+    }
+
+    public static @Nullable Entity getEntityAcrossDimensions(ServerLevel level, UUID id){
+        for(ServerLevel lv: level.getServer().getAllLevels()){
+            Entity ent = lv.getEntity(id);
+            if(ent != null) return ent;
+        }
+        return null;
+    }
+    public static @Nullable Entity getEntityAcrossDimensions(ServerLevel level, int id){
+        for(ServerLevel lv: level.getServer().getAllLevels()){
+            Entity ent = lv.getEntity(id);
+            if(ent != null) return ent;
+        }
+        return null;
+    }
+
+    public static ServerLevel getDimensionKey(MinecraftServer server, String dimKey){
+        return server.getLevel(ResourceKey.create(Registries.DIMENSION, new ResourceLocation(dimKey)));
+    }
+
     @SuppressWarnings("unchecked")
     @Nullable
-    public static <T extends BeyonderEffect> T getEffectOnPlayer(String effectId, LivingEntity target) {
-        return target.getCapability(BeyonderStatsProvider.BEYONDER_STATS)
+    public static <T extends BeyonderEffect> T getEffectOnTarget(String effectId, LivingEntity target) {
+        return target.getCapability(CapProvider.BEYONDER_STATS)
                 .resolve()
                 .map(cap -> cap.getEffectsManager().getEffect(effectId))
                 .map(effect -> (T) effect)
@@ -47,6 +150,7 @@ public class AbilityFunctionHelper {
     }
 
     public static boolean areEntitiesAllies(ServerLevel level, LivingEntity ent1, LivingEntity ent2){
+        if(isTruce(ent1, ent2)) return true;
         boolean trueAnswer = areEntitiesAllies(level, ent1.getUUID(), ent2.getUUID());
         if(isPlayerBerserk(ent1) || isPlayerBerserk(ent2)) return false;
         return trueAnswer;
@@ -62,6 +166,9 @@ public class AbilityFunctionHelper {
         if(isPlayerBerserk(player)) return List.of();
         return trueAnswer;
     }
+    public static List<String> getRealGroupsPlayerIsIn(ServerLevel level, UUID player){
+        return getGroupsPlayerIsIn(level, player);
+    }
 
     public static boolean isEntityInAnyGroup(ServerLevel level, LivingEntity target, List<String> testGroups){
         if(!(target instanceof Player player)) return false;
@@ -69,6 +176,7 @@ public class AbilityFunctionHelper {
         return !Collections.disjoint(realGroups, testGroups);
     }
 
+    @SuppressWarnings("DimensionEntityLookup")
     public static List<Player> getAlliesOf(ServerLevel level, Player player){
         if(isPlayerBerserk(player)) return List.of();
         List<UUID> allyIds = getAlliesOf(level, player.getUUID());
@@ -80,7 +188,14 @@ public class AbilityFunctionHelper {
     }
 
     private static boolean isPlayerBerserk(LivingEntity entity){
-        return entity.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve().get().getEffectsManager().hasEffect(BeyonderEffects.TYRANT_BERSERK);
+        return entity.getCapability(CapProvider.BEYONDER_STATS).resolve().get().getEffectsManager().hasEffect(BeyonderEffects.TYRANT_BERSERK);
+    }
+
+    private static boolean isTruce(LivingEntity ent1, LivingEntity ent2){
+        BribeRecipientEffect eff1 = getEffectOnTarget(BeyonderEffects.TYRANT_BRIBE_RECIPIENT.getEffectId(), ent1);
+        BribeRecipientEffect eff2 = getEffectOnTarget(BeyonderEffects.TYRANT_BRIBE_RECIPIENT.getEffectId(), ent2);
+        if(eff1 == null && eff2 == null) return false;
+        return (eff1 != null && eff1.isTruce(ent2)) || (eff2 != null && eff2.isTruce(ent1));
     }
 
     private static boolean areEntitiesAllies(ServerLevel level, UUID ent1, UUID ent2){
@@ -89,6 +204,7 @@ public class AbilityFunctionHelper {
     }
 
     private static List<String> getGroupsPlayerIsIn(ServerLevel level, UUID player){
+        if(player == null) return List.of();
         AllySystemSaveData data = AllySystemSaveData.from(level);
         return data.getGroupNamesPlayerIsIn(player);
     }
@@ -242,8 +358,7 @@ public class AbilityFunctionHelper {
                 pos.x-radius, pos.y-radius, pos.z-radius,
                 pos.x+radius, pos.y+radius, pos.z+radius
         );
-        ArrayList<Entity> res = new ArrayList<>(level.getEntities((Entity) null, box, pred));
-        return res;
+        return new ArrayList<>(level.getEntities((Entity) null, box, pred));
     }
 
     public static Optional<LivingEntity> getTargetEntity(LivingEntity looker, double radius){
@@ -324,6 +439,38 @@ public class AbilityFunctionHelper {
 
     public static ArrayList<LivingEntity> getLivingEntitiesLooking(LivingEntity looker, double radius){
         return getLivingEntitiesLooking(looker, radius, 0);
+    }
+
+    public interface IBlockPlacer{
+        boolean place(Level level, BlockPos pos, BeyonderCapability cap, LivingEntity target);
+    }
+    public static boolean placeBlockAtReach(Level level, BeyonderCapability cap, LivingEntity player, IBlockPlacer placer){
+        HitResult block = player.pick(player.getAttributeBaseValue(ForgeMod.BLOCK_REACH.get()) + 0.5, 0f, false);
+        if(block instanceof BlockHitResult rayTrace){
+            //first, tries to replace the block youre pointing to
+            BlockPos relativePos = rayTrace.getBlockPos().relative(rayTrace.getDirection());
+            BlockPos hitPos = rayTrace.getBlockPos();
+            BlockState relativeState = level.getBlockState(relativePos);
+            BlockState hitState = level.getBlockState(hitPos);
+            if(hitState.canBeReplaced()
+                    && !hitState.is(Blocks.AIR)
+                    && !hitState.is(Blocks.WATER)){
+                return placer.place(level, hitPos, cap, player);
+            }
+            //otherwise, tries to place it next to it
+            else if(!hitState.is(Blocks.AIR)
+                    && relativeState.canBeReplaced())
+            {
+                return placer.place(level, relativePos, cap, player);
+            }
+        }
+        return false;
+    }
+
+    public static List<LivingEntity> getLivingEntitiesInChunk(Level level, ChunkPos chunk){
+        AABB bb = new AABB(new BlockPos(chunk.getMinBlockX(), level.getMinBuildHeight(), chunk.getMinBlockZ()),
+                new BlockPos(chunk.getMaxBlockX(), level.getMaxBuildHeight(), chunk.getMaxBlockZ()));
+        return level.getEntities((Entity) null, bb, ent -> ent instanceof LivingEntity).stream().map(ent -> (LivingEntity) ent).toList();
     }
 
     public static ArrayList<LivingEntity> getLivingEntitiesLooking(LivingEntity looker, double radius, float inflate){return getLivingEntitiesLooking(looker, radius, inflate, true);}

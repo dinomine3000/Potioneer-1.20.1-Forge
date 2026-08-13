@@ -19,7 +19,7 @@ public class SlotMachineEntity extends AbstractEffectEntity implements GeoEntity
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
     public SlotMachineEntity(EntityType<?> pEntityType, Level pLevel) {
         super(pEntityType, pLevel);
-        setOffset(new Vector3f(0, 2.5f, 1));
+        setOffset(new Vector3f(0, 0.5f, 1));
     }
 
     @Override

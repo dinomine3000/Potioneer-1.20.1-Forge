@@ -1,6 +1,6 @@
 package net.dinomine.potioneer.beyonder.downsides;
 
-import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
+import net.dinomine.potioneer.beyonder.player.BeyonderCapability;
 import net.minecraft.world.entity.LivingEntity;
 
 public class DummyDownside extends Downside{
@@ -16,7 +16,7 @@ public class DummyDownside extends Downside{
     }
 
     @Override
-    public boolean primary(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    public boolean primary(BeyonderCapability cap, LivingEntity target) {
         target.hurt(target.damageSources().generic(), 2);
         return true;
     }

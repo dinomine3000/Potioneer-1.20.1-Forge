@@ -1,7 +1,7 @@
 package net.dinomine.potioneer.item.custom;
 
-import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
-import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
+import net.dinomine.potioneer.beyonder.player.BeyonderCapability;
+import net.dinomine.potioneer.beyonder.player.CapProvider;
 import net.dinomine.potioneer.beyonder.player.PlayerLuckManager;
 import net.dinomine.potioneer.config.PotioneerGameplayConfig;
 import net.dinomine.potioneer.item.ModItems;
@@ -32,9 +32,9 @@ public class SealedBundleItem extends Item {
     @Override
     public InteractionResultHolder<ItemStack> use(Level pLevel, Player pPlayer, InteractionHand pUsedHand) {
         ItemStack heldItem = pPlayer.getItemInHand(pUsedHand);
-        Optional<LivingEntityBeyonderCapability> optCap = pPlayer.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve();
+        Optional<BeyonderCapability> optCap = pPlayer.getCapability(CapProvider.BEYONDER_STATS).resolve();
         if(pLevel.isClientSide() || optCap.isEmpty()) return new InteractionResultHolder<>(InteractionResult.FAIL, heldItem);
-        LivingEntityBeyonderCapability cap = optCap.get();
+        BeyonderCapability cap = optCap.get();
         PlayerLuckManager luckManager = cap.getLuckManager();
         RandomSource random = pPlayer.getRandom();
         if(luckManager.passesLuckCheck((float)(double) PotioneerGameplayConfig.SEALED_BUNDLE_CHARACTERISTIC_CHANCE.get(), 0, 0, random)){
@@ -63,7 +63,7 @@ public class SealedBundleItem extends Item {
         return new InteractionResultHolder<>(InteractionResult.SUCCESS, page);
     }
 
-    private static ItemStack getRandomArtifact(LivingEntityBeyonderCapability cap, RandomSource random){
+    private static ItemStack getRandomArtifact(BeyonderCapability cap, RandomSource random){
         List<Item> itemList = PotioneerGameplayConfig.getRandomArtifactItems();
         ItemStack stack = new ItemStack(itemList.get(random.nextInt(itemList.size())));
         int charPathSeqId = PotioneerMathHelper.ProbabilityHelper.getRandomPathwaySequenceId(cap, random);

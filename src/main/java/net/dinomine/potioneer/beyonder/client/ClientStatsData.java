@@ -1,11 +1,10 @@
 package net.dinomine.potioneer.beyonder.client;
 
-import net.dinomine.potioneer.beyonder.client.screen.AdvancementScreen;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
 import net.dinomine.potioneer.beyonder.ModAttributes;
+import net.dinomine.potioneer.beyonder.player.BeyonderCapability;
 import net.dinomine.potioneer.beyonder.player.BeyonderStats;
-import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
-import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
+import net.dinomine.potioneer.beyonder.player.CapProvider;
 import net.dinomine.potioneer.config.PotioneerClientConfig;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
@@ -17,8 +16,6 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 import java.util.Optional;
-
-import static net.dinomine.potioneer.util.misc.AdvancementDifficultyHelper.calculateDifficultyClient;
 
 @OnlyIn(Dist.CLIENT)
 public class ClientStatsData {
@@ -32,22 +29,11 @@ public class ClientStatsData {
     private static int minLuck = 0;
     private static int maxLuck = 0;
 
-    public static void attemptAdvancement(int newSeq, int addedDifficulty){
-        Optional<LivingEntityBeyonderCapability> capOpt = getCapability();
-        if(capOpt.isEmpty()) return;
-        LivingEntityBeyonderCapability cap = capOpt.get();
-        int pathwaySequenceId = cap.getPathwaySequenceId();
-        int sanity = (int) cap.getSanity();
-        ClientAdvancementManager.setDifficulty(addedDifficulty + calculateDifficultyClient(pathwaySequenceId, newSeq, sanity, actingProgress));
-//        ClientAdvancementManager.difficulty = 10;     //Debug
-        ClientAdvancementManager.targetSequence = newSeq;
-        Minecraft.getInstance().setScreen(new AdvancementScreen());
-    }
 
-    public static Optional<LivingEntityBeyonderCapability> getCapability(){
+    public static Optional<BeyonderCapability> getCapability(){
         if(Minecraft.getInstance().player == null) return Optional.empty();
-        if(!Minecraft.getInstance().player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).isPresent()) return Optional.empty();
-        return Minecraft.getInstance().player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve();
+        if(!Minecraft.getInstance().player.getCapability(CapProvider.BEYONDER_STATS).isPresent()) return Optional.empty();
+        return Minecraft.getInstance().player.getCapability(CapProvider.BEYONDER_STATS).resolve();
     }
 
     public static float getPlayerSpirituality(){
@@ -88,9 +74,9 @@ public class ClientStatsData {
             return -1;
         }
 
-        Optional<LivingEntityBeyonderCapability> optCap = getCapability();
+        Optional<BeyonderCapability> optCap = getCapability();
         if(optCap.isPresent()){
-            LivingEntityBeyonderCapability cap = optCap.get();
+            BeyonderCapability cap = optCap.get();
             return cap.getPathwaySequenceId();
         }
         return -1;
@@ -106,6 +92,8 @@ public class ClientStatsData {
             case DAMAGE -> dmg;
             case RESISTANCE -> Math.round(ModAttributes.getResistance(Minecraft.getInstance().player)*100f)/100f;
             case REGENERATION -> Math.round(ModAttributes.getRegeneration(Minecraft.getInstance().player)*100f)/100f;
+            case MINING_SPEED_ADD -> 0;
+            case MINING_SPEED_MULT -> 0;
         };
     }
 

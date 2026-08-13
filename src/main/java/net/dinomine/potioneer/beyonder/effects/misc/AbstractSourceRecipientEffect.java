@@ -30,6 +30,8 @@ public abstract class AbstractSourceRecipientEffect extends BeyonderEffect {
         this.sources = other;
     }
 
+    protected boolean hasSource(UUID id){return sources.containsKey(id);}
+
     protected void addSource(UUID id, int time, @Nullable LivingEntity target){
         sources.put(id, time);
         if(target == null) return;

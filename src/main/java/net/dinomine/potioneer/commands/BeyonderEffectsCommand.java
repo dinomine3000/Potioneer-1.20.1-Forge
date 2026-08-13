@@ -3,7 +3,7 @@ package net.dinomine.potioneer.commands;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
+import net.dinomine.potioneer.beyonder.player.CapProvider;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
@@ -29,7 +29,7 @@ public class BeyonderEffectsCommand {
         try {
             Entity target = EntityArgument.getEntity(cmd, "target");
             if(!(target instanceof LivingEntity lTarget)) return 0;
-            lTarget.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap ->{
+            lTarget.getCapability(CapProvider.BEYONDER_STATS).ifPresent(cap ->{
                 cap.getEffectsManager().clearEffects(cap, lTarget);
             });
             return 1;
@@ -44,7 +44,7 @@ public class BeyonderEffectsCommand {
             if(!(target instanceof LivingEntity lTarget)) return 0;
             ServerPlayer executor = cmd.getSource().getPlayer();
             if(executor == null) return 0;
-            lTarget.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap ->{
+            lTarget.getCapability(CapProvider.BEYONDER_STATS).ifPresent(cap ->{
                 executor.sendSystemMessage(Component.literal(cap.getEffectsManager().toString()));
             });
             return 1;

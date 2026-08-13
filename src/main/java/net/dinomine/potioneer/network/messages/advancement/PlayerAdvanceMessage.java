@@ -1,7 +1,7 @@
 package net.dinomine.potioneer.network.messages.advancement;
 
 import net.dinomine.potioneer.beyonder.pathways.Pathways;
-import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
+import net.dinomine.potioneer.beyonder.player.CapProvider;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Player;
@@ -51,7 +51,7 @@ public class PlayerAdvanceMessage {
                 context.enqueueWork(() -> DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> ClientSyncMessage.handlePacket(msg, contextSupplier)));
             } else {
                 Player player = context.getSender();
-                player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
+                player.getCapability(CapProvider.BEYONDER_STATS).ifPresent(cap -> {
                     for(Integer charac: msg.characteristics){
                         cap.advance(charac, false);
                         Pathways.getPathwayBySequenceId(charac).applyRitualEffects(player, charac%10);
@@ -74,7 +74,7 @@ class ClientSyncMessage
 
         if (player != null)
         {
-            player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap -> {
+            player.getCapability(CapProvider.BEYONDER_STATS).ifPresent(cap -> {
                 cap.getCharacteristicManager().setCharacteristicsOnClient(player, msg.characteristics);
             });
         }

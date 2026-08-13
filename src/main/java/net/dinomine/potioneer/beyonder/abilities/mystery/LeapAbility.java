@@ -1,7 +1,7 @@
 package net.dinomine.potioneer.beyonder.abilities.mystery;
 
 import net.dinomine.potioneer.beyonder.abilities.Ability;
-import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
+import net.dinomine.potioneer.beyonder.player.BeyonderCapability;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
@@ -20,7 +20,7 @@ public class LeapAbility extends Ability {
     }
 
     @Override
-    protected boolean primary(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    protected boolean primary(BeyonderCapability cap, LivingEntity target) {
         if(cap.getSpirituality() < cost()) return false;
         Vec3 look = target.getLookAngle();
         double mult = 1 + 1.2*(9-getSequenceLevel());

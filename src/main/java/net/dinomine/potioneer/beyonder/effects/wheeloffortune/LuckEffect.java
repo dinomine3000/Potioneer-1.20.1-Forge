@@ -5,7 +5,7 @@ import net.dinomine.potioneer.beyonder.damages.PotioneerDamage;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffect;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
 import net.dinomine.potioneer.beyonder.pathways.WheelOfFortunePathway;
-import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
+import net.dinomine.potioneer.beyonder.player.BeyonderCapability;
 import net.dinomine.potioneer.sound.ModSounds;
 import net.dinomine.potioneer.util.PotioneerMathHelper;
 import net.minecraft.core.Direction;
@@ -41,11 +41,11 @@ public class LuckEffect extends BeyonderEffect {
     }
 
     @Override
-    public void onAcquire(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    public void onAcquire(BeyonderCapability cap, LivingEntity target) {
     }
 
     @Override
-    protected void doTick(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    protected void doTick(BeyonderCapability cap, LivingEntity target) {
         if(sequenceLevel > 7) return;
         //run logic 5 times a second
         if(target.tickCount%4 != target.getId()%4) return;
@@ -76,14 +76,14 @@ public class LuckEffect extends BeyonderEffect {
     }
 
     @Override
-    public void stopEffects(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    public void stopEffects(BeyonderCapability cap, LivingEntity target) {
     }
 
     @Override
-    public boolean onTakeDamage(LivingDamageEvent event, LivingEntity victim, LivingEntity attacker, LivingEntityBeyonderCapability victimCap, Optional<LivingEntityBeyonderCapability> optAttackerCap, boolean calledOnVictim) {
+    public boolean onTakeDamage(LivingDamageEvent event, LivingEntity victim, LivingEntity attacker, BeyonderCapability victimCap, Optional<BeyonderCapability> optAttackerCap, boolean calledOnVictim) {
         //Crit Damage dealt
         if(optAttackerCap.isEmpty() || event.getAmount() == 0 || calledOnVictim || !crit) return false;
-        LivingEntityBeyonderCapability attackerCap = optAttackerCap.get();
+        BeyonderCapability attackerCap = optAttackerCap.get();
         if(attackerCap.getLuckManager().passesLuckCheck(critBaseChance, critLuckCost, 0, attacker.getRandom())){
             attackerCap.getCharacteristicManager().progressActing(WheelOfFortunePathway.LUCK_ACTING_INC, 6);
 //            victimCap.getEffectsManager().removeEffect(BeyonderEffects.WHEEL_CRIT.getEffectId(), getSequenceLevel());
@@ -95,7 +95,7 @@ public class LuckEffect extends BeyonderEffect {
     }
 
     @Override
-    public boolean onDamageProposal(LivingAttackEvent event, LivingEntity victim, LivingEntity attacker, LivingEntityBeyonderCapability victimCap, Optional<LivingEntityBeyonderCapability> attackerCap, boolean calledOnVictim) {
+    public boolean onDamageProposal(LivingAttackEvent event, LivingEntity victim, LivingEntity attacker, BeyonderCapability victimCap, Optional<BeyonderCapability> attackerCap, boolean calledOnVictim) {
         //Dodge Damage received
         if(!calledOnVictim || event.getSource().is(PotioneerDamage.Tags.ABSOLUTE) || event.getSource().is(PotioneerDamage.Tags.MENTAL)) return false;
 

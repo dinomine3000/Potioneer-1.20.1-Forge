@@ -1,8 +1,8 @@
 package net.dinomine.potioneer.network.messages.abilityRelevant.abilitySpecific;
 
 import net.dinomine.potioneer.beyonder.client.ClientHudData;
-import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
-import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
+import net.dinomine.potioneer.beyonder.player.BeyonderCapability;
+import net.dinomine.potioneer.beyonder.player.CapProvider;
 import net.dinomine.potioneer.network.PacketHandler;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerLevel;
@@ -38,9 +38,9 @@ public class AppraisalDataMessage {
         this.entityId = entity.getId();
         this.luck = luck;
 
-        Optional<LivingEntityBeyonderCapability> optCap = entity.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve();
+        Optional<BeyonderCapability> optCap = entity.getCapability(CapProvider.BEYONDER_STATS).resolve();
         if(optCap.isPresent()){
-            LivingEntityBeyonderCapability cap = optCap.get();
+            BeyonderCapability cap = optCap.get();
             if(luck){
                 this.data = cap.getLuckManager().getDataForHud();
             } else {

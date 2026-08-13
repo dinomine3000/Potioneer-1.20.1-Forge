@@ -4,6 +4,7 @@ import net.dinomine.potioneer.sound.ModSounds;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
+import org.joml.Vector3f;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.core.animation.AnimatableManager;
@@ -17,6 +18,7 @@ public class DiceEffectEntity extends AbstractEffectEntity implements GeoEntity 
     private AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
     public DiceEffectEntity(EntityType<?> pEntityType, Level pLevel) {
         super(pEntityType, pLevel);
+        setOffset(new Vector3f(0, -0.5f, 0));
     }
 
     @Override

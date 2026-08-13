@@ -2,8 +2,8 @@ package net.dinomine.potioneer.rituals.responses;
 
 import net.dinomine.potioneer.beyonder.pathways.BeyonderPathway;
 import net.dinomine.potioneer.beyonder.pathways.Pathways;
-import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
-import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
+import net.dinomine.potioneer.beyonder.player.BeyonderCapability;
+import net.dinomine.potioneer.beyonder.player.CapProvider;
 import net.dinomine.potioneer.block.entity.RitualPedestalBlockEntity;
 import net.dinomine.potioneer.recipe.CharmRecipe;
 import net.dinomine.potioneer.recipe.RitualContainer;
@@ -16,7 +16,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 
 import java.util.List;
-import java.util.Optional;
 
 public class PlayerResponse extends SpiritResponse {
     @Override
@@ -43,8 +42,8 @@ public class PlayerResponse extends SpiritResponse {
         int inputPathway = inputData.pathwaySequenceId()%10;
         int sequenceLevel = 9;
         //if targeting someone else in the ritual, make a charm based on their level
-        if(player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve().isPresent()){
-            LivingEntityBeyonderCapability cap = player.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve().get();
+        if(player.getCapability(CapProvider.BEYONDER_STATS).resolve().isPresent()){
+            BeyonderCapability cap = player.getCapability(CapProvider.BEYONDER_STATS).resolve().get();
             inputPathway = cap.getCharacteristicManager().getPathwayId();
             sequenceLevel = cap.getSequenceLevel();
         }

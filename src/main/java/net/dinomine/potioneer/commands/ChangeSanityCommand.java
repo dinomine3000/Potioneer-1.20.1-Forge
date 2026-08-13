@@ -4,7 +4,7 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
+import net.dinomine.potioneer.beyonder.player.CapProvider;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
@@ -35,7 +35,7 @@ public class ChangeSanityCommand {
         try {
             Entity target = EntityArgument.getEntity(cmd, "target");
             if(!(target instanceof LivingEntity lTarget)) return 0;
-            lTarget.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap ->{
+            lTarget.getCapability(CapProvider.BEYONDER_STATS).ifPresent(cap ->{
                 cap.setSanity(IntegerArgumentType.getInteger(cmd, "value"));
             });
             return 1;
@@ -48,7 +48,7 @@ public class ChangeSanityCommand {
         try {
             Entity target = EntityArgument.getEntity(cmd, "target");
             if(!(target instanceof LivingEntity lTarget)) return 0;
-            lTarget.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap ->{
+            lTarget.getCapability(CapProvider.BEYONDER_STATS).ifPresent(cap ->{
                 cap.setSanity(cap.getSanity() + IntegerArgumentType.getInteger(cmd, "value"));
             });
             return 1;
@@ -63,7 +63,7 @@ public class ChangeSanityCommand {
             if(!(target instanceof LivingEntity lTarget)) return 0;
             ServerPlayer executor = cmd.getSource().getPlayer();
             if(executor == null) return 0;
-            lTarget.getCapability(BeyonderStatsProvider.BEYONDER_STATS).ifPresent(cap ->{
+            lTarget.getCapability(CapProvider.BEYONDER_STATS).ifPresent(cap ->{
                 executor.sendSystemMessage(Component.literal("Sanity of " + lTarget.getDisplayName().getString() + ": " + cap.getSanity() + "/" + cap.getMaxSanity()));
             });
             return 1;

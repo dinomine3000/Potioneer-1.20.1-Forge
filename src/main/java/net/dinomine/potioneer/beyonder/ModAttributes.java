@@ -21,6 +21,8 @@ public class ModAttributes {
             () -> new RangedAttribute("attribute.potioneer.stamina", 1, 1.0D, 10D).setSyncable(true));
     public static final RegistryObject<Attribute> REGENERATION = ATTRIBUTES.register("regeneration",
             () -> new RangedAttribute("attribute.potioneer.regeneration", 1, 0.0D, 10D).setSyncable(true));
+    public static final RegistryObject<Attribute> MINING_SPEED = ATTRIBUTES.register("mining_speed",
+            () -> new RangedAttribute("attribute.potioneer.mining_speed", 1, 0.0D, Double.MAX_VALUE).setSyncable(true));
 
     public static void register(IEventBus eventBus) {
         ATTRIBUTES.register(eventBus);
@@ -34,6 +36,11 @@ public class ModAttributes {
     public static double getStamina(LivingEntity entity) {
         var attributeInstance = entity.getAttribute(STAMINA.get());
         return attributeInstance != null ? attributeInstance.getValue() : 5.0D;
+    }
+
+    public static double getMiningSpeed(LivingEntity entity) {
+        var attributeInstance = entity.getAttribute(MINING_SPEED.get());
+        return attributeInstance != null ? attributeInstance.getValue() : 1.0D;
     }
 
     public static double getRegeneration(LivingEntity entity) {

@@ -1,9 +1,9 @@
 package net.dinomine.potioneer.entities.custom;
 
 import net.dinomine.potioneer.beyonder.abilities.Abilities;
-import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
-import net.dinomine.potioneer.beyonder.player.BeyonderStatsProvider;
-import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
+import net.dinomine.potioneer.beyonder.pathways.TyrantPathway;
+import net.dinomine.potioneer.beyonder.player.BeyonderCapability;
+import net.dinomine.potioneer.beyonder.player.CapProvider;
 import net.dinomine.potioneer.util.misc.DivinationResult;
 import net.dinomine.potioneer.util.misc.MysticismHelper;
 import net.minecraft.core.BlockPos;
@@ -97,9 +97,9 @@ public class DivinationRodEntity extends PlaceableItemEntity implements GeoEntit
         boolean seer = false;
         boolean lucky = false;
 
-        Optional<LivingEntityBeyonderCapability> optCap = pPlayer.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve();
+        Optional<BeyonderCapability> optCap = pPlayer.getCapability(CapProvider.BEYONDER_STATS).resolve();
         if(optCap.isEmpty()) return InteractionResult.SUCCESS;
-        LivingEntityBeyonderCapability cap = pPlayer.getCapability(BeyonderStatsProvider.BEYONDER_STATS).resolve().get();
+        BeyonderCapability cap = pPlayer.getCapability(CapProvider.BEYONDER_STATS).resolve().get();
 
         sequenceId = cap.getPathwaySequenceId();
         seer = cap.getAbilitiesManager().hasAbility(Abilities.TYRANT_DIVINATION.getAblId());
@@ -121,6 +121,7 @@ public class DivinationRodEntity extends PlaceableItemEntity implements GeoEntit
             if(positions.isEmpty()) positions = new ArrayList<>(result.positions());
 //            System.out.println("Found positions: " + positions);
             if(seer || lucky){
+                cap.getCharacteristicManager().progressActing(TyrantPathway.WATER_MAGE_ACTING_DIVINATION, 18);
                 this.entityData.set(INTENDED_YAW, getYawFromPosToPos(this.getOnPos(), positions.get(0)));
 //                System.out.println("Telling you the way");
             }

@@ -59,7 +59,8 @@ public class BeyonderEffects {
     public static final BeyonderEffectType TYRANT_SCALES = registerEffect("scales", new BeyonderEffectType(ScalesEffect::new));
     public static final BeyonderEffectType TYRANT_DROWNING = registerEffect("drowning", new BeyonderEffectType(DrowningEffect::new));
     public static final BeyonderEffectType TYRANT_WATER_JET = registerEffect("water_jet", new BeyonderEffectType(WaterJetEffect::new));
-    public static final BeyonderEffectType TYRANT_AOJ_SOURCE = registerEffect("aoj_viewer", new BeyonderEffectType(AoJSourceEffect::new));
+    public static final BeyonderEffectType TYRANT_AOJ_SOURCE = registerEffect("aoj_source", new BeyonderEffectType(AoJSourceEffect::new));
+    public static final BeyonderEffectType TYRANT_AOJ_VIEWER = registerEffect("aoj_viewer", new BeyonderEffectType(AoJViewerEffect::new));
     public static final BeyonderEffectType TYRANT_AOJ_RECIPIENT = registerEffect("aoj_influence", new BeyonderEffectType(AoJRecipientEffect::new));
     public static final BeyonderEffectType TYRANT_AURA_SOURCE = registerEffect("aura_source", new BeyonderEffectType(AuraSourceEffect::new));
     public static final BeyonderEffectType TYRANT_AURA_RECIPIENT = registerEffect("aura_recipient", new BeyonderEffectType(AuraRecipientEffect::new));
@@ -72,6 +73,14 @@ public class BeyonderEffects {
     public static final BeyonderEffectType TYRANT_EXILE = registerEffect("exile", new BeyonderEffectType(ExiledEffect::new));
     public static final BeyonderEffectType TYRANT_CONTRACT = registerEffect("contract", new BeyonderEffectType(ContractedEffect::new));
     public static final BeyonderEffectType TYRANT_BERSERK = registerEffect("berserk", new BeyonderEffectType(BerserkEffect::new));
+    public static final BeyonderEffectType TYRANT_MAIN_HAND_RULE = registerEffect("main_hand_rule", new BeyonderEffectType(TyrantChangeItemInHandRuleEffect::new));
+    public static final BeyonderEffectType TYRANT_DISABLE_PUNISHMENT = registerEffect("disable_punishment", new BeyonderEffectType(TyrantDisableAbilitiesPunishment::new));
+    public static final BeyonderEffectType TYRANT_GENERAL_PROHIBITION = registerEffect("general_prohibition", new BeyonderEffectType(GeneralProhibitionEffect::new));
+    public static final BeyonderEffectType TYRANT_ABILITY_PROHIBITION = registerEffect("ability_prohibition", new BeyonderEffectType(AbilityProhibitionEffect::new));
+    public static final BeyonderEffectType TYRANT_BRIBE = registerEffect("bribe_source", new BeyonderEffectType(BribeSourceEffect::new));
+    public static final BeyonderEffectType TYRANT_BRIBE_RECIPIENT = registerEffect("bribe_recipient", new BeyonderEffectType(BribeRecipientEffect::new));
+    public static final BeyonderEffectType TYRANT_AURA_DOWNSIDE = registerEffect("d_aura", new BeyonderEffectType(AuraDownsideEffect::new));
+    public static final BeyonderEffectType TYRANT_MIST_DOWNSIDE = registerEffect("d_mist", new BeyonderEffectType(MistDownsideEffect::new));
     public static final BeyonderEffectType RED_FIRE_AURA = registerEffect("fire_aura", new BeyonderEffectType(BeyonderFireAuraEffect::new));
     public static final BeyonderEffectType RED_FIRE_BUFF = registerEffect("fire_buff", new BeyonderEffectType(BeyonderFireBuffEffect::new));
     public static final BeyonderEffectType RED_LIGHT_BUFF = registerEffect("light_buff", new BeyonderEffectType(BeyonderLightBuffEffect::new));

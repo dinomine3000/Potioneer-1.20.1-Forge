@@ -13,9 +13,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import static net.dinomine.potioneer.util.misc.ModTags.*;
-import static net.dinomine.potioneer.util.misc.ModTags.ArtifactInfoTag.generateArtifactTag;
-import static net.dinomine.potioneer.util.misc.ModTags.CharmInfoTag.*;
+import static net.dinomine.potioneer.util.misc.ModNbtUtils.*;
+import static net.dinomine.potioneer.util.misc.ModNbtUtils.ArtifactInfoTag.generateArtifactTag;
+import static net.dinomine.potioneer.util.misc.ModNbtUtils.CharmInfoTag.*;
 
 public class MysticalItemHelper {
     public static final String GEM_TAG_ID = "gem_ability_info";
@@ -35,7 +35,17 @@ public class MysticalItemHelper {
         abilityMap.add(new MetaArtifactAbility(0, 9, Abilities.BLOCK_APPRAISAL.getAblId()));
         abilityMap.add(new MetaArtifactAbility(0, 10, Abilities.MINING_SPEED.getAblId()));
         abilityMap.add(new MetaArtifactAbility(0, 10, Abilities.VOID_VISION.getAblId()));
-        abilityMap.add(new MetaArtifactAbility(10, 20, Abilities.WATER_AFFINITY.getAblId()));
+        abilityMap.add(new MetaArtifactAbility(18, 20, Abilities.WATER_AFFINITY.getAblId()));
+        abilityMap.add(new MetaArtifactAbility(17, 20, Abilities.WATER_SCALES.getAblId()));
+        abilityMap.add(new MetaArtifactAbility(10, 19, Abilities.TYRANT_WATER_SPELLS.getAblId()));
+        abilityMap.add(new MetaArtifactAbility(17, 19, Abilities.TYRANT_DIVINATION.getAblId()));
+        abilityMap.add(new MetaArtifactAbility(10, 18, Abilities.ARREST.getAblId()));
+        abilityMap.add(new MetaArtifactAbility(10, 17, Abilities.CONTRACT.getAblId()));
+        abilityMap.add(new MetaArtifactAbility(10, 17, Abilities.BERSERK_RAGE.getAblId()));
+        abilityMap.add(new MetaArtifactAbility(10, 17, Abilities.TYRANT_CALAMITY.getAblId()));
+        abilityMap.add(new MetaArtifactAbility(10, 16, Abilities.AMPLIFICATION.getAblId()));
+        abilityMap.add(new MetaArtifactAbility(10, 16, Abilities.PROHIBITION.getAblId()));
+        abilityMap.add(new MetaArtifactAbility(10, 16, Abilities.RULE_PYLON.getAblId()));
 //        abilityMap.put("water_affinity", new MetaAbilityEntry(10, 20, WaterAffinityAbility::new));
         abilityMap.add(new MetaArtifactAbility(20, 30, Abilities.AIR_BULLET.getAblId()));
         abilityMap.add(new MetaArtifactAbility(30, 40, Abilities.MELT_ABILITY.getAblId()));
@@ -44,7 +54,10 @@ public class MysticalItemHelper {
         //abilities for gems and amulets
 //        abilityMap.put("lucky_trend", new MetaArtifactAbility(-1, -1, level -> Abilities.LUCK_TREND.create(level%10)));
 
+        downsideMap.add(new MetaArtifactAbility(0, 50, Abilities.NOISES_DOWNSIDE.getAblId()));
+        downsideMap.add(new MetaArtifactAbility(0, 50, Abilities.SLOWNESS_DOWNSIDE.getAblId()));
         downsideMap.add(new MetaArtifactAbility(0, 50, Abilities.DUMMY_DOWNSIDE.getAblId()));
+
         downsideMap.add(new MetaArtifactAbility(7, 10, Abilities.CHAOS_LUCK_DOWNSIDE.getAblId()));
         downsideMap.add(new MetaArtifactAbility(0, 8, Abilities.COOLDOWN_DOWNSIDE.getAblId()));
         downsideMap.add(new MetaArtifactAbility(0, 8, Abilities.FAKE_LAG_DOWNSIDE.getAblId()));
@@ -52,6 +65,12 @@ public class MysticalItemHelper {
         downsideMap.add(new MetaArtifactAbility(0, 8, Abilities.LUCK_CONSUME_DOWNSIDE.getAblId()));
         downsideMap.add(new MetaArtifactAbility(0, 10, Abilities.LUCK_TREND_DOWNWARDS_DOWNSIDE.getAblId()));
         downsideMap.add(new MetaArtifactAbility(0, 7, Abilities.RANDOM_VELOCITY_DOWNSIDE.getAblId()));
+
+        downsideMap.add(new MetaArtifactAbility(16, 20, Abilities.WATER_DOWNSIDE.getAblId()));
+        downsideMap.add(new MetaArtifactAbility(15, 19, Abilities.AURA_DOWNSIDE.getAblId()));
+        downsideMap.add(new MetaArtifactAbility(15, 19, Abilities.AXIS_DOWNSIDE.getAblId()));
+        downsideMap.add(new MetaArtifactAbility(15, 18, Abilities.MIST_DOWNSIDE.getAblId()));
+        downsideMap.add(new MetaArtifactAbility(15, 17, Abilities.CALAMITY_DOWNSIDE.getAblId()));
 
 //        effectMap.put("silk", new MetaEffectEntry(0, 8, dur -> BeyonderEffects.byId(BeyonderEffects.EFFECT.WHEEL_SILK_TOUCH, 8, 0, dur, true)));
 //        effectMap.put("water_affinity", new MetaEffectEntry(10, 9, dur -> BeyonderEffects.byId(BeyonderEffects.EFFECT.TYRANT_WATER_AFFINITY, 9, 5, dur, true)));
@@ -76,7 +95,7 @@ public class MysticalItemHelper {
     public static ItemStack makeCharm(ItemStack stack, String beyonderEffectId, int pathwaySequenceId, int duration){
         if(!stack.is(ModItems.CHARM.get()) || beyonderEffectId.isEmpty() || hasTag(TAGS.CHARM, stack) ) return stack;
 
-        ModTags.setItemRootTag(stack, createTag(beyonderEffectId, duration, pathwaySequenceId), TAGS.CHARM);
+        ModNbtUtils.setItemRootTag(stack, createTag(beyonderEffectId, duration, pathwaySequenceId), TAGS.CHARM);
         return stack;
     }
 
@@ -113,9 +132,9 @@ public class MysticalItemHelper {
 //        root.put(BEYONDER_TAG_ID, beyonderInfo);
 
         //create beyonder tag
-        CompoundTag beyonderTag = ModTags.BeyonderInfoTag.setTagForItem(stack, pathwaySequenceId);
+        CompoundTag beyonderTag = ModNbtUtils.BeyonderInfoTag.setTagForItem(stack, pathwaySequenceId);
         //create artifact tag
-        generateAbilityTag(stack, ModTags.BeyonderInfoTag.getAssociatedPathSeqLevel(beyonderTag), random, quantity);
+        generateAbilityTag(stack, ModNbtUtils.BeyonderInfoTag.getAssociatedPathSeqLevel(beyonderTag), random, quantity);
     }
 
     private static CompoundTag generateAbilityTag(ItemStack stack, int pathwaySequenceId, RandomSource random, int quantity) {
@@ -158,7 +177,7 @@ public class MysticalItemHelper {
     }
 
     public static boolean isWorkingArtifact(ItemStack stack){
-        return hasTag(ModTags.TAGS.ARTIFACT, stack);
+        return hasTag(ModNbtUtils.TAGS.ARTIFACT, stack);
     }
 
     public static ArtifactHolder getArtifactFromItem(ItemStack itemStack) {
@@ -168,13 +187,13 @@ public class MysticalItemHelper {
     }
 
     public static UUID getArtifactIdFromItem(ItemStack itemStack){
-        return ModTags.ArtifactInfoTag.getArtifactId(itemStack);
+        return ModNbtUtils.ArtifactInfoTag.getArtifactId(itemStack);
     }
 
     public static void updateArtifactTagOnItem(ArtifactHolder artifactHolder, ItemStack itemStack) {
         if(!isWorkingArtifact(itemStack)) return;
-        if(!ModTags.ArtifactInfoTag.getArtifactId(itemStack).equals(artifactHolder.getArtifactId())) return;
-        ModTags.ArtifactInfoTag.saveArtifactToItem(artifactHolder, itemStack);
+        if(!ModNbtUtils.ArtifactInfoTag.getArtifactId(itemStack).equals(artifactHolder.getArtifactId())) return;
+        ModNbtUtils.ArtifactInfoTag.saveArtifactToItem(artifactHolder, itemStack);
     }
 
 //    /**

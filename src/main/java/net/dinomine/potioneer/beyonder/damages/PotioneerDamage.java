@@ -39,11 +39,32 @@ public class PotioneerDamage {
     public static final ResourceKey<DamageType> WIND_SHEAR = ResourceKey.create(Registries.DAMAGE_TYPE, new ResourceLocation(Potioneer.MOD_ID, "wind_shear"));
     public static final ResourceKey<DamageType> WATER_TRAP = ResourceKey.create(Registries.DAMAGE_TYPE, new ResourceLocation(Potioneer.MOD_ID, "water_trap_explosion"));
     public static final ResourceKey<DamageType> WATER_TRAP_ENVIRONMENT = ResourceKey.create(Registries.DAMAGE_TYPE, new ResourceLocation(Potioneer.MOD_ID, "water_trap_explosion_environment"));
+    public static final ResourceKey<DamageType> STRIKE = ResourceKey.create(Registries.DAMAGE_TYPE, new ResourceLocation(Potioneer.MOD_ID, "punishment_strike"));
+    public static final ResourceKey<DamageType> LAW = ResourceKey.create(Registries.DAMAGE_TYPE, new ResourceLocation(Potioneer.MOD_ID, "tyrant_law"));
+    public static final ResourceKey<DamageType> EXECUTION = ResourceKey.create(Registries.DAMAGE_TYPE, new ResourceLocation(Potioneer.MOD_ID, "execution"));
+    public static final ResourceKey<DamageType> TYRANT_PURIFICATION = ResourceKey.create(Registries.DAMAGE_TYPE, new ResourceLocation(Potioneer.MOD_ID, "tyrant_purification"));
 //    public static final ResourceKey<DamageType> MENTAL = ResourceKey.create(Registries.DAMAGE_TYPE, new ResourceLocation(Potioneer.MOD_ID, "mental"));
 //    public static final ResourceKey<DamageType> ANNIHILATION = ResourceKey.create(Registries.DAMAGE_TYPE, new ResourceLocation(Potioneer.MOD_ID, "annihilation"));
 
     public static DamageSource crit(ServerLevel level, LivingEntity attacker) {
         return getSource(level, CRIT, attacker);
+    }
+
+    public static DamageSource strike(ServerLevel level, LivingEntity attacker){
+        return getSource(level, STRIKE, attacker);
+    }
+
+    public static DamageSource execution(ServerLevel level, LivingEntity attacker){
+        return getSource(level, EXECUTION, attacker);
+    }
+
+
+    public static DamageSource tyrant_purification(ServerLevel level, LivingEntity attacker){
+        return getSource(level, TYRANT_PURIFICATION, attacker);
+    }
+
+    public static DamageSource law(ServerLevel level, LivingEntity attacker){
+        return getSource(level, LAW, attacker);
     }
 
     public static DamageSource tyrantHealing(ServerLevel level) {

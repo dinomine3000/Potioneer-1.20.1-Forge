@@ -2,11 +2,10 @@ package net.dinomine.potioneer.beyonder.abilities.mystery;
 
 import net.dinomine.potioneer.beyonder.abilities.Ability;
 import net.dinomine.potioneer.beyonder.abilities.AbilityFunctionHelper;
-import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
+import net.dinomine.potioneer.beyonder.player.BeyonderCapability;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
@@ -29,7 +28,7 @@ public class PushAbility extends Ability {
     }
 
     @Override
-    protected boolean primary(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    protected boolean primary(BeyonderCapability cap, LivingEntity target) {
         if(cap.getSpirituality() < cost()) return false;
         Level level = target.level();
         if(level.isClientSide()){
@@ -60,7 +59,7 @@ public class PushAbility extends Ability {
     }
 
     @Override
-    public boolean secondary(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    public boolean secondary(BeyonderCapability cap, LivingEntity target) {
         System.out.println("Warning: tried to cast secondary ability of Push (pull) but it hasnt been implemented yet");
         return true;
     }

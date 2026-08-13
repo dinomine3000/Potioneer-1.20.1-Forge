@@ -7,6 +7,9 @@ import net.dinomine.potioneer.beyonder.abilities.redpriest.*;
 import net.dinomine.potioneer.beyonder.abilities.tyrant.*;
 import net.dinomine.potioneer.beyonder.abilities.wheeloffortune.*;
 import net.dinomine.potioneer.beyonder.downsides.DummyDownside;
+import net.dinomine.potioneer.beyonder.downsides.MobNoisesDownside;
+import net.dinomine.potioneer.beyonder.downsides.SlownessDownside;
+import net.dinomine.potioneer.beyonder.downsides.tyrant.*;
 import net.dinomine.potioneer.beyonder.downsides.wheeloffortune.*;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
 import net.minecraft.resources.ResourceLocation;
@@ -14,6 +17,7 @@ import net.minecraft.world.effect.MobEffects;
 
 import java.util.HashMap;
 import java.util.LinkedHashSet;
+import java.util.Set;
 import java.util.UUID;
 import java.util.function.Function;
 
@@ -26,6 +30,10 @@ public class Abilities {
 
     public static final AbilityFactory DUMMY_DOWNSIDE = registerAbility("d_dummy",
             DummyDownside::new, 0, 0, 0);
+    public static final AbilityFactory SLOWNESS_DOWNSIDE = registerAbility("d_slowness",
+            SlownessDownside::new, 0, 0, 0);
+    public static final AbilityFactory NOISES_DOWNSIDE = registerAbility("d_noises",
+            MobNoisesDownside::new, 0, 0, 0);
 
     public static final AbilityFactory CHAOS_LUCK_DOWNSIDE = registerAbility("d_chaos",
             ChaosLuckDownside::new, 0, 0, 0);
@@ -41,6 +49,17 @@ public class Abilities {
             RandomVelocityDownside::new, 0, 0, 0);
     public static final AbilityFactory FATE_CAST_DOWNSIDE = registerAbility("d_fate",
             FateCastDownside::new, 0, 0, 0);
+
+    public static final AbilityFactory AXIS_DOWNSIDE = registerAbility("d_axis",
+            AxisDownside::new, 0, 0, 0);
+    public static final AbilityFactory CALAMITY_DOWNSIDE = registerAbility("d_calamity",
+            CalamityDownside::new, 0, 0, 0);
+    public static final AbilityFactory WATER_DOWNSIDE = registerAbility("d_water",
+            WaterDownside::new, 0, 0, 0);
+    public static final AbilityFactory AURA_DOWNSIDE = registerAbility("d_aura",
+            AuraDownside::new, 0, 0, 0);
+    public static final AbilityFactory MIST_DOWNSIDE = registerAbility("d_mist",
+            MistDownside::new, 0, 0, 0);
 
 
     public static final AbilityFactory BLANK_OPTIONS = registerAbility("blank_options",
@@ -202,7 +221,7 @@ public class Abilities {
 
     //retweaked
     public static final AbilityFactory TYRANT_AURA = registerAbility("aoj_aura",
-            (Integer level) -> PassiveAbility.createAbility(level, BeyonderEffects.TYRANT_AURA_SOURCE, lv -> lv < 7 ? "aoj_aura_2" : "aoj_aura").canFlip().withThreshold(0.1f).withCost(10),
+            AuraAbility::new,
             21, 1, 1).passiveAndActive();
 
     //retweaked
@@ -245,6 +264,14 @@ public class Abilities {
     public static final AbilityFactory ANCHOR_BLINKING = registerAbility("mist_blinking_anchors",
             MistBlinkingAnchorsAbility::new, 0, 1, 20).hasSecondaryFunction();
 
+    public static final AbilityFactory RULE_PYLON = registerAbility("rule_pylon",
+            RulePylonAbility::new, 0, 1, 25);
+
+    public static final AbilityFactory PROHIBITION = registerAbility("prohibition",
+            ProhibitionAbility::new, 0, 1, 25).hasSecondaryFunction();
+
+    public static final AbilityFactory BRIBE = registerAbility("bribe",
+            BribeAbility::new, 0, 1, 0).hasSecondaryFunction().passiveAndActive();
 
 
     // -------------------------- MYSTERY ---------------------------------------------------
@@ -422,6 +449,10 @@ public class Abilities {
 
     public static Ability createAbilityInstance(AbilityKey key){
         return createAbilityInstance(key.getAbilityId(), key.getSequenceLevel());
+    }
+
+    public static Ability createAbilityInstance(AbilityKey key, int level){
+        return createAbilityInstance(key.getAbilityId(), level);
     }
 
     public static Ability getAbilityInstanceByKey(AbilityKey key, UUID instanceId){

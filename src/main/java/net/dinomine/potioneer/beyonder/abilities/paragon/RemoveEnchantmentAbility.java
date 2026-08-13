@@ -1,7 +1,7 @@
 package net.dinomine.potioneer.beyonder.abilities.paragon;
 
 import net.dinomine.potioneer.beyonder.abilities.Ability;
-import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
+import net.dinomine.potioneer.beyonder.player.BeyonderCapability;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
@@ -21,7 +21,7 @@ public class RemoveEnchantmentAbility extends Ability {
     }
 
     @Override
-    public boolean primary(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    public boolean primary(BeyonderCapability cap, LivingEntity target) {
         if(target.level().isClientSide()) {
             if(cap.getSpirituality() > cost()) return true;
         }

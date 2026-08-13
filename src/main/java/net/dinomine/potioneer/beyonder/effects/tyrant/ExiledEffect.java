@@ -2,10 +2,9 @@ package net.dinomine.potioneer.beyonder.effects.tyrant;
 
 import net.dinomine.potioneer.beyonder.abilities.AbilityFunctionHelper;
 import net.dinomine.potioneer.beyonder.abilities.tyrant.AreaOfJurisdictionAbility;
-import net.dinomine.potioneer.beyonder.damages.PotioneerDamage;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
 import net.dinomine.potioneer.beyonder.effects.misc.AbstractSourceRecipientEffect;
-import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
+import net.dinomine.potioneer.beyonder.player.BeyonderCapability;
 import net.dinomine.potioneer.config.PotioneerAbilityConfig;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -34,19 +33,12 @@ public class ExiledEffect extends AbstractSourceRecipientEffect {
     }
 
     @Override
-    protected void doTick(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    protected void doTick(BeyonderCapability cap, LivingEntity target) {
         if(!(target.level() instanceof ServerLevel serverLevel)) return;
         tickDownTime(target);
-        boolean pushFlag = false;
         for(UUID id: this.sources.keySet()){
-            Entity enforcer = serverLevel.getEntity(id);
+            Entity enforcer = AbilityFunctionHelper.getEntityAcrossDimensions(serverLevel, id);
             if(!AreaOfJurisdictionAbility.isEntityInAOJ(target, enforcer)) return;
-            if(!pushFlag){
-                if(timeInAoj-- < 1 && target.tickCount%25 == 0){
-                    target.hurt(PotioneerDamage.exile(serverLevel, enforcer), 8);
-                }
-            }
-            pushFlag = true;
             addForce(target, enforcer);
         }
     }
@@ -72,7 +64,7 @@ public class ExiledEffect extends AbstractSourceRecipientEffect {
     }
 
     @Override
-    public void stopEffects(LivingEntityBeyonderCapability cap, LivingEntity target) {
+    public void stopEffects(BeyonderCapability cap, LivingEntity target) {
 
     }
 }

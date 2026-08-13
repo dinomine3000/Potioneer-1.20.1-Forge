@@ -1,6 +1,6 @@
 package net.dinomine.potioneer.beyonder.player.luck.luckevents;
 
-import net.dinomine.potioneer.beyonder.player.LivingEntityBeyonderCapability;
+import net.dinomine.potioneer.beyonder.player.BeyonderCapability;
 import net.dinomine.potioneer.beyonder.player.PlayerLuckManager;
 import net.dinomine.potioneer.config.PotioneerGameplayConfig;
 import net.dinomine.potioneer.savedata.PotionFormulaSaveData;
@@ -23,7 +23,7 @@ import java.util.List;
 
 public class ItemGenLuckEvent extends LuckEvent {
     @Override
-    public void triggerEvent(LivingEntityBeyonderCapability cap, PlayerLuckManager luck, LivingEntity target) {
+    public void triggerEvent(BeyonderCapability cap, PlayerLuckManager luck, LivingEntity target) {
         List<Item> items = getPossibleItems(target.level(), cap, target.getRandom());
         if(target instanceof Player player){
             player.addItem(
@@ -34,7 +34,7 @@ public class ItemGenLuckEvent extends LuckEvent {
         }
     }
 
-    public static List<Item> getPossibleItems(Level level, LivingEntityBeyonderCapability cap, RandomSource random){
+    public static List<Item> getPossibleItems(Level level, BeyonderCapability cap, RandomSource random){
         List<String> itemKeys = PotioneerGameplayConfig.ITEM_GEN_LUCK_EVENT_ITEMS.get();
         List<Item> res = new ArrayList<>();
         for(String key: itemKeys){
