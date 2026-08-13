@@ -31,7 +31,7 @@ public class AreaOfJurisdictionAbility extends PassiveAbility implements IAreaOf
      * @param sequenceLevel
      */
     public AreaOfJurisdictionAbility(int sequenceLevel) {
-        super(sequenceLevel, BeyonderEffects.TYRANT_AOJ_SOURCE, level -> "area_of_jurisdiction" + (level < 7 ? (level < 6 ? "_3" : "_2") : ""));
+        super(sequenceLevel, BeyonderEffects.TYRANT_AOJ_VIEWER, level -> "area_of_jurisdiction" + (level < 7 ? (level < 6 ? "_3" : "_2") : ""));
         enabledOnAcquire();
     }
 
@@ -52,6 +52,8 @@ public class AreaOfJurisdictionAbility extends PassiveAbility implements IAreaOf
     public void passive(BeyonderCapability cap, LivingEntity target) {
         super.passive(cap, target);
         if(target.level().isClientSide()) return;
+        cap.getEffectsManager().addOrRefreshEffect(BeyonderEffects.TYRANT_AOJ_SOURCE.createInstance(sequenceLevel, 0, 20, true), cap, target);
+        if(isRevoked()) return;
         if(target.tickCount%20 == target.getId()%20){
             if(isEntityInAOJ(target, target))
                 target.addEffect(new MobEffectInstance(ModEffects.AOJ_INFLUENCE.get(), 250, 0, false, false, true));

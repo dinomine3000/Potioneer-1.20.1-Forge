@@ -220,12 +220,13 @@ public class ParticleMaker {
         jetEffect.start();
     }
 
-    public static void createWaterBlockEffectForPlayer(LivingEntity target, Level level, int duration){
+    public static int createWaterBlockEffectForPlayer(LivingEntity target, Level level, int duration){
         WaterBlockEffectEntity effect = new WaterBlockEffectEntity(ModEntities.WATER_BLOCK_EFFECT_ENTITY.get(), level);
-        effect.setOffset(new Vector3f(-0.5f, target.getEyeHeight() - 0.5f, -0.5f));
+        effect.setOffset(new Vector3f(-0.5f, - 0.5f, -0.5f));
         effect.setTarget(target);
         effect.setDuration(duration);
         level.addFreshEntity(effect);
+        return effect.getId();
     }
 
     public static void createSlotMachineForEntity(Level level, LivingEntity target, boolean success){

@@ -59,7 +59,8 @@ public class BeyonderEffects {
     public static final BeyonderEffectType TYRANT_SCALES = registerEffect("scales", new BeyonderEffectType(ScalesEffect::new));
     public static final BeyonderEffectType TYRANT_DROWNING = registerEffect("drowning", new BeyonderEffectType(DrowningEffect::new));
     public static final BeyonderEffectType TYRANT_WATER_JET = registerEffect("water_jet", new BeyonderEffectType(WaterJetEffect::new));
-    public static final BeyonderEffectType TYRANT_AOJ_SOURCE = registerEffect("aoj_viewer", new BeyonderEffectType(AoJSourceEffect::new));
+    public static final BeyonderEffectType TYRANT_AOJ_SOURCE = registerEffect("aoj_source", new BeyonderEffectType(AoJSourceEffect::new));
+    public static final BeyonderEffectType TYRANT_AOJ_VIEWER = registerEffect("aoj_viewer", new BeyonderEffectType(AoJViewerEffect::new));
     public static final BeyonderEffectType TYRANT_AOJ_RECIPIENT = registerEffect("aoj_influence", new BeyonderEffectType(AoJRecipientEffect::new));
     public static final BeyonderEffectType TYRANT_AURA_SOURCE = registerEffect("aura_source", new BeyonderEffectType(AuraSourceEffect::new));
     public static final BeyonderEffectType TYRANT_AURA_RECIPIENT = registerEffect("aura_recipient", new BeyonderEffectType(AuraRecipientEffect::new));

@@ -297,6 +297,11 @@ public class MysticismHelper {
         return getSpiritualityOfTag(getTagFromItem(ModNbtUtils.TAGS.MYSTICISM, stack));
     }
 
+    public static String getPlayerNameOfItem(ItemStack stack){
+        if(!hasTag(ModNbtUtils.TAGS.MYSTICISM, stack)) return "";
+        return getPlayerNameFromTag(getTagFromItem(ModNbtUtils.TAGS.MYSTICISM, stack));
+    }
+
     /**
      * this method adds the player into the items NBT registry, creating the myst tag if it doesnt exist.
      * @param stack

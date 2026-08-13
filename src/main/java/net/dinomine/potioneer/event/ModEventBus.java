@@ -23,6 +23,7 @@ public class ModEventBus {
     public static void onEntityAttributeModification(EntityAttributeModificationEvent event) {
         event.add(EntityType.PLAYER, ModAttributes.RESISTANCE.get());
         event.add(EntityType.PLAYER, ModAttributes.REGENERATION.get());
+        event.add(EntityType.PLAYER, ModAttributes.MINING_SPEED.get());
         event.add(EntityType.PLAYER, ModAttributes.STAMINA.get());
     }
 

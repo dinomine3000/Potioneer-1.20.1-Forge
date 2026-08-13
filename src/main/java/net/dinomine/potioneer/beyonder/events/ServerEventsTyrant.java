@@ -10,6 +10,7 @@ import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
 import net.dinomine.potioneer.beyonder.effects.tyrant.*;
 import net.dinomine.potioneer.beyonder.player.CapProvider;
 import net.dinomine.potioneer.beyonder.player.BeyonderCapability;
+import net.dinomine.potioneer.block.ModBlocks;
 import net.dinomine.potioneer.block.entity.RulePylonBlockEntity;
 import net.dinomine.potioneer.config.PotioneerAbilityConfig;
 import net.dinomine.potioneer.event.*;
@@ -20,6 +21,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -27,12 +29,14 @@ import net.minecraft.world.level.ChunkPos;
 import net.minecraftforge.event.ServerChatEvent;
 import net.minecraftforge.event.entity.EntityMobGriefingEvent;
 import net.minecraftforge.event.entity.item.ItemTossEvent;
+import net.minecraftforge.event.entity.living.LivingBreatheEvent;
 import net.minecraftforge.event.entity.living.LivingDamageEvent;
 import net.minecraftforge.event.entity.living.LivingDestroyBlockEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.level.BlockEvent;
+import net.minecraftforge.event.level.ExplosionEvent;
 import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -117,11 +121,42 @@ public class ServerEventsTyrant {
     }
 
     @SubscribeEvent
+    public static void livingBreathEvent(LivingBreatheEvent event){
+        LivingEntity entity = event.getEntity();
+        if(entity.level().isClientSide()) return;
+        if(entity.hasEffect(MobEffects.WATER_BREATHING)) return;
+        entity.getCapability(CapProvider.BEYONDER_STATS).ifPresent(cap -> {
+            if(cap.getEffectsManager().hasEffect(BeyonderEffects.TYRANT_WATER_AFFINITY)) return;
+            if(cap.getEffectsManager().hasEffect(BeyonderEffects.TYRANT_DROWNING.getEffectId())){
+                int sequenceLevel = cap.getEffectsManager().getEffect(BeyonderEffects.TYRANT_DROWNING.getEffectId()).getSequenceLevel();
+                int multiplier = 1 + (int)((9-sequenceLevel)/2f);
+                event.setCanBreathe(false);
+                event.setConsumeAirAmount(event.getConsumeAirAmount()*multiplier);
+            }
+        });
+    }
+
+    @SubscribeEvent
+    public static void playerBreakBlockEvent(BlockEvent.BreakEvent event){
+        if(event.getPlayer().level().isClientSide) return;
+        if(!PotioneerAbilityConfig.AOJ_PLAYER_GRIEFING.get() && !event.getState().is(ModBlocks.RULE_PYLON.get())){
+            for(Player player: event.getPlayer().level().players()){
+                if(AreaOfJurisdictionAbility.isPosInAOJ(event.getPos(), player, event.getPlayer().level().dimension())){
+                    if(AbilityFunctionHelper.areEntitiesAllies(player, event.getPlayer())) continue;
+                    event.setCanceled(event.isCancelable());
+                    event.setResult(Event.Result.DENY);
+                    return;
+                }
+            }
+        }
+        ruleBroken(RulePylonAbility.Rule.BLOCK_BREAK, event.getPlayer(), event.getPos());
+    }
+
+    @SubscribeEvent
     public static void livingDestroyBlock(LivingDestroyBlockEvent event){
         if(event.getEntity().level().isClientSide()) return;
-        if(
-                (event.getEntity() instanceof Player && !PotioneerAbilityConfig.AOJ_PLAYER_GRIEFING.get())
-            || (!(event.getEntity() instanceof Player) && !PotioneerAbilityConfig.AOJ_MOB_GRIEFING.get())
+        if(event.getEntity() instanceof Player) return;
+        if((!(event.getEntity() instanceof Player) && !PotioneerAbilityConfig.AOJ_MOB_GRIEFING.get())
         ) {
             for(Player player: event.getEntity().level().players()){
                 if(AreaOfJurisdictionAbility.isPosInAOJ(event.getPos(), player, event.getEntity().level().dimension())){

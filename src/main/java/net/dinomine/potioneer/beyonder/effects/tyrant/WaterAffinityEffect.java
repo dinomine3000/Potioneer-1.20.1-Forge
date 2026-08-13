@@ -46,9 +46,9 @@ public class WaterAffinityEffect extends BeyonderEffect {
 //                    player.addEffect(new MobEffectInstance(MobEffects.REGENERATION, 80, 0, false, false));
 //                    cap.requestActiveSpiritualityCost(this.cost/2f);
 //                }
-                if(player.getFoodData().needsFood() && target.getRandom().nextFloat() <= 0.01){
+                /*if(player.getFoodData().needsFood() && target.getRandom().nextFloat() <= 0.01){
                     player.getFoodData().eat(1, 2);
-                }
+                }*/
                 if (sequenceLevel < 9 && target.isInWater() && !target.onGround()) {
                     f *= 5.0F;
                 }

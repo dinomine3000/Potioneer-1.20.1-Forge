@@ -39,8 +39,11 @@ public class EffectEntityCapability {
     }
 
     public void stopEffect(AbstractEffectEntity effect){
+        stopEffect(effect.getId());
+    }
+    public void stopEffect(int effectId){
         if(entity.level().isClientSide()) return;
-        effects.removeIf(eff -> eff.getId() == effect.getId());
+        effects.removeIf(eff -> eff.getId() == effectId);
     }
 
     public void saveNBTData(CompoundTag nbt) {

@@ -3,15 +3,11 @@ package net.dinomine.potioneer.beyonder.player;
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
 import net.dinomine.potioneer.beyonder.ModAttributes;
-import net.dinomine.potioneer.network.PacketHandler;
-import net.dinomine.potioneer.network.messages.PlayerMiningSpeedSync;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
-import net.minecraftforge.event.entity.player.PlayerEvent;
 
 import java.util.EnumMap;
 import java.util.Map;
@@ -22,31 +18,36 @@ public class BeyonderStats {
 
     /**
      * Enum defining all manageable stats, their order in Legacy int[]/float[] arrays,
-     * unique Modifier UUIDs, and attribute mappings.
+     * unique Modifier UUIDs, attribute mappings, and operation types.
      */
     public enum StatType {
-        HEALTH(0, "60377805-43e1-4c53-966b-1f279744716b", "potioneer health mod", () -> Attributes.MAX_HEALTH),
-        DAMAGE(1, "f73a5318-f269-4a29-900a-51d10838c33c", "potioneer attack mod", () -> Attributes.ATTACK_DAMAGE),
-        RESISTANCE(2, "5adc375c-e334-4eba-96a0-52bbc84b5b6c", "potioneer resistance mod", ModAttributes.RESISTANCE::get),
-        STAMINA(3, "d6085650-f859-4600-8af6-357d76104b8c", "potioneer stamina mod", ModAttributes.STAMINA::get),
-        REGENERATION(4, "dbe90f95-df6e-4d52-8bc6-c5c0499a7356", "potioneer regeneration mod", ModAttributes.REGENERATION::get);
-
+        HEALTH(0, "60377805-43e1-4c53-966b-1f279744716b", "potioneer health mod", () -> Attributes.MAX_HEALTH, AttributeModifier.Operation.ADDITION),
+        DAMAGE(1, "f73a5318-f269-4a29-900a-51d10838c33c", "potioneer attack mod", () -> Attributes.ATTACK_DAMAGE, AttributeModifier.Operation.ADDITION),
+        RESISTANCE(2, "5adc375c-e334-4eba-96a0-52bbc84b5b6c", "potioneer resistance mod", ModAttributes.RESISTANCE::get, AttributeModifier.Operation.ADDITION),
+        STAMINA(3, "d6085650-f859-4600-8af6-357d76104b8c", "potioneer stamina mod", ModAttributes.STAMINA::get, AttributeModifier.Operation.ADDITION),
+        REGENERATION(4, "dbe90f95-df6e-4d52-8bc6-c5c0499a7356", "potioneer regeneration mod", ModAttributes.REGENERATION::get, AttributeModifier.Operation.ADDITION),
+        MINING_SPEED_ADD(5, "737cb2b1-6b41-456a-b5cf-56c2d6293118", "potioneer mining add mod", ModAttributes.MINING_SPEED::get, AttributeModifier.Operation.ADDITION),
+        MINING_SPEED_MULT(6, "199b13a6-a93c-4077-9402-e372b77bcf87", "potioneer mining mult mod", ModAttributes.MINING_SPEED::get, AttributeModifier.Operation.MULTIPLY_TOTAL);
+;
         private final int index;
         private final UUID modifierId;
         private final String modifierName;
         private final Supplier<Attribute> attributeSupplier;
+        private final AttributeModifier.Operation operation;
 
-        StatType(int index, String uuid, String name, Supplier<Attribute> attributeSupplier) {
+        StatType(int index, String uuid, String name, Supplier<Attribute> attributeSupplier, AttributeModifier.Operation operation) {
             this.index = index;
             this.modifierId = UUID.fromString(uuid);
             this.modifierName = name;
             this.attributeSupplier = attributeSupplier;
+            this.operation = operation;
         }
 
         public int getIndex() { return index; }
         public UUID getModifierId() { return modifierId; }
         public String getModifierName() { return modifierName; }
         public Attribute getAttribute() { return attributeSupplier.get(); }
+        public AttributeModifier.Operation getOperation() { return operation; }
 
         public static StatType byIndex(int index) {
             for (StatType type : values()) {
@@ -56,7 +57,6 @@ public class BeyonderStats {
         }
     }
 
-    private float miningSpeedMult = 1;
     private boolean mayFly = false;
     private final Map<StatType, Float> stats = new EnumMap<>(StatType.class);
     private BeyonderStats tempEffectStats = null;
@@ -100,9 +100,12 @@ public class BeyonderStats {
         addStat(StatType.STAMINA, i);
     }
 
-    /*public void addKnockbackRes(int i) {
-        addStat(StatType.KNOCKBACK_RES, i);
-    }*/
+    public void addMiningSpeed(float i) {
+        addStat(StatType.MINING_SPEED_ADD, i);
+    }
+    public void multMiningSpeed(float i) {
+        addStat(StatType.MINING_SPEED_MULT, i);
+    }
 
     public void addStat(StatType type, float amount) {
         this.stats.put(type, this.stats.getOrDefault(type, 0f) + amount);
@@ -127,29 +130,7 @@ public class BeyonderStats {
         return mayFly;
     }
 
-    public void setMiningSpeed(float mult) {
-        this.miningSpeedMult = mult;
-    }
-
-    public void getMiningSpeed(PlayerEvent.BreakSpeed event) {
-        event.setNewSpeed(event.getOriginalSpeed() * miningSpeedMult);
-    }
-
-    public float getMiningSpeed() {
-        return miningSpeedMult;
-    }
-
-    public void multMiningSpeed(float mult) {
-        this.miningSpeedMult *= mult;
-    }
-
-    private void updateClientIfMiningSpeedChanged(ServerPlayer player, float newSpeed) {
-        if (player.level().isClientSide()) return;
-        PacketHandler.sendMessageSTC(new PlayerMiningSpeedSync(newSpeed), player);
-    }
-
     public void resetStats() {
-        miningSpeedMult = 1;
         mayFly = false;
         for (StatType type : StatType.values()) {
             stats.put(type, 0f);
@@ -158,14 +139,12 @@ public class BeyonderStats {
 
     public void resetAndApplyStats(LivingEntity entity, boolean heal) {
         resetStats();
-        if (entity instanceof Player player) applyStats(player, heal);
+        if (entity instanceof Player player) {
+            applyStats(player, heal);
+        }
     }
 
     public void setEffects(BeyonderStats otherStats, LivingEntity target) {
-        if (otherStats.miningSpeedMult != getMiningSpeed() && target instanceof ServerPlayer player) {
-            updateClientIfMiningSpeedChanged(player, otherStats.miningSpeedMult);
-        }
-        this.miningSpeedMult = otherStats.miningSpeedMult;
         this.mayFly = otherStats.mayFly;
     }
 
@@ -226,14 +205,14 @@ public class BeyonderStats {
     }
 
     /**
-     * Helper to build dynamic attribute modifiers cleanly.
+     * Helper to build dynamic attribute modifiers using each StatType's designated Operation.
      */
     private static Multimap<Attribute, AttributeModifier> createModifierMap(StatType type, float val) {
         AttributeModifier modifier = new AttributeModifier(
                 type.getModifierId(),
                 type.getModifierName(),
                 val,
-                AttributeModifier.Operation.ADDITION
+                type.getOperation()
         );
         return ImmutableMultimap.of(type.getAttribute(), modifier);
     }
@@ -242,6 +221,5 @@ public class BeyonderStats {
         this.stats.clear();
         this.stats.putAll(beyonderStats.stats);
         this.mayFly = beyonderStats.mayFly;
-        this.miningSpeedMult = beyonderStats.miningSpeedMult;
     }
 }

@@ -29,27 +29,11 @@ public class AoJSourceEffect extends BeyonderEffect {
 
     @Override
     protected void doTick(BeyonderCapability cap, LivingEntity target) {
-        if(target.level().isClientSide()){
-            if(cap.getAbilitiesManager().isEnabledAtLevelOrLower(Abilities.AOJ.getAblId(), getSequenceLevel()) && target.tickCount%20 == 0){
-                List<BlockPos> centers = new ArrayList<>();
-                List<Integer> sides = new ArrayList<>();
-                for(Ability abl: cap.getAbilitiesManager().getAbilities()){
-                    if(abl instanceof IAreaOfJurisdiction aojAbl){
-                        String dimensionLocation = target.level().dimension().location().toString();
-                        centers.addAll(aojAbl.getCenters(dimensionLocation));
-                        sides.addAll(aojAbl.getSides(dimensionLocation));
-                    }
-                }
-                if(!centers.isEmpty())
-                    ParticleMaker.createAreaOfJurisdiction(target.level(), (int)(target.getY()), centers, sides);
-            }
-        } else {
-            if(AreaOfJurisdictionAbility.isEntityInAOJ(target, target)) cap.getEffectsManager().statsHolder.addRegeneration(1);
-            if(target.tickCount%20 == target.getId()%20){
-                target.level().getEntities(target,
-                        new AABB(target.getOnPos().offset(-RADIUS.get(), 0, -RADIUS.get()).atY(-500), target.getOnPos().offset(RADIUS.get(), 0, RADIUS.get()).atY(500)))
-                        .forEach( entity -> applyAojInfluenceToEntity(entity, target));
-            }
+        if(AreaOfJurisdictionAbility.isEntityInAOJ(target, target)) cap.getEffectsManager().statsHolder.addRegeneration(1);
+        if(target.tickCount%20 == target.getId()%20){
+            target.level().getEntities(target,
+                            new AABB(target.getOnPos().offset(-RADIUS.get(), 0, -RADIUS.get()).atY(-500), target.getOnPos().offset(RADIUS.get(), 0, RADIUS.get()).atY(500)))
+                    .forEach( entity -> applyAojInfluenceToEntity(entity, target));
         }
     }
 

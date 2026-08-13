@@ -99,20 +99,6 @@ public class BeyonderEvents {
         });
     }
 
-    @SubscribeEvent
-    public static void livingBreathEvent(LivingBreatheEvent event){
-        LivingEntity entity = event.getEntity();
-        if(entity.hasEffect(MobEffects.WATER_BREATHING)) return;
-        entity.getCapability(CapProvider.BEYONDER_STATS).ifPresent(cap -> {
-            if(cap.getEffectsManager().hasEffect(BeyonderEffects.TYRANT_WATER_AFFINITY)) return;
-            if(cap.getEffectsManager().hasEffect(BeyonderEffects.TYRANT_DROWNING.getEffectId())){
-                int sequenceLevel = cap.getEffectsManager().getEffect(BeyonderEffects.TYRANT_DROWNING.getEffectId()).getSequenceLevel();
-                int multiplier = 1 + (int)((9-sequenceLevel)/2f);
-                event.setCanBreathe(false);
-                event.setConsumeAirAmount(event.getConsumeAirAmount()*multiplier);
-            }
-        });
-    }
 
     @SubscribeEvent
     public static void itemDroppedEvent(ItemTossEvent event){
@@ -536,9 +522,9 @@ public class BeyonderEvents {
 
     @SubscribeEvent
     public static void mine(PlayerEvent.BreakSpeed event){
-        event.getEntity().getCapability(CapProvider.BEYONDER_STATS).ifPresent(stats -> {
-            stats.getBeyonderStats().getMiningSpeed(event);
-        });
+        float ogSpeed = event.getOriginalSpeed();
+        float newSpeed = (float) ModAttributes.getMiningSpeed(event.getEntity());
+        event.setNewSpeed(ogSpeed*newSpeed);
     }
 
 }

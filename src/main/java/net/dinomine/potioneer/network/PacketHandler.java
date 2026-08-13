@@ -60,7 +60,6 @@ public class PacketHandler {
         INSTANCE.registerMessage(i++, AllyGroupSyncMessage.class, AllyGroupSyncMessage::encode, AllyGroupSyncMessage::decode, AllyGroupSyncMessage::handle);
 
         INSTANCE.registerMessage(i++, OpenScreenMessage.class, OpenScreenMessage::encode, OpenScreenMessage::decode, OpenScreenMessage::handle);
-        INSTANCE.registerMessage(i++, PlayerMiningSpeedSync.class, PlayerMiningSpeedSync::encode, PlayerMiningSpeedSync::decode, PlayerMiningSpeedSync::handle);
         INSTANCE.registerMessage(i++, PlayerSTCStatsSync.class, PlayerSTCStatsSync::encode, PlayerSTCStatsSync::decode, PlayerSTCStatsSync::handle);
         INSTANCE.registerMessage(i++, RitualC2STextSync.class, RitualC2STextSync::encode, RitualC2STextSync::decode, RitualC2STextSync::handle);
         INSTANCE.registerMessage(i++, SequenceSTCSyncRequest.class, SequenceSTCSyncRequest::encode, SequenceSTCSyncRequest::decode, SequenceSTCSyncRequest::handle);

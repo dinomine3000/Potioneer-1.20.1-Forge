@@ -63,7 +63,7 @@ public class RulePylonAbility extends Ability implements IAreaOfJurisdiction {
     @Override
     public void passive(BeyonderCapability cap, LivingEntity target) {
         if(target.level().isClientSide) return;
-        if(target.tickCount%(20*3) == target.getId()){
+        if(target.tickCount%60 == target.getId()%60){
             List<BlockPos> center = new ArrayList<>();
             List<Integer> sides = new ArrayList<>();
             List<String> dims = new ArrayList<>();
@@ -131,6 +131,7 @@ public class RulePylonAbility extends Ability implements IAreaOfJurisdiction {
         }
 
         public static final Punishment STRIKE = new Punishment("strike", Component.literal("Strike"), Component.literal("Deal purifying damage."), (target, targetCap, tribunal, lvl) -> {
+            if(target.level().isClientSide()) return;
             target.hurt(PotioneerDamage.strike((ServerLevel) target.level(), (LivingEntity) tribunal), 10);
         });
         public static final Punishment DISABLE = new Punishment("disable", Component.literal("Disable Abilities"), Component.literal("Disable Abilities"), (target, targetCap, tribunal, lvl) -> {

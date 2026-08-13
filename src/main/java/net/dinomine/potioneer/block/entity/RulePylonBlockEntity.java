@@ -320,7 +320,10 @@ public class RulePylonBlockEntity extends BlockEntity implements GeoBlockEntity 
 
     public List<LivingEntity> getEntities() {
         assert level != null;
-        return AbilityFunctionHelper.getLivingEntitiesInChunk(level, new ChunkPos(getBlockPos()));
+        List<LivingEntity> res = new ArrayList<>();
+        for(ChunkPos chunk: claimedChunks)
+            res.addAll(AbilityFunctionHelper.getLivingEntitiesInChunk(level, chunk));
+        return res;
     }
 
     AnimatableInstanceCache cache = new SingletonAnimatableInstanceCache(this);

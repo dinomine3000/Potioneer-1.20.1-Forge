@@ -362,7 +362,7 @@ public class PlayerEffectsManager {
     public void onTick(BeyonderCapability cap, LivingEntity target){
         if(target.level().isClientSide()){
             if(!passives.isEmpty()){
-                passives.forEach(effect -> {
+                new ArrayList<>(passives).forEach(effect -> {
                     effect.effectTick(cap, target);
                 });
             }
@@ -372,7 +372,7 @@ public class PlayerEffectsManager {
         }
         statsHolder.resetStats();
         if(!passives.isEmpty()){
-            passives.forEach(effect -> {
+            new ArrayList<>(passives).forEach(effect -> {
                 effect.effectTick(cap, target);
             });
         }

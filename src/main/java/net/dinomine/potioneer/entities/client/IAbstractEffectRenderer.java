@@ -6,6 +6,7 @@ import net.dinomine.potioneer.entities.custom.effects.AbstractEffectEntity;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.phys.Vec3;
 import org.joml.Vector3f;
 
 public interface IAbstractEffectRenderer {
@@ -15,9 +16,13 @@ public interface IAbstractEffectRenderer {
 
         if (targetEntity instanceof LivingEntity livingTargetEntity) {
             // Interpolate the target's exact position between ticks
-            double targetX = Mth.lerp(pPartialTick, livingTargetEntity.xOld, livingTargetEntity.getX());
+            /*double targetX = Mth.lerp(pPartialTick, livingTargetEntity.xOld, livingTargetEntity.getX());
             double targetY = Mth.lerp(pPartialTick, livingTargetEntity.yOld, livingTargetEntity.getY());
-            double targetZ = Mth.lerp(pPartialTick, livingTargetEntity.zOld, livingTargetEntity.getZ());
+            double targetZ = Mth.lerp(pPartialTick, livingTargetEntity.zOld, livingTargetEntity.getZ());*/
+            Vec3 targetEye = livingTargetEntity.getEyePosition(pPartialTick);
+            double targetX = targetEye.x;
+            double targetY = targetEye.y;
+            double targetZ = targetEye.z;
 
             // Interpolate the effect entity's position between ticks
             double effectX = Mth.lerp(pPartialTick, effectEntity.xOld, effectEntity.getX());

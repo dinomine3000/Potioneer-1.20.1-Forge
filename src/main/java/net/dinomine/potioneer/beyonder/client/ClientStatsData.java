@@ -92,6 +92,8 @@ public class ClientStatsData {
             case DAMAGE -> dmg;
             case RESISTANCE -> Math.round(ModAttributes.getResistance(Minecraft.getInstance().player)*100f)/100f;
             case REGENERATION -> Math.round(ModAttributes.getRegeneration(Minecraft.getInstance().player)*100f)/100f;
+            case MINING_SPEED_ADD -> 0;
+            case MINING_SPEED_MULT -> 0;
         };
     }
 

@@ -499,28 +499,34 @@ public abstract class ModNbtUtils {
      *           "player_0": [UUID_HERE],
      *           "player_1": [UUID_HERE],
      *           "player_2": [UUID_HERE]
+     *      ],
+     *      "names":[
+     *          "name_0": [NAME_HERE],
+     *          "name_1": [NAME_HERE],
+     *          "name_2": [NAME_HERE],
      *      ]
      * }
      */
     public static class MysticismTag{
         public static final String SPIRITUALITY_KEY = "spirituality";
         public static final String PLAYER_KEY = "players";
+        public static final String NAME_KEY = "names";
 
         public static UUID getPlayerIdFromMysticalTag(CompoundTag mysticalTag, Level level, int toConsume){
             CompoundTag spirituality = mysticalTag.getCompound(SPIRITUALITY_KEY);
-            CompoundTag names = mysticalTag.getCompound(PLAYER_KEY);
+            CompoundTag ids = mysticalTag.getCompound(PLAYER_KEY);
             int i = 0;
             int bestIndex = 0;
             float bestSpirituality = -1;
-            UUID bestName = UUID.randomUUID();
+            UUID bestId = UUID.randomUUID();
             while(spirituality.contains("spirituality_" + i)){
                 float testSpirituality = spirituality.getFloat("spirituality_" + i);
                 if(testSpirituality > bestSpirituality){
-                    UUID name = names.getUUID("player_" + i);
-                    if(level == null || level.getPlayerByUUID(name) != null){
+                    UUID id = ids.getUUID("player_" + i);
+                    if(level == null || level.getPlayerByUUID(id) != null){
                         bestIndex = i;
                         bestSpirituality = testSpirituality;
-                        bestName = name;
+                        bestId = id;
                     }
                 }
                 i++;
@@ -528,13 +534,35 @@ public abstract class ModNbtUtils {
             if(bestSpirituality != -1){
                 if(bestSpirituality - toConsume <= 0){
                     spirituality.remove("spirituality_" + bestIndex);
-                    names.remove("player_" + bestIndex);
+                    ids.remove("player_" + bestIndex);
                 } else {
                     spirituality.putFloat("spirituality_" + bestIndex, bestSpirituality - toConsume);
                 }
-                return bestName;
+                return bestId;
             }
             return null;
+        }
+
+        public static String getPlayerNameFromTag(CompoundTag mysticalTag){
+            CompoundTag spirituality = mysticalTag.getCompound(SPIRITUALITY_KEY);
+            CompoundTag names = mysticalTag.getCompound(NAME_KEY);
+            int i = 0;
+            int bestIndex = 0;
+            float bestSpirituality = -1;
+            String bestName = "";
+            while(spirituality.contains("spirituality_" + i)){
+                float testSpirituality = spirituality.getFloat("spirituality_" + i);
+                if(testSpirituality > bestSpirituality){
+                    bestName = names.getString("name_" + i);
+                    bestIndex = i;
+                    bestSpirituality = testSpirituality;
+                }
+                i++;
+            }
+            if(bestSpirituality != -1){
+                return bestName;
+            }
+            return "";
         }
 
         public static CompoundTag updateOrApplyTagInfluence(CompoundTag mystTag, float spiritualityAmount, Player player){
@@ -544,15 +572,16 @@ public abstract class ModNbtUtils {
                 return mystTag;
             }
             CompoundTag spiritualityTag = mystTag.getCompound(SPIRITUALITY_KEY);
-            CompoundTag nameTag = mystTag.getCompound(PLAYER_KEY);
+            CompoundTag idTag = mystTag.getCompound(PLAYER_KEY);
+            CompoundTag nameTag = mystTag.getCompound(NAME_KEY);
             int i = 0;
             boolean flag = false;
             //tries to find a valid index i:
             //an index i is valid if its an index that corresponds to the player
             //if it couldnt find that player, it then searches for an available spot to write their information
             //in the end, you get an i that corresponds to either the players old spot, or a new one if its the first time writing this player in.
-            for(String key: nameTag.getAllKeys()){
-                if(nameTag.getUUID(key).equals(player.getUUID())){
+            for(String key: idTag.getAllKeys()){
+                if(idTag.getUUID(key).equals(player.getUUID())){
                     flag = true;
                     break;
                 }
@@ -569,10 +598,12 @@ public abstract class ModNbtUtils {
             float oldSpirituality = spiritualityTag.getFloat(tagKey);
             if(oldSpirituality + spiritualityAmount <= 0){
                 spiritualityTag.remove(tagKey);
-                nameTag.remove("player_" + i);
+                idTag.remove("player_" + i);
+                nameTag.remove("name_" + i);
             } else {
                 spiritualityTag.putFloat(tagKey, oldSpirituality + spiritualityAmount);
-                nameTag.putUUID("player_" + i, player.getUUID());
+                idTag.putUUID("player_" + i, player.getUUID());
+                nameTag.putString("name_" + i, player.getDisplayName().getString());
             }
             return mystTag;
         }
@@ -600,9 +631,11 @@ public abstract class ModNbtUtils {
         public static CompoundTag generateNewMysticismTag(){
             CompoundTag mystTag = new CompoundTag();
             CompoundTag spiritualityTag = new CompoundTag();
+            CompoundTag idTag = new CompoundTag();
             CompoundTag nameTag = new CompoundTag();
             mystTag.put(SPIRITUALITY_KEY, spiritualityTag);
-            mystTag.put(PLAYER_KEY, nameTag);
+            mystTag.put(PLAYER_KEY, idTag);
+            mystTag.put(NAME_KEY, nameTag);
             return mystTag;
         }
     }

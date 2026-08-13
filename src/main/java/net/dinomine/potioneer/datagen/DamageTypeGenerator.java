@@ -27,7 +27,8 @@ public class DamageTypeGenerator extends DamageTypeTagsProvider {
         tag(DamageTypeTags.BYPASSES_RESISTANCE).add(LOW_SANITY, ASTEROID, CHRYON_PIERCE, CRIT, STRIKE, EXECUTION);
         tag(DamageTypeTags.BYPASSES_EFFECTS).add(LOW_SANITY, ASTEROID, CHRYON_PIERCE, CRIT, STRIKE, EXECUTION);
         tag(DamageTypeTags.BYPASSES_ENCHANTMENTS).add(LOW_SANITY, CHRYON_PIERCE, CRIT, EXECUTION);
-        tag(DamageTypeTags.BYPASSES_COOLDOWN).add(LOW_SANITY, CHRYON_PIERCE, CRIT, STRIKE, EXECUTION);
+        //bypasses damage cooldown
+        tag(DamageTypeTags.BYPASSES_COOLDOWN).add(LOW_SANITY, CHRYON_PIERCE, CRIT, EXECUTION);
         tag(DamageTypeTags.ALWAYS_HURTS_ENDER_DRAGONS).add(LOW_SANITY, CRIT, STRIKE, EXECUTION);
 //        tag(DamageTypeTags.AVOIDS_GUARDIAN_THORNS).add();
         //eventually add Annihilation-type damage sources to the bypasses invulnerability

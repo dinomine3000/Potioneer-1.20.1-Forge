@@ -2,7 +2,9 @@ package net.dinomine.potioneer.beyonder.effects.tyrant;
 
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffect;
 import net.dinomine.potioneer.beyonder.player.BeyonderCapability;
+import net.dinomine.potioneer.beyonder.player.CapProvider;
 import net.dinomine.potioneer.util.ParticleMaker;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -11,11 +13,12 @@ import net.minecraft.world.entity.LivingEntity;
 
 public class DrowningEffect extends BeyonderEffect {
 
+    private int effId = 0;
     @Override
     public void onAcquire(BeyonderCapability cap, LivingEntity target, boolean fromLoading) {
         if(fromLoading) return;
         target.level().playSound(null, target.getOnPos(), SoundEvents.AMBIENT_UNDERWATER_ENTER, SoundSource.NEUTRAL, 1, 1);
-        ParticleMaker.createWaterBlockEffectForPlayer(target, target.level(), maxLife);
+        effId = ParticleMaker.createWaterBlockEffectForPlayer(target, target.level(), maxLife);
     }
 
     @Override
@@ -31,5 +34,20 @@ public class DrowningEffect extends BeyonderEffect {
     @Override
     public void stopEffects(BeyonderCapability cap, LivingEntity target) {
         if(target.hasEffect(MobEffects.MOVEMENT_SLOWDOWN)) target.removeEffect(MobEffects.MOVEMENT_SLOWDOWN);
+        target.getCapability(CapProvider.EFFECT_ENTITIES).ifPresent(effCap -> {
+            effCap.stopEffect(effId);
+        });
+    }
+
+    @Override
+    public void toNbt(CompoundTag nbt) {
+        super.toNbt(nbt);
+        nbt.putInt("entityId", effId);
+    }
+
+    @Override
+    public void loadNBTData(CompoundTag nbt) {
+        super.loadNBTData(nbt);
+        effId = nbt.getInt("entityId");
     }
 }
