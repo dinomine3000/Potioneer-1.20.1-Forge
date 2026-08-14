@@ -89,5 +89,16 @@
     "sounds": [
       "potioneer:fail_cast"
     ]
+  },
+  "jab": {
+    "sounds": [
+      "potioneer:jab"
+    ]
+  },
+  "jump": {
+    "sounds": [
+      "potioneer:jump1",
+      "potioneer:jump2"
+    ]
   }
 }

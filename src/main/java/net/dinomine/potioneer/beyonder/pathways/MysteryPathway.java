@@ -77,18 +77,17 @@ public class MysteryPathway extends BeyonderPathway {
             case 6:
             case 7:
                 abilities.add(Abilities.AIR_BULLET.create(atSequenceLevel));
-                abilities.add(Abilities.PAPER_FIGURINE_SUBSTITUTE.create(atSequenceLevel));
-                abilities.add(Abilities.PANACEA.create(atSequenceLevel));
-                abilities.add(Abilities.PUSH.create(atSequenceLevel));
-            case 8:
-                abilities.add(Abilities.CANCEL_FALL_DAMAGE.create(atSequenceLevel));
-                abilities.add(Abilities.STEP_UP.create(atSequenceLevel));
-                abilities.add(Abilities.LEAP.create(atSequenceLevel));
-            case 9:
-                abilities.add(Abilities.EXTENDED_REACH.create(atSequenceLevel));
-                abilities.add(Abilities.DOOR_OPENING.create(atSequenceLevel));
-                abilities.add(Abilities.MYSTERY_REGEN.create(atSequenceLevel));
                 abilities.add(Abilities.INVISIBILITY.create(atSequenceLevel));
+            case 8:
+                abilities.add(Abilities.STEP_UP.create(atSequenceLevel));
+                abilities.add(Abilities.GYMNASTICS.create(atSequenceLevel));
+                abilities.add(Abilities.DODGE.create(atSequenceLevel));
+            case 9:
+                //abilities.add(Abilities.EXTENDED_REACH.create(atSequenceLevel));
+                abilities.add(Abilities.DOOR_OPENING.create(atSequenceLevel));
+                abilities.add(Abilities.MYSTERY_JAB.create(atSequenceLevel));
+                abilities.add(Abilities.MYSTERY_SAP.create(atSequenceLevel));
+                abilities.add(Abilities.THEFT.create(atSequenceLevel));
         }
         Collections.reverse(abilities);
         return abilities;
@@ -104,12 +103,12 @@ public class MysteryPathway extends BeyonderPathway {
         Map<BeyonderStats.StatType, Float> stats = new EnumMap<>(BeyonderStats.StatType.class);
 
         switch (sequence % 10) {
-            case 9 -> setStats(stats, 0, 0, 0, 5);
-            case 8 -> setStats(stats, 2, 0, 0, 4.5f);
-            case 7 -> setStats(stats, 4, 2, 1, 4f);
-            case 6 -> setStats(stats, 6, 4, 2, 3.5f);
-            case 5 -> setStats(stats, 10, 8, 8, 3f);
-            default -> setStats(stats, 12, 12, 10, 2.5f);
+            case 9 -> setStats(stats, 0, 0, 0, 6, 0.25f);
+            case 8 -> setStats(stats, 2, 0, 0, 5.5f, 0.25f);
+            case 7 -> setStats(stats, 4, 2, 1, 5f, 0.5f);
+            case 6 -> setStats(stats, 6, 4, 2, 4.5f, 0.5f);
+            case 5 -> setStats(stats, 10, 8, 8, 4f, 0.75f);
+            default -> setStats(stats, 12, 12, 10, 3.5f, 0.75f);
         }
         return stats;
     }

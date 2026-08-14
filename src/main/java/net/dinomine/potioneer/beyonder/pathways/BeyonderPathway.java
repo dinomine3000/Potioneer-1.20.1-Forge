@@ -90,12 +90,17 @@ public abstract class BeyonderPathway {
 
     public abstract String getSequenceNameFromId(int sequenceLevel, boolean show);
 
+    /**
+     * given values are added, and serve as base value for the stats class
+     * @param map
+     * @param hp
+     * @param atk
+     * @param res
+     * @param stamina
+     * @return
+     */
     protected Map<BeyonderStats.StatType, Float> setStats(Map<BeyonderStats.StatType, Float> map, float hp, float atk, float res, float stamina) {
-        map.put(BeyonderStats.StatType.HEALTH, hp);
-        map.put(BeyonderStats.StatType.DAMAGE, atk);
-        map.put(BeyonderStats.StatType.RESISTANCE, res);
-        map.put(BeyonderStats.StatType.STAMINA, stamina);
-        return map;
+        return setStats(map, hp, atk, res, stamina, 0);
     }
     protected Map<BeyonderStats.StatType, Float> setStats(Map<BeyonderStats.StatType, Float> map, float hp, float atk, float res, float stamina, float regeneration) {
         map.put(BeyonderStats.StatType.HEALTH, hp);

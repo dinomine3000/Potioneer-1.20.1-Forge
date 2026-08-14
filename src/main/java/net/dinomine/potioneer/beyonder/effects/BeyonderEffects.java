@@ -4,10 +4,7 @@ package net.dinomine.potioneer.beyonder.effects;
 import net.dinomine.potioneer.beyonder.effects.misc.BeyonderCogitationEffect;
 import net.dinomine.potioneer.beyonder.effects.misc.BeyonderHungerRegenEffect;
 import net.dinomine.potioneer.beyonder.effects.misc.BlankEffect;
-import net.dinomine.potioneer.beyonder.effects.mystery.BeyonderExtendedReachEffect;
-import net.dinomine.potioneer.beyonder.effects.mystery.BeyonderFallDmgCancelEffect;
-import net.dinomine.potioneer.beyonder.effects.mystery.BeyonderRegenEffect;
-import net.dinomine.potioneer.beyonder.effects.mystery.BeyonderStepUpEffect;
+import net.dinomine.potioneer.beyonder.effects.mystery.*;
 import net.dinomine.potioneer.beyonder.effects.paragon.BeyonderCraftingSpiritualityEffect;
 import net.dinomine.potioneer.beyonder.effects.paragon.BeyonderDurabilityEffect;
 import net.dinomine.potioneer.beyonder.effects.paragon.BeyonderXpReduceEffect;
@@ -24,12 +21,8 @@ public class BeyonderEffects {
     private static final HashMap<String, BeyonderEffectType> EFFECTS = new HashMap<>();
 
     public static final BeyonderEffectType COGITATION = registerEffect("cogitation", new BeyonderEffectType(BeyonderCogitationEffect::new));
-    public static final BeyonderEffectType MYSTERY_FALL_NEGATE = registerEffect("negate_fall", new BeyonderEffectType(BeyonderFallDmgCancelEffect::new));
-    public static final BeyonderEffectType MYSTERY_FIGURINE = registerEffect("figurine_substitute", new BeyonderEffectType(BlankEffect::new));
-    public static final BeyonderEffectType MYSTERY_INVISIBLE = registerEffect("invisibility", new BeyonderEffectType(BlankEffect::new));
-    public static final BeyonderEffectType MYSTERY_REACH = registerEffect("extended_reach", new BeyonderEffectType(BeyonderExtendedReachEffect::new));
-    public static final BeyonderEffectType MYSTERY_REGEN = registerEffect("spirituality_regen", new BeyonderEffectType(BeyonderRegenEffect::new));
-    public static final BeyonderEffectType MYSTERY_STEP_UP = registerEffect("step_up", new BeyonderEffectType(BeyonderStepUpEffect::new));
+
+    //Wheel of Fortune
     public static final BeyonderEffectType WHEEL_CALAMITY = registerEffect("calamity", new BeyonderEffectType(CalamityEffect::new));
     public static final BeyonderEffectType WHEEL_FORTUNE = registerEffect("fortune", new BeyonderEffectType(FortuneEffect::new));
     public static final BeyonderEffectType WHEEL_SILK = registerEffect("silk", new BeyonderEffectType(SilkTouchEffect::new));
@@ -52,6 +45,8 @@ public class BeyonderEffects {
     public static final BeyonderEffectType WHEEL_DAMAGE_RECORDING = registerEffect("damage_recording", new BeyonderEffectType(DamageRecordingEffect::new));
     public static final BeyonderEffectType WHEEL_BAD_LUCK = registerEffect("bad_luck", new BeyonderEffectType(TempBadLuckEffect::new));
     public static final BeyonderEffectType WHEEL_CHAOTIC_LUCK = registerEffect("chaotic_luck", new BeyonderEffectType(ChaoticLuckEffect::new));
+
+    //Tyrant
     public static final BeyonderEffectType TYRANT_WATER_AFFINITY = registerEffect("water_affinity", new BeyonderEffectType(WaterAffinityEffect::new));
     public static final BeyonderEffectType TYRANT_OCEAN_ORDER = registerEffect("ocean_order", new BeyonderEffectType(OceanOrderEffect::new));
     public static final BeyonderEffectType TYRANT_LIGHTNING_TARGET = registerEffect("lightning_target", new BeyonderEffectType(LightningTargetEffect::new));
@@ -81,6 +76,18 @@ public class BeyonderEffects {
     public static final BeyonderEffectType TYRANT_BRIBE_RECIPIENT = registerEffect("bribe_recipient", new BeyonderEffectType(BribeRecipientEffect::new));
     public static final BeyonderEffectType TYRANT_AURA_DOWNSIDE = registerEffect("d_aura", new BeyonderEffectType(AuraDownsideEffect::new));
     public static final BeyonderEffectType TYRANT_MIST_DOWNSIDE = registerEffect("d_mist", new BeyonderEffectType(MistDownsideEffect::new));
+
+    //Mystery
+    public static final BeyonderEffectType MYSTERY_SAP = registerEffect("mystery_sap", new BeyonderEffectType(SapEffect::new));
+    public static final BeyonderEffectType MYSTERY_JAB = registerEffect("mystery_jab", new BeyonderEffectType(JabEffect::new));
+    public static final BeyonderEffectType MYSTERY_FIGURINE = registerEffect("figurine_substitute", new BeyonderEffectType(BlankEffect::new));
+    public static final BeyonderEffectType MYSTERY_INVISIBLE = registerEffect("invisibility", new BeyonderEffectType(BlankEffect::new));
+    public static final BeyonderEffectType MYSTERY_REACH = registerEffect("extended_reach", new BeyonderEffectType(BeyonderExtendedReachEffect::new));
+    public static final BeyonderEffectType MYSTERY_STEP_UP = registerEffect("step_up", new BeyonderEffectType(StepUpEffect::new));
+    public static final BeyonderEffectType MYSTERY_GYMNASTICS = registerEffect("gymnastics", new BeyonderEffectType(GymnasticsEffect::new));
+    public static final BeyonderEffectType MYSTERY_DODGE = registerEffect("dodge", new BeyonderEffectType(DodgeEffect::new));
+
+    //Red Priest
     public static final BeyonderEffectType RED_FIRE_AURA = registerEffect("fire_aura", new BeyonderEffectType(BeyonderFireAuraEffect::new));
     public static final BeyonderEffectType RED_FIRE_BUFF = registerEffect("fire_buff", new BeyonderEffectType(BeyonderFireBuffEffect::new));
     public static final BeyonderEffectType RED_LIGHT_BUFF = registerEffect("light_buff", new BeyonderEffectType(BeyonderLightBuffEffect::new));
@@ -146,7 +153,7 @@ public class BeyonderEffects {
         List<BeyonderEffectType> typeList = switch (prefix.toLowerCase()) {
             case "wheel" -> List.of(WHEEL_FORTUNE, WHEEL_SILK, WHEEL_MINING);
             case "tyrant" -> List.of(TYRANT_LIGHTNING_TARGET, TYRANT_WATER_AFFINITY);
-            case "mystery" -> List.of(MYSTERY_INVISIBLE, MYSTERY_REACH, MYSTERY_STEP_UP, MYSTERY_FALL_NEGATE);
+            case "mystery" -> List.of(MYSTERY_INVISIBLE, MYSTERY_STEP_UP);
             case "red" -> List.of(RED_FIRE_BUFF, RED_LIGHT_BUFF, RED_PROFICIENCY, RED_PURIFICATION);
             case "paragon" -> List.of(PARAGON_CRAFTING, PARAGON_XP, PARAGON_REGEN);
             default -> new ArrayList<>();

@@ -24,6 +24,7 @@ import java.util.function.Supplier;
 public class GeneralAreaEffectMessage {
     ParticleMaker.Preset preset;
     public Vector3f centerPos;
+    public Vector3f speed = new Vector3f();
     public double radius;
 
     public GeneralAreaEffectMessage(ParticleMaker.Preset preset, Vector3f pos, double radius){
@@ -31,18 +32,26 @@ public class GeneralAreaEffectMessage {
         this.centerPos = pos;
         this.radius = radius;
     }
+    public GeneralAreaEffectMessage(ParticleMaker.Preset preset, Vector3f pos, Vector3f speed, double radius){
+        this.preset = preset;
+        this.centerPos = pos;
+        this.radius = radius;
+        this.speed = speed;
+    }
 
     public static void encode(GeneralAreaEffectMessage msg, FriendlyByteBuf buffer){
         BufferUtils.writeStringToBuffer(msg.preset.name(), buffer);
         buffer.writeDouble(msg.radius);
         buffer.writeVector3f(msg.centerPos);
+        buffer.writeVector3f(msg.speed);
     }
 
     public static GeneralAreaEffectMessage decode(FriendlyByteBuf buffer){
         ParticleMaker.Preset preset = ParticleMaker.Preset.valueOf(BufferUtils.readString(buffer));
         double radius = buffer.readDouble();
         Vector3f pos = buffer.readVector3f();
-        return new GeneralAreaEffectMessage(preset, pos, radius);
+        Vector3f speed = buffer.readVector3f();
+        return new GeneralAreaEffectMessage(preset, pos, speed, radius);
     }
 
 
@@ -83,6 +92,9 @@ class GeneralAreaEffectClient
                     break;
                 case SMALL_MIST:
                     ParticleMaker.waterMist(level, new Vec3(msg.centerPos), (int) msg.radius);
+                    break;
+                case WHOOOSH:
+                    ParticleMaker.doAirWhoosh(level, new Vec3(msg.centerPos), new Vec3(msg.speed));
                     break;
             }
         }

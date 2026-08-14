@@ -202,7 +202,7 @@ public class BeyonderCapability {
 
     public void onFoodEat(ItemStack item, LivingEntity target) {
         if(item.getFoodProperties(target) == null) return;
-        changeSpirituality(item.getFoodProperties(target).getNutrition() * getMaxSpirituality()/160f);
+        regenerateSpirituality(item.getFoodProperties(target).getNutrition() * getMaxSpirituality()/80f);
     }
 
     public void setUnlimitedSpirituality(int duration){
@@ -220,6 +220,11 @@ public class BeyonderCapability {
 
     public float getSpiritualityPercent(){
         return getSpirituality() / getMaxSpirituality();
+    }
+
+    public void regenerateSpirituality(float val){
+        changeSpirituality(val);
+        changeSanity((val*100/maxSpirituality)/spiritualityToSanityScalar.apply(entity));
     }
 
     public void changeSpirituality(float val){

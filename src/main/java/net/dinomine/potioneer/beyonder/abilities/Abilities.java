@@ -17,7 +17,6 @@ import net.minecraft.world.effect.MobEffects;
 
 import java.util.HashMap;
 import java.util.LinkedHashSet;
-import java.util.Set;
 import java.util.UUID;
 import java.util.function.Function;
 
@@ -275,56 +274,48 @@ public class Abilities {
 
 
     // -------------------------- MYSTERY ---------------------------------------------------
-    public static final AbilityFactory AIR_BULLET = registerAbility("air_bullet",
-            AirBulletAbility::new, 1, 2, i -> 60 + 10*(9-i));
+
+    public static final AbilityFactory MYSTERY_SAP = registerAbility("mystery_sap",
+            (Integer sequenceLevel) -> PassiveAbility.createAbility(sequenceLevel, BeyonderEffects.MYSTERY_SAP,
+                            (ignored) -> "mystery_sap")
+                    .canFlip().enabledOnAcquire(),
+            0, 2, 0);
+
+    public static final AbilityFactory MYSTERY_JAB = registerAbility("mystery_jab",
+            (Integer sequenceLevel) -> PassiveAbility.createAbility(sequenceLevel, BeyonderEffects.MYSTERY_JAB,
+                            (ignored) -> "mystery_jab")
+                    .canFlip().enabledOnAcquire().withCost(5),
+            3, 2, 0);
 
     public static final AbilityFactory DOOR_OPENING = registerAbility("door_opening",
-            DoorOpeningAbility::new, 80, 2, 20);
+            DoorOpeningAbility::new, 2, 2, 15);
 
-    public static final AbilityFactory PAPER_FIGURINE_SUBSTITUTE = registerAbility("figurine_substitute",
-            (Integer sequenceLevel) -> PassiveAbility.createAbility(sequenceLevel, BeyonderEffects.MYSTERY_FIGURINE,
-                            (ignored) -> "figurine_substitute")
-                    .canFlip().enabledOnAcquire().withCost(level -> 30 + 10*(9-level)),
-            224, 2, 0);
-
-    public static final AbilityFactory INVISIBILITY = registerAbility("invisibility",
-            (Integer sequenceLevel) -> TimedPassiveAbility.createTimed(sequenceLevel, BeyonderEffects.MYSTERY_INVISIBLE,
-                            (ignored) -> "invisibility", level -> 2*40*((9-level)*10 + 5))
-                    .canFlip().withThreshold(0.15f),
-            128, 2, 0);
-
-    public static final AbilityFactory LEAP = registerAbility("leap",
-            LeapAbility::new, 200, 2, 15);
-
-    public static final AbilityFactory PANACEA = registerAbility("panacea",
-            PanaceaAbility::new, 272, 2, 15);
-
-    public static final AbilityFactory PUSH = registerAbility("push_pull",
-            PushAbility::new, 296, 2, 40).hasSecondaryFunction();
-
-    public static final AbilityFactory EXTENDED_REACH = registerAbility("extended_reach",
-            (Integer sequenceLevel) -> PassiveAbility.createAbility(sequenceLevel, BeyonderEffects.MYSTERY_REACH,
-                            (ignored) -> "extended_reach")
-                    .canFlip().enabledOnAcquire(),
-            104, 2, 0);
-
-    public static final AbilityFactory MYSTERY_REGEN = registerAbility("spirituality_regen",
-            (Integer sequenceLevel) -> PassiveAbility.createAbility(sequenceLevel, BeyonderEffects.MYSTERY_REGEN,
-                            (ignored) -> "spirituality_regen")
-                    .canFlip().enabledOnAcquire(),
-            32, 2, 0);
+    public static final AbilityFactory THEFT = registerAbility("theft",
+            TheftAbility::new, 80, 2, 15);
 
     public static final AbilityFactory STEP_UP = registerAbility("step_up",
             (Integer sequenceLevel) -> PassiveAbility.createAbility(sequenceLevel, BeyonderEffects.MYSTERY_STEP_UP,
                             (ignored) -> "step_up")
                     .canFlip().enabledOnAcquire(),
-            152, 2, 0);
+            5, 2, 0);
 
-    public static final AbilityFactory CANCEL_FALL_DAMAGE = registerAbility("negate_fall",
-            (Integer sequenceLevel) -> PassiveAbility.createAbility(sequenceLevel, BeyonderEffects.MYSTERY_FALL_NEGATE,
-                            (ignored) -> "negate_fall")
-                    .enabledOnAcquire(),
-            32, 2, 0);
+    public static final AbilityFactory GYMNASTICS = registerAbility("gymnastics",
+            GymnasticsAbility::new,
+            5, 2, 0);
+
+    public static final AbilityFactory DODGE = registerAbility("dodge",
+            lvl -> PassiveAbility.createAbility(lvl, BeyonderEffects.MYSTERY_DODGE, ign -> "dodge")
+                    .canFlip().withCooldown(20*5, PassiveAbility.CooldownTrigger.ON_REMOVE).withActives(true, true).withCost(5),
+            5, 2, 15);
+
+    public static final AbilityFactory AIR_BULLET = registerAbility("air_bullet",
+            AirBulletAbility::new, 1, 2, 60);
+
+    public static final AbilityFactory INVISIBILITY = registerAbility("invisibility",
+            (Integer sequenceLevel) -> TimedPassiveAbility.createTimed(sequenceLevel, BeyonderEffects.MYSTERY_INVISIBLE,
+                            (ignored) -> "invisibility", level -> 2*40*((9-level)*10 + 5))
+                    .canFlip().withThreshold(0.15f),
+            4, 2, 0);
 
     // -------------------------- RED PRIEST ---------------------------------------------------
 

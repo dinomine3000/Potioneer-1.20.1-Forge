@@ -4,6 +4,7 @@ import net.dinomine.potioneer.beyonder.abilities.AbilityFunctionHelper;
 import net.dinomine.potioneer.beyonder.damages.PotioneerDamage;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffect;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
+import net.dinomine.potioneer.beyonder.effects.mystery.DodgeEffect;
 import net.dinomine.potioneer.beyonder.pathways.WheelOfFortunePathway;
 import net.dinomine.potioneer.beyonder.player.BeyonderCapability;
 import net.dinomine.potioneer.sound.ModSounds;
@@ -99,26 +100,10 @@ public class LuckEffect extends BeyonderEffect {
         //Dodge Damage received
         if(!calledOnVictim || event.getSource().is(PotioneerDamage.Tags.ABSOLUTE) || event.getSource().is(PotioneerDamage.Tags.MENTAL)) return false;
 
-        Entity dmgSrc = event.getSource().getDirectEntity();
-        if(dmgSrc == null) dmgSrc = attacker;
-        if(dmgSrc == null) return false;
 
         if(victimCap.getLuckManager().passesLuckCheck(sequenceLevel < 5 ? 0.4f : dodgeChance, dodgeLuckCost, dodgeLuckGain, victim.getRandom())){
+            if(!DodgeEffect.doDodge(victim, attacker, event, dodgeMag)) return false;
             victimCap.getCharacteristicManager().progressActing(WheelOfFortunePathway.LUCK_ACTING_INC, 6);
-            RandomSource random = victim.getRandom();
-            victim.level().playSound(null, victim.getOnPos(), ModSounds.WHOOOOSH.get(), SoundSource.PLAYERS, 0.6f, (float) random.triangle(1, 0.2));
-            Vec3 attackDirection = new Vec3(dmgSrc.getX() - victim.getX(), 0, dmgSrc.getZ() - victim.getZ());
-            attackDirection = attackDirection.normalize();
-//            Vec3 orthogonal = victim.getLookAngle();
-            Vec3 dodgeDir = PotioneerMathHelper.getRandomOrthogonalConstantY(attackDirection, random.nextBoolean(), dodgeMag).offsetRandom(random, 0.2f);
-            if(victim.getDeltaMovement().length() > 0.1){
-                if(dodgeDir.dot(victim.getDeltaMovement().scale(1)) < 0)
-                    dodgeDir = dodgeDir.scale(-1);
-            }
-
-            AbilityFunctionHelper.pushEntity(victim, dodgeDir);
-
-            if(event.getSource().getDirectEntity().is(new Arrow(victim.level(), 0, 0, 0))) event.getSource().getDirectEntity().kill();
             return true;
         }
         return false;

@@ -40,6 +40,8 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.common.ForgeMod;
 
 import javax.annotation.Nullable;
@@ -288,6 +290,20 @@ public class AbilityFunctionHelper {
 
     public static void addAttributeTo(LivingEntity player, Multimap<Attribute, AttributeModifier> pMap){
         player.getAttributes().addTransientAttributeModifiers(pMap);
+    }
+
+    public static boolean isEntityStandingOnGround(int breathingRoom, LivingEntity target, boolean readLiquidAsSolid){
+        BlockPos pos = target.getOnPos();
+        for(int i = 0; i <= breathingRoom; i++){
+            boolean liquid = !target.level().getFluidState(pos).isEmpty();
+            if(readLiquidAsSolid && liquid) return true;
+            VoxelShape collisionShape = target.level().getBlockState(pos).getCollisionShape(target.level(),pos, CollisionContext.of(target));
+            boolean empty = collisionShape.isEmpty();
+            boolean air = target.level().getBlockState(pos).isAir();
+            if(!empty && !air) return true;
+            pos = pos.below();
+        }
+        return false;
     }
 
     //Credit to the create mod

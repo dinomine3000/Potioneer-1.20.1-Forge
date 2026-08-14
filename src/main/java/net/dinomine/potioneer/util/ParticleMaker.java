@@ -196,7 +196,16 @@ public class ParticleMaker {
         SMALL_MIST,
         WATER_TRAP,
         WATER_IMPLOSION,
-        WATER_JET
+        WATER_JET,
+        WHOOOSH,
+    }
+
+    public static void doAirWhoosh(Level level, Vec3 centerPos, Vec3 speed){
+        for(int i = level.getRandom().nextInt(4); i < 7; i++){
+            level.addParticle(ParticleTypes.POOF,
+                    level.getRandom().triangle(centerPos.x, 0.2), centerPos.y, level.getRandom().triangle(centerPos.z, 0.2),
+                    speed.x, speed.y, speed.z);
+        }
     }
 
     public static void waterMist(Level level, Vec3 centerPos, int radius){

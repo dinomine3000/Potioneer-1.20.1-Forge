@@ -63,7 +63,7 @@ public class BeyonderPotionItem extends PotionItem implements GeoItem, GeoTintab
 
     @Override
     public void inventoryTick(ItemStack pStack, Level pLevel, Entity pEntity, int pSlotId, boolean pIsSelected) {
-        //ModTags.PotionInfoTag.tickPotionSpoilTime(pStack, pLevel.getGameTime());
+        ModNbtUtils.PotionInfoTag.tickPotionSpoilTime(pStack, pLevel.getGameTime());
         super.inventoryTick(pStack, pLevel, pEntity, pSlotId, pIsSelected);
     }
 

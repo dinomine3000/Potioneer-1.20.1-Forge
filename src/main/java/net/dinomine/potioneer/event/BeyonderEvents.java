@@ -465,17 +465,6 @@ public class BeyonderEvents {
         });
     }
 
-
-    @SubscribeEvent
-    public static void onFall(LivingFallEvent event){
-        event.getEntity().getCapability(CapProvider.BEYONDER_STATS).ifPresent(cap -> {
-            if(cap.getEffectsManager().hasEffect(BeyonderEffects.MYSTERY_FALL_NEGATE.getEffectId())){
-                event.setDamageMultiplier(0);
-//                cap.getEffectsManager().removeEffect(BeyonderEffects.MYSTERY_FALL_NEGATE.getEffectId());
-            }
-        });
-    }
-
     @SubscribeEvent
     public static void onBlockBroken(BlockEvent.BreakEvent event){
         Player player = event.getPlayer();

@@ -34,13 +34,12 @@ public class GeneralProhibitionEffect extends BeyonderEffect {
     @Override
     protected void doTick(BeyonderCapability cap, LivingEntity target) {
         if (type.equals("flying")) {
-            VoxelShape blockBelow = target.level().getBlockState(target.getOnPos().below()).getCollisionShape(target.level(), target.getOnPos().below(), CollisionContext.of(target));
-            if (blockBelow.isEmpty() && target.mainSupportingBlockPos.isEmpty() && !target.isInWater() && !target.isInLava()) {
+            if (target instanceof Player player) player.getAbilities().flying = false;
+            if(!AbilityFunctionHelper.isEntityStandingOnGround(1, target, true)){
                 AbilityFunctionHelper.pushEntity(target, new Vec3(0, -1, 0));
                 target.fallDistance += 5;
                 target.setOnGround(false);
             }
-            if (target instanceof Player player) player.getAbilities().flying = false;
         }
         //target.setOnGround(true);
     }

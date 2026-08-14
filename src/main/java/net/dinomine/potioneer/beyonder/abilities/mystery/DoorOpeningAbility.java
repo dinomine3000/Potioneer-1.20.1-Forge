@@ -29,7 +29,7 @@ public class DoorOpeningAbility extends Ability {
     public DoorOpeningAbility(int sequence){
 //        this.info = new AbilityInfo(57, 80, "Door Opening", 20+sequence, , 20, "door_opening");
         super(sequence);
-        setCost(level -> 7 + 5*(10-level));
+        withCost(5);
     }
 
     @Override
@@ -42,8 +42,8 @@ public class DoorOpeningAbility extends Ability {
         HitResult block = target.pick(target.getAttribute(ForgeMod.BLOCK_REACH.get()).getValue() + 0.5, 0f, false);
         if(block instanceof BlockHitResult rayTrace){
             BlockState blockTar = level.getBlockState(rayTrace.getBlockPos());
-            if(blockTar.is(BlockTags.DOORS)){
-                ((DoorBlock) blockTar.getBlock()).setOpen(null, level, blockTar, rayTrace.getBlockPos(), !blockTar.getValue(OPEN));
+            if(blockTar.is(BlockTags.DOORS) && blockTar.getBlock() instanceof DoorBlock door){
+                door.setOpen(null, level, blockTar, rayTrace.getBlockPos(), !blockTar.getValue(OPEN));
                 cap.requestActiveSpiritualityCost(cost());
                 return true;
             }
@@ -74,7 +74,7 @@ public class DoorOpeningAbility extends Ability {
             i++;
         }
         if(target instanceof Player player){
-            player.displayClientMessage(Component.literal("Wall is too thick for your level."), true);
+            player.displayClientMessage(Component.translatable("message.potioneer.door_opening_too_thick"), true);
         }
         return false;
     }

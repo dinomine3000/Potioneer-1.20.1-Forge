@@ -742,6 +742,7 @@
   "ability_name.potioneer.door_opening": "Door Opening",
   "abilityoption.potioneer.amplify_ability": "Amplify/Weaken Abilities",
   "abilityoption.potioneer.amplify_stats": "Amplify/Weaken Stats",
+
   "message.potioneer.no_pick_saved": "You have no pickaxe saved.",
   "message.potioneer.saved_pickaxe": "Saved pickaxe %s.",
   "message.potioneer.blocked_ability": "%s has been disabled.",
@@ -751,5 +752,6 @@
   "message.potioneer.bribe_set_weakening": "Bribe set to Weakening",
   "message.potioneer.bribe_set_truce": "Bribe set to Truce",
   "message.potioneer.bribe_set_disorder": "Bribe set to Disorder",
-  "luck.potioneer.event_cast": "You feel a dire omen..."
+  "luck.potioneer.event_cast": "You feel a dire omen...",
+  "message.potioneer.door_opening_too_thick": "Wall is too thick for your level."
 }

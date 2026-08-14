@@ -1,6 +1,12 @@
 package net.dinomine.potioneer.config;
 
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.effect.MobEffect;
 import net.minecraftforge.common.ForgeConfigSpec;
+import net.minecraftforge.registries.ForgeRegistries;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class PotioneerAbilityConfig {
     public static final ForgeConfigSpec.Builder BUILDER = new ForgeConfigSpec.Builder();
@@ -95,6 +101,10 @@ public class PotioneerAbilityConfig {
     public static final ForgeConfigSpec.IntValue BRIBE_DURATION;
     public static final ForgeConfigSpec.DoubleValue BRIBE_DAMAGE_MULTIPLIER;
 
+    //Mystery Pathway
+    public static final ForgeConfigSpec.IntValue SAP_MAX_DIST;
+    public static final ForgeConfigSpec.DoubleValue JAB_CHANCE;
+    public static final ForgeConfigSpec.ConfigValue<List<? extends String>> JAB_EFFECTS;
 
 
     static {
@@ -380,8 +390,62 @@ public class PotioneerAbilityConfig {
 
 
         BUILDER.pop(); // Pop tyrant_pathway
+
+        BUILDER.push("Mystery Pathway");
+
+        SAP_MAX_DIST = BUILDER.comment("Maximum distance a trickster must be from a victim to regenerate spirituality and heal.")
+                .defineInRange("sap_max_dist", 2, 0, Integer.MAX_VALUE);
+        JAB_CHANCE = BUILDER.comment("Chance for a trickster's jab to apply a mob effect on hit or being hit")
+                .defineInRange("jab_chance", 0.25, 0, 1);
+
+        JAB_EFFECTS = BUILDER
+                .comment("Mob Effects to randomly pick from when jabbing someone. Repeated entries are more likely to be chosen.")
+                .defineListAllowEmpty(
+                        "jab_effects",
+                        List.of(
+                                "minecraft:levitation",
+                                "minecraft:nausea",
+                                "minecraft:hunger",
+                                "minecraft:mining_fatigue",
+                                "minecraft:slowness",
+                                "minecraft:slowness",
+                                "minecraft:wither",
+                                "minecraft:poison",
+                                "minecraft:poison",
+                                "minecraft:weakness",
+                                "minecraft:weakness",
+                                "minecraft:slow_falling"
+                        ),
+                        PotioneerAbilityConfig::isValidResourceLocation
+                );
+        BUILDER.pop(); // Pop Mystery
+
         BUILDER.pop(); // Pop Potioneer
 
         SPEC = BUILDER.build();
+    }
+
+    public static List<MobEffect> getConfiguredMobEffects() {
+        List<MobEffect> effects = new ArrayList<>();
+        List<? extends String> effectIds = JAB_EFFECTS.get();
+
+        for (String id : effectIds) {
+            ResourceLocation location = ResourceLocation.tryParse(id);
+            if (location == null) continue;
+
+            MobEffect effect = ForgeRegistries.MOB_EFFECTS.getValue(location);
+            if (effect != null) {
+                effects.add(effect);
+            }
+        }
+
+        return effects;
+    }
+
+    private static boolean isValidResourceLocation(Object obj) {
+        if (obj instanceof String str) {
+            return ResourceLocation.isValidResourceLocation(str);
+        }
+        return false;
     }
 }
