@@ -198,6 +198,37 @@ public class ParticleMaker {
         WATER_IMPLOSION,
         WATER_JET,
         WHOOOSH,
+        AIR_BULLET,
+        ENDERMAN
+    }
+
+    public static void spawnEndermanParticles(Level level, Vec3 pos) {
+        for (int i = 0; i < 32; ++i) {
+            double x = pos.x() + (level.random.nextDouble() - 0.5D) * 1.0D;
+            double y = pos.y() + level.random.nextDouble() * 2.0D - 1.0D;
+            double z = pos.z() + (level.random.nextDouble() - 0.5D) * 1.0D;
+
+            double xSpeed = (level.random.nextDouble() - 0.5D) * 2.0D;
+            double ySpeed = -level.random.nextDouble();
+            double zSpeed = (level.random.nextDouble() - 0.5D) * 2.0D;
+
+            level.addParticle(ParticleTypes.PORTAL, x, y, z, xSpeed, ySpeed, zSpeed);
+        }
+    }
+
+    public static void drawAirBullet(Level level, Vec3 start, Vec3 end) {
+        Vec3 direction = end.subtract(start);
+        double totalDistance = direction.length();
+        if (totalDistance == 0) return;
+
+        Vec3 step = direction.normalize().scale(0.4f);
+        float currentDist = 0.7f;
+
+        while (currentDist < totalDistance) {
+            Vec3 itVector = start.add(direction.normalize().scale(currentDist));
+            level.addParticle(ParticleTypes.POOF, itVector.x, itVector.y, itVector.z, 0, -0.02f, 0);
+            currentDist += 0.4f;
+        }
     }
 
     public static void doAirWhoosh(Level level, Vec3 centerPos, Vec3 speed){

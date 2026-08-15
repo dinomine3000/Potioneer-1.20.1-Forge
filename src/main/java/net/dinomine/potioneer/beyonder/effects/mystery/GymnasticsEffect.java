@@ -30,7 +30,9 @@ public class GymnasticsEffect extends BeyonderEffect {
     public boolean canJump(){return jumpCount > 0;}
 
     public int onJump(LivingEntity target, BeyonderCapability cap){
-        if(AbilityFunctionHelper.isEntityStandingOnGround(0, target, false)) return jumpCount;
+        if(AbilityFunctionHelper.isEntityStandingOnGround(0, target, false)) {
+            return jumpCount;
+        }
         if(jumpCount < 1) return 0;
         PacketHandler.sendMessageToClientsAround(target, 16, new GeneralAreaEffectMessage(
                 ParticleMaker.Preset.WHOOOSH,
@@ -49,9 +51,10 @@ public class GymnasticsEffect extends BeyonderEffect {
         //if(target.level().isClientSide() && canJump()
         //        && (!(target instanceof Player player) || !player.getAbilities().flying)) target.setOnGround(true);
         if(AbilityFunctionHelper.isEntityStandingOnGround(0, target, false)) jumpCount = getMaxJump();
+
     }
 
-    private int getMaxJump(){return 2;}
+    private int getMaxJump(){return 1 + (9 - sequenceLevel);}
 
     @Override
     public void stopEffects(BeyonderCapability cap, LivingEntity target) {
@@ -62,9 +65,9 @@ public class GymnasticsEffect extends BeyonderEffect {
         return 0.2;
     }
 
-    private int getResistance(){return 3;}
+    private int getResistance(){return sequenceLevel < 6 ? Integer.MAX_VALUE : 1 + 2*(9-sequenceLevel);}
 
-    private float getMultiplier(){return 0.5f;}
+    private float getMultiplier(){return sequenceLevel < 6 ? 0f : 0.1f + (sequenceLevel - 6)*0.15f;}
 
     @Override
     public boolean onDamageProposal(LivingAttackEvent event, LivingEntity victim, @Nullable LivingEntity attacker, BeyonderCapability victimCap, Optional<BeyonderCapability> attackerCap, boolean calledOnVictim) {

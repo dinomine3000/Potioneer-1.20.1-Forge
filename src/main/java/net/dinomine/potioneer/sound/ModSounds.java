@@ -29,7 +29,9 @@ public class ModSounds {
     public static final RegistryObject<SoundEvent> WATER_JET = registerSoundEvents("water_jet");
     public static final RegistryObject<SoundEvent> FAIL_CAST = registerSoundEvents("fail_cast");
     public static final RegistryObject<SoundEvent> JAB = registerSoundEvents("jab");
+    public static final RegistryObject<SoundEvent> BLINK = registerSoundEvents("blink");
     public static final RegistryObject<SoundEvent> JUMP = registerSoundEvents("jump");
+    public static final RegistryObject<SoundEvent> PUSH = registerSoundEvents("push");
 
 
 

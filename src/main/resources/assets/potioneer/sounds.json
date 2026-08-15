@@ -100,5 +100,18 @@
       "potioneer:jump1",
       "potioneer:jump2"
     ]
+  },
+  "blink": {
+    "sounds": [
+      "potioneer:mystery_blink"
+    ]
+  },
+  "push": {
+    "sounds": [
+      "potioneer:mystery_push1",
+      "potioneer:mystery_push2",
+      "potioneer:mystery_push3",
+      "potioneer:mystery_push4"
+    ]
   }
 }

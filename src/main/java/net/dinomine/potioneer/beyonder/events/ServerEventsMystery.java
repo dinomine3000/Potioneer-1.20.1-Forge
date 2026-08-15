@@ -26,6 +26,7 @@ public class ServerEventsMystery {
             if(player.level().isClientSide()
                     && eff != null && eff.canJump()
                     && !AbilityFunctionHelper.isEntityStandingOnGround(0, player, false)){
+                System.out.println("Sending emss...");
                 PacketHandler.sendMessageCTS(new DoubleJumpMessage());
             }
             if(eff != null) eff.onJump(event.getEntity(), cap);

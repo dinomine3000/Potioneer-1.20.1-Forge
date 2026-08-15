@@ -1,10 +1,16 @@
 package net.dinomine.potioneer.beyonder.abilities.mystery;
 
 import net.dinomine.potioneer.beyonder.abilities.Ability;
+import net.dinomine.potioneer.beyonder.abilities.AbilityFunctionHelper;
 import net.dinomine.potioneer.beyonder.player.BeyonderCapability;
+import net.dinomine.potioneer.network.PacketHandler;
+import net.dinomine.potioneer.network.messages.effects.GeneralAreaEffectMessage;
+import net.dinomine.potioneer.sound.ModSounds;
+import net.dinomine.potioneer.util.ParticleMaker;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.BlockTags;
@@ -54,19 +60,12 @@ public class DoorOpeningAbility extends Ability {
         int i = 0;
 
         while(i <= range){
-            if(level.getBlockState(pos.offset(newX*i, 0, newZ*i)).isCollisionShapeFullBlock(level, pos)
-                    || level.getBlockState(pos.offset(newX*i, 1, newZ*i)).isCollisionShapeFullBlock(level, pos)){
-//                System.out.println("wall check");
-                if(!level.getBlockState(pos.offset(newX*(i+1), 0, newZ*(i+1))).isCollisionShapeFullBlock(level, pos)
-                        && !level.getBlockState(pos.offset(newX*(i+1), 1, newZ*(i+1))).isCollisionShapeFullBlock(level, pos)){
-//                    System.out.println("teleporting");
-                    //target.teleportRelative(newX*(i+1), 0, newZ*(i+1));
-                    BlockPos endPos = new BlockPos(pos.getX() + newX*(i+1), pos.getY(), pos.getZ() + newZ*(i+1));
-                    target.teleportTo(endPos.getX() + 0.5, endPos.getY(), endPos.getZ() + 0.5);
-                    cap.requestActiveSpiritualityCost(cost()*(1+i));
-                    level.playSound(null,
-                            pos.offset(newX*(i+1), 0, newZ*(i+1)), SoundEvents.ENDERMAN_TELEPORT,
-                            SoundSource.PLAYERS, 1, 1);
+            if(!isValidBlockposToTeleportTo(pos.offset(newX*i, 0, newZ*i), level)){
+                if(isValidBlockposToTeleportTo(pos.offset(newX*(i+1), 0, newZ*(i+1)), level)){
+                    BlockPos endPos = pos.offset(newX*(i+1), 0, newZ*(i+1));
+                    if(BlinkAbility.teleport(target, (ServerLevel) level, endPos, target.getXRot(), target.getYRot())){
+                        cap.requestActiveSpiritualityCost(cost()*(1+i));
+                    }
                     return true;
                 }
             }
@@ -77,5 +76,12 @@ public class DoorOpeningAbility extends Ability {
             player.displayClientMessage(Component.translatable("message.potioneer.door_opening_too_thick"), true);
         }
         return false;
+    }
+
+    public static boolean isValidBlockposToTeleportTo(BlockPos pos, Level level){
+        BlockState stateUnder = level.getBlockState(pos);
+        BlockState stateAbove = level.getBlockState(pos.above());
+        return (stateUnder.isAir() || stateUnder.getCollisionShape(level, pos).isEmpty())
+                && (stateAbove.isAir() || stateAbove.getCollisionShape(level, pos).isEmpty());
     }
 }

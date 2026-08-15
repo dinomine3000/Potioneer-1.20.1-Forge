@@ -115,6 +115,8 @@ public class ClientEventsMystery {
                 (opt.get().getEffectsManager().hasEffect(BeyonderEffects.MYSTERY_DODGE));
     }
 
+    private static boolean jumpO = false;
+    private static boolean flying = false;
 
     @SubscribeEvent
     public static void clientTick(TickEvent.ClientTickEvent event){
@@ -122,9 +124,23 @@ public class ClientEventsMystery {
         LocalPlayer player = minecraft.player;
         if(player == null) return;
         if(player.input.jumping){
+            if(!jumpO){
+                jumpO = true;
+                onJumpStart(player);
+            }
+        } else {
+            jumpO = false;
+        }
+        flying = player.getAbilities().flying;
+    }
+
+    private static void onJumpStart(LocalPlayer player){
+        if(AbilityFunctionHelper.isEntityStandingOnGround(1, player, true)) return;
+        if(!flying){
             GymnasticsEffect eff = AbilityFunctionHelper.getEffectOnTarget(BeyonderEffects.MYSTERY_GYMNASTICS.getEffectId(), player);
             if(eff != null && eff.canJump() && !player.getAbilities().flying){
-                player.setOnGround(true);
+                System.out.println("Jumping...");
+                player.jumpFromGround();
             }
         }
     }

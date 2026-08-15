@@ -96,6 +96,10 @@ class GeneralAreaEffectClient
                 case WHOOOSH:
                     ParticleMaker.doAirWhoosh(level, new Vec3(msg.centerPos), new Vec3(msg.speed));
                     break;
+                case AIR_BULLET:
+                    ParticleMaker.drawAirBullet(level, new Vec3(msg.centerPos), new Vec3(msg.speed));
+                case ENDERMAN:
+                    ParticleMaker.spawnEndermanParticles(level, new Vec3(msg.centerPos));
             }
         }
     }

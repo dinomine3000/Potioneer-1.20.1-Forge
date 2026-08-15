@@ -301,15 +301,27 @@ public class Abilities {
 
     public static final AbilityFactory GYMNASTICS = registerAbility("gymnastics",
             GymnasticsAbility::new,
-            5, 2, 0);
+            5, 2, 0).hasSecondaryFunction();
 
     public static final AbilityFactory DODGE = registerAbility("dodge",
             lvl -> PassiveAbility.createAbility(lvl, BeyonderEffects.MYSTERY_DODGE, ign -> "dodge")
                     .canFlip().withCooldown(20*5, PassiveAbility.CooldownTrigger.ON_REMOVE).withActives(true, true).withCost(5),
             5, 2, 15);
 
+    public static final AbilityFactory UNSEEN_HAND = registerAbility("unseen_hand",
+            UnseenHandAbility::new,
+            5, 2, 0).hasSecondaryFunction();
+
+    public static final AbilityFactory AERIAL_DOMAIN = registerAbility("aerial_domain",
+            lvl -> PassiveAbility.createAbility(lvl, BeyonderEffects.MYSTERY_AERIAL_DOMAIN, ign -> "aerial_domain")
+                    .canFlip().enabledOnAcquire(),
+            5, 2, 0);
+
     public static final AbilityFactory AIR_BULLET = registerAbility("air_bullet",
             AirBulletAbility::new, 1, 2, 60);
+
+    public static final AbilityFactory BLINK = registerAbility("blink",
+            BlinkAbility::new, 1, 2, 20);
 
     public static final AbilityFactory INVISIBILITY = registerAbility("invisibility",
             (Integer sequenceLevel) -> TimedPassiveAbility.createTimed(sequenceLevel, BeyonderEffects.MYSTERY_INVISIBLE,

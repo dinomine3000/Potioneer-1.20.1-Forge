@@ -66,7 +66,7 @@ public class JabEffect extends BeyonderEffect {
         if(toJab == null) return false;
         if(!jabberCap.getLuckManager().passesLuckCheck(JAB_CHANCE.get(), 0, 0, RandomSource.create())) return false;
 
-        jabber.level().playSound(null, jabber.getOnPos(), ModSounds.JAB.get(), SoundSource.PLAYERS, 1, (float) jabber.getRandom().triangle(1f, 0.2f));
+        jabber.level().playSound(null, jabber.getOnPos(), ModSounds.JAB.get(), SoundSource.PLAYERS, 2f, (float) jabber.getRandom().triangle(1f, 0.2f));
         List<MobEffect> effects = PotioneerAbilityConfig.getConfiguredMobEffects();
         if(effects.isEmpty()){
             effects = DEFAULT_BAD_EFFECTS;

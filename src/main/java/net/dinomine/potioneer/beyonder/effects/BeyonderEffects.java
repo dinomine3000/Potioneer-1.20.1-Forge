@@ -86,6 +86,9 @@ public class BeyonderEffects {
     public static final BeyonderEffectType MYSTERY_STEP_UP = registerEffect("step_up", new BeyonderEffectType(StepUpEffect::new));
     public static final BeyonderEffectType MYSTERY_GYMNASTICS = registerEffect("gymnastics", new BeyonderEffectType(GymnasticsEffect::new));
     public static final BeyonderEffectType MYSTERY_DODGE = registerEffect("dodge", new BeyonderEffectType(DodgeEffect::new));
+    public static final BeyonderEffectType MYSTERY_AERIAL_DOMAIN = registerEffect("aerial_domain", new BeyonderEffectType(AerialDomainEffect::new));
+    public static final BeyonderEffectType MYSTERY_AIR_BULLET = registerEffect("air_bullet", new BeyonderEffectType(AirBulletEffect::new));
+    public static final BeyonderEffectType MYSTERY_AUTO_BLINK = registerEffect("auto_blink", new BeyonderEffectType(AutoBlinkEffect::new));
 
     //Red Priest
     public static final BeyonderEffectType RED_FIRE_AURA = registerEffect("fire_aura", new BeyonderEffectType(BeyonderFireAuraEffect::new));

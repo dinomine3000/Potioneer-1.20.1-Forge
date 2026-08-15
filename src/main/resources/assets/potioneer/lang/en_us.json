@@ -477,6 +477,7 @@
   "death.attack.potioneer.tyrant_law": "%s was ruled to die by %s",
   "death.attack.potioneer.execution": "%s was ordered for execution by %s",
   "death.attack.potioneer.tyrant_purification": "%s was forcefully purified by %s",
+  "death.attack.potioneer.air_bullet": "%s was shot by %s's magical air bullet.",
 
   "short_desc.potioneer.cogitation": "Your essence... your being... this is what makes you",
   "long_desc.potioneer.cogitation": "Concentrate your spirituality and recuperate in a safe place.",
@@ -717,6 +718,10 @@
   "ability_name.potioneer.rule_pylon": "Rule Pylon",
   "short_desc.potioneer.rule_pylon": "This Pylon functions as your castle. Protect it with your life.",
   "long_desc.potioneer.rule_pylon": "Place down a rule pylon to rule over an area. You can apply Laws, universal rules that are forever true, or rules, which, when broken, are followed by a punishment. Also extends your Area of Jurisdiction if you want.",
+
+  "ability_name.potioneer.unseen_hand": "Invisible Force",
+  "short_desc.potioneer.unseen_hand": "What a neat and interesting ability.",
+  "long_desc.potioneer.unseen_hand": "Left click to push the target you're looking at away, Right click to push them into the air.",
 
   "ability_name.potioneer.d_dummy": "Hurt",
   "ability_name.potioneer.d_cooldown": "Random Cooldowns",

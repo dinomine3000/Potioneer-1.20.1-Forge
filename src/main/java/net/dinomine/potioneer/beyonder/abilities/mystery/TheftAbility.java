@@ -3,15 +3,21 @@ package net.dinomine.potioneer.beyonder.abilities.mystery;
 import net.dinomine.potioneer.beyonder.abilities.Ability;
 import net.dinomine.potioneer.beyonder.abilities.AbilityFunctionHelper;
 import net.dinomine.potioneer.beyonder.player.BeyonderCapability;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.trading.MerchantOffer;
+import net.minecraft.world.item.trading.MerchantOffers;
 import net.minecraftforge.common.ForgeMod;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class TheftAbility extends Ability {
+    private static final int LEVEL_FOR_TRADE_THEFT = 6;
     public TheftAbility(int sequenceLevel) {
         super(sequenceLevel);
         defaultMaxCooldown = 20*2;
@@ -23,7 +29,8 @@ public class TheftAbility extends Ability {
         if(cap.getSpirituality() < cost()) return false;
         if(caster.level().isClientSide()) return true;
 
-        LivingEntity target = AbilityFunctionHelper.getLivingEntityLooking(caster, caster.getAttributeBaseValue(ForgeMod.ENTITY_REACH.get()) + 0.5, 0);
+        float extraReach = 0.5f + (9-sequenceLevel)*0.5f;
+        LivingEntity target = AbilityFunctionHelper.getLivingEntityLooking(caster, caster.getAttributeBaseValue(ForgeMod.ENTITY_REACH.get()) + extraReach, 0);
         if(target == null) return false;
 
         cap.requestActiveSpiritualityCost(cost());
@@ -43,7 +50,27 @@ public class TheftAbility extends Ability {
             }
             //if it landed on the other 50%, or it didnt find armor
             if(ogStack == null){
-                if(target instanceof Player playerTarget){
+                if(target instanceof Villager villager){
+                    //try to steal a trade.
+                    if(sequenceLevel <= LEVEL_FOR_TRADE_THEFT || cap.getLuckManager().passesLuckCheck(0.1f, 50, 0, caster.getRandom())){
+                        toGive = stealVillagerTrade(villager, sequenceLevel <= LEVEL_FOR_TRADE_THEFT ? Integer.MAX_VALUE : 2 * (9 - sequenceLevel));
+                    }
+                    //otherwise, steal their inventory (where they keep them carrots!!)
+                    if(toGive == null || toGive.isEmpty()){
+                        List<ItemStack> items = new ArrayList<>();
+                        SimpleContainer inventory = villager.getInventory();
+
+                        for (int i = 0; i < inventory.getContainerSize(); i++) {
+                            ItemStack stack = inventory.getItem(i);
+                            if (!stack.isEmpty()) items.add(stack);
+                            if(!items.isEmpty()){
+                                ogStack = items.get(caster.getRandom().nextInt(items.size()));
+                                toGive = ogStack.copy();
+                            }
+                        }
+                    }
+                }
+                else if(target instanceof Player playerTarget){
                     List<ItemStack> items = playerTarget.inventoryMenu.getItems().stream().filter(item -> !item.isEmpty()).toList();
                     if(!items.isEmpty()){
                         ogStack = items.get(caster.getRandom().nextInt(items.size()));
@@ -58,11 +85,9 @@ public class TheftAbility extends Ability {
                     }
                 }
             }
-
         }
 
-
-        if(toGive != null && caster instanceof Player player && !player.addItem(toGive)) player.drop(toGive, true, true);
+        if(toGive != null && !toGive.isEmpty() && caster instanceof Player player && !player.addItem(toGive)) player.drop(toGive, true, true);
         if(ogStack != null){
             ogStack.setCount(0);
             setNextCooldownAs(20*7);
@@ -73,5 +98,30 @@ public class TheftAbility extends Ability {
     @Override
     protected String getMainDescId(int sequenceLevel) {
         return "theft";
+    }
+
+    private ItemStack stealVillagerTrade(Villager villager, int maxCount){
+        List<MerchantOffer> offers = villager.getOffers().stream()
+                .filter(off -> !off.isOutOfStock())
+                .toList();
+        if (offers.isEmpty()) return ItemStack.EMPTY;
+
+        MerchantOffer toSteal = offers.get(RandomSource.create().nextInt(offers.size()));
+
+        int itemPerTrade = toSteal.getResult().getCount();
+        int remainingTrades = toSteal.getMaxUses() - toSteal.getUses();
+        int totalItemsInStock = remainingTrades * itemPerTrade;
+
+        if (totalItemsInStock <= 0) return ItemStack.EMPTY;
+
+        int itemsToSteal = Math.min(totalItemsInStock, maxCount);
+        int tradesToConsume = (int) Math.ceil((double) itemsToSteal / itemPerTrade);
+
+        for (int i = 0; i < tradesToConsume; i++) {
+            toSteal.increaseUses();
+        }
+        ItemStack stackToGive = toSteal.assemble();
+        stackToGive.setCount(itemsToSteal);
+        return stackToGive;
     }
 }

@@ -78,10 +78,13 @@ public class MysteryPathway extends BeyonderPathway {
             case 7:
                 abilities.add(Abilities.AIR_BULLET.create(atSequenceLevel));
                 abilities.add(Abilities.INVISIBILITY.create(atSequenceLevel));
+                abilities.add(Abilities.BLINK.create(atSequenceLevel));
             case 8:
                 abilities.add(Abilities.STEP_UP.create(atSequenceLevel));
                 abilities.add(Abilities.GYMNASTICS.create(atSequenceLevel));
                 abilities.add(Abilities.DODGE.create(atSequenceLevel));
+                abilities.add(Abilities.UNSEEN_HAND.create(atSequenceLevel));
+                abilities.add(Abilities.AERIAL_DOMAIN.create(atSequenceLevel));
             case 9:
                 //abilities.add(Abilities.EXTENDED_REACH.create(atSequenceLevel));
                 abilities.add(Abilities.DOOR_OPENING.create(atSequenceLevel));
@@ -108,7 +111,7 @@ public class MysteryPathway extends BeyonderPathway {
             case 7 -> setStats(stats, 4, 2, 1, 5f, 0.5f);
             case 6 -> setStats(stats, 6, 4, 2, 4.5f, 0.5f);
             case 5 -> setStats(stats, 10, 8, 8, 4f, 0.75f);
-            default -> setStats(stats, 12, 12, 10, 3.5f, 0.75f);
+            default -> setStats(stats, 12, 12, 10, 3.5f, 1f);
         }
         return stats;
     }

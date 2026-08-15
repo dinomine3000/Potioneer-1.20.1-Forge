@@ -43,6 +43,7 @@ public class PotioneerDamage {
     public static final ResourceKey<DamageType> LAW = ResourceKey.create(Registries.DAMAGE_TYPE, new ResourceLocation(Potioneer.MOD_ID, "tyrant_law"));
     public static final ResourceKey<DamageType> EXECUTION = ResourceKey.create(Registries.DAMAGE_TYPE, new ResourceLocation(Potioneer.MOD_ID, "execution"));
     public static final ResourceKey<DamageType> TYRANT_PURIFICATION = ResourceKey.create(Registries.DAMAGE_TYPE, new ResourceLocation(Potioneer.MOD_ID, "tyrant_purification"));
+    public static final ResourceKey<DamageType> AIR_BULLET = ResourceKey.create(Registries.DAMAGE_TYPE, new ResourceLocation(Potioneer.MOD_ID, "air_bullet"));
 //    public static final ResourceKey<DamageType> MENTAL = ResourceKey.create(Registries.DAMAGE_TYPE, new ResourceLocation(Potioneer.MOD_ID, "mental"));
 //    public static final ResourceKey<DamageType> ANNIHILATION = ResourceKey.create(Registries.DAMAGE_TYPE, new ResourceLocation(Potioneer.MOD_ID, "annihilation"));
 
@@ -52,6 +53,10 @@ public class PotioneerDamage {
 
     public static DamageSource strike(ServerLevel level, LivingEntity attacker){
         return getSource(level, STRIKE, attacker);
+    }
+
+    public static DamageSource air_bullet(ServerLevel level, LivingEntity attacker){
+        return getSource(level, AIR_BULLET, attacker);
     }
 
     public static DamageSource execution(ServerLevel level, LivingEntity attacker){

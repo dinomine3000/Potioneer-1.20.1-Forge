@@ -80,20 +80,23 @@ public class AbilityFunctionHelper {
         return itemEntity;
     }
 
-    public static void teleportEntity(Entity target, ServerLevel fromLevel, ServerLevel toLevel, BlockPos targetPosition){
+    public static boolean teleportEntity(Entity target, ServerLevel fromLevel, ServerLevel toLevel, BlockPos targetPosition){
+        return teleportEntity(target, fromLevel, toLevel, targetPosition, target.getXRot(), target.getYRot());
+    }
+    public static boolean teleportEntity(Entity target, ServerLevel fromLevel, ServerLevel toLevel, BlockPos targetPosition, float xRot, float yRot){
         Optional<BeyonderCapability> optCap = target.getCapability(CapProvider.BEYONDER_STATS).resolve();
         if(optCap.isPresent() && target instanceof LivingEntity lTarget){
             BeyonderCapability cap = optCap.get();
             GeneralProhibitionEffect eff = getEffectOnTarget(BeyonderEffects.TYRANT_GENERAL_PROHIBITION.getEffectId(), lTarget);
             if(eff != null && eff.type.equalsIgnoreCase("teleporting")){
-                return;
+                return false;
             }
         }
 
         Vec3 motion = target.getDeltaMovement();
         Vec3 targetPos = targetPosition.getCenter();
 
-        if (fromLevel != toLevel) {
+        if (fromLevel == toLevel) {
             /*// 1. Force the target chunk to load immediately on the target server level
             toLevel.getChunkSource().addRegionTicket(
                     net.minecraft.server.level.TicketType.POST_TELEPORT,
@@ -114,12 +117,15 @@ public class AbilityFunctionHelper {
                 transferredEntity.setDeltaMovement(motion);
                 transferredEntity.hasImpulse = true;
             }*/
-            target.teleportTo(toLevel, targetPos.x, targetPos.y, targetPos.z, Set.of(), target.getYRot(), target.getXRot());
+            target.teleportTo(toLevel, targetPos.x, targetPos.y, targetPos.z, Set.of(), yRot, xRot);
         } else {
             target.teleportToWithTicket(targetPosition.getX() + 0.5f, targetPosition.getY(), targetPosition.getZ() + 0.5);
+            target.setXRot(xRot);
+            target.setYRot(yRot);
             target.setDeltaMovement(motion);
             target.hasImpulse = true;
         }
+        return true;
     }
 
     public static @Nullable Entity getEntityAcrossDimensions(ServerLevel level, UUID id){
@@ -316,6 +322,12 @@ public class AbilityFunctionHelper {
         return resMod.get();
     }
 
+    public static double getEntityReach(LivingEntity target){
+        return target.getAttribute(ForgeMod.ENTITY_REACH.get()).getValue();
+    }
+    public static @Nullable LivingEntity getLivingEntityLooking(LivingEntity looker, int inflate){
+        return getLivingEntityLooking(looker, getEntityReach(looker), inflate);
+    }
     public static @Nullable LivingEntity getLivingEntityLooking(LivingEntity looker, double reach, int inflate){
         List<LivingEntity> hits = getLivingEntitiesLooking(looker, reach, inflate, false);
         if(hits.isEmpty()) return null;
@@ -450,7 +462,9 @@ public class AbilityFunctionHelper {
         double dist = target.position().subtract(looker.getEyePosition()).length();
         Vec3 eye = looker.getEyePosition();
         Vec3 end = looker.getEyePosition().add(lookAngle.scale(dist+1));
-        return target.getBoundingBoxForCulling().inflate(inflate).intersects(eye, end) && (hitThroughWalls || looker.hasLineOfSight(target));
+
+        Vec3 diffVec = target.position().subtract(looker.position());
+        return diffVec.dot(lookAngle) > 0 && target.getBoundingBoxForCulling().inflate(inflate).intersects(eye, end) && (hitThroughWalls || looker.hasLineOfSight(target));
     }
 
     public static ArrayList<LivingEntity> getLivingEntitiesLooking(LivingEntity looker, double radius){
