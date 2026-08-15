@@ -81,7 +81,8 @@ public class BeyonderEffects {
     public static final BeyonderEffectType MYSTERY_SAP = registerEffect("mystery_sap", new BeyonderEffectType(SapEffect::new));
     public static final BeyonderEffectType MYSTERY_JAB = registerEffect("mystery_jab", new BeyonderEffectType(JabEffect::new));
     public static final BeyonderEffectType MYSTERY_FIGURINE = registerEffect("figurine_substitute", new BeyonderEffectType(BlankEffect::new));
-    public static final BeyonderEffectType MYSTERY_INVISIBLE = registerEffect("invisibility", new BeyonderEffectType(BlankEffect::new));
+    public static final BeyonderEffectType MYSTERY_INVISIBLE = registerEffect("invisibility", new BeyonderEffectType(InvisibilityEffect::new));
+    public static final BeyonderEffectType MYSTERY_ILLUSION = registerEffect("illusion", new BeyonderEffectType(IllusionEffect::new));
     public static final BeyonderEffectType MYSTERY_REACH = registerEffect("extended_reach", new BeyonderEffectType(BeyonderExtendedReachEffect::new));
     public static final BeyonderEffectType MYSTERY_STEP_UP = registerEffect("step_up", new BeyonderEffectType(StepUpEffect::new));
     public static final BeyonderEffectType MYSTERY_GYMNASTICS = registerEffect("gymnastics", new BeyonderEffectType(GymnasticsEffect::new));

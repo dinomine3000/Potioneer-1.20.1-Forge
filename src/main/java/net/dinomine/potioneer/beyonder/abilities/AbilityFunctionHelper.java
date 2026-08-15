@@ -84,6 +84,7 @@ public class AbilityFunctionHelper {
         return teleportEntity(target, fromLevel, toLevel, targetPosition, target.getXRot(), target.getYRot());
     }
     public static boolean teleportEntity(Entity target, ServerLevel fromLevel, ServerLevel toLevel, BlockPos targetPosition, float xRot, float yRot){
+        if(target == null) return false;
         Optional<BeyonderCapability> optCap = target.getCapability(CapProvider.BEYONDER_STATS).resolve();
         if(optCap.isPresent() && target instanceof LivingEntity lTarget){
             BeyonderCapability cap = optCap.get();

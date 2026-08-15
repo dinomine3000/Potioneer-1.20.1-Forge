@@ -15,6 +15,7 @@ import net.dinomine.potioneer.beyonder.pathways.Pathways;
 import net.dinomine.potioneer.beyonder.ModAttributes;
 import net.dinomine.potioneer.beyonder.player.BeyonderCapability;
 import net.dinomine.potioneer.beyonder.player.CapProvider;
+import net.dinomine.potioneer.entities.custom.CloneEntity;
 import net.dinomine.potioneer.item.ModItems;
 import net.dinomine.potioneer.network.messages.SequenceSTCSyncRequest;
 import net.dinomine.potioneer.rituals.spirits.Deity;
@@ -35,6 +36,8 @@ import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.MobType;
+import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
+import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BowItem;
 import net.minecraft.world.item.ItemStack;
@@ -61,6 +64,16 @@ import java.util.*;
 @Mod.EventBusSubscriber
 public class BeyonderEvents {
 
+    @SubscribeEvent
+    public static void onEntityJoin(EntityJoinLevelEvent event) {
+        if (event.getEntity() instanceof Monster monster) {
+            monster.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(
+                    monster,
+                    CloneEntity.class,
+                    true
+            ));
+        }
+    }
     @SubscribeEvent
     public static void onAttachCapabilitiesPlayer(AttachCapabilitiesEvent<Entity> event){
         if(event.getObject() instanceof LivingEntity){

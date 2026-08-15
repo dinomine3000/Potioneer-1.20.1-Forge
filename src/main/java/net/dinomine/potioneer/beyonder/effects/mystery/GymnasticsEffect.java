@@ -3,6 +3,7 @@ package net.dinomine.potioneer.beyonder.effects.mystery;
 import net.dinomine.potioneer.beyonder.ModAttributes;
 import net.dinomine.potioneer.beyonder.abilities.AbilityFunctionHelper;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffect;
+import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
 import net.dinomine.potioneer.beyonder.player.BeyonderCapability;
 import net.dinomine.potioneer.network.PacketHandler;
 import net.dinomine.potioneer.network.messages.effects.GeneralAreaEffectMessage;
@@ -34,6 +35,7 @@ public class GymnasticsEffect extends BeyonderEffect {
             return jumpCount;
         }
         if(jumpCount < 1) return 0;
+        if(cap.getEffectsManager().hasEffect(BeyonderEffects.MYSTERY_INVISIBLE)) return --jumpCount;
         PacketHandler.sendMessageToClientsAround(target, 16, new GeneralAreaEffectMessage(
                 ParticleMaker.Preset.WHOOOSH,
                 target.getOnPos().getCenter().toVector3f(),

@@ -26,7 +26,7 @@ public abstract class BeyonderEffect {
     protected boolean visible;
     protected Priority priority = Priority.MEDIUM;
 
-    public int getPriority(){return priority.value;}
+    public final int getPriority(){return priority.value;}
 
     public void onUpdateReceivedOnClient(BeyonderCapability cap, LivingEntity target) {}
 

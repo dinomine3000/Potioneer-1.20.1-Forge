@@ -21,13 +21,17 @@ import net.dinomine.potioneer.network.PacketHandler;
 import net.dinomine.potioneer.network.messages.abilityRelevant.abilitySpecific.DoubleJumpMessage;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.FogRenderer;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RenderGuiOverlayEvent;
+import net.minecraftforge.client.event.RenderLivingEvent;
 import net.minecraftforge.client.event.ViewportEvent;
+import net.minecraftforge.client.gui.overlay.VanillaGuiOverlay;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -40,6 +44,42 @@ import java.util.UUID;
 @Mod.EventBusSubscriber(modid = Potioneer.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
 public class ClientEventsMystery {
 
+    private static float realHealth = -1.0F;
+
+    @SubscribeEvent
+    public static void onRenderGuiPre(RenderGuiOverlayEvent.Pre event) {
+        if (event.getOverlay().id().equals(VanillaGuiOverlay.PLAYER_HEALTH.id())) {
+            Minecraft mc = Minecraft.getInstance();
+            Player player = mc.player;
+
+            CapProvider.beyonder(player).ifPresent(cap -> {
+                if(cap.getEffectsManager().hasEffect(BeyonderEffects.MYSTERY_ILLUSION)){
+                    realHealth = player.getHealth();
+                    player.setHealth(1.0F);
+                }
+            });
+        }
+    }
+
+    @SubscribeEvent
+    public static void onRenderGuiPost(RenderGuiOverlayEvent.Post event) {
+        if (event.getOverlay().id().equals(VanillaGuiOverlay.PLAYER_HEALTH.id())) {
+            if (realHealth >= 0.0F) {
+                Minecraft mc = Minecraft.getInstance();
+                if (mc.player != null) {
+                    mc.player.setHealth(realHealth);
+                }
+                realHealth = -1.0F;
+            }
+        }
+    }
+
+    @SubscribeEvent
+    public static <T extends LivingEntity, M extends EntityModel<T>> void onRender(RenderLivingEvent.Pre<T, M> event){
+        Optional<BeyonderCapability> optCap = CapProvider.beyonder(event.getEntity());
+        if(optCap.isEmpty()) return;
+        if(optCap.get().getEffectsManager().hasEffect(BeyonderEffects.MYSTERY_INVISIBLE)) event.setCanceled(true);
+    }
 
     @SubscribeEvent
     public static void onComputeFogColor(ViewportEvent.ComputeFogColor event) {

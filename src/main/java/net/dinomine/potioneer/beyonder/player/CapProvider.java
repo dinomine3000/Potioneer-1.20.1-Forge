@@ -30,7 +30,10 @@ public class CapProvider implements ICapabilityProvider, INBTSerializable<Compou
     private final LazyOptional<BeyonderCapability> beyonderOptional = LazyOptional.of(this::createBeyonderStats);
     private final LazyOptional<EffectEntityCapability> effectEntityOptional = LazyOptional.of(this::createEffectEntity);
 
-    public static Optional<BeyonderCapability> beyonder(Entity target){return target.getCapability(BEYONDER_STATS).resolve();}
+    public static Optional<BeyonderCapability> beyonder(Entity target){
+        if(target == null) return Optional.empty();
+        return target.getCapability(BEYONDER_STATS).resolve();
+    }
 
     private BeyonderCapability createBeyonderStats() {
         if(this.beyonderStats == null){
