@@ -29,6 +29,8 @@ if (localPropertiesFile.exists()) {
 // Set defaults if the local file is missing
 project.ext.devUsername1 = localProperties.getProperty('dev1_username') ?: 'Klein'
 project.ext.devUUID1 = localProperties.getProperty('dev1_uuid') ?: '0'
+project.ext.devUsername = localProperties.getProperty('dev_username') ?: 'Klein'
+project.ext.devUUID = localProperties.getProperty('dev_uuid') ?: '0'
 project.ext.devUsername2 = localProperties.getProperty('dev2_username') ?: 'Amon'
 project.ext.devUUID2 = localProperties.getProperty('dev2_uuid') ?: '0'
 // Mojang ships Java 17 to end users in 1.18+, so your mod should target Java 17.
@@ -105,6 +107,8 @@ minecraft {
         client {
             property 'forge.enabledGameTestNamespaces', mod_id
             property 'forge.logging.console.level', 'debug'
+            args '--username', "${project.devUsername}",
+                    '--uuid', "${project.devUUID}"
         }
 
         client1 {

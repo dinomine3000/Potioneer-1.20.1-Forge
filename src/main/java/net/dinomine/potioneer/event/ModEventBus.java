@@ -3,10 +3,7 @@ package net.dinomine.potioneer.event;
 import net.dinomine.potioneer.Potioneer;
 import net.dinomine.potioneer.beyonder.ModAttributes;
 import net.dinomine.potioneer.entities.ModEntities;
-import net.dinomine.potioneer.entities.custom.ChryonEntity;
-import net.dinomine.potioneer.entities.custom.DemonicWolfEntity;
-import net.dinomine.potioneer.entities.custom.PecanEntity;
-import net.dinomine.potioneer.entities.custom.WanderingCactusEntity;
+import net.dinomine.potioneer.entities.custom.*;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.SpawnPlacements;
 import net.minecraft.world.level.levelgen.Heightmap;
@@ -44,5 +41,6 @@ public class ModEventBus {
         event.put(ModEntities.WANDERING_CACTUS.get(), WanderingCactusEntity.setAttributes());
         event.put(ModEntities.PECAN.get(), PecanEntity.setAttributes());
         event.put(ModEntities.DEMONIC_WOLF.get(), DemonicWolfEntity.setAttributes());
+        event.put(ModEntities.CLONE_ENTITY.get(), CloneEntity.setAttributes());
     }
 }

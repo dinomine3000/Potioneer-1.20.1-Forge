@@ -23,8 +23,8 @@ public class ServerEventsMystery {
         if(!(event.getEntity() instanceof Player player)) return;
         CapProvider.beyonder(event.getEntity()).ifPresent(cap -> {
             GymnasticsEffect eff = AbilityFunctionHelper.getEffectOnTarget(BeyonderEffects.MYSTERY_GYMNASTICS.getEffectId(), event.getEntity());
-            if(player.level().isClientSide()
-                    && eff != null && eff.canJump()
+            if(eff != null
+                    && player.level().isClientSide() && eff.canJump()
                     && !AbilityFunctionHelper.isEntityStandingOnGround(0, player, false)){
                 System.out.println("Sending emss...");
                 PacketHandler.sendMessageCTS(new DoubleJumpMessage());

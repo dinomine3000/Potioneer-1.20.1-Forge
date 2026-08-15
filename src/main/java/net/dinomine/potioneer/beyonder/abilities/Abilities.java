@@ -323,6 +323,9 @@ public class Abilities {
     public static final AbilityFactory BLINK = registerAbility("blink",
             BlinkAbility::new, 1, 2, 20);
 
+    public static final AbilityFactory CLONE = registerAbility("clone",
+            CloneAbility::new, 1, 2, 0);
+
     public static final AbilityFactory INVISIBILITY = registerAbility("invisibility",
             (Integer sequenceLevel) -> TimedPassiveAbility.createTimed(sequenceLevel, BeyonderEffects.MYSTERY_INVISIBLE,
                             (ignored) -> "invisibility", level -> 2*40*((9-level)*10 + 5))
