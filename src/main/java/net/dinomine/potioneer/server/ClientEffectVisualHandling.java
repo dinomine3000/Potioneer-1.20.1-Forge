@@ -1,11 +1,12 @@
-package net.dinomine.potioneer.mob_effects;
+package net.dinomine.potioneer.server;
 
+import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
+import net.dinomine.potioneer.beyonder.player.CapProvider;
 import net.dinomine.potioneer.util.ParticleMaker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -16,6 +17,22 @@ import java.util.List;
 @Mod.EventBusSubscriber
 public class ClientEffectVisualHandling {
     private static final List<Integer> mistEntities = new ArrayList<>();
+
+    public static void addInvisibleEntity(Level level, int target){
+        Entity ent = level.getEntity(target);
+        if(!(ent instanceof LivingEntity livingEntity)) return;
+        CapProvider.beyonder(livingEntity).ifPresent(cap -> {
+            cap.getEffectsManager().addEffectNoRefresh(BeyonderEffects.MYSTERY_INVISIBLE.createInstance(9, 0, -1, false), cap, livingEntity);
+        });
+    }
+
+    public static void removeInvisibleEntity(Level level, int target){
+        Entity ent = level.getEntity(target);
+        if(!(ent instanceof LivingEntity livingEntity)) return;
+        CapProvider.beyonder(livingEntity).ifPresent(cap -> {
+            cap.getEffectsManager().removeEffectImmediately(BeyonderEffects.MYSTERY_INVISIBLE.getEffectId(), cap, livingEntity);
+        });
+    }
 
     public static void addMistEntity(int target){
         mistEntities.add(target);

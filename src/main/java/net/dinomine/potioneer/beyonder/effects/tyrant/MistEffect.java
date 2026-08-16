@@ -5,7 +5,7 @@ import net.dinomine.potioneer.beyonder.effects.BeyonderEffect;
 import net.dinomine.potioneer.beyonder.pathways.TyrantPathway;
 import net.dinomine.potioneer.beyonder.player.BeyonderCapability;
 import net.dinomine.potioneer.mob_effects.ModEffects;
-import net.dinomine.potioneer.mob_effects.ServerEffectVisualHandling;
+import net.dinomine.potioneer.server.ServerEffectVisualHandling;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;

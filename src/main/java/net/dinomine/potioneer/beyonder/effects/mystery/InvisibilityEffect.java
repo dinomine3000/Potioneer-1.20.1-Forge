@@ -4,6 +4,7 @@ import net.dinomine.potioneer.beyonder.abilities.Abilities;
 import net.dinomine.potioneer.beyonder.abilities.AbilityFunctionHelper;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffect;
 import net.dinomine.potioneer.beyonder.player.BeyonderCapability;
+import net.dinomine.potioneer.server.ServerEffectVisualHandling;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
@@ -22,6 +23,7 @@ public class InvisibilityEffect extends BeyonderEffect {
                 if(monsterTarget != null && monsterTarget.is(target)) monster.setTarget(null);
             }
         });
+        ServerEffectVisualHandling.addInvisibleEntity(target);
     }
 
     @Override
@@ -37,6 +39,7 @@ public class InvisibilityEffect extends BeyonderEffect {
         if(target.hasEffect(MobEffects.INVISIBILITY)){
             target.removeEffect(MobEffects.INVISIBILITY);
         }
+        ServerEffectVisualHandling.removeInvisibleEntity(target);
     }
 
     @Override

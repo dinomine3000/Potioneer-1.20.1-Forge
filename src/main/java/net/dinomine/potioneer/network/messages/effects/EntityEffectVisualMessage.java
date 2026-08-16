@@ -1,10 +1,9 @@
 package net.dinomine.potioneer.network.messages.effects;
 
-import net.dinomine.potioneer.mob_effects.ClientEffectVisualHandling;
+import net.dinomine.potioneer.server.ClientEffectVisualHandling;
 import net.dinomine.potioneer.util.BufferUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -81,9 +80,19 @@ class EntityEffectSyncClient {
         Level level = Minecraft.getInstance().level;
         if (level == null) return;
 
-        if(msg.operation == EntityEffectVisualMessage.Operation.ADD)
-            for (int entityId : msg.entityIds) ClientEffectVisualHandling.addMistEntity(entityId);
-        else
-            for (int entityId : msg.entityIds) ClientEffectVisualHandling.removeMistEntity(entityId);
+        switch (msg.effectType){
+            case "mist":
+                if(msg.operation == EntityEffectVisualMessage.Operation.ADD)
+                    for (int entityId : msg.entityIds) ClientEffectVisualHandling.addMistEntity(entityId);
+                else
+                    for (int entityId : msg.entityIds) ClientEffectVisualHandling.removeMistEntity(entityId);
+                break;
+            case "invisible":
+                if(msg.operation == EntityEffectVisualMessage.Operation.ADD)
+                    for (int entityId : msg.entityIds) ClientEffectVisualHandling.addInvisibleEntity(level, entityId);
+                else
+                    for (int entityId : msg.entityIds) ClientEffectVisualHandling.removeInvisibleEntity(level, entityId);
+                break;
+        }
     }
 }
