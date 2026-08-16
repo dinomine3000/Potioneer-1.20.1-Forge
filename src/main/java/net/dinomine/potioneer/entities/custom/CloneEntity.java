@@ -190,6 +190,7 @@ public class CloneEntity extends LivingEntity {
                 if(eff == null) return;
                 if(cap.getEffectsManager().removeEffectImmediately(eff, cap, player)){
                     if(!level().isClientSide()) {
+                        cap.getEffectsManager().clearCloneWeakEffects(cap, player);
                         AbilityFunctionHelper.teleportEntity(player, (ServerLevel) player.level(), (ServerLevel) level(), getOnPos().above(), getXRot(), getYRot(), false);
                         if(dmg != null) player.hurt(dmg, dmgAmount);
                     }

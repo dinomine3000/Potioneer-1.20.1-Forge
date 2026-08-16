@@ -25,6 +25,6 @@ public class CleanseAbility extends Ability {
 
     @Override
     protected String getMainDescId(int sequenceLevel) {
-        return "";
+        return "cleanse";
     }
 }

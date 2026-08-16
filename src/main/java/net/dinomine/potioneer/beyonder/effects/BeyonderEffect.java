@@ -29,6 +29,14 @@ public abstract class BeyonderEffect {
 
     public final int getPriority(){return priority.value;}
 
+    /**
+     * function that can be overridden to make effects go away if the target was actually an illusion when it was applied.
+     * this means itll be cleared immediately.
+     * by default, NO effect bypasses clones and illusions when applied. that is, the must be rea
+     * @return
+     */
+    public boolean bypassesClones(){return false;}
+
     public void onUpdateReceivedOnClient(BeyonderCapability cap, LivingEntity target) {}
 
     public boolean onDie(LivingDeathEvent event, BeyonderCapability cap, LivingEntity target) {

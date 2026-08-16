@@ -6,6 +6,12 @@ import net.minecraft.world.entity.LivingEntity;
 
 public class AirBulletEffect extends BeyonderEffect {
     public static final int DAMAGE = 6;
+
+    @Override
+    public boolean bypassesClones() {
+        return true;
+    }
+
     @Override
     protected void doTick(BeyonderCapability cap, LivingEntity target) {
         cap.getEffectsManager().statsHolder.addHealth(-DAMAGE);

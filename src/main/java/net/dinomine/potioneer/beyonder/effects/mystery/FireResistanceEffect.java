@@ -12,6 +12,10 @@ public class FireResistanceEffect extends BeyonderEffect {
     private boolean resFlag = false;
 
     @Override
+    public boolean bypassesClones() {
+        return true;
+    }
+    @Override
     public void onAcquire(BeyonderCapability cap, LivingEntity target) {}
 
     @Override

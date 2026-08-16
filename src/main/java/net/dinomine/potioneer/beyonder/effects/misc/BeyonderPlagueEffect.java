@@ -20,6 +20,10 @@ public class BeyonderPlagueEffect extends BeyonderEffect {
     private int spreadCd;
     private UUID casterId = null;
 
+    @Override
+    public boolean bypassesClones() {
+        return false;
+    }
 
     public void setCasterId(UUID id){
         this.casterId = id;

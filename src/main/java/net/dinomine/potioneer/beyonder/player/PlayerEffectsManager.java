@@ -18,7 +18,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.*;
 
 public class PlayerEffectsManager {
-    private final PriorityQueue<BeyonderEffect> passives = new PriorityQueue<>(Comparator.comparingInt(BeyonderEffect::getPriority));
+    private PriorityQueue<BeyonderEffect> passives = new PriorityQueue<>(Comparator.comparingInt(BeyonderEffect::getPriority));
     public BeyonderStats statsHolder;
 
     //called from victim perspective
@@ -441,12 +441,15 @@ public class PlayerEffectsManager {
     /**
      * TODO: make passives that actually want to persist in death, like shepherd graze
      * @param otherEffects
-     * @param cap
-     * @param player
      */
-    public void copyFrom(PlayerEffectsManager otherEffects, BeyonderCapability cap, BeyonderCapability oldCap, Player player) {
-        for (BeyonderEffect passive : otherEffects.passives) {
-            addOrRefreshEffect(passive, cap, player);
+    public void copyFrom(PlayerEffectsManager otherEffects) {
+        this.passives = otherEffects.passives;
+    }
+
+    public void clearCloneWeakEffects(BeyonderCapability cap, LivingEntity target) {
+        for(BeyonderEffect eff: new ArrayList<>(passives)){
+            if(eff.bypassesClones()) continue;
+            removeEffectImmediately(eff, cap, target);
         }
     }
 }

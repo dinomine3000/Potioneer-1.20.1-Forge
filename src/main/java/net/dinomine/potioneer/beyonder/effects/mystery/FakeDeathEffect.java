@@ -16,6 +16,11 @@ import java.util.Optional;
 public class FakeDeathEffect extends BeyonderEffect {
 
     @Override
+    public boolean bypassesClones() {
+        return true;
+    }
+
+    @Override
     protected void setPriority(int sequenceLevel) {
         priority = Priority.VERY_HIGH;
     }
