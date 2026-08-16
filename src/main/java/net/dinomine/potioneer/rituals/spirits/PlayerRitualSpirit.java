@@ -13,4 +13,5 @@ public class PlayerRitualSpirit extends EvilSpirit{
         super(new RitualResponseLogic(new NeverCriteria(), new AlwaysCriteria(), new NothingResponse(),
                 new PlayerResponse()), new ArrayList<>());
     }
+
 }

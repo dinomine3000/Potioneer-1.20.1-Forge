@@ -158,6 +158,10 @@ public abstract class ModNbtUtils {
             return Arrays.stream(array).boxed().toList();
         }
 
+        public static boolean isCharacteristic(ItemStack stack){
+            return hasTag(TAGS.BEYONDER, stack);
+        }
+
         public static int getAssociatedPathSeqLevel(CompoundTag tag){
             List<Integer> bestIds = CharacteristicHelper.closestToLowerTens(getCharIds(tag)).stream().sorted().toList();
             if(bestIds.isEmpty()) return -1;
@@ -201,6 +205,32 @@ public abstract class ModNbtUtils {
     public static class ArtifactInfoTag{
         private static final String UUID_KEY = "artifactId";
         private static final String STACK_KEY = "itemStack";
+        private static final String NEED_CHARGE_KEY = "needsCharge";
+        private static final String CHARGE_KEY = "charge";
+
+        public static CompoundTag generateArtifactTag(ItemStack stack, List<String> abilityIds, int sequenceLevel){
+            return generateArtifactTag(stack, abilityIds.stream().map(id -> new AbilityKey(id, sequenceLevel)).toList());
+        }
+
+        /**
+         * generates a brand new artifact tag with the given abilities.
+         * @param abilityKeys
+         * @return
+         */
+        public static CompoundTag generateChargedArtifactTag(ItemStack stack, List<AbilityKey> abilityKeys, float chargeSeconds){
+            return generateArtifactTag(stack, UUID.randomUUID(), abilityKeys, true, chargeSeconds);
+        }
+        public static CompoundTag generateArtifactTag(ItemStack stack, UUID artifactId, List<AbilityKey> abilityKeys, boolean needsCharge, float useSeconds){
+            CompoundTag resArtifactTag = new CompoundTag();
+            resArtifactTag.putUUID(UUID_KEY, artifactId);
+            for(AbilityKey abl: abilityKeys){
+                resArtifactTag.put(abl.onArtifact(artifactId).toString(), new CompoundTag());
+            }
+            resArtifactTag.putBoolean(NEED_CHARGE_KEY, needsCharge);
+            resArtifactTag.putFloat(CHARGE_KEY, useSeconds);
+            setItemRootTag(stack, resArtifactTag, ARTIFACT_TAG_ID);
+            return resArtifactTag;
+        }
         /**
          * generates a brand new artifact tag with the given abilities.
          * @param abilityKeys
@@ -209,18 +239,8 @@ public abstract class ModNbtUtils {
         public static CompoundTag generateArtifactTag(ItemStack stack, List<AbilityKey> abilityKeys){
             return generateArtifactTag(stack, UUID.randomUUID(), abilityKeys);
         }
-        public static CompoundTag generateArtifactTag(ItemStack stack, List<String> abilityIds, int sequenceLevel){
-            return generateArtifactTag(stack, abilityIds.stream().map(id -> new AbilityKey(id, sequenceLevel)).toList());
-        }
-
         public static CompoundTag generateArtifactTag(ItemStack stack, UUID artifactId, List<AbilityKey> abilityKeys){
-            CompoundTag resArtifactTag = new CompoundTag();
-            resArtifactTag.putUUID(UUID_KEY, artifactId);
-            for(AbilityKey abl: abilityKeys){
-                resArtifactTag.put(abl.onArtifact(artifactId).toString(), new CompoundTag());
-            }
-            setItemRootTag(stack, resArtifactTag, ARTIFACT_TAG_ID);
-            return resArtifactTag;
+            return generateArtifactTag(stack, artifactId, abilityKeys, false, -1);
         }
 
         public static void saveArtifactToItem(ArtifactHolder artifact, ItemStack stack){
@@ -261,6 +281,23 @@ public abstract class ModNbtUtils {
         public static ArtifactHolder getArtifactHolderFromItem(ItemStack stack){
             return getArtifactHolderFromTag(getTagFromItem(ARTIFACT_TAG_ID, stack));
         }
+        public static boolean isArtifactCharged(ItemStack stack){
+            if(!hasTag(TAGS.ARTIFACT, stack)) return false;
+            return isArtifactCharged(getTagFromItem(TAGS.ARTIFACT, stack));
+        }
+
+        public static boolean isArtifactCharged(CompoundTag artifactTag){
+            if(artifactTag == null) return false;
+            return !artifactTag.getBoolean(NEED_CHARGE_KEY) || artifactTag.getFloat(CHARGE_KEY) > 0;
+        }
+
+        public static boolean doesArtifactNeedCharge(ItemStack stack){
+            return hasTag(TAGS.ARTIFACT, stack) && getTagFromItem(TAGS.ARTIFACT, stack).getBoolean(NEED_CHARGE_KEY);
+        }
+
+        public static float getArtifactCharge(ItemStack stack){
+            return hasTag(TAGS.ARTIFACT, stack) ? getTagFromItem(TAGS.ARTIFACT, stack).getFloat(CHARGE_KEY) : 0f;
+        }
 
         public static ArtifactHolder getArtifactHolderFromTag(CompoundTag artifactTag){
             if(artifactTag == null) return null;
@@ -279,7 +316,11 @@ public abstract class ModNbtUtils {
             }
             ItemStack stack = ItemStack.EMPTY;
             if(artifactTag.contains(STACK_KEY)) stack = ItemStack.of(artifactTag.getCompound(STACK_KEY));
-            return new ArtifactHolder(abilities, artifactId, stack);
+            if(artifactTag.getBoolean(NEED_CHARGE_KEY)){
+                return new ArtifactHolder(abilities, artifactId, stack, artifactTag.getFloat(CHARGE_KEY));
+            } else {
+                return new ArtifactHolder(abilities, artifactId, stack);
+            }
         }
 
         public static CompoundTag getTagFromArtifactHolder(ArtifactHolder artifact, boolean saveItem){
@@ -291,8 +332,9 @@ public abstract class ModNbtUtils {
             for(Ability abl: artifact.downsides.values()){
                 artifactTag.put(abl.getAbilityKey().toString(), abl.saveNbt());
             }
-            if(saveItem)
-                artifactTag.put(STACK_KEY, artifact.item.save(new CompoundTag()));
+            if(saveItem) artifactTag.put(STACK_KEY, artifact.item.save(new CompoundTag()));
+            artifactTag.putBoolean(NEED_CHARGE_KEY, artifact.needsCharge);
+            artifactTag.putFloat(CHARGE_KEY, artifact.chargeSeconds);
             return artifactTag;
         }
 
@@ -564,7 +606,13 @@ public abstract class ModNbtUtils {
             }
             return "";
         }
-
+        public static ItemStack updateOrApplyInfluenceOnItem(ItemStack stack, float spiritualityAmount, Player player){
+            if(stack.isEmpty()) return stack;
+            CompoundTag tag = getTagFromItem(TAGS.MYSTICISM, stack);
+            if(tag == null) tag = generateNewMysticismTag();
+            setItemRootTag(stack, updateOrApplyTagInfluence(tag, spiritualityAmount, player), TAGS.MYSTICISM);
+            return stack;
+        }
         public static CompoundTag updateOrApplyTagInfluence(CompoundTag mystTag, float spiritualityAmount, Player player){
             if(player == null) {
                 System.out.println("[Potioneer] Warning: Tried to add spirituality from a non-existent player. Did you mean to add blank spirituality? Check your TODO LIST!");

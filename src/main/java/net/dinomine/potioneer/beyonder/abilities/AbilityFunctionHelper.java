@@ -457,7 +457,9 @@ public class AbilityFunctionHelper {
     }
 
     public static boolean hasEffect(String effectId, LivingEntity target) {
-        return getEffectOnTarget(effectId, target) != null;
+        Optional<BeyonderCapability> optCap = CapProvider.beyonder(target);
+        if(optCap.isEmpty()) return false;
+        return optCap.get().getEffectsManager().hasEffect(effectId);
     }
 
     public interface IBlockPlacer{
@@ -500,6 +502,7 @@ public class AbilityFunctionHelper {
     public static void pushEntity(LivingEntity target, Vec3 pushAngle) {
         target.push(pushAngle.x, pushAngle.y, pushAngle.z);
         target.hasImpulse = true;
+        target.hurtMarked = true;
         /*if(target instanceof Player player){
             player.push(pushAngle.x, pushAngle.y, pushAngle.z);
             target.hasImpulse = true;

@@ -249,6 +249,8 @@
   "page.potioneer.rituals_candles": "Candles",
   "page.potioneer.rituals_ink": "Ritualistic Ink",
   "page.potioneer.rituals_dagger": "Ritualistic Dagger",
+  "page.potioneer.item_charging": "Charging Mystical Items",
+  "page.potioneer.single_candle": "Candle",
   "page.potioneer.rituals_offerings": "Offerings",
   "page.potioneer.charm_101": "Charm Crafting",
   "page.potioneer.mistakes": "Skipping levels.",
@@ -313,6 +315,10 @@
   "contents.potioneer.map_divination_bottom": "Simply hold the map in your main hand, the target of your divination on your offhand, and some ritualistic ink in your inventory, and cast the ability to do map divination.",
   "contents.potioneer.luck": "Luck as a concept is impossible to predict, but it does follow rules. Firstly, it is always changing. Every second it goes up or down randomly. But it never leaves someone's 'luck range' naturally, so you'll generally find it sitting between their minimum and maximum values. Certain mystical phenomena can suppress this range, maxing it at 0, making the person unlucky.",
   "contents.potioneer.luck_range": "A luck range can be interpreted as someone's affinity to Fate. It is compromised of a maximum and minimum values, which are calculated based on the person's luck position. If their position rises 50 levels, then both their maximum and minimum rise 50 levels too. Their instant luck fluctuates randomly overtime within this range, and if it is outside the range, it'll slowly walk back inside. Knowing how to affect one's luck range is crucial to tamper with Fate.",
+  "contents.potioneer.single_candle_top": "Candles are needed to perform a ritual, but the amount can often be exaggerated by beginners.",
+  "contents.potioneer.single_candle_bottom": "For simple enough rituals that rely on the caster's own power, one candle is more than enough, and doesn't risk warning other existences.",
+  "contents.potioneer.item_charging_top": "To charge an item with your spirituality, you only require one ritualistic pedestal.",
+  "contents.potioneer.item_charging_bottom": "Place the desired item in the pedestal and pray to \"infuse\" or \"inbue\" your item of choice. More pedestals only drain your spirituality needlessly.",
 
   "menu.potioneer.conjurer_menu": "Conjurer",
   "menu.potioneer.crafter_menu": "Crafter",
@@ -723,6 +729,15 @@
   "ability_name.potioneer.unseen_hand": "Invisible Force",
   "short_desc.potioneer.unseen_hand": "What a neat and interesting ability.",
   "long_desc.potioneer.unseen_hand": "Left click to push the target you're looking at away, Right click to push them into the air.",
+  "ability_name.potioneer.magic_tools": "Magical Tools",
+  "short_desc.potioneer.magic_tools": "I suppose this could be good for some, but it's downright useless for someone like me.",
+  "long_desc.potioneer.magic_tools": "On cast, copy your quick-cast ability into the item you're holding to create a mystical item. Right-click to learn more.",
+  "ability_name.potioneer.theft": "Theft",
+  "short_desc.potioneer.theft": "Now this is something I'm incredibly familiar with.",
+  "long_desc.potioneer.theft": "Allows you to steal a target's main hand item, or some random item.",
+  "ability_name.potioneer.theft_2": "Spirit Theft",
+  "short_desc.potioneer.theft_2": "Oh I see what's happening here... Very interesting.",
+  "long_desc.potioneer.theft_2": "When stealing from someone, also steals some spirituality.",
 
   "ability_name.potioneer.d_dummy": "Hurt",
   "ability_name.potioneer.d_cooldown": "Random Cooldowns",
@@ -759,5 +774,7 @@
   "message.potioneer.bribe_set_truce": "Bribe set to Truce",
   "message.potioneer.bribe_set_disorder": "Bribe set to Disorder",
   "luck.potioneer.event_cast": "You feel a dire omen...",
-  "message.potioneer.door_opening_too_thick": "Wall is too thick for your level."
+  "message.potioneer.door_opening_too_thick": "Wall is too thick for your level.",
+  "tooltip.potioneer.artifact_charge": "Charge left: %s seconds.",
+  "tooltip.potioneer.artifact_out_of_charge": "Item out of charge."
 }

@@ -91,6 +91,14 @@ public class BeyonderEffects {
     public static final BeyonderEffectType MYSTERY_AERIAL_DOMAIN = registerEffect("aerial_domain", new BeyonderEffectType(AerialDomainEffect::new));
     public static final BeyonderEffectType MYSTERY_AIR_BULLET = registerEffect("air_bullet", new BeyonderEffectType(AirBulletEffect::new));
     public static final BeyonderEffectType MYSTERY_AUTO_BLINK = registerEffect("auto_blink", new BeyonderEffectType(AutoBlinkEffect::new));
+    public static final BeyonderEffectType MYSTERY_WATER_BREATHING = registerEffect("water_breath", new BeyonderEffectType(WaterBreathingEffect::new));
+    public static final BeyonderEffectType MYSTERY_FIRE_RES = registerEffect("fire_res", new BeyonderEffectType(FireResistanceEffect::new));
+    public static final BeyonderEffectType MYSTERY_MOB_NOISES = registerEffect("mob_noises", new BeyonderEffectType(MobNoisesEffect::new));
+    public static final BeyonderEffectType MYSTERY_FRICTIONLESS = registerEffect("frictionless", new BeyonderEffectType(BlankEffect::new));
+    public static final BeyonderEffectType MYSTERY_BOUNCY = registerEffect("bouncy", new BeyonderEffectType(BlankEffect::new));
+    public static final BeyonderEffectType MYSTERY_FOG = registerEffect("fog", new BeyonderEffectType(BlankEffect::new));
+    public static final BeyonderEffectType MYSTERY_SHOCK = registerEffect("shock", new BeyonderEffectType(ShockEffect::new));
+    public static final BeyonderEffectType MYSTERY_FLASH = registerEffect("flash", new BeyonderEffectType(BlankEffect::new));
 
     //Red Priest
     public static final BeyonderEffectType RED_FIRE_AURA = registerEffect("fire_aura", new BeyonderEffectType(BeyonderFireAuraEffect::new));

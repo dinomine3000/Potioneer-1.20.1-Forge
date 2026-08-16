@@ -235,7 +235,7 @@ public abstract class Ability {
         if(--cooldown == 0 && target instanceof Player player) updateCooldownClient(player);
     }
 
-    protected void setNextCooldownAs(int cooldownTicks){
+    public void setNextCooldownAs(int cooldownTicks){
         temporaryCooldown = cooldownTicks;
     }
 

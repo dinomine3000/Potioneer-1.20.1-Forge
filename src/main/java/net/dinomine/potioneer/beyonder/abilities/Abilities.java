@@ -331,11 +331,11 @@ public class Abilities {
                     .withCooldown(20*60, PassiveAbility.CooldownTrigger.ON_APPLY).withCost(25),
             1, 2, 0);
 
-    public static final AbilityFactory INVISIBILITY = registerAbility("invisibility",
-            (Integer sequenceLevel) -> TimedPassiveAbility.createTimed(sequenceLevel, BeyonderEffects.MYSTERY_INVISIBLE,
-                            (ignored) -> "invisibility", level -> 20*3)
-                    .withCooldown(20*5, PassiveAbility.CooldownTrigger.ON_APPLY).withThreshold(0.15f),
-            4, 2, 0);
+    public static final AbilityFactory TRICKS = registerAbility("tricks",
+            MagicTricksAbility::new, 1, 2, MagicTricksAbility.CAST_COST).hasSecondaryFunction();
+
+    public static final AbilityFactory MAGIC_TOOLS = registerAbility("magic_tools",
+            MagicToolsAbility::new, 1, 2, 0).hasSecondaryFunction();
 
     // -------------------------- RED PRIEST ---------------------------------------------------
 

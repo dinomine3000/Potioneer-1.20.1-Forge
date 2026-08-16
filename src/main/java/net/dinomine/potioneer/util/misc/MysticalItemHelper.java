@@ -1,11 +1,14 @@
 package net.dinomine.potioneer.util.misc;
 
 import net.dinomine.potioneer.beyonder.abilities.Abilities;
+import net.dinomine.potioneer.beyonder.abilities.Ability;
+import net.dinomine.potioneer.beyonder.abilities.AbilityKey;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffect;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
 import net.dinomine.potioneer.item.ModItems;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.common.Tags;
 
@@ -14,7 +17,8 @@ import java.util.List;
 import java.util.UUID;
 
 import static net.dinomine.potioneer.util.misc.ModNbtUtils.*;
-import static net.dinomine.potioneer.util.misc.ModNbtUtils.ArtifactInfoTag.generateArtifactTag;
+import static net.dinomine.potioneer.util.misc.ModNbtUtils.ArtifactInfoTag.isArtifactCharged;
+import static net.dinomine.potioneer.util.misc.ModNbtUtils.ArtifactInfoTag.saveArtifactToItem;
 import static net.dinomine.potioneer.util.misc.ModNbtUtils.CharmInfoTag.*;
 
 public class MysticalItemHelper {
@@ -114,8 +118,21 @@ public class MysticalItemHelper {
 //        gemStack.setTag(ogTag);
 //    }
 
-    //artifact weapons without downsides and without beyonder tag
-//    public static void makeBeyonderWeapon(){}
+    public static ItemStack generateMysticalItem(ItemStack stack, String abilityId, int sequenceLevel, float useSeconds){
+        ModNbtUtils.ArtifactInfoTag.generateArtifactTag(stack, UUID.randomUUID(), List.of(new AbilityKey(abilityId, sequenceLevel)), true, useSeconds);
+        return stack;
+    }
+
+    public static boolean isChargeableArtifact(ItemStack stack){
+        return isArtifact(stack) && ModNbtUtils.ArtifactInfoTag.doesArtifactNeedCharge(stack);
+    }
+
+    public static ItemStack chargeArtifact(ItemStack toCharge, float spir, Player player) {
+        ArtifactHolder artifact = ArtifactInfoTag.getArtifactHolderFromItem(toCharge);
+        artifact.charge(3*spir);
+        saveArtifactToItem(artifact, toCharge);
+        return ModNbtUtils.MysticismTag.updateOrApplyInfluenceOnItem(toCharge, spir, player);
+    }
 
     public static void generateSealedArtifact(ItemStack stack, int pathwaySequenceId, RandomSource random){
         generateSealedArtifact(stack, List.of(pathwaySequenceId), random);
@@ -147,7 +164,7 @@ public class MysticalItemHelper {
             if(!downId.isEmpty()) abilities.add(downId);
             if(!ablId.isEmpty()) abilities.add(ablId);
         }
-        return generateArtifactTag(stack, abilities, level);
+        return ModNbtUtils.ArtifactInfoTag.generateArtifactTag(stack, abilities, level);
     }
 
     private static String getRandomAbilityId(int pathwaySequenceId, RandomSource random, List<String> dontRepeatAbilities, boolean downsides) {
@@ -173,14 +190,23 @@ public class MysticalItemHelper {
     }
 
     public static boolean isValidItemForArtifact(ItemStack stack){
-        return !isWorkingArtifact(stack) && (stack.is(Tags.Items.TOOLS) || stack.is(ModItems.RING.get()) || stack.is(ModItems.CROWN.get())) && !stack.is(ModItems.CHARACTERISTIC.get());
+        return !isArtifact(stack) && (stack.is(Tags.Items.TOOLS) || stack.is(ModItems.RING.get()) || stack.is(ModItems.CROWN.get())) && !stack.is(ModItems.CHARACTERISTIC.get());
     }
 
-    public static boolean isWorkingArtifact(ItemStack stack){
+    public static boolean isArtifact(ItemStack stack){
         return hasTag(ModNbtUtils.TAGS.ARTIFACT, stack);
     }
 
+    public static boolean isWorkingArtifact(ItemStack stack){
+         return isArtifact(stack) && isArtifactCharged(getTagFromItem(TAGS.ARTIFACT, stack));
+    }
+
     public static ArtifactHolder getArtifactFromItem(ItemStack itemStack) {
+        if(!isArtifact(itemStack)) return null;
+        CompoundTag artifactTag = getTagFromItem(TAGS.ARTIFACT, itemStack);
+        return ArtifactHolder.loadFromTag(artifactTag).withStack(itemStack);
+    }
+    public static ArtifactHolder getWorkingArtifactFromItem(ItemStack itemStack) {
         if(!isWorkingArtifact(itemStack)) return null;
         CompoundTag artifactTag = getTagFromItem(TAGS.ARTIFACT, itemStack);
         return ArtifactHolder.loadFromTag(artifactTag).withStack(itemStack);
@@ -191,7 +217,7 @@ public class MysticalItemHelper {
     }
 
     public static void updateArtifactTagOnItem(ArtifactHolder artifactHolder, ItemStack itemStack) {
-        if(!isWorkingArtifact(itemStack)) return;
+        if(!isArtifact(itemStack)) return;
         if(!ModNbtUtils.ArtifactInfoTag.getArtifactId(itemStack).equals(artifactHolder.getArtifactId())) return;
         ModNbtUtils.ArtifactInfoTag.saveArtifactToItem(artifactHolder, itemStack);
     }
@@ -207,6 +233,7 @@ public class MysticalItemHelper {
     public static boolean isCharacteristic(ItemStack item) {
         return hasTag(TAGS.BEYONDER, item);
     }
+
 //    public static ArtifactHolder getArtifactIdsFromItem(ItemStack stack){
 //        if(!stack.hasTag() || !stack.getTag().contains(ARTIFACT_TAG_ID)) return new ArrayList<>();
 ////        if(stack.is(ModItems.AMULET.get())) return new ArrayList<>();

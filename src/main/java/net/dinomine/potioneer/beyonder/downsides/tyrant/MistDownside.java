@@ -35,7 +35,7 @@ public class MistDownside extends Downside {
             boolean flag = false;
             while(iterator.hasNext()){
                 ItemStack stack = iterator.next();
-                if(ModNbtUtils.ArtifactInfoTag.isItemArtifact(stack)) continue;
+                if(ModNbtUtils.BeyonderInfoTag.isCharacteristic(stack)) continue;
                 if(stack.isEmpty()) continue;
                 PacketHandler.sendMessageToClientsAround(target, 6, new GeneralAreaEffectMessage(ParticleMaker.Preset.SMALL_MIST, target.getEyePosition().toVector3f(), 1));
                 target.level().playSound(null, target.getOnPos(), SoundEvents.BUCKET_FILL, SoundSource.PLAYERS);

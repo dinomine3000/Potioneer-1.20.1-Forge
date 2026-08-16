@@ -56,7 +56,7 @@ public class GymnasticsEffect extends BeyonderEffect {
 
     }
 
-    private int getMaxJump(){return 1 + (9 - sequenceLevel);}
+    private int getMaxJump(){return 1 + (9 - sequenceLevel) + Math.max(0, 8-sequenceLevel);}
 
     @Override
     public void stopEffects(BeyonderCapability cap, LivingEntity target) {

@@ -74,9 +74,17 @@ public class ClientForgeHandler {
             if(stack.hasTag() && stack.getTag().contains("recipe_data")){
                 tooltip.add(Component.literal(PotionRecipeData.getName(stack.getTag().getCompound("recipe_data"))));
             }
-            if(appraiser && MysticalItemHelper.isWorkingArtifact(stack)){
-                for(AbilityInfo info: MysticalItemHelper.getArtifactFromItem(stack).getAbilitiesInfo(true)){
-                    tooltip.add(info.getMutableNameComponent().withStyle(ChatFormatting.ITALIC));
+            if(MysticalItemHelper.isArtifact(stack)){
+                if(appraiser)
+                    for(AbilityInfo info: MysticalItemHelper.getArtifactFromItem(stack).getAbilitiesInfo(true)){
+                        tooltip.add(info.getMutableNameComponent().withStyle(ChatFormatting.ITALIC));
+                    }
+                if(ModNbtUtils.ArtifactInfoTag.doesArtifactNeedCharge(stack)){
+                    if(ModNbtUtils.ArtifactInfoTag.isArtifactCharged(stack)){
+                        tooltip.add(Component.translatable("tooltip.potioneer.artifact_charge", (int) ModNbtUtils.ArtifactInfoTag.getArtifactCharge(stack)));
+                    } else {
+                        tooltip.add(Component.translatable("tooltip.potioneer.artifact_out_of_charge"));
+                    }
                 }
             }
             if(appraiser && ModNbtUtils.hasTag(ModNbtUtils.TAGS.POTION, stack)){

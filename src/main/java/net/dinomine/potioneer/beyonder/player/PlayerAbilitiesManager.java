@@ -37,6 +37,10 @@ public class PlayerAbilitiesManager {
     public ArrayList<AbilityKey> clientHotbar = new ArrayList<>();
     public AbilityKey quickAbility = new AbilityKey();
 
+    public @Nullable Ability getQuickAbility(){
+        return quickAbility.isEmpty() ? null : getAbility(quickAbility);
+    }
+
     @Override
     public String toString() {
         return "Abilities: " + abilities.keySet().stream().map(AbilityKey::toString).toList() +
@@ -58,9 +62,14 @@ public class PlayerAbilitiesManager {
         }
         ArtifactHolder artifact = artifacts.get(artifactKey);
         artifact.castDefaultAbilities(cap, target);
-
     }
-
+    public @Nullable Ability getFirstAbilityOutOfCooldown(String ability){
+        List<Ability> matches = getAbilities(ability);
+        for(Ability abl: matches){
+            if(abl.getCooldown() == 0) return abl;
+        }
+        return null;
+    }
     public Ability getAbility(AbilityKey key){
         if(key.isArtifactKey()) return artifacts.get(key.getArtifactId()).getAbility(key);
         return abilities.get(key);
@@ -104,7 +113,7 @@ public class PlayerAbilitiesManager {
         //use messages to update the client.
         if(player.level().isClientSide()) return;
 
-        //1 - create list of artifacts from inventory data
+        //1 - create list of working artifacts from inventory data
         //returns a map, connecting ablIds to artifactIds
         Map<UUID, ArtifactHolder> inventoryArtifacts = getArtifactsFromInventory(player);
         //2 - update artifacts list attribute if anything changed
@@ -139,7 +148,7 @@ public class PlayerAbilitiesManager {
 //        boolean tooManyAmulets = false;
         HashMap<UUID, ArtifactHolder> resMap = new HashMap<>();
         iterateThroughInventory(player, itemStack -> {
-            ArtifactHolder artifact = MysticalItemHelper.getArtifactFromItem(itemStack);
+            ArtifactHolder artifact = MysticalItemHelper.getWorkingArtifactFromItem(itemStack);
             if(artifact != null)
                 resMap.putIfAbsent(artifact.getArtifactId(), artifact);
         });
@@ -570,6 +579,11 @@ public class PlayerAbilitiesManager {
 
     public boolean hasAbility(String ablId) {
         return hasAbilityOrBetter(ablId, 9);
+    }
+
+    public boolean hasAbilityAndIsOutOfCooldown(String ablId){
+        List<Ability> abilities = getAbilities(ablId);
+        return abilities.stream().anyMatch(abl -> abl.getCooldown() == 0);
     }
 
     public List<Ability> getAbilities() {

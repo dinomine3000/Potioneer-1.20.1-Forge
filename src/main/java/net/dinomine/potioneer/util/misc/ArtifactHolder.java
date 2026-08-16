@@ -23,6 +23,13 @@ public class ArtifactHolder {
     private final HashMap<AbilityKey, Boolean> abilitiesToActivateOnItemInteract = new HashMap<>();
     private final UUID artifactId;
     protected ItemStack item;
+    //1 active cast = 60 passive seconds
+    protected float chargeSeconds = -1;
+    protected boolean needsCharge = false;
+
+    public void charge(float chargeSeconds){
+        this.chargeSeconds += chargeSeconds;
+    }
 
     public UUID getArtifactId(){
         return artifactId;
@@ -59,29 +66,28 @@ public class ArtifactHolder {
         this.artifactId = artifactId;
     }
 
+    public ArtifactHolder(List<Ability> abilities, UUID artifactId, ItemStack stack, float useInSeconds){
+        this(abilities, artifactId, stack);
+        this.chargeSeconds = useInSeconds;
+        this.needsCharge = true;
+    }
+
     public ArtifactHolder withStack(ItemStack stack) {
         if(stack == null) return this;
         this.item = stack;
         return this;
     }
 
-    /**
-     * for creating a new artifact
-     * @param abilities
-     * @param downsides
-     */
-    public ArtifactHolder(List<Ability> abilities, List<Downside> downsides){
-        this(abilities, UUID.randomUUID(), ItemStack.EMPTY);
-    }
-
 
     public boolean castAbility(AbilityKey key, boolean primary, BeyonderCapability cap, LivingEntity target, CompoundTag args){
+        if(outOfCharge()) return false;
         Ability abl = abilities.get(key);
         if(abl == null) return false;
         if(!abl.castAbility(cap, target, primary, args)) return false;
         for(Downside ds: downsides.values()){
             ds.castAbility(cap, target, true);
         }
+        if(needsCharge) chargeSeconds -= 60;
         return true;
     }
 
@@ -95,12 +101,9 @@ public class ArtifactHolder {
         downsides.values().forEach(downside -> downside.deactivate(cap, target));
     }
 
-    public void revokeAbilities(List<AbilityKey> abilitiesToRevoke, BeyonderCapability cap, LivingEntity target){
-
-    }
-
     public void castDefaultAbilities(BeyonderCapability cap, LivingEntity target){
         if(abilitiesToActivateOnItemInteract.isEmpty()) return;
+        if(outOfCharge()) return;
         boolean flag = false;
         for(AbilityKey key: abilitiesToActivateOnItemInteract.keySet()){
             if(abilities.get(key).castAbility(cap, target, abilitiesToActivateOnItemInteract.get(key))) flag = true;
@@ -109,14 +112,22 @@ public class ArtifactHolder {
         for(Downside ds: downsides.values()){
             ds.castAbility(cap, target, true);
         }
+        if(needsCharge) chargeSeconds -= 60;
     }
 
     public void passives(BeyonderCapability cap, LivingEntity target){
+        if(outOfCharge()) return;
         abilities.values().forEach(abl -> abl.passive(cap, target));
         downsides.values().forEach(downside -> downside.passive(cap, target));
         abilities.values().forEach(abl -> abl.tickCooldown(target));
         downsides.values().forEach(downside -> downside.tickCooldown(target));
+        if(abilities.values().stream().anyMatch(abl -> abl.isPassive() && abl.isEnabled()) && needsCharge){
+            chargeSeconds -= 1/20f;
+            if(chargeSeconds <= 0) updateItemTags();
+        }
     }
+
+    private boolean outOfCharge(){return needsCharge && chargeSeconds <= 0;}
 
     /**
      * saves the artifact to a compound tag
@@ -130,6 +141,7 @@ public class ArtifactHolder {
     public static ArtifactHolder loadFromTag(CompoundTag artifactTag, ItemStack stack){
         ArtifactHolder artifact = ModNbtUtils.ArtifactInfoTag.getArtifactHolderFromTag(artifactTag);
         if(artifact == null) return null;
+        //if(artifact.needsCharge && artifact.chargeSeconds <= 0) return null;
         return artifact.withStack(stack);
     }
 

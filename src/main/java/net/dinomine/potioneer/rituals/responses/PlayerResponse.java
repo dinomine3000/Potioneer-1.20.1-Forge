@@ -10,12 +10,15 @@ import net.dinomine.potioneer.recipe.RitualContainer;
 import net.dinomine.potioneer.rituals.RitualInputData;
 import net.dinomine.potioneer.rituals.spirits.RitualSpiritResponse;
 import net.dinomine.potioneer.util.PotionIngredient;
+import net.dinomine.potioneer.util.misc.ModNbtUtils;
+import net.dinomine.potioneer.util.misc.MysticalItemHelper;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 
 import java.util.List;
+import java.util.Optional;
 
 public class PlayerResponse extends SpiritResponse {
     @Override
@@ -31,12 +34,50 @@ public class PlayerResponse extends SpiritResponse {
     protected void defaultNormalResponse(RitualInputData inputData, Level level){
         String testString = inputData.thirdVerse().toLowerCase();
         if(testString.contains("aid")
-                || testString.contains("help")) aidTarget(inputData, level);
+                || testString.contains("help")) makeCharm(inputData, level);
         else if(testString.contains("imbue")
-                || testString.contains("infuse")) imbue(inputData, level);
+                || testString.contains("infuse")) chargeItem(inputData, level);
     }
 
-    private void imbue(RitualInputData inputData, Level level) {
+    private static final float CHARGE_PERCENT = 0.3f;
+    private void chargeItem(RitualInputData inputData, Level level){
+        Player player = level.getPlayerByUUID(inputData.caster());
+        if(player == null) return;
+        Optional<BeyonderCapability> optCap = CapProvider.beyonder(player);
+        if(optCap.isEmpty()) return;
+        BeyonderCapability cap = optCap.get();
+
+        if(cap.getSpirituality() < 0.3f*cap.getMaxSpirituality()) {
+            System.out.println("Not enough spirituality");
+            return;
+        }
+        ItemStack toCharge = ItemStack.EMPTY;
+        for(ItemStack stack: inputData.offerings()){
+            if(MysticalItemHelper.isChargeableArtifact(stack)){
+                toCharge = stack;
+                break;
+            }
+        }
+        if(toCharge.isEmpty()){
+            System.out.println("no chargeable item");
+            return;
+        }
+
+        float spir = cap.getMaxSpirituality()*0.3f;
+        cap.requestActiveSpiritualityCost(spir);
+        ItemStack res = MysticalItemHelper.chargeArtifact(toCharge.copy(), spir, player);
+
+        for(RitualPedestalBlockEntity be: RitualInputData.getPedestalsOfRitual(inputData, level)){
+            if(ItemStack.matches(be.getRenderStack(), toCharge)){
+                be.forcefullySetItem(res);
+                System.out.println("Charge Successful");
+                return;
+            }
+        }
+        System.out.println("Could not find original");
+    }
+
+    private void makeCharm(RitualInputData inputData, Level level) {
         Player player = level.getPlayerByUUID(inputData.caster());
         if(player == null) return;
         int inputPathway = inputData.pathwaySequenceId()%10;

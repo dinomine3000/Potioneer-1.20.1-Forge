@@ -25,7 +25,7 @@ public class AxisDownside extends Downside {
 
     }
 
-    private void alignLook(LivingEntity target){
+    public static void alignLook(LivingEntity target){
         Vec3 lookAngle = target.getLookAngle();
 
         // The 6 cardinal/axis directions

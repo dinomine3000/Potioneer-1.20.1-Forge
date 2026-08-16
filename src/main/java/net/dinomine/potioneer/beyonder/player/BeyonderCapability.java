@@ -440,12 +440,12 @@ public class BeyonderCapability {
 
     private void updateStats(ArrayList<Integer> pageList){
         if(entity instanceof ServerPlayer player){
-            if(pageList.isEmpty())
+            /*if(pageList.isEmpty())
                 PacketHandler.sendMessageSTC(new PlayerSTCStatsSync(
                         this.spirituality, this.maxSpirituality, (int) this.sanity, getMaxSanity(),
                         (float) characteristicManager.getAdjustedActingPercent(getPathwaySequenceId()),
                         (int) ModAttributes.getAttribute(entity, Attributes.ATTACK_DAMAGE)), player);
-            else
+            else*/
                 PacketHandler.sendMessageSTC(new PlayerSTCStatsSync(
                         this.spirituality, this.maxSpirituality, (int) this.sanity, getMaxSanity(),
                         (float) characteristicManager.getAdjustedActingPercent(getPathwaySequenceId()),

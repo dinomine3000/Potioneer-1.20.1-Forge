@@ -3,6 +3,7 @@ package net.dinomine.potioneer.beyonder.abilities.mystery;
 import net.dinomine.potioneer.beyonder.abilities.Ability;
 import net.dinomine.potioneer.beyonder.abilities.AbilityFunctionHelper;
 import net.dinomine.potioneer.beyonder.player.BeyonderCapability;
+import net.dinomine.potioneer.beyonder.player.CapProvider;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.LivingEntity;
@@ -25,8 +26,13 @@ public class TheftAbility extends Ability {
     }
 
     @Override
+    protected String getMainDescId(int sequenceLevel) {
+        return sequenceLevel < 8 ? "theft_2" : "theft";
+    }
+
+    @Override
     protected boolean primary(BeyonderCapability cap, LivingEntity caster) {
-        if(cap.getSpirituality() < cost()) return false;
+        if(cap.getSpirituality() < cost() && sequenceLevel > 7) return false;
         if(caster.level().isClientSide()) return true;
 
         float extraReach = 0.5f + (9-sequenceLevel)*0.5f;
@@ -92,12 +98,14 @@ public class TheftAbility extends Ability {
             ogStack.setCount(0);
             setNextCooldownAs(20*7);
         }
-        return true;
-    }
 
-    @Override
-    protected String getMainDescId(int sequenceLevel) {
-        return "theft";
+        CapProvider.beyonder(target).ifPresent(otherCap -> {
+            float toSteal = cap.getMaxSpirituality()*0.1f;
+            otherCap.changeSpirituality(-toSteal);
+            cap.changeSpirituality(toSteal);
+            setNextCooldownAs(20*15);
+        });
+        return true;
     }
 
     private ItemStack stealVillagerTrade(Villager villager, int maxCount){

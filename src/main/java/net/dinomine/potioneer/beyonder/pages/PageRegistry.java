@@ -62,6 +62,8 @@ public class PageRegistry {
     public static Page DREAM_DIVINATION = register(i++, () -> new ItemPage(Page.Chapter.DIVINATION, "dream_divination", Items.RED_BED).withOffset(20));
     public static Page LUCK_1 = register(i++, () -> new TextPage(Page.Chapter.ABILITIES, "luck"));
     public static Page LUCK_2 = register(i++, () -> new TextPage(Page.Chapter.ABILITIES, "luck_range"));
+    public static Page ITEM_CHARGING = register(i++, () -> new ItemPage(Page.Chapter.RITUALS, "item_charging", ModBlocks.RITUAL_PEDESTAL.get().asItem()).withOffset(10));
+    public static Page SINGLE_CANDLE = register(i++, () -> new ItemPage(Page.Chapter.RITUALS, "single_candle", Items.CANDLE).withOffset(10));
 //    public static Page LUCK_2 = register(i++, () -> new ItemPage(Page.Chapter.DIVINATION, "rod_divination", ModItems.DIVINATION_ROD.get()));
 
     public static ArrayList<Integer> DEFAULT_PAGES = new ArrayList<>();

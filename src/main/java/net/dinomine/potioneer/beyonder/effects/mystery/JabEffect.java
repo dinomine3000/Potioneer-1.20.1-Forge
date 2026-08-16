@@ -73,7 +73,7 @@ public class JabEffect extends BeyonderEffect {
             System.out.println("[Potioneer] Warning - configured jab effects read as empty. If this was not intended, that might be a problem. Defaulting mob effects...");
         }
         MobEffect eff = effects.get(jabber.getRandom().nextInt(effects.size()));
-        toJab.addEffect(new MobEffectInstance(eff, 20*5, 0, true, true, true));
+        toJab.addEffect(new MobEffectInstance(eff, sequenceLevel < 8 ? 20*7 : 20*3, 0, true, true, true));
         jabberCap.requestActiveSpiritualityCost(cost);
         return false;
     }
