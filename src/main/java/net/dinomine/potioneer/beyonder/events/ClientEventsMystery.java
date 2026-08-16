@@ -179,7 +179,6 @@ public class ClientEventsMystery {
         if(!flying){
             GymnasticsEffect eff = AbilityFunctionHelper.getEffectOnTarget(BeyonderEffects.MYSTERY_GYMNASTICS.getEffectId(), player);
             if(eff != null && eff.canJump() && !player.getAbilities().flying){
-                System.out.println("Jumping...");
                 player.jumpFromGround();
             }
         }

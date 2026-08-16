@@ -124,6 +124,7 @@ public class BeyonderEvents {
     @SubscribeEvent
     public static void onPlayerDie(LivingDeathEvent event){
         event.getEntity().getCapability(CapProvider.BEYONDER_STATS).ifPresent(cap -> {
+            if(cap.getEffectsManager().onPlayerDie(event, event.getEntity(), cap)) return;
             cap.onPlayerDie(event);
         });
     }

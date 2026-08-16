@@ -2,6 +2,7 @@ package net.dinomine.potioneer.beyonder.effects.mystery;
 
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffect;
 import net.dinomine.potioneer.beyonder.player.BeyonderCapability;
+import net.dinomine.potioneer.entities.custom.CloneEntity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraftforge.event.entity.living.LivingDamageEvent;
 import org.jetbrains.annotations.Nullable;
@@ -28,6 +29,7 @@ public class SapEffect extends BeyonderEffect {
     public boolean onTakeDamage(LivingDamageEvent event, LivingEntity victim, @Nullable LivingEntity attacker, BeyonderCapability victimCap, Optional<BeyonderCapability> attackerCap, boolean calledOnVictim) {
         if(calledOnVictim || attacker == null) return false;
         if(attackerCap.isEmpty()) return false;
+        if(victim instanceof CloneEntity) return false;
         if(victim.distanceTo(attacker) > REGEN_DIST.get()) return false;
         BeyonderCapability cap = attackerCap.get();
         cap.changeSpirituality(cap.getMaxSpirituality()*0.02f);

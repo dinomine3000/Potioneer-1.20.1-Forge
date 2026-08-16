@@ -30,15 +30,20 @@ public class CloneAbility extends Ability {
     @Override
     protected boolean primary(BeyonderCapability cap, LivingEntity target) {
         if(!(target instanceof Player player)) return false;
+        IllusionEffect existingEffect = AbilityFunctionHelper.getEffectOnTarget(BeyonderEffects.MYSTERY_ILLUSION.getEffectId(), target);
+        if(existingEffect != null){
+            existingEffect.invalidateEffect(target);
+            return true;
+        }
         if(target.level().isClientSide()) return true;
         CloneEntity clone = CloneEntity.clone(player, (ServerLevel) player.level());
         clone.setCloneHealth(target.getMaxHealth(), target.getHealth());
         clone.type = CloneEntity.Type.INHABIT;
         clone.setPos(player.position());
         target.level().addFreshEntity(clone);
-        overrideTargets(target, clone);
+        //overrideTargets(target, clone);
 
-        IllusionEffect eff = (IllusionEffect) BeyonderEffects.MYSTERY_ILLUSION.createInstance(sequenceLevel, 0, 20*15, true);
+        IllusionEffect eff = (IllusionEffect) BeyonderEffects.MYSTERY_ILLUSION.createInstance(sequenceLevel, 0, -1, true);
         eff.setClone(clone);
         cap.getEffectsManager().addOrReplaceEffect(eff, cap, target);
 

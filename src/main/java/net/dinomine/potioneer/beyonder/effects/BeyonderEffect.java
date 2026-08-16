@@ -10,6 +10,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingDamageEvent;
+import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 
 import javax.annotation.Nullable;
@@ -29,6 +30,10 @@ public abstract class BeyonderEffect {
     public final int getPriority(){return priority.value;}
 
     public void onUpdateReceivedOnClient(BeyonderCapability cap, LivingEntity target) {}
+
+    public boolean onDie(LivingDeathEvent event, BeyonderCapability cap, LivingEntity target) {
+        return false;
+    }
 
     public enum Priority {
         VERY_HIGH(5),

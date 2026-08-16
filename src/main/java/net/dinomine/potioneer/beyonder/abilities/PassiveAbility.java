@@ -33,7 +33,7 @@ public class PassiveAbility extends Ability {
     private final Function<Integer, LinkedHashSet<String>> otherDescIds;
     private int duration = -1;
 
-    private int cooldownTicks = 0;
+    protected int cooldownTicks = 0;
     private CooldownTrigger cooldownTrigger = CooldownTrigger.ON_REMOVE;
 
     protected PassiveAbility(int sequenceLevel, BeyonderEffects.BeyonderEffectType effect, Function<Integer, String> descId){
@@ -136,7 +136,17 @@ public class PassiveAbility extends Ability {
     @Override
     protected boolean primary(BeyonderCapability cap, LivingEntity target) {
         if(target.level().isClientSide()) return false;
-        if(!isEnabled() || canFlip) flipEnable(cap, target);
+        if(!isEnabled() || canFlip){
+            if(flipEnable(cap, target)){
+                if (cooldownTicks > 0 && (cooldownTrigger == CooldownTrigger.ON_APPLY || cooldownTrigger == CooldownTrigger.BOTH)){
+                    setNextCooldownAs(cooldownTicks);
+                }
+            } else{
+                if (cooldownTicks > 0 && cooldownTrigger == CooldownTrigger.ON_REMOVE) {
+                    setNextCooldownAs(cooldownTicks);
+                }
+            }
+        }
         return true;
     }
 
@@ -147,20 +157,15 @@ public class PassiveAbility extends Ability {
 
     @Override
     public void passive(BeyonderCapability cap, LivingEntity target) {
-        if(isEnabled() && !cap.getEffectsManager().hasEffectOrBetter(effect.createInstance(sequenceLevel, duration, true))){
-            if (cooldownTicks > 0 && (cooldownTrigger == CooldownTrigger.ON_APPLY || cooldownTrigger == CooldownTrigger.BOTH)) {
-                setNextCooldownAs(cooldownTicks);
-            }
-            cap.getEffectsManager().addOrRefreshEffect(createEffectInstance(cap, target), cap, target);
+        if(!isEnabled()) return;
+        cap.getEffectsManager().addOrRefreshEffect(createEffectInstance(cap, target), cap, target);
+        if(!hasEnoughSpirituality(cap)) {
+            setEnabled(cap, target, false);
         }
+    }
 
-        if(cap.getSpirituality() < cap.getMaxSpirituality()*minimumSpiritualityThreshold
-                || cap.getSpirituality() < minSpiritualityAbsolute) {
-            if (isEnabled()) {
-                deactivate(cap, target);
-                setEnabled(cap, target, false);
-            }
-        }
+    protected boolean hasEnoughSpirituality(BeyonderCapability cap){
+        return cap.getSpirituality() >= cap.getMaxSpirituality()*minimumSpiritualityThreshold && cap.getSpirituality() >= minSpiritualityAbsolute;
     }
 
     protected BeyonderEffect createEffectInstance(BeyonderCapability cap, LivingEntity target){
@@ -172,12 +177,9 @@ public class PassiveAbility extends Ability {
     }
 
     @Override
-    public final void deactivate(BeyonderCapability cap, LivingEntity target) {
+    public void deactivate(BeyonderCapability cap, LivingEntity target) {
         if (cap.getEffectsManager().hasEffect(effect.getEffectId(), sequenceLevel)) {
             cap.getEffectsManager().removeEffect(effect.getEffectId(), sequenceLevel);
-            if (cooldownTicks > 0 && (cooldownTrigger == CooldownTrigger.ON_REMOVE || cooldownTrigger == CooldownTrigger.BOTH)) {
-                setNextCooldownAs(cooldownTicks);
-            }
         }
     }
 }

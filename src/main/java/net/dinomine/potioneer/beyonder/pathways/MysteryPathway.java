@@ -80,6 +80,7 @@ public class MysteryPathway extends BeyonderPathway {
                 abilities.add(Abilities.INVISIBILITY.create(atSequenceLevel));
                 abilities.add(Abilities.BLINK.create(atSequenceLevel));
                 abilities.add(Abilities.CLONE.create(atSequenceLevel));
+                abilities.add(Abilities.FAKE_DEATH.create(atSequenceLevel));
             case 8:
                 abilities.add(Abilities.STEP_UP.create(atSequenceLevel));
                 abilities.add(Abilities.GYMNASTICS.create(atSequenceLevel));

@@ -1,5 +1,6 @@
 package net.dinomine.potioneer.beyonder.abilities;
 
+import net.dinomine.potioneer.beyonder.effects.BeyonderEffect;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
 import net.dinomine.potioneer.beyonder.player.BeyonderCapability;
 import net.minecraft.world.entity.LivingEntity;
@@ -22,11 +23,26 @@ public class TimedPassiveAbility extends PassiveAbility {
         return new TimedPassiveAbility(level, effect, descId, durationFunction);
     }
 
+
+    @Override
+    protected BeyonderEffect createEffectInstance(BeyonderCapability cap, LivingEntity target) {
+        return effect.createInstance(sequenceLevel, minSpiritualityAbsolute, durationFunction.apply(sequenceLevel), true);
+    }
+
+    @Override
+    protected boolean primary(BeyonderCapability cap, LivingEntity target) {
+        if(!hasEnoughSpirituality(cap)) return false;
+        super.passive(cap, target);
+        setNextCooldownAs(cooldownTicks);
+        cap.requestActiveSpiritualityCost(cost());
+        return true;
+    }
+
     @Override
     public void passive(BeyonderCapability cap, LivingEntity target) {
-        if(isEnabled()){
-            cap.getEffectsManager().addOrRefreshEffect(effect.createInstance(sequenceLevel, cost(), durationFunction.apply(getSequenceLevel()), true), cap, target);
-            if(cap.getSpirituality() <= cap.getMaxSpirituality()*minimumSpiritualityThreshold) flipEnable(cap, target);
-        }
+        setEnabled(cap, target, true);
     }
+
+    @Override
+    public void deactivate(BeyonderCapability cap, LivingEntity target) {}
 }

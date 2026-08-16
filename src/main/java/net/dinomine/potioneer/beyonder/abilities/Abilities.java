@@ -324,12 +324,17 @@ public class Abilities {
             BlinkAbility::new, 1, 2, 20);
 
     public static final AbilityFactory CLONE = registerAbility("clone",
-            CloneAbility::new, 1, 2, 0);
+            CloneAbility::new, 1, 2, 0).hasSecondaryFunction();
+
+    public static final AbilityFactory FAKE_DEATH = registerAbility("fakeout",
+            lvl -> TimedPassiveAbility.createTimed(lvl, BeyonderEffects.MYSTERY_FAKEOUT, ign -> "fakeout", ign -> 20*10)
+                    .withCooldown(20*60, PassiveAbility.CooldownTrigger.ON_APPLY).withCost(25),
+            1, 2, 0);
 
     public static final AbilityFactory INVISIBILITY = registerAbility("invisibility",
             (Integer sequenceLevel) -> TimedPassiveAbility.createTimed(sequenceLevel, BeyonderEffects.MYSTERY_INVISIBLE,
-                            (ignored) -> "invisibility", level -> 2*40*((9-level)*10 + 5))
-                    .canFlip().withThreshold(0.15f),
+                            (ignored) -> "invisibility", level -> 20*3)
+                    .withCooldown(20*5, PassiveAbility.CooldownTrigger.ON_APPLY).withThreshold(0.15f),
             4, 2, 0);
 
     // -------------------------- RED PRIEST ---------------------------------------------------

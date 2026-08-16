@@ -127,14 +127,26 @@ public class PlayerEffectsManager {
     public void onCraft(PlayerEvent.ItemCraftedEvent event, BeyonderCapability cap){
     }
 
-    public void onPlayerDie(LivingDeathEvent event, BeyonderCapability cap) {
+    public boolean onPlayerDie(LivingDeathEvent event, LivingEntity entity, BeyonderCapability cap) {
+        for(BeyonderEffect eff: passives){
+            if(eff.onDie(event, cap, entity)){
+                event.setCanceled(true);
+                return true;
+            }
+        }
+        for(BeyonderEffect eff: new ArrayList<>(passives)){
+            if(!eff.shouldPersistInDeath()){
+                removeEffectImmediately(eff, cap, entity);
+            }
+        }
+        return false;
     }
 
     @Override
     public String toString(){
         String res = "";
         for(BeyonderEffect eff : passives){
-            res = res.concat(eff.getId().concat(String.valueOf(eff.getSequenceLevel()) + " - Max Life: ").concat(String.valueOf(eff.getMaxLife())).concat("\n"));
+            res = res.concat(eff.getId().concat(eff.getSequenceLevel() + " - Max Life: ").concat(String.valueOf(eff.getMaxLife())).concat("\n"));
         }
         return res;
     }
@@ -174,8 +186,7 @@ public class PlayerEffectsManager {
         if(!effect.canAdd(cap, target)) return false;
         if(!hasEffectOrBetter(effect)){
             removeEffect(effect.getId());
-            addEffect(effect, cap, target, true);
-            return true;
+            return addEffect(effect, cap, target, true);
         } else if(hasEffect(effect.getId(), effect.getSequenceLevel())){
             BeyonderEffect oldEffect = getEffect(effect.getId(), effect.getSequenceLevel());
             oldEffect.refreshTime(cap, target, effect);
@@ -193,20 +204,20 @@ public class PlayerEffectsManager {
      */
     public boolean addOrReplaceEffect(BeyonderEffect effect, BeyonderCapability cap, LivingEntity target) {
         if(target.level().isClientSide()) return false;
+        if(!effect.canAdd(cap, target)) return false;
         if(!hasBetterEffect(effect)){
             removeEffectImmediately(effect.getId(), cap, target);
-            addEffect(effect, cap, target, true);
-            return true;
+            return addEffect(effect, cap, target, true);
         }
         return false;
     }
 
     public boolean addEffectNoRefresh(BeyonderEffect effect, BeyonderCapability cap, LivingEntity target){
         if(target.level().isClientSide()) return false;
+        if(!effect.canAdd(cap, target)) return false;
         if(!hasEffectOrBetter(effect)){
             removeEffect(effect.getId());
-            addEffect(effect, cap, target, true);
-            return true;
+            return addEffect(effect, cap, target, true);
         }
         return false;
     }
@@ -217,6 +228,7 @@ public class PlayerEffectsManager {
     }
 
     private boolean addEffect(BeyonderEffect effect, BeyonderCapability cap, LivingEntity target, boolean sync, boolean fromLoading){
+        if(!effect.canAdd(cap, target)) return false;
         passives.add(effect);
         effect.onAcquire(cap, target, fromLoading);
         if(sync) sendUpdateToClient(List.of(effect), BeyonderEffectSyncMessage.ADD, target);
@@ -288,6 +300,18 @@ public class PlayerEffectsManager {
             }
             return flag;
         });
+    }
+
+    public boolean removeEffectImmediately(BeyonderEffect eff, BeyonderCapability cap, LivingEntity target){
+        for(BeyonderEffect effect: new ArrayList<>(passives)){
+            if(effect == eff){
+                effect.stopEffects(cap, target);
+                passives.remove(eff);
+                sendUpdateToClient(List.of(eff), BeyonderEffectSyncMessage.REMOVE, target);
+                return true;
+            }
+        }
+        return false;
     }
 
     public boolean removeEffect(String effect){
@@ -422,11 +446,7 @@ public class PlayerEffectsManager {
      */
     public void copyFrom(PlayerEffectsManager otherEffects, BeyonderCapability cap, BeyonderCapability oldCap, Player player) {
         for (BeyonderEffect passive : otherEffects.passives) {
-            if(passive.shouldPersistInDeath()){
-                addOrRefreshEffect(passive, cap, player);
-            } else {
-                passive.stopEffects(oldCap, player);
-            }
+            addOrRefreshEffect(passive, cap, player);
         }
     }
 }

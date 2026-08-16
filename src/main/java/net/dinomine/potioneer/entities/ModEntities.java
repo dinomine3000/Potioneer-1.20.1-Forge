@@ -110,6 +110,12 @@ public class ModEntities {
                             .sized(0.5f, 0.5f)
                             .build(new ResourceLocation(Potioneer.MOD_ID, "wind_shear").toString()));
 
+    public static final RegistryObject<EntityType<PaperDaggerProjectile>> PAPER_DAGGER_PROJECTILE =
+            ENTITY_TYPES.register("paper_dagger",
+                    () -> EntityType.Builder.of(PaperDaggerProjectile::new, MobCategory.MISC)
+                            .sized(0.5f, 0.5f)
+                            .build(new ResourceLocation(Potioneer.MOD_ID, "paper_dagger").toString()));
+
     public static final RegistryObject<EntityType<CloneEntity>> CLONE_ENTITY =
             ENTITY_TYPES.register("clone",
                     () -> EntityType.Builder.of(CloneEntity::new, MobCategory.MISC)

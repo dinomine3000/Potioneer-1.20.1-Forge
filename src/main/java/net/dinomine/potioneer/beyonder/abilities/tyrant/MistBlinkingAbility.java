@@ -61,7 +61,7 @@ public class MistBlinkingAbility extends Ability {
         Vec3 pos = caster.getEyePosition();
         fromLevel.sendParticles(ParticleTypes.FALLING_WATER, pos.x, pos.y, pos.z, 50, 1, 0, 1, 0);
 
-        AbilityFunctionHelper.teleportEntity(caster, fromLevel, toLevel, blockPos);
+        AbilityFunctionHelper.teleportEntity(caster, fromLevel, toLevel, blockPos, true);
 
         cap.requestActiveSpiritualityCost(cost);
     }

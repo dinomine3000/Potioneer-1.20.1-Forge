@@ -3,6 +3,7 @@ package net.dinomine.potioneer.entities.custom;
 import com.mojang.authlib.GameProfile;
 import net.dinomine.potioneer.beyonder.abilities.AbilityFunctionHelper;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
+import net.dinomine.potioneer.beyonder.effects.mystery.IllusionEffect;
 import net.dinomine.potioneer.beyonder.player.CapProvider;
 import net.dinomine.potioneer.entities.ModEntities;
 import net.minecraft.nbt.CompoundTag;
@@ -12,6 +13,7 @@ import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.TicketType;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -23,6 +25,7 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.SkullBlockEntity;
 import net.minecraftforge.api.distmarker.Dist;
@@ -30,6 +33,7 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -40,6 +44,12 @@ public class CloneEntity extends LivingEntity {
 
     public static final EntityDataAccessor<String> ORIGINAL_NAME = SynchedEntityData.defineId(CloneEntity.class, EntityDataSerializers.STRING);
     public static final EntityDataAccessor<Optional<UUID>> ORIGINAL_ID = SynchedEntityData.defineId(CloneEntity.class, EntityDataSerializers.OPTIONAL_UUID);
+    private static final TicketType<ChunkPos> CLONE_TICKET = TicketType.create(
+            "clone_forced_chunk",
+            Comparator.comparingLong(ChunkPos::toLong),
+            20 // ticket ttl
+    );
+    private ChunkPos lastChunkPos = null;
 
     @OnlyIn(Dist.CLIENT)
     private ResourceLocation clientSkinLocation;
@@ -119,25 +129,52 @@ public class CloneEntity extends LivingEntity {
         if(id.isEmpty()) return DEFAULT_PROFILE;
         return new GameProfile(id.get(), entityData.get(ORIGINAL_NAME));
     }
-
-    boolean crouching = false;
-
     @Override
     public void tick() {
         super.tick();
         if(level().isClientSide()) return;
+        if (tickCount % 10 == 0) updateForcedChunk();
         if(type == Type.INVISIBLE && tickCount > 20*5) remove(RemovalReason.DISCARDED);
+        else if(type == Type.INHABIT) if(IllusionEffect.tooFar(this, getPlayer())) remove(RemovalReason.DISCARDED);
     }
+
+    private void updateForcedChunk() {
+        if (this.level().isClientSide() || !(this.level() instanceof ServerLevel serverLevel)) return;
+
+        ChunkPos currentChunk = new ChunkPos(this.blockPosition());
+        if (lastChunkPos != null && !lastChunkPos.equals(currentChunk)) {
+            serverLevel.getChunkSource().removeRegionTicket(CLONE_TICKET, lastChunkPos, 2, lastChunkPos);
+        }
+        serverLevel.getChunkSource().addRegionTicket(CLONE_TICKET, currentChunk, 2, currentChunk);
+        this.lastChunkPos = currentChunk;
+    }
+
+    private void releaseForcedChunk() {
+        if (this.level().isClientSide() || !(this.level() instanceof ServerLevel serverLevel)) return;
+
+        if (lastChunkPos != null) {
+            serverLevel.getChunkSource().removeRegionTicket(CLONE_TICKET, lastChunkPos, 2, lastChunkPos);
+            lastChunkPos = null;
+        }
+    }
+
+    private DamageSource dmg = null;
+    private float dmgAmount = 0;
 
     @Override
     protected void actuallyHurt(DamageSource pDamageSource, float pDamageAmount) {
         super.actuallyHurt(pDamageSource, pDamageAmount);
+        if(type == Type.INHABIT) {
+            dmg = pDamageSource;
+            dmgAmount = pDamageAmount;
+        }
         if(type == Type.INVISIBLE || type == Type.INHABIT) remove(RemovalReason.DISCARDED);
     }
 
     @Override
     public void remove(RemovalReason pReason) {
-        Player player = getPlayer();
+        releaseForcedChunk();
+        Player player = getPlayerAcrossDimensions();
         if(player == null) {
             super.remove(pReason);
             return;
@@ -149,10 +186,12 @@ public class CloneEntity extends LivingEntity {
         }
         else if(type == Type.INHABIT){
             CapProvider.beyonder(player).ifPresent(cap -> {
-                if(cap.getEffectsManager().removeEffect(BeyonderEffects.MYSTERY_ILLUSION.getEffectId())){
+                IllusionEffect eff = AbilityFunctionHelper.getEffectOnTarget(BeyonderEffects.MYSTERY_ILLUSION.getEffectId(), player);
+                if(eff == null) return;
+                if(cap.getEffectsManager().removeEffectImmediately(eff, cap, player)){
                     if(!level().isClientSide()) {
-                        if(AbilityFunctionHelper.teleportEntity(player, (ServerLevel) player.level(), (ServerLevel) level(), getOnPos().above(), getXRot(), getYRot()))
-                            player.setHealth(getHealth());
+                        AbilityFunctionHelper.teleportEntity(player, (ServerLevel) player.level(), (ServerLevel) level(), getOnPos().above(), getXRot(), getYRot(), false);
+                        if(dmg != null) player.hurt(dmg, dmgAmount);
                     }
                 }
             });
@@ -175,6 +214,11 @@ public class CloneEntity extends LivingEntity {
         Optional<UUID> optId = entityData.get(ORIGINAL_ID);
         if(optId.isEmpty()) return null;
         return level().getPlayerByUUID(optId.get());
+    }
+    private @Nullable Player getPlayerAcrossDimensions(){
+        Optional<UUID> optId = entityData.get(ORIGINAL_ID);
+        if(optId.isEmpty()) return null;
+        return (Player) AbilityFunctionHelper.getEntityAcrossDimensions((ServerLevel) level(), optId.get());
     }
 
     @Override

@@ -18,10 +18,12 @@ import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.protocol.game.ClientboundSetEntityMotionPacket;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
@@ -80,10 +82,10 @@ public class AbilityFunctionHelper {
         return itemEntity;
     }
 
-    public static boolean teleportEntity(Entity target, ServerLevel fromLevel, ServerLevel toLevel, BlockPos targetPosition){
-        return teleportEntity(target, fromLevel, toLevel, targetPosition, target.getXRot(), target.getYRot());
+    public static boolean teleportEntity(Entity target, ServerLevel fromLevel, ServerLevel toLevel, BlockPos targetPosition, boolean keepMovement){
+        return teleportEntity(target, fromLevel, toLevel, targetPosition, target.getXRot(), target.getYRot(), keepMovement);
     }
-    public static boolean teleportEntity(Entity target, ServerLevel fromLevel, ServerLevel toLevel, BlockPos targetPosition, float xRot, float yRot){
+    public static boolean teleportEntity(Entity target, ServerLevel fromLevel, ServerLevel toLevel, BlockPos targetPosition, float xRot, float yRot, boolean keepMovement){
         if(target == null) return false;
         Optional<BeyonderCapability> optCap = target.getCapability(CapProvider.BEYONDER_STATS).resolve();
         if(optCap.isPresent() && target instanceof LivingEntity lTarget){
@@ -94,38 +96,20 @@ public class AbilityFunctionHelper {
             }
         }
 
-        Vec3 motion = target.getDeltaMovement();
+        Vec3 motion = keepMovement ? target.getDeltaMovement() : Vec3.ZERO;
         Vec3 targetPos = targetPosition.getCenter();
 
-        if (fromLevel == toLevel) {
-            /*// 1. Force the target chunk to load immediately on the target server level
-            toLevel.getChunkSource().addRegionTicket(
-                    net.minecraft.server.level.TicketType.POST_TELEPORT,
-                    new net.minecraft.world.level.ChunkPos(BlockPos.containing(targetPos)),
-                    1,
-                    target.getId()
-            );
-
-            // 2. Perform cross-dimension transfer
-            Entity transferredEntity = target.changeDimension(toLevel, new MistBlinkingAbility.SimpleTeleporter(targetPos));
-
-            // 3. If caster is a Player, handle network sync & motion re-application
-            if (transferredEntity instanceof ServerPlayer player) {
-                player.connection.teleport(targetPos.x, targetPos.y, targetPos.z, player.getYRot(), player.getXRot());
-                player.setDeltaMovement(motion);
-                player.hasImpulse = true;
-            } else if (transferredEntity != null) {
-                transferredEntity.setDeltaMovement(motion);
-                transferredEntity.hasImpulse = true;
-            }*/
+        if (fromLevel != toLevel) {
             target.teleportTo(toLevel, targetPos.x, targetPos.y, targetPos.z, Set.of(), yRot, xRot);
         } else {
             target.teleportToWithTicket(targetPosition.getX() + 0.5f, targetPosition.getY(), targetPosition.getZ() + 0.5);
             target.setXRot(xRot);
             target.setYRot(yRot);
-            target.setDeltaMovement(motion);
-            target.hasImpulse = true;
         }
+        target.setDeltaMovement(motion);
+        target.hasImpulse = true;
+        target.hurtMarked = true;
+        target.resetFallDistance();
         return true;
     }
 
@@ -470,6 +454,10 @@ public class AbilityFunctionHelper {
 
     public static ArrayList<LivingEntity> getLivingEntitiesLooking(LivingEntity looker, double radius){
         return getLivingEntitiesLooking(looker, radius, 0);
+    }
+
+    public static boolean hasEffect(String effectId, LivingEntity target) {
+        return getEffectOnTarget(effectId, target) != null;
     }
 
     public interface IBlockPlacer{

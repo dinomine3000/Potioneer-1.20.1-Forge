@@ -1,6 +1,8 @@
 package net.dinomine.potioneer.beyonder.effects.mystery;
 
+import net.dinomine.potioneer.beyonder.abilities.AbilityFunctionHelper;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffect;
+import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
 import net.dinomine.potioneer.beyonder.player.BeyonderCapability;
 import net.dinomine.potioneer.entities.custom.CloneEntity;
 import net.minecraft.nbt.CompoundTag;
@@ -30,26 +32,31 @@ public class IllusionEffect extends BeyonderEffect {
     @Override
     protected void doTick(BeyonderCapability cap, LivingEntity target) {
         if(target.level().isClientSide()) return;
-        if(!(target instanceof Player player) || tooFar(player)) endEffectWhenPossible();
+        if(!(target instanceof Player player) || tooFar(getClone((ServerLevel) player.level(), player.getUUID(), false), player)) invalidateEffect(target);
     }
 
-    private boolean tooFar(Player player){
-        CloneEntity clone = getClone((ServerLevel) player.level(), player.getUUID());
-        if(clone == null) return true;
+    public static boolean tooFar(CloneEntity clone, Player player){
+        if(clone == null || player == null || !AbilityFunctionHelper.hasEffect(BeyonderEffects.MYSTERY_ILLUSION.getEffectId(), player)) return true;
         return clone.distanceTo(player) > MAX_CLONE_DIST.get();
     }
 
-    private CloneEntity getClone(ServerLevel level, UUID playerId){
-        Entity ent = level.getEntity(cloneId);
+    private CloneEntity getClone(ServerLevel level, UUID playerId, boolean acrossDimensions){
+        Entity ent = acrossDimensions ? AbilityFunctionHelper.getEntityAcrossDimensions(level, this.cloneId) : level.getEntity(this.cloneId);
         if(ent instanceof CloneEntity clone && clone.isCloneOf(playerId)) return clone;
         return null;
     }
 
     @Override
     public void stopEffects(BeyonderCapability cap, LivingEntity target) {
+    }
+
+    public void invalidateEffect(LivingEntity target){
         if(target.level().isClientSide()) return;
-        CloneEntity clone = getClone((ServerLevel) target.level(), target.getUUID());
-        if(clone == null) return;
+        CloneEntity clone = getClone((ServerLevel) target.level(), target.getUUID(), true);
+        if(clone == null) {
+            endEffectWhenPossible();
+            return;
+        }
         clone.remove(Entity.RemovalReason.DISCARDED);
     }
 
@@ -57,7 +64,7 @@ public class IllusionEffect extends BeyonderEffect {
     @Override
     public boolean onDamageProposal(LivingAttackEvent event, LivingEntity victim, @Nullable LivingEntity attacker, BeyonderCapability victimCap, Optional<BeyonderCapability> attackerCap, boolean calledOnVictim) {
         if(!calledOnVictim) return false;
-        endEffectWhenPossible();
+        invalidateEffect(victim);
         return true;
     }
 

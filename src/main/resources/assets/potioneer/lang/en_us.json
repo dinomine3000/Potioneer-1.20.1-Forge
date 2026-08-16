@@ -471,6 +471,7 @@
   "death.attack.potioneer.asteroid": "%s was eradicated by %s's meteor.",
   "death.attack.potioneer.asteroid_rogue": "%s was eradicated by a rogue meteor.",
   "death.attack.potioneer.wind_shear": "%s was killed by %s's wind shear.",
+  "death.attack.potioneer.paper_dagger": "%s died to %s's illusory paper daggers.",
   "death.attack.potioneer.arrest": "%s was purified after being arrested by %s.",
   "death.attack.potioneer.exile": "%s died to %s's exile.",
   "death.attack.potioneer.punishment_strike": "%s couldn't handle the punishment from %s",
