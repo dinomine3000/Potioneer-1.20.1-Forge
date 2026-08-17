@@ -30,6 +30,7 @@ public class GymnasticsAbility extends PassiveAbility {
     @Override
     protected boolean primary(BeyonderCapability cap, LivingEntity target) {
         if(cap.getSpirituality() < LEAP_COST.get()) return false;
+        if(target.isFallFlying()) return false;
         GymnasticsEffect eff = AbilityFunctionHelper.getEffectOnTarget(BeyonderEffects.MYSTERY_GYMNASTICS.getEffectId(), target);
         if(eff == null || !eff.canJump()) return false;
         if(target.level().isClientSide()) return true;

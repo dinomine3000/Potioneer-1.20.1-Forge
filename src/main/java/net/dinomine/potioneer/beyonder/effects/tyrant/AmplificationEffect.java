@@ -19,6 +19,11 @@ public class AmplificationEffect extends BeyonderEffect {
     private static final UUID uuid = UUID.fromString("863e9aa0-1036-498f-9818-51bdb282290d");
 
     @Override
+    public boolean shouldPersistInDeath() {
+        return false;
+    }
+
+    @Override
     public boolean canBeCleansed() {
         return false;
     }
@@ -26,7 +31,7 @@ public class AmplificationEffect extends BeyonderEffect {
     public Set<UUID> getAffectedInstances(){return affectedInstances;}
 
     @Override
-    public void onAcquire(BeyonderCapability cap, LivingEntity target, boolean fromLoading) {
+    public void onAcquire(BeyonderCapability cap, LivingEntity target) {
         applyExistingAmplifications(cap, target);
     }
 

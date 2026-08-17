@@ -14,8 +14,13 @@ public class TyrantDisableAbilitiesPunishment extends BeyonderEffect {
     }
 
     @Override
-    public void onAcquire(BeyonderCapability cap, LivingEntity target, boolean fromLoading) {
-        if(fromLoading) return;
+    public boolean shouldPersistInDeath() {
+        return false;
+    }
+
+    @Override
+    public void onAcquire(BeyonderCapability cap, LivingEntity target, AcquireType acquireType) {
+        if(acquireType != AcquireType.ADDED) return;
         disable(cap, target);
     }
 

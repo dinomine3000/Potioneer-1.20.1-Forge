@@ -75,6 +75,7 @@ public class MysteryPathway extends BeyonderPathway {
             case 4:
             case 5:
             case 6:
+                abilities.add(Abilities.ELYTRA.create(atSequenceLevel));
             case 7:
                 abilities.add(Abilities.AIR_BULLET.create(atSequenceLevel));
                 abilities.add(Abilities.TRICKS.create(atSequenceLevel));

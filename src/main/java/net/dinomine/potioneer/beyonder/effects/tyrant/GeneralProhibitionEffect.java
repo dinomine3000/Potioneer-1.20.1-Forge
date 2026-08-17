@@ -17,8 +17,13 @@ public class GeneralProhibitionEffect extends BeyonderEffect {
     public String type = "";
 
     @Override
-    public void onAcquire(BeyonderCapability cap, LivingEntity target, boolean fromLoading) {
-        if(fromLoading) return;
+    public boolean shouldPersistInDeath() {
+        return false;
+    }
+
+    @Override
+    public void onAcquire(BeyonderCapability cap, LivingEntity target, AcquireType acquireType) {
+        if(acquireType != AcquireType.ADDED) return;
         if(target instanceof Player player && !target.level().isClientSide()){
             player.displayClientMessage(Component.translatable("message.potioneer.prohibit_" + type), true);
         }

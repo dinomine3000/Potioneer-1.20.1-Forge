@@ -39,8 +39,14 @@ public abstract class BeyonderEffect {
 
     public void onUpdateReceivedOnClient(BeyonderCapability cap, LivingEntity target) {}
 
-    public boolean onDie(LivingDeathEvent event, BeyonderCapability cap, LivingEntity target) {
+    public boolean testDie(LivingDeathEvent event, BeyonderCapability cap, LivingEntity target) {
         return false;
+    }
+
+    public void onDie(BeyonderCapability cap, LivingEntity target) {    }
+
+    public void respawn(BeyonderCapability cap, LivingEntity target) {
+        onAcquire(cap, target, AcquireType.RESPAWN);
     }
 
     public enum Priority {
@@ -194,13 +200,6 @@ public abstract class BeyonderEffect {
         return this.is(effect) && this.sequenceLevel < effect.sequenceLevel;
     }
 
-    public void setActive(boolean active, BeyonderCapability cap, LivingEntity target){
-        this.visible = active;
-        if(!active){
-            stopEffects(cap, target);
-        }
-    }
-
     public int getCost(){
         return this.cost;
     }
@@ -213,8 +212,13 @@ public abstract class BeyonderEffect {
     }
 
 
+    public enum AcquireType{
+        LOADING,
+        ADDED,
+        RESPAWN
+    }
     /**
-     * called anytime the effect is added to a player (including when he loads into the world)
+     * called anytime the effect is added to a player (including when he loads into the world, when the effect is added, or when the player respawns)
      * as such, be wary of doing things that require a connection (like adding an effect or sending system messages)
      * mob effects should be added on the doTick function, not on the onAcquire
      * @param cap
@@ -226,9 +230,9 @@ public abstract class BeyonderEffect {
      * same as onAcquire, but you also get information of whether its from loading into the world or not
      * @param cap
      * @param target
-     * @param fromLoading
+     * @param acquireType
      */
-    public void onAcquire(BeyonderCapability cap, LivingEntity target, boolean fromLoading){onAcquire(cap, target);};
+    public void onAcquire(BeyonderCapability cap, LivingEntity target, AcquireType acquireType){onAcquire(cap, target);};
     protected abstract void doTick(BeyonderCapability cap, LivingEntity target);
     public abstract void stopEffects(BeyonderCapability cap, LivingEntity target);
 

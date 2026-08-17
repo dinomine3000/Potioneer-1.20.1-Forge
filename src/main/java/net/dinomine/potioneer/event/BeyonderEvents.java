@@ -156,7 +156,7 @@ public class BeyonderEvents {
         event.getEntity().getCapability(CapProvider.BEYONDER_STATS).ifPresent(newStore -> {
             event.getOriginal().reviveCaps();
             event.getOriginal().getCapability(CapProvider.BEYONDER_STATS).ifPresent(oldStore -> {
-                newStore.copyFrom(oldStore, event.getEntity());
+                newStore.copyFrom(oldStore, event.getEntity(), event.isWasDeath());
             });
             event.getOriginal().invalidateCaps();
         });

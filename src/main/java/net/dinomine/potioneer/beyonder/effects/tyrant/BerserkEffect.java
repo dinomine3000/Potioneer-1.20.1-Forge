@@ -17,8 +17,8 @@ public class BerserkEffect extends BeyonderEffect {
     private boolean aura = false;
     private boolean soo = false;
     @Override
-    public void onAcquire(BeyonderCapability cap, LivingEntity target, boolean fromLoading) {
-        if(fromLoading) return;
+    public void onAcquire(BeyonderCapability cap, LivingEntity target, AcquireType acquireType) {
+        if(acquireType != AcquireType.ADDED) return;
         scales = cap.getAbilitiesManager().isEnabledExactLevel(Abilities.WATER_SCALES.getAblId(), sequenceLevel);
         aura = cap.getAbilitiesManager().isEnabledExactLevel(Abilities.TYRANT_AURA.getAblId(), sequenceLevel);
         soo = cap.getAbilitiesManager().isEnabledExactLevel(Abilities.SENSE_OF_ORDER.getAblId(), sequenceLevel);

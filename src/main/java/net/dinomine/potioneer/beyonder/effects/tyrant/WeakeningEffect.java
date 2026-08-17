@@ -21,7 +21,7 @@ public class WeakeningEffect extends BeyonderEffect {
     public Set<UUID> getAffectedInstances(){return affectedInstances;}
 
     @Override
-    public void onAcquire(BeyonderCapability cap, LivingEntity target, boolean fromLoading) {
+    public void onAcquire(BeyonderCapability cap, LivingEntity target) {
         applyExistingWeakening(cap, target);
     }
 

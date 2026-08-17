@@ -3,28 +3,18 @@ package net.dinomine.potioneer.beyonder.events;
 import com.mojang.blaze3d.shaders.FogShape;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.dinomine.potioneer.Potioneer;
-import net.dinomine.potioneer.beyonder.abilities.Ability;
 import net.dinomine.potioneer.beyonder.abilities.AbilityFunctionHelper;
-import net.dinomine.potioneer.beyonder.client.ClientAbilitiesData;
-import net.dinomine.potioneer.beyonder.client.ClientStatsData;
-import net.dinomine.potioneer.beyonder.client.HUD.AbilitiesHotbarHUD;
-import net.dinomine.potioneer.beyonder.client.KeyBindings;
-import net.dinomine.potioneer.beyonder.client.screen.BeyonderScreen;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
 import net.dinomine.potioneer.beyonder.effects.mystery.GymnasticsEffect;
-import net.dinomine.potioneer.beyonder.effects.tyrant.AmplificationEffect;
-import net.dinomine.potioneer.beyonder.effects.tyrant.WeakeningEffect;
 import net.dinomine.potioneer.beyonder.player.BeyonderCapability;
 import net.dinomine.potioneer.beyonder.player.CapProvider;
-import net.dinomine.potioneer.config.PotioneerClientConfig;
 import net.dinomine.potioneer.network.PacketHandler;
-import net.dinomine.potioneer.network.messages.abilityRelevant.abilitySpecific.DoubleJumpMessage;
+import net.dinomine.potioneer.network.messages.abilityRelevant.abilitySpecific.ElytraFlyMessage;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.FogRenderer;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.api.distmarker.Dist;
@@ -36,10 +26,7 @@ import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 @Mod.EventBusSubscriber(modid = Potioneer.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
 public class ClientEventsMystery {
@@ -136,7 +123,7 @@ public class ClientEventsMystery {
     }
 
     private static boolean jumpO = false;
-    private static boolean flying = false;
+    private static boolean fallFlying = false;
 
     @SubscribeEvent
     public static void clientTick(TickEvent.ClientTickEvent event){
@@ -151,16 +138,16 @@ public class ClientEventsMystery {
         } else {
             jumpO = false;
         }
-        flying = player.getAbilities().flying;
     }
 
     private static void onJumpStart(LocalPlayer player){
         if(AbilityFunctionHelper.isEntityStandingOnGround(1, player, true)) return;
-        if(!flying){
-            GymnasticsEffect eff = AbilityFunctionHelper.getEffectOnTarget(BeyonderEffects.MYSTERY_GYMNASTICS.getEffectId(), player);
-            if(eff != null && eff.canJump() && !player.getAbilities().flying){
-                player.jumpFromGround();
-            }
+        GymnasticsEffect eff = AbilityFunctionHelper.getEffectOnTarget(BeyonderEffects.MYSTERY_GYMNASTICS.getEffectId(), player);
+        if(AbilityFunctionHelper.hasEffect(BeyonderEffects.MYSTERY_ELYTRA.getEffectId(), player)){
+            player.startFallFlying();
+            PacketHandler.sendMessageCTS(new ElytraFlyMessage(true));
+        } else if(eff != null && eff.canJump() && !player.getAbilities().flying){
+            player.jumpFromGround();
         }
     }
 

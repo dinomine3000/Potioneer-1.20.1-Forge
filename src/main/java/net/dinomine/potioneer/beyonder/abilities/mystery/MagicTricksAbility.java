@@ -82,12 +82,12 @@ public class MagicTricksAbility extends AbilityWithOptions {
     protected boolean secondaryWithArgument(BeyonderCapability cap, LivingEntity caster, String args) {
         if(cap.getSpirituality() < CAST_COST) return false;
         if (args == null || args.isEmpty()) return false;
-        Optional<LivingEntity> optTarget = AbilityFunctionHelper.getTargetEntityClosestToCrosshair(caster, TARGET_RANGE, 3, true);
-        if(optTarget.isEmpty()) return false;
-        LivingEntity target = optTarget.get();
-        Optional<BeyonderCapability> optCap = CapProvider.beyonder(target);
-        if(optCap.isEmpty()) return false;
-        BeyonderCapability targetCap = optCap.get();
+        /*Optional<LivingEntity> optTarget = AbilityFunctionHelper.getTargetEntityClosestToCrosshair(caster, TARGET_RANGE, 3, true);
+        if(optTarget.isEmpty()) return false;*/
+        LivingEntity target = caster;
+        /*Optional<BeyonderCapability> optCap = CapProvider.beyonder(target);
+        if(optCap.isEmpty()) return false;*/
+        BeyonderCapability targetCap = cap;
         boolean res = switch (args) {
             case "flash" -> doFlash(targetCap, target);
             case "noises" -> doNoises(targetCap, target);

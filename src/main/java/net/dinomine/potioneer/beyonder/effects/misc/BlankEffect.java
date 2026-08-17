@@ -12,7 +12,7 @@ public class BlankEffect extends BeyonderEffect {
 
     @Override
     protected void doTick(BeyonderCapability cap, LivingEntity target) {
-
+        cap.requestPassiveSpiritualityCost(cost);
     }
 
     @Override

@@ -231,8 +231,18 @@ dependencies {
     // then special handling is done to allow a setup of a vanilla dependency without the use of an external repository.
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
 
-    // Apply Mixin AP
-    annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
+    // Mixin
+    annotationProcessor "org.spongepowered:mixin:0.8.5:processor"
+
+    // MixinExtras
+    compileOnly "io.github.llamalad7:mixinextras-common:${mixin_extras_version}"
+    annotationProcessor "io.github.llamalad7:mixinextras-common:${mixin_extras_version}"
+
+    implementation "io.github.llamalad7:mixinextras-forge:${mixin_extras_version}"
+
+    implementation(jarJar("io.github.llamalad7:mixinextras-forge:${mixin_extras_version}")) {
+        jarJar.ranged(it, "[${mixin_extras_version},)")
+    }
 
     //geckoLib
     implementation fg.deobf("software.bernie.geckolib:geckolib-forge-${minecraft_version}:${geckolib_version}")
@@ -341,6 +351,15 @@ publishing {
     repositories {
         maven {
             url "file://${project.projectDir}/mcmodsrepo"
+        }
+    }
+}
+// Prevent Mixin annotation processor from getting into IDEA's annotation processor settings
+// Copied from Ars Nouveau (who copied from Botania)
+if (System.getProperty("idea.sync.active") == "true") {
+    afterEvaluate {
+        tasks.withType(JavaCompile).configureEach {
+            it.options.annotationProcessorPath = files()
         }
     }
 }

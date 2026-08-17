@@ -19,13 +19,13 @@ import java.util.Optional;
 public class MistEffect extends BeyonderEffect {
     private boolean wasFlyingBefore = false;
     @Override
-    public void onAcquire(BeyonderCapability cap, LivingEntity target, boolean fromLoading) {
+    public void onAcquire(BeyonderCapability cap, LivingEntity target, AcquireType acquireType) {
 //        if(target instanceof Player player){
 //            player.setForcedPose(Pose.);
 //        }
         if(target.level().isClientSide()) return;
         ServerEffectVisualHandling.addMistEntity(target);
-        if(fromLoading || !(target instanceof Player player)) return;
+        if(acquireType != AcquireType.ADDED || !(target instanceof Player player)) return;
         wasFlyingBefore = player.getAbilities().flying;
 
     }

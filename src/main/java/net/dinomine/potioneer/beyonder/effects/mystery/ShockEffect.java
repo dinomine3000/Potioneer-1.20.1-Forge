@@ -10,9 +10,15 @@ import net.minecraft.world.phys.Vec3;
 
 public class ShockEffect extends BeyonderEffect {
 
+
     @Override
-    public void onAcquire(BeyonderCapability cap, LivingEntity target, boolean fromLoading) {
-        if(fromLoading) return;
+    public boolean shouldPersistInDeath() {
+        return false;
+    }
+
+    @Override
+    public void onAcquire(BeyonderCapability cap, LivingEntity target, AcquireType acquireType) {
+        if(acquireType != AcquireType.ADDED) return;
         cap.getAbilitiesManager().getAbilities().forEach(abl -> abl.putOnCooldown(20, target));
         if(target instanceof Monster monster) monster.setTarget(null);
     }

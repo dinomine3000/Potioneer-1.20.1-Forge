@@ -129,11 +129,12 @@ public class PlayerEffectsManager {
 
     public boolean onPlayerDie(LivingDeathEvent event, LivingEntity entity, BeyonderCapability cap) {
         for(BeyonderEffect eff: passives){
-            if(eff.onDie(event, cap, entity)){
+            if(eff.testDie(event, cap, entity)){
                 event.setCanceled(true);
                 return true;
             }
         }
+        for(BeyonderEffect eff: passives) eff.onDie(cap, entity);
         for(BeyonderEffect eff: new ArrayList<>(passives)){
             if(!eff.shouldPersistInDeath()){
                 removeEffectImmediately(eff, cap, entity);
@@ -212,10 +213,10 @@ public class PlayerEffectsManager {
         return false;
     }
 
-    public boolean addEffectNoRefresh(BeyonderEffect effect, BeyonderCapability cap, LivingEntity target){
-        if(target.level().isClientSide()) return false;
-        if(!effect.canAdd(cap, target)) return false;
-        if(!hasEffectOrBetter(effect)){
+    public boolean addEffectNoRefresh(BeyonderEffect effect, BeyonderCapability cap, LivingEntity target) {
+        if (target.level().isClientSide()) return false;
+        if (!effect.canAdd(cap, target)) return false;
+        if (!hasEffectOrBetter(effect)) {
             removeEffect(effect.getId());
             return addEffect(effect, cap, target, true);
         }
@@ -227,16 +228,16 @@ public class PlayerEffectsManager {
         return addEffect(effect, cap, target, true);
     }
 
-    private boolean addEffect(BeyonderEffect effect, BeyonderCapability cap, LivingEntity target, boolean sync, boolean fromLoading){
+    private boolean addEffect(BeyonderEffect effect, BeyonderCapability cap, LivingEntity target, boolean sync, BeyonderEffect.AcquireType acquireType){
         if(!effect.canAdd(cap, target)) return false;
         passives.add(effect);
-        effect.onAcquire(cap, target, fromLoading);
+        effect.onAcquire(cap, target, acquireType);
         if(sync) sendUpdateToClient(List.of(effect), BeyonderEffectSyncMessage.ADD, target);
         return true;
     }
 
     private boolean addEffect(BeyonderEffect effect, BeyonderCapability cap, LivingEntity target, boolean sync){
-        return addEffect(effect, cap, target, sync, false);
+        return addEffect(effect, cap, target, sync, BeyonderEffect.AcquireType.ADDED);
     }
 
     /**
@@ -434,7 +435,7 @@ public class PlayerEffectsManager {
             CompoundTag iterator = list.getCompound(i);
             BeyonderEffect eff = BeyonderEffect.readEffectFromNBTTag(iterator);
             if(eff == null) continue;
-            addEffect(eff, cap, entity, false, true);
+            addEffect(eff, cap, entity, false, BeyonderEffect.AcquireType.LOADING);
         }
     }
 
@@ -442,8 +443,11 @@ public class PlayerEffectsManager {
      * TODO: make passives that actually want to persist in death, like shepherd graze
      * @param otherEffects
      */
-    public void copyFrom(PlayerEffectsManager otherEffects) {
+    public void copyFrom(PlayerEffectsManager otherEffects, BeyonderCapability cap, LivingEntity target, boolean fromDeath) {
         this.passives = otherEffects.passives;
+        if(fromDeath){
+            for(BeyonderEffect eff: passives) eff.respawn(cap, target);
+        }
     }
 
     public void clearCloneWeakEffects(BeyonderCapability cap, LivingEntity target) {

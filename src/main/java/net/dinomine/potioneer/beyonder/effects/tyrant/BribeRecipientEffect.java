@@ -27,8 +27,8 @@ public class BribeRecipientEffect extends BeyonderEffect {
     }
 
     @Override
-    public void onAcquire(BeyonderCapability cap, LivingEntity target, boolean fromLoading) {
-        if(!fromLoading && target.level() instanceof ServerLevel sLevel && ownerId != null){
+    public void onAcquire(BeyonderCapability cap, LivingEntity target, AcquireType acquireType) {
+        if(acquireType == AcquireType.ADDED && target.level() instanceof ServerLevel sLevel && ownerId != null){
             Entity magistrate = AbilityFunctionHelper.getEntityAcrossDimensions(sLevel, ownerId);
             if(magistrate == null) return;
             CapProvider.beyonder(magistrate).ifPresent(mCap -> mCap.getCharacteristicManager().progressActing(TyrantPathway.MAGISTRATE_ACTING_BRIBE, 16));

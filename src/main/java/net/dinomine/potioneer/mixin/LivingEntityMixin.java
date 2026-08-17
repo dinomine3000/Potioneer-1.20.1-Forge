@@ -1,5 +1,6 @@
 package net.dinomine.potioneer.mixin;
 
+import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import net.dinomine.potioneer.beyonder.abilities.AbilityFunctionHelper;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
 import net.minecraft.world.entity.Entity;
@@ -8,10 +9,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.ModifyArg;
-import org.spongepowered.asm.mixin.injection.ModifyArgs;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
-import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
 
 @Mixin(LivingEntity.class)
 public abstract class LivingEntityMixin {
@@ -30,7 +28,8 @@ public abstract class LivingEntityMixin {
     @ModifyVariable(
             method = "travel",
             at = @At(
-                value = "STORE"
+                value = "STORE",
+                target = "Lnet/minecraft/world/entity/LivingEntity;handleRelativeFrictionAndCalculateMovement(Lnet/minecraft/world/phys/Vec3;F)Lnet/minecraft/world/phys/Vec3;"
             ),
             ordinal = 0
     )
@@ -38,4 +37,29 @@ public abstract class LivingEntityMixin {
         if (AbilityFunctionHelper.hasEffect(BeyonderEffects.MYSTERY_FRICTIONLESS.getEffectId(), potioneer$self())) return 1.05F;
         return originalF2;
     }
+
+    @ModifyExpressionValue(
+            method = "updateFallFlying",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/world/item/ItemStack;canElytraFly(Lnet/minecraft/world/entity/LivingEntity;)Z",
+                    remap = false
+            )
+    )
+    public boolean elytraOverride(boolean originalFlag) {
+        return originalFlag || AbilityFunctionHelper.hasEffect(BeyonderEffects.MYSTERY_ELYTRA.getEffectId(), potioneer$self());
+    }
+
+    @ModifyExpressionValue(
+            method = "updateFallFlying",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/world/item/ItemStack;elytraFlightTick(Lnet/minecraft/world/entity/LivingEntity;I)Z",
+                    remap = false
+            )
+    )
+    public boolean eytraValidOverride(boolean originalFlag) {
+        return originalFlag || AbilityFunctionHelper.hasEffect(BeyonderEffects.MYSTERY_ELYTRA.getEffectId(), potioneer$self());
+    }
+
 }

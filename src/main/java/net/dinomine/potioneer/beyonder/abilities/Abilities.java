@@ -340,6 +340,10 @@ public class Abilities {
     public static final AbilityFactory CLEANSE = registerAbility("mystery_cleanse",
             CleanseAbility::new, 1, 2, 0);
 
+    public static final AbilityFactory ELYTRA = registerAbility("elytra",
+            ElytraAbility::new,
+            1, 2, 0);
+
     // -------------------------- RED PRIEST ---------------------------------------------------
 
     public static final AbilityFactory FIRE_SWORD = registerAbility("fire_sword",

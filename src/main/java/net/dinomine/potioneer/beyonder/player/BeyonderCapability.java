@@ -453,14 +453,14 @@ public class BeyonderCapability {
         }
     }
 
-    public void copyFrom(BeyonderCapability source, Player player){
+    public void copyFrom(BeyonderCapability source, Player player, boolean wasFromDeath){
         //TODO have this account for everything
         this.spirituality = source.getSpirituality();
         //advance(source.getPathwayId(), player, true, false);
         //setPathway(source.getPathwayId(), false);
         //player.setHealth(player.getMaxHealth());
         this.luckManager.copyFrom(source.luckManager);
-        this.effectsManager.copyFrom(source.effectsManager);
+        this.effectsManager.copyFrom(source.effectsManager, source, player, wasFromDeath);
         this.abilitiesManager.copyFrom(source.getAbilitiesManager());
         this.conjurerContainers = new ArrayList<>(source.conjurerContainers);
         this.beyonderStats.copyFrom(source.beyonderStats);

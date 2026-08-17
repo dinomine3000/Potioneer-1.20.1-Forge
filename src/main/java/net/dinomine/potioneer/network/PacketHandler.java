@@ -69,6 +69,7 @@ public class PacketHandler {
         INSTANCE.registerMessage(i++, SignContractMessage.class, SignContractMessage::encode, SignContractMessage::decode, SignContractMessage::handle);
         INSTANCE.registerMessage(i++, RulePylonMessage.class, RulePylonMessage::encode, RulePylonMessage::decode, RulePylonMessage::handle);
         INSTANCE.registerMessage(i++, DoubleJumpMessage.class, DoubleJumpMessage::encode, DoubleJumpMessage::decode, DoubleJumpMessage::handle);
+        INSTANCE.registerMessage(i++, ElytraFlyMessage.class, ElytraFlyMessage::encode, ElytraFlyMessage::decode, ElytraFlyMessage::handle);
     }
     public static <T> void sendToPlayer(T message, ServerPlayer player) {
         if (player.connection == null) return;
