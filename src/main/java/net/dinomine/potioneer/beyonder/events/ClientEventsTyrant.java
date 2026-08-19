@@ -43,7 +43,7 @@ public class ClientEventsTyrant {
         MistEffect eff = AbilityFunctionHelper.getEffectOnTarget(BeyonderEffects.TYRANT_MIST_EFFECT.getEffectId(), Minecraft.getInstance().player);
         if(eff == null) return;
         AbilityInfo currentAbility = AbilitiesHotbarHUD.getCurrentSelectedAbility();
-        if(currentAbility != null && Abilities.MIST.getAblId().equalsIgnoreCase(currentAbility.innerId())) return;
+        if(currentAbility != null && Abilities.MIST.get().getAblId().equals(currentAbility.getAbilityId())) return;
         event.setCanceled(true);
     }
 

@@ -13,9 +13,6 @@ public class DummyAbility extends Ability{
         return "dummy";
     }
 
-    public DummyAbility(int sequence){
-        super(sequence);
-    }
 
     @Override
     public boolean primary(BeyonderCapability cap, LivingEntity target) {

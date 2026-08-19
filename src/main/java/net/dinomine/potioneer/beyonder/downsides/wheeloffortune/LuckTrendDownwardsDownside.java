@@ -6,10 +6,6 @@ import net.minecraft.world.entity.LivingEntity;
 
 public class LuckTrendDownwardsDownside extends Downside {
 
-    public LuckTrendDownwardsDownside(int sequenceLevel) {
-        super(sequenceLevel);
-    }
-
     @Override
     protected String getMainDescId(int sequenceLevel) {
         return "d_luck_trend";

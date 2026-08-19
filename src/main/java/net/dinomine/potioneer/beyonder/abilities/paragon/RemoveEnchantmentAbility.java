@@ -8,17 +8,17 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 
 public class RemoveEnchantmentAbility extends Ability {
-    public RemoveEnchantmentAbility(int sequence){
+    @Override
+    protected String getMainDescId(int sequenceLevel) {
+        return "disenchant";
+    }
+    /*public RemoveEnchantmentAbility(int sequence){
 //        this.info = new AbilityInfo(109, 224, "Disenchant", 40 + sequence, 50, this.getMaxCooldown(), "disenchant");
 //        this.isActive = true;
         super(sequence);
         setCost(ignored -> 50);
     }
 
-    @Override
-    protected String getMainDescId(int sequenceLevel) {
-        return "disenchant";
-    }
 
     @Override
     public boolean primary(BeyonderCapability cap, LivingEntity target) {
@@ -40,5 +40,5 @@ public class RemoveEnchantmentAbility extends Ability {
         }
 
         return false;
-    }
+    }*/
 }

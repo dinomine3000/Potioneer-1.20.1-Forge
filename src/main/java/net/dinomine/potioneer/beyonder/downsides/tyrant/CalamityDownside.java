@@ -8,9 +8,6 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.LivingEntity;
 
 public class CalamityDownside extends Downside {
-    public CalamityDownside(int sequenceLevel) {
-        super(sequenceLevel);
-    }
 
     @Override
     protected boolean primary(BeyonderCapability cap, LivingEntity target) {
@@ -34,10 +31,10 @@ public class CalamityDownside extends Downside {
                 CalamityAbility.doMeteor(target);
                 break;
             case 1:
-                CalamityAbility.doRain(target, sequenceLevel);
+                CalamityAbility.doRain(target, getSequenceLevel());
                 break;
             case 2:
-                CalamityAbility.doThunder(target.level().isThundering(), target, sequenceLevel, cap, true);
+                CalamityAbility.doThunder(target.level().isThundering(), target, getSequenceLevel(), cap, true);
                 break;
         }
         target.level().playSound(null, target.getOnPos(), ModSounds.UNLUCK.get(), SoundSource.AMBIENT);

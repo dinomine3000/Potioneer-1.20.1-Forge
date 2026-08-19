@@ -13,16 +13,19 @@ import net.minecraft.world.entity.LivingEntity;
 import java.util.List;
 
 public class DamageRecordingAbility extends PassiveAbility {
-    /**
-     * pass the sequence level or pathway-sequence id to define the abilities sequence level
-     * abilities that depend on changing pathways like Cogitation, that exists for every pathway, need to process their own pathway-sequence id here.
-     * I dont ask specifically for sequence level OR pathway id, but if you want to choose one, pass along the pathwaySequenceId.
-     *
-     * @param sequenceLevel
-     */
-    public DamageRecordingAbility(int sequenceLevel) {
-        super(sequenceLevel, BeyonderEffects.WHEEL_DAMAGE_RECORDING, ignored -> "damage_recording");
+    private static final int cost = 0;
+    public DamageRecordingAbility() {
+        super(BeyonderEffects.WHEEL_DAMAGE_RECORDING, ignored -> "damage_recording");
+    }
+
+    @Override
+    public void init() {
         enabledOnAcquire();
+    }
+
+    @Override
+    protected boolean hasSecondary(int level) {
+        return true;
     }
 
     @Override
@@ -43,7 +46,7 @@ public class DamageRecordingAbility extends PassiveAbility {
     @Override
     protected boolean secondary(BeyonderCapability cap, LivingEntity target) {
         if(target.level().isClientSide()) return false;
-        if(cap.getSpirituality() < cost()) return false;
+        if(cap.getSpirituality() < cost) return false;
         DamageRecordingEffect effect = (DamageRecordingEffect) cap.getEffectsManager().getEffect(BeyonderEffects.WHEEL_DAMAGE_RECORDING.getEffectId(), getSequenceLevel());
         if(effect == null) return false;
         float amount = effect.getRecordedDamage(false);
@@ -56,7 +59,7 @@ public class DamageRecordingAbility extends PassiveAbility {
         for(LivingEntity victim: targets){
             victim.hurt(PotioneerDamage.crit((ServerLevel) target.level(), target), effect.getRecordedDamage(true));
         }
-        cap.requestActiveSpiritualityCost(cost());
+        cap.requestActiveSpiritualityCost(cost);
         return true;
     }
 }

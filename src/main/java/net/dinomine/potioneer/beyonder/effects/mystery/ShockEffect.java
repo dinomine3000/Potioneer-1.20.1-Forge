@@ -19,7 +19,7 @@ public class ShockEffect extends BeyonderEffect {
     @Override
     public void onAcquire(BeyonderCapability cap, LivingEntity target, AcquireType acquireType) {
         if(acquireType != AcquireType.ADDED) return;
-        cap.getAbilitiesManager().getAbilities().forEach(abl -> abl.putOnCooldown(20, target));
+        cap.getAbilitiesManager().getAllAbilities().forEach(abl -> abl.putOnCooldown(20, target));
         if(target instanceof Monster monster) monster.setTarget(null);
     }
 

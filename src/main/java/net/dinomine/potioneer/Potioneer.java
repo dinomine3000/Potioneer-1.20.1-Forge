@@ -1,6 +1,7 @@
 package net.dinomine.potioneer;
 
 import com.mojang.logging.LogUtils;
+import net.dinomine.potioneer.beyonder.abilities.Abilities;
 import net.dinomine.potioneer.beyonder.pathways.Pathways;
 import net.dinomine.potioneer.beyonder.ModAttributes;
 import net.dinomine.potioneer.block.ModBlocks;
@@ -99,6 +100,8 @@ public class Potioneer
         ModMenuTypes.MENU_TYPES.register(eventBus);
 
         Pathways.register(eventBus);
+
+        Abilities.register(eventBus);
 
         ModAttributes.register(eventBus);
 

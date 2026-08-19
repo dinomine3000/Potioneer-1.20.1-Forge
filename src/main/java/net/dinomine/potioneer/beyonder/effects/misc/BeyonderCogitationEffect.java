@@ -5,6 +5,7 @@ import net.dinomine.potioneer.beyonder.abilities.DisabledAbilitiesManager;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffect;
 import net.dinomine.potioneer.beyonder.player.BeyonderCapability;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
@@ -14,6 +15,7 @@ public class BeyonderCogitationEffect extends BeyonderEffect {
     private boolean darknessCheck = false;
     private boolean weaknessCheck = false;
     private boolean glowingCheck = false;
+    public ResourceLocation ablId = null;
 
     @Override
     public void onAcquire(BeyonderCapability cap, LivingEntity target) {
@@ -21,7 +23,8 @@ public class BeyonderCogitationEffect extends BeyonderEffect {
 //        if(target instanceof Player player && deactivatedAbilities.isEmpty()){
 //            deactivatedAbilities = cap.getAbilitiesManager().disabledAllAbilities(player, "cogitation");
 //        }
-        cap.getAbilitiesManager().getDisabledAbilitiesManager().disableAbility("cogitation", DisabledAbilitiesManager.DisabledAbilityProxy.all(-1, Abilities.COGITATION.getAblId()), cap, target);
+        if(ablId == null) throw new RuntimeException("[Potioneer] tried to add a cogitation effect with no reference to its casting ability");
+        cap.getAbilitiesManager().getDisabledAbilitiesManager().disableAbility("cogitation", DisabledAbilitiesManager.DisabledAbilityProxy.all(-1, ablId), cap, target);
     }
 
     @Override

@@ -2,6 +2,7 @@ package net.dinomine.potioneer.beyonder.pathways;
 
 import net.dinomine.potioneer.beyonder.abilities.Abilities;
 import net.dinomine.potioneer.beyonder.abilities.Ability;
+import net.dinomine.potioneer.beyonder.abilities.AbilityFactory;
 import net.dinomine.potioneer.beyonder.player.BeyonderStats;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
@@ -49,6 +50,11 @@ public class MysteryPathway extends BeyonderPathway {
     }
 
     @Override
+    public AbilityFactory getCogitationAbility() {
+        return Abilities.COGITATION_MY.get();
+    }
+
+    @Override
     public int getSequenceColorFromLevel(int sequenceLevel) {
         return switch (sequenceLevel%10) {
             case 9 -> 12117700;
@@ -59,13 +65,8 @@ public class MysteryPathway extends BeyonderPathway {
     }
 
     @Override
-    public List<Ability> getAbilities(int sequenceLevel) {
-        return getAbilities(sequenceLevel%10, sequenceLevel%10);
-    }
-
-    @Override
-    public List<Ability> getAbilities(int ofSequenceLevel, int atSequenceLevel) {
-        ArrayList<Ability> abilities = new ArrayList<>();
+    public List<AbilityFactory> getAbilities(int ofSequenceLevel) {
+        ArrayList<AbilityFactory> abilities = new ArrayList<>();
 
         switch(ofSequenceLevel%10){
             case 0:
@@ -75,27 +76,27 @@ public class MysteryPathway extends BeyonderPathway {
             case 4:
             case 5:
             case 6:
-                abilities.add(Abilities.ELYTRA.create(atSequenceLevel));
+                abilities.add(Abilities.ELYTRA.get());
             case 7:
-                abilities.add(Abilities.AIR_BULLET.create(atSequenceLevel));
-                abilities.add(Abilities.TRICKS.create(atSequenceLevel));
-                abilities.add(Abilities.BLINK.create(atSequenceLevel));
-                abilities.add(Abilities.CLONE.create(atSequenceLevel));
-                abilities.add(Abilities.FAKE_DEATH.create(atSequenceLevel));
-                abilities.add(Abilities.MAGIC_TOOLS.create(atSequenceLevel));
-                abilities.add(Abilities.CLEANSE.create(atSequenceLevel));
+                abilities.add(Abilities.AIR_BULLET.get());
+                abilities.add(Abilities.TRICKS.get());
+                abilities.add(Abilities.BLINK.get());
+                abilities.add(Abilities.CLONE.get());
+                abilities.add(Abilities.FAKE_DEATH.get());
+                abilities.add(Abilities.MAGIC_TOOLS.get());
+                abilities.add(Abilities.CLEANSE.get());
             case 8:
-                abilities.add(Abilities.STEP_UP.create(atSequenceLevel));
-                abilities.add(Abilities.GYMNASTICS.create(atSequenceLevel));
-                abilities.add(Abilities.DODGE.create(atSequenceLevel));
-                abilities.add(Abilities.UNSEEN_HAND.create(atSequenceLevel));
-                abilities.add(Abilities.AERIAL_DOMAIN.create(atSequenceLevel));
+                abilities.add(Abilities.STEP_UP.get());
+                abilities.add(Abilities.GYMNASTICS.get());
+                abilities.add(Abilities.DODGE.get());
+                abilities.add(Abilities.UNSEEN_HAND.get());
+                abilities.add(Abilities.AERIAL_DOMAIN.get());
             case 9:
-                //abilities.add(Abilities.EXTENDED_REACH.create(atSequenceLevel));
-                abilities.add(Abilities.DOOR_OPENING.create(atSequenceLevel));
-                abilities.add(Abilities.MYSTERY_JAB.create(atSequenceLevel));
-                abilities.add(Abilities.MYSTERY_SAP.create(atSequenceLevel));
-                abilities.add(Abilities.THEFT.create(atSequenceLevel));
+                //abilities.add(Abilities.EXTENDED_REACH.get());
+                abilities.add(Abilities.DOOR_OPENING.get());
+                abilities.add(Abilities.MYSTERY_JAB.get());
+                abilities.add(Abilities.MYSTERY_SAP.get());
+                abilities.add(Abilities.THEFT.get());
         }
         Collections.reverse(abilities);
         return abilities;

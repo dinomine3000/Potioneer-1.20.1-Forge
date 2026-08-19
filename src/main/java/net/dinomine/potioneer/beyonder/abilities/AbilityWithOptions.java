@@ -11,19 +11,6 @@ public abstract class AbilityWithOptions extends Ability {
     private AbilityOptions secondaryOptions = null;
     public AbilityOptions getPrimaryOptions(){return primaryOptions;}
     public AbilityOptions getSecondaryOptions(){return secondaryOptions;}
-    /**
-     * pass the sequence level or pathway-sequence id to define the abilities sequence level
-     * abilities that depend on changing pathways like Cogitation, that exists for every pathway, need to process their own pathway-sequence id here.
-     * I dont ask specifically for sequence level OR pathway id, but if you want to choose one, pass along the pathwaySequenceId.
-     *
-     * @param sequenceLevel
-     */
-    public AbilityWithOptions(int sequenceLevel) {
-        super(sequenceLevel);
-    }
-    public AbilityWithOptions(int sequenceLevel, int defaultCooldown) {
-        super(sequenceLevel, defaultCooldown);
-    }
 
     protected void setPrimaryOptions(AbilityOptions primaryOptions){
         this.primaryOptions = primaryOptions;

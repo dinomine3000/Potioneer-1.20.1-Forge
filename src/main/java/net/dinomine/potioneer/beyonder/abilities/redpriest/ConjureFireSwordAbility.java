@@ -15,7 +15,7 @@ public class ConjureFireSwordAbility extends Ability {
     protected String getMainDescId(int sequenceLevel) {
         return "fire_sword";
     }
-
+/*
     public ConjureFireSwordAbility(int sequence){
 //        this.info = new AbilityInfo(83, 56, "Create Sword", 30 + sequence, 25, 20*30, "fire_sword");
         super(sequence);
@@ -53,5 +53,5 @@ public class ConjureFireSwordAbility extends Ability {
             }
         }
         return false;
-    }
+    }*/
 }

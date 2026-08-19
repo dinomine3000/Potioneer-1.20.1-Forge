@@ -2,6 +2,7 @@ package net.dinomine.potioneer.beyonder.pathways;
 
 import net.dinomine.potioneer.beyonder.abilities.Abilities;
 import net.dinomine.potioneer.beyonder.abilities.Ability;
+import net.dinomine.potioneer.beyonder.abilities.AbilityFactory;
 import net.dinomine.potioneer.beyonder.player.BeyonderStats;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
@@ -76,15 +77,10 @@ public class ParagonPathway extends BeyonderPathway {
     }*/
 
     @Override
-    public List<Ability> getAbilities(int sequence){
-        return getAbilities(sequence%10, sequence%10);
-    }
+    public List<AbilityFactory> getAbilities(int ofSequenceLevel) {
+        ArrayList<AbilityFactory> abilities = new ArrayList<>();
 
-    @Override
-    public List<Ability> getAbilities(int ofSequenceLevel, int atSequenceLevel) {
-        ArrayList<Ability> abilities = new ArrayList<>();
-
-        switch(ofSequenceLevel%10){
+        /*switch(ofSequenceLevel%10){
             case 0:
             case 1:
             case 2:
@@ -93,7 +89,7 @@ public class ParagonPathway extends BeyonderPathway {
             case 5:
             case 6:
             case 7:
-                abilities.add(Abilities.XP_COST_REDUCE.create(atSequenceLevel));
+                abilities.add(Abilities.XP_COST_REDUCE);
                 abilities.add(Abilities.REMOVE_ENCHANTMENT.create(atSequenceLevel));
             case 8:
                 abilities.add(Abilities.ANVIL_GUI.create(atSequenceLevel));
@@ -106,7 +102,7 @@ public class ParagonPathway extends BeyonderPathway {
                 abilities.add(Abilities.FUEL_CREATE.create(atSequenceLevel));
                 abilities.add(Abilities.DURABILITY_REGEN.create(atSequenceLevel));
         }
-        Collections.reverse(abilities);
+        Collections.reverse(abilities);*/
         return abilities;
     }
 
@@ -141,4 +137,8 @@ public class ParagonPathway extends BeyonderPathway {
         };
     }
 
+    @Override
+    public AbilityFactory getCogitationAbility() {
+        return Abilities.COGITATION_PA.get();
+    }
 }

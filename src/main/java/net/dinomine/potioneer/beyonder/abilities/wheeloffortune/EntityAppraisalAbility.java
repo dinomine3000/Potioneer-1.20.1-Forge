@@ -19,13 +19,11 @@ import net.minecraft.world.item.ItemStack;
 import java.util.Optional;
 
 public class EntityAppraisalAbility extends Ability {
-
-    public EntityAppraisalAbility(int sequence){
-//        this.info = new AbilityInfo(5, 104, "Luck Check", sequence, 0, getMaxCooldown(), "luck_check" + (sequence > 7 ? "1" : "2"));
-        super(sequence);
-        this.isActive = true;
-        this.isPassive = false;
-        withCost(0);
+    private static final int COST = 0;
+    
+    @Override
+    protected boolean hasSecondary(int level) {
+        return true;
     }
 
     @Override
@@ -46,14 +44,14 @@ public class EntityAppraisalAbility extends Ability {
 
     @Override
     protected boolean primary(BeyonderCapability cap, LivingEntity target) {
-        if(cap.getSpirituality() < cost()) return false;
-        cap.requestActiveSpiritualityCost(cost());
+        if(cap.getSpirituality() < COST) return false;
+        cap.requestActiveSpiritualityCost(COST);
         if(target.level().isClientSide()) return true;
         LivingEntity statAppraisalTarget = getTarget(target);
         if(statAppraisalTarget.getId() != target.getId())
             cap.getCharacteristicManager().progressActing(WheelOfFortunePathway.APPRAISER_ACTING_APPRAISE, 8);
         statAppraisalTarget.getCapability(CapProvider.BEYONDER_STATS).ifPresent(targetCap -> {
-            if(sequenceLevel > 6){
+            if(getSequenceLevel() > 6){
                 target.sendSystemMessage(Component.translatable("ability.potioneer.target_appraisal",
                         statAppraisalTarget.getDisplayName(), Math.ceil(statAppraisalTarget.getHealth()), Math.ceil(statAppraisalTarget.getMaxHealth()),
                         Math.round(targetCap.getSpirituality()), Math.max(targetCap.getMaxSpirituality(), 100), Math.round(targetCap.getSanity()), targetCap.getMaxSanity()));
@@ -67,8 +65,8 @@ public class EntityAppraisalAbility extends Ability {
 
     @Override
     protected boolean secondary(BeyonderCapability cap, LivingEntity target) {
-        if(cap.getSpirituality() < cost()) return false;
-        cap.requestActiveSpiritualityCost(cost());
+        if(cap.getSpirituality() < COST) return false;
+        cap.requestActiveSpiritualityCost(COST);
         if(target.level().isClientSide()) return true;
 
         LivingEntity luckAppraisalTarget = getTarget(target);

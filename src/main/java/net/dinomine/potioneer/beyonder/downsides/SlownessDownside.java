@@ -6,9 +6,7 @@ import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
 
 public class SlownessDownside extends Downside{
-    public SlownessDownside(int sequenceLevel) {
-        super(sequenceLevel);
-    }
+    public SlownessDownside() {}
 
     @Override
     protected boolean primary(BeyonderCapability cap, LivingEntity target) {

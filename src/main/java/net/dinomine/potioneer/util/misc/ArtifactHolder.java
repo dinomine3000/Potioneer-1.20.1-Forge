@@ -1,8 +1,8 @@
 package net.dinomine.potioneer.util.misc;
 
+import lombok.Getter;
 import net.dinomine.potioneer.beyonder.abilities.Ability;
 import net.dinomine.potioneer.beyonder.abilities.AbilityInfo;
-import net.dinomine.potioneer.beyonder.abilities.AbilityKey;
 import net.dinomine.potioneer.beyonder.downsides.Downside;
 import net.dinomine.potioneer.beyonder.player.BeyonderCapability;
 import net.minecraft.nbt.CompoundTag;
@@ -12,16 +12,18 @@ import net.minecraft.world.item.ItemStack;
 import java.util.*;
 
 public class ArtifactHolder {
-    protected final HashMap<AbilityKey, Ability> abilities = new HashMap<>();
-    protected final HashMap<AbilityKey, Downside> downsides = new HashMap<>();
+    protected final HashMap<UUID, Ability> abilities = new HashMap<>();
+    protected final HashMap<UUID, Downside> downsides = new HashMap<>();
     /**
      * this list contains all the abilities that the player wants to run from this artifact when interacting with the item.
      * say the artifact has door opening and extended reach. when interacting with the item, it would by default run both of these abilities.
      * instead, itll run only the abilities present in this array list.
      * now its a hashmap, where the corresponding boolean value tells the artifact what the default action is (between casting the primary or secondary ability)
      */
-    private final HashMap<AbilityKey, Boolean> abilitiesToActivateOnItemInteract = new HashMap<>();
+    private final HashMap<UUID, Boolean> abilitiesToActivateOnItemInteract = new HashMap<>();
+    @Getter
     private final UUID artifactId;
+    @Getter
     protected ItemStack item;
     //1 active cast = 60 passive seconds
     protected float chargeSeconds = -1;
@@ -31,11 +33,7 @@ public class ArtifactHolder {
         this.chargeSeconds += chargeSeconds;
     }
 
-    public UUID getArtifactId(){
-        return artifactId;
-    }
-
-    public List<AbilityKey> getAbilityKeys() {
+    public List<UUID> getAbilityIds() {
         return new ArrayList<>(abilities.keySet().stream().toList());
     }
 
@@ -54,12 +52,12 @@ public class ArtifactHolder {
      */
     public ArtifactHolder(List<Ability> abilities, UUID artifactId, ItemStack stack){
         for(Ability abl: abilities){
-            AbilityKey key = abl.setArtifactAbilityKey(artifactId);
+            abl.setOnArtifact(stack);
             if(abl.isDownside())
-                this.downsides.put(key, (Downside) abl);
+                this.downsides.put(abl.getInstanceId(), (Downside) abl);
             else {
-                this.abilities.put(key, abl);
-                abilitiesToActivateOnItemInteract.put(key, true);
+                this.abilities.put(abl.getInstanceId(), abl);
+                abilitiesToActivateOnItemInteract.put(abl.getInstanceId(), true);
             }
         }
         this.item = stack;
@@ -79,9 +77,9 @@ public class ArtifactHolder {
     }
 
 
-    public boolean castAbility(AbilityKey key, boolean primary, BeyonderCapability cap, LivingEntity target, CompoundTag args){
+    public boolean castAbility(UUID abilityId, boolean primary, BeyonderCapability cap, LivingEntity target, CompoundTag args){
         if(outOfCharge()) return false;
-        Ability abl = abilities.get(key);
+        Ability abl = abilities.get(abilityId);
         if(abl == null) return false;
         if(!abl.castAbility(cap, target, primary, args)) return false;
         for(Downside ds: downsides.values()){
@@ -105,8 +103,8 @@ public class ArtifactHolder {
         if(abilitiesToActivateOnItemInteract.isEmpty()) return;
         if(outOfCharge()) return;
         boolean flag = false;
-        for(AbilityKey key: abilitiesToActivateOnItemInteract.keySet()){
-            if(abilities.get(key).castAbility(cap, target, abilitiesToActivateOnItemInteract.get(key))) flag = true;
+        for(UUID id: abilitiesToActivateOnItemInteract.keySet()){
+            if(abilities.get(id).castAbility(cap, target, abilitiesToActivateOnItemInteract.get(id))) flag = true;
         }
         if(!flag) return;
         for(Downside ds: downsides.values()){
@@ -153,17 +151,12 @@ public class ArtifactHolder {
         return abilities.isEmpty() && downsides.isEmpty();
     }
 
-    public Ability getAbility(AbilityKey key) {
-        if(!key.isArtifactKey() || !key.getArtifactId().equals(artifactId)) return null;
-        return abilities.get(key);
+    public Ability getAbility(UUID id) {
+        return abilities.get(id);
     }
 
     public Collection<Ability> getAbilities() {
         return abilities.values();
-    }
-
-    public void updateOnClient(ArtifactHolder artifact) {
-
     }
 
     @Override
@@ -179,5 +172,14 @@ public class ArtifactHolder {
         ItemStack returnItem = item.copy();
         MysticalItemHelper.updateArtifactTagOnItem(this, returnItem);
         return MysticalItemHelper.getArtifactFromItem(returnItem);
+    }
+
+    public void updateItem(ItemStack item) {
+        this.item = item.copy();
+        for(Ability abl: abilities.values()) abl.setOnArtifact(this.item);
+    }
+
+    public boolean hasAbility(UUID instanceId) {
+        return abilities.containsKey(instanceId) || downsides.containsKey(instanceId);
     }
 }

@@ -29,12 +29,7 @@ import net.minecraftforge.network.PacketDistributor;
 import java.util.ArrayList;
 
 public class MeltAbility extends Ability {
-
-    public MeltAbility(int sequence){
-//        this.info = new AbilityInfo(83, 80, "Melt", 30 + sequence, 20, this.getMaxCooldown(), "melt");
-        super(sequence);
-        setCost(ignored -> 20);
-    }
+    private static final int cost = 20;
 
     @Override
     protected String getMainDescId(int sequenceLevel) {
@@ -43,8 +38,8 @@ public class MeltAbility extends Ability {
 
     @Override
     protected boolean primary(BeyonderCapability cap, LivingEntity target) {
-        if(target.level().isClientSide() && cap.getSpirituality() >= cost()) return true;
-        if(cap.getSpirituality() < cost()) return false;
+        if(target.level().isClientSide() && cap.getSpirituality() >= cost) return true;
+        if(cap.getSpirituality() < cost) return false;
         HitResult hit = target.pick(target.getAttributeValue(ForgeMod.BLOCK_REACH.get()) + 0.5f, 0, true);
         ArrayList<Entity> players = AbilityFunctionHelper.getEntitiesAroundPredicate(target, 16, ent -> ent instanceof Player);
         ServerLevel level = (ServerLevel) target.level();
@@ -59,7 +54,7 @@ public class MeltAbility extends Ability {
                 level.playSound(null, target, SoundEvents.GENERIC_EXTINGUISH_FIRE, SoundSource.PLAYERS, 1, 1);
                 ItemEntity itemEntity = new ItemEntity(level, pos.getX(), pos.getY(), pos.getZ(), burnResult, 0, 0, 0);
                 level.addFreshEntity(itemEntity);
-                cap.requestActiveSpiritualityCost(cost());
+                cap.requestActiveSpiritualityCost(cost);
                 for(Entity ent: players){
                     if(ent instanceof ServerPlayer player){
                         PacketHandler.INSTANCE.send(PacketDistributor.PLAYER.with(() -> player),
@@ -71,7 +66,7 @@ public class MeltAbility extends Ability {
                     || blockState.isFlammable(target.level(), pos, blockHit.getDirection())){
                 level.setBlock(pos, Blocks.AIR.defaultBlockState(), Block.UPDATE_ALL);
                 level.playSound(null, target, SoundEvents.GENERIC_EXTINGUISH_FIRE, SoundSource.PLAYERS, 1, 1);
-                cap.requestActiveSpiritualityCost(cost());
+                cap.requestActiveSpiritualityCost(cost);
                 for(Entity ent: players){
                     if(ent instanceof ServerPlayer player){
                         PacketHandler.INSTANCE.send(PacketDistributor.PLAYER.with(() -> player),
@@ -101,7 +96,7 @@ public class MeltAbility extends Ability {
         }
         if(flag){
             target.level().playSound(null, target, SoundEvents.GENERIC_EXTINGUISH_FIRE, SoundSource.PLAYERS, 1, 1.5f - target.getRandom().nextFloat());
-            cap.requestActiveSpiritualityCost(cost());
+            cap.requestActiveSpiritualityCost(cost);
             return true;
         }
         return false;

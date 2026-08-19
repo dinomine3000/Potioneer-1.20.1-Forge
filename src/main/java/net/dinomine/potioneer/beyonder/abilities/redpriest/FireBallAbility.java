@@ -14,7 +14,7 @@ public class FireBallAbility extends Ability {
     protected String getMainDescId(int sequenceLevel) {
         return "fire_ball";
     }
-
+/*
     public FireBallAbility(int sequence){
 //        this.info = new AbilityInfo(83, 128, "Fire Ball", 30 + sequence, 20, this.getMaxCooldown(), "fire_ball");
         super(sequence);
@@ -40,5 +40,5 @@ public class FireBallAbility extends Ability {
 
         cap.requestActiveSpiritualityCost(cost());
         return true;
-    }
+    }*/
 }

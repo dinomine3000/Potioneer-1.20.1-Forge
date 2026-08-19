@@ -257,8 +257,7 @@ public class BeyonderScreen extends Screen {
 
     private static void drawAbilityIcon(GuiGraphics pGuiGraphics, int pX, int pY, float scale, AbilityInfo info){
         int pathwayId = info.getPathwayId();
-        AbilityFactory abl = Abilities.getAbilityFactory(info.getKey());
-        pGuiGraphics.blit(ICONS, pX + (int) (5*scale), pY + (int)(4*scale), (int)(ICON_WIDTH*scale), (int)(ICON_HEIGHT*scale), Pathways.getPathwayById(pathwayId).getAbilityX(), abl.getPosY(), ICON_WIDTH, ICON_HEIGHT, ICONS_WIDTH, ICONS_HEIGHT);
+        pGuiGraphics.blit(ICONS, pX + (int) (5*scale), pY + (int)(4*scale), (int)(ICON_WIDTH*scale), (int)(ICON_HEIGHT*scale), Pathways.getPathwayById(pathwayId).getAbilityX(), info.getPosY(), ICON_WIDTH, ICON_HEIGHT, ICONS_WIDTH, ICONS_HEIGHT);
     }
 
     @Override

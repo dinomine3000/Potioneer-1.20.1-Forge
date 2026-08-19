@@ -16,22 +16,29 @@ import java.util.Optional;
 
 
 public class FateAbility extends Ability {
+    private int cost = 0;
     @Override
     protected String getMainDescId(int sequenceLevel) {
         return sequenceLevel < 6 ? "fate_" : "fate";
     }
 
-    public FateAbility(int sequenceLevel) {
-        super(sequenceLevel);
+    @Override
+    public void init() {
         defaultMaxCooldown = PotioneerAbilityConfig.FATE_COOLDOWN.get();
-        withCost(PotioneerAbilityConfig.FATE_COST.get());
+        cost = PotioneerAbilityConfig.FATE_COST.get();
+        isPassive = true;
+    }
+
+    @Override
+    protected boolean hasSecondary(int level) {
+        return true;
     }
 
     @Override
     protected boolean primary(BeyonderCapability cap, LivingEntity target) {
-        if(cap.getSpirituality() < cost()) return false;
+        if(cap.getSpirituality() < cost) return false;
         if(target.level().isClientSide()) return true;
-        cap.getEffectsManager().addEffectNoCheck(BeyonderEffects.WHEEL_FATE.createInstance(getSequenceLevel(), cost(), 2, true), cap, target);
+        cap.getEffectsManager().addEffectNoCheck(BeyonderEffects.WHEEL_FATE.createInstance(getSequenceLevel(), cost, 2, true), cap, target);
         cap.getLuckManager().consumeLuck(target, 50, false);
         if(getSequenceLevel() < 7) ParticleMaker.createDiceEffectForEntity(target.level(), target);
         return true;

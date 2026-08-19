@@ -10,8 +10,8 @@ public class DummyDownside extends Downside{
         return "d_dummy";
     }
 
-    public DummyDownside(int sequenceLevel){
-        super(sequenceLevel);
+    public DummyDownside(){
+        super();
         defaultMaxCooldown = 0;
     }
 

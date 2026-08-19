@@ -6,9 +6,6 @@ import net.dinomine.potioneer.util.ParticleMaker;
 import net.minecraft.world.entity.LivingEntity;
 
 public class LuckConsumeDownside extends Downside {
-    public LuckConsumeDownside(int sequenceLevel) {
-        super(sequenceLevel);
-    }
 
     @Override
     protected String getMainDescId(int sequenceLevel) {

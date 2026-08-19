@@ -16,6 +16,7 @@ import net.dinomine.potioneer.network.PacketHandler;
 import net.dinomine.potioneer.network.messages.effects.GeneralAreaEffectMessage;
 import net.dinomine.potioneer.savedata.DimensionChunkSavedData;
 import net.dinomine.potioneer.util.ParticleMaker;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -34,7 +35,7 @@ public class AbilityProhibitionEffect extends AbstractSourceRecipientEffect {
         addSource(sourceId, ProhibitionAbility.ABILITY_PROHIBITION_WINDOW.get(), null);
     }
 
-    public boolean onAbilityCast(LivingEntity target, String abilityId){
+    public boolean onAbilityCast(LivingEntity target, ResourceLocation abilityId){
         if(target.level().isClientSide()) return false;
         ServerLevel level = (ServerLevel) target.level();
         int radius = ProhibitionAbility.PROHIBITION_RADIUS.get();
@@ -58,7 +59,7 @@ public class AbilityProhibitionEffect extends AbstractSourceRecipientEffect {
 
             //3. clear other instances of this effect, as created by the sources
             player.getCapability(CapProvider.BEYONDER_STATS).ifPresent(cap -> {
-                cap.getAbilitiesManager().getAbilities(Abilities.PROHIBITION.getAblId()).stream()
+                cap.getAbilitiesManager().getAllAbilities(Abilities.PROHIBITION.get().getAblId()).stream()
                         .map(abl -> (ProhibitionAbility) abl)
                         .forEach(prohibitionAbility -> prohibitionAbility.clearEffectForEveryone(level, player));
                 cap.getCharacteristicManager().progressActing(TyrantPathway.TRIBUNAL_ACTING_PROHIBITION, 15);

@@ -20,7 +20,7 @@ import net.minecraft.util.Mth;
 import net.minecraftforge.client.gui.overlay.IGuiOverlay;
 
 public class AbilitiesHotbarHUD {
-    private static final ResourceLocation ICONS = new ResourceLocation(Potioneer.MOD_ID, "textures/gui/ability_icon_atlas.png");
+    public static final ResourceLocation ICONS = new ResourceLocation(Potioneer.MOD_ID, "textures/gui/ability_icon_atlas.png");
     public static int ICONS_WIDTH = 180;
     public static int ICONS_HEIGHT = 632;
     public static int ICON_WIDTH = 16;
@@ -171,7 +171,9 @@ public class AbilitiesHotbarHUD {
     public static void drawAbility(GuiGraphics guiGraphics, AbilityInfo info, int xPos, int yPos, float scale){
         if(scale <= 0.01) return;
         if(info == null) return;
+        int pathwayId = info.getPathwayId();
         int abilityX = Pathways.getPathwayById(info.getPathwayId()).getAbilityX();
+        int abilityY = info.getPosY();
         int caseX = xPos - (int) (CASE_WIDTH * scale / 2);
         int caseY = yPos - (int) (CASE_HEIGHT * scale / 2);
 
@@ -180,8 +182,7 @@ public class AbilitiesHotbarHUD {
         guiGraphics.blit(ICONS, caseX, caseY, (int) (CASE_WIDTH*scale), (int) (CASE_HEIGHT*scale), abilityX - 5, 0, CASE_WIDTH, CASE_HEIGHT, ICONS_WIDTH, ICONS_HEIGHT);
 
         //ability cast (primary vs secondary) shape
-        AbilityFactory abl = Abilities.getAbilityFactory(info.getKey());
-        if(abl.getHasSecondaryFunction(info.getSequenceLevel())){
+        if(info.isHasSecondary()){
             int pCastHeight = (int)(leftCastCooldownAnimation.getValue(0, CAST_HEIGHT));
             int sCastHeight = (int)(rightCastCooldownAnimation.getValue(0, CAST_HEIGHT));
             guiGraphics.blit(ICONS, caseX, caseY + (int)(scale * (CAST_HEIGHT - pCastHeight)),
@@ -202,8 +203,8 @@ public class AbilitiesHotbarHUD {
         if(!info.isEnabled()){
             RenderSystem.setShaderColor(0.6F, 0.6F, 0.6F, 1.0F);
         }
-        ResourceLocation AbilityIcon = Abilities.getAbilityFactory(info.innerId()).getTextureLocation();
-        guiGraphics.blit(AbilityIcon, caseX + (int) (5*scale), caseY + (int)(4*scale), (int)(ICON_WIDTH*scale), (int)(ICON_HEIGHT*scale), abilityX, abl.getPosY(), ICON_WIDTH, ICON_HEIGHT, ICONS_WIDTH, ICONS_HEIGHT);
+        ResourceLocation AbilityIcon = Pathways.getPathwayById(pathwayId).getIconTextureLocation();
+        guiGraphics.blit(AbilityIcon, caseX + (int) (5*scale), caseY + (int)(4*scale), (int)(ICON_WIDTH*scale), (int)(ICON_HEIGHT*scale), abilityX, abilityY, ICON_WIDTH, ICON_HEIGHT, ICONS_WIDTH, ICONS_HEIGHT);
 
         RenderSystem.setShaderColor(1F, 1F, 1F, 1F); // Reset color
 
@@ -225,8 +226,7 @@ public class AbilitiesHotbarHUD {
 
         //disabled gradient
         float spir = ClientStatsData.getPlayerSpirituality();
-        int cost = abl.getMinimumSpiritualityToActivate(info.getSequenceLevel());
-        if(!info.isEnabled() || spir < cost){
+        if(!info.isEnabled()){
 //            guiGraphics.blit(ICONS, caseX + (int) (5*scale), caseY + (int)(4*scale), (int)(ICON_WIDTH*scale), (int)(ICON_HEIGHT*scale), 130, 32, ICON_WIDTH, ICON_HEIGHT, ICONS_WIDTH, ICONS_HEIGHT);
 
             guiGraphics.fillGradient(caseX + (int) (5*scale), caseY + (int) (4*scale),
@@ -235,7 +235,7 @@ public class AbilitiesHotbarHUD {
 
 
         //cooldown gradient
-        float percent = Mth.clamp(1 - ((float) info.getCooldown() / info.maxCooldown()), 0, 1);
+        float percent = Mth.clamp(1 - ((float) info.getCooldown() / info.getMaxCd()), 0, 1);
         guiGraphics.fillGradient(caseX + (int) (5*scale), (int) (caseY + (int) (4*scale) + (percent)*ICON_HEIGHT*scale),
                 (int) (caseX + (int) (5*scale) + ICON_WIDTH*scale), (int) (caseY + (int) (4*scale) + ICON_HEIGHT*scale), 0xDD696969, 0xDD424242);
 

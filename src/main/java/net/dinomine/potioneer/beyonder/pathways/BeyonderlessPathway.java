@@ -1,6 +1,7 @@
 package net.dinomine.potioneer.beyonder.pathways;
 
 import net.dinomine.potioneer.beyonder.abilities.Ability;
+import net.dinomine.potioneer.beyonder.abilities.AbilityFactory;
 import net.dinomine.potioneer.beyonder.player.BeyonderStats;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
@@ -32,14 +33,10 @@ public class BeyonderlessPathway extends BeyonderPathway{
     }
 
     @Override
-    public List<Ability> getAbilities(int sequenceLevel) {
+    public List<AbilityFactory> getAbilities(int sequenceLevel) {
         return List.of();
     }
 
-    @Override
-    public List<Ability> getAbilities(int sequenceLevel, int atSequenceLevel) {
-        return List.of();
-    }
 
     @Override
     public int getSequenceColorFromLevel(int sequenceLevel) {

@@ -1,7 +1,6 @@
 package net.dinomine.potioneer.beyonder.client.screen;
 
 import net.dinomine.potioneer.Potioneer;
-import net.dinomine.potioneer.beyonder.abilities.AbilityKey;
 import net.dinomine.potioneer.beyonder.abilities.tyrant.ContractAbility;
 import net.dinomine.potioneer.beyonder.abilities.tyrant.ContractAbility.ContractOption;
 import net.dinomine.potioneer.beyonder.client.ClientAbilitiesData;
@@ -29,7 +28,7 @@ public class ContractScreen extends Screen {
     private int leftPos, topPos;
     private int imgWidth, imgHeight;
 
-    private final AbilityKey key;
+    private final UUID key;
     private final List<ContractAbility.ContractOption> conditions = new ArrayList<>();
     private final List<ContractAbility.ContractOption> rewards = new ArrayList<>();
     private final int targetId;
@@ -55,13 +54,13 @@ public class ContractScreen extends Screen {
 
     private final Component entityName;
 
-    public ContractScreen(List<ContractAbility.ContractOption> options, int targetId, AbilityKey ablKey) {
+    public ContractScreen(List<ContractAbility.ContractOption> options, int targetId, UUID ablId) {
         super(Component.literal("Contract"));
         for(ContractAbility.ContractOption opt: options){
             if(opt.isCondition()) conditions.add(opt);
             else rewards.add(opt);
         }
-        this.key = ablKey;
+        this.key = ablId;
         this.targetId = targetId;
         entityName = Minecraft.getInstance().level.getEntity(targetId).getDisplayName();
     }

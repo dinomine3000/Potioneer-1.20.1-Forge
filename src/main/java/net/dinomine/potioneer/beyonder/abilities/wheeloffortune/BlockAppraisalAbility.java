@@ -33,11 +33,16 @@ import java.util.Map;
 import java.util.Optional;
 
 public class BlockAppraisalAbility extends Ability {
+    private static final int COST = 15;
 
-    public BlockAppraisalAbility(int sequence){
-        super(sequence);
+    @Override
+    public void init() {
         defaultMaxCooldown = PotioneerAbilityConfig.BLOCK_AP_COOLDOWN.get();
-        withCost(15);
+    }
+
+    @Override
+    protected boolean hasSecondary(int level) {
+        return true;
     }
 
     @Override
@@ -47,8 +52,8 @@ public class BlockAppraisalAbility extends Ability {
 
     @Override
     protected boolean primary(BeyonderCapability cap, LivingEntity target) {
-        int radius = getRadius(sequenceLevel);
-        if(cap.getSpirituality() < cost() || !(target instanceof Player player)) return false;
+        int radius = getRadius(getSequenceLevel());
+        if(cap.getSpirituality() < COST || !(target instanceof Player player)) return false;
         Level level = player.level();
 
         if(player.getMainHandItem().getItem() instanceof BlockItem blockItem
@@ -83,7 +88,7 @@ public class BlockAppraisalAbility extends Ability {
                 });
             } else {
                 cap.getCharacteristicManager().progressActing(WheelOfFortunePathway.APPRAISER_ACTING_APPRAISE, 8);
-                cap.requestActiveSpiritualityCost(cost());
+                cap.requestActiveSpiritualityCost(COST);
             }
             //the early return above guarantees that the ability only returns true if it found anything.
             return true;
@@ -95,8 +100,8 @@ public class BlockAppraisalAbility extends Ability {
 
     @Override
     protected boolean secondary(BeyonderCapability cap, LivingEntity target) {
-        cap.requestActiveSpiritualityCost(cost()/2f);
-        int radius = getRadius(sequenceLevel);
+        cap.requestActiveSpiritualityCost(COST/2f);
+        int radius = getRadius(getSequenceLevel());
         if(target.level().isClientSide()){
             //renderParticles(target.level(), radius, target.position().x, target.position().y, target.position().z);
             putOnCooldown(20, target);

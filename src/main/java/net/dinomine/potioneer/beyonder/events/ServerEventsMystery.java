@@ -10,6 +10,7 @@ import net.dinomine.potioneer.beyonder.effects.mystery.GymnasticsEffect;
 import net.dinomine.potioneer.beyonder.player.BeyonderCapability;
 import net.dinomine.potioneer.beyonder.player.CapProvider;
 import net.dinomine.potioneer.entities.custom.CloneEntity;
+import net.dinomine.potioneer.event.AbilityCastEvent;
 import net.dinomine.potioneer.network.PacketHandler;
 import net.dinomine.potioneer.network.messages.abilityRelevant.abilitySpecific.DoubleJumpMessage;
 import net.minecraft.core.Direction;
@@ -26,6 +27,7 @@ import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
+import java.util.List;
 import java.util.Optional;
 
 
@@ -39,7 +41,7 @@ public class ServerEventsMystery {
         Optional<BeyonderCapability> optCap = CapProvider.beyonder(ent);
         if(optCap.isEmpty()) return;
         BeyonderCapability cap = optCap.get();
-        Ability abl = cap.getAbilitiesManager().getFirstAbilityOutOfCooldown(Abilities.TRICKS.getAblId());
+        Ability abl = cap.getAbilitiesManager().getFirstAbilityOutOfCooldown(Abilities.TRICKS.get().getAblId());
         if(!(abl instanceof MagicTricksAbility tricksAbility)) return;
         MagicTricksAbility.doPaper(tricksAbility, cap, ent, false);
         if(!(ent instanceof Player player) || !player.isCreative()) event.getItemStack().shrink(1);
@@ -66,6 +68,13 @@ public class ServerEventsMystery {
             if(eff != null) eff.onJump(event.getEntity(), cap);
         });
         AbilityFunctionHelper.pushEntity(player, new Vec3(0, ModAttributes.getJump(player), 0));
+    }
+
+    @SubscribeEvent
+    public static void onAbilityCast(AbilityCastEvent.Post event){
+        //try to record
+        List<LivingEntity> hits = AbilityFunctionHelper.getLivingEntitiesAround(event.getEntity(), 16);
+
     }
 
 }

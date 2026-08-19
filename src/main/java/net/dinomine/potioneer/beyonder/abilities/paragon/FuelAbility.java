@@ -16,18 +16,17 @@ public class FuelAbility extends Ability {
     private static final Item sourceItem = Items.CAKE;
     private static final float percentCost = 0.4f;
     private static final float percentDelta = 0.2f;
-    private static final Logger log = LoggerFactory.getLogger(FuelAbility.class);
+    @Override
+    protected String getMainDescId(int sequenceLevel) {
+        return "fuel";
+    }
 
-    public FuelAbility(int sequence){
+/*    public FuelAbility(int sequence){
 //        this.info = new AbilityInfo(109, 80, "Create Golden Drop", 40 + sequence, 0, this.getMaxCooldown(), "fuel");
 //        this.isActive = true;
         super(sequence);
     }
 
-    @Override
-    protected String getMainDescId(int sequenceLevel) {
-        return "fuel";
-    }
 
     @Override
     public boolean primary(BeyonderCapability cap, LivingEntity target) {
@@ -50,5 +49,5 @@ public class FuelAbility extends Ability {
         }
 
         return false;
-    }
+    }*/
 }

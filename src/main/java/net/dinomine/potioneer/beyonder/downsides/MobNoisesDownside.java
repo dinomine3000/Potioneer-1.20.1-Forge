@@ -53,9 +53,7 @@ public class MobNoisesDownside extends Downside{
             SoundEvents.STONE_STEP,
             SoundEvents.STONE_PRESSURE_PLATE_CLICK_ON
     );
-    public MobNoisesDownside(int sequenceLevel) {
-        super(sequenceLevel);
-    }
+    public MobNoisesDownside() {}
 
     @Override
     public void passive(BeyonderCapability cap, LivingEntity target) {

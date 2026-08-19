@@ -21,31 +21,32 @@ public class ConjurePickaxeAbility extends Ability {
         return "pick";
     }
 
-    public ConjurePickaxeAbility(int sequence){
-        super(sequence, PotioneerAbilityConfig.CONJURE_PICKAXE_COOLDOWN.get());
-        withCost(PotioneerAbilityConfig.CONJURE_PICKAXE_COST.get());
-    }
-
     @Override
     protected boolean primary(BeyonderCapability cap, LivingEntity target) {
-        if(target.level().isClientSide()) return cap.getSpiritualityPercent() >= cost();
+        float cost = PotioneerAbilityConfig.CONJURE_PICKAXE_COST.get();
+        if(target.level().isClientSide()) return cap.getSpiritualityPercent() >= cost;
         if(!(target instanceof Player player)) return false;
         CompoundTag tag = getData();
         if(!tag.contains("pickaxe")){
             target.sendSystemMessage(Component.translatableWithFallback("message.potioneer.no_pick_saved", "Theres no pickaxe saved. Right-Click to save the pickaxe in your hand."));
             return false;
         }
-        if(cap.getSpirituality() >= cost()){
+        if(cap.getSpirituality() >= cost){
             ItemStack pickaxe = ItemStack.of(tag.getCompound("pickaxe"));
             pickaxe.setDamageValue(pickaxe.getMaxDamage()/2);
-            MysticismHelper.updateOrApplyMysticismTag(pickaxe, cost(), player);
+            MysticismHelper.updateOrApplyMysticismTag(pickaxe, cost, player);
             if(!player.addItem(pickaxe)){
                 player.drop(pickaxe, false, true);
             }
-            cap.requestActiveSpiritualityCost(cost());
+            cap.requestActiveSpiritualityCost(cost);
             return true;
         }
         return false;
+    }
+
+    @Override
+    protected boolean hasSecondary(int level) {
+        return true;
     }
 
     @Override
@@ -55,7 +56,7 @@ public class ConjurePickaxeAbility extends Ability {
         if(stack.isEmpty() || !stack.is(ItemTags.PICKAXES)) return false;
         CompoundTag tag = getData();
         ItemStack pickaxe = stack.copy();
-        if(sequenceLevel > 3){
+        if(getSequenceLevel() > 3){
             pickaxe.removeTagKey(ModNbtUtils.TAGS.ARTIFACT.getTagId());
             pickaxe.removeTagKey(ModNbtUtils.TAGS.BEYONDER.getTagId());
         }

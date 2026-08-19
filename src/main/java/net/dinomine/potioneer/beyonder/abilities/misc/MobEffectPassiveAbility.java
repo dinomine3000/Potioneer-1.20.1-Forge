@@ -9,8 +9,8 @@ import net.minecraft.world.entity.LivingEntity;
 import java.util.function.Function;
 
 public class MobEffectPassiveAbility extends Ability {
-    private Function<Integer, String> descId;
-    private MobEffect effect;
+    private final Function<Integer, String> descId;
+    private final MobEffect effect;
     private int amplifier = 255;
     private int duration = -1;
     private int effectCooldown = -1;
@@ -18,16 +18,15 @@ public class MobEffectPassiveAbility extends Ability {
     private int spiritualityThreshold = 0;
     private boolean enabledOnAcquire = false;
 
-    protected MobEffectPassiveAbility(int sequenceLevel, MobEffect effect, Function<Integer, String> descId){
-        super(sequenceLevel);
+    protected MobEffectPassiveAbility(MobEffect effect, Function<Integer, String> descId){
         this.effect = effect;
         this.descId = descId;
         this.isPassive = true;
-        this.isActive = false;
     }
 
-    public static MobEffectPassiveAbility createAbility(int level, MobEffect effect, Function<Integer, String> descId){
-        return new MobEffectPassiveAbility(level, effect, descId);
+
+    public static MobEffectPassiveAbility createAbility(MobEffect effect, Function<Integer, String> descId){
+        return new MobEffectPassiveAbility(effect, descId);
     }
 
     public MobEffectPassiveAbility withAmplifier(int newAmplifier){
@@ -68,7 +67,7 @@ public class MobEffectPassiveAbility extends Ability {
         if(newState) {
             return true;
         }
-        putOnCooldown(effectCooldown, target);
+        setNextCooldownAs(effectCooldown);
         return false;
     }
 

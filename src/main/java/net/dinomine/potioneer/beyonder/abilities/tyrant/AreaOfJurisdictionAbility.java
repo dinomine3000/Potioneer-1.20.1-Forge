@@ -23,28 +23,31 @@ import net.minecraft.world.level.Level;
 import java.util.*;
 
 public class AreaOfJurisdictionAbility extends PassiveAbility implements IAreaOfJurisdiction {
-    /**
-     * pass the sequence level or pathway-sequence id to define the abilities sequence level
-     * abilities that depend on changing pathways like Cogitation, that exists for every pathway, need to process their own pathway-sequence id here.
-     * I dont ask specifically for sequence level OR pathway id, but if you want to choose one, pass along the pathwaySequenceId.
-     *
-     * @param sequenceLevel
-     */
-    public AreaOfJurisdictionAbility(int sequenceLevel) {
-        super(sequenceLevel, BeyonderEffects.TYRANT_AOJ_VIEWER, level -> "area_of_jurisdiction" + (level < 7 ? (level < 6 ? "_3" : "_2") : ""));
+    private static final int cost = 75;
+    public AreaOfJurisdictionAbility() {
+        super(BeyonderEffects.TYRANT_AOJ_VIEWER, level -> "area_of_jurisdiction" + (level < 7 ? (level < 6 ? "_3" : "_2") : ""));
+    }
+
+    @Override
+    public void init() {
         enabledOnAcquire();
+    }
+
+    @Override
+    protected boolean hasSecondary(int level) {
+        return true;
     }
 
     @Override
     protected boolean primary(BeyonderCapability cap, LivingEntity target) {
         if(target.level().isClientSide()) return true;
-        if(cap.getSpirituality() < cost()) return false;
+        if(cap.getSpirituality() < cost) return false;
         BlockPos center = target.getOnPos();
         CompoundTag tag = getData();
         placeNewCenter(tag, center, target.level().getGameTime(), target);
         int cd = PotioneerAbilityConfig.AOJ_COOLDOWN.get();
-        setNextCooldownAs(sequenceLevel < 6 ? (int) (cd * 0.7f) : cd);
-        cap.requestActiveSpiritualityCost(cost());
+        setNextCooldownAs(getSequenceLevel() < 6 ? (int) (cd * 0.7f) : cd);
+        cap.requestActiveSpiritualityCost(cost);
         return true;
     }
 
@@ -52,7 +55,7 @@ public class AreaOfJurisdictionAbility extends PassiveAbility implements IAreaOf
     public void passive(BeyonderCapability cap, LivingEntity target) {
         super.passive(cap, target);
         if(target.level().isClientSide()) return;
-        cap.getEffectsManager().addOrRefreshEffect(BeyonderEffects.TYRANT_AOJ_SOURCE.createInstance(sequenceLevel, 0, 20, true), cap, target);
+        cap.getEffectsManager().addOrRefreshEffect(BeyonderEffects.TYRANT_AOJ_SOURCE.createInstance(getSequenceLevel(), 0, 20, true), cap, target);
         if(isRevoked()) return;
         if(target.tickCount%20 == target.getId()%20){
             if(isEntityInAOJ(target, target))
@@ -61,7 +64,7 @@ public class AreaOfJurisdictionAbility extends PassiveAbility implements IAreaOf
             CompoundTag dataTag = getData();
             List<CompoundTag> centersList = new ArrayList<>(getCentersCompoundTagList(dataTag, false, ""));
             boolean changedFlag = false;
-            int setupTime = sequenceLevel < 6 ? 20*2 : 20*30;
+            int setupTime = getSequenceLevel() < 6 ? 20*2 : 20*30;
             for(CompoundTag centerTag: centersList){
                 if(centerTag.contains("aoj_enabled") && !centerTag.getBoolean("aoj_enabled") && target.level().getGameTime() - centerTag.getLong("timestamp") > setupTime){
                     changedFlag = true;
@@ -76,7 +79,7 @@ public class AreaOfJurisdictionAbility extends PassiveAbility implements IAreaOf
     }
 
     private void placeNewCenter(CompoundTag dataTag, BlockPos center, long timestamp, LivingEntity target){
-        int idx = getNextAvailableIndex(dataTag, sequenceLevel);
+        int idx = getNextAvailableIndex(dataTag, getSequenceLevel());
         List<CompoundTag> centerTags = getCentersCompoundTagList(dataTag, false, "");
         String dimension = target.level().dimension().location().toString();
         CompoundTag newCenter = createAreaTag(center, dimension, timestamp, false);
@@ -121,7 +124,7 @@ public class AreaOfJurisdictionAbility extends PassiveAbility implements IAreaOf
         ListTag compoundList = new ListTag();
         compoundList.addAll(centers);
         tag.put("areas", compoundList);
-        tag.putInt("nextIdx", nextIdx % getMaxCentersAtLevel(sequenceLevel));
+        tag.putInt("nextIdx", nextIdx % getMaxCentersAtLevel(getSequenceLevel()));
         return tag;
     }
 
@@ -155,7 +158,7 @@ public class AreaOfJurisdictionAbility extends PassiveAbility implements IAreaOf
         if(!(enforcer instanceof LivingEntity lEnforcer)) return new ArrayList<>();
         BeyonderCapability cap = lEnforcer.getCapability(CapProvider.BEYONDER_STATS).resolve().get();
         List<BlockPos> centers = new ArrayList<>();
-        for(Ability abl: cap.getAbilitiesManager().getAbilities()){
+        for(Ability abl: cap.getAbilitiesManager().getAllAbilities()){
             if(abl instanceof IAreaOfJurisdiction aojAbl){
                 centers.addAll(aojAbl.getCenters(dimension.location().toString()).stream().toList());
             }
@@ -191,7 +194,7 @@ public class AreaOfJurisdictionAbility extends PassiveAbility implements IAreaOf
     private static boolean isPosInAOJ(BlockPos testPos, BeyonderCapability enforcerCap, String dimensionLocation){
         List<BlockPos> centers = new ArrayList<>();
         List<Integer> sides = new ArrayList<>();
-        for(Ability abl: enforcerCap.getAbilitiesManager().getAbilities()){
+        for(Ability abl: enforcerCap.getAbilitiesManager().getAllAbilities()){
             if(abl instanceof IAreaOfJurisdiction aojAbl){
                 centers.addAll(aojAbl.getCenters(dimensionLocation));
                 sides.addAll(aojAbl.getSides(dimensionLocation));

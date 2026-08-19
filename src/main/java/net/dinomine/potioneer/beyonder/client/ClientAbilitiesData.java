@@ -1,9 +1,9 @@
 package net.dinomine.potioneer.beyonder.client;
 
+import lombok.Getter;
 import net.dinomine.potioneer.beyonder.abilities.Abilities;
 import net.dinomine.potioneer.beyonder.abilities.Ability;
 import net.dinomine.potioneer.beyonder.abilities.AbilityInfo;
-import net.dinomine.potioneer.beyonder.abilities.AbilityKey;
 import net.dinomine.potioneer.beyonder.client.HUD.AbilitiesHotbarHUD;
 import net.dinomine.potioneer.util.misc.ArtifactHolder;
 import net.dinomine.potioneer.beyonder.client.screen.BeyonderAbilitiesScreen;
@@ -14,10 +14,13 @@ import net.dinomine.potioneer.network.messages.abilityRelevant.PlayerSyncHotbarM
 import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -35,7 +38,7 @@ public class ClientAbilitiesData {
     }
 
     public static boolean isHotbarValid(){
-        return !hotbar.isEmpty() && abilities.get(hotbar.get(caret)) != null;
+        return !hotbar.isEmpty() && getCurrentAbility() != null;
     }
 
     public static boolean isHotbarVisible(){
@@ -50,7 +53,7 @@ public class ClientAbilitiesData {
         }
         if(val && !isHotbarVisible()){
             assert Minecraft.getInstance().player != null;
-            Minecraft.getInstance().player.displayClientMessage(Ability.getNameComponent(abilities.get(hotbar.get(caret)).descId()), true);
+            Minecraft.getInstance().player.displayClientMessage(Ability.getNameComponent(getCurrentAbility().getDescId()), true);
         }
         AbilitiesHotbarHUD.hotbarAnimation.tickInReverse(!val);
     }
@@ -72,12 +75,9 @@ public class ClientAbilitiesData {
     public static void setAbilities(List<AbilityInfo> abilities2) {
         clearAbilitiesOf(false);
         for (AbilityInfo abl : abilities2) {
-            abilities.put(abl.getKey(), abl);
+            abilities.put(abl.getInstanceId(), abl);
         }
         updateHotbarOnChange();
-//        if(changingPath) hotbar = new ArrayList<>();
-//        if(changingPath) quickSelect = "";
-        if(!hasQuickSelect() && !abilities.containsKey(quickSelect)) quickSelect = new AbilityKey();
         ClientStatsData.getCapability().ifPresent(cap -> {
             if(Minecraft.getInstance().player != null)
                 cap.getAbilitiesManager().setAbilitiesOnClient(abilities2, cap, Minecraft.getInstance().player);
@@ -88,13 +88,13 @@ public class ClientAbilitiesData {
     }
 
     public static boolean hasQuickSelect(){
-        return quickSelect != null && !quickSelect.isEmpty();
+        return quickSelect != null;
     }
 
     public static void addAbilities(List<AbilityInfo> abilities2){
         for(AbilityInfo info: abilities2){
-            if(abilities.containsKey(info.getKey())) continue;
-            abilities.put(info.getKey(), info);
+            if(abilities.containsKey(info.getInstanceId())) continue;
+            abilities.put(info.getInstanceId(), info);
         }
         ClientStatsData.getCapability().ifPresent(cap -> {
             if(Minecraft.getInstance().player != null)
@@ -107,8 +107,8 @@ public class ClientAbilitiesData {
 
     public static void removeAbilities(List<AbilityInfo> abilities2){
         for(AbilityInfo info: abilities2){
-            if(!abilities.containsKey(info.getKey())) continue;
-            abilities.remove(info.getKey());
+            if(!abilities.containsKey(info.getInstanceId())) continue;
+            abilities.remove(info.getInstanceId());
         }
 
         ClientStatsData.getCapability().ifPresent(cap -> {
@@ -123,9 +123,9 @@ public class ClientAbilitiesData {
 
     public static void updateAbilities(List<AbilityInfo> abilities2){
         for(AbilityInfo abl: abilities2){
-            AbilityKey key = abl.getKey();
+            UUID key = abl.getInstanceId();
             if(key == null){
-                System.out.println("Warning: tried to update an ability with a null id: " + abl.descId());
+                System.out.println("Warning: tried to update an ability with a null id: " + abl.getDescId());
                 continue;
             }
             if(!abilities.containsKey(key)) continue;
@@ -145,21 +145,10 @@ public class ClientAbilitiesData {
 
     private static void updateHotbarOnChange(){
         if(hotbar == null) hotbar = new ArrayList<>();
-        for(AbilityKey key: hotbar){
-            if (abilities.containsKey(key)) continue;
-            if (!key.getGroup().equals(PlayerAbilitiesManager.AbilityList.INTRINSIC.name())) continue;
-            for(AbilityKey iKey: abilities.keySet()){
-                if(iKey.isSameAbility(key.getAbilityId())
-                        && iKey.isSameGroup(PlayerAbilitiesManager.AbilityList.INTRINSIC.name())){
-                    key.setSequenceLevel(iKey.getSequenceLevel());
-                    break;
-                }
-            }
-        }
-
         if(!hotbar.isEmpty()){
             hotbar.removeIf(key -> !abilities.containsKey(key));
         }
+        if(hasQuickSelect() && !abilities.containsKey(quickSelect)) quickSelect = null;
         setHotbarChanged();
     }
 
@@ -167,13 +156,12 @@ public class ClientAbilitiesData {
         clearAbilitiesOf(true);
         for(ArtifactHolder artifact: artifacts){
             for (AbilityInfo abl : artifact.getAbilitiesInfo(false)) {
-                abilities.put(abl.getKey(), abl);
+                abilities.put(abl.getInstanceId(), abl);
             }
         }
         updateHotbarOnChange();
 //        if(changingPath) hotbar = new ArrayList<>();
 //        if(changingPath) quickSelect = "";
-        if(!hasQuickSelect() && !abilities.containsKey(quickSelect)) quickSelect = new AbilityKey();
         ClientStatsData.getCapability().ifPresent(cap -> {
             if(Minecraft.getInstance().player != null)
                 cap.getAbilitiesManager().setArtifactsOnClient(artifacts, cap, Minecraft.getInstance().player);
@@ -187,7 +175,7 @@ public class ClientAbilitiesData {
     public static void updateArtifacts(List<ArtifactHolder> artifacts) {
         for(ArtifactHolder artifact: artifacts){
             for (AbilityInfo abl : artifact.getAbilitiesInfo(false)) {
-                abilities.put(abl.getKey(), abl);
+                abilities.put(abl.getInstanceId(), abl);
             }
         }
         updateHotbarOnChange();
@@ -203,8 +191,8 @@ public class ClientAbilitiesData {
     public static void removeArtifacts(List<ArtifactHolder> artifacts) {
         for(ArtifactHolder artifact: artifacts){
             for(AbilityInfo info: artifact.getAbilitiesInfo(false)){
-                if(!abilities.containsKey(info.getKey())) continue;
-                abilities.remove(info.getKey());
+                if(!abilities.containsKey(info.getInstanceId())) continue;
+                abilities.remove(info.getInstanceId());
             }
         }
 
@@ -221,8 +209,8 @@ public class ClientAbilitiesData {
     public static void addArtifacts(List<ArtifactHolder> artifacts) {
         for(ArtifactHolder artifact: artifacts){
             for(AbilityInfo info: artifact.getAbilitiesInfo(false)){
-                if(abilities.containsKey(info.getKey())) continue;
-                abilities.put(info.getKey(), info);
+                if(abilities.containsKey(info.getInstanceId())) continue;
+                abilities.put(info.getInstanceId(), info);
             }
         }
         ClientStatsData.getCapability().ifPresent(cap -> {
@@ -234,20 +222,19 @@ public class ClientAbilitiesData {
         BeyonderAbilitiesScreen.refreshAbilitiesScreen();
     }
 
-    public static AbilityKey getQuickAbility(){
+    public static boolean isQuickAbility(UUID testId){
+        return getQuickAbility() != null && getQuickAbility().equals(testId);
+    }
+
+    public static @Nullable UUID getQuickAbility(){
         return quickSelect;
     }
 
-    public static void setQuickAbility(AbilityKey id){
+    public static void setQuickAbility(UUID id){
         quickSelect = id;
-        if(id == null) quickSelect = new AbilityKey();
     }
 
-    public static ArrayList<AbilityKey> getHotbar() {
-        return hotbar;
-    }
-
-    public static void setHotbar(ArrayList<AbilityKey> hotbar2) {
+    public static void setHotbar(ArrayList<UUID> hotbar2) {
         hotbar = hotbar2;
         updateHotbarOnChange();
     }
@@ -257,8 +244,8 @@ public class ClientAbilitiesData {
 
         time += dt;
         if(time > 1){
-            for(Map.Entry<AbilityKey, AbilityInfo> entry: abilities.entrySet()){
-                if(getCooldown(entry.getKey()) > 0) abilities.get(entry.getKey()).tickCooldown();
+            for(Map.Entry<UUID, AbilityInfo> entry: abilities.entrySet()){
+                if(entry.getValue().getCooldown() > 0) entry.getValue().tickCooldown();
             }
             time = 0;
         }
@@ -268,25 +255,25 @@ public class ClientAbilitiesData {
         return getCooldown(caret);
     }
 
-    public static int getCooldown(AbilityKey key){
+    public static int getCooldown(UUID key){
         return abilities.get(key).getCooldown();
     }
 
     public static int getCooldown(int pos){
         if(hotbar.isEmpty()) return 0;
-        AbilityKey key = hotbar.get(Math.floorMod(pos, hotbar.size()));
+        UUID key = hotbar.get(Math.floorMod(pos, hotbar.size()));
         if(key == null) return 0;
         return getCooldown(key);
     }
 
-    public static int getMaxCooldown(AbilityKey key){
+    public static int getMaxCooldown(UUID key){
         if(!abilities.containsKey(key)) return 1;
-        return Math.max(abilities.get(key).maxCooldown(), 1);
+        return Math.max(abilities.get(key).getMaxCd(), 1);
     }
 
     public static int getMaxCooldown(int pos){
         if(hotbar.isEmpty()) return 1;
-        return abilities.get(hotbar.get(Math.floorMod(pos, hotbar.size()))).maxCooldown();
+        return abilities.get(hotbar.get(Math.floorMod(pos, hotbar.size()))).getMaxCd();
     }
 
     public static void setHotbarChanged(){
@@ -309,13 +296,15 @@ public class ClientAbilitiesData {
 
     public static boolean configScreenOpenAnimation = false;
     private static float time = 0;
-    private static HashMap<AbilityKey, AbilityInfo> abilities = new LinkedHashMap<>();
+    private static HashMap<UUID, AbilityInfo> abilities = new LinkedHashMap<>();
     //private static ArrayList<String> abilitiesByIndex;
-    private static ArrayList<AbilityKey> hotbar = new ArrayList<>();
-    private static AbilityKey quickSelect = new AbilityKey();
+    @Getter
+    private static ArrayList<UUID> hotbar = new ArrayList<>();
+    private static UUID quickSelect = null;
     /**
      * caret refers to the index in the hotbar -> current selected ability in hotbar
      */
+    @Getter
     private static int caret = 0;
 
 
@@ -324,16 +313,12 @@ public class ClientAbilitiesData {
         if(!AbilitiesHotbarHUD.scrollAnimation.isFinished()) return;
         caret = Math.floorMod(caret + diff, hotbar.size());
         if(Minecraft.getInstance().player == null) return;
-        Minecraft.getInstance().player.displayClientMessage(Ability.getNameComponent(abilities.get(hotbar.get(caret)).descId()), true);
+        Minecraft.getInstance().player.displayClientMessage(Ability.getNameComponent(getCurrentAbility().getDescId()), true);
 
         if(diff < 0)
             AbilitiesHotbarHUD.scrollAnimation.startAnimation("scrollRight", false);
         else
             AbilitiesHotbarHUD.scrollAnimation.startAnimation("scrollLeft", false);
-    }
-
-    public static int getCaret(){
-        return caret;
     }
 
     public static AbilityInfo getCurrentAbility(){
@@ -345,12 +330,12 @@ public class ClientAbilitiesData {
         return abilities.get(hotbar.get(Math.floorMod(caretPos, hotbar.size())));
     }
 
-    public static boolean isEnabled(AbilityKey key){
+    public static boolean isEnabled(UUID key){
         return abilities.get(key).isEnabled();
     }
 
     public static boolean isEnabled(int pos){
-        AbilityKey key = hotbar.get(Math.floorMod(pos, hotbar.size()));
+        UUID key = hotbar.get(Math.floorMod(pos, hotbar.size()));
         if(key == null) return false;
         return isEnabled(key);
     }
@@ -366,10 +351,10 @@ public class ClientAbilitiesData {
         return useAbility(player, hotbar.get(Math.floorMod(caret, hotbar.size())), primary);
     }
 
-    public static boolean useAbility(Player player, AbilityKey key, boolean primary){
+    public static boolean useAbility(Player player, UUID key, boolean primary){
         return useAbility(player, key, primary, new CompoundTag());
     }
-    public static boolean useAbility(Player player, AbilityKey key, boolean primary, CompoundTag args){
+    public static boolean useAbility(Player player, UUID key, boolean primary, CompoundTag args){
         if(abilities.isEmpty() || key == null || abilities.get(key) == null ) return false;
         AbilityInfo abl = abilities.get(key);
         Component abilityName = abl.getNameComponent();
@@ -381,13 +366,7 @@ public class ClientAbilitiesData {
         }
         if(abl.getCooldown() != 0)
             return true;
-        int cost = Abilities.getAbilityFactory(key).getMinimumSpiritualityToActivate(abl.getSequenceLevel());
-        float spir = ClientStatsData.getPlayerSpirituality();
-        if(spir < cost){
-            player.sendSystemMessage(Component.translatable("message.potioneer.insufficient_spirituality", abilityName));
-            return false;
-        }
-        if(Abilities.getAbilityFactory(key).getHasSecondaryFunction(abl.getSequenceLevel())) beginCastAnimation(primary);
+        if(abl.isHasSecondary()) beginCastAnimation(primary);
         else if(ClientConfigData.getHotbarOutlines() && primary) beginCastAnimation(true);
         player.getCapability(CapProvider.BEYONDER_STATS).ifPresent(cap -> {
             cap.getAbilitiesManager().useAbility(cap, player, key, true, primary, args);
@@ -396,25 +375,25 @@ public class ClientAbilitiesData {
     }
 
     private static void clearAbilitiesOf(boolean clearArtifactsNotAbilities){
-        Set<AbilityKey> keysToRemove = abilities.keySet().stream().filter(key -> clearArtifactsNotAbilities == key.isArtifactKey()).collect(Collectors.toSet());
-        for(AbilityKey key: keysToRemove){
+        Set<UUID> keysToRemove = abilities.keySet().stream().filter(key -> clearArtifactsNotAbilities == !abilities.get(key).getArtifactStack().isEmpty()).collect(Collectors.toSet());
+        for(UUID key: keysToRemove){
             abilities.remove(key);
         }
     }
 
-    public static boolean hasAbility(AbilityKey key) {
-        return abilities.containsKey(key);
-    }
-
-    public static boolean hasAbility(String ablId){
-        for(AbilityKey key: abilities.keySet()){
-            if(key.isSameAbility(ablId)) return true;
+    public static boolean hasAbility(ResourceLocation ablId){
+        for(AbilityInfo info: abilities.values()){
+            if(info.getAbilityId().equals(ablId)) return true;
         }
         return false;
     }
 
-    public static ArtifactHolder getArtifact(AbilityKey key) {
-        return ClientStatsData.getCapability().get().getAbilitiesManager().getArtifact(key);
+    public static boolean hasAbility(UUID ablId){
+        return abilities.containsKey(ablId);
+    }
+
+    public static ItemStack getArtifactItem(UUID ablId) {
+        return abilities.get(ablId).getArtifactStack();
     }
 
     public static class AbilitySpecific{

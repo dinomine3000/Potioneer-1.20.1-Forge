@@ -18,21 +18,16 @@ import static net.dinomine.potioneer.block.custom.MinerLightSourceBlock.WATERLOG
 
 public abstract class LightAbility extends Ability {
     private final BlockState lightBlockState;
-    public LightAbility(int sequence, BlockState lightBlock, Function<Integer, Integer> cost){
-//        this.info = new AbilityInfo(5, 56, "Light", sequence, 0, this.getMaxCooldown(), "");
-        super(sequence);
+    protected int cost = 0;
+    public LightAbility(BlockState lightBlock){
         lightBlockState = lightBlock;
-        if(cost != null) setCost(cost);
         this.defaultMaxCooldown = 20;
-    }
-    public LightAbility(int sequence, BlockState lightBlock){
-        this(sequence, lightBlock, null);
     }
 
     @Override
     protected boolean primary(BeyonderCapability cap, LivingEntity target) {
         if(target.level().isClientSide()) return true;
-        if(cap.getSpirituality() > cost()){
+        if(cap.getSpirituality() > cost){
             HitResult block = target.pick(target.getAttributeBaseValue(ForgeMod.BLOCK_REACH.get()) + 0.5, 0f, false);
             if(block instanceof BlockHitResult rayTrace){
                 Level level = target.level();
@@ -44,7 +39,7 @@ public abstract class LightAbility extends Ability {
 
                     level.setBlockAndUpdate(rayTrace.getBlockPos(),
                             lightBlockState.setValue(WATERLOGGED, water));
-                    cap.requestActiveSpiritualityCost(cost());
+                    cap.requestActiveSpiritualityCost(cost);
                     return true;
 
                 }
@@ -55,7 +50,7 @@ public abstract class LightAbility extends Ability {
 
                     level.setBlockAndUpdate(targetPos,
                             lightBlockState.setValue(WATERLOGGED, water));
-                    cap.requestActiveSpiritualityCost(cost());
+                    cap.requestActiveSpiritualityCost(cost);
                     return true;
                 }
             }

@@ -24,16 +24,20 @@ import java.util.*;
 import java.util.function.Function;
 
 public class BlinkAbility extends PassiveAbility {
-    public BlinkAbility(int sequenceLevel) {
-        super(sequenceLevel, BeyonderEffects.MYSTERY_AUTO_BLINK, ign -> "blink");
+    private static final int cost = 20;
+    public BlinkAbility() {
+        super(BeyonderEffects.MYSTERY_AUTO_BLINK, ign -> "blink");
+    }
+
+    @Override
+    public void init() {
         enabledOnAcquire();
         canFlip();
-        withCost(20);
     }
 
     @Override
     protected boolean primary(BeyonderCapability cap, LivingEntity caster) {
-        if (cap.getSpirituality() < cost()) return false;
+        if (cap.getSpirituality() < cost) return false;
         if (caster.level().isClientSide()) return true;
 
         ServerLevel level = (ServerLevel) caster.level();

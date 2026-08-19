@@ -1,10 +1,12 @@
 package net.dinomine.potioneer.beyonder.abilities;
 
+import net.dinomine.potioneer.beyonder.abilities.mystery.RecordingAbility;
 import net.dinomine.potioneer.beyonder.player.BeyonderCapability;
 import net.dinomine.potioneer.network.messages.abilityRelevant.AbilitySyncMessage;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 
@@ -38,7 +40,7 @@ public class DisabledAbilitiesManager {
     }
 
     private void ensureDisabledAbilities(BeyonderCapability cap, LivingEntity target){
-        for(Ability abl: cap.getAbilitiesManager().getAbilities()){
+        for(Ability abl: cap.getAbilitiesManager().getAllAbilities()){
             ensureDisabledAbility(abl, cap, target);
         }
         if(target instanceof Player player) cap.getAbilitiesManager().updateClientAbilityInfo(player, AbilitySyncMessage.UPDATE);
@@ -90,7 +92,7 @@ public class DisabledAbilitiesManager {
     }
 
     public static class DisabledAbilityProxy {
-        private String ablId = "";
+        private ResourceLocation ablId = null;
         private int ablLevel = -1;
         private UUID instanceId = null;
         private int time = -1;
@@ -104,7 +106,7 @@ public class DisabledAbilitiesManager {
         /**
          * disables abilities of that id, up to the given level (from 9 to level)
          */
-        public DisabledAbilityProxy(String ablId, int level, int time){
+        public DisabledAbilityProxy(ResourceLocation ablId, int level, int time){
             this.ablId = ablId;
             this.ablLevel = level;
             this.time = time;
@@ -129,14 +131,14 @@ public class DisabledAbilitiesManager {
         /**
          * disables all abilities except the given one
          */
-        public DisabledAbilityProxy(String ablId, int time){
+        public DisabledAbilityProxy(ResourceLocation ablId, int time){
             this.all = true;
             this.ablId = ablId;
             this.time = time;
         }
 
-        public DisabledAbilityProxy(String groupId, boolean belongsToGroup, int time){
-            this.group = groupId;
+        public DisabledAbilityProxy(AbilityInfo.Group groupId, boolean belongsToGroup, int time){
+            this.group = groupId.name();
             this.disableInGroup = belongsToGroup;
             this.time = time;
         }
@@ -161,7 +163,7 @@ public class DisabledAbilitiesManager {
             }
             if (instanceId != null) return instanceId.equals(abl.getInstanceId());
             if (all) return !abl.is(ablId);
-            if(!group.isEmpty()) return disableInGroup == abl.getType().equalsIgnoreCase(group);
+            if(!group.isEmpty()) return disableInGroup == abl.isOfGroup(AbilityInfo.Group.valueOf(group));
             return abl.is(ablId) && level >= ablLevel;
         }
         public boolean is(Ability abl){
@@ -186,7 +188,7 @@ public class DisabledAbilitiesManager {
 
         public CompoundTag saveNbt() {
             CompoundTag tag = new CompoundTag();
-            tag.putString("ablId", ablId);
+            tag.putString("ablId", ablId.toString());
             tag.putInt("ablLevel", ablLevel);
             if (instanceId != null) {
                 tag.putUUID("instanceId", instanceId);
@@ -209,7 +211,7 @@ public class DisabledAbilitiesManager {
 
         public static DisabledAbilityProxy fromNbt(CompoundTag tag) {
             DisabledAbilityProxy proxy = new DisabledAbilityProxy(
-                    tag.getString("ablId"),
+                    new ResourceLocation(tag.getString("ablId")),
                     tag.getInt("ablLevel"),
                     tag.getInt("time")
             );
@@ -243,15 +245,15 @@ public class DisabledAbilitiesManager {
         /**
          * Disables all abilities for the given duration, except the given one.
          */
-        public static DisabledAbilityProxy all(int time, String ablIdToIgnore) {
+        public static DisabledAbilityProxy all(int time, ResourceLocation ablIdToIgnore) {
             return new DisabledAbilityProxy(ablIdToIgnore, time);
         }
 
-        public static DisabledAbilityProxy ofGroup(int time, String groupId) {
+        public static DisabledAbilityProxy ofGroup(int time, AbilityInfo.Group groupId) {
             return new DisabledAbilityProxy(groupId, true, time);
         }
 
-        public static DisabledAbilityProxy notOfGroup(int time, String groupId) {
+        public static DisabledAbilityProxy notOfGroup(int time, AbilityInfo.Group groupId) {
             return new DisabledAbilityProxy(groupId, false, time);
         }
 
@@ -265,14 +267,14 @@ public class DisabledAbilitiesManager {
         /**
          * Disables an ability type by ID above a minimum sequence level threshold.
          */
-        public static DisabledAbilityProxy byId(String ablId, int maxLevel, int time) {
+        public static DisabledAbilityProxy byId(ResourceLocation ablId, int maxLevel, int time) {
             return new DisabledAbilityProxy(ablId, maxLevel, time);
         }
 
         /**
          * Disables an ability type by ID regardless of sequence level.
          */
-        public static DisabledAbilityProxy byId(String ablId, int time) {
+        public static DisabledAbilityProxy byId(ResourceLocation ablId, int time) {
             return new DisabledAbilityProxy(ablId, -1, time);
         }
 
@@ -308,12 +310,12 @@ public class DisabledAbilitiesManager {
                 return this;
             }
 
-            public Builder addId(String ablId, int time) {
+            public Builder addId(ResourceLocation ablId, int time) {
                 proxies.add(DisabledAbilityProxy.byId(ablId, time));
                 return this;
             }
 
-            public Builder addId(String ablId, int maxLevel, int time) {
+            public Builder addId(ResourceLocation ablId, int maxLevel, int time) {
                 proxies.add(DisabledAbilityProxy.byId(ablId, maxLevel, time));
                 return this;
             }

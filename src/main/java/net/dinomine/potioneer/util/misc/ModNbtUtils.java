@@ -3,10 +3,11 @@ package net.dinomine.potioneer.util.misc;
 import net.dinomine.potioneer.Potioneer;
 import net.dinomine.potioneer.beyonder.abilities.Abilities;
 import net.dinomine.potioneer.beyonder.abilities.Ability;
-import net.dinomine.potioneer.beyonder.abilities.AbilityKey;
+import net.dinomine.potioneer.beyonder.abilities.AbilityInfo;
 import net.dinomine.potioneer.item.ModItems;
 import net.dinomine.potioneer.recipe.PotionContentData;
 import net.minecraft.nbt.*;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -208,39 +209,24 @@ public abstract class ModNbtUtils {
         private static final String NEED_CHARGE_KEY = "needsCharge";
         private static final String CHARGE_KEY = "charge";
 
-        public static CompoundTag generateArtifactTag(ItemStack stack, List<String> abilityIds, int sequenceLevel){
-            return generateArtifactTag(stack, abilityIds.stream().map(id -> new AbilityKey(id, sequenceLevel)).toList());
+        public static CompoundTag generateArtifactTag(ItemStack stack, List<ResourceLocation> abilityIds, int sequenceLevel){
+            return generateArtifactTag(stack, UUID.randomUUID(), abilityIds.stream().map(id -> Abilities.getFactory(id).get().construct(sequenceLevel, AbilityInfo.Group.ARTIFACT)).toList());
         }
 
-        /**
-         * generates a brand new artifact tag with the given abilities.
-         * @param abilityKeys
-         * @return
-         */
-        public static CompoundTag generateChargedArtifactTag(ItemStack stack, List<AbilityKey> abilityKeys, float chargeSeconds){
-            return generateArtifactTag(stack, UUID.randomUUID(), abilityKeys, true, chargeSeconds);
+        public static CompoundTag generateArtifactTag(ItemStack stack, UUID artifactId, List<Ability> abilities){
+            return generateArtifactTag(stack, artifactId, abilities, false, -1);
         }
-        public static CompoundTag generateArtifactTag(ItemStack stack, UUID artifactId, List<AbilityKey> abilityKeys, boolean needsCharge, float useSeconds){
+
+        public static CompoundTag generateArtifactTag(ItemStack stack, UUID artifactId, List<Ability> abilities, boolean needsCharge, float useSeconds){
             CompoundTag resArtifactTag = new CompoundTag();
             resArtifactTag.putUUID(UUID_KEY, artifactId);
-            for(AbilityKey abl: abilityKeys){
-                resArtifactTag.put(abl.onArtifact(artifactId).toString(), new CompoundTag());
+            for(Ability abl: abilities){
+                resArtifactTag.put(abl.getInstanceId().toString(), abl.saveAbility());
             }
             resArtifactTag.putBoolean(NEED_CHARGE_KEY, needsCharge);
             resArtifactTag.putFloat(CHARGE_KEY, useSeconds);
             setItemRootTag(stack, resArtifactTag, ARTIFACT_TAG_ID);
             return resArtifactTag;
-        }
-        /**
-         * generates a brand new artifact tag with the given abilities.
-         * @param abilityKeys
-         * @return
-         */
-        public static CompoundTag generateArtifactTag(ItemStack stack, List<AbilityKey> abilityKeys){
-            return generateArtifactTag(stack, UUID.randomUUID(), abilityKeys);
-        }
-        public static CompoundTag generateArtifactTag(ItemStack stack, UUID artifactId, List<AbilityKey> abilityKeys){
-            return generateArtifactTag(stack, artifactId, abilityKeys, false, -1);
         }
 
         public static void saveArtifactToItem(ArtifactHolder artifact, ItemStack stack){
@@ -259,7 +245,7 @@ public abstract class ModNbtUtils {
             for(String key: artifactTag.getAllKeys()){
                 if(key.equals(UUID_KEY)) continue;
                 if(artifactTag.getCompound(key).getBoolean("downside")) continue;
-                if(!artifactTag.getCompound(key).getBoolean("enabled")) continue;
+                if(!artifactTag.getCompound(key).getBoolean("Enabled")) continue;
                 return true;
             }
             return false;
@@ -306,13 +292,8 @@ public abstract class ModNbtUtils {
             List<Ability> abilities = new ArrayList<>();
             for(String stringKey: artifactTag.getAllKeys()){
                 if(stringKey.equals(UUID_KEY)) continue;
-                AbilityKey key = AbilityKey.fromString(stringKey);
-                if(key.isEmpty()) continue;
-                int savedLevel = artifactTag.getCompound(stringKey).contains("levelState") ? artifactTag.getCompound(stringKey).getInt("level") : key.getSequenceLevel();
-                Ability ability = Abilities.createAbilityInstance(key, savedLevel);
-                ability.setArtifactAbilityKey(artifactId);
-                ability.loadNbt(artifactTag);
-                abilities.add(ability);
+                Ability abl = Ability.loadAndInitAbility(artifactTag.getCompound(stringKey));
+                abilities.add(abl);
             }
             ItemStack stack = ItemStack.EMPTY;
             if(artifactTag.contains(STACK_KEY)) stack = ItemStack.of(artifactTag.getCompound(STACK_KEY));
@@ -327,10 +308,10 @@ public abstract class ModNbtUtils {
             CompoundTag artifactTag = new CompoundTag();
             artifactTag.putUUID(UUID_KEY, artifact.getArtifactId());
             for(Ability abl: artifact.abilities.values()){
-                artifactTag.put(abl.getAbilityKey().toString(), abl.saveNbt());
+                artifactTag.put(abl.getInstanceId().toString(), abl.saveAbility());
             }
             for(Ability abl: artifact.downsides.values()){
-                artifactTag.put(abl.getAbilityKey().toString(), abl.saveNbt());
+                artifactTag.put(abl.getInstanceId().toString(), abl.saveAbility());
             }
             if(saveItem) artifactTag.put(STACK_KEY, artifact.item.save(new CompoundTag()));
             artifactTag.putBoolean(NEED_CHARGE_KEY, artifact.needsCharge);

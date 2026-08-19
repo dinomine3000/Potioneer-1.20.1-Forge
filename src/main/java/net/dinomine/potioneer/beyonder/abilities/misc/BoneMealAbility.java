@@ -13,21 +13,20 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 
 public class BoneMealAbility extends Ability {
+    private int cost = 0;
     @Override
     protected String getMainDescId(int sequenceLevel) {
-        return abilityId;
+        return "w_bone_meal";
     }
 
-    public BoneMealAbility(int sequence){
-        super(sequence);
-        this.isActive = true;
-        this.isPassive = false;
-        withCost(level-> 2*(10-level));
+    @Override
+    public void init() {
+        cost = 2*(10-getSequenceLevel());
     }
 
     @Override
     protected boolean primary(BeyonderCapability cap, LivingEntity target) {
-        if(cap.getSpirituality() < cost()) return false;
+        if(cap.getSpirituality() < cost) return false;
         if(!(target instanceof Player player)) return false;
         Level level = target.level();
         if (!(level instanceof ServerLevel )) return false;
@@ -37,7 +36,7 @@ public class BoneMealAbility extends Ability {
         BlockHitResult blockHit = (BlockHitResult) hitResult;
         UseOnContext context = new UseOnContext(level, player, player.getUsedItemHand(), ItemStack.EMPTY, blockHit);
         Items.BONE_MEAL.useOn(context);
-        cap.requestActiveSpiritualityCost(cost());
+        cap.requestActiveSpiritualityCost(cost);
         return true;
     }
 }

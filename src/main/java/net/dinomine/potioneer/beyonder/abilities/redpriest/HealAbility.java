@@ -21,7 +21,7 @@ public class HealAbility extends Ability {
         return "heal";
     }
 
-    public HealAbility(int sequence){
+    /*public HealAbility(int sequence){
 //        this.info = new AbilityInfo(83, 152, "Healing", 30 + sequence, 20, 20*10, "heal");
         super(sequence);
         setCost(ignored -> 20);
@@ -58,6 +58,6 @@ public class HealAbility extends Ability {
             return true;
         }
         return flag;
-    }
+    }*/
 
 }

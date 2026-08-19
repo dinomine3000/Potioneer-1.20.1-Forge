@@ -16,15 +16,23 @@ import java.util.function.Supplier;
 
 public class AmplificationAbility extends AbilityWithOptions {
     private static final Supplier<Integer> EFFECT_DURATION = PotioneerAbilityConfig.AMPLIFICATION_DURATION;
-    public AmplificationAbility(int sequenceLevel) {
-        super(sequenceLevel);
+    private int cost = 0;
+
+    @Override
+    public void init() {
+        super.init();
         defaultMaxCooldown = EFFECT_DURATION.get() + 20;
         AbilityOptions options = new AbilityOptions()
                 .addEmptyOption("ability", Component.translatable("abilityoption.potioneer.amplify_ability"))
                 .addEmptyOption("stats", Component.translatable("abilityoption.potioneer.amplify_stats"));
         setPrimaryOptions(options);
         setSecondaryOptions(options);
-        withCost(PotioneerAbilityConfig.AMPLIFICATION_COST.get());
+        cost = PotioneerAbilityConfig.AMPLIFICATION_COST.get();
+    }
+
+    @Override
+    protected boolean hasSecondary(int level) {
+        return true;
     }
 
     @Override
@@ -34,24 +42,24 @@ public class AmplificationAbility extends AbilityWithOptions {
 
     @Override
     protected boolean primaryWithArgument(BeyonderCapability cap, LivingEntity caster, String args){
-        if(cap.getSpirituality() < cost()) return false;
+        if(cap.getSpirituality() < cost) return false;
         if(caster.level().isClientSide) return false;
         boolean buffAbility = args.equalsIgnoreCase("ability");
         LivingEntity target = AbilityFunctionHelper.getLivingEntityLooking(caster, 2, 1);
         if(target == null) return false;
 
-        applyEffectsTo(caster, target, target.getCapability(CapProvider.BEYONDER_STATS).resolve().get(), sequenceLevel, buffAbility);
-        cap.requestActiveSpiritualityCost(cost());
+        applyEffectsTo(caster, target, target.getCapability(CapProvider.BEYONDER_STATS).resolve().get(), getSequenceLevel(), buffAbility);
+        cap.requestActiveSpiritualityCost(cost);
         return true;
     }
 
     @Override
     protected boolean secondaryWithArgument(BeyonderCapability cap, LivingEntity caster, String args) {
-        if(cap.getSpirituality() < cost()) return false;
+        if(cap.getSpirituality() < cost) return false;
         if(caster.level().isClientSide) return false;
         boolean buffAbility = args.equalsIgnoreCase("ability");
-        applyEffectsTo(caster, caster, cap, sequenceLevel, buffAbility);
-        cap.requestActiveSpiritualityCost(cost());
+        applyEffectsTo(caster, caster, cap, getSequenceLevel(), buffAbility);
+        cap.requestActiveSpiritualityCost(cost);
         return true;
     }
 

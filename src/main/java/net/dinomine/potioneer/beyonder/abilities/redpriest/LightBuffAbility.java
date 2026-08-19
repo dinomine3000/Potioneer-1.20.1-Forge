@@ -13,17 +13,12 @@ import java.util.Optional;
 
 public class LightBuffAbility extends Ability {
 
-    public LightBuffAbility(int sequence){
-//        this.info = new AbilityInfo(83, 224, "Light Buff", 30 + sequence, 5, this.getMaxCooldown(), "light_buff");
-        super(sequence);
-    }
-
     @Override
     protected String getMainDescId(int sequenceLevel) {
         return "light_buff";
     }
 
-    @Override
+    /*@Override
     protected boolean primary(BeyonderCapability cap, LivingEntity target) {
         if(target.level().isClientSide()) return cap.getSpirituality() >= cost();
 
@@ -40,5 +35,5 @@ public class LightBuffAbility extends Ability {
             }
         }
         return false;
-    }
+    }*/
 }

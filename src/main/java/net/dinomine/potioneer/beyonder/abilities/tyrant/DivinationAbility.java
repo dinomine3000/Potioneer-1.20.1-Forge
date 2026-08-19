@@ -71,9 +71,6 @@ public class DivinationAbility extends MysticalKnowledgeAbility {
         return true;*/
     }
 
-    public DivinationAbility(int sequence){
-        super(sequence);
-    }
 //
 //    private static void removeDecorationFromMap(ItemStack pMap, String decorationName){
 //        if(!pMap.is(Items.FILLED_MAP)) return;

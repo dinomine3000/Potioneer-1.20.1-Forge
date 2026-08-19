@@ -14,19 +14,21 @@ import java.util.function.Function;
  */
 public class TimedPassiveAbility extends PassiveAbility {
     private final Function<Integer, Integer> durationFunction;
-    protected TimedPassiveAbility(int sequenceLevel, BeyonderEffects.BeyonderEffectType effect, Function<Integer, String> descId, Function<Integer, Integer> durationFunction) {
-        super(sequenceLevel, effect, descId);
+    private int passiveCost = 0;
+    private int castCost = 0;
+    protected TimedPassiveAbility(BeyonderEffects.BeyonderEffectType effect, Function<Integer, String> descId, Function<Integer, Integer> durationFunction) {
+        super(effect, descId);
         this.durationFunction = durationFunction;
     }
 
-    public static TimedPassiveAbility createTimed(int level, BeyonderEffects.BeyonderEffectType effect, Function<Integer, String> descId, Function<Integer, Integer> durationFunction){
-        return new TimedPassiveAbility(level, effect, descId, durationFunction);
+    public static TimedPassiveAbility createTimed(BeyonderEffects.BeyonderEffectType effect, Function<Integer, String> descId, Function<Integer, Integer> durationFunction){
+        return new TimedPassiveAbility(effect, descId, durationFunction);
     }
 
 
     @Override
     protected BeyonderEffect createEffectInstance(BeyonderCapability cap, LivingEntity target) {
-        return effect.createInstance(sequenceLevel, minSpiritualityAbsolute, durationFunction.apply(sequenceLevel), true);
+        return effect.createInstance(getSequenceLevel(), passiveCost, durationFunction.apply(getSequenceLevel()), true);
     }
 
     @Override
@@ -34,8 +36,14 @@ public class TimedPassiveAbility extends PassiveAbility {
         if(!hasEnoughSpirituality(cap)) return false;
         super.passive(cap, target);
         setNextCooldownAs(cooldownTicks);
-        cap.requestActiveSpiritualityCost(cost());
+        cap.requestActiveSpiritualityCost(castCost);
         return true;
+    }
+
+    public TimedPassiveAbility withCost(int castCost, int passiveCost){
+        this.castCost = castCost;
+        this.passiveCost = passiveCost;
+        return this;
     }
 
     @Override

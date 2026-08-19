@@ -1,6 +1,5 @@
 package net.dinomine.potioneer.network.messages.abilityRelevant;
 
-import net.dinomine.potioneer.beyonder.abilities.AbilityKey;
 import net.dinomine.potioneer.beyonder.player.CapProvider;
 import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.CompoundTag;
@@ -17,7 +16,7 @@ import java.util.function.Supplier;
 //message sent to the server when a client has authorized the casting of an ability
 //OR sent from server to client when casting artifact abilities in full
 public class PlayerCastAbilityMessageCTS {
-    public AbilityKey key;
+    public UUID ablId;
     public boolean primary;
     public CompoundTag args;
     public UUID artifactId = null;
@@ -26,8 +25,8 @@ public class PlayerCastAbilityMessageCTS {
         this.artifactId = artifactId;
     }
 
-    public PlayerCastAbilityMessageCTS(AbilityKey key, boolean primary, CompoundTag args){
-        this.key = key;
+    public PlayerCastAbilityMessageCTS(UUID ablId, boolean primary, CompoundTag args){
+        this.ablId = ablId;
         this.primary = primary;
         this.args = args;
     }
@@ -35,7 +34,7 @@ public class PlayerCastAbilityMessageCTS {
     public static void encode(PlayerCastAbilityMessageCTS msg, FriendlyByteBuf buffer){
         if(msg.artifactId == null){
             buffer.writeBoolean(true);
-            msg.key.writeToBuffer(buffer);
+            buffer.writeUUID(msg.ablId);
             buffer.writeBoolean(msg.primary);
             buffer.writeNbt(msg.args);
         } else{
@@ -46,7 +45,7 @@ public class PlayerCastAbilityMessageCTS {
 
     public static PlayerCastAbilityMessageCTS decode(FriendlyByteBuf buffer){
         if(buffer.readBoolean()){
-            AbilityKey ablId = AbilityKey.readFromBuffer(buffer);
+            UUID ablId = buffer.readUUID();
             boolean primary = buffer.readBoolean();
             CompoundTag args = buffer.readNbt();
             return new PlayerCastAbilityMessageCTS(ablId, primary, args);
@@ -65,7 +64,7 @@ public class PlayerCastAbilityMessageCTS {
                 //on server side
                 Player player = context.getSender();
                 player.getCapability(CapProvider.BEYONDER_STATS).ifPresent(cap -> {
-                    cap.getAbilitiesManager().useAbility(cap, player, msg.key, false, msg.primary, msg.args);
+                    cap.getAbilitiesManager().useAbility(cap, player, msg.ablId, false, msg.primary, msg.args);
                 });
             } else {
                 context.enqueueWork(() -> DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> ClientCastAbilityMessage.handlePacket(msg, contextSupplier)));

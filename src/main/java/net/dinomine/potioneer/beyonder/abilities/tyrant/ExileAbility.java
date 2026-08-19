@@ -9,10 +9,12 @@ import net.dinomine.potioneer.config.PotioneerAbilityConfig;
 import net.minecraft.world.entity.LivingEntity;
 
 public class ExileAbility extends Ability {
-    public ExileAbility(int sequenceLevel) {
-        super(sequenceLevel);
+    private int cost = 0;
+
+    @Override
+    public void init() {
         defaultMaxCooldown = PotioneerAbilityConfig.EXILE_COOLDOWN.getDefault();
-        withCost(PotioneerAbilityConfig.EXILE_COST.get());
+        cost = PotioneerAbilityConfig.EXILE_COST.get();
     }
 
     @Override
@@ -22,14 +24,14 @@ public class ExileAbility extends Ability {
 
     @Override
     protected boolean primary(BeyonderCapability cap, LivingEntity caster) {
-        if(cap.getSpirituality() < cost()) return false;
+        if(cap.getSpirituality() < cost) return false;
         LivingEntity target = AbilityFunctionHelper.getLivingEntityLooking(caster, 5, 1);
         if(target == null) return false;
         if(caster.level().isClientSide()) return true;
-        ExiledEffect eff = ExiledEffect.getInstance(caster.getUUID(), sequenceLevel);
+        ExiledEffect eff = ExiledEffect.getInstance(caster.getUUID(), getSequenceLevel());
         BeyonderCapability targetCap = target.getCapability(CapProvider.BEYONDER_STATS).resolve().get();
         targetCap.getEffectsManager().addOrRefreshEffect(eff, targetCap, target);
-        cap.requestActiveSpiritualityCost(cost());
+        cap.requestActiveSpiritualityCost(cost);
         return true;
     }
 }

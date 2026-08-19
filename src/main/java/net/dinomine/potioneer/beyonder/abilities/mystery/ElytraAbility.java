@@ -14,11 +14,16 @@ import java.util.function.Supplier;
 
 public class ElytraAbility extends PassiveAbility {
     private static final Supplier<Integer> BOOST_COST = () -> 10;
-    public ElytraAbility(int sequenceLevel) {
-        super(sequenceLevel, BeyonderEffects.MYSTERY_ELYTRA, ign -> "elytra");
+    public ElytraAbility() {
+        super(BeyonderEffects.MYSTERY_ELYTRA, ign -> "elytra");
         withCost(5);
         canFlip();
         defaultMaxCooldown = 20*3;
+    }
+
+    @Override
+    protected boolean hasSecondary(int level) {
+        return true;
     }
 
     @Override

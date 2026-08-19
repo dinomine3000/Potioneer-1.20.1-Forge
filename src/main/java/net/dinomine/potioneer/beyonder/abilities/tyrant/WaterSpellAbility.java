@@ -50,7 +50,7 @@ import static net.dinomine.potioneer.block.custom.BaseLightSourceBlock.WATERLOGG
 import static net.minecraft.world.level.block.Block.dropResources;
 
 public class WaterSpellAbility extends AbilityWithOptions {
-
+    private static final int cost = 0;
     private static final Supplier<Integer> CONJURE_COST = PotioneerAbilityConfig.WATER_SPELL_COST_CONJURE;
     private static final Supplier<Integer> ABSORB_COST = PotioneerAbilityConfig.WATER_SPELL_COST_ABSORB;
     private static final Supplier<Integer> DROWNING_COST = PotioneerAbilityConfig.WATER_SPELL_COST_DROWNING;
@@ -62,16 +62,14 @@ public class WaterSpellAbility extends AbilityWithOptions {
     private static final Supplier<Integer> HEALING_COOLDOWN = PotioneerAbilityConfig.WATER_SPELL_COOLDOWN_HEALING;
     private static final Supplier<Integer> WATER_TRAP_COOLDOWN = PotioneerAbilityConfig.WATER_SPELL_COOLDOWN_WATER_TRAP;
 
-    /**
-     * pass the sequence level or pathway-sequence id to define the abilities sequence level
-     * abilities that depend on changing pathways like Cogitation, that exists for every pathway, need to process their own pathway-sequence id here.
-     * I dont ask specifically for sequence level OR pathway id, but if you want to choose one, pass along the pathwaySequenceId.
-     *
-     * @param sequenceLevel
-     */
-    public WaterSpellAbility(int sequenceLevel) {
-        super(sequenceLevel, 20);
-        updateOptions(sequenceLevel);
+    @Override
+    public void init() {
+        updateOptions(getSequenceLevel());
+    }
+
+    @Override
+    protected boolean hasSecondary(int level) {
+        return true;
     }
 
     private void digest(BeyonderCapability cap){
@@ -207,7 +205,7 @@ public class WaterSpellAbility extends AbilityWithOptions {
 
     private boolean applyWaterPrison(BeyonderCapability cap, LivingEntity target) {
         if(target.level().isClientSide()) return true;
-        if(cap.getSpirituality() > cost()){
+        if(cap.getSpirituality() > cost){
             double radius = target.getAttributeBaseValue(ForgeMod.ENTITY_REACH.get()) + (10 - getSequenceLevel());
             ArrayList<LivingEntity> hits = AbilityFunctionHelper.getNonAllyLivingEntitiesAround((ServerLevel) target.level(), target, radius);
             boolean flag = false;
@@ -220,7 +218,7 @@ public class WaterSpellAbility extends AbilityWithOptions {
             ParticleMaker.summonAOEParticles(target.level(), target.getEyePosition(), (int)(2*radius), radius, ParticleMaker.Preset.AOE_END_ROD);
             target.level().playSound(null, target.getOnPos(), ModSounds.WATER_PRISON.get(), SoundSource.PLAYERS, 1, 1);
             if(flag){
-                cap.requestActiveSpiritualityCost(cost());
+                cap.requestActiveSpiritualityCost(cost);
                 digest(cap);
             }
             return true;
@@ -232,7 +230,7 @@ public class WaterSpellAbility extends AbilityWithOptions {
         if(target.level().isClientSide()) return true;
         if(cap.getSpirituality() > DROWNING_COST.get()){
             double radius = target.getAttributeBaseValue(ForgeMod.ENTITY_REACH.get()) + (10 - getSequenceLevel());
-            int duration = 20*10*(10-sequenceLevel);
+            int duration = 20*10*(10-getSequenceLevel());
             ArrayList<LivingEntity> hits = AbilityFunctionHelper.getNonAllyLivingEntitiesAround((ServerLevel) target.level(), target, radius);
             boolean flag = false;
             for(LivingEntity entity: hits){

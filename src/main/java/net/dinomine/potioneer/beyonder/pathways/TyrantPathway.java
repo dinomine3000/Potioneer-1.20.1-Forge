@@ -2,6 +2,7 @@ package net.dinomine.potioneer.beyonder.pathways;
 
 import net.dinomine.potioneer.beyonder.abilities.Abilities;
 import net.dinomine.potioneer.beyonder.abilities.Ability;
+import net.dinomine.potioneer.beyonder.abilities.AbilityFactory;
 import net.dinomine.potioneer.beyonder.abilities.AbilityFunctionHelper;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
 import net.dinomine.potioneer.beyonder.effects.tyrant.ContractedEffect;
@@ -127,13 +128,8 @@ public class TyrantPathway extends BeyonderPathway {
 
 
     @Override
-    public List<Ability> getAbilities(int sequence){
-        return getAbilities(sequence%10, sequence%10);
-    }
-
-    @Override
-    public List<Ability> getAbilities(int ofSequenceLevel, int atSequenceLevel){
-        ArrayList<Ability> abilities = new ArrayList<>();
+    public List<AbilityFactory> getAbilities(int ofSequenceLevel){
+        ArrayList<AbilityFactory> abilities = new ArrayList<>();
         switch(ofSequenceLevel%10){
             case 0:
             case 1:
@@ -141,30 +137,30 @@ public class TyrantPathway extends BeyonderPathway {
             case 3:
             case 4:
             case 5:
-                abilities.add(Abilities.RULE_PYLON.create(atSequenceLevel));
-                abilities.add(Abilities.PROHIBITION.create(atSequenceLevel));
-                abilities.add(Abilities.AMPLIFICATION.create(atSequenceLevel));
+                abilities.add(Abilities.RULE_PYLON.get());
+                abilities.add(Abilities.PROHIBITION.get());
+                abilities.add(Abilities.AMPLIFICATION.get());
             case 6:
-                abilities.add(Abilities.BRIBE.create(atSequenceLevel));
-                abilities.add(Abilities.EXILE.create(atSequenceLevel));
-                abilities.add(Abilities.CONTRACT.create(atSequenceLevel));
-                abilities.add(Abilities.TYRANT_CALAMITY.create(atSequenceLevel));
-                abilities.add(Abilities.BERSERK_RAGE.create(atSequenceLevel));
-                abilities.add(Abilities.ANCHOR_BLINKING.create(atSequenceLevel));
+                abilities.add(Abilities.BRIBE.get());
+                abilities.add(Abilities.EXILE.get());
+                abilities.add(Abilities.CONTRACT.get());
+                abilities.add(Abilities.TYRANT_CALAMITY.get());
+                abilities.add(Abilities.BERSERK_RAGE.get());
+                abilities.add(Abilities.ANCHOR_BLINKING.get());
             case 7:
-                abilities.add(Abilities.AOJ.create(atSequenceLevel));
-                abilities.add(Abilities.TYRANT_AURA.create(atSequenceLevel));
-                abilities.add(Abilities.ARREST.create(atSequenceLevel));
-                abilities.add(Abilities.MIST.create(atSequenceLevel));
-                abilities.add(Abilities.MIST_BLINKING.create(atSequenceLevel));
-                abilities.add(Abilities.SENSE_OF_ORDER.create(atSequenceLevel));
+                abilities.add(Abilities.AOJ.get());
+                abilities.add(Abilities.TYRANT_AURA.get());
+                abilities.add(Abilities.ARREST.get());
+                abilities.add(Abilities.MIST.get());
+                abilities.add(Abilities.MIST_BLINKING.get());
+                abilities.add(Abilities.SENSE_OF_ORDER.get());
             case 8:
-                abilities.add(Abilities.TYRANT_DIVINATION.create(atSequenceLevel));
-                abilities.add(Abilities.TYRANT_WATER_SPELLS.create(atSequenceLevel));
+                abilities.add(Abilities.TYRANT_DIVINATION.get());
+                abilities.add(Abilities.TYRANT_WATER_SPELLS.get());
             case 9:
-                abilities.add(Abilities.WATER_AFFINITY.create(atSequenceLevel));
-                abilities.add(Abilities.WATER_SCALES.create(atSequenceLevel));
-                abilities.add(Abilities.OCEAN_ORDER.create(atSequenceLevel));
+                abilities.add(Abilities.WATER_AFFINITY.get());
+                abilities.add(Abilities.WATER_SCALES.get());
+                abilities.add(Abilities.OCEAN_ORDER.get());
         }
         Collections.reverse(abilities);
         return abilities;
@@ -216,5 +212,9 @@ public class TyrantPathway extends BeyonderPathway {
                 res.addAll(List.of(BeyonderEffects.TYRANT_WATER_AFFINITY.getEffectId(), BeyonderEffects.TYRANT_WATER_PRISON.getEffectId()));
         }
         return res;
+    }
+    @Override
+    public AbilityFactory getCogitationAbility() {
+        return Abilities.COGITATION_WOF.get();
     }
 }

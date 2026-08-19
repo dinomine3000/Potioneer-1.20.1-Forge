@@ -21,14 +21,22 @@ public class MiningSpeedAbility extends PassiveAbility {
 
     public static final Function<Integer, Float> levelToMaxSpeed = level -> 1.5f + 1.5f*(9-level);
 
-    public MiningSpeedAbility(int sequence){
-//        this.info = new AbilityInfo(5, 32, "Mining Speed", sequence, 0, this.getMaxCooldown(), "mining");
-        super(sequence, BeyonderEffects.WHEEL_MINING, level -> "mining_" + (level < 8 ? "2" : "1"));
+    public MiningSpeedAbility(){
+        super(BeyonderEffects.WHEEL_MINING, level -> "mining_" + (level < 8 ? "2" : "1"));
+    }
+
+    @Override
+    public void init() {
         CompoundTag tag = new CompoundTag();
-        float maxSpeed = levelToMaxSpeed.apply(sequence%10);
+        float maxSpeed = levelToMaxSpeed.apply(getSequenceLevel()%10);
         tag.putFloat("speed", maxSpeed);
         setDataSilent(tag);
         updateOptions(maxSpeed);
+    }
+
+    @Override
+    protected boolean hasSecondary(int level) {
+        return level < 8;
     }
 
     @Override
@@ -44,7 +52,7 @@ public class MiningSpeedAbility extends PassiveAbility {
 
     @Override
     protected BeyonderEffect createEffectInstance(BeyonderCapability cap, LivingEntity target) {
-        MiningSpeedEffect eff = (MiningSpeedEffect) effect.createInstance(sequenceLevel, cost(), -1, true);
+        MiningSpeedEffect eff = (MiningSpeedEffect) effect.createInstance(getSequenceLevel(), 0, -1, true);
         CompoundTag tag = getData();
         if(!tag.contains("speed")){
             tag.putFloat("speed", levelToMaxSpeed.apply(getSequenceLevel()));
@@ -57,8 +65,6 @@ public class MiningSpeedAbility extends PassiveAbility {
     @Override
     protected boolean secondary(BeyonderCapability cap, LivingEntity target, CompoundTag args) {
         if(getSequenceLevel() >= 8) {
-            if(target.level().isClientSide())
-                target.sendSystemMessage(Component.translatableWithFallback("message.potioneer.outdated_secondary", "It doesn't do anything... yet"));
             return false;
         }
         String option = AbilityOptionsUtil.validadeArguments(args, this, speedOptions, target.level().isClientSide(), false);

@@ -4,9 +4,13 @@ import net.dinomine.potioneer.beyonder.abilities.misc.LightAbility;
 import net.dinomine.potioneer.block.ModBlocks;
 
 public class MinerLightAbility extends LightAbility {
-    public MinerLightAbility(int sequence){
-        super(sequence, ModBlocks.MINER_LIGHT.get().defaultBlockState());
-        withCost(5);
+    public MinerLightAbility(){
+        super(ModBlocks.MINER_LIGHT.get().defaultBlockState());
+    }
+
+    @Override
+    public void init() {
+        cost = 5;
     }
 
     @Override

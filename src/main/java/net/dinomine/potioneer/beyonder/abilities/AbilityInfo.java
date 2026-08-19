@@ -1,169 +1,237 @@
 package net.dinomine.potioneer.beyonder.abilities;
 
-import net.dinomine.potioneer.util.BufferUtils;
+import lombok.Getter;
+import lombok.Setter;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.StringTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
-import org.apache.commons.lang3.StringUtils;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 import java.util.LinkedHashSet;
+import java.util.Objects;
 import java.util.UUID;
 
+@Getter
+@Setter
 public class AbilityInfo {
-    private final int pathwayId;
-    private final String descId;
-    private final LinkedHashSet<String> allDescIds;
-    private boolean enabled;
-    private int cooldown;
-    private int maxCd;
-    private final String innerAbilityId;
-    private AbilityKey key = new AbilityKey();
-    private CompoundTag abilityData = new CompoundTag();
-    private boolean isDownside = false;
-    private int sequenceLevel;
-    private UUID instanceId;
 
-    public AbilityInfo(int pathwayId, int cooldown, int maxCooldown, boolean enabled, String descId, LinkedHashSet<String> allDescIds, String innerId, int sequenceLevel) {
-        this.pathwayId = pathwayId;
-        this.cooldown = cooldown;
-        this.maxCd = maxCooldown;
-        this.descId = descId;
-        this.allDescIds = allDescIds;
-        this.enabled = enabled;
-        this.innerAbilityId = innerId;
-        this.sequenceLevel = sequenceLevel;
-    }
-
-    public AbilityInfo markDownside(){
-        return this.markDownside(true);
-    }
-
-    protected AbilityInfo markDownside(boolean isDownside){
-        this.isDownside = isDownside;
-        return this;
-    }
-
-    public boolean isDownside(){
-        return isDownside;
-    }
-
-    public AbilityInfo withKey(AbilityKey key){
-        this.key = key;
-        return this;
-    }
-
-    public AbilityInfo withInstanceId(UUID instanceId){this.instanceId = instanceId;return this;}
-
-    public UUID getInstanceId() {
-        return instanceId;
-    }
-
-    public AbilityKey getKey(){
-        return this.key;
-    }
-
-    public int getSequenceLevel(){
-        return sequenceLevel;
-    }
-
-
-    public void encode(FriendlyByteBuf buffer){
-        buffer.writeInt(pathwayId);
-        buffer.writeInt(cooldown);
-        buffer.writeInt(maxCd);
-        buffer.writeBoolean(enabled);
-        BufferUtils.writeStringToBuffer(descId, buffer);
-
-        buffer.writeVarInt(allDescIds.size());
-        for (String id : allDescIds) {
-            BufferUtils.writeStringToBuffer(id, buffer);
-        }
-
-        BufferUtils.writeStringToBuffer(innerAbilityId, buffer);
-        key.writeToBuffer(buffer);
-        buffer.writeNbt(abilityData);
-        buffer.writeBoolean(isDownside);
-        buffer.writeInt(sequenceLevel);
-        buffer.writeUUID(instanceId);
-    }
-
-    public static AbilityInfo decode(FriendlyByteBuf buffer){
-        int pathwayId = buffer.readInt();
-        int cooldown = buffer.readInt();
-        int maxCd = buffer.readInt();
-        boolean enabled = buffer.readBoolean();
-        String descId = BufferUtils.readString(buffer);
-
-        int count = buffer.readVarInt();
-        LinkedHashSet<String> allDescIds = new LinkedHashSet<>(count);
-        for (int i = 0; i < count; i++) {
-            allDescIds.add(BufferUtils.readString(buffer));
-        }
-
-        String innerId = BufferUtils.readString(buffer);
-        AbilityKey key = AbilityKey.readFromBuffer(buffer);
-        CompoundTag tag = buffer.readAnySizeNbt();
-        boolean downside = buffer.readBoolean();
-        int sequenceLevel = buffer.readInt();
-        UUID instanceId = buffer.readUUID();
-        return new AbilityInfo(pathwayId, cooldown, maxCd, enabled, descId, allDescIds, innerId, sequenceLevel).withKey(key).withData(tag).withInstanceId(instanceId).markDownside(downside);
-    }
-    public String innerId(){
-        return innerAbilityId;
-    }
-
-    public String descId(){
-        return descId;
-    }
-
-    public LinkedHashSet<String> allDescIds(){return allDescIds;}
-
-    public Component getNameComponent(){
-        return Ability.getNameComponent(descId);
-    }
-
-    public MutableComponent getMutableNameComponent(){
-        return (MutableComponent) Ability.getNameComponent(descId);
-    }
-
-    public int maxCooldown() {
-        return this.maxCd;
-    }
-
-    public int getPathwayId(){
-        return pathwayId;
-    }
-
-    public void setEnabled(boolean state){
-        enabled = state;
-    }
-
-    public boolean isEnabled(){
-        return enabled;
-    }
-
-    public int getCooldown(){
-        return cooldown;
-    }
-
-    public void tickCooldown(){
+    @OnlyIn(Dist.CLIENT)
+    public void tickCooldown() {
         if(cooldown > 0) cooldown--;
     }
 
-    public AbilityInfo withCooldown(int cd, int maxCd){
-        this.cooldown = cd;
-        this.maxCd = maxCd;
-        return this;
+    public Component getNameComponent() {
+        return Ability.getNameComponent(getDescId());
     }
 
-    public AbilityInfo withData(CompoundTag abilityData) {
-        this.abilityData = abilityData;
-        return this;
+    public int getPathwayId() {
+        return Abilities.getFactory(getAbilityId()).get().getPathwayId();
+    }
+    public int getPosY() {
+        return Abilities.getFactory(getAbilityId()).get().getPosY();
     }
 
-    public CompoundTag getData() {
-        return abilityData;
+    public enum Group {
+        INTRINSIC,
+        ARTIFACT,
+        CONTRACT,
+        RECORDED,
+        STOLEN
     }
 
+    private ResourceLocation abilityId;
+    private UUID instanceId;
+    private ItemStack artifactStack = ItemStack.EMPTY;
+    private Group group = Group.INTRINSIC;
+
+    private String descId = "";
+    private LinkedHashSet<String> allDescIds = new LinkedHashSet<>();
+    private boolean enabled;
+    private boolean revoked;
+    private int cooldown;
+    private int maxCd;
+    private CompoundTag abilityData = new CompoundTag();
+    private int sequenceLevel;
+    private int trueSequenceLevel;
+    private boolean hasSecondary;
+
+    public AbilityInfo(ResourceLocation abilityId) {
+        this.abilityId = Objects.requireNonNull(abilityId, "abilityId cannot be null");
+        this.instanceId = UUID.randomUUID();
+    }
+
+    public void setAbilityId(ResourceLocation abilityId) {
+        this.abilityId = Objects.requireNonNull(abilityId, "abilityId cannot be null");
+    }
+
+    public void setInstanceId(UUID instanceId) {
+        this.instanceId = instanceId != null ? instanceId : UUID.randomUUID();
+    }
+
+    public void setArtifactStack(ItemStack artifactStack) {
+        this.artifactStack = artifactStack != null ? artifactStack : ItemStack.EMPTY;
+    }
+
+    public void setGroup(Group group) {
+        this.group = group != null ? group : Group.INTRINSIC;
+    }
+
+    public void setDescId(String descId) {
+        this.descId = descId != null ? descId : "";
+    }
+
+    public void setAllDescIds(LinkedHashSet<String> allDescIds) {
+        this.allDescIds = allDescIds != null ? new LinkedHashSet<>(allDescIds) : new LinkedHashSet<>();
+    }
+
+    public void setCooldown(int cooldown) {
+        this.cooldown = Math.max(-1, cooldown);
+    }
+
+    public void setMaxCd(int maxCd) {
+        this.maxCd = Math.max(1, maxCd);
+    }
+
+    public boolean setAbilityData(CompoundTag abilityData) {
+        if (abilityData == null) return false;
+        if (this.abilityData.equals(abilityData)) return false;
+        this.abilityData = abilityData.copy();
+        return true;
+    }
+
+    public void copyFrom(AbilityInfo source) {
+        if (source == null) return;
+
+        this.abilityId = source.abilityId;
+        this.instanceId = source.instanceId;
+        this.artifactStack = source.artifactStack.copy();
+        this.group = source.group;
+
+        this.descId = source.descId;
+        this.allDescIds = new LinkedHashSet<>(source.allDescIds);
+        this.enabled = source.enabled;
+        this.revoked = source.revoked;
+        this.cooldown = source.cooldown;
+        this.maxCd = source.maxCd;
+        this.abilityData = source.abilityData != null ? source.abilityData.copy() : new CompoundTag();
+        this.sequenceLevel = source.sequenceLevel;
+        this.trueSequenceLevel = source.trueSequenceLevel;
+        this.hasSecondary = source.hasSecondary;
+    }
+
+    public CompoundTag serializeNBT() {
+        CompoundTag tag = new CompoundTag();
+        tag.putString("AbilityId", abilityId.toString());
+        tag.putUUID("InstanceId", instanceId);
+        tag.put("ArtifactStack", artifactStack.serializeNBT());
+        tag.putString("Group", group.name());
+
+        tag.putString("DescId", descId);
+        ListTag descList = new ListTag();
+        for (String id : allDescIds) {
+            descList.add(StringTag.valueOf(id));
+        }
+        tag.put("AllDescIds", descList);
+
+        tag.putBoolean("Enabled", enabled);
+        tag.putBoolean("Revoked", revoked);
+        tag.putInt("Cooldown", cooldown);
+        tag.putInt("MaxCd", maxCd);
+        tag.put("AbilityData", abilityData.copy());
+        tag.putInt("SequenceLevel", sequenceLevel);
+        tag.putInt("TrueSequenceLevel", trueSequenceLevel);
+        tag.putBoolean("HasSecondary", hasSecondary);
+        return tag;
+    }
+
+    public static AbilityInfo deserializeNBT(CompoundTag tag) {
+        ResourceLocation id = new ResourceLocation(tag.getString("AbilityId"));
+        AbilityInfo info = new AbilityInfo(id);
+
+        info.instanceId = tag.hasUUID("InstanceId") ? tag.getUUID("InstanceId") : UUID.randomUUID();
+        info.artifactStack = tag.contains("ArtifactStack", Tag.TAG_COMPOUND) ? ItemStack.of(tag.getCompound("ArtifactStack")) : ItemStack.EMPTY;
+        if (tag.contains("Group", Tag.TAG_STRING)) {
+            try {
+                info.group = Group.valueOf(tag.getString("Group"));
+            } catch (IllegalArgumentException e) {
+                info.group = Group.INTRINSIC;
+            }
+        }
+
+        info.descId = tag.getString("DescId");
+        LinkedHashSet<String> descIds = new LinkedHashSet<>();
+        ListTag descList = tag.getList("AllDescIds", Tag.TAG_STRING);
+        for (int i = 0; i < descList.size(); i++) {
+            descIds.add(descList.getString(i));
+        }
+        info.allDescIds = descIds;
+
+        info.enabled = tag.getBoolean("Enabled");
+        info.revoked = tag.getBoolean("Revoked");
+        info.cooldown = tag.getInt("Cooldown");
+        info.maxCd = tag.getInt("MaxCd");
+        info.abilityData = tag.getCompound("AbilityData").copy();
+        info.sequenceLevel = tag.getInt("SequenceLevel");
+        info.trueSequenceLevel = tag.getInt("TrueSequenceLevel");
+        info.hasSecondary = tag.getBoolean("HasSecondary");
+        return info;
+    }
+
+    public void encode(FriendlyByteBuf buf) {
+        buf.writeResourceLocation(abilityId);
+        buf.writeUUID(instanceId);
+        buf.writeItem(artifactStack);
+        buf.writeEnum(group);
+
+        buf.writeUtf(descId);
+        buf.writeVarInt(allDescIds.size());
+        for (String id : allDescIds) {
+            buf.writeUtf(id);
+        }
+
+        buf.writeBoolean(enabled);
+        buf.writeBoolean(revoked);
+        buf.writeVarInt(cooldown);
+        buf.writeVarInt(maxCd);
+        buf.writeNbt(abilityData);
+        buf.writeVarInt(sequenceLevel);
+        buf.writeVarInt(trueSequenceLevel);
+        buf.writeBoolean(hasSecondary);
+    }
+
+    public static AbilityInfo decode(FriendlyByteBuf buf) {
+        ResourceLocation id = buf.readResourceLocation();
+        AbilityInfo info = new AbilityInfo(id);
+
+        info.instanceId = buf.readUUID();
+        info.artifactStack = buf.readItem();
+        info.group = buf.readEnum(Group.class);
+
+        info.descId = buf.readUtf();
+        int descCount = buf.readVarInt();
+        LinkedHashSet<String> descIds = new LinkedHashSet<>();
+        for (int i = 0; i < descCount; i++) {
+            descIds.add(buf.readUtf());
+        }
+        info.allDescIds = descIds;
+
+        info.enabled = buf.readBoolean();
+        info.revoked = buf.readBoolean();
+        info.cooldown = buf.readVarInt();
+        info.maxCd = buf.readVarInt();
+        info.abilityData = buf.readNbt();
+        if (info.abilityData == null) {
+            info.abilityData = new CompoundTag();
+        }
+        info.sequenceLevel = buf.readVarInt();
+        info.trueSequenceLevel = buf.readVarInt();
+        info.hasSecondary = buf.readBoolean();
+        return info;
+    }
 }
