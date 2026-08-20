@@ -26,7 +26,7 @@ public class PhasingEffect extends BeyonderEffect {
         target.addEffect(new MobEffectInstance(MobEffects.GLOWING, -1, 1, false, false, true));
         if(target instanceof Player player){
             if(!hasNearbySolidSurface(target.level(), player) && (target.getY() > -64 || target.getY() < -68)){
-                cap.getAbilitiesManager().setAbilityEnabled(Abilities.PHASING.getAblId(), getSequenceLevel(), false, cap, target);
+                cap.getAbilitiesManager().setAbilityEnabled(Abilities.PHASING.get().getAblId(), getSequenceLevel(), false, cap, target);
                 return;
             }
             target.noPhysics = true;

@@ -47,7 +47,7 @@ public class ClientForgeHandler {
         ItemStack stack = event.getItemStack();
         List<Component> tooltip = event.getToolTip();
         Level level = event.getEntity() != null ? event.getEntity().level() : null;
-        boolean appraiser = ClientAbilitiesData.hasAbility(Abilities.APPRAISAL.getAblId());
+        boolean appraiser = ClientAbilitiesData.hasAbility(Abilities.APPRAISAL.get().getAblId());
         // Only run client-side
         if (level != null) {
             if(ClientStatsData.getPathwaySequenceId() > -1){
@@ -77,7 +77,7 @@ public class ClientForgeHandler {
             if(MysticalItemHelper.isArtifact(stack)){
                 if(appraiser)
                     for(AbilityInfo info: MysticalItemHelper.getArtifactFromItem(stack).getAbilitiesInfo(true)){
-                        tooltip.add(info.getMutableNameComponent().withStyle(ChatFormatting.ITALIC));
+                        tooltip.add(info.getNameComponent().withStyle(ChatFormatting.ITALIC));
                     }
                 if(ModNbtUtils.ArtifactInfoTag.doesArtifactNeedCharge(stack)){
                     if(ModNbtUtils.ArtifactInfoTag.isArtifactCharged(stack)){
@@ -139,7 +139,7 @@ public class ClientForgeHandler {
     @SubscribeEvent
     public static void onScrollWheel(InputEvent.MouseScrollingEvent event){
         if(!ClientAbilitiesData.isHotbarVisible()) return;
-        ClientAbilitiesData.changeCaret((int)event.getScrollDelta());
+        ClientAbilitiesData.changeCaret(event.getScrollDelta() > 0 ? 1 : -1);
         event.setCanceled(true);
     }
 

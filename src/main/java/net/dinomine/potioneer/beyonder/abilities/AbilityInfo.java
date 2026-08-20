@@ -8,6 +8,7 @@ import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.api.distmarker.Dist;
@@ -26,7 +27,7 @@ public class AbilityInfo {
         if(cooldown > 0) cooldown--;
     }
 
-    public Component getNameComponent() {
+    public MutableComponent getNameComponent() {
         return Ability.getNameComponent(getDescId());
     }
 
@@ -34,7 +35,7 @@ public class AbilityInfo {
         return Abilities.getFactory(getAbilityId()).get().getPathwayId();
     }
     public int getPosY() {
-        return Abilities.getFactory(getAbilityId()).get().getPosY();
+        return 32 + 24*Abilities.getFactory(getAbilityId()).get().getPosY();
     }
 
     public enum Group {
@@ -52,7 +53,7 @@ public class AbilityInfo {
 
     private String descId = "";
     private LinkedHashSet<String> allDescIds = new LinkedHashSet<>();
-    private boolean enabled;
+    private boolean enabled = true;
     private boolean revoked;
     private int cooldown;
     private int maxCd;

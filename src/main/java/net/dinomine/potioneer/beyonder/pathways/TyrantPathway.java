@@ -215,6 +215,6 @@ public class TyrantPathway extends BeyonderPathway {
     }
     @Override
     public AbilityFactory getCogitationAbility() {
-        return Abilities.COGITATION_WOF.get();
+        return Abilities.COGITATION_TY.get();
     }
 }

@@ -10,7 +10,7 @@ import java.util.function.Supplier;
 public class DurabilityRegenAbility extends PassiveAbility {
     private boolean levelUp;
     private Supplier<Integer> getEffectDuration = () -> levelUp ? -1 : 60*((9-getSequenceLevel())*6 + 3);
-    private Supplier<Integer> getEffectCost = () -> levelUp ? cost() / 10 : cost() / 5;
+    private Supplier<Integer> getEffectCost = () -> 10;
     public DurabilityRegenAbility(int sequence){
 //        this.info = new AbilityInfo(109, 56, "Durability Regen", 40 + sequence, 30*(10-sequence), levelUp ? this.getMaxCooldown() : 20*5, "durability_regen_" + (levelUp ? "2" : ""));
         super(BeyonderEffects.PARAGON_REGEN, level -> "durability_regen_" + (level <= 7 ? "2" : ""));

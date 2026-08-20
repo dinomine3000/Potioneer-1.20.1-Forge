@@ -1,5 +1,6 @@
 package net.dinomine.potioneer.beyonder.pathways;
 
+import net.dinomine.potioneer.beyonder.abilities.Abilities;
 import net.dinomine.potioneer.beyonder.abilities.Ability;
 import net.dinomine.potioneer.beyonder.abilities.AbilityFactory;
 import net.dinomine.potioneer.beyonder.player.BeyonderStats;
@@ -64,5 +65,10 @@ public class BeyonderlessPathway extends BeyonderPathway{
     @Override
     public Component getRitualDescriptionForSequence(int sequenceLevel) {
         return Component.empty();
+    }
+
+    @Override
+    public AbilityFactory getCogitationAbility() {
+        return Abilities.COGITATION_WOF.get();
     }
 }

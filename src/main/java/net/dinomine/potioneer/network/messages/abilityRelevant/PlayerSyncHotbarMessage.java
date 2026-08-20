@@ -28,7 +28,11 @@ public class PlayerSyncHotbarMessage {
         for(int i = 0; i < msg.hotbar.size(); i++){
             buffer.writeUUID(msg.hotbar.get(i));
         }
-        buffer.writeUUID(msg.quick);
+        if(msg.quick == null) buffer.writeBoolean(false);
+        else{
+            buffer.writeBoolean(true);
+            buffer.writeUUID(msg.quick);
+        }
     }
 
     public static PlayerSyncHotbarMessage decode(FriendlyByteBuf buffer){
@@ -37,8 +41,9 @@ public class PlayerSyncHotbarMessage {
         for(int i = 0; i < size; i++){
             hotbar.add(buffer.readUUID());
         }
-
-        return new PlayerSyncHotbarMessage(hotbar, buffer.readUUID());
+        UUID quick = null;
+        if(buffer.readBoolean()) quick = buffer.readUUID();
+        return new PlayerSyncHotbarMessage(hotbar, quick);
     }
 
     public static void handle(PlayerSyncHotbarMessage msg, Supplier<NetworkEvent.Context> contextSupplier){

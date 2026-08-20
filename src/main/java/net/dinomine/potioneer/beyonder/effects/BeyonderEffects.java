@@ -75,7 +75,7 @@ public class BeyonderEffects {
     public static final BeyonderEffectType TYRANT_BRIBE = registerEffect("bribe_source", new BeyonderEffectType(BribeSourceEffect::new));
     public static final BeyonderEffectType TYRANT_BRIBE_RECIPIENT = registerEffect("bribe_recipient", new BeyonderEffectType(BribeRecipientEffect::new));
     public static final BeyonderEffectType TYRANT_AURA_DOWNSIDE = registerEffect("d_aura", new BeyonderEffectType(AuraDownsideEffect::new));
-    public static final BeyonderEffectType TYRANT_MIST_DOWNSIDE = registerEffect("d_mist", new BeyonderEffectType(MistDownsideEffect::new));
+    public static final BeyonderEffectType TYRANT_MIST_DOWNSIDE = registerEffect("d_mist", new BeyonderEffectType(BlankEffect::new));
 
     //Mystery
     public static final BeyonderEffectType MYSTERY_SAP = registerEffect("mystery_sap", new BeyonderEffectType(SapEffect::new));

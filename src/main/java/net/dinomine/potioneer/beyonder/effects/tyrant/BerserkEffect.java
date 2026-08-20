@@ -19,17 +19,21 @@ public class BerserkEffect extends BeyonderEffect {
     @Override
     public void onAcquire(BeyonderCapability cap, LivingEntity target, AcquireType acquireType) {
         if(acquireType != AcquireType.ADDED) return;
-        scales = cap.getAbilitiesManager().isEnabledExactLevel(Abilities.WATER_SCALES.getAblId(), sequenceLevel);
-        aura = cap.getAbilitiesManager().isEnabledExactLevel(Abilities.TYRANT_AURA.getAblId(), sequenceLevel);
-        soo = cap.getAbilitiesManager().isEnabledExactLevel(Abilities.SENSE_OF_ORDER.getAblId(), sequenceLevel);
-        cap.getAbilitiesManager().setAbilityEnabled(Abilities.TYRANT_AURA.getAblId(), sequenceLevel, true, cap, target);
-        cap.getAbilitiesManager().setAbilityEnabled(Abilities.WATER_SCALES.getAblId(), sequenceLevel, true, cap, target);
-        cap.getAbilitiesManager().setAbilityEnabled(Abilities.SENSE_OF_ORDER.getAblId(), sequenceLevel, true, cap, target);
-        cap.getAbilitiesManager().setAbilityEnabled(Abilities.AOJ.getAblId(), sequenceLevel, true, cap, target);
+        scales = cap.getAbilitiesManager().isEnabledAtLevelOrLower(Abilities.WATER_SCALES.get().getAblId(), sequenceLevel);
+        aura = cap.getAbilitiesManager().isEnabledAtLevelOrLower(Abilities.TYRANT_AURA.get().getAblId(), sequenceLevel);
+        soo = cap.getAbilitiesManager().isEnabledAtLevelOrLower(Abilities.SENSE_OF_ORDER.get().getAblId(), sequenceLevel);
+        cap.getAbilitiesManager().setAbilityEnabled(Abilities.TYRANT_AURA.get().getAblId(), sequenceLevel, true, cap, target);
+        cap.getAbilitiesManager().setAbilityEnabled(Abilities.WATER_SCALES.get().getAblId(), sequenceLevel, true, cap, target);
+        cap.getAbilitiesManager().setAbilityEnabled(Abilities.SENSE_OF_ORDER.get().getAblId(), sequenceLevel, true, cap, target);
+        cap.getAbilitiesManager().setAbilityEnabled(Abilities.AOJ.get().getAblId(), sequenceLevel, true, cap, target);
 
         DisabledAbilityProxy proxyCogitation = DisabledAbilityProxy.of(
-                DisabledAbilityProxy.byId(Abilities.COGITATION.getAblId(), 0, -1),
-                DisabledAbilityProxy.byId(Abilities.AOJ.getAblId(), 0, -1)
+                DisabledAbilityProxy.byId(Abilities.COGITATION_WOF.get().getAblId(), 0, -1),
+                DisabledAbilityProxy.byId(Abilities.COGITATION_TY.get().getAblId(), 0, -1),
+                DisabledAbilityProxy.byId(Abilities.COGITATION_MY.get().getAblId(), 0, -1),
+                DisabledAbilityProxy.byId(Abilities.COGITATION_RP.get().getAblId(), 0, -1),
+                DisabledAbilityProxy.byId(Abilities.COGITATION_PA.get().getAblId(), 0, -1),
+                DisabledAbilityProxy.byId(Abilities.AOJ.get().getAblId(), 0, -1)
         );
         cap.getAbilitiesManager().getDisabledAbilitiesManager().disableAbility("berserk", proxyCogitation, cap, target);
     }
@@ -71,8 +75,8 @@ public class BerserkEffect extends BeyonderEffect {
         target.removeEffect(MobEffects.DARKNESS);
         cap.getAbilitiesManager().getDisabledAbilitiesManager().enableAbility("berserk", cap, target);
 
-        cap.getAbilitiesManager().setAbilityEnabled(Abilities.TYRANT_AURA.getAblId(), sequenceLevel, aura, cap, target);
-        cap.getAbilitiesManager().setAbilityEnabled(Abilities.WATER_SCALES.getAblId(), sequenceLevel, scales, cap, target);
-        cap.getAbilitiesManager().setAbilityEnabled(Abilities.SENSE_OF_ORDER.getAblId(), sequenceLevel, soo, cap, target);
+        cap.getAbilitiesManager().setAbilityEnabled(Abilities.TYRANT_AURA.get().getAblId(), sequenceLevel, aura, cap, target);
+        cap.getAbilitiesManager().setAbilityEnabled(Abilities.WATER_SCALES.get().getAblId(), sequenceLevel, scales, cap, target);
+        cap.getAbilitiesManager().setAbilityEnabled(Abilities.SENSE_OF_ORDER.get().getAblId(), sequenceLevel, soo, cap, target);
     }
 }

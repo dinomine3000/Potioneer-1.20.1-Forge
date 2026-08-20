@@ -124,11 +124,11 @@ public class ContractAbility extends Ability {
         }
 
         public String toString(){
-            return ablId.toString().concat(":" + descId);
+            return ablId.toString().concat("/-/" + descId);
         }
 
         public static ContractAbilityOption fromString(String string){
-            String[] res = string.split(":");
+            String[] res = string.split("/-/");
             if(res.length != 2) return null;
             ResourceLocation ablId = new ResourceLocation(res[0]);
             String desc = res[1];

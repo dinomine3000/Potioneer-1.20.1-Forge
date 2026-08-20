@@ -280,7 +280,7 @@ public class PlayerAbilitiesManager {
                 break;
             }
         }
-        addAndInitializeAbility(Pathways.getPathwayById(pathwaySequenceId).getCogitationAbility().construct(pathwaySequenceId%10, AbilityInfo.Group.INTRINSIC), cap, target, true, false);
+        addAndInitializeAbility(Pathways.getPathwayBySequenceId(pathwaySequenceId).getCogitationAbility().construct(pathwaySequenceId%10, AbilityInfo.Group.INTRINSIC), cap, target, true, false);
     }
 
     private void upgradeIntrinsicAbilitiesToLevel(int sequenceLevel, BeyonderCapability cap, LivingEntity target){
@@ -314,12 +314,6 @@ public class PlayerAbilitiesManager {
      */
     public void setAbilityEnabled(ResourceLocation abilityId, int sequenceLevel, boolean state, BeyonderCapability cap, LivingEntity target) {
         applyToValidAbilities(abl -> abl.setEnabled(cap, target, state), abilityId, sequenceLevel, true);
-        /*for(Map.Entry<AbilityKey, Ability> abilityEntry: abilities.entrySet()){
-            AbilityKey iKey = abilityEntry.getKey();
-            if(iKey.isSameAbility(abilityId) && abilityEntry.getValue().getSequenceLevel() >= sequenceLevel){
-                abilityEntry.getValue().setEnabled(cap, target, state);
-            }
-        }*/
     }
 
     private void applyToValidAbilities(Consumer<Ability> applier, ResourceLocation abilityId, int sequenceLevel, boolean specificLevel){
@@ -598,6 +592,8 @@ public class PlayerAbilitiesManager {
      */
     public boolean addAndInitializeAbility(Ability ability, BeyonderCapability cap, LivingEntity target, boolean runOnAcquire, boolean sync){
         if(abilities.containsKey(ability.getInstanceId())) return false;
+        boolean exists = getAllAbilities(ability.getAbilityInfo().getGroup()).stream().anyMatch(abl -> abl.is(ability.getAbilityId(), ability.getSequenceLevel()));
+        if(exists) return false;
         ability.init();
         abilities.put(ability.getInstanceId(), ability);
         disabledManager.onAbilityGained(ability, cap, target);
@@ -713,7 +709,7 @@ public class PlayerAbilitiesManager {
             //for every ability data read in the tag...
             for (int i = 0; i < ablTag.size(); i++) {
                 CompoundTag singleAblTag = ablTag.getCompound(i);
-                ResourceLocation ablId = new ResourceLocation(singleAblTag.getString("abilityId"));
+                ResourceLocation ablId = new ResourceLocation(singleAblTag.getString("AbilityId"));
 
                 //since the charManager already added the intrinsic abilities we should have, try to find a match.
                 Ability intrinsicToLoad = null;
@@ -724,11 +720,12 @@ public class PlayerAbilitiesManager {
                 if(intrinsicToLoad != null){
                     //if the tag we're loading is an intrinsic ability, it was already added, so just load data.
                     intrinsicToLoad.loadTag(singleAblTag);
+                    abilities.put(intrinsicToLoad.getInstanceId(), intrinsicToLoad);
                 } else {
                     //otherwise, instantiate a new one.
                     Abilities.getFactory(ablId).ifPresent(factory -> {
                         Ability abl = factory.construct(
-                                singleAblTag.contains("sequenceLevel") ? singleAblTag.getInt("sequenceLevel") : 9,
+                                singleAblTag.contains("SequenceLevel") ? singleAblTag.getInt("SequenceLevel") : 9,
                                 AbilityInfo.Group.INTRINSIC
                         );
                         abl.loadTag(singleAblTag);

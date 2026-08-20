@@ -3,6 +3,7 @@ package net.dinomine.potioneer.beyonder.player;
 import net.dinomine.potioneer.beyonder.abilities.Ability;
 import net.dinomine.potioneer.beyonder.abilities.AbilityFactory;
 import net.dinomine.potioneer.beyonder.abilities.AbilityInfo;
+import net.dinomine.potioneer.beyonder.abilities.misc.CogitationAbility;
 import net.dinomine.potioneer.beyonder.pathways.BeyonderPathway;
 import net.dinomine.potioneer.beyonder.pathways.Pathways;
 import net.dinomine.potioneer.config.PotioneerGameplayConfig;
@@ -339,7 +340,7 @@ public class PlayerCharacteristicManager {
         aptitudePathway = acting.getInt("aptitude");
 
         //get abilities
-        cap.getAbilitiesManager().loadIntrinsicAbilities(getAbilitiesFromCharacteristics());
+        cap.getAbilitiesManager().loadIntrinsicAbilities(getAbilitiesFromCharacteristics(true));
 
         //set stats
         if(target instanceof Player player){
@@ -349,7 +350,7 @@ public class PlayerCharacteristicManager {
     }
 
     private void setAllAbilities(BeyonderCapability cap, LivingEntity target) {
-        List<Ability> allAbilities = getAbilitiesFromCharacteristics();
+        List<Ability> allAbilities = getAbilitiesFromCharacteristics(false);
         cap.getAbilitiesManager().setAndInitializeIntrinsicAbilities(allAbilities, getPathwaySequenceId(), cap, target);
     }
 
@@ -360,7 +361,7 @@ public class PlayerCharacteristicManager {
         aptitudePathway = other.aptitudePathway;
     }
 
-    public List<Ability> getAbilitiesFromCharacteristics() {
+    public List<Ability> getAbilitiesFromCharacteristics(boolean includeCogitation) {
         //get all abilities from characteristics
         //create cogitation ability based on last consumed characteristic
         //update the abilities manager
@@ -372,6 +373,8 @@ public class PlayerCharacteristicManager {
         for(Integer characId: closestToLowerTens(lastConsumedCharacteristics)){
             factories.addAll(Pathways.getPathwayBySequenceId(characId).getAbilities(characId%10));
         }
+        AbilityFactory cog = Pathways.getPathwayBySequenceId(pathwaySequenceId).getCogitationAbility();
+        if(includeCogitation && cog != null) factories.add(cog);
         return factories.stream().map(fac -> fac.construct(pathwaySequenceId%10, AbilityInfo.Group.INTRINSIC)).toList();
     }
 

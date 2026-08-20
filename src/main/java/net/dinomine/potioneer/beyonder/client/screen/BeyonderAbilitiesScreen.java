@@ -137,15 +137,6 @@ public class BeyonderAbilitiesScreen extends Screen {
                     187, 123, 13, TEXTURE, TEXTURE_WIDTH, TEXTURE_HEIGHT, btn -> {addAbilityToQuickSelect();});
             removeFromQuickSelectButton.setTooltip(Tooltip.create(Component.translatable("gui.potioneer.remove_from_quick")));
 
-            goToMainMenuButton = new ImageButton(leftPos + 4, topPos + 165, 43, 18,
-                    132, 277, 0, TEXTURE, TEXTURE_WIDTH, TEXTURE_HEIGHT, btn -> {BeyonderScreen.goToMainMenu();});
-            addRenderableWidget(goToMainMenuButton);
-            goToOptionsMenu = new ImageButton(leftPos + 89, topPos + 165, 43, 18,
-                    132, 277, 0, TEXTURE, TEXTURE_WIDTH, TEXTURE_HEIGHT, btn -> {BeyonderScreen.goToOptionsMenu();});
-            addRenderableWidget(goToOptionsMenu);
-            goToAllyMenu = new ImageButton(leftPos + 131, topPos + 165, 43, 18,
-                    132, 277, 0, TEXTURE, TEXTURE_WIDTH, TEXTURE_HEIGHT, btn -> {BeyonderScreen.goToAllyMenu();});
-            addRenderableWidget(goToAllyMenu);
 
             addRenderableWidget(addToHotbarButton);
             addRenderableWidget(removeFromHotbarButton);
@@ -155,6 +146,16 @@ public class BeyonderAbilitiesScreen extends Screen {
             addWidget(descriptionOffsetRightButton);
             updateHotbarButton();
         }
+
+        goToMainMenuButton = new ImageButton(leftPos + 4, topPos + 165, 43, 18,
+                132, 277, 0, TEXTURE, TEXTURE_WIDTH, TEXTURE_HEIGHT, btn -> {BeyonderScreen.goToMainMenu();});
+        addRenderableWidget(goToMainMenuButton);
+        goToOptionsMenu = new ImageButton(leftPos + 89, topPos + 165, 43, 18,
+                132, 277, 0, TEXTURE, TEXTURE_WIDTH, TEXTURE_HEIGHT, btn -> {BeyonderScreen.goToOptionsMenu();});
+        addRenderableWidget(goToOptionsMenu);
+        goToAllyMenu = new ImageButton(leftPos + 131, topPos + 165, 43, 18,
+                132, 277, 0, TEXTURE, TEXTURE_WIDTH, TEXTURE_HEIGHT, btn -> {BeyonderScreen.goToAllyMenu();});
+        addRenderableWidget(goToAllyMenu);
     }
 
     @Override
@@ -332,7 +333,7 @@ public class BeyonderAbilitiesScreen extends Screen {
         AbilityFactory ablFactory = Abilities.getFactory(ablId).get();
         int abilityX = Pathways.getPathwayById(ablFactory.getPathwayId()).getAbilityX();
         pGuiGraphics.blit(ABILITY_ICONS, posX, posY, (int) (scale * ICON_WIDTH), (int)(scale * ICON_HEIGHT),
-                abilityX, ablFactory.getPosY(), ICON_WIDTH, ICON_HEIGHT, ICONS_WIDTH, ICONS_HEIGHT);
+                abilityX, data.getPosY(), ICON_WIDTH, ICON_HEIGHT, ICONS_WIDTH, ICONS_HEIGHT);
 
         //quick and hotbar symbols
         if(!main){
