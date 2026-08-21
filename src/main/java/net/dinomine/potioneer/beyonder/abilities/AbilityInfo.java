@@ -235,4 +235,17 @@ public class AbilityInfo {
         info.hasSecondary = buf.readBoolean();
         return info;
     }
+
+    @Override
+    public String toString() {
+        return "AbilityInfo{" +
+                "abilityId=" + abilityId +
+                ", instanceId=" + instanceId +
+                ", sequenceLevel=" + sequenceLevel +
+                ", group=" + group +
+                ", enabled=" + enabled +
+                ", revoked=" + revoked +
+                ", cooldown=" + cooldown +
+                '}' ;
+    }
 }

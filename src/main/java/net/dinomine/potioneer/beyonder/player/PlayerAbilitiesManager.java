@@ -400,7 +400,7 @@ public class PlayerAbilitiesManager {
         for(AbilityInfo abl: abilities){
             Ability ability = Ability.constructAbility(abl);
             if(!addAndInitializeAbility(ability, cap, target, runOnAcquire, false)){
-                System.out.println("Warning: Tried to add an ability that already exists on client: " + abl);
+                System.out.println("Tried to add an ability that already exists on client: " + abl);
             }
         }
     }
@@ -591,6 +591,7 @@ public class PlayerAbilitiesManager {
      * @return
      */
     public boolean addAndInitializeAbility(Ability ability, BeyonderCapability cap, LivingEntity target, boolean runOnAcquire, boolean sync){
+        if(ability == null) return false;
         if(abilities.containsKey(ability.getInstanceId())) return false;
         boolean exists = getAllAbilities(ability.getAbilityInfo().getGroup()).stream().anyMatch(abl -> abl.is(ability.getAbilityId(), ability.getSequenceLevel()));
         if(exists) return false;

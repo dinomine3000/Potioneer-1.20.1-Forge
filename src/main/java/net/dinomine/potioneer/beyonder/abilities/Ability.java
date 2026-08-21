@@ -14,6 +14,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.registries.RegistryObject;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.*;
@@ -358,12 +359,22 @@ public abstract class Ability {
     }
 
     public static Ability constructAbility(AbilityInfo info){
-        Ability abl = Abilities.getFactory(info.getAbilityId()).get().construct(info.getTrueSequenceLevel(), info.getGroup());
+        Optional<AbilityFactory> obj = Abilities.getFactory(info.getAbilityId());
+        if(obj.isEmpty()){
+            System.out.println("Couldnt find ability id for ability: " + info.toString());
+            return null;
+        }
+        Ability abl = obj.get().construct(info.getTrueSequenceLevel(), info.getGroup());
         abl.abilityInfo = info;
         return abl;
     }
     public static Ability loadAndInitAbility(CompoundTag abilityTag){
         AbilityInfo info = AbilityInfo.deserializeNBT(abilityTag);
+        Optional<AbilityFactory> obj = Abilities.getFactory(info.getAbilityId());
+        if(obj.isEmpty()){
+            System.out.println("couldnt find ability id for ability: " + info.toString() + " from tag " + abilityTag);
+            return null;
+        }
         Ability abl = Abilities.getFactory(info.getAbilityId()).get().construct(info.getTrueSequenceLevel(), info.getGroup());
         abl.loadTag(abilityTag);
         abl.init();

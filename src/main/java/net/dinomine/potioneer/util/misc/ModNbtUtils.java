@@ -291,8 +291,13 @@ public abstract class ModNbtUtils {
             UUID artifactId = getArtifactId(artifactTag);
             List<Ability> abilities = new ArrayList<>();
             for(String stringKey: artifactTag.getAllKeys()){
-                if(stringKey.equals(UUID_KEY)) continue;
+                switch (stringKey) {
+                    case UUID_KEY, CHARGE_KEY, NEED_CHARGE_KEY -> {
+                        continue;
+                    }
+                }
                 Ability abl = Ability.loadAndInitAbility(artifactTag.getCompound(stringKey));
+                if(abl == null) continue;
                 abilities.add(abl);
             }
             ItemStack stack = ItemStack.EMPTY;
