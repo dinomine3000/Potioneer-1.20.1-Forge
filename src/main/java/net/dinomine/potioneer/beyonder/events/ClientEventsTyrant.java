@@ -103,12 +103,14 @@ public class ClientEventsTyrant {
 
         for(UUID instanceId: weakenedAbls){
             Ability abl = cap.getAbilitiesManager().getAbilityInstance(instanceId);
+            if(abl == null) continue;
             AbilitiesHotbarHUD.drawAbility(guiGraphics, abl.getAbilityInfo(), (int)((idx++)*(AbilitiesHotbarHUD.CASE_WIDTH*scale)) + 5 + AbilitiesHotbarHUD.CASE_WIDTH/2, 10, scale);
             //guiGraphics.drawString(Minecraft.getInstance().font, abl.getAbilityInfo().descId(), 0, (int) (Minecraft.getInstance().font.lineHeight*1.5*(idx++)), 0, false);
         }
 
         for(UUID id: amplifiedAbls){
             Ability abl = cap.getAbilitiesManager().getAbilityInstance(id);
+            if(abl == null) continue;
             AbilitiesHotbarHUD.drawAbility(guiGraphics, abl.getAbilityInfo(), (int)((idx++)*(AbilitiesHotbarHUD.CASE_WIDTH*scale)) + 5 + AbilitiesHotbarHUD.CASE_WIDTH/2, (int) (20 + AbilitiesHotbarHUD.CASE_HEIGHT*scale), scale);
             //guiGraphics.drawString(Minecraft.getInstance().font, abl.getAbilityInfo().descId(), 0, 10 + (int) (Minecraft.getInstance().font.lineHeight*1.5*(idx++)), 0, false);
         }

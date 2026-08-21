@@ -593,7 +593,7 @@ public class PlayerAbilitiesManager {
     public boolean addAndInitializeAbility(Ability ability, BeyonderCapability cap, LivingEntity target, boolean runOnAcquire, boolean sync){
         if(ability == null) return false;
         if(abilities.containsKey(ability.getInstanceId())) return false;
-        boolean exists = getAllAbilities(ability.getAbilityInfo().getGroup()).stream().anyMatch(abl -> abl.is(ability.getAbilityId(), ability.getSequenceLevel()));
+        boolean exists = ability.isOfGroup(AbilityInfo.Group.INTRINSIC) && getAllAbilities(AbilityInfo.Group.INTRINSIC).stream().anyMatch(abl -> abl.is(ability.getAbilityId()));
         if(exists) return false;
         ability.init();
         abilities.put(ability.getInstanceId(), ability);

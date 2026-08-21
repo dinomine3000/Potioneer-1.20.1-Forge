@@ -85,8 +85,6 @@ class ClientArtifactSyncHandler
                 ClientAbilitiesData.updateArtifacts(msg.artifacts);
                 break;
         }
-        player.getCapability(CapProvider.BEYONDER_STATS).ifPresent(cap -> {
-        });
         contextSupplier.get().setPacketHandled(true);
     }
 
