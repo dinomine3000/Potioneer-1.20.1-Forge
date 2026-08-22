@@ -350,6 +350,8 @@ public abstract class Ability {
 
     public void deactivate(BeyonderCapability cap, LivingEntity target) {}
 
+    public void onAbilityRemoved(BeyonderCapability cap, LivingEntity target) {deactivate(cap, target);}
+
     public void onRevoke(BeyonderCapability cap, LivingEntity target) {
         setEnabled(cap, target, false);
     }
@@ -430,6 +432,9 @@ public abstract class Ability {
         return is(ablId) && getSequenceLevel() == sequenceLevel;
     }
 
+    public boolean is(RegistryObject<AbilityFactory> fac) {
+        return is(fac.get().getAblId());
+    }
     public boolean is(ResourceLocation ablId) {
         return abilityInfo != null && abilityInfo.getAbilityId().equals(ablId);
     }
@@ -448,5 +453,9 @@ public abstract class Ability {
 
     public boolean isOfGroup(AbilityInfo.Group group) {
         return abilityInfo != null && abilityInfo.getGroup() == group;
+    }
+
+    public void setInstanceId(UUID instanceId) {
+        this.abilityInfo.setInstanceId(instanceId);
     }
 }

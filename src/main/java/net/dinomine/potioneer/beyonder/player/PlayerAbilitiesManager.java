@@ -224,7 +224,7 @@ public class PlayerAbilitiesManager {
 
 
     public void clearAbilities(BeyonderCapability cap, LivingEntity target){
-        abilities.values().forEach(ability -> ability.deactivate(cap, target));
+        abilities.values().forEach(ability -> ability.onAbilityRemoved(cap, target));
         abilities = new LinkedHashMap<>();
     }
 
@@ -291,11 +291,17 @@ public class PlayerAbilitiesManager {
         }
     }
 
+    public void removeAbilitiesOfGroup(AbilityInfo.Group group, LivingEntity target, BeyonderCapability cap){
+        for(Ability abl: new ArrayList<>(abilities.values())){
+            if(abl.isOfGroup(group)) removeAbility(abl.getInstanceId(), cap, target, true);
+        }
+    }
+
     public boolean removeAbility(UUID ablId, BeyonderCapability cap, LivingEntity target, boolean sync){
         if(!abilities.containsKey(ablId)) return false;
         Ability abl = abilities.get(ablId);
         MinecraftForge.EVENT_BUS.post(new AbilityPossessionEvent.Lost(abl, target));
-        abl.deactivate(cap, target);
+        abl.onAbilityRemoved(cap, target);
         abilities.remove(ablId);
         if(sync && target instanceof Player player) updateClientAbilityInfo(player, List.of(abl.getAbilityInfo()), AbilitySyncMessage.REMOVE);
         return true;
@@ -470,7 +476,7 @@ public class PlayerAbilitiesManager {
             break;
         }
         if(artifactHolder == null) {
-            String message = "[Potioneer] Error: Tried to update ability data, but it wasnt found in the abilities map nor in any artifacts." + ability;
+            String message = "[Potioneer] Warning: Tried to update ability data, but it wasn't found in the abilities map nor in any artifacts. This is usually due to losing an ability at the same time as its cast (like with recorded abilities)" + ability;
             System.err.println(message);
             Potioneer.LOGGER.error(message);
             return;
@@ -610,7 +616,7 @@ public class PlayerAbilitiesManager {
         if(optAbl.isEmpty()) return false;
         Ability abl = optAbl.get();
         MinecraftForge.EVENT_BUS.post(new AbilityPossessionEvent.Lost(abl, target));
-        abl.deactivate(cap, target);
+        abl.onAbilityRemoved(cap, target);
         abilities.remove(abl.getInstanceId());
         if(sync && target instanceof ServerPlayer player) updateClientAbilityInfo(player, List.of(abl.getAbilityInfo()), AbilitySyncMessage.REMOVE);
         return true;

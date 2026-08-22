@@ -1,16 +1,16 @@
 package net.dinomine.potioneer.beyonder.abilities;
 
+import lombok.Getter;
 import net.dinomine.potioneer.beyonder.player.BeyonderCapability;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.LivingEntity;
 
 import static net.dinomine.potioneer.beyonder.abilities.AbilityOptionsUtil.validadeArguments;
 
+@Getter
 public abstract class AbilityWithOptions extends Ability {
     private AbilityOptions primaryOptions = null;
     private AbilityOptions secondaryOptions = null;
-    public AbilityOptions getPrimaryOptions(){return primaryOptions;}
-    public AbilityOptions getSecondaryOptions(){return secondaryOptions;}
 
     protected void setPrimaryOptions(AbilityOptions primaryOptions){
         this.primaryOptions = primaryOptions;

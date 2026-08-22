@@ -56,7 +56,7 @@ public class AbilityInfo {
     private boolean enabled = true;
     private boolean revoked;
     private int cooldown;
-    private int maxCd;
+    private int maxCd = 1;
     private CompoundTag abilityData = new CompoundTag();
     private int sequenceLevel;
     private int trueSequenceLevel;

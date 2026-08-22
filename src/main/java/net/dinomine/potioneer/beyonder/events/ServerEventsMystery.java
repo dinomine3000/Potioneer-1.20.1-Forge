@@ -5,6 +5,7 @@ import net.dinomine.potioneer.beyonder.abilities.Abilities;
 import net.dinomine.potioneer.beyonder.abilities.Ability;
 import net.dinomine.potioneer.beyonder.abilities.AbilityFunctionHelper;
 import net.dinomine.potioneer.beyonder.abilities.mystery.MagicTricksAbility;
+import net.dinomine.potioneer.beyonder.abilities.mystery.RecordingAbility;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
 import net.dinomine.potioneer.beyonder.effects.mystery.GymnasticsEffect;
 import net.dinomine.potioneer.beyonder.player.BeyonderCapability;
@@ -74,7 +75,15 @@ public class ServerEventsMystery {
     public static void onAbilityCast(AbilityCastEvent.Post event){
         //try to record
         List<LivingEntity> hits = AbilityFunctionHelper.getLivingEntitiesAround(event.getEntity(), 16);
-
+        for(LivingEntity ent: hits){
+            CapProvider.beyonder(ent).ifPresent(cap -> {
+                cap.getAbilitiesManager().getAllAbilities(Abilities.RECORDING.get().getAblId()).forEach(abl -> {
+                    if(abl instanceof RecordingAbility recAbl){
+                        recAbl.onAbilityCast(ent, cap, event.getAbility());
+                    }
+                });
+            });
+        }
     }
 
 }

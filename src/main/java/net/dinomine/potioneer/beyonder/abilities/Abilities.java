@@ -19,6 +19,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.registries.*;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
 import java.util.function.Supplier;
@@ -447,6 +448,12 @@ public class Abilities {
             return Optional.empty();
         }
         return Optional.ofNullable(REGISTRY.get().getValue(location));
+    }
+
+    public static @Nullable Ability getFactoryAndConstruct(ResourceLocation ablId, int level, AbilityInfo.Group group){
+        Optional<AbilityFactory> optFac = getFactory(ablId);
+        if(optFac.isEmpty()) return null;
+        return optFac.get().construct(level, group);
     }
 
     public static void register(IEventBus eventBus) {

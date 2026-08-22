@@ -95,8 +95,8 @@ public class ArtifactHolder {
     }
 
     public void onRemove(BeyonderCapability cap, LivingEntity target){
-        abilities.values().forEach(abl -> abl.deactivate(cap, target));
-        downsides.values().forEach(downside -> downside.deactivate(cap, target));
+        abilities.values().forEach(abl -> abl.onAbilityRemoved(cap, target));
+        downsides.values().forEach(downside -> downside.onAbilityRemoved(cap, target));
     }
 
     public void castDefaultAbilities(BeyonderCapability cap, LivingEntity target){
