@@ -26,6 +26,7 @@ public class RecordingAbility extends AbilityWithOptions {
             toAdd.setInstanceId(abl.instanceId);
             cap.getAbilitiesManager().addAndInitializeAbility(toAdd, cap, target, true, true);
         }
+        setEnabled(cap, target, false);
     }
 
     @Override
@@ -46,7 +47,9 @@ public class RecordingAbility extends AbilityWithOptions {
 
     @Override
     protected boolean secondaryWithArgument(BeyonderCapability cap, LivingEntity target, String args) {
-        return false;
+        if(target.level().isClientSide()) return true;
+        UUID ablId = UUID.fromString(args);
+        return cap.getAbilitiesManager().useAbility(cap, target, ablId, true, true, new CompoundTag());
     }
 
     @Override
@@ -67,6 +70,7 @@ public class RecordingAbility extends AbilityWithOptions {
         } else {
             if(!isEnabled()) return;
             if(abilityCast.is(Abilities.RECORDING)) return;
+            if(existingAbls.size() > 5) return;
 
             ResourceLocation ablId = abilityCast.getAbilityId();
             int lvl = abilityCast.getSequenceLevel();
@@ -97,6 +101,7 @@ public class RecordingAbility extends AbilityWithOptions {
         for(AbilityRepr abl: abls) ablList.add(abl.saveToTag(new CompoundTag()));
         dataTag.put("recordedAbilities", ablList);
         setData(dataTag, target);
+        buildOptions();
     }
 
     private List<AbilityRepr> getAbilitiesInData(){
@@ -120,12 +125,16 @@ public class RecordingAbility extends AbilityWithOptions {
 
     @Override
     protected void onClientUpdate(BeyonderCapability cap, LivingEntity target) {
-
+        buildOptions();
     }
 
 
-    private AbilityOptions buildOptions(){
-        return new AbilityOptions();
+    private void buildOptions(){
+        AbilityOptions options = new AbilityOptions();
+        for(AbilityRepr abl: getAbilitiesInData()){
+            options.addEmptyOption(abl.instanceId.toString(), Ability.getNameComponent(Abilities.getFactory(abl.ablId).get().construct(abl.sequenceLevel, AbilityInfo.Group.RECORDED).getMainDescId()));
+        }
+        setSecondaryOptions(options);
     }
 
     private record AbilityRepr(UUID instanceId, ResourceLocation ablId, int sequenceLevel){

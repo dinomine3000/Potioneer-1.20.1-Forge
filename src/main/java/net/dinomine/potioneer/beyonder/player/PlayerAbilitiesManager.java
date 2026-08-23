@@ -626,13 +626,14 @@ public class PlayerAbilitiesManager {
         return getAllAbilities().stream().filter(abl -> abl.is(abilityId) && abl.isOfGroup(abilityGroup)).findFirst();
     }
 
-    public void useAbility(BeyonderCapability cap, LivingEntity tar, UUID ablId, boolean sync, boolean primary, CompoundTag args){
+    public boolean useAbility(BeyonderCapability cap, LivingEntity tar, UUID ablId, boolean sync, boolean primary, CompoundTag args){
         Ability abl = getAbilityById(ablId);
-        if(abl == null) return;
-        abl.castAbility(cap, tar, primary, args);
+        if(abl == null) return false;
+        boolean flag = abl.castAbility(cap, tar, primary, args);
         if(sync && tar.level().isClientSide()){
             PacketHandler.sendMessageCTS(new PlayerCastAbilityMessageCTS(ablId, primary, args));
         }
+        return flag;
 //        if(ability != null && cap.getSpirituality() >= Abilities.getAbilityById(key.getAbilityId()).getCostSpirituality()){
     }
 
