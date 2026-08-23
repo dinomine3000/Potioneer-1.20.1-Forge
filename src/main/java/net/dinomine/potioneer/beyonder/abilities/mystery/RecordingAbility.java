@@ -1,6 +1,7 @@
 package net.dinomine.potioneer.beyonder.abilities.mystery;
 
 import net.dinomine.potioneer.beyonder.abilities.*;
+import net.dinomine.potioneer.beyonder.effects.BeyonderEffect;
 import net.dinomine.potioneer.beyonder.player.BeyonderCapability;
 import net.dinomine.potioneer.beyonder.player.PlayerAbilitiesManager;
 import net.minecraft.nbt.CompoundTag;
@@ -65,7 +66,16 @@ public class RecordingAbility extends AbilityWithOptions {
                 cap.getAbilitiesManager().removeAbility(abilityCast.getInstanceId(), cap, thisOwner, true);
                 thisOwner.sendSystemMessage(Component.literal("Consumed ability: " + abilityCast.getMainDescId()));
                 saveAbilitiesToData(existingAbls, thisOwner);
-                return;
+                /*
+                 * TODO: Make this verify its not an extension of passive ability.
+                 * this behaviour should only apply to instances OF passive ability, but abilities that extend it
+                 * oftentimes use its behaviours supplementary (like mystery blinking)
+                 * for this reason, this bit of code stays commented until i find a nice solution.
+
+                if(abilityCast instanceof PassiveAbility passiveAbility){
+                    BeyonderEffect eff = passiveAbility.createEffectInstance(cap, thisOwner);
+
+                }*/
             }
         } else {
             if(!isEnabled()) return;
@@ -76,6 +86,7 @@ public class RecordingAbility extends AbilityWithOptions {
             int lvl = abilityCast.getSequenceLevel();
             Ability toAdd = Abilities.getFactoryAndConstruct(ablId, lvl, AbilityInfo.Group.RECORDED);
             if(toAdd != null) {
+                toAdd.anchor(getInstanceId());
                 existingAbls.add(new AbilityRepr(toAdd.getInstanceId(), ablId, lvl));
                 saveAbilitiesToData(existingAbls, thisOwner);
                 cap.getAbilitiesManager().addAndInitializeAbility(toAdd, cap, thisOwner, true, true);

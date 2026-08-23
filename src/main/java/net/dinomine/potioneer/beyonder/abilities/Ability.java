@@ -30,6 +30,7 @@ public abstract class Ability {
     private final Map<UUID, Integer> activeLevelModifiers = new HashMap<>();
     protected boolean isPassive = false;
     private AbilityInfo abilityInfo;
+    private UUID anchorId = null;
 
     public void preInit(ResourceLocation abilityLocation, int trueLevel, AbilityInfo.Group group) {
         this.abilityInfo = new AbilityInfo(abilityLocation);
@@ -397,6 +398,7 @@ public abstract class Ability {
                 activeLevelModifiers.put(entryTag.getUUID("source"), entryTag.getInt("mod"));
             }
         }
+        if(abilityTag.hasUUID("anchor")) this.anchorId = abilityTag.getUUID("anchor");
     }
 
     public CompoundTag saveAbility() {
@@ -411,6 +413,7 @@ public abstract class Ability {
         }
         tag.put("activeLevelModifiers", modifiersTag);
         tag.putBoolean("downside", isDownside());
+        if(anchorId != null) tag.putUUID("anchor", anchorId);
         return tag;
     }
 
@@ -458,4 +461,10 @@ public abstract class Ability {
     public void setInstanceId(UUID instanceId) {
         this.abilityInfo.setInstanceId(instanceId);
     }
+
+    public boolean isAnchored(){return anchorId != null;}
+
+    public UUID getAnchorId(){return anchorId;}
+
+    public void anchor(UUID anchoId){this.anchorId = anchorId;}
 }

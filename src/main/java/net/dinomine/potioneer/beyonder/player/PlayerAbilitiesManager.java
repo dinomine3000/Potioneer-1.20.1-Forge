@@ -747,7 +747,12 @@ public class PlayerAbilitiesManager {
 
         intrisicAbilitiesBuffer.clear();
         //finally, regardless of how it was created or what it is, initialize them with the proper state data.
-        for (Ability abl : abilities.values()) {
+        for (Ability abl : new ArrayList<>(abilities.values())) {
+            //anchoredAbilities must be anchored. after loading all abilities, if the anchor is not present, skip and remove this one.
+            if(abl.isAnchored() && !abilities.containsKey(abl.getAnchorId())) {
+                abilities.remove(abl.getInstanceId());
+                continue;
+            }
             abl.init();
         }
 
