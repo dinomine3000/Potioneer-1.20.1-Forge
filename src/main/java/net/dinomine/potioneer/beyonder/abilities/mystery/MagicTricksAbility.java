@@ -40,8 +40,9 @@ public class MagicTricksAbility extends AbilityWithOptions {
     private static final int MOB_EFFECT_RANGE = 8;
     private static final int TARGET_RANGE = 12;
 
-    public MagicTricksAbility(int sequenceLevel) {
-        super(sequenceLevel);
+    @Override
+    public void init() {
+        super.init();
         AbilityOptions pOptions = new AbilityOptions()
                 .addEmptyOption("ignite", Component.literal("Ignition"))
                 .addEmptyOption("water", Component.literal("Water Affinity"))
@@ -59,6 +60,11 @@ public class MagicTricksAbility extends AbilityWithOptions {
         setPrimaryOptions(pOptions);
         setSecondaryOptions(sOptions);
         defaultMaxCooldown = 20*5;
+    }
+
+    @Override
+    protected boolean hasSecondary(int level) {
+        return true;
     }
 
     @Override
@@ -128,7 +134,7 @@ public class MagicTricksAbility extends AbilityWithOptions {
     }
 
     private boolean doWater(BeyonderCapability cap, LivingEntity target) {
-        cap.getEffectsManager().addOrRefreshEffect(BeyonderEffects.MYSTERY_WATER_BREATHING.createInstance(sequenceLevel, 0, 20*3, true), cap, target);
+        cap.getEffectsManager().addOrRefreshEffect(BeyonderEffects.MYSTERY_WATER_BREATHING.createInstance(getSequenceLevel(), 0, 20*3, true), cap, target);
         return true;
     }
 
@@ -139,7 +145,7 @@ public class MagicTricksAbility extends AbilityWithOptions {
         if(target.level().isClientSide()) return true;
         BlockPos chosen = blocks.get(target.getRandom().nextInt(blocks.size()));
         BlinkAbility.teleport(target, (ServerLevel) target.level(), chosen, target.getXRot(), target.getYRot());
-        cap.getEffectsManager().addOrRefreshEffect(BeyonderEffects.MYSTERY_FIRE_RES.createInstance(sequenceLevel, 0, 20*4, true), cap, target);
+        cap.getEffectsManager().addOrRefreshEffect(BeyonderEffects.MYSTERY_FIRE_RES.createInstance(getSequenceLevel(), 0, 20*4, true), cap, target);
         return true;
     }
 
@@ -220,32 +226,32 @@ public class MagicTricksAbility extends AbilityWithOptions {
     }
 
     private boolean doFlash(BeyonderCapability cap, LivingEntity target) {
-        cap.getEffectsManager().addOrReplaceEffect(BeyonderEffects.MYSTERY_FLASH.createInstance(sequenceLevel, 0, 20*2, false), cap, target);
+        cap.getEffectsManager().addOrReplaceEffect(BeyonderEffects.MYSTERY_FLASH.createInstance(getSequenceLevel(), 0, 20*2, false), cap, target);
         return true;
     }
 
     private boolean doNoises(BeyonderCapability cap, LivingEntity target) {
-        cap.getEffectsManager().addOrReplaceEffect(BeyonderEffects.MYSTERY_MOB_NOISES.createInstance(sequenceLevel, 0, 20*15, false), cap, target);
+        cap.getEffectsManager().addOrReplaceEffect(BeyonderEffects.MYSTERY_MOB_NOISES.createInstance(getSequenceLevel(), 0, 20*15, false), cap, target);
         return true;
     }
 
     private boolean doFriction(BeyonderCapability cap, LivingEntity target) {
-        cap.getEffectsManager().addOrRefreshEffect(BeyonderEffects.MYSTERY_FRICTIONLESS.createInstance(sequenceLevel, 0, 20*15, false), cap, target);
+        cap.getEffectsManager().addOrRefreshEffect(BeyonderEffects.MYSTERY_FRICTIONLESS.createInstance(getSequenceLevel(), 0, 20*15, false), cap, target);
         return true;
     }
 
     private boolean doBouncy(BeyonderCapability cap, LivingEntity target) {
-        cap.getEffectsManager().addOrRefreshEffect(BeyonderEffects.MYSTERY_BOUNCY.createInstance(sequenceLevel, 0, 20*15, false), cap, target);
+        cap.getEffectsManager().addOrRefreshEffect(BeyonderEffects.MYSTERY_BOUNCY.createInstance(getSequenceLevel(), 0, 20*15, false), cap, target);
         return true;
     }
 
     private boolean doShock(BeyonderCapability cap, LivingEntity target) {
-        cap.getEffectsManager().addOrReplaceEffect(BeyonderEffects.MYSTERY_SHOCK.createInstance(sequenceLevel, 0, 20, false), cap, target);
+        cap.getEffectsManager().addOrReplaceEffect(BeyonderEffects.MYSTERY_SHOCK.createInstance(getSequenceLevel(), 0, 20, false), cap, target);
         return true;
     }
 
     private boolean doFog(BeyonderCapability cap, LivingEntity target) {
-        cap.getEffectsManager().addOrReplaceEffect(BeyonderEffects.MYSTERY_FOG.createInstance(sequenceLevel, 0, 20*7, false), cap, target);
+        cap.getEffectsManager().addOrReplaceEffect(BeyonderEffects.MYSTERY_FOG.createInstance(getSequenceLevel(), 0, 20*7, false), cap, target);
         return true;
     }
 

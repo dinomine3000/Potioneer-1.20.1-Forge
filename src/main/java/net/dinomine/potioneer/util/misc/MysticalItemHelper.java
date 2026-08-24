@@ -2,11 +2,11 @@ package net.dinomine.potioneer.util.misc;
 
 import net.dinomine.potioneer.beyonder.abilities.Abilities;
 import net.dinomine.potioneer.beyonder.abilities.Ability;
-import net.dinomine.potioneer.beyonder.abilities.AbilityKey;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffect;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
 import net.dinomine.potioneer.item.ModItems;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -30,51 +30,49 @@ public class MysticalItemHelper {
     static {
         //define minimum and maximum sequences here to define what levels can generate the ability
         //min sequence is inclusive, max sequence is exclusive
-        abilityMap.add(new MetaArtifactAbility(8, 10, Abilities.MINER_LIGHT.getAblId()));
-        abilityMap.add(new MetaArtifactAbility(0, 7, Abilities.HALF_COOLDOWN.getAblId()));
-        abilityMap.add(new MetaArtifactAbility(0, 7, Abilities.FATE.getAblId()));
-        abilityMap.add(new MetaArtifactAbility(0, 9, Abilities.APPRAISAL.getAblId()));
-        abilityMap.add(new MetaArtifactAbility(0, 9, Abilities.TARGET_APPRAISAL.getAblId()));
-        abilityMap.add(new MetaArtifactAbility(0, 8, Abilities.GAMBLING.getAblId()));
-        abilityMap.add(new MetaArtifactAbility(0, 9, Abilities.BLOCK_APPRAISAL.getAblId()));
-        abilityMap.add(new MetaArtifactAbility(0, 10, Abilities.MINING_SPEED.getAblId()));
-        abilityMap.add(new MetaArtifactAbility(0, 10, Abilities.VOID_VISION.getAblId()));
-        abilityMap.add(new MetaArtifactAbility(18, 20, Abilities.WATER_AFFINITY.getAblId()));
-        abilityMap.add(new MetaArtifactAbility(17, 20, Abilities.WATER_SCALES.getAblId()));
-        abilityMap.add(new MetaArtifactAbility(10, 19, Abilities.TYRANT_WATER_SPELLS.getAblId()));
-        abilityMap.add(new MetaArtifactAbility(17, 19, Abilities.TYRANT_DIVINATION.getAblId()));
-        abilityMap.add(new MetaArtifactAbility(10, 18, Abilities.ARREST.getAblId()));
-        abilityMap.add(new MetaArtifactAbility(10, 17, Abilities.CONTRACT.getAblId()));
-        abilityMap.add(new MetaArtifactAbility(10, 17, Abilities.BERSERK_RAGE.getAblId()));
-        abilityMap.add(new MetaArtifactAbility(10, 17, Abilities.TYRANT_CALAMITY.getAblId()));
-        abilityMap.add(new MetaArtifactAbility(10, 16, Abilities.AMPLIFICATION.getAblId()));
-        abilityMap.add(new MetaArtifactAbility(10, 16, Abilities.PROHIBITION.getAblId()));
-        abilityMap.add(new MetaArtifactAbility(10, 16, Abilities.RULE_PYLON.getAblId()));
+        abilityMap.add(new MetaArtifactAbility(8, 10, Abilities.MINER_LIGHT.getId()));
+        abilityMap.add(new MetaArtifactAbility(0, 7, Abilities.HALF_COOLDOWN.getId()));
+        abilityMap.add(new MetaArtifactAbility(0, 7, Abilities.FATE.getId()));
+        abilityMap.add(new MetaArtifactAbility(0, 9, Abilities.APPRAISAL.getId()));
+        abilityMap.add(new MetaArtifactAbility(0, 9, Abilities.TARGET_APPRAISAL.getId()));
+        abilityMap.add(new MetaArtifactAbility(0, 8, Abilities.GAMBLING.getId()));
+        abilityMap.add(new MetaArtifactAbility(0, 9, Abilities.BLOCK_APPRAISAL.getId()));
+        abilityMap.add(new MetaArtifactAbility(0, 10, Abilities.MINING_SPEED.getId()));
+        abilityMap.add(new MetaArtifactAbility(0, 10, Abilities.VOID_VISION.getId()));
+        abilityMap.add(new MetaArtifactAbility(18, 20, Abilities.WATER_AFFINITY.getId()));
+        abilityMap.add(new MetaArtifactAbility(17, 20, Abilities.WATER_SCALES.getId()));
+        abilityMap.add(new MetaArtifactAbility(10, 19, Abilities.TYRANT_WATER_SPELLS.getId()));
+        abilityMap.add(new MetaArtifactAbility(17, 19, Abilities.TYRANT_DIVINATION.getId()));
+        abilityMap.add(new MetaArtifactAbility(10, 18, Abilities.ARREST.getId()));
+        abilityMap.add(new MetaArtifactAbility(10, 17, Abilities.CONTRACT.getId()));
+        abilityMap.add(new MetaArtifactAbility(10, 17, Abilities.BERSERK_RAGE.getId()));
+        abilityMap.add(new MetaArtifactAbility(10, 17, Abilities.TYRANT_CALAMITY.getId()));
+        abilityMap.add(new MetaArtifactAbility(10, 16, Abilities.AMPLIFICATION.getId()));
+        abilityMap.add(new MetaArtifactAbility(10, 16, Abilities.PROHIBITION.getId()));
+        abilityMap.add(new MetaArtifactAbility(10, 16, Abilities.RULE_PYLON.getId()));
 //        abilityMap.put("water_affinity", new MetaAbilityEntry(10, 20, WaterAffinityAbility::new));
-        abilityMap.add(new MetaArtifactAbility(20, 30, Abilities.AIR_BULLET.getAblId()));
-        abilityMap.add(new MetaArtifactAbility(30, 40, Abilities.MELT_ABILITY.getAblId()));
-        abilityMap.add(new MetaArtifactAbility(40, 50, Abilities.CRAFTING_GUI.getAblId()));
+        abilityMap.add(new MetaArtifactAbility(20, 30, Abilities.AIR_BULLET.getId()));
 
         //abilities for gems and amulets
 //        abilityMap.put("lucky_trend", new MetaArtifactAbility(-1, -1, level -> Abilities.LUCK_TREND.create(level%10)));
 
-        downsideMap.add(new MetaArtifactAbility(0, 50, Abilities.NOISES_DOWNSIDE.getAblId()));
-        downsideMap.add(new MetaArtifactAbility(0, 50, Abilities.SLOWNESS_DOWNSIDE.getAblId()));
-        downsideMap.add(new MetaArtifactAbility(0, 50, Abilities.DUMMY_DOWNSIDE.getAblId()));
+        downsideMap.add(new MetaArtifactAbility(0, 50, Abilities.NOISES_DOWNSIDE.getId()));
+        downsideMap.add(new MetaArtifactAbility(0, 50, Abilities.SLOWNESS_DOWNSIDE.getId()));
+        downsideMap.add(new MetaArtifactAbility(0, 50, Abilities.DUMMY_DOWNSIDE.getId()));
 
-        downsideMap.add(new MetaArtifactAbility(7, 10, Abilities.CHAOS_LUCK_DOWNSIDE.getAblId()));
-        downsideMap.add(new MetaArtifactAbility(0, 8, Abilities.COOLDOWN_DOWNSIDE.getAblId()));
-        downsideMap.add(new MetaArtifactAbility(0, 8, Abilities.FAKE_LAG_DOWNSIDE.getAblId()));
-        downsideMap.add(new MetaArtifactAbility(0, 7, Abilities.FATE_CAST_DOWNSIDE.getAblId()));
-        downsideMap.add(new MetaArtifactAbility(0, 8, Abilities.LUCK_CONSUME_DOWNSIDE.getAblId()));
-        downsideMap.add(new MetaArtifactAbility(0, 10, Abilities.LUCK_TREND_DOWNWARDS_DOWNSIDE.getAblId()));
-        downsideMap.add(new MetaArtifactAbility(0, 7, Abilities.RANDOM_VELOCITY_DOWNSIDE.getAblId()));
+        downsideMap.add(new MetaArtifactAbility(7, 10, Abilities.CHAOS_LUCK_DOWNSIDE.getId()));
+        downsideMap.add(new MetaArtifactAbility(0, 8, Abilities.COOLDOWN_DOWNSIDE.getId()));
+        downsideMap.add(new MetaArtifactAbility(0, 8, Abilities.FAKE_LAG_DOWNSIDE.getId()));
+        downsideMap.add(new MetaArtifactAbility(0, 7, Abilities.FATE_CAST_DOWNSIDE.getId()));
+        downsideMap.add(new MetaArtifactAbility(0, 8, Abilities.LUCK_CONSUME_DOWNSIDE.getId()));
+        downsideMap.add(new MetaArtifactAbility(0, 10, Abilities.LUCK_TREND_DOWNWARDS_DOWNSIDE.getId()));
+        downsideMap.add(new MetaArtifactAbility(0, 7, Abilities.RANDOM_VELOCITY_DOWNSIDE.getId()));
 
-        downsideMap.add(new MetaArtifactAbility(16, 20, Abilities.WATER_DOWNSIDE.getAblId()));
-        downsideMap.add(new MetaArtifactAbility(15, 19, Abilities.AURA_DOWNSIDE.getAblId()));
-        downsideMap.add(new MetaArtifactAbility(15, 19, Abilities.AXIS_DOWNSIDE.getAblId()));
-        downsideMap.add(new MetaArtifactAbility(15, 18, Abilities.MIST_DOWNSIDE.getAblId()));
-        downsideMap.add(new MetaArtifactAbility(15, 17, Abilities.CALAMITY_DOWNSIDE.getAblId()));
+        downsideMap.add(new MetaArtifactAbility(16, 20, Abilities.WATER_DOWNSIDE.getId()));
+        downsideMap.add(new MetaArtifactAbility(15, 19, Abilities.AURA_DOWNSIDE.getId()));
+        downsideMap.add(new MetaArtifactAbility(15, 19, Abilities.AXIS_DOWNSIDE.getId()));
+        downsideMap.add(new MetaArtifactAbility(15, 18, Abilities.MIST_DOWNSIDE.getId()));
+        downsideMap.add(new MetaArtifactAbility(15, 17, Abilities.CALAMITY_DOWNSIDE.getId()));
 
 //        effectMap.put("silk", new MetaEffectEntry(0, 8, dur -> BeyonderEffects.byId(BeyonderEffects.EFFECT.WHEEL_SILK_TOUCH, 8, 0, dur, true)));
 //        effectMap.put("water_affinity", new MetaEffectEntry(10, 9, dur -> BeyonderEffects.byId(BeyonderEffects.EFFECT.TYRANT_WATER_AFFINITY, 9, 5, dur, true)));
@@ -118,8 +116,8 @@ public class MysticalItemHelper {
 //        gemStack.setTag(ogTag);
 //    }
 
-    public static ItemStack generateMysticalItem(ItemStack stack, String abilityId, int sequenceLevel, float useSeconds){
-        ModNbtUtils.ArtifactInfoTag.generateArtifactTag(stack, UUID.randomUUID(), List.of(new AbilityKey(abilityId, sequenceLevel)), true, useSeconds);
+    public static ItemStack generateMysticalItem(ItemStack stack, Ability ability, float useSeconds){
+        ModNbtUtils.ArtifactInfoTag.generateArtifactTag(stack, UUID.randomUUID(), List.of(ability), true, useSeconds);
         return stack;
     }
 
@@ -157,18 +155,18 @@ public class MysticalItemHelper {
     private static CompoundTag generateAbilityTag(ItemStack stack, int pathwaySequenceId, RandomSource random, int quantity) {
         //TODO: make this take in all the characteristics and pick abilities based on that
         int level = pathwaySequenceId%10;
-        List<String> abilities = new ArrayList<>();
+        List<ResourceLocation> abilities = new ArrayList<>();
         for(int i = 0; i < quantity; i++){
-            String downId = getRandomAbilityId(pathwaySequenceId, random, abilities, true);
-            String ablId = getRandomAbilityId(pathwaySequenceId, random, abilities, false);
-            if(!downId.isEmpty()) abilities.add(downId);
-            if(!ablId.isEmpty()) abilities.add(ablId);
+            ResourceLocation downId = getRandomAbilityId(pathwaySequenceId, random, abilities, true);
+            ResourceLocation ablId = getRandomAbilityId(pathwaySequenceId, random, abilities, false);
+            if(downId != null) abilities.add(downId);
+            if(ablId != null) abilities.add(ablId);
         }
         return ModNbtUtils.ArtifactInfoTag.generateArtifactTag(stack, abilities, level);
     }
 
-    private static String getRandomAbilityId(int pathwaySequenceId, RandomSource random, List<String> dontRepeatAbilities, boolean downsides) {
-        List<String> matching;
+    private static ResourceLocation getRandomAbilityId(int pathwaySequenceId, RandomSource random, List<ResourceLocation> dontRepeatAbilities, boolean downsides) {
+        List<ResourceLocation> matching;
         if(downsides){
             matching = abilityMap.stream()
                     .filter(mAbl -> mAbl.isInRange(pathwaySequenceId))
@@ -183,7 +181,7 @@ public class MysticalItemHelper {
 
         if (matching.isEmpty()){
             System.out.println("No ability IDs match sequence: " + pathwaySequenceId);
-            return "";
+            return null;
         }
 
         return matching.get(random.nextInt(matching.size()));
@@ -266,7 +264,7 @@ public class MysticalItemHelper {
 //        return abilityIds;
 //    }
 
-    record MetaArtifactAbility(int minSequence, int maxSequence, String ablId) {
+    record MetaArtifactAbility(int minSequence, int maxSequence, ResourceLocation ablId) {
 
         boolean isInRange(int pathwaySequenceId) {
             return pathwaySequenceId >= minSequence && pathwaySequenceId < maxSequence;

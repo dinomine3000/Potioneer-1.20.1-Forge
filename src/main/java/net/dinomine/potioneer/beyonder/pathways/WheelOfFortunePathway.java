@@ -2,6 +2,7 @@ package net.dinomine.potioneer.beyonder.pathways;
 
 import net.dinomine.potioneer.beyonder.abilities.Abilities;
 import net.dinomine.potioneer.beyonder.abilities.Ability;
+import net.dinomine.potioneer.beyonder.abilities.AbilityFactory;
 import net.dinomine.potioneer.beyonder.abilities.AbilityFunctionHelper;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
 import net.dinomine.potioneer.beyonder.player.BeyonderStats;
@@ -124,13 +125,8 @@ public class WheelOfFortunePathway extends BeyonderPathway {
     }
 
     @Override
-    public List<Ability> getAbilities(int sequence){
-        return getAbilities(sequence%10, sequence%10);
-    }
-
-    @Override
-    public List<Ability> getAbilities(int ofSequenceLevel, int atSequenceLevel) {
-        ArrayList<Ability> abilities = new ArrayList<>();
+    public List<AbilityFactory> getAbilities(int ofSequenceLevel) {
+        ArrayList<AbilityFactory> abilities = new ArrayList<>();
         switch(ofSequenceLevel%10){
             case 0:
             case 1:
@@ -138,35 +134,35 @@ public class WheelOfFortunePathway extends BeyonderPathway {
             case 3:
             case 4:
             case 5:
-                abilities.add(Abilities.PHASING.create(atSequenceLevel));
-                abilities.add(Abilities.BET.create(atSequenceLevel));
-                abilities.add(Abilities.RECORD_DAMAGE.create(atSequenceLevel));
-                abilities.add(Abilities.MISFORTUNE.create(atSequenceLevel));
+                abilities.add(Abilities.PHASING.get());
+                abilities.add(Abilities.BET.get());
+                abilities.add(Abilities.RECORD_DAMAGE.get());
+                abilities.add(Abilities.MISFORTUNE.get());
             case 6:
-                abilities.add(Abilities.FATE.create(atSequenceLevel));
-                abilities.add(Abilities.LUCK.create(atSequenceLevel));
-                abilities.add(Abilities.HALF_COOLDOWN.create(atSequenceLevel));
-                abilities.add(Abilities.WHEEL_DIVINATION.create(atSequenceLevel));
+                abilities.add(Abilities.FATE.get());
+                abilities.add(Abilities.LUCK.get());
+                abilities.add(Abilities.HALF_COOLDOWN.get());
+                abilities.add(Abilities.WHEEL_DIVINATION.get());
             case 7:
-                abilities.add(Abilities.PATIENCE.create(atSequenceLevel));
-                abilities.add(Abilities.VELOCITY.create(atSequenceLevel));
-                abilities.add(Abilities.MINER_BONE_MEAL.create(atSequenceLevel));
-                abilities.add(Abilities.FORCE_COOLDOWN_ABILITY.create(atSequenceLevel));
-                abilities.add(Abilities.GAMBLING.create(atSequenceLevel));
+                abilities.add(Abilities.PATIENCE.get());
+                abilities.add(Abilities.VELOCITY.get());
+                abilities.add(Abilities.MINER_BONE_MEAL.get());
+                abilities.add(Abilities.FORCE_COOLDOWN_ABILITY.get());
+                abilities.add(Abilities.GAMBLING.get());
             case 8:
-                abilities.add(Abilities.WHEEL_KNOWLEDGE.create(atSequenceLevel));
-                abilities.add(Abilities.TARGET_APPRAISAL.create(atSequenceLevel));
-                abilities.add(Abilities.BLOCK_APPRAISAL.create(atSequenceLevel));
-                abilities.add(Abilities.APPRAISAL.create(atSequenceLevel));
-                abilities.add(Abilities.FORTUNE_ABILITY.create(atSequenceLevel));
-                abilities.add(Abilities.SILK_TOUCH_ABILITY.create(atSequenceLevel));
-                abilities.add(Abilities.CALAMITY_INCREASE.create(atSequenceLevel));
+                abilities.add(Abilities.WHEEL_KNOWLEDGE.get());
+                abilities.add(Abilities.TARGET_APPRAISAL.get());
+                abilities.add(Abilities.BLOCK_APPRAISAL.get());
+                abilities.add(Abilities.APPRAISAL.get());
+                abilities.add(Abilities.FORTUNE_ABILITY.get());
+                abilities.add(Abilities.SILK_TOUCH_ABILITY.get());
+                abilities.add(Abilities.CALAMITY_INCREASE.get());
             case 9:
-                abilities.add(Abilities.MINER_LIGHT.create(atSequenceLevel));
-                abilities.add(Abilities.VOID_VISION.create(atSequenceLevel));
-                abilities.add(Abilities.CONJURE_PICKAXE.create(atSequenceLevel));
-                abilities.add(Abilities.MINING_SPEED.create(atSequenceLevel));
-                abilities.add(Abilities.ZERO_DAMAGE.create(atSequenceLevel));
+                abilities.add(Abilities.MINER_LIGHT.get());
+                abilities.add(Abilities.VOID_VISION.get());
+                abilities.add(Abilities.CONJURE_PICKAXE.get());
+                abilities.add(Abilities.MINING_SPEED.get());
+                abilities.add(Abilities.ZERO_DAMAGE.get());
         }
 
         Collections.reverse(abilities);
@@ -236,5 +232,10 @@ public class WheelOfFortunePathway extends BeyonderPathway {
                 res.addAll(List.of(BeyonderEffects.WHEEL_LUCK.getEffectId(), BeyonderEffects.WHEEL_INSTANT_LUCK.getEffectId()));
         }
         return res;
+    }
+
+    @Override
+    public AbilityFactory getCogitationAbility() {
+        return Abilities.COGITATION_WOF.get();
     }
 }

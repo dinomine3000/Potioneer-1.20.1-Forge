@@ -11,8 +11,12 @@ import net.minecraft.world.entity.LivingEntity;
 
 public class ZeroDamageAbility extends PassiveAbility {
 
-    public ZeroDamageAbility(int sequenceLevel) {
-        super(sequenceLevel, BeyonderEffects.WHEEL_ZERO_DAMAGE, (level) -> "zero_damage_" + (level > 7 ? "1" : (level > 6 ? "2" : "3")));
+    public ZeroDamageAbility() {
+        super(BeyonderEffects.WHEEL_ZERO_DAMAGE, (level) -> "zero_damage_" + (level > 7 ? "1" : (level > 6 ? "2" : "3")));
+    }
+
+    @Override
+    public void init() {
         enabledOnAcquire();
         CompoundTag tag = new CompoundTag();
         tag.putBoolean("blocks", true);
@@ -21,8 +25,8 @@ public class ZeroDamageAbility extends PassiveAbility {
 
     @Override
     protected BeyonderEffect createEffectInstance(BeyonderCapability cap, LivingEntity target) {
-        if(sequenceLevel > 6) return super.createEffectInstance(cap, target);
-        ZeroDamageEffect eff = (ZeroDamageEffect) BeyonderEffects.WHEEL_ZERO_DAMAGE.createInstance(getSequenceLevel(), cost(), -1, true);
+        if(getSequenceLevel() > 6) return super.createEffectInstance(cap, target);
+        ZeroDamageEffect eff = (ZeroDamageEffect) BeyonderEffects.WHEEL_ZERO_DAMAGE.createInstance(getSequenceLevel(), spiritualityCost, -1, true);
         CompoundTag tag = getData();
         if(!tag.contains("blocks")){
             tag.putBoolean("blocks", true);
@@ -33,12 +37,12 @@ public class ZeroDamageAbility extends PassiveAbility {
     }
 
     @Override
+    protected boolean hasSecondary(int level) {
+        return getSequenceLevel() < 6;
+    }
+
+    @Override
     protected boolean secondary(BeyonderCapability cap, LivingEntity target) {
-        if(sequenceLevel > 6){
-            if(target.level().isClientSide())
-                target.sendSystemMessage(Component.translatableWithFallback("message.potioneer.outdated_secondary", "It doesn't do anything... yet"));
-            return false;
-        }
         if(target.level().isClientSide()) return true;
         CompoundTag tag = getData();
         boolean newState = !tag.getBoolean("blocks");

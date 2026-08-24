@@ -16,8 +16,10 @@ import java.util.function.Supplier;
 public class UnseenHandAbility extends Ability {
     private static final Supplier<Integer> PUSH_COST = () -> 10;
     private static final Supplier<Integer> RAISE_COST = () -> 10;
-    public UnseenHandAbility(int sequenceLevel) {
-        super(sequenceLevel);
+
+    @Override
+    public void init() {
+        super.init();
         defaultMaxCooldown = 20*3;
     }
 

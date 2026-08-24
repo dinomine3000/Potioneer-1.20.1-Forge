@@ -3,6 +3,7 @@ package net.dinomine.potioneer.beyonder.player;
 import net.dinomine.potioneer.Potioneer;
 import net.dinomine.potioneer.beyonder.abilities.*;
 import net.dinomine.potioneer.beyonder.pages.Page;
+import net.dinomine.potioneer.beyonder.pathways.Pathways;
 import net.dinomine.potioneer.event.AbilityPossessionEvent;
 import net.dinomine.potioneer.event.ArtifactPossessionEvent;
 import net.dinomine.potioneer.network.PacketHandler;
@@ -10,10 +11,13 @@ import net.dinomine.potioneer.network.messages.abilityRelevant.AbilitySyncMessag
 import net.dinomine.potioneer.network.messages.abilityRelevant.PlayerArtifactSyncSTC;
 import net.dinomine.potioneer.network.messages.abilityRelevant.PlayerCastAbilityMessageCTS;
 import net.dinomine.potioneer.util.misc.ArtifactHolder;
+import net.dinomine.potioneer.util.misc.ModNbtUtils;
 import net.dinomine.potioneer.util.misc.MysticalItemHelper;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtUtils;
 import net.minecraft.nbt.Tag;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -30,20 +34,36 @@ import java.util.*;
 import java.util.function.Consumer;
 
 public class PlayerAbilitiesManager {
-    private LinkedHashMap<AbilityKey, Ability> abilities = new LinkedHashMap<>();
+    private LinkedHashMap<UUID, Ability> abilities = new LinkedHashMap<>();
     private LinkedHashMap<UUID, ArtifactHolder> artifacts = new LinkedHashMap<>();
     private DisabledAbilitiesManager disabledManager = new DisabledAbilitiesManager();
+    private final List<Ability> intrisicAbilitiesBuffer = new ArrayList<>();
 
-    public ArrayList<AbilityKey> clientHotbar = new ArrayList<>();
-    public AbilityKey quickAbility = new AbilityKey();
+    public ArrayList<UUID> clientHotbar = new ArrayList<>();
+    public UUID quickAbility = null;
 
     public @Nullable Ability getQuickAbility(){
-        return quickAbility.isEmpty() ? null : getAbility(quickAbility);
+        return quickAbility == null ? null : getAbilityInstance(quickAbility);
+    }
+
+    public @Nullable Ability getAbilityById(UUID instanceId){
+        if(instanceId == null) return null;
+        if(abilities.containsKey(instanceId)) return abilities.get(instanceId);
+        for(ArtifactHolder artifactHolder: artifacts.values()){
+            for(Ability abl: artifactHolder.getAbilities()){
+                if(abl.getInstanceId().equals(instanceId)) return abl;
+            }
+        }
+        return null;
+    }
+
+    public List<Ability> getAllAbilities(AbilityInfo.Group group){
+        return new ArrayList<>(getAllAbilities().stream().filter(abl -> abl.isOfGroup(group)).toList());
     }
 
     @Override
     public String toString() {
-        return "Abilities: " + abilities.keySet().stream().map(AbilityKey::toString).toList() +
+        return "Abilities: " + abilities.values().stream().map(Ability::toString).toList() +
                 "\nArtifacts: " + artifacts.values().stream().map(ArtifactHolder::toString).toList();
     }
 
@@ -63,16 +83,12 @@ public class PlayerAbilitiesManager {
         ArtifactHolder artifact = artifacts.get(artifactKey);
         artifact.castDefaultAbilities(cap, target);
     }
-    public @Nullable Ability getFirstAbilityOutOfCooldown(String ability){
-        List<Ability> matches = getAbilities(ability);
+    public @Nullable Ability getFirstAbilityOutOfCooldown(ResourceLocation ability){
+        List<Ability> matches = getAllAbilities(ability);
         for(Ability abl: matches){
             if(abl.getCooldown() == 0) return abl;
         }
         return null;
-    }
-    public Ability getAbility(AbilityKey key){
-        if(key.isArtifactKey()) return artifacts.get(key.getArtifactId()).getAbility(key);
-        return abilities.get(key);
     }
 
     public Ability getAbilityInstance(UUID instanceId){
@@ -124,6 +140,8 @@ public class PlayerAbilitiesManager {
 
             if (!artifacts.containsKey(artifactKey)) {
                 addArtifact(artifact, cap, player, true, true);
+            } else {
+                artifacts.get(artifactKey).updateItem(artifact.getItem());
             }
         }
         //remove artifacts from list
@@ -132,12 +150,6 @@ public class PlayerAbilitiesManager {
                 removeArtifact(artifactId, cap, player, true);
             }
         }
-
-        //3 - update artifact data into the item tags.
-//        iterateThroughInventory(player, itemStack -> {
-//            UUID id = MysticalItemHelper.getArtifactIdFromItem(itemStack);
-//            if(id != null) MysticalItemHelper.updateArtifactTagOnItem(artifacts.get(id), itemStack);
-//        });
     }
 
     /**
@@ -155,13 +167,13 @@ public class PlayerAbilitiesManager {
         return resMap;
     }
 
-    private boolean addArtifact(ArtifactHolder artifact, BeyonderCapability cap, Player player, boolean runOnAcquire, boolean sync){
+    private boolean addArtifact(ArtifactHolder artifact, BeyonderCapability cap, LivingEntity target, boolean runOnAcquire, boolean sync){
         if(artifact == null || artifact.isEmpty()) return false;
         if(artifacts.containsKey(artifact.getArtifactId())) return false;
         artifacts.put(artifact.getArtifactId(), artifact);
-        MinecraftForge.EVENT_BUS.post(new ArtifactPossessionEvent.Gained(artifact, player));
-        if (runOnAcquire) artifact.onAcquire(cap, player);
-        if(sync) updateClientArtifactInfo(player, List.of(artifact), PlayerArtifactSyncSTC.ADD);
+        MinecraftForge.EVENT_BUS.post(new ArtifactPossessionEvent.Gained(artifact, target));
+        if (runOnAcquire) artifact.onAcquire(cap, target);
+        if(sync && target instanceof Player player) updateClientArtifactInfo(player, List.of(artifact), PlayerArtifactSyncSTC.ADD);
         return true;
     }
 
@@ -174,36 +186,6 @@ public class PlayerAbilitiesManager {
         return true;
     }
 
-//    /**
-//     * method that saves the artifact ability data to its respective item
-//     * @param artifactId
-//     * @param player
-//     */
-//    public void updateDataOnArtifact(UUID artifactId, Player player){
-//        if(artifactId == null || player.level().isClientSide()) return;
-//        for(ItemStack itemStack: player.getInventory().items){
-//            if(Objects.equals(MysticalItemHelper.getArtifactIdFromItem(itemStack), artifactId)){
-//                MysticalItemHelper.updateArtifactTagOnItem(artifacts.get(artifactId), itemStack);
-//                return;
-//            }
-//        }
-//        if(ModList.get().isLoaded("curios")){
-//            if(CuriosApi.getCuriosInventory(player).resolve().isPresent()){
-//                ICuriosItemHandler curiosInventory = CuriosApi.getCuriosInventory(player).resolve().get();
-//                Map<String, ICurioStacksHandler> curios = curiosInventory.getCurios();
-//                for(ICurioStacksHandler handler: curios.values()){
-//                    int slots = handler.getSlots();
-//                    for(int i = 0; i < slots; i++){
-//                        ItemStack itemStack = handler.getStacks().getStackInSlot(i);
-//                        if(Objects.equals(MysticalItemHelper.getArtifactIdFromItem(itemStack), artifactId)){
-//                            MysticalItemHelper.updateArtifactTagOnItem(artifacts.get(artifactId), itemStack);
-//                            return;
-//                        }
-//                    }
-//                }
-//            }
-//        }
-//    }
 
     private static void iterateThroughInventory(Player player, Consumer<ItemStack> consumer){
         for(ItemStack itemStack: player.getInventory().items){
@@ -242,7 +224,7 @@ public class PlayerAbilitiesManager {
 
 
     public void clearAbilities(BeyonderCapability cap, LivingEntity target){
-        abilities.values().forEach(ability -> ability.deactivate(cap, target));
+        abilities.values().forEach(ability -> ability.onAbilityRemoved(cap, target));
         abilities = new LinkedHashMap<>();
     }
 
@@ -251,7 +233,15 @@ public class PlayerAbilitiesManager {
         artifacts = new LinkedHashMap<>();
     }
 
-    public void grantIntrinsicAbilities(List<Ability> abilitiesToSet, int pathwaySequenceId, boolean runOnAcquire, BeyonderCapability cap, LivingEntity target) {
+    /**
+     * called on loading NBT tag. saves the abilities without initializing them.
+     * @param abilitiesToSet
+     */
+    public void loadIntrinsicAbilities(List<Ability> abilitiesToSet) {
+        if(!intrisicAbilitiesBuffer.isEmpty()) return;
+        intrisicAbilitiesBuffer.addAll(abilitiesToSet);
+    }
+    public void setAndInitializeIntrinsicAbilities(List<Ability> abilitiesToSet, int pathwaySequenceId, BeyonderCapability cap, LivingEntity target) {
         if(abilitiesToSet.isEmpty()){
             cap.getAbilitiesManager().clearAbilities(cap, target);
             return;
@@ -259,61 +249,64 @@ public class PlayerAbilitiesManager {
 
         //first, remove abilities you lose. they shouldnt be affecting you anymore.
         //only removes abilities that are intrinsic
-        List<AbilityKey> keysToRemove = new ArrayList<>();
-        for(Ability abl: abilities.values().stream().filter(abl -> abl.getType().equalsIgnoreCase(AbilityList.INTRINSIC.name())).toList()){
-            if(abilitiesToSet.stream().noneMatch(abl::is))
-                keysToRemove.add(abl.getAbilityKey());
+        List<UUID> abilitiesToRemove = new ArrayList<>();
+        for(Ability abl: getAllAbilities(AbilityInfo.Group.INTRINSIC)){
+            if(abilitiesToSet.stream().map(Ability::getAbilityId).noneMatch(abl::is))
+                abilitiesToRemove.add(abl.getInstanceId());
         }
         //sync false since we update in the end
-        keysToRemove.forEach(key -> removeIntrinsicAbility(key, cap, target, false));
+        abilitiesToRemove.forEach(key -> removeAbility(key, cap, target, false));
 
         //then, upgrade/downgrade any and all existing intrinsic abilities to the target sequence level, regardless of their original pathway.
-        upgradeAbilitiesToLevel(pathwaySequenceId%10, cap, target);
+        upgradeIntrinsicAbilitiesToLevel(pathwaySequenceId%10, cap, target);
 
         //then grant new abilities
         for(Ability abl: abilitiesToSet){
             //already checks if it exists
-            addAbility(AbilityList.INTRINSIC.name(), abl, cap, target, runOnAcquire, false);
+            addAndInitializeAbility(abl, cap, target, true, false);
         }
         //then replace any cogitation abilities with the pathway one, so it shows up first.
-        replaceCogitation(pathwaySequenceId, cap, target, runOnAcquire);
+        replaceCogitation(pathwaySequenceId, cap, target, true);
 
         //finally, update client info
         if(target instanceof Player player) updateSetClientAbilityInfo(player);
     }
 
-    public void replaceCogitation(int pathwaySequenceId, BeyonderCapability cap, LivingEntity target, boolean runOnAcquire) {
+    private void replaceCogitation(int pathwaySequenceId, BeyonderCapability cap, LivingEntity target, boolean runOnAcquire) {
         if(abilities.isEmpty()) return;
-        for(AbilityKey key: new ArrayList<>(abilities.keySet())){
-            if(key.isSameAbility(Abilities.COGITATION.getAblId())){
-                abilities.remove(key);
+        for(Ability abl: new ArrayList<>(getAllAbilities(AbilityInfo.Group.INTRINSIC))){
+            if(abl.getAbilityId().toString().contains("cogitation")){
+                abilities.remove(abl.getInstanceId());
                 break;
             }
         }
-        addAbility(AbilityList.INTRINSIC.name(), Abilities.COGITATION.create(pathwaySequenceId), cap, target, runOnAcquire, false);
+        addAndInitializeAbility(Pathways.getPathwayBySequenceId(pathwaySequenceId).getCogitationAbility().construct(pathwaySequenceId%10, AbilityInfo.Group.INTRINSIC), cap, target, true, false);
     }
 
-    private void upgradeAbilitiesToLevel(int sequenceLevel, BeyonderCapability cap, LivingEntity target){
-        for(Ability abl: new ArrayList<>(abilities.values())){
-            if(abl.getSequenceLevel() != sequenceLevel && abl.getType().equals(AbilityList.INTRINSIC.name())){
-                abilities.remove(abl.getAbilityKey());
+    private void upgradeIntrinsicAbilitiesToLevel(int sequenceLevel, BeyonderCapability cap, LivingEntity target){
+        for(Ability abl: new ArrayList<>(getAllAbilities(AbilityInfo.Group.INTRINSIC))){
+            if(abl.getSequenceLevel() != sequenceLevel){
                 abl.permanentlyUpgradeToLevel(sequenceLevel, cap, target);
-                AbilityKey newKey = abl.setAbilityKey(AbilityList.INTRINSIC.name());
-                abilities.put(newKey, abl);
             }
         }
     }
 
-    private boolean removeIntrinsicAbility(AbilityKey key, BeyonderCapability cap, LivingEntity target, boolean sync){
-        if(!key.getGroup().equals(AbilityList.INTRINSIC.name())) return false;
-        if(!abilities.containsKey(key)) return false;
-        Ability abl = abilities.get(key);
-        MinecraftForge.EVENT_BUS.post(new AbilityPossessionEvent.Lost(abl, key, target));
-        abl.deactivate(cap, target);
-        abilities.remove(key);
+    public void removeAbilitiesOfGroup(AbilityInfo.Group group, LivingEntity target, BeyonderCapability cap){
+        for(Ability abl: new ArrayList<>(abilities.values())){
+            if(abl.isOfGroup(group)) removeAbility(abl.getInstanceId(), cap, target, true);
+        }
+    }
+
+    public boolean removeAbility(UUID ablId, BeyonderCapability cap, LivingEntity target, boolean sync){
+        if(!abilities.containsKey(ablId)) return false;
+        Ability abl = abilities.get(ablId);
+        MinecraftForge.EVENT_BUS.post(new AbilityPossessionEvent.Lost(abl, target));
+        abl.onAbilityRemoved(cap, target);
+        abilities.remove(ablId);
         if(sync && target instanceof Player player) updateClientAbilityInfo(player, List.of(abl.getAbilityInfo()), AbilitySyncMessage.REMOVE);
         return true;
     }
+
 
 
     /**
@@ -325,24 +318,17 @@ public class PlayerAbilitiesManager {
      * @param cap
      * @param target
      */
-    public void setAbilityEnabled(String abilityId, int sequenceLevel, boolean state, BeyonderCapability cap, LivingEntity target) {
+    public void setAbilityEnabled(ResourceLocation abilityId, int sequenceLevel, boolean state, BeyonderCapability cap, LivingEntity target) {
         applyToValidAbilities(abl -> abl.setEnabled(cap, target, state), abilityId, sequenceLevel, true);
-        /*for(Map.Entry<AbilityKey, Ability> abilityEntry: abilities.entrySet()){
-            AbilityKey iKey = abilityEntry.getKey();
-            if(iKey.isSameAbility(abilityId) && abilityEntry.getValue().getSequenceLevel() >= sequenceLevel){
-                abilityEntry.getValue().setEnabled(cap, target, state);
-            }
-        }*/
     }
 
-    private void applyToValidAbilities(Consumer<Ability> applier, String abilityId, int sequenceLevel, boolean specificLevel){
-        for(Map.Entry<AbilityKey, Ability> abilityEntry: abilities.entrySet()){
-            AbilityKey iKey = abilityEntry.getKey();
-            if(iKey.isSameAbility(abilityId) &&
-                    (abilityEntry.getValue().getSequenceLevel() == sequenceLevel ||
-                            (!specificLevel && abilityEntry.getValue().getSequenceLevel() > sequenceLevel))
+    private void applyToValidAbilities(Consumer<Ability> applier, ResourceLocation abilityId, int sequenceLevel, boolean specificLevel){
+        for(Ability abl: getAllAbilities()){
+            if(abl.is(abilityId) &&
+                    (abl.getSequenceLevel() == sequenceLevel ||
+                            (!specificLevel && abl.getSequenceLevel() > sequenceLevel))
             ){
-                applier.accept(abilityEntry.getValue());
+                applier.accept(abl);
             }
         }
     }
@@ -355,7 +341,7 @@ public class PlayerAbilitiesManager {
      * @param cooldownTicks
      * @param target
      */
-    public void putAbilityOnCooldown(String abilityId, int sequenceLevel, int cooldownTicks, LivingEntity target){
+    public void putAbilityOnCooldown(ResourceLocation abilityId, int sequenceLevel, int cooldownTicks, LivingEntity target){
         applyToValidAbilities(abl -> abl.putOnCooldown(cooldownTicks, target), abilityId, sequenceLevel, false);
         /*for(Map.Entry<AbilityKey, Ability> abilityEntry: abilities.entrySet()){
             AbilityKey iKey = abilityEntry.getKey();
@@ -365,25 +351,25 @@ public class PlayerAbilitiesManager {
         }*/
     }
 
-    public void putAbilityOnCooldown(AbilityKey key, int cooldownTicks, LivingEntity target){
-        putAbilityOnCooldown(key.getAbilityId(), key.getSequenceLevel(), cooldownTicks, target);
+    public void putAbilityOnCooldown(UUID ablId, int cooldownTicks, LivingEntity target){
+        Ability abl = getAbilityInstance(ablId);
+        if(abl == null) return;
+        abl.putOnCooldown(cooldownTicks, target);
     }
 
-    public boolean isEnabledExactLevel(String abilityId, int sequenceLevel){
-        for(Map.Entry<AbilityKey, Ability> abilityEntry: abilities.entrySet()){
-            AbilityKey iKey = abilityEntry.getKey();
-            if(iKey.isSameAbility(abilityId) && abilityEntry.getValue().getSequenceLevel() == sequenceLevel){
-                return abilityEntry.getValue().isEnabled();
+    public boolean isEnabledExactLevel(ResourceLocation abilityId, int sequenceLevel){
+        for(Ability abl: getAllAbilities()){
+            if(abl.is(abilityId, sequenceLevel)){
+                return abl.isEnabled();
             }
         }
         return false;
     }
 
-    public boolean isEnabledAtLevelOrLower(String abilityId, int sequenceLevel) {
-        for(Map.Entry<AbilityKey, Ability> abilityEntry: abilities.entrySet()){
-            AbilityKey iKey = abilityEntry.getKey();
-            if(iKey.isSameAbility(abilityId) && abilityEntry.getValue().getSequenceLevel() >= sequenceLevel){
-                return abilityEntry.getValue().isEnabled();
+    public boolean isEnabledAtLevelOrLower(ResourceLocation abilityId, int sequenceLevel) {
+        for(Ability abl: getAllAbilities()){
+            if(abl.is(abilityId) && abl.getSequenceLevel() >= sequenceLevel){
+                return abl.isEnabled();
             }
         }
         return false;
@@ -418,15 +404,9 @@ public class PlayerAbilitiesManager {
     public void addAbilitiesOnClient(List<AbilityInfo> abilities, @NotNull BeyonderCapability cap, LivingEntity target, boolean runOnAcquire) {
         if(!target.level().isClientSide()) return;
         for(AbilityInfo abl: abilities){
-            AbilityKey key = abl.getKey();
-            if(key == null){
-                System.out.println("Warning: Read an ability with a null key: " + abl.descId());
-                continue;
-            }
-            Ability ability = Abilities.getAbilityInstanceByKey(key, abl.getInstanceId());
-            ability.setDataSilent(abl.getData());
-            if(!addAbility(key, ability, cap, target, runOnAcquire, false)){
-                System.out.println("Warning: Tried to add an ability that already exists on client: " + abl.getKey());
+            Ability ability = Ability.constructAbility(abl);
+            if(!addAndInitializeAbility(ability, cap, target, runOnAcquire, false)){
+                System.out.println("Tried to add an ability that already exists on client: " + abl);
             }
         }
     }
@@ -448,13 +428,9 @@ public class PlayerAbilitiesManager {
     public void removeAbilitiesOnClient(List<AbilityInfo> abilities, @NotNull BeyonderCapability cap, LivingEntity target) {
         if(!target.level().isClientSide()) return;
         for(AbilityInfo abl: abilities){
-            AbilityKey key = abl.getKey();
-            if(key == null){
-                System.out.println("Warning: Read an ability with a null key: " + abl.descId());
-                continue;
-            }
-            if(!removeAbility(key, cap, target, false)){
-                System.out.println("Warning: Tried to remove an ability that doesnt exist on client: " + key);
+            UUID toRemove = abl.getInstanceId();
+            if(!removeAbility(toRemove, cap, target, false)){
+                System.out.println("Warning: Tried to remove an ability that doesnt exist on client: " + abl);
             }
         }
     }
@@ -476,45 +452,47 @@ public class PlayerAbilitiesManager {
     public void updateAbilitiesOnClient(List<AbilityInfo> abilities2, @NotNull BeyonderCapability cap, LivingEntity target) {
         if(!target.level().isClientSide()) return;
         for(AbilityInfo info: abilities2){
-            AbilityKey key = info.getKey();
-            if(key == null){
-                System.out.println("Warning: Read an ability with a null key: " + info.descId());
+            Ability abl = getAbilityById(info.getInstanceId());
+            if(abl == null){
                 continue;
             }
-            if(key.isArtifactKey() && artifacts.containsKey(key.getArtifactId())){
-                artifacts.get(key.getArtifactId()).getAbility(key).receiveUpdateOnClient(info, cap, target);
-                continue;
-            }
-            if(!this.abilities.containsKey(key)){
-                //System.out.println("Warning: Tried to update an ability with a non existent key: " + key);
-                continue;
-            }
-
-            Ability abl = this.abilities.get(key);
             abl.receiveUpdateOnClient(info, cap, target);
         }
     }
 
-    public void onAbilityUpdateData(AbilityInfo abilityInfo, BeyonderCapability cap, LivingEntity target) {
+    public void onAbilityUpdateData(Ability ability, BeyonderCapability cap, LivingEntity target) {
         if(!(target instanceof Player player)) return;
         if(player.level().isClientSide()) return;
-        PacketHandler.sendMessageSTC(new AbilitySyncMessage(abilityInfo, AbilitySyncMessage.UPDATE), player);
-        if(abilityInfo.getKey().isArtifactKey()){
-            UUID artifactID = abilityInfo.getKey().getArtifactId();
-            if(!artifacts.containsKey(artifactID)) return;
-            List<ItemStack> items = getItemsInInventory(player);
-            for(ItemStack item: items){
-                UUID itemId = MysticalItemHelper.getArtifactIdFromItem(item);
-                if(itemId == null) continue;
-                if(itemId.compareTo(artifactID) == 0){
-                    MysticalItemHelper.updateArtifactTagOnItem(artifacts.get(artifactID), item);
-                    return;
-                }
-            }
-            String message = "[Potioneer] Error: Tried to update artifact data into item but no matching item was found: " + abilityInfo.getKey();
+        PacketHandler.sendMessageSTC(new AbilitySyncMessage(ability.getAbilityInfo(), AbilitySyncMessage.UPDATE), player);
+
+        //if it can be found in the standard abilities map, then its not an artifact.
+        if(abilities.containsKey(ability.getInstanceId())) return;
+
+        //otherwise, attempt to update its item.
+        ArtifactHolder artifactHolder = null;
+        for(ArtifactHolder artifact: artifacts.values()){
+            if(!artifact.hasAbility(ability.getInstanceId())) continue;
+            artifactHolder = artifact;
+            break;
+        }
+        if(artifactHolder == null) {
+            String message = "[Potioneer] Warning: Tried to update ability data, but it wasn't found in the abilities map nor in any artifacts. This is usually due to losing an ability at the same time as its cast (like with recorded abilities)" + ability;
             System.err.println(message);
             Potioneer.LOGGER.error(message);
+            return;
         }
+        List<ItemStack> items = getItemsInInventory(player);
+        for(ItemStack item: items){
+            UUID itemId = MysticalItemHelper.getArtifactIdFromItem(item);
+            if(itemId == null) continue;
+            if(itemId.equals(artifactHolder.getArtifactId())){
+                MysticalItemHelper.updateArtifactTagOnItem(artifactHolder, item);
+                return;
+            }
+        }
+        String message = "[Potioneer] Error: Tried to update artifact data into item but no matching item was found: " + ability;
+        System.err.println(message);
+        Potioneer.LOGGER.error(message);
     }
 
     public static List<ItemStack> getItemsInInventory(Player player){
@@ -539,16 +517,7 @@ public class PlayerAbilitiesManager {
         return artifacts.size();
     }
 
-    public List<AbilityKey> getAbilityKeys() {
-        return abilities.keySet().stream().toList();
-    }
-
-    public ArtifactHolder getArtifact(AbilityKey key) {
-        if(key.isEmpty() || !key.isArtifactKey() || !artifacts.containsKey(key.getArtifactId())) return null;
-        return artifacts.get(key.getArtifactId()).updateItemTags();
-    }
-
-    public int getSequenceLevelOfAbility(String ablId){
+    public int getSequenceLevelOfAbility(ResourceLocation ablId){
         int highest = 10;
         for(Ability abl: abilities.values()){
             if(abl.is(ablId) && abl.getSequenceLevel() < highest){
@@ -565,34 +534,34 @@ public class PlayerAbilitiesManager {
         return highest;
     }
 
-    public boolean hasAbilityOrBetter(String ablId, int sequenceLevel) {
-        for(AbilityKey key: abilities.keySet()){
-            if(key.isSameAbility(ablId) && abilities.get(key).getSequenceLevel() <= sequenceLevel) return true;
+    public boolean hasAbilityOrBetter(ResourceLocation ablId, int sequenceLevel) {
+        for(Ability abl: abilities.values()){
+            if(abl.is(ablId) && abl.getSequenceLevel() <= sequenceLevel) return true;
         }
         for(ArtifactHolder artifact: artifacts.values()){
-            for(AbilityKey key: artifact.getAbilityKeys()){
-                if(key.isSameAbility(ablId) && abilities.get(key).getSequenceLevel() <= sequenceLevel) return true;
+            for(Ability abl: artifact.getAbilities()){
+                if(abl.is(ablId) && abl.getSequenceLevel() <= sequenceLevel) return true;
             }
         }
         return false;
     }
 
-    public boolean hasAbility(String ablId) {
+    public boolean hasAbility(ResourceLocation ablId) {
         return hasAbilityOrBetter(ablId, 9);
     }
 
-    public boolean hasAbilityAndIsOutOfCooldown(String ablId){
-        List<Ability> abilities = getAbilities(ablId);
+    public boolean hasAbilityAndIsOutOfCooldown(ResourceLocation ablId){
+        List<Ability> abilities = getAllAbilities(ablId);
         return abilities.stream().anyMatch(abl -> abl.getCooldown() == 0);
     }
 
-    public List<Ability> getAbilities() {
+    public List<Ability> getAllAbilities() {
         List<Ability> res = new ArrayList<>(abilities.values());
         for(ArtifactHolder art: artifacts.values()) res.addAll(art.getAbilities());
         return res;
     }
-    public List<Ability> getAbilities(String abilityId) {
-        return getAbilities().stream().filter(abl -> abl.is(abilityId)).toList();
+    public List<Ability> getAllAbilities(ResourceLocation abilityId) {
+        return getAllAbilities().stream().filter(abl -> abl.is(abilityId)).toList();
     }
 
     public void updateArtifact(@Nullable UUID artifactId, Player player, ItemStack artifactStack) {
@@ -618,84 +587,64 @@ public class PlayerAbilitiesManager {
 //    }
 
 
-    public enum AbilityList{
-        INTRINSIC,
-        RECORDED,
-        REPLICATED,
-        ARTIFACT,
-    }
-
-    public boolean addAbility(String abilityGroup, Ability ability, BeyonderCapability cap, LivingEntity target, boolean runOnAcquire, boolean sync){
-        return addAbility(new AbilityKey(abilityGroup, ability.getAbilityId(), ability.getSequenceLevel()), ability, cap, target, runOnAcquire, sync);
-    }
-
-    public boolean addAbility(AbilityKey key, Ability ability, BeyonderCapability cap, LivingEntity target, boolean runOnAcquire, boolean sync){
-        if(abilities.containsKey(key)) return false;
-        ability.setAbilityKey(key.getGroup());
-        abilities.put(key, ability);
+    /**
+     * ability should already be pre-initialized and loaded if relevant. the UUID associated will be the one used.
+     * @param ability
+     * @param cap
+     * @param target
+     * @param runOnAcquire
+     * @param sync
+     * @return
+     */
+    public boolean addAndInitializeAbility(Ability ability, BeyonderCapability cap, LivingEntity target, boolean runOnAcquire, boolean sync){
+        if(ability == null) return false;
+        if(abilities.containsKey(ability.getInstanceId())) return false;
+        boolean exists = ability.isOfGroup(AbilityInfo.Group.INTRINSIC) && getAllAbilities(AbilityInfo.Group.INTRINSIC).stream().anyMatch(abl -> abl.is(ability.getAbilityId()));
+        if(exists) return false;
+        ability.init();
+        abilities.put(ability.getInstanceId(), ability);
         disabledManager.onAbilityGained(ability, cap, target);
-        MinecraftForge.EVENT_BUS.post(new AbilityPossessionEvent.Gained(ability, key, target));
+        MinecraftForge.EVENT_BUS.post(new AbilityPossessionEvent.Gained(ability, target));
         if (runOnAcquire) ability.onAcquire(cap, target);
         if(sync && target instanceof ServerPlayer player) updateClientAbilityInfo(player, List.of(ability.getAbilityInfo()), AbilitySyncMessage.ADD);
         return true;
     }
 
-    public boolean removeFirstAbilityLike(String abilityId, String abilityGroup, BeyonderCapability cap, LivingEntity target, boolean sync){
-        if(abilityGroup.equals(AbilityList.INTRINSIC.name())) return false;
+    public boolean removeFirstAbilityLike(ResourceLocation abilityId, AbilityInfo.Group abilityGroup, BeyonderCapability cap, LivingEntity target, boolean sync){
+        if(abilityGroup == AbilityInfo.Group.INTRINSIC) return false;
         Optional<Ability> optAbl = findAbility(abilityId, abilityGroup);
         if(optAbl.isEmpty()) return false;
         Ability abl = optAbl.get();
-        MinecraftForge.EVENT_BUS.post(new AbilityPossessionEvent.Lost(abl, abl.getAbilityKey(), target));
-        abl.deactivate(cap, target);
-        abilities.remove(abl.getAbilityKey());
+        MinecraftForge.EVENT_BUS.post(new AbilityPossessionEvent.Lost(abl, target));
+        abl.onAbilityRemoved(cap, target);
+        abilities.remove(abl.getInstanceId());
         if(sync && target instanceof ServerPlayer player) updateClientAbilityInfo(player, List.of(abl.getAbilityInfo()), AbilitySyncMessage.REMOVE);
         return true;
     }
 
-    private Optional<Ability> findAbility(String abilityId, String abilityGroup){
-        return getAbilities().stream().filter(abl -> abl.is(abilityId) && abl.getType().equalsIgnoreCase(abilityGroup)).findFirst();
+    private Optional<Ability> findAbility(ResourceLocation abilityId, AbilityInfo.Group abilityGroup){
+        return getAllAbilities().stream().filter(abl -> abl.is(abilityId) && abl.isOfGroup(abilityGroup)).findFirst();
     }
 
-    public boolean removeAbility(AbilityKey key, BeyonderCapability cap, LivingEntity target, boolean sync){
-        if(key.getGroup().equals(AbilityList.INTRINSIC.name())) return false;
-        Ability abl = abilities.get(key);
-        if(!abilities.containsKey(key)) return false;
-        MinecraftForge.EVENT_BUS.post(new AbilityPossessionEvent.Lost(abl, key, target));
-        abl.deactivate(cap, target);
-        abilities.remove(key);
-        if(sync && target instanceof Player player) updateClientAbilityInfo(player, List.of(abl.getAbilityInfo()), AbilitySyncMessage.REMOVE);
-        return true;
-    }
-
-    public void useAbility(BeyonderCapability cap, LivingEntity tar, AbilityKey key, boolean sync, boolean primary, CompoundTag args){
-        if(key.isArtifactKey()){
-            ArtifactHolder artifact = artifacts.get(key.getArtifactId());
-            if(artifact != null){
-                artifact.castAbility(key, primary, cap, tar, args);
-            }
-            if(sync && tar.level().isClientSide()){
-                PacketHandler.sendMessageCTS(new PlayerCastAbilityMessageCTS(key, primary, args));
-            }
-        } else {
-            Ability ability = abilities.get(key);
-            if(ability != null){
-                ability.castAbility(cap, tar, primary, args);
-                if(sync && tar.level().isClientSide()){
-                    PacketHandler.sendMessageCTS(new PlayerCastAbilityMessageCTS(key, primary, args));
-                }
-            }
+    public boolean useAbility(BeyonderCapability cap, LivingEntity tar, UUID ablId, boolean sync, boolean primary, CompoundTag args){
+        Ability abl = getAbilityById(ablId);
+        if(abl == null) return false;
+        boolean flag = abl.castAbility(cap, tar, primary, args);
+        if(sync && tar.level().isClientSide()){
+            PacketHandler.sendMessageCTS(new PlayerCastAbilityMessageCTS(ablId, primary, args));
         }
+        return flag;
 //        if(ability != null && cap.getSpirituality() >= Abilities.getAbilityById(key.getAbilityId()).getCostSpirituality()){
     }
 
-    public void setEnabledAtLevel(String ablId, int sequenceLevel, boolean enabling, BeyonderCapability cap, LivingEntity target){
+    /*public void setEnabledAtLevel(String ablId, int sequenceLevel, boolean enabling, BeyonderCapability cap, LivingEntity target){
         applyToValidAbilities(abl -> abl.setEnabled(cap, target, enabling), ablId, sequenceLevel, true);
         /*for(Map.Entry<AbilityKey, Ability> entry: abilities.entrySet()){
             AbilityKey iKey = entry.getKey();
             if(iKey.isSameAbility(ablId) && iKey.getSequenceLevel() == sequenceLevel){
                 entry.getValue().setEnabled(cap, target, enabling);
             }
-        }*/
+        }
     }
 
     public void setEnabledAtLevelOrLower(String ablId, int sequenceLevel, boolean enabling, BeyonderCapability cap, LivingEntity target){
@@ -705,25 +654,8 @@ public class PlayerAbilitiesManager {
             if(iKey.isSameAbility(ablId) && iKey.getSequenceLevel() >= sequenceLevel){
                 entry.getValue().setEnabled(cap, target, enabling);
             }
-        }*/
-    }
-
-    /**
-     *
-     * @param key
-     * @param enabling
-     * @param cap
-     * @param target
-     * @return the new enabled state for that ability
-     */
-    public boolean setEnabled(AbilityKey key, boolean enabling, BeyonderCapability cap, LivingEntity target){
-        //cAblId example: Artifact:23:water_affinity:9
-        // Intrinsic:water_affinity:8
-        // artifact abilities point to the specific artifact, intrinsic and other abilities just point to that ability.
-        //if the argument cAblId is incomplete ("water_affinity:8" or just "water_affinity") we must apply this enableDisable to every such ability
-        //      of that sequence level or lower.
-        return abilities.get(key).setEnabled(cap, target, enabling);
-    }
+        }
+    }*/
 
     public void updateClientAbilityInfo(Player player, List<AbilityInfo> abilities, int operation){
         if(player.level().isClientSide()) return;
@@ -750,69 +682,102 @@ public class PlayerAbilitiesManager {
     }
 
     private List<AbilityInfo> getAbilityInfos() {
-        List<AbilityInfo> res = new ArrayList<>();
-        for(Map.Entry<AbilityKey, Ability> entry : abilities.entrySet()){
-            res.add(entry.getValue().getAbilityInfo());
-        }
-        return res;
+        return getAllAbilities().stream().map(Ability::getAbilityInfo).toList();
     }
 
     public void saveNBTData(CompoundTag nbt){
-        CompoundTag hotbar = new CompoundTag();
-        hotbar.putInt("size", clientHotbar.size());
-        for(int j = 0; j < clientHotbar.size(); j++){
-            hotbar.putString(String.valueOf(j), clientHotbar.get(j).toString());
+        ListTag hotbar = new ListTag();
+        for (UUID uuid : clientHotbar) {
+            hotbar.add(NbtUtils.createUUID(uuid));
         }
-        hotbar.putString("quick", quickAbility.toString());
         nbt.put("hotbar", hotbar);
+
+        if(quickAbility != null) nbt.putUUID("quick", quickAbility);
+
+        ListTag ablTag = new ListTag();
         for(Ability abl: abilities.values()){
-            nbt.put(abl.getAbilityKey().toString(), abl.saveNbt());
+            ablTag.add(abl.saveAbility());
         }
+        nbt.put("abilityTags", ablTag);
+
         ListTag artifactsTag = new ListTag();
         for(ArtifactHolder artifact: artifacts.values()){
             artifactsTag.add(artifact.saveToTag(true));
         }
         nbt.put("artifacts", artifactsTag);
+
         nbt.put("disabledData", disabledManager.saveNbt());
     }
 
-    private List<Ability> bufferNewAbilities = new ArrayList<>();
-    private List<String> bufferAbilityGroups = new ArrayList<>();
+    public void loadNBTData(CompoundTag nbt, BeyonderCapability cap, LivingEntity target) {
+        clientHotbar.clear();
 
-    public void loadNBTData(CompoundTag nbt, BeyonderCapability cap, LivingEntity target){
-        for(Ability abl: abilities.values()){
-            abl.loadNbtAndRecalculateLevel(nbt, cap, target);
-        }
+        if (nbt.contains("abilityTags", Tag.TAG_LIST)) {
+            ListTag ablTag = nbt.getList("abilityTags", Tag.TAG_COMPOUND);
+            //for every ability data read in the tag...
+            for (int i = 0; i < ablTag.size(); i++) {
+                CompoundTag singleAblTag = ablTag.getCompound(i);
+                ResourceLocation ablId = new ResourceLocation(singleAblTag.getString("AbilityId"));
 
-        if(!(target instanceof Player player)) return;
-
-        CompoundTag hot = nbt.getCompound("hotbar");
-        int sizeHot = hot.getInt("size");
-        if(sizeHot != 0){
-            for(int i = 0; i < sizeHot; i++){
-                AbilityKey key = AbilityKey.fromString(hot.getString(String.valueOf(i)));
-                if(key.isEmpty()){
-                    System.out.println("Read invalid ability key from NBT data: " + hot.getString(String.valueOf(i)));
-                    continue;
+                //since the charManager already added the intrinsic abilities we should have, try to find a match.
+                Ability intrinsicToLoad = null;
+                for(Ability abl: intrisicAbilitiesBuffer){
+                    if(abl.is(ablId)) intrinsicToLoad = abl;
                 }
-                clientHotbar.add(key);
-            }
-        }
-        quickAbility = AbilityKey.fromString(hot.getString("quick"));
-        for(int i = 0; i < bufferAbilityGroups.size(); i++){
-            Ability abl = bufferNewAbilities.get(i);
-            addAbility(bufferAbilityGroups.get(i), abl, cap, target, false, false);
-            abl.loadNbtAndRecalculateLevel(nbt, cap, target);
-        }
-        bufferNewAbilities.clear();
 
-        ListTag artifactTag = nbt.getList("artifacts", ListTag.TAG_COMPOUND);
-        for(Tag tag: artifactTag){
-            if(tag instanceof CompoundTag artTag){
-                addArtifact(ArtifactHolder.loadFromTag(artTag), cap, player, false, false);
+                if(intrinsicToLoad != null){
+                    //if the tag we're loading is an intrinsic ability, it was already added, so just load data.
+                    intrinsicToLoad.loadTag(singleAblTag);
+                    abilities.put(intrinsicToLoad.getInstanceId(), intrinsicToLoad);
+                } else {
+                    //otherwise, instantiate a new one.
+                    Abilities.getFactory(ablId).ifPresent(factory -> {
+                        Ability abl = factory.construct(
+                                singleAblTag.contains("SequenceLevel") ? singleAblTag.getInt("SequenceLevel") : 9,
+                                AbilityInfo.Group.INTRINSIC
+                        );
+                        abl.loadTag(singleAblTag);
+                        //intrinsic abilities should have been added above. if we add an intrinsic ability here, that means that it was removed between mod versions.
+                        if(abl.isOfGroup(AbilityInfo.Group.INTRINSIC)) return;
+                        abilities.put(abl.getInstanceId(), abl);
+                    });
+                }
             }
         }
-        disabledManager.loadNbt(nbt.getCompound("disabledData"), cap, target);
+
+        intrisicAbilitiesBuffer.clear();
+        //finally, regardless of how it was created or what it is, initialize them with the proper state data.
+        for (Ability abl : new ArrayList<>(abilities.values())) {
+            //anchoredAbilities must be anchored. after loading all abilities, if the anchor is not present, skip and remove this one.
+            if(abl.isAnchored() && !abilities.containsKey(abl.getAnchorId())) {
+                abilities.remove(abl.getInstanceId());
+                continue;
+            }
+            abl.init();
+        }
+
+        //back to your scheduled programming...
+        if (nbt.contains("hotbar", Tag.TAG_LIST)) {
+            ListTag hotbarTag = nbt.getList("hotbar", Tag.TAG_INT_ARRAY); // NbtUtils.createUUID uses IntArray tags
+            for (Tag tag : hotbarTag) clientHotbar.add(NbtUtils.loadUUID(tag));
+        }
+
+        if (nbt.hasUUID("quick")) quickAbility = nbt.getUUID("quick");
+        else quickAbility = null;
+
+
+        if (nbt.contains("artifacts", Tag.TAG_LIST)) {
+            ListTag artifactTag = nbt.getList("artifacts", Tag.TAG_COMPOUND);
+            for (Tag tag : artifactTag) {
+                if (tag instanceof CompoundTag artTag) {
+                    addArtifact(ArtifactHolder.loadFromTag(artTag), cap, target, false, false);
+                }
+            }
+        }
+
+        if (nbt.contains("disabledData", Tag.TAG_COMPOUND)) {
+            disabledManager.loadNbt(nbt.getCompound("disabledData"), cap, target);
+        }
     }
 
 }

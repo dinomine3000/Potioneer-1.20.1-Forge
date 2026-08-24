@@ -47,9 +47,10 @@ public class BeyonderDurabilityEffect extends BeyonderEffect {
     @Override
     public void stopEffects(BeyonderCapability cap, LivingEntity target) {
         if(target.level().isClientSide) return;
-        if(cap.getAbilitiesManager().isEnabledAtLevelOrLower(Abilities.DURABILITY_REGEN.getAblId(), sequenceLevel%10)){
+        //commented bc of the ability key rework
+        /*if(cap.getAbilitiesManager().isEnabledAtLevelOrLower(Abilities.DURABILITY_REGEN.getAblId(), sequenceLevel%10)){
             cap.getAbilitiesManager().setAbilityEnabled(Abilities.DURABILITY_REGEN.getAblId(), sequenceLevel%10, false, cap, target);
             cap.getAbilitiesManager().putAbilityOnCooldown(Abilities.DURABILITY_REGEN.getAblId(), sequenceLevel%10, 20*5, target);
-        }
+        }*/
     }
 }

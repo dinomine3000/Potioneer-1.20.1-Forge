@@ -274,8 +274,8 @@ public class BeyonderEvents {
             long seed = stringToLong(String.valueOf(id));
             RandomSource random = RandomSource.create(seed);
             float chance = 0.1f;
-            if(cap.getAbilitiesManager().hasAbility(Abilities.TYRANT_DIVINATION.getAblId())){
-                chance += (10 - cap.getAbilitiesManager().getSequenceLevelOfAbility(Abilities.TYRANT_DIVINATION.getAblId()))/10f;
+            if(cap.getAbilitiesManager().hasAbility(Abilities.TYRANT_DIVINATION.get().getAblId())){
+                chance += (10 - cap.getAbilitiesManager().getSequenceLevelOfAbility(Abilities.TYRANT_DIVINATION.get().getAblId()))/10f;
             }
             if(random.nextFloat() <= chance){
                 ItemStack stack = ItemStack.EMPTY;
@@ -415,7 +415,7 @@ public class BeyonderEvents {
     public static void onLuckEventCastConfirmed(LuckEventCastEvent.Post event){
         LivingEntity target = event.getEntity();
         target.getCapability(CapProvider.BEYONDER_STATS).ifPresent(cap -> {
-            if(cap.getAbilitiesManager().hasAbility(Abilities.FATE.getAblId())){
+            if(cap.getAbilitiesManager().hasAbility(Abilities.FATE.get().getAblId())){
                 target.sendSystemMessage(event.getLuckEvent().getForecast());
             }
         });

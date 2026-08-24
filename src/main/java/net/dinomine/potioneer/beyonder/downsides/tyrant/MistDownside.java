@@ -18,9 +18,6 @@ import java.util.Iterator;
 
 public class MistDownside extends Downside {
 
-    public MistDownside(int sequenceLevel) {
-        super(sequenceLevel);
-    }
 
     @Override
     protected boolean primary(BeyonderCapability cap, LivingEntity target) {
@@ -56,7 +53,7 @@ public class MistDownside extends Downside {
     @Override
     public void passive(BeyonderCapability cap, LivingEntity target) {
         if(target.level().isClientSide()) return;
-        if(target.tickCount%90 == target.getId()%90) cap.getEffectsManager().addOrRefreshEffect(BeyonderEffects.TYRANT_MIST_DOWNSIDE.createInstance(sequenceLevel, 0, 20*5, true), cap, target);
+        if(target.tickCount%90 == target.getId()%90) cap.getEffectsManager().addOrRefreshEffect(BeyonderEffects.TYRANT_MIST_DOWNSIDE.createInstance(getSequenceLevel(), 0, 20*5, true), cap, target);
     }
 
     @Override

@@ -6,10 +6,6 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.Vec3;
 
 public class AxisDownside extends Downside {
-    public AxisDownside(int sequenceLevel) {
-        super(sequenceLevel);
-    }
-
     @Override
     protected boolean primary(BeyonderCapability cap, LivingEntity target) {
         alignLook(target);
@@ -19,7 +15,7 @@ public class AxisDownside extends Downside {
     @Override
     public void passive(BeyonderCapability cap, LivingEntity target) {
         if(target.level().isClientSide()) return;
-        int interval = 15 - (9-sequenceLevel)*3;
+        int interval = 15 - (9-getSequenceLevel())*3;
         if (target.tickCount % (interval*20) != 0) return;
         alignLook(target);
 

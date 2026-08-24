@@ -1,6 +1,6 @@
 package net.dinomine.potioneer.beyonder.downsides.wheeloffortune;
 
-import net.dinomine.potioneer.beyonder.abilities.AbilityKey;
+import net.dinomine.potioneer.beyonder.abilities.Ability;
 import net.dinomine.potioneer.beyonder.downsides.Downside;
 import net.dinomine.potioneer.beyonder.player.BeyonderCapability;
 import net.minecraft.world.entity.LivingEntity;
@@ -8,9 +8,6 @@ import net.minecraft.world.entity.LivingEntity;
 import java.util.List;
 
 public class CooldownDownside extends Downside {
-    public CooldownDownside(int sequenceLevel) {
-        super(sequenceLevel);
-    }
 
     @Override
     protected String getMainDescId(int sequenceLevel) {
@@ -20,12 +17,12 @@ public class CooldownDownside extends Downside {
     @Override
     protected boolean primary(BeyonderCapability cap, LivingEntity target) {
         if(target.level().isClientSide()) return false;
-        List<AbilityKey> keys = cap.getAbilitiesManager().getAbilityKeys();
+        List<Ability> keys = cap.getAbilitiesManager().getAllAbilities();
         int maxCount = 10 - getSequenceLevel();
         int maxTime = 20*(10-getSequenceLevel())*15;
         for(int i = 0; i < cap.getLuckManager().getRandomNumber(0, maxCount, false, target.getRandom()); i++){
-            AbilityKey toCooldown = keys.get(target.getRandom().nextInt(keys.size()));
-            cap.getAbilitiesManager().putAbilityOnCooldown(toCooldown, cap.getLuckManager().getRandomNumber(20, maxTime, false, target.getRandom()), target);
+            Ability toCooldown = keys.get(target.getRandom().nextInt(keys.size()));
+            cap.getAbilitiesManager().putAbilityOnCooldown(toCooldown.getInstanceId(), cap.getLuckManager().getRandomNumber(20, maxTime, false, target.getRandom()), target);
             keys.remove(toCooldown);
         }
         return true;

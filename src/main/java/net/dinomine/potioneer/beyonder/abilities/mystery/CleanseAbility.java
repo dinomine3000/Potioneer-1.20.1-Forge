@@ -8,10 +8,9 @@ import net.minecraft.world.entity.LivingEntity;
 import java.util.ArrayList;
 
 public class CleanseAbility extends Ability {
-    public CleanseAbility(int sequenceLevel) {
-        super(sequenceLevel);
+    @Override
+    public void init() {
         defaultMaxCooldown = 20*10;
-        withCost(20);
     }
 
     @Override

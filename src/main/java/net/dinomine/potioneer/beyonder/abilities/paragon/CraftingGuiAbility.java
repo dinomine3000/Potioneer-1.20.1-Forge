@@ -26,7 +26,7 @@ public class CraftingGuiAbility extends Ability {
     protected String getMainDescId(int sequenceLevel) {
         return "crafting_gui";
     }
-
+/*
     public CraftingGuiAbility(int sequence){
 //        this.info = new AbilityInfo(109, 32, "Crafting Gui", 40 + sequence, 10, this.getMaxCooldown(), "crafting_gui");
         super(sequence);
@@ -90,5 +90,5 @@ public class CraftingGuiAbility extends Ability {
                 player.connection.send(new ClientboundContainerSetSlotPacket(pMenu.containerId, pMenu.incrementStateId(), 0, result));
             }
         }
-    }
+    }*/
 }

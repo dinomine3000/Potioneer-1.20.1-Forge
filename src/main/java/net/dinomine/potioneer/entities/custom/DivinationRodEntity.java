@@ -102,8 +102,8 @@ public class DivinationRodEntity extends PlaceableItemEntity implements GeoEntit
         BeyonderCapability cap = pPlayer.getCapability(CapProvider.BEYONDER_STATS).resolve().get();
 
         sequenceId = cap.getPathwaySequenceId();
-        seer = cap.getAbilitiesManager().hasAbility(Abilities.TYRANT_DIVINATION.getAblId());
-        lucky = cap.getAbilitiesManager().hasAbility(Abilities.WHEEL_DIVINATION.getAblId()) && cap.getLuckManager().passesLuckCheck(1/4f, 0, 0, pPlayer.getRandom());
+        seer = cap.getAbilitiesManager().hasAbility(Abilities.TYRANT_DIVINATION.get().getAblId());
+        lucky = cap.getAbilitiesManager().hasAbility(Abilities.WHEEL_DIVINATION.get().getAblId()) && cap.getLuckManager().passesLuckCheck(1/4f, 0, 0, pPlayer.getRandom());
 
 
         DivinationResult result = MysticismHelper.doDivination(target, pPlayer, 128, this.getOnPos(), sequenceId, pPlayer.getRandom());

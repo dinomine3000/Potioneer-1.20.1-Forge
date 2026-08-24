@@ -6,26 +6,10 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 
 public abstract class Downside extends Ability {
-    public Downside(int sequenceLevel){
-        super(sequenceLevel);
-//        this.info = new AbilityInfo(130, 4, name, sequenceLevel, cost, 20, "d_" + id);
-//        this.isActive = active;
-    }
-
-    @Override
-    public AbilityInfo getAbilityInfo() {
-        return super.getAbilityInfo().markDownside();
-    }
 
     @Override
     public boolean isDownside() {
         return true;
     }
 
-    @Override
-    public CompoundTag saveNbt() {
-        CompoundTag tag = super.saveNbt();
-        tag.putBoolean("downside", true);
-        return tag;
-    }
 }

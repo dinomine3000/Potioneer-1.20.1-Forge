@@ -134,7 +134,7 @@ public class RulePylonBlockEntity extends BlockEntity implements GeoBlockEntity 
         Entity ent = AbilityFunctionHelper.getEntityAcrossDimensions(sLevel, ownerId);
         if(ent instanceof LivingEntity livingEntity){
             BeyonderCapability cap = livingEntity.getCapability(CapProvider.BEYONDER_STATS).resolve().get();
-            sequenceLevel = cap.getAbilitiesManager().getSequenceLevelOfAbility(Abilities.RULE_PYLON.getAblId());
+            sequenceLevel = cap.getAbilitiesManager().getSequenceLevelOfAbility(Abilities.RULE_PYLON.get().getAblId());
             if(sequenceLevel < 0 || sequenceLevel == 10) sequenceLevel = 9;
 
         }

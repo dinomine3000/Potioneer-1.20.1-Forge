@@ -1,6 +1,6 @@
 package net.dinomine.potioneer.beyonder.effects.wheeloffortune;
 
-import net.dinomine.potioneer.beyonder.abilities.AbilityKey;
+import net.dinomine.potioneer.beyonder.abilities.Ability;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffect;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
 import net.dinomine.potioneer.beyonder.pathways.WheelOfFortunePathway;
@@ -14,6 +14,7 @@ import net.minecraft.world.entity.LivingEntity;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class CooldownRecipientEffect extends BeyonderEffect {
 
@@ -71,17 +72,16 @@ public class CooldownRecipientEffect extends BeyonderEffect {
 
     public static void disableRandomAbilities(BeyonderCapability victimCapability, PlayerLuckManager luck, LivingEntity victim, boolean casterPespective, int minCooldown, int maxCooldown){
         int numToDisable = luck.getRandomNumber(0, 4, casterPespective, victim.getRandom());
-        List<AbilityKey> keys = new ArrayList<>(victimCapability.getAbilitiesManager().getAbilityKeys());
-        if(keys.isEmpty()) return;
+        List<Ability> abilities = new ArrayList<>(victimCapability.getAbilitiesManager().getAllAbilities());
+        if(abilities.isEmpty()) return;
         if(numToDisable > 0) WheelOfFortunePathway.playSound(victim.level(), victim.getOnPos(), WheelOfFortunePathway.UNLUCK);
         for(int i = 0; i < numToDisable; i++){
-            if(keys.isEmpty()) break;
             victimCapability.getLuckManager().grantLuck(null, 10, false);
             //bigger is better here because, generally, the last abilities in the list are the higher level sequence ones.
-            AbilityKey key = keys.get(luck.getRandomNumber(0, keys.size(), casterPespective, victim.getRandom()));
-            victim.sendSystemMessage(Component.translatableWithFallback("ability.potioneer.cooldown_put", "%s has been put on cooldown.", key.getNameComponent()));
-            victimCapability.getAbilitiesManager().putAbilityOnCooldown(key, luck.getRandomNumber(minCooldown, maxCooldown, casterPespective, victim.getRandom()), victim);
-            keys.remove(key);
+            Ability ablToDisable = abilities.get(luck.getRandomNumber(0, abilities.size(), casterPespective, victim.getRandom()));
+            victim.sendSystemMessage(Component.translatableWithFallback("ability.potioneer.cooldown_put", "%s has been put on cooldown.", Ability.getNameComponent(ablToDisable.getMainDescId())));
+            victimCapability.getAbilitiesManager().putAbilityOnCooldown(ablToDisable.getInstanceId(), luck.getRandomNumber(minCooldown, maxCooldown, casterPespective, victim.getRandom()), victim);
+            abilities.remove(ablToDisable);
         }
     }
 

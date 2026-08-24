@@ -9,9 +9,6 @@ import net.minecraft.world.entity.LivingEntity;
 import java.util.UUID;
 
 public class ChaosLuckDownside extends Downside {
-    public ChaosLuckDownside(int sequenceLevel) {
-        super(sequenceLevel);
-    }
 
     @Override
     public void passive(BeyonderCapability cap, LivingEntity target) {
@@ -20,7 +17,7 @@ public class ChaosLuckDownside extends Downside {
             cap.getLuckManager().castOrHurryEvent(target, cap);
             ParticleMaker.createDiceEffectForEntity(target.level(), target);
         }
-        cap.getEffectsManager().addOrRefreshEffect(BeyonderEffects.WHEEL_CALAMITY.createInstance(sequenceLevel, 0, 20*60*20, true), cap, target);
+        cap.getEffectsManager().addOrRefreshEffect(BeyonderEffects.WHEEL_CALAMITY.createInstance(getSequenceLevel(), 0, 20*60*20, true), cap, target);
     }
 
     @Override

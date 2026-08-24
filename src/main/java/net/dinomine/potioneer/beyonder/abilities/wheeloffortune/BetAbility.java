@@ -7,15 +7,9 @@ import net.dinomine.potioneer.config.PotioneerAbilityConfig;
 import net.minecraft.world.entity.LivingEntity;
 
 public class BetAbility extends Ability {
-    /**
-     * pass the sequence level or pathway-sequence id to define the abilities sequence level
-     * abilities that depend on changing pathways like Cogitation, that exists for every pathway, need to process their own pathway-sequence id here.
-     * I dont ask specifically for sequence level OR pathway id, but if you want to choose one, pass along the pathwaySequenceId.
-     *
-     * @param sequenceLevel
-     */
-    public BetAbility(int sequenceLevel) {
-        super(sequenceLevel);
+    private static final int cost = 0;
+    @Override
+    public void init() {
         defaultMaxCooldown = PotioneerAbilityConfig.BET_COOLDOWN.get();
     }
 
@@ -26,8 +20,8 @@ public class BetAbility extends Ability {
 
     @Override
     protected boolean primary(BeyonderCapability cap, LivingEntity target) {
-        if(cap.getSpirituality() < cost() || target.level().isClientSide()) return false;
-        cap.requestActiveSpiritualityCost(cost());
+        if(cap.getSpirituality() < cost || target.level().isClientSide()) return false;
+        cap.requestActiveSpiritualityCost(cost);
         int luck = cap.getLuckManager().getLuck();
         int minDuration = 25;
         int maxDuration = 300;

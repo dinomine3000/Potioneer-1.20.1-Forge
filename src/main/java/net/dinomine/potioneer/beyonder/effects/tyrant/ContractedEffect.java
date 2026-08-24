@@ -1,9 +1,11 @@
 package net.dinomine.potioneer.beyonder.effects.tyrant;
 
+import lombok.Getter;
+import lombok.Setter;
 import net.dinomine.potioneer.Potioneer;
 import net.dinomine.potioneer.beyonder.abilities.Abilities;
 import net.dinomine.potioneer.beyonder.abilities.Ability;
-import net.dinomine.potioneer.beyonder.abilities.AbilityKey;
+import net.dinomine.potioneer.beyonder.abilities.AbilityInfo;
 import net.dinomine.potioneer.beyonder.abilities.tyrant.ContractAbility;
 import net.dinomine.potioneer.beyonder.abilities.tyrant.ContractAbility.ContractOption;
 import net.dinomine.potioneer.beyonder.abilities.tyrant.ContractViewAbility;
@@ -14,6 +16,7 @@ import net.dinomine.potioneer.beyonder.player.BeyonderCapability;
 import net.dinomine.potioneer.beyonder.player.BeyonderStats;
 import net.dinomine.potioneer.config.PotioneerAbilityConfig;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.MobType;
 import net.minecraft.world.level.Level;
@@ -42,17 +45,15 @@ public class ContractedEffect extends BeyonderEffect {
             PotioneerAbilityConfig.CONTRACT_HEALTH_BUFF;
 
     private static final UUID SEQUENCE_LEVEL_UPGRADE_ID = UUID.fromString("eb93c3f3-9d5b-4c61-9f36-507379ce9e41");
-    private static final String VIEWER_GROUP = "contract_view";
 
     private ContractOption condition;
     private ContractOption reward;
+    @Setter
+    @Getter
     private UUID casterId = null;
     private int time = 0;
     public int getTime(){return time;}
 
-    private AbilityKey generateKeyForViewerAbility(){
-        return new AbilityKey(VIEWER_GROUP, Abilities.CONTRACT_VIEW.getAblId(), 0);
-    }
 
     @Override
     public boolean canBeCleansed() {
@@ -67,9 +68,9 @@ public class ContractedEffect extends BeyonderEffect {
         }
 
         if(target.level().isClientSide()) return;
-        ContractViewAbility abl = (ContractViewAbility) Abilities.CONTRACT_VIEW.create(0);
+        ContractViewAbility abl = (ContractViewAbility) Abilities.CONTRACT_VIEW.get().construct(0, AbilityInfo.Group.CONTRACT);
         abl.setConditions(condition, reward);
-        if(!cap.getAbilitiesManager().addAbility(generateKeyForViewerAbility(), abl, cap, target, false, true)){
+        if(!cap.getAbilitiesManager().addAndInitializeAbility(abl, cap, target, false, true)){
             Potioneer.LOGGER.warn("Important: On activating ContractedEffect, the ability to view it failed to be added! This might have happened because another ContractedEffect exists, or because the ability failed to be removed previously. Please report this bug if you find it.");
             System.out.println("Warning: Failed to add Contract Viewer Ability. Either another effect already exists or the ability failed to be removed before.-");
         }
@@ -98,15 +99,15 @@ public class ContractedEffect extends BeyonderEffect {
 
         //we filter to server side to make sure nothing weird happens, since ability management is mainly handled by server.
         if(target.level().isClientSide()) return;
-        cap.getAbilitiesManager().removeAbility(generateKeyForViewerAbility(), cap, target, true);
-        //cap.getAbilitiesManager().removeFirstAbilityLike(Abilities.CONTRACT_VIEW.getAblId(), VIEWER_GROUP, cap, target, true);
+        //cap.getAbilitiesManager().removeAbility(generateKeyForViewerAbility(), cap, target, true);
+        cap.getAbilitiesManager().removeFirstAbilityLike(Abilities.CONTRACT_VIEW.getId(), AbilityInfo.Group.CONTRACT, cap, target, true);
     }
 
     private void manageAbilityBuffs(BeyonderCapability cap, LivingEntity target, boolean doBuff){
         if(!reward.getId().equalsIgnoreCase("ability")) return;
 
-        String ablId = AbilityKey.fromString(reward.getArguments().get(0)).getAbilityId();
-        cap.getAbilitiesManager().getAbilities(ablId).forEach(abl ->  {
+        ResourceLocation ablId = new ResourceLocation(reward.getArguments().get(0));
+        cap.getAbilitiesManager().getAllAbilities(ablId).forEach(abl ->  {
             if(doBuff)
                 abl.temporarilyUpgradeToLevel(SEQUENCE_LEVEL_UPGRADE_ID, -1, cap, target);
             else
@@ -126,20 +127,16 @@ public class ContractedEffect extends BeyonderEffect {
         this.reward = reward;
     }
 
-    public UUID getCasterId() {
-        return casterId;
-    }
-
-    public void setCasterId(UUID casterId) {
-        this.casterId = casterId;
-    }
-
     public void testAbilityCast(Ability abl, BeyonderCapability cap, LivingEntity target){
         if(condition.getId().equalsIgnoreCase("ability_cond")){
             if(!condition.isValid()) return;
             for(String ablArg: condition.getArguments()){
-                AbilityKey key = AbilityKey.fromString(ablArg);
-                if(key.isSameAbility(abl.getAbilityId())){
+                ContractAbility.ContractAbilityOption contractOption = ContractAbility.ContractAbilityOption.fromString(ablArg);
+                if(contractOption == null){
+                    System.out.println("Error: Failed to parse Contract Ability Option: " + ablArg);
+                    continue;
+                }
+                if(abl.getAbilityId().equals(contractOption.getAblId())){
                     endEffectWhenPossible();
                     return;
                 }
@@ -147,7 +144,12 @@ public class ContractedEffect extends BeyonderEffect {
         }
         if(!condition.isValid() || !reward.getId().equalsIgnoreCase("ability")) return;
 
-        if(abl.is(reward.getArguments().get(0))){
+        ContractAbility.ContractAbilityOption rewardOption = ContractAbility.ContractAbilityOption.fromString(reward.getArguments().get(0));
+        if(rewardOption == null){
+            System.out.println("Error: Failed to parse Contract Ability Option: " + reward.getArguments().get(0));
+            return;
+        }
+        if(abl.is(rewardOption.getAblId())){
             abl.temporarilyUpgradeToLevel(SEQUENCE_LEVEL_UPGRADE_ID, -1, cap, target);
         }
     }

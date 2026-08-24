@@ -11,8 +11,9 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.LivingEntity;
 
 public class MistBlinkingAnchorsAbility extends AbilityWithOptions {
-    public MistBlinkingAnchorsAbility(int sequenceLevel) {
-        super(sequenceLevel);
+    private int cost = 0;
+    @Override
+    public void init() {
         AbilityOptions sOptions = new AbilityOptions()
                 .addEmptyOption("clear", Component.literal("Clear Anchors"))
                 .addEmptyOption("anchor1", Component.literal("Set Anchor 1"))
@@ -20,18 +21,13 @@ public class MistBlinkingAnchorsAbility extends AbilityWithOptions {
                 .addEmptyOption("anchor3", Component.literal("Set Anchor 3"))
                 .addEmptyOption("anchor4", Component.literal("Set Anchor 4"));
         setSecondaryOptions(sOptions);
-        withCost(PotioneerAbilityConfig.MIST_ANCHOR_BLINK_COST.get());
-    }
-
-    @Override
-    protected void loadExtraNbtInfo(CompoundTag tag) {
-        super.loadExtraNbtInfo(tag);
         setPrimaryOptions(createPOptions());
+        cost = PotioneerAbilityConfig.MIST_ANCHOR_BLINK_COST.get();
     }
 
     @Override
     protected boolean primaryWithArgument(BeyonderCapability cap, LivingEntity target, String args) {
-        if(cap.getSpirituality() < cost()) return false;
+        if(cap.getSpirituality() < cost) return false;
         CompoundTag anchorTag = getData().getCompound(args);
         if(anchorTag.isEmpty()) return false;
         if(target.level().isClientSide()) return true;
@@ -41,7 +37,7 @@ public class MistBlinkingAnchorsAbility extends AbilityWithOptions {
             putOnCooldown(20, target);
             return false;
         }
-        MistBlinkingAbility.doMistBlinkingTo(target, cap, (ServerLevel) target.level(), dimKey, cost(), anchorPos.above(), sequenceLevel);
+        MistBlinkingAbility.doMistBlinkingTo(target, cap, (ServerLevel) target.level(), dimKey, cost, anchorPos.above(), getSequenceLevel());
         return true;
     }
 

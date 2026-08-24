@@ -8,9 +8,6 @@ import net.dinomine.potioneer.beyonder.player.BeyonderCapability;
 import net.minecraft.world.entity.LivingEntity;
 
 public class RandomVelocityDownside extends Downside {
-    public RandomVelocityDownside(int sequenceLevel) {
-        super(sequenceLevel);
-    }
 
     @Override
     public void passive(BeyonderCapability cap, LivingEntity target) {

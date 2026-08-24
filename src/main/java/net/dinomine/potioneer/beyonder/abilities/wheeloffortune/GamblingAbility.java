@@ -10,19 +10,22 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.LivingEntity;
 
 public class GamblingAbility extends Ability {
-    /**
-     * pass the sequence level or pathway-sequence id to define the abilities sequence level
-     * abilities that depend on changing pathways like Cogitation, that exists for every pathway, need to process their own pathway-sequence id here.
-     * I dont ask specifically for sequence level OR pathway id, but if you want to choose one, pass along the pathwaySequenceId.
-     *
-     * @param sequenceLevel
-     */
-    public GamblingAbility(int sequenceLevel) {
-        super(sequenceLevel, PotioneerAbilityConfig.GAMBLING_COOLDOWN.get());
+    private static int cost = 40;
+    public GamblingAbility() {
+    }
+
+    @Override
+    public void init() {
         CompoundTag tag = new CompoundTag();
         tag.putBoolean("quick", false);
         setDataSilent(tag);
-        withCost(PotioneerAbilityConfig.GAMBLING_COST.get());
+        defaultMaxCooldown = PotioneerAbilityConfig.GAMBLING_COOLDOWN.get();
+        cost = PotioneerAbilityConfig.GAMBLING_COST.get();
+    }
+
+    @Override
+    protected boolean hasSecondary(int level) {
+        return true;
     }
 
     @Override
@@ -33,7 +36,7 @@ public class GamblingAbility extends Ability {
     @Override
     protected boolean primary(BeyonderCapability cap, LivingEntity target) {
         if(target.level().isClientSide()) return true;
-        cap.requestActiveSpiritualityCost(cost());
+        cap.requestActiveSpiritualityCost(cost);
         GamblingEffect eff = (GamblingEffect) BeyonderEffects.WHEEL_GAMBLING.createInstance(getSequenceLevel(), 0, 2, true);
         eff.setQuick(getData().getBoolean("quick"));
         cap.getEffectsManager().addEffectNoRefresh(eff, cap, target);

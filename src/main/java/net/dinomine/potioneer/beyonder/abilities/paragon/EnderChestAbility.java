@@ -12,6 +12,11 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.ChestMenu;
 
 public class EnderChestAbility extends Ability {
+    @Override
+    protected String getMainDescId(int sequenceLevel) {
+        return "ender_chest";
+    }
+    /*
     public EnderChestAbility(int sequence){
 //        this.info = new AbilityInfo(109, 152, "Ender Chest", 40 + sequence, 50, this.getMaxCooldown(), "ender_chest");
 //        this.isActive = true;
@@ -19,10 +24,6 @@ public class EnderChestAbility extends Ability {
         setCost(ignored -> 50);
     }
 
-    @Override
-    protected String getMainDescId(int sequenceLevel) {
-        return "ender_chest";
-    }
 
     @Override
     public boolean primary(BeyonderCapability cap, LivingEntity target) {
@@ -46,5 +47,5 @@ public class EnderChestAbility extends Ability {
         }
 
         return false;
-    }
+    }*/
 }

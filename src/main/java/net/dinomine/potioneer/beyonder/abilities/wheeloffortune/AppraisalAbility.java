@@ -9,8 +9,9 @@ import net.minecraft.world.entity.LivingEntity;
 
 public class AppraisalAbility extends Ability {
 
-    public AppraisalAbility(int sequence){
-        super(sequence);
+    @Override
+    public void init() {
+        isPassive = true;
     }
 
     @Override

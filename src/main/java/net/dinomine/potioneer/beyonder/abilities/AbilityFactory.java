@@ -1,101 +1,31 @@
 package net.dinomine.potioneer.beyonder.abilities;
 
-import net.dinomine.potioneer.Potioneer;
+import lombok.Getter;
 import net.minecraft.resources.ResourceLocation;
 
-import java.util.LinkedHashSet;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 public class AbilityFactory {
-    private ResourceLocation textureLocation;
-    private int posY;
-    private String ablId;
-    /**
-     * base cost in spirituality for client checking. if the client has less than this spirituality, the ability wont trigger
-     */
-    private Function<Integer, Integer> minimumSpiritualityToActivate = null;
-    private Function<Integer, Boolean> secondaryCheck;
-    private int pathwayId;
-    private Function<Integer, Ability> createFunction;
-    private boolean passive = false;
-    private boolean active = true;
+    private final Supplier<Ability> constructionFunction;
+    @Getter
+    private final ResourceLocation ablId;
+    @Getter
+    private final int posY;
+    @Getter
+    private final int pathwayId;
 
-    public AbilityFactory(ResourceLocation textureLocation, int posY, int pathwayId, Function<Integer, Integer> costFunction, String ablId, Function<Integer, Ability> createFunction){
-        this.minimumSpiritualityToActivate = costFunction;
-        this.textureLocation = textureLocation;
-        this.posY = 32 + 24*posY;
-        this.pathwayId = pathwayId;
-        this.createFunction = createFunction;
+    public AbilityFactory(Supplier<Ability> constructionFunction, ResourceLocation ablId, int posY, int pathwayId) {
+        this.constructionFunction = constructionFunction;
         this.ablId = ablId;
-        secondaryCheck = lvl -> false;
-    }
-    public AbilityFactory(ResourceLocation textureLocation, int posY, int pathwayId, String ablId, Function<Integer, Ability> createFunction){
-        this(textureLocation, posY, pathwayId, null, ablId, createFunction);
+        this.posY = posY;
+        this.pathwayId = pathwayId;
     }
 
-    public AbilityFactory(int posY, int pathwayId, Function<Integer, Integer> costFunction, String ablId, Function<Integer, Ability> createFunction){
-        this(new ResourceLocation(Potioneer.MOD_ID, "textures/gui/ability_icon_atlas.png"), posY, pathwayId, costFunction, ablId, createFunction);
+    public Ability construct(int level, AbilityInfo.Group group){
+        Ability abl = constructionFunction.get();
+        abl.preInit(ablId, level, group);
+        return abl;
     }
 
-    public AbilityFactory hasSecondaryFunction(){
-        return this.hasSecondaryFunction(9);
-    }
-    public AbilityFactory passiveAndActive(){
-        this.active = true;
-        this.passive = true;
-        return this;
-    }
-
-    public AbilityFactory passive(){
-        this.active = false;
-        this.passive = true;
-        return this;
-    }
-
-    public AbilityFactory hasSecondaryFunction(Function<Integer, Boolean> levelCheck){
-        this.secondaryCheck = levelCheck;
-        return this;
-    }
-
-    public AbilityFactory hasSecondaryFunction(int levelCheck){
-        return this.hasSecondaryFunction(lvl -> lvl <= levelCheck);
-    }
-
-    public boolean getHasSecondaryFunction(int level){
-        return this.secondaryCheck.apply(level);
-    }
-
-    public int getPosY() {
-        return posY;
-    }
-
-    public String getAblId() {
-        return ablId;
-    }
-
-    public String getOuterId(int sequenceLevel){
-        return getAblId().concat(":" + sequenceLevel);
-    }
-
-    public int getMinimumSpiritualityToActivate(int level) {
-        return minimumSpiritualityToActivate == null ? 0 : minimumSpiritualityToActivate.apply(level);
-    }
-
-    public ResourceLocation getTextureLocation(){
-        return textureLocation;
-    }
-
-    public int getPathwayId(){return pathwayId;}
-
-    public Ability create(int pathwaySequenceId){
-        return createFunction.apply(pathwaySequenceId).withAbilityId(ablId);
-    }
-
-    public AbilityInfo getInfo(int cooldown, int maxCd, boolean enabled, String descId, LinkedHashSet<String> allDescIds, String innerId, int sequenceLevel) {
-        return new AbilityInfo(pathwayId, cooldown, maxCd, enabled, descId, allDescIds, innerId, sequenceLevel);
-    }
-
-    public AbilityInfo getInfo(int cooldown, int maxCd, boolean enabled, String descId, LinkedHashSet<String> allDescIds, String innerId, int pathwayId, int sequenceLevel) {
-        return new AbilityInfo(pathwayId, cooldown, maxCd, enabled, descId, allDescIds, innerId, sequenceLevel);
-    }
 }

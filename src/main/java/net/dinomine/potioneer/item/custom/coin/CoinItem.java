@@ -153,9 +153,9 @@ public class CoinItem extends Item implements GeoItem {
         if(player.getCapability(CapProvider.BEYONDER_STATS).resolve().isPresent()){
             BeyonderCapability cap = player.getCapability(CapProvider.BEYONDER_STATS).resolve().get();
             sequence = cap.getPathwaySequenceId();
-            seer = cap.getAbilitiesManager().hasAbility(Abilities.TYRANT_DIVINATION.getAblId());
-            appraiser = cap.getAbilitiesManager().hasAbility(Abilities.APPRAISAL.getAblId());
-            lucky = cap.getAbilitiesManager().hasAbility(Abilities.WHEEL_DIVINATION.getAblId()) && cap.getLuckManager().passesLuckCheck(0.7f, 0, 0, player.getRandom());
+            seer = cap.getAbilitiesManager().hasAbility(Abilities.TYRANT_DIVINATION.get().getAblId());
+            appraiser = cap.getAbilitiesManager().hasAbility(Abilities.APPRAISAL.get().getAblId());
+            lucky = cap.getAbilitiesManager().hasAbility(Abilities.WHEEL_DIVINATION.get().getAblId()) && cap.getLuckManager().passesLuckCheck(0.7f, 0, 0, player.getRandom());
         }
 
         DivinationResult result = MysticismHelper.doDivination(divinationTarget, player, sequence, player.getRandom());

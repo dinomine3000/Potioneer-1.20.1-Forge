@@ -61,7 +61,7 @@ public class ServerEventsTyrant {
         RulePylonBlockEntity be = DimensionChunkSavedData.getRulingPylon((ServerLevel) event.getEntity().level(), event.getEntity().getOnPos());
         if(be == null) return;
         event.getEntity().getCapability(CapProvider.BEYONDER_STATS).ifPresent(cap -> {
-            if(!cap.getAbilitiesManager().hasAbility(Abilities.AOJ.getAblId())) return;
+            if(!cap.getAbilitiesManager().hasAbility(Abilities.AOJ.get().getAblId())) return;
             boolean flag = AreaOfJurisdictionAbility.getCentersOfEnforcer(event.getEntity(), event.getEntity().level().dimension()).stream().anyMatch(
                     center -> be.getClaimedChunks().stream().anyMatch(chunkPos -> chunkPos.equals(new ChunkPos(center))));
             if(flag) ruleBroken(RulePylonAbility.Rule.AOJ, event.getEntity());
@@ -289,7 +289,7 @@ public class ServerEventsTyrant {
         if(event.getEntity().level().isClientSide()) return;
         Ability abl = event.getAbility();
         if(event.getAbility().isDownside()) return;
-        if(event.getAbility().getAbilityKey().isArtifactKey()) ruleBroken(RulePylonAbility.Rule.ARTIFACT, event.getEntity(), event.getEntity().getOnPos());
+        if(!event.getAbility().getAbilityInfo().getArtifactStack().isEmpty()) ruleBroken(RulePylonAbility.Rule.ARTIFACT, event.getEntity(), event.getEntity().getOnPos());
         event.getEntity().getCapability(CapProvider.BEYONDER_STATS).ifPresent(cap -> {
             //amplification
             WeakeningEffect weakening = (WeakeningEffect) cap.getEffectsManager().getEffect(BeyonderEffects.TYRANT_WEAKENING.getEffectId());
@@ -308,7 +308,7 @@ public class ServerEventsTyrant {
             if(aura != null && aura.isOrBetter(6)){
                 if(!cap.getLuckManager().passesLuckCheck(PotioneerAbilityConfig.AURA_MISCAST_CHANCE.get().floatValue(), 0, 0, event.getEntity().getRandom())){
                     event.setCanceled(true);
-                    cap.getAbilitiesManager().putAbilityOnCooldown(event.getAbility().getAbilityKey(), 20*5, event.getEntity());
+                    cap.getAbilitiesManager().putAbilityOnCooldown(event.getAbility().getInstanceId(), 20*5, event.getEntity());
                     event.getEntity().level().playSound(null, event.getEntity().getOnPos(), ModSounds.FAIL_CAST.get(), SoundSource.PLAYERS, 1, 1);
                 }
             }
@@ -318,7 +318,7 @@ public class ServerEventsTyrant {
             if(auraDownside != null){
                 if(!cap.getLuckManager().passesLuckCheck(PotioneerAbilityConfig.AURA_MISCAST_CHANCE.get().floatValue(), 0, 0, event.getEntity().getRandom())){
                     event.setCanceled(true);
-                    cap.getAbilitiesManager().putAbilityOnCooldown(event.getAbility().getAbilityKey(), 20*5, event.getEntity());
+                    cap.getAbilitiesManager().putAbilityOnCooldown(event.getAbility().getInstanceId(), 20*5, event.getEntity());
                     event.getEntity().level().playSound(null, event.getEntity().getOnPos(), ModSounds.FAIL_CAST.get(), SoundSource.PLAYERS, 1, 1);
                 }
             }

@@ -2,6 +2,7 @@ package net.dinomine.potioneer.beyonder.pathways;
 
 import net.dinomine.potioneer.beyonder.abilities.Abilities;
 import net.dinomine.potioneer.beyonder.abilities.Ability;
+import net.dinomine.potioneer.beyonder.abilities.AbilityFactory;
 import net.dinomine.potioneer.beyonder.player.BeyonderStats;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
@@ -74,17 +75,11 @@ public class RedPriestPathway extends BeyonderPathway {
         return stats;
     }
 
-
     @Override
-    public List<Ability> getAbilities(int sequence){
-        return getAbilities(sequence%10, sequence%10);
-    }
+    public List<AbilityFactory> getAbilities(int ofSequenceLevel){
+        ArrayList<AbilityFactory> abilities = new ArrayList<>();
 
-    @Override
-    public List<Ability> getAbilities(int ofSequenceLevel, int atSequenceLevel){
-        ArrayList<Ability> abilities = new ArrayList<>();
-
-        switch(ofSequenceLevel%10){
+        /*switch(ofSequenceLevel%10){
             case 0:
             case 1:
             case 2:
@@ -93,19 +88,19 @@ public class RedPriestPathway extends BeyonderPathway {
             case 5:
             case 6:
             case 7:
-                abilities.add(Abilities.FIRE_AURA.create(atSequenceLevel));
-                abilities.add(Abilities.FIRE_BUFF.create(atSequenceLevel));
-                abilities.add(Abilities.FIRE_BALL.create(atSequenceLevel));
-                abilities.add(Abilities.FIRE_SWORD.create(atSequenceLevel));
+                abilities.add(Abilities.FIRE_AURA.get());
+                abilities.add(Abilities.FIRE_BUFF.get());
+                abilities.add(Abilities.FIRE_BALL.get());
+                abilities.add(Abilities.FIRE_SWORD.get());
             case 8:
-                abilities.add(Abilities.PRIEST_LIGHT.create(atSequenceLevel));
-                abilities.add(Abilities.LIGHT_BUFF.create(atSequenceLevel));
-                abilities.add(Abilities.HEALING.create(atSequenceLevel));
-                abilities.add(Abilities.MELT_ABILITY.create(atSequenceLevel));
-                abilities.add(Abilities.PURIFICATION.create(atSequenceLevel));
+                abilities.add(Abilities.PRIEST_LIGHT.get());
+                abilities.add(Abilities.LIGHT_BUFF.get());
+                abilities.add(Abilities.HEALING.get());
+                abilities.add(Abilities.MELT_ABILITY.get());
+                abilities.add(Abilities.PURIFICATION.get());
             case 9:
-                abilities.add(Abilities.WEAPON_PROFICIENCY.create(atSequenceLevel));
-        }
+                abilities.add(Abilities.WEAPON_PROFICIENCY.get());
+        }*/
 
         Collections.reverse(abilities);
         return abilities;
@@ -144,4 +139,8 @@ public class RedPriestPathway extends BeyonderPathway {
         };
     }
 
+    @Override
+    public AbilityFactory getCogitationAbility() {
+        return Abilities.COGITATION_RP.get();
+    }
 }

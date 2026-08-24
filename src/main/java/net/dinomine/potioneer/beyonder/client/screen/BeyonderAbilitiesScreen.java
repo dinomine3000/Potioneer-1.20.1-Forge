@@ -7,8 +7,6 @@ import net.dinomine.potioneer.beyonder.client.KeyBindings;
 import net.dinomine.potioneer.beyonder.client.TooltipHelper;
 import net.dinomine.potioneer.beyonder.pathways.Pathways;
 import net.dinomine.potioneer.util.CustomImageButton;
-import net.dinomine.potioneer.util.PotioneerMathHelper;
-import net.dinomine.potioneer.util.misc.ArtifactHolder;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
@@ -19,12 +17,9 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
-import org.apache.commons.lang3.StringUtils;
+import net.minecraft.world.item.ItemStack;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.LinkedHashSet;
+import java.util.*;
 
 import static net.dinomine.potioneer.beyonder.client.HUD.AbilitiesHotbarHUD.*;
 
@@ -142,15 +137,6 @@ public class BeyonderAbilitiesScreen extends Screen {
                     187, 123, 13, TEXTURE, TEXTURE_WIDTH, TEXTURE_HEIGHT, btn -> {addAbilityToQuickSelect();});
             removeFromQuickSelectButton.setTooltip(Tooltip.create(Component.translatable("gui.potioneer.remove_from_quick")));
 
-            goToMainMenuButton = new ImageButton(leftPos + 4, topPos + 165, 43, 18,
-                    132, 277, 0, TEXTURE, TEXTURE_WIDTH, TEXTURE_HEIGHT, btn -> {BeyonderScreen.goToMainMenu();});
-            addRenderableWidget(goToMainMenuButton);
-            goToOptionsMenu = new ImageButton(leftPos + 89, topPos + 165, 43, 18,
-                    132, 277, 0, TEXTURE, TEXTURE_WIDTH, TEXTURE_HEIGHT, btn -> {BeyonderScreen.goToOptionsMenu();});
-            addRenderableWidget(goToOptionsMenu);
-            goToAllyMenu = new ImageButton(leftPos + 131, topPos + 165, 43, 18,
-                    132, 277, 0, TEXTURE, TEXTURE_WIDTH, TEXTURE_HEIGHT, btn -> {BeyonderScreen.goToAllyMenu();});
-            addRenderableWidget(goToAllyMenu);
 
             addRenderableWidget(addToHotbarButton);
             addRenderableWidget(removeFromHotbarButton);
@@ -160,6 +146,16 @@ public class BeyonderAbilitiesScreen extends Screen {
             addWidget(descriptionOffsetRightButton);
             updateHotbarButton();
         }
+
+        goToMainMenuButton = new ImageButton(leftPos + 4, topPos + 165, 43, 18,
+                132, 277, 0, TEXTURE, TEXTURE_WIDTH, TEXTURE_HEIGHT, btn -> {BeyonderScreen.goToMainMenu();});
+        addRenderableWidget(goToMainMenuButton);
+        goToOptionsMenu = new ImageButton(leftPos + 89, topPos + 165, 43, 18,
+                132, 277, 0, TEXTURE, TEXTURE_WIDTH, TEXTURE_HEIGHT, btn -> {BeyonderScreen.goToOptionsMenu();});
+        addRenderableWidget(goToOptionsMenu);
+        goToAllyMenu = new ImageButton(leftPos + 131, topPos + 165, 43, 18,
+                132, 277, 0, TEXTURE, TEXTURE_WIDTH, TEXTURE_HEIGHT, btn -> {BeyonderScreen.goToAllyMenu();});
+        addRenderableWidget(goToAllyMenu);
     }
 
     @Override
@@ -195,15 +191,15 @@ public class BeyonderAbilitiesScreen extends Screen {
 
     private void addAbilityToQuickSelect(){
         int caretToAdd = selectedCaret;
-        AbilityKey key = abilities.get(caretToAdd).getKey();
-        if(!ClientAbilitiesData.hasAbility(key)){
+        UUID ablId = abilities.get(caretToAdd).getInstanceId();
+        if(!ClientAbilitiesData.hasAbility(ablId)){
             refreshAbilitiesScreen();
             return;
         }
-        if(ClientAbilitiesData.getQuickAbility().equals(key)){
-            ClientAbilitiesData.setQuickAbility(new AbilityKey());
+        if(ClientAbilitiesData.isQuickAbility(ablId)){
+            ClientAbilitiesData.setQuickAbility(null);
         } else {
-            ClientAbilitiesData.setQuickAbility(key);
+            ClientAbilitiesData.setQuickAbility(ablId);
         }
         updateHotbarButton();
         ClientAbilitiesData.setHotbarChanged();
@@ -218,15 +214,15 @@ public class BeyonderAbilitiesScreen extends Screen {
 
     private void addAbilityToHotbar(){
         int caretToAdd = selectedCaret;
-        AbilityKey key = abilities.get(caretToAdd).getKey();
-        if(!ClientAbilitiesData.hasAbility(key)){
+        UUID ablId = abilities.get(caretToAdd).getInstanceId();
+        if(!ClientAbilitiesData.hasAbility(ablId)){
             refreshAbilitiesScreen();
             return;
         }
-        if(!ClientAbilitiesData.getHotbar().contains(key)){
-            ClientAbilitiesData.getHotbar().add(key);
+        if(!ClientAbilitiesData.getHotbar().contains(ablId)){
+            ClientAbilitiesData.getHotbar().add(ablId);
         } else {
-            ClientAbilitiesData.getHotbar().remove(key);
+            ClientAbilitiesData.getHotbar().remove(ablId);
         }
         ClientAbilitiesData.updateCaret();
         updateHotbarButton();
@@ -235,7 +231,7 @@ public class BeyonderAbilitiesScreen extends Screen {
 
     private void updateHotbarButton(){
         int abilityCaret = selectedCaret;
-        AbilityKey ablId = abilities.get(abilityCaret).getKey();
+        UUID ablId = abilities.get(abilityCaret).getInstanceId();
         if(!ClientAbilitiesData.getHotbar().contains(ablId)){
             addToHotbarButton.active = true;
             addToHotbarButton.visible = true;
@@ -248,7 +244,7 @@ public class BeyonderAbilitiesScreen extends Screen {
             removeFromHotbarButton.visible = true;
         }
 
-        if(ClientAbilitiesData.getQuickAbility().equals(ablId)){
+        if(ClientAbilitiesData.isQuickAbility(ablId)){
             addToQuickSelectButton.active = false;
             addToQuickSelectButton.visible = false;
             removeFromQuickSelectButton.active = true;
@@ -262,11 +258,11 @@ public class BeyonderAbilitiesScreen extends Screen {
     }
 
     private void castAbilityAt(boolean primary){
-        if(!ClientAbilitiesData.hasAbility(abilities.get(selectedCaret).getKey())){
+        if(!ClientAbilitiesData.hasAbility(abilities.get(selectedCaret).getInstanceId())){
             refreshAbilitiesScreen();
             return;
         }
-        ClientAbilitiesData.useAbility(Minecraft.getInstance().player, abilities.get(selectedCaret).getKey(), primary);
+        ClientAbilitiesData.useAbility(Minecraft.getInstance().player, abilities.get(selectedCaret).getInstanceId(), primary);
     }
 
     private void changeCaret(int buttonIdx){
@@ -292,8 +288,9 @@ public class BeyonderAbilitiesScreen extends Screen {
     }
     private void drawAbilityIcon(GuiGraphics pGuiGraphics, int posX, int posY, float scale, int abilityIndex, boolean main, int mouseX, int mouseY){
         AbilityInfo data = abilities.get(abilityIndex);
-        AbilityKey key = data.getKey();
-        if(!ClientAbilitiesData.hasAbility(key)){
+        UUID instanceId = data.getInstanceId();
+        ResourceLocation ablId = data.getAbilityId();
+        if(!ClientAbilitiesData.hasAbility(ablId)){
             refreshAbilitiesScreen();
             return;
         }
@@ -301,15 +298,12 @@ public class BeyonderAbilitiesScreen extends Screen {
 
         //name title
         if(main){
-
-
             Component name = Ability.getNameComponent(getAbilityDescriptionId(data, abilityDescOffset));
             pGuiGraphics.drawString(this.font, name, leftPos + 24 + imageWidth/2 - this.font.width(name)/2, topPos + 9, 0, false);
         }
 
         //right click functionality
-        AbilityFactory abl = Abilities.getAbilityFactory(data.getKey());
-        if(main && abl.getHasSecondaryFunction(data.getSequenceLevel())){
+        if(main && data.isHasSecondary()){
             pGuiGraphics.blit(TEXTURE, leftPos + 165, topPos + 30, 7, 11, 178, 1, 7, 11, TEXTURE_WIDTH, TEXTURE_HEIGHT);
             if(mouseX >= leftPos + 165 && mouseX <= leftPos + 173
                     && mouseY >= topPos + 29 && mouseY <= topPos + 41){
@@ -318,14 +312,15 @@ public class BeyonderAbilitiesScreen extends Screen {
         }
 
         //artifact page BG
-        if(main && key.isArtifactKey()){
+        ItemStack artifactStack = ClientAbilitiesData.getArtifactItem(instanceId);
+        if(main && !artifactStack.isEmpty()){
             pGuiGraphics.blit(TEXTURE, leftPos + 3, topPos + 3, 55, 69, 0, 226,
                     55, 69, TEXTURE_WIDTH, TEXTURE_HEIGHT);
         }
 
         //cooldown gradient
         if(main){
-            float percent = Mth.clamp(1 - ((float) ClientAbilitiesData.getCooldown(key) / ClientAbilitiesData.getMaxCooldown(key)),
+            float percent = Mth.clamp(1 - ((float) ClientAbilitiesData.getCooldown(instanceId) / ClientAbilitiesData.getMaxCooldown(instanceId)),
                     0, 1);
             pGuiGraphics.fillGradient(posX - 7, (int) (posY - 9 + percent*58),
                     (int) (posX + 6 + scale*ICON_WIDTH), (int) (posY - 9 + 58), 0xDD696969, 0xDD424242);
@@ -335,19 +330,20 @@ public class BeyonderAbilitiesScreen extends Screen {
 
         }
         //icon itself
-        int abilityX = Pathways.getPathwayById(data.getPathwayId()).getAbilityX();
+        AbilityFactory ablFactory = Abilities.getFactory(ablId).get();
+        int abilityX = Pathways.getPathwayById(ablFactory.getPathwayId()).getAbilityX();
         pGuiGraphics.blit(ABILITY_ICONS, posX, posY, (int) (scale * ICON_WIDTH), (int)(scale * ICON_HEIGHT),
-                abilityX, abl.getPosY(), ICON_WIDTH, ICON_HEIGHT, ICONS_WIDTH, ICONS_HEIGHT);
+                abilityX, data.getPosY(), ICON_WIDTH, ICON_HEIGHT, ICONS_WIDTH, ICONS_HEIGHT);
 
         //quick and hotbar symbols
         if(!main){
             boolean hotbarFlag = false;
-            if(ClientAbilitiesData.getHotbar().contains(key)){
+            if(ClientAbilitiesData.getHotbar().contains(instanceId)){
                 pGuiGraphics.blit(TEXTURE, posX + 134, posY + 2, 8, 8,
                         193, 152, 7, 7, TEXTURE_WIDTH, TEXTURE_HEIGHT);
                 hotbarFlag = true;
             }
-            if(ClientAbilitiesData.getQuickAbility().equals(key)){
+            if(ClientAbilitiesData.isQuickAbility(instanceId)){
                 pGuiGraphics.blit(TEXTURE, posX + (hotbarFlag ? 120: 130), posY, 12, 12,
                         176, 149, 16, 16, TEXTURE_WIDTH, TEXTURE_HEIGHT);
             }
@@ -356,12 +352,12 @@ public class BeyonderAbilitiesScreen extends Screen {
         //enabled gradient
         if(main){
             //enabled gradient
-            if(!ClientAbilitiesData.isEnabled(key)){
+            if(!ClientAbilitiesData.isEnabled(instanceId)){
                 pGuiGraphics.fillGradient(posX - 7, posY-9,
                         (int) (posX + 6 + scale*ICON_WIDTH), (int) (posY - 9 + 58), 0x44440000, 0x44660000);
             }
             //barrier symbol if ability is disabled
-            if(ClientAbilitiesData.getCooldown(key) < 0){
+            if(ClientAbilitiesData.getCooldown(instanceId) < 0){
                 //Copied from the icons part
                 pGuiGraphics.blit(ABILITY_ICONS, posX, posY,
                         (int)(ICON_WIDTH*scale), (int)(ICON_HEIGHT*scale), 130, 4, ICON_WIDTH, ICON_HEIGHT, ICONS_WIDTH, ICONS_HEIGHT);
@@ -376,18 +372,13 @@ public class BeyonderAbilitiesScreen extends Screen {
         }
 
         //itemstack for artifact
-        if(main && key.isArtifactKey()){
-            ArtifactHolder artifact = ClientAbilitiesData.getArtifact(key);
-            if(artifact == null){
-                System.out.println("Warning: Can't render item as artifact is null with key = " + key);
-                return;
-            }
+        if(main && !artifactStack.isEmpty()){
             pGuiGraphics.blit(TEXTURE, leftPos + 36, topPos + 49, 22, 23, 55, 226,
                     22, 23, TEXTURE_WIDTH, TEXTURE_HEIGHT);
-            pGuiGraphics.renderFakeItem(artifact.getStack(), leftPos + 39, topPos + 52);
+            pGuiGraphics.renderFakeItem(artifactStack, leftPos + 39, topPos + 52);
             if(mouseX > leftPos + 36 && mouseX < leftPos + 36 + 22
                     && mouseY > topPos + 49 && mouseY < topPos + 49 + 23){
-                pGuiGraphics.renderTooltip(this.font, artifact.getStack().getDisplayName(), mouseX, mouseY);
+                pGuiGraphics.renderTooltip(this.font, artifactStack.getDisplayName(), mouseX, mouseY);
             }
         }
 
@@ -503,7 +494,7 @@ public class BeyonderAbilitiesScreen extends Screen {
 
     private static boolean hasPreviousDescription(AbilityInfo data, int currentOffset){
         if(data == null) return false;
-        LinkedHashSet<String> otherDescriptions = data.allDescIds();
+        LinkedHashSet<String> otherDescriptions = data.getAllDescIds();
         if(otherDescriptions.isEmpty()) return false;
         return otherDescriptions.size() > currentOffset;
     }
@@ -515,10 +506,10 @@ public class BeyonderAbilitiesScreen extends Screen {
 
     private static String getAbilityDescriptionId(AbilityInfo data, int descriptionOffset){
         if(data == null) return "";
-        if(descriptionOffset == 0) return data.descId();
-        LinkedHashSet<String> otherDescriptions = data.allDescIds();
-        if(otherDescriptions.isEmpty()) return data.descId();
-        if(otherDescriptions.size() < descriptionOffset) return data.descId();
+        if(descriptionOffset == 0) return data.getDescId();
+        LinkedHashSet<String> otherDescriptions = data.getAllDescIds();
+        if(otherDescriptions.isEmpty()) return data.getDescId();
+        if(otherDescriptions.size() < descriptionOffset) return data.getDescId();
         return new ArrayList<>(otherDescriptions).get(descriptionOffset - 1);
 
     }

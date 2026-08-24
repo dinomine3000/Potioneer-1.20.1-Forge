@@ -22,17 +22,27 @@ public class CooldownAbility extends PassiveAbility {
     private static final int effectRadius = 16;
     private static final int minCooldown = 5*20;
     private static final int maxCooldown = 120*20;
-    public CooldownAbility(int sequence){
-        super(sequence, BeyonderEffects.WHEEL_COOLDOWN_DEFENCE, level -> "aoe_cooldown");
+    private int cost = 0;
+    public CooldownAbility(){
+        super(BeyonderEffects.WHEEL_COOLDOWN_DEFENCE, level -> "aoe_cooldown");
+    }
+
+    @Override
+    public void init() {
         enabledOnAcquire();
         canFlip();
         this.defaultMaxCooldown = 20*20;
-        withCost(level-> 10 + 10*(9-level));
+        cost = 10 + 10*(9-getSequenceLevel());
+    }
+
+    @Override
+    protected boolean hasSecondary(int level) {
+        return true;
     }
 
     @Override
     protected BeyonderEffect createEffectInstance(BeyonderCapability cap, LivingEntity target) {
-        return effect.createInstance(sequenceLevel, 0, -1, true);
+        return effect.createInstance(getSequenceLevel(), 0, -1, true);
     }
 
     public static BeyonderEffect createCooldownEffectInstance(int sequenceLevel, int minCooldown, int maxCooldown, int durationTicks){
@@ -43,10 +53,10 @@ public class CooldownAbility extends PassiveAbility {
 
     @Override
     protected boolean primary(BeyonderCapability cap, LivingEntity target) {
-        if(cap.getSpirituality() < cost()) return false;
+        if(cap.getSpirituality() < cost) return false;
         ParticleMaker.summonAOEParticles(target.level(), target.position(), 2*effectRadius, effectRadius, ParticleMaker.Preset.AOE_END_ROD);
         if(target.level().isClientSide()) return true;
-        cap.requestActiveSpiritualityCost(cost());
+        cap.requestActiveSpiritualityCost(cost);
         List<LivingEntity> victims = AbilityFunctionHelper.getLivingEntitiesAround(target, effectRadius);
         for(LivingEntity ent: victims){
             if(!PotioneerAbilityConfig.COOLDOWN_TARGET_ALLIES.get() && ent instanceof Player playerVictim && target instanceof Player playerCaster && playerVictim != playerCaster){

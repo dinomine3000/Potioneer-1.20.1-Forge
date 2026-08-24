@@ -26,21 +26,16 @@ import net.minecraftforge.common.ForgeMod;
 import static net.minecraft.world.level.block.DoorBlock.OPEN;
 
 public class DoorOpeningAbility extends Ability {
+    private int cost = 5;
 
     @Override
     protected String getMainDescId(int sequenceLevel) {
         return "door_opening";
     }
 
-    public DoorOpeningAbility(int sequence){
-//        this.info = new AbilityInfo(57, 80, "Door Opening", 20+sequence, , 20, "door_opening");
-        super(sequence);
-        withCost(5);
-    }
-
     @Override
     protected boolean primary(BeyonderCapability cap, LivingEntity target) {
-        if(target.level().isClientSide() || cap.getSpirituality() < cost()) return false;
+        if(target.level().isClientSide() || cap.getSpirituality() < cost) return false;
         Level level = target.level();
         BlockPos pos = target.getOnPos().above();
         Direction dir = target.getDirection();
@@ -50,7 +45,7 @@ public class DoorOpeningAbility extends Ability {
             BlockState blockTar = level.getBlockState(rayTrace.getBlockPos());
             if(blockTar.is(BlockTags.DOORS) && blockTar.getBlock() instanceof DoorBlock door){
                 door.setOpen(null, level, blockTar, rayTrace.getBlockPos(), !blockTar.getValue(OPEN));
-                cap.requestActiveSpiritualityCost(cost());
+                cap.requestActiveSpiritualityCost(cost);
                 return true;
             }
         }
@@ -64,7 +59,7 @@ public class DoorOpeningAbility extends Ability {
                 if(isValidBlockposToTeleportTo(pos.offset(newX*(i+1), 0, newZ*(i+1)), level)){
                     BlockPos endPos = pos.offset(newX*(i+1), 0, newZ*(i+1));
                     if(BlinkAbility.teleport(target, (ServerLevel) level, endPos, target.getXRot(), target.getYRot())){
-                        cap.requestActiveSpiritualityCost(cost()*(1+i));
+                        cap.requestActiveSpiritualityCost(cost*(1+i));
                     }
                     return true;
                 }

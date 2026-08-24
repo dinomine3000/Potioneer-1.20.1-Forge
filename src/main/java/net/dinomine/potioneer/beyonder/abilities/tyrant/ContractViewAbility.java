@@ -19,10 +19,6 @@ public class ContractViewAbility extends Ability {
         setDataSilent(tag);
     }
 
-    public ContractViewAbility(int sequenceLevel) {
-        super(sequenceLevel);
-    }
-
     @Override
     protected boolean primary(BeyonderCapability cap, LivingEntity target, CompoundTag args) {
         if(!target.level().isClientSide()) return false;

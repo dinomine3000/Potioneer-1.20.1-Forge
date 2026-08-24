@@ -12,9 +12,6 @@ import net.minecraft.world.entity.LivingEntity;
 import java.util.List;
 
 public class AuraDownside extends Downside {
-    public AuraDownside(int sequenceLevel) {
-        super(sequenceLevel);
-    }
 
     @Override
     public void passive(BeyonderCapability cap, LivingEntity target) {
@@ -25,7 +22,7 @@ public class AuraDownside extends Downside {
         List<LivingEntity> hits = AbilityFunctionHelper.getLivingEntitiesAround(target, 16);
         for(LivingEntity hit: hits){
             if(target.is(hit)) continue;
-            AuraDownsideEffect eff = (AuraDownsideEffect) BeyonderEffects.TYRANT_AURA_DOWNSIDE.createInstance(sequenceLevel, 0, 20*20, true);
+            AuraDownsideEffect eff = (AuraDownsideEffect) BeyonderEffects.TYRANT_AURA_DOWNSIDE.createInstance(getSequenceLevel(), 0, 20*20, true);
             eff.setup(hit.getId());
             cap.getEffectsManager().addOrReplaceEffect(eff, cap, target);
             break;

@@ -28,17 +28,18 @@ import java.util.List;
 import java.util.function.Supplier;
 
 public class AnvilGuiAbility extends Ability {
-    private Supplier<Boolean> levelUp = () -> sequenceLevel < 8;
+
+    @Override
+    protected String getMainDescId(int sequenceLevel) {
+        return "anvil_gui_1";
+    }
+
+/*    private Supplier<Boolean> levelUp = () -> sequenceLevel < 8;
     public AnvilGuiAbility(int sequence){
 //        levelUp = sequence < 8;
 //        this.info = new AbilityInfo(109, levelUp ? 104 : 248, "Anvil Gui", 40 + sequence, levelUp ? 10 : 100, this.getMaxCooldown(), "anvil_gui_" + (levelUp ? "2" : "1"));
         super(sequence);
         setCost(level -> levelUp.get() ? 10 : 100);
-    }
-
-    @Override
-    protected String getMainDescId(int sequenceLevel) {
-        return "anvil_gui_" + (levelUp.get() ? "2" : "1");
     }
 
     @Override
@@ -102,5 +103,5 @@ public class AnvilGuiAbility extends Ability {
             }
         }
         return false;
-    }
+    }*/
 }

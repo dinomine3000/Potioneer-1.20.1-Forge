@@ -42,8 +42,8 @@ public class CalamityAbility extends AbilityWithOptions {
     private static final Supplier<Integer> WIND_COST = PotioneerAbilityConfig.CALAMITY_COST_WIND;
     private static final Supplier<Integer> WIND_COOLDOWN = PotioneerAbilityConfig.CALAMITY_COOLDOWN_WIND;
 
-    public CalamityAbility(int sequenceLevel) {
-        super(sequenceLevel);
+    @Override
+    public void init() {
         AbilityOptions options = new AbilityOptions()
                 .addEmptyOption("thunder", Component.literal("Thunder Strike"))
                 .addEmptyOption("luck", Component.literal("Bad Luck"))
@@ -116,7 +116,7 @@ public class CalamityAbility extends AbilityWithOptions {
         if(cap.getSpirituality() < RAIN_COST.get()) return false;
         if(target.level().isRaining()) return false;
         if(target.level().isClientSide()) return true;
-        doRain(target, sequenceLevel);
+        doRain(target, getSequenceLevel());
         setNextCooldownAs(RAIN_COOLDOWN.get());
         cap.requestActiveSpiritualityCost(RAIN_COST.get());
         digest(cap);

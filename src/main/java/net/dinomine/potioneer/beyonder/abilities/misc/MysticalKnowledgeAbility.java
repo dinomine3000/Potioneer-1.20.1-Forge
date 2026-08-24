@@ -13,17 +13,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public abstract class MysticalKnowledgeAbility extends Ability {
-    /**
-     * pass the sequence level or pathway-sequence id to define the abilities sequence level
-     * abilities that depend on changing pathways like Cogitation, that exists for every pathway, need to process their own pathway-sequence id here.
-     * I dont ask specifically for sequence level OR pathway id, but if you want to choose one, pass along the pathwaySequenceId.
-     *
-     * @param sequenceLevel
-     */
-    protected MysticalKnowledgeAbility(int sequenceLevel) {
-        super(sequenceLevel);
+    protected MysticalKnowledgeAbility() {
         this.isPassive = true;
-        this.isActive = false;
     }
 
     @Override
@@ -47,7 +38,7 @@ public abstract class MysticalKnowledgeAbility extends Ability {
     @Override
     public List<Page> getPages(){
         List<Page> result = new ArrayList<>(List.of());
-        result.addAll(getPages(sequenceLevel));
+        result.addAll(getPages(getSequenceLevel()));
         return result;
     }
 

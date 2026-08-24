@@ -26,26 +26,21 @@ import java.util.function.Supplier;
 
 public class AirBulletAbility extends Ability {
     private static final Supplier<Integer> EFFECT_DURATION = () -> 20*10;
+    private static final int cost = 50;
     @Override
     protected String getMainDescId(int sequenceLevel) {
         return "air_bullet";
     }
 
-    public AirBulletAbility(int sequence){
-        super(sequence);
+    @Override
+    public void init() {
+        super.init();
         defaultMaxCooldown = 20*30;
-        withCost(50);
     }
-
-//    @Override
-//    public AbilityInfo getAbilityinfo(int sequenceLevel) {
-//        return new AbilityInfo(57, 56, "Air Bullet", 20 + sequenceLevel, 60 + 10*(9-sequenceLevel), 5*20, "air_bullet");
-//    }
-
 
     @Override
     protected boolean primary(BeyonderCapability cap, LivingEntity caster) {
-        if(cap.getSpirituality() < cost()) return false;
+        if(cap.getSpirituality() < cost) return false;
         if(caster.level().isClientSide()) return true;
         double dist = Math.max((10 - getSequenceLevel())*8 - 8, 21);
         LivingEntity target = AbilityFunctionHelper.getLivingEntityLooking(caster, dist, 1);
@@ -60,7 +55,7 @@ public class AirBulletAbility extends Ability {
         PacketHandler.sendMessageToClientsAround(caster, 16,
                 new GeneralAreaEffectMessage(ParticleMaker.Preset.AIR_BULLET, eyePos, endPos, 0));
 
-        //cap.requestActiveSpiritualityCost(cost());
+        //cap.requestActiveSpiritualityCost(cost);
         caster.level().playSound(null, caster.getOnPos().above(), SoundEvents.GENERIC_EXTINGUISH_FIRE, SoundSource.PLAYERS, 1, 1);
 
         if(target.getMaxHealth() <= AirBulletEffect.DAMAGE) {
@@ -71,7 +66,7 @@ public class AirBulletAbility extends Ability {
         target.hurt(PotioneerDamage.air_bullet((ServerLevel) caster.level(), caster), 2);
 
         CapProvider.beyonder(target).ifPresent(targetCap -> {
-            targetCap.getEffectsManager().addEffectNoCheck(BeyonderEffects.MYSTERY_AIR_BULLET.createInstance(sequenceLevel, 0, EFFECT_DURATION.get(), false), targetCap, target);
+            targetCap.getEffectsManager().addEffectNoCheck(BeyonderEffects.MYSTERY_AIR_BULLET.createInstance(getSequenceLevel(), 0, EFFECT_DURATION.get(), false), targetCap, target);
         });
 
         return true;

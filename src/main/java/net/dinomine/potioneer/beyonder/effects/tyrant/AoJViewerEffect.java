@@ -1,6 +1,5 @@
 package net.dinomine.potioneer.beyonder.effects.tyrant;
 
-import net.dinomine.potioneer.beyonder.abilities.Abilities;
 import net.dinomine.potioneer.beyonder.abilities.Ability;
 import net.dinomine.potioneer.beyonder.abilities.tyrant.IAreaOfJurisdiction;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffect;
@@ -24,7 +23,7 @@ public class AoJViewerEffect extends BeyonderEffect {
         if(target.tickCount%20 == 0){
             List<BlockPos> centers = new ArrayList<>();
             List<Integer> sides = new ArrayList<>();
-            for(Ability abl: cap.getAbilitiesManager().getAbilities()){
+            for(Ability abl: cap.getAbilitiesManager().getAllAbilities()){
                 if(abl instanceof IAreaOfJurisdiction aojAbl){
                     String dimensionLocation = target.level().dimension().location().toString();
                     centers.addAll(aojAbl.getCenters(dimensionLocation));

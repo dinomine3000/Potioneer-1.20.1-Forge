@@ -16,20 +16,33 @@ public class VelocityAbility extends PassiveAbility {
 
     public static final Function<Integer, Integer> levelToMaxMovement = level -> Math.max(1, 9-level);
     public static final Function<Integer, Integer> levelToMaxAttack = level -> Math.max(1, 9-level);
+    private static final int COST = 3;
 
-    public VelocityAbility(int sequence){
+    public VelocityAbility(){
 //        this.info = new AbilityInfo(5, 32, "Mining Speed", sequence, 0, this.getMaxCooldown(), "mining");
-        super(sequence, BeyonderEffects.WHEEL_VELOCITY, level -> "velocity");
+        super(BeyonderEffects.WHEEL_VELOCITY, level -> "velocity");
+    }
+
+    @Override
+    protected boolean hasSecondary(int level) {
+        return true;
+    }
+
+    @Override
+    public void init() {
         CompoundTag tag = new CompoundTag();
         tag.putInt("movement", 1);
         tag.putInt("attack", 1);
         setDataSilent(tag);
+        enabledOnAcquire();
+        withThreshold(0.1f);
+        withCost(COST);
     }
 
     @Override
     protected BeyonderEffect createEffectInstance(BeyonderCapability cap, LivingEntity target) {
-        int cost = cost();
-        VelocityEffect eff = (VelocityEffect) effect.createInstance(sequenceLevel, cost, -1, true);
+        int cost = spiritualityCost;
+        VelocityEffect eff = (VelocityEffect) effect.createInstance(getSequenceLevel(), cost, -1, true);
         CompoundTag tag = getData();
         boolean flag = false;
         if(!tag.contains("movement")){

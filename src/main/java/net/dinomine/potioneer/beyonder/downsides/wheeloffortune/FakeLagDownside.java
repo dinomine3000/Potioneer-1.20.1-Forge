@@ -8,9 +8,6 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.LivingEntity;
 
 public class FakeLagDownside extends Downside {
-    public FakeLagDownside(int sequenceLevel) {
-        super(sequenceLevel);
-    }
 
     @Override
     protected String getMainDescId(int sequenceLevel) {

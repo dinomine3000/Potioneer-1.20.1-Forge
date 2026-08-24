@@ -6,7 +6,6 @@ import net.dinomine.potioneer.beyonder.player.BeyonderCapability;
 import net.minecraft.world.entity.LivingEntity;
 
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.function.Function;
 
 /**
@@ -29,28 +28,21 @@ public class PassiveAbility extends Ability {
      */
     protected float minimumSpiritualityThreshold = 0f;
     protected int minSpiritualityAbsolute = 0;
+    protected int spiritualityCost = 0;
     private final Function<Integer, String> descId;
     private final Function<Integer, LinkedHashSet<String>> otherDescIds;
-    private int duration = -1;
 
     protected int cooldownTicks = 0;
     private CooldownTrigger cooldownTrigger = CooldownTrigger.ON_REMOVE;
 
-    protected PassiveAbility(int sequenceLevel, BeyonderEffects.BeyonderEffectType effect, Function<Integer, String> descId){
-        this(sequenceLevel, effect, descId, null);
+    protected PassiveAbility(BeyonderEffects.BeyonderEffectType effect, Function<Integer, String> descId){
+        this(effect, descId, null);
     }
-    protected PassiveAbility(int sequenceLevel, BeyonderEffects.BeyonderEffectType effect, Function<Integer, String> descId, Function<Integer, LinkedHashSet<String>> otherDescs){
-        super(sequenceLevel);
+    protected PassiveAbility(BeyonderEffects.BeyonderEffectType effect, Function<Integer, String> descId, Function<Integer, LinkedHashSet<String>> otherDescs){
         this.effect = effect;
         this.descId = descId;
-        this.isPassive = true;
-        this.isActive = false;
         this.otherDescIds = otherDescs;
-    }
-
-    public PassiveAbility withDuration(int duration){
-        this.duration = duration;
-        return this;
+        this.isPassive = true;
     }
 
     public PassiveAbility withCooldown(int ticks) {
@@ -63,12 +55,17 @@ public class PassiveAbility extends Ability {
         return this;
     }
 
-    public static PassiveAbility createAbility(int level, BeyonderEffects.BeyonderEffectType effect, Function<Integer, String> descId){
-        return new PassiveAbility(level, effect, descId);
+    public PassiveAbility withCost(int cost) {
+        this.spiritualityCost = cost;
+        return this;
     }
 
-    public static PassiveAbility createAbility(int level, BeyonderEffects.BeyonderEffectType effect, Function<Integer, String> descId, Function<Integer, LinkedHashSet<String>> otherIds){
-        return new PassiveAbility(level, effect, descId, otherIds);
+    public static PassiveAbility createAbility(BeyonderEffects.BeyonderEffectType effect, Function<Integer, String> descId){
+        return new PassiveAbility(effect, descId);
+    }
+
+    public static PassiveAbility createAbility(BeyonderEffects.BeyonderEffectType effect, Function<Integer, String> descId, Function<Integer, LinkedHashSet<String>> otherIds){
+        return new PassiveAbility(effect, descId, otherIds);
     }
 
     /**
@@ -108,13 +105,6 @@ public class PassiveAbility extends Ability {
 
     public PassiveAbility withThreshold(int thresh){
         this.minSpiritualityAbsolute = thresh;
-        return this;
-    }
-
-    @Override
-    public Ability withActives(boolean isActive, boolean isPassive) {
-        this.isActive = isActive;
-        this.isPassive = true;
         return this;
     }
 
@@ -169,7 +159,7 @@ public class PassiveAbility extends Ability {
     }
 
     protected BeyonderEffect createEffectInstance(BeyonderCapability cap, LivingEntity target){
-        return effect.createInstance(sequenceLevel, cost(), -1, true);
+        return effect.createInstance(getSequenceLevel(), spiritualityCost, -1, true);
     }
 
     @Override
@@ -178,8 +168,8 @@ public class PassiveAbility extends Ability {
 
     @Override
     public void deactivate(BeyonderCapability cap, LivingEntity target) {
-        if (cap.getEffectsManager().hasEffect(effect.getEffectId(), sequenceLevel)) {
-            cap.getEffectsManager().removeEffect(effect.getEffectId(), sequenceLevel);
+        if (cap.getEffectsManager().hasEffect(effect.getEffectId(), getSequenceLevel())) {
+            cap.getEffectsManager().removeEffect(effect.getEffectId(), getSequenceLevel());
         }
     }
 }

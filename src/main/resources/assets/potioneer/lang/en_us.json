@@ -776,5 +776,6 @@
   "luck.potioneer.event_cast": "You feel a dire omen...",
   "message.potioneer.door_opening_too_thick": "Wall is too thick for your level.",
   "tooltip.potioneer.artifact_charge": "Charge left: %s seconds.",
-  "tooltip.potioneer.artifact_out_of_charge": "Item out of charge."
+  "tooltip.potioneer.artifact_out_of_charge": "Item out of charge.",
+  "ability.potioneer.cooldown_put": "%s has been put on cooldown"
 }

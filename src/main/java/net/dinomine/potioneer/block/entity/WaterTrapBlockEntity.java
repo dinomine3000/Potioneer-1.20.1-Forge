@@ -146,7 +146,7 @@ public class WaterTrapBlockEntity extends BlockEntity implements GeoBlockEntity 
                 Entity ent = AbilityFunctionHelper.getEntityAcrossDimensions(sLevel, id);
                 if(ent instanceof LivingEntity caster){
                     BeyonderCapability cap = caster.getCapability(CapProvider.BEYONDER_STATS).resolve().get();
-                    if(cap.getAbilitiesManager().hasAbilityOrBetter(Abilities.TYRANT_WATER_SPELLS.getAblId(), 7)){
+                    if(cap.getAbilitiesManager().hasAbilityOrBetter(Abilities.TYRANT_WATER_SPELLS.get().getAblId(), 7)){
                         UUID token = UUID.randomUUID();
                         CompoundTag dataTag = new CompoundTag();
                         dataTag.putInt("x", getBlockPos().getX());

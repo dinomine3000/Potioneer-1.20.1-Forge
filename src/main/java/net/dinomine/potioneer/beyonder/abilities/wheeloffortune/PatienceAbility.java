@@ -9,10 +9,19 @@ import net.minecraft.world.entity.LivingEntity;
 
 public class PatienceAbility extends PassiveAbility {
 
-    public PatienceAbility(int sequence){
+    public PatienceAbility(){
 //        this.info = new AbilityInfo(5, 296, "Patience", sequence, 0, getMaxCooldown(), "gambling");
-        super(sequence, BeyonderEffects.WHEEL_PATIENCE, level -> level < 7 ? "patience_2" : "patience_1");
+        super(BeyonderEffects.WHEEL_PATIENCE, level -> level < 7 ? "patience_2" : "patience_1");
+    }
+
+    @Override
+    public void init() {
         canFlip();
+    }
+
+    @Override
+    protected boolean hasSecondary(int level) {
+        return true;
     }
 
     @Override

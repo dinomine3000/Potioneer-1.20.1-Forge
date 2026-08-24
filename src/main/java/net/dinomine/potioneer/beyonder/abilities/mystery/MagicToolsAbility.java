@@ -13,8 +13,9 @@ import net.minecraft.world.item.ItemStack;
 import java.util.List;
 
 public class MagicToolsAbility extends MysticalKnowledgeAbility {
-    public MagicToolsAbility(int sequenceLevel) {
-        super(sequenceLevel);
+    @Override
+    protected boolean hasSecondary(int level) {
+        return true;
     }
 
     @Override
@@ -26,7 +27,7 @@ public class MagicToolsAbility extends MysticalKnowledgeAbility {
         if(abl == null) return false;
         ItemStack stack = target.getMainHandItem();
         if(!MysticalItemHelper.isValidItemForArtifact(stack)) return false;
-        ItemStack item = MysticalItemHelper.generateMysticalItem(stack, abl.getAbilityId(), abl.getSequenceLevel(), 0);
+        ItemStack item = MysticalItemHelper.generateMysticalItem(stack, abl, 5*60);
         MysticalItemHelper.chargeArtifact(item, cost, player);
         cap.requestActiveSpiritualityCost(cost);
         return true;

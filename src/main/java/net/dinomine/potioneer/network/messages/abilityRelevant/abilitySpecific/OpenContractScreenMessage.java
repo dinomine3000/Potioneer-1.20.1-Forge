@@ -1,6 +1,5 @@
 package net.dinomine.potioneer.network.messages.abilityRelevant.abilitySpecific;
 
-import net.dinomine.potioneer.beyonder.abilities.AbilityKey;
 import net.dinomine.potioneer.beyonder.abilities.tyrant.ContractAbility;
 import net.dinomine.potioneer.beyonder.client.screen.ContractScreen;
 import net.minecraft.client.Minecraft;
@@ -19,13 +18,13 @@ import java.util.function.Supplier;
 public class OpenContractScreenMessage {
     public List<ContractAbility.ContractOption> options;
     public int id;
-    public AbilityKey key = null;
+    public UUID ablId = null;
     public boolean writer = true;
     public UUID casterId = null;
 
-    public OpenContractScreenMessage(List<ContractAbility.ContractOption> options, int targetId, AbilityKey key){
+    public OpenContractScreenMessage(List<ContractAbility.ContractOption> options, int targetId, UUID ablId){
         this.options = options;
-        this.key = key;
+        this.ablId = ablId;
         this.id = targetId;
     }
 
@@ -42,7 +41,7 @@ public class OpenContractScreenMessage {
         buf.writeInt(msg.id);
         buf.writeBoolean(msg.writer);
         if(msg.writer) {
-            msg.key.writeToBuffer(buf);
+            buf.writeUUID(msg.ablId);
         } else {
             buf.writeBoolean(msg.casterId != null);
             if(msg.casterId != null) {
@@ -62,8 +61,8 @@ public class OpenContractScreenMessage {
             UUID casterId = hasCasterId ? buffer.readUUID() : null;
             return new OpenContractScreenMessage(options.get(0), options.get(1), id, casterId);
         }
-        AbilityKey key = AbilityKey.readFromBuffer(buffer);
-        return new OpenContractScreenMessage(options, id, key);
+        UUID ablId = buffer.readUUID();
+        return new OpenContractScreenMessage(options, id, ablId);
     }
 
     public static void handle(OpenContractScreenMessage msg, Supplier<NetworkEvent.Context> contextSupplier){
@@ -87,7 +86,7 @@ class ClientOpenContractScreen
 
     public static void handlePacket(OpenContractScreenMessage msg)
     {
-        if(msg.writer) Minecraft.getInstance().setScreen(new ContractScreen(msg.options, msg.id, msg.key));
+        if(msg.writer) Minecraft.getInstance().setScreen(new ContractScreen(msg.options, msg.id, msg.ablId));
         else ContractScreen.openContractToSign(msg.options.get(0), msg.options.get(1), msg.id, msg.casterId);
     }
 }

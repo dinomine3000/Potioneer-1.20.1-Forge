@@ -10,11 +10,11 @@ import net.minecraft.world.entity.LivingEntity;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
-import java.util.function.Function;
 
 public class AuraAbility extends PassiveAbility {
-    public AuraAbility(int sequenceLevel) {
-        super(sequenceLevel, BeyonderEffects.TYRANT_AURA_SOURCE, ign -> "");
+    private static final int cost = 1;
+    public AuraAbility() {
+        super(BeyonderEffects.TYRANT_AURA_SOURCE, ign -> "");
 
         canFlip().withThreshold(0.1f).withCost(10);
     }
@@ -40,7 +40,7 @@ public class AuraAbility extends PassiveAbility {
 
     @Override
     protected BeyonderEffect createEffectInstance(BeyonderCapability cap, LivingEntity target) {
-        AuraSourceEffect eff = (AuraSourceEffect) effect.createInstance(sequenceLevel, cost(), -1, true);
+        AuraSourceEffect eff = (AuraSourceEffect) effect.createInstance(getSequenceLevel(), cost, -1, true);
         eff.setCooldown(getData().getInt("aura_cooldown"), getInstanceId());
         return eff;
     }

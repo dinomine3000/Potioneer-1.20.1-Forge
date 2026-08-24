@@ -19,10 +19,11 @@ import java.util.List;
 
 public class TheftAbility extends Ability {
     private static final int LEVEL_FOR_TRADE_THEFT = 6;
-    public TheftAbility(int sequenceLevel) {
-        super(sequenceLevel);
+    private int cost = 10;
+
+    @Override
+    public void init() {
         defaultMaxCooldown = 20*2;
-        withCost(10);
     }
 
     @Override
@@ -32,14 +33,14 @@ public class TheftAbility extends Ability {
 
     @Override
     protected boolean primary(BeyonderCapability cap, LivingEntity caster) {
-        if(cap.getSpirituality() < cost() && sequenceLevel > 7) return false;
+        if(cap.getSpirituality() < cost && getSequenceLevel() > 7) return false;
         if(caster.level().isClientSide()) return true;
 
-        float extraReach = 0.5f + (9-sequenceLevel)*0.5f;
+        float extraReach = 0.5f + (9-getSequenceLevel())*0.5f;
         LivingEntity target = AbilityFunctionHelper.getLivingEntityLooking(caster, caster.getAttributeBaseValue(ForgeMod.ENTITY_REACH.get()) + extraReach, 0);
         if(target == null) return false;
 
-        cap.requestActiveSpiritualityCost(cost());
+        cap.requestActiveSpiritualityCost(cost);
         ItemStack ogStack = null;
         ItemStack toGive = null;
         if(!target.getMainHandItem().isEmpty()){
@@ -58,8 +59,8 @@ public class TheftAbility extends Ability {
             if(ogStack == null){
                 if(target instanceof Villager villager){
                     //try to steal a trade.
-                    if(sequenceLevel <= LEVEL_FOR_TRADE_THEFT || cap.getLuckManager().passesLuckCheck(0.1f, 50, 0, caster.getRandom())){
-                        toGive = stealVillagerTrade(villager, sequenceLevel <= LEVEL_FOR_TRADE_THEFT ? Integer.MAX_VALUE : 2 * (9 - sequenceLevel));
+                    if(getSequenceLevel() <= LEVEL_FOR_TRADE_THEFT || cap.getLuckManager().passesLuckCheck(0.1f, 50, 0, caster.getRandom())){
+                        toGive = stealVillagerTrade(villager, getSequenceLevel() <= LEVEL_FOR_TRADE_THEFT ? Integer.MAX_VALUE : 2 * (9 - getSequenceLevel()));
                     }
                     //otherwise, steal their inventory (where they keep them carrots!!)
                     if(toGive == null || toGive.isEmpty()){

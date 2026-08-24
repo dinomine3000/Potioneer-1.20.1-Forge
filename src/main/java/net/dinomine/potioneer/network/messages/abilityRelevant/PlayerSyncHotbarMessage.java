@@ -1,6 +1,5 @@
 package net.dinomine.potioneer.network.messages.abilityRelevant;
 
-import net.dinomine.potioneer.beyonder.abilities.AbilityKey;
 import net.dinomine.potioneer.beyonder.client.ClientAbilitiesData;
 import net.dinomine.potioneer.beyonder.player.CapProvider;
 import net.minecraft.network.FriendlyByteBuf;
@@ -11,14 +10,15 @@ import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.network.NetworkEvent;
 
 import java.util.ArrayList;
+import java.util.UUID;
 import java.util.function.Supplier;
 
 //message sent between server and client to keep the ability hotbar info between world loads
 public class PlayerSyncHotbarMessage {
-    public ArrayList<AbilityKey> hotbar;
-    public AbilityKey quick;
+    public ArrayList<UUID> hotbar;
+    public UUID quick;
 
-    public PlayerSyncHotbarMessage(ArrayList<AbilityKey> hotbar, AbilityKey quickAbility){
+    public PlayerSyncHotbarMessage(ArrayList<UUID> hotbar, UUID quickAbility){
         this.hotbar = new ArrayList<>(hotbar);
         this.quick = quickAbility;
     }
@@ -26,19 +26,24 @@ public class PlayerSyncHotbarMessage {
     public static void encode(PlayerSyncHotbarMessage msg, FriendlyByteBuf buffer){
         buffer.writeInt(msg.hotbar.size());
         for(int i = 0; i < msg.hotbar.size(); i++){
-            msg.hotbar.get(i).writeToBuffer(buffer);
+            buffer.writeUUID(msg.hotbar.get(i));
         }
-        msg.quick.writeToBuffer(buffer);
+        if(msg.quick == null) buffer.writeBoolean(false);
+        else{
+            buffer.writeBoolean(true);
+            buffer.writeUUID(msg.quick);
+        }
     }
 
     public static PlayerSyncHotbarMessage decode(FriendlyByteBuf buffer){
         int size = buffer.readInt();
-        ArrayList<AbilityKey> hotbar = new ArrayList<>();
+        ArrayList<UUID> hotbar = new ArrayList<>();
         for(int i = 0; i < size; i++){
-            hotbar.add(AbilityKey.readFromBuffer(buffer));
+            hotbar.add(buffer.readUUID());
         }
-
-        return new PlayerSyncHotbarMessage(hotbar, AbilityKey.readFromBuffer(buffer));
+        UUID quick = null;
+        if(buffer.readBoolean()) quick = buffer.readUUID();
+        return new PlayerSyncHotbarMessage(hotbar, quick);
     }
 
     public static void handle(PlayerSyncHotbarMessage msg, Supplier<NetworkEvent.Context> contextSupplier){

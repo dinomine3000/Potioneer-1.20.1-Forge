@@ -15,14 +15,22 @@ import java.util.LinkedHashSet;
 
 public class BribeAbility extends PassiveAbility {
     private final AbilityOptions options;
-    public BribeAbility(int sequenceLevel) {
-        super(sequenceLevel, BeyonderEffects.TYRANT_BRIBE, ign -> "bribe");
-        canFlip();
-        withActives(true, true);
+    public BribeAbility() {
+        super(BeyonderEffects.TYRANT_BRIBE, ign -> "bribe");
         options = new AbilityOptions()
                 .addEmptyOption("truce", Component.literal("Truce"))
                 .addEmptyOption("disorder", Component.literal("Disorder"))
                 .addEmptyOption("weakening", Component.literal("Weakening"));
+    }
+
+    @Override
+    public void init() {
+        canFlip();
+    }
+
+    @Override
+    protected boolean hasSecondary(int level) {
+        return true;
     }
 
     @Override

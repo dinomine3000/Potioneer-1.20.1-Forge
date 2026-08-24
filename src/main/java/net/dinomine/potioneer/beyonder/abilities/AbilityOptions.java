@@ -115,4 +115,6 @@ public class AbilityOptions {
     public List<AbilityOptions> getFurtherOptions(){
         return furtherOptions;
     }
+
+    public boolean isEmpty(){return furtherOptions.isEmpty();}
 }

@@ -27,10 +27,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.*;
 
 public class RulePylonAbility extends Ability implements IAreaOfJurisdiction {
-
-    public RulePylonAbility(int sequenceLevel) {
-        super(sequenceLevel);
-    }
+    private static final int cost = 25;
 
     @Override
     protected String getMainDescId(int sequenceLevel) {
@@ -55,7 +52,7 @@ public class RulePylonAbility extends Ability implements IAreaOfJurisdiction {
     }
 
     private boolean canAddNewPylon(MinecraftServer server, LivingEntity owner){
-        int max = getMaxPylons(sequenceLevel);
+        int max = getMaxPylons(getSequenceLevel());
         Set<BlockPos> pylons = DimensionChunkSavedData.getAllPylonPositionsOwnedBy(server, owner);
         return pylons.size() < max;
     }

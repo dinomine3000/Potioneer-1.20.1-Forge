@@ -34,7 +34,7 @@ public class AuraSourceEffect extends BeyonderEffect {
         wordCooldown += newCooldown;
         if(res) return true;
 
-        cap.getAbilitiesManager().getAbilities(Abilities.TYRANT_AURA.getAblId()).forEach(abl -> {
+        cap.getAbilitiesManager().getAllAbilities(Abilities.TYRANT_AURA.get().getAblId()).forEach(abl -> {
             abl.putOnCooldown(20*20, target);
             abl.setEnabled(cap, target, false);
         });

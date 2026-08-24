@@ -7,21 +7,18 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.LivingEntity;
 
 public class WaterDownside extends Downside {
-    public WaterDownside(int sequenceLevel) {
-        super(sequenceLevel);
-    }
 
     @Override
     protected boolean primary(BeyonderCapability cap, LivingEntity target) {
         if(target.level().isClientSide()) return true;
-        if(!cap.getLuckManager().passesLuckCheck(0.7f, 0, 0, target.getRandom())) cap.getEffectsManager().addOrRefreshEffect(BeyonderEffects.TYRANT_DROWNING.createInstance(sequenceLevel, 0, 20*10, true), cap, target);
+        if(!cap.getLuckManager().passesLuckCheck(0.7f, 0, 0, target.getRandom())) cap.getEffectsManager().addOrRefreshEffect(BeyonderEffects.TYRANT_DROWNING.createInstance(getSequenceLevel(), 0, 20*10, true), cap, target);
         return true;
     }
 
     @Override
     public void passive(BeyonderCapability cap, LivingEntity target) {
         if(target.level().isClientSide()) return;
-        if(target.isInWater()) cap.getEffectsManager().addOrRefreshEffect(BeyonderEffects.TYRANT_WATER_PRISON.createInstance(sequenceLevel, 0, 20, true), cap, target);
+        if(target.isInWater()) cap.getEffectsManager().addOrRefreshEffect(BeyonderEffects.TYRANT_WATER_PRISON.createInstance(getSequenceLevel(), 0, 20, true), cap, target);
     }
 
     @Override

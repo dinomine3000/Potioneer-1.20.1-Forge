@@ -16,10 +16,15 @@ import java.util.function.Supplier;
 
 public class GymnasticsAbility extends PassiveAbility {
     private static final Supplier<Integer> LEAP_COST = () -> 5;
-    public GymnasticsAbility(int sequenceLevel) {
-        super(sequenceLevel, BeyonderEffects.MYSTERY_GYMNASTICS, ign -> "gymnastics");
+    public GymnasticsAbility() {
+        super(BeyonderEffects.MYSTERY_GYMNASTICS, ign -> "gymnastics");
         enabledOnAcquire();
         canFlip();
+    }
+
+    @Override
+    protected boolean hasSecondary(int level) {
+        return true;
     }
 
     @Override

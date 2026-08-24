@@ -1,6 +1,7 @@
 package net.dinomine.potioneer.beyonder.effects.tyrant;
 
 import net.dinomine.potioneer.beyonder.abilities.AbilityFunctionHelper;
+import net.dinomine.potioneer.beyonder.abilities.AbilityInfo;
 import net.dinomine.potioneer.beyonder.abilities.DisabledAbilitiesManager;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffect;
 import net.dinomine.potioneer.beyonder.player.BeyonderCapability;
@@ -29,9 +30,9 @@ public class GeneralProhibitionEffect extends BeyonderEffect {
         }
         DisabledAbilitiesManager.DisabledAbilityProxy proxy = null;
         if(type.equalsIgnoreCase("artifact")){
-            proxy = DisabledAbilitiesManager.DisabledAbilityProxy.ofGroup(maxLife - lifetime, PlayerAbilitiesManager.AbilityList.ARTIFACT.name());
+            proxy = DisabledAbilitiesManager.DisabledAbilityProxy.ofGroup(maxLife - lifetime, AbilityInfo.Group.ARTIFACT);
         } else if(type.equalsIgnoreCase("intrinsic")) {
-            proxy = DisabledAbilitiesManager.DisabledAbilityProxy.notOfGroup(maxLife - lifetime, PlayerAbilitiesManager.AbilityList.INTRINSIC.name());
+            proxy = DisabledAbilitiesManager.DisabledAbilityProxy.notOfGroup(maxLife - lifetime, AbilityInfo.Group.INTRINSIC);
         }
         if(proxy != null) cap.getAbilitiesManager().getDisabledAbilitiesManager().disableAbility("prohibition", proxy, cap, target);
     }

@@ -3,7 +3,6 @@ package net.dinomine.potioneer.beyonder.client.screen;
 import com.mojang.blaze3d.platform.InputConstants;
 import net.dinomine.potioneer.Potioneer;
 import net.dinomine.potioneer.beyonder.abilities.Ability;
-import net.dinomine.potioneer.beyonder.abilities.AbilityKey;
 import net.dinomine.potioneer.beyonder.abilities.AbilityOptions;
 import net.dinomine.potioneer.beyonder.client.ClientAbilitiesData;
 import net.dinomine.potioneer.config.PotioneerClientConfig;
@@ -17,6 +16,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec2;
 
 import java.util.List;
+import java.util.UUID;
 
 public class AbilityOptionsScreen extends Screen {
     private static final Component TITLE = Component.translatable("gui." + Potioneer.MOD_ID + ".ability_options");
@@ -26,14 +26,14 @@ public class AbilityOptionsScreen extends Screen {
     private static final int MAX_ICON_SIZE = 24;
 
     private AbilityOptions options;
-    private final AbilityKey abilityKey;
+    private final UUID abilityKey;
     private final boolean castPrimary;
     private int mouseX, mouseY;
 
 
     public static void start(AbilityOptions rootOptions, Ability abl, boolean castPrimary) {
         Minecraft.getInstance().tell(() -> {
-            Minecraft.getInstance().setScreen(new AbilityOptionsScreen(rootOptions, abl.getAbilityKey(), castPrimary));
+            Minecraft.getInstance().setScreen(new AbilityOptionsScreen(rootOptions, abl.getInstanceId(), castPrimary));
         });
     }
 
@@ -51,7 +51,7 @@ public class AbilityOptionsScreen extends Screen {
         return super.keyPressed(pKeyCode, pScanCode, pModifiers);
     }
 
-    public AbilityOptionsScreen(AbilityOptions options, AbilityKey keyToCast, boolean castPrimary) {
+    public AbilityOptionsScreen(AbilityOptions options, UUID keyToCast, boolean castPrimary) {
         super(TITLE);
         this.options = options;
         this.abilityKey = keyToCast;

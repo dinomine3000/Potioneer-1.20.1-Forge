@@ -20,11 +20,20 @@ import java.util.function.Supplier;
 public class ArrestAbility extends PassiveAbility {
     private static final Supplier<Integer> MANUAL_CAST_COST = PotioneerAbilityConfig.ARREST_MANUAL_COST;
     private static final Supplier<Integer> CAST_COST = PotioneerAbilityConfig.ARREST_COST;
-    public ArrestAbility(int sequenceLevel) {
-        super(sequenceLevel, BeyonderEffects.TYRANT_ARREST_SOURCE, lv -> lv < 7 ? "arrest_2" : "arrest");
+    public ArrestAbility() {
+        super(BeyonderEffects.TYRANT_ARREST_SOURCE, lv -> lv < 7 ? "arrest_2" : "arrest");
+    }
+
+    @Override
+    public void init() {
         enabledOnAcquire();
-        canFlip(sequenceLevel < 7);
+        canFlip(getSequenceLevel() < 7);
         withCost(CAST_COST.get());
+    }
+
+    @Override
+    protected boolean hasSecondary(int level) {
+        return level <= 6;
     }
 
     @Override
@@ -42,7 +51,7 @@ public class ArrestAbility extends PassiveAbility {
         if(hits.isEmpty()) return false;
         boolean aoj = AreaOfJurisdictionAbility.isEntityInAOJ(target, target);
         PacketHandler.sendMessageToClientsAround(target, 4, new GeneralAreaEffectMessage(ParticleMaker.Preset.AOE_END_ROD, target.getOnPos().getCenter().toVector3f(), 4));
-        hits.forEach(ent -> ent.getCapability(CapProvider.BEYONDER_STATS).ifPresent(victimCap -> ArrestSourceEffect.applyArrestToRecipient(target, victimCap, ent, sequenceLevel, aoj)));
+        hits.forEach(ent -> ent.getCapability(CapProvider.BEYONDER_STATS).ifPresent(victimCap -> ArrestSourceEffect.applyArrestToRecipient(target, victimCap, ent, getSequenceLevel(), aoj)));
         cap.requestActiveSpiritualityCost(MANUAL_CAST_COST.get());
         setNextCooldownAs(20*5);
         cap.getCharacteristicManager().progressActing(TyrantPathway.ENFORCER_ACTING_ARREST, 17);

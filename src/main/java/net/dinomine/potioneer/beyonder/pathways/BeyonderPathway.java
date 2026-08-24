@@ -1,14 +1,19 @@
 package net.dinomine.potioneer.beyonder.pathways;
 
+import net.dinomine.potioneer.Potioneer;
 import net.dinomine.potioneer.beyonder.abilities.Ability;
+import net.dinomine.potioneer.beyonder.abilities.AbilityFactory;
 import net.dinomine.potioneer.beyonder.player.BeyonderStats;
 import net.dinomine.potioneer.rituals.spirits.Deity;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 
 import java.util.List;
 import java.util.Map;
+
+import static net.dinomine.potioneer.beyonder.client.HUD.AbilitiesHotbarHUD.ICONS;
 
 public abstract class BeyonderPathway {
     /**
@@ -70,19 +75,11 @@ public abstract class BeyonderPathway {
 //    }
 
     /**
-     * return all abilities given at this level or lower, with their sequence levels being the highest.
-     * @param sequenceLevel, like 5
-     * @return a list of all abilities given from sequences 9-5, all at level 5
-     */
-    public abstract List<Ability> getAbilities(int sequenceLevel);
-
-    /**
      * return all abilities given at sequenceLevel level or lower, with their sequence levels being atSequenceLevel.
      * @param sequenceLevel, like 5
-     * @param atSequenceLevel, like 3
      * @return a list of all abilities given from sequences 9-5, all at level 3
      */
-    public abstract List<Ability> getAbilities(int sequenceLevel, int atSequenceLevel);
+    public abstract List<AbilityFactory> getAbilities(int sequenceLevel);
 
     public Component getSequenceComponentFromId(int sequenceLevel){
         return Component.translatable("beyonder.potioneer.sequence." + getSequenceNameFromId(sequenceLevel, false));
@@ -145,4 +142,10 @@ public abstract class BeyonderPathway {
     public abstract Component getRitualDescriptionForSequence(int sequenceLevel);
 
     public List<String> canCraftEffectCharms(int sequenceLevel){return List.of();}
+
+    public ResourceLocation getIconTextureLocation() {
+        return ICONS;
+    }
+
+    public abstract AbilityFactory getCogitationAbility();
 }

@@ -13,15 +13,15 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.MenuType;
 
 public class ConjurerContainerAbility extends Ability {
-    public ConjurerContainerAbility(int sequence){
-//        this.info = new AbilityInfo(109, 176, "Conjure", 40 + sequence, 0, this.getMaxCooldown(), "conjure_container");
-        super(sequence);
-    }
-
     @Override
     protected String getMainDescId(int sequenceLevel) {
         return "conjure_container";
     }
+  /*  public ConjurerContainerAbility(int sequence){
+//        this.info = new AbilityInfo(109, 176, "Conjure", 40 + sequence, 0, this.getMaxCooldown(), "conjure_container");
+        super(sequence);
+    }
+
 
     @Override
     public boolean primary(BeyonderCapability cap, LivingEntity target) {
@@ -49,5 +49,5 @@ public class ConjurerContainerAbility extends Ability {
         }
 
         return false;
-    }
+    }*/
 }

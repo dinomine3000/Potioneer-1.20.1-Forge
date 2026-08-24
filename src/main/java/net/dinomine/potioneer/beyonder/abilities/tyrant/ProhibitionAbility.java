@@ -25,11 +25,11 @@ public class ProhibitionAbility extends AbilityWithOptions {
     public static final Supplier<Integer> PROHIBITION_RADIUS = PotioneerAbilityConfig.PROHIBITION_RADIUS;
     public static final Supplier<Integer> ABILITY_PROHIBITION_WINDOW = PotioneerAbilityConfig.PROHIBITION_ABILITY_WINDOW;
     public static final Supplier<Integer> ABILITY_PROHIBITION_DURATION = PotioneerAbilityConfig.PROHIBITION_ABILITY_DURATION;
-
-    public ProhibitionAbility(int sequenceLevel) {
-        super(sequenceLevel);
+    private int cost = 0;
+    @Override
+    public void init() {
         defaultMaxCooldown = PotioneerAbilityConfig.PROHIBITION_COOLDOWN.get();
-        withCost(PotioneerAbilityConfig.PROHIBITION_COST.get());
+        cost = PotioneerAbilityConfig.PROHIBITION_COST.get();
 
         AbilityOptions sOptions = new AbilityOptions()
                 .addEmptyOption("flying", Component.literal("Flying"))
@@ -39,6 +39,11 @@ public class ProhibitionAbility extends AbilityWithOptions {
                 .addEmptyOption("artifact", Component.literal("Artifact Abilities"))
                 .addEmptyOption("intrinsic", Component.literal("Extra Abilities"));
         setSecondaryOptions(sOptions);
+    }
+
+    @Override
+    protected boolean hasSecondary(int level) {
+        return true;
     }
 
     public void clearEffectForEveryone(Level level, LivingEntity caster){
@@ -79,7 +84,7 @@ public class ProhibitionAbility extends AbilityWithOptions {
         List<LivingEntity> hits = AbilityFunctionHelper.getLivingEntitiesAround(target, PROHIBITION_RADIUS.get());
         for(LivingEntity ent: hits){
             ent.getCapability(CapProvider.BEYONDER_STATS).ifPresent(entCap -> {
-                GeneralProhibitionEffect eff = (GeneralProhibitionEffect) BeyonderEffects.TYRANT_GENERAL_PROHIBITION.createInstance(sequenceLevel, 0, GENERAL_DURATION.get(), true);
+                GeneralProhibitionEffect eff = (GeneralProhibitionEffect) BeyonderEffects.TYRANT_GENERAL_PROHIBITION.createInstance(getSequenceLevel(), 0, GENERAL_DURATION.get(), true);
                 eff.type = args;
                 entCap.getEffectsManager().addOrReplaceEffect(eff, entCap, ent);
             });

@@ -1,8 +1,10 @@
 package net.dinomine.potioneer.beyonder.abilities.tyrant;
 
+import lombok.Getter;
+import net.dinomine.potioneer.beyonder.abilities.Abilities;
 import net.dinomine.potioneer.beyonder.abilities.Ability;
 import net.dinomine.potioneer.beyonder.abilities.AbilityFunctionHelper;
-import net.dinomine.potioneer.beyonder.abilities.AbilityKey;
+import net.dinomine.potioneer.beyonder.abilities.AbilityInfo;
 import net.dinomine.potioneer.beyonder.effects.tyrant.ContractedEffect;
 import net.dinomine.potioneer.beyonder.player.BeyonderCapability;
 import net.dinomine.potioneer.beyonder.player.CapProvider;
@@ -17,6 +19,7 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 
@@ -25,14 +28,15 @@ import java.util.List;
 import java.util.*;
 import java.util.function.Function;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
 
 public class ContractAbility extends Ability {
-    public ContractAbility(int sequenceLevel) {
-        super(sequenceLevel);
-        withCost(PotioneerAbilityConfig.CONTRACT_COST.get());
+    private int cost = 0;
+
+    @Override
+    public void init() {
+        cost = PotioneerAbilityConfig.CONTRACT_COST.get();
     }
 
     @Override
@@ -46,7 +50,7 @@ public class ContractAbility extends Ability {
             LivingEntity target = AbilityFunctionHelper.getLivingEntityLooking(caster, 2, 1);
             return startWritingContract(target, caster);
         } else {
-            if(cap.getSpirituality() < cost()) return false;
+            if(cap.getSpirituality() < cost) return false;
             Entity ent = caster.level().getEntity(args.getInt("target"));
             if(!(ent instanceof LivingEntity target)) return false;
             if(caster.level().isClientSide()) return true;
@@ -56,7 +60,7 @@ public class ContractAbility extends Ability {
             if(target instanceof Monster) return false;
 
             setNextCooldownAs(20*30);
-            cap.requestActiveSpiritualityCost(cost());
+            cap.requestActiveSpiritualityCost(cost);
             if(target instanceof Player){
                 UUID token = UUID.randomUUID();
                 int duration = 20*60;
@@ -88,24 +92,48 @@ public class ContractAbility extends Ability {
         setNextCooldownAs(0);
         if(target == null) return false;
         if(caster.level().isClientSide()) return true;
-        PacketHandler.sendMessageSTC(new OpenContractScreenMessage(buildOptions(sequenceLevel, target), target.getId(), this.getAbilityKey()), caster);
+        PacketHandler.sendMessageSTC(new OpenContractScreenMessage(buildOptions(target), target.getId(), getInstanceId()), caster);
         return true;
     }
 
-    private List<ContractOption> buildOptions(int sequenceLevel, LivingEntity targetEntity){
-        List<String> keys = new ArrayList<>(List.of());
+    private List<ContractOption> buildOptions(LivingEntity targetEntity){
+        List<String> abilityOptions = new ArrayList<>(List.of());
         targetEntity.getCapability(CapProvider.BEYONDER_STATS).ifPresent(cap -> {
-            cap.getAbilitiesManager().getAbilities().forEach(abl -> {
-                if(!abl.getType().equalsIgnoreCase(PlayerAbilitiesManager.AbilityList.INTRINSIC.name())) return;
-                keys.add(abl.getAbilityKey().toString());
+            cap.getAbilitiesManager().getAllAbilities(AbilityInfo.Group.INTRINSIC).forEach(abl -> {
+                abilityOptions.add(new ContractAbilityOption(abl).toString());
             });
         });
-        if(keys.isEmpty())
+        if(abilityOptions.isEmpty())
             return List.of(ContractOption.DAMAGE_BUFF, ContractOption.HEALTH_BUFF, ContractOption.REGENERATION_BUFF, ContractOption.UNDEAD_BUFF,ContractOption.STAMINA_BUFF,
                     ContractOption.NETHER_COND, ContractOption.UNDEAD_COND, ContractOption.HP_COND, ContractOption.SPIRITUALITY_COND);
         else
-            return List.of(ContractOption.DAMAGE_BUFF, ContractOption.HEALTH_BUFF, ContractOption.REGENERATION_BUFF, ContractOption.UNDEAD_BUFF, ContractOption.ABILITY_BUFF.apply(keys),
-                    ContractOption.NETHER_COND, ContractOption.UNDEAD_COND, ContractOption.HP_COND, ContractOption.SPIRITUALITY_COND, ContractOption.ABILITY_COND.apply(keys));
+            return List.of(ContractOption.DAMAGE_BUFF, ContractOption.HEALTH_BUFF, ContractOption.REGENERATION_BUFF, ContractOption.UNDEAD_BUFF, ContractOption.ABILITY_BUFF.apply(abilityOptions),
+                    ContractOption.NETHER_COND, ContractOption.UNDEAD_COND, ContractOption.HP_COND, ContractOption.SPIRITUALITY_COND, ContractOption.ABILITY_COND.apply(abilityOptions));
+    }
+
+    @Getter
+    public static class ContractAbilityOption{
+        private final ResourceLocation ablId;
+        private final String descId;
+        public ContractAbilityOption(ResourceLocation ablId, String descId){
+            this.ablId = ablId;
+            this.descId = descId;
+        }
+        public ContractAbilityOption(Ability abl){
+            this(abl.getAbilityId(), abl.getMainDescId());
+        }
+
+        public String toString(){
+            return ablId.toString().concat("/-/" + descId);
+        }
+
+        public static ContractAbilityOption fromString(String string){
+            String[] res = string.split("/-/");
+            if(res.length != 2) return null;
+            ResourceLocation ablId = new ResourceLocation(res[0]);
+            String desc = res[1];
+            return new ContractAbilityOption(ablId, desc);
+        }
     }
 
     public static class ContractOption {
@@ -118,11 +146,16 @@ public class ContractAbility extends Ability {
         private static final Map<String, ContractOption> REGISTRY = new HashMap<>();
         private static final Map<String, Function<List<String>, ContractOption>> FACTORY_REGISTRY = new HashMap<>();
 
+        @Getter
         private final String id;
+        @Getter
         private final OptionType type;
         private final String finalDescription;
+        @Getter
         private final Component previewComponent;
+        @Getter
         private final List<String> arguments;
+        @Getter
         private final int argumentsToChoose;
         private boolean valid = true;
         public ContractOption markInvalid(){valid = false;return this;}
@@ -302,21 +335,14 @@ public class ContractAbility extends Ability {
             return create(id, args, valid);
         }
 
-        // --- Getters ---
-
-        public String getId() { return id; }
-        public OptionType getType() { return type; }
         public Component getFinalComponent(Object... args) {
             return Component.translatable(finalDescription, args);
         }
-        public Component getPreviewComponent() { return previewComponent; }
-        public List<String> getArguments() { return arguments; }
-        public int getArgumentsToChoose() { return argumentsToChoose; }
 
         public Component getComponentForArgument(String argument) {
-            AbilityKey key = AbilityKey.fromString(argument);
-            if (key.isEmpty()) return Component.literal(argument);
-            return Ability.getNameComponent(key);
+            ContractAbilityOption ablOp = ContractAbilityOption.fromString(argument);
+            if(ablOp == null) return Component.literal(argument);
+            return Ability.getNameComponent(ablOp.descId);
         }
 
         public boolean isCondition() {

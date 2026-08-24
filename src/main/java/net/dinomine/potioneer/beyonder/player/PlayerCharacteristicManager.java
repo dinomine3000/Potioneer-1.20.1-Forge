@@ -1,6 +1,9 @@
 package net.dinomine.potioneer.beyonder.player;
 
 import net.dinomine.potioneer.beyonder.abilities.Ability;
+import net.dinomine.potioneer.beyonder.abilities.AbilityFactory;
+import net.dinomine.potioneer.beyonder.abilities.AbilityInfo;
+import net.dinomine.potioneer.beyonder.abilities.misc.CogitationAbility;
 import net.dinomine.potioneer.beyonder.pathways.BeyonderPathway;
 import net.dinomine.potioneer.beyonder.pathways.Pathways;
 import net.dinomine.potioneer.config.PotioneerGameplayConfig;
@@ -70,7 +73,7 @@ public class PlayerCharacteristicManager {
         actingProgress.put(characId, Mth.clamp(actingProgress.getOrDefault(characId, 0d)*(count-1d)/(count), 0, 1));
 
 
-        cap.getAbilitiesManager().grantIntrinsicAbilities(getAbilitiesFromCharacteristics(), getPathwaySequenceId(), true, cap, entity);
+        setAllAbilities(cap, entity);
         if(entity instanceof Player player) setAttributes(cap.getBeyonderStats(), player);
     }
 
@@ -100,7 +103,7 @@ public class PlayerCharacteristicManager {
             actingProgress.put(droppedCharacteristic, Mth.clamp(getActing(droppedCharacteristic)*(count+1d)/(count), 0d, 1d));
         }
 
-        setAllAbilities(cap, target, false);
+        setAllAbilities(cap, target);
         if(target instanceof Player player){
             setAttributes(cap.getBeyonderStats(), player);
         }
@@ -129,7 +132,7 @@ public class PlayerCharacteristicManager {
         }
 
         if(!characteristicsHolder.isEmpty()){
-            setAllAbilities(cap, target, false);
+            setAllAbilities(cap, target);
             if(target instanceof Player player){
                 setAttributes(cap.getBeyonderStats(), player);
                 cap.getBeyonderStats().applyStats(player, true);
@@ -337,7 +340,7 @@ public class PlayerCharacteristicManager {
         aptitudePathway = acting.getInt("aptitude");
 
         //get abilities
-        setAllAbilities(cap, target, true);
+        cap.getAbilitiesManager().loadIntrinsicAbilities(getAbilitiesFromCharacteristics(true));
 
         //set stats
         if(target instanceof Player player){
@@ -346,9 +349,9 @@ public class PlayerCharacteristicManager {
         }
     }
 
-    private void setAllAbilities(BeyonderCapability cap, LivingEntity target, boolean fromLoading) {
-        List<Ability> allAbilities = getAbilitiesFromCharacteristics();
-        cap.getAbilitiesManager().grantIntrinsicAbilities(allAbilities, getPathwaySequenceId(), !fromLoading, cap, target);
+    private void setAllAbilities(BeyonderCapability cap, LivingEntity target) {
+        List<Ability> allAbilities = getAbilitiesFromCharacteristics(false);
+        cap.getAbilitiesManager().setAndInitializeIntrinsicAbilities(allAbilities, getPathwaySequenceId(), cap, target);
     }
 
     public void copyFrom(PlayerCharacteristicManager other) {
@@ -358,7 +361,7 @@ public class PlayerCharacteristicManager {
         aptitudePathway = other.aptitudePathway;
     }
 
-    public List<Ability> getAbilitiesFromCharacteristics() {
+    public List<Ability> getAbilitiesFromCharacteristics(boolean includeCogitation) {
         //get all abilities from characteristics
         //create cogitation ability based on last consumed characteristic
         //update the abilities manager
@@ -366,11 +369,13 @@ public class PlayerCharacteristicManager {
 
 
         int pathwaySequenceId = getPathwaySequenceId();
-        List<Ability> newAbilities = new ArrayList<>();
+        List<AbilityFactory> factories = new ArrayList<>();
         for(Integer characId: closestToLowerTens(lastConsumedCharacteristics)){
-            newAbilities.addAll(Pathways.getPathwayBySequenceId(characId).getAbilities(characId%10, pathwaySequenceId%10));
+            factories.addAll(Pathways.getPathwayBySequenceId(characId).getAbilities(characId%10));
         }
-        return newAbilities;
+        AbilityFactory cog = Pathways.getPathwayBySequenceId(pathwaySequenceId).getCogitationAbility();
+        if(includeCogitation && cog != null) factories.add(cog);
+        return factories.stream().map(fac -> fac.construct(pathwaySequenceId%10, AbilityInfo.Group.INTRINSIC)).toList();
     }
 
     public void setAttributes(BeyonderStats beyonderStats, Player player) {
