@@ -23,7 +23,7 @@ public abstract class ModNbtUtils {
     public static final String PURIFYING_TAG = "purifying";
 
     private static final String BEYONDER_TAG_ID = "beyonder_info";
-    private static final String ARTIFACT_TAG_ID = "artifact_info";
+    public static final String ARTIFACT_TAG_ID = "artifact_info";
     private static final String POTION_TAG_ID = "potion_info";
     private static final String CHARM_TAG_ID = "mystical_charm_info";
     private static final String MYSTICISM_TAG_ID = "mysticism_info";
@@ -292,7 +292,7 @@ public abstract class ModNbtUtils {
             List<Ability> abilities = new ArrayList<>();
             for(String stringKey: artifactTag.getAllKeys()){
                 switch (stringKey) {
-                    case UUID_KEY, CHARGE_KEY, NEED_CHARGE_KEY -> {
+                    case UUID_KEY, CHARGE_KEY, NEED_CHARGE_KEY, STACK_KEY -> {
                         continue;
                     }
                 }
@@ -318,7 +318,11 @@ public abstract class ModNbtUtils {
             for(Ability abl: artifact.downsides.values()){
                 artifactTag.put(abl.getInstanceId().toString(), abl.saveAbility());
             }
-            if(saveItem) artifactTag.put(STACK_KEY, artifact.item.save(new CompoundTag()));
+            if(saveItem) {
+                CompoundTag itemTag = artifact.item.save(new CompoundTag());
+                itemTag.remove(ARTIFACT_TAG_ID);
+                artifactTag.put(STACK_KEY, itemTag);
+            }
             artifactTag.putBoolean(NEED_CHARGE_KEY, artifact.needsCharge);
             artifactTag.putFloat(CHARGE_KEY, artifact.chargeSeconds);
             return artifactTag;

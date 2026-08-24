@@ -401,13 +401,20 @@ public class BeyonderAbilitiesScreen extends Screen {
         if(     //If mouse within big square
                 (mouseX > leftPos + 59 && mouseX < leftPos + 163
                         && mouseY > topPos + 16 && mouseY < topPos + 68)
-                        &&      //if mouse NOT hovering over button
+                        &&
+                        //if mouse NOT hovering over button
                         !(mouseX >= hotbarButtonRight - hotbarButtonSide && mouseX < hotbarButtonRight
                                 && mouseY >= hotbarButtonBottom - hotbarButtonSide && mouseY < hotbarButtonBottom)
         ){
             TooltipHelper.drawTooltip(pGuiGraphics, mouseX, mouseY, this.width/2, this.width, this.height,
                     Component.translatable("long_desc.potioneer." + getAbilityDescriptionId(getCurrentAbility(), abilityDescOffset)),
                     0xffffff, this.font);
+        } else if(mouseX > leftPos + 59 && mouseX < leftPos + 163
+                        && mouseY > topPos && mouseY < topPos + 16
+        ){
+            //if hovering over the title
+            AbilityInfo abl = getCurrentAbility();
+            if(abl != null) pGuiGraphics.renderTooltip(this.font, Component.translatable("tooltip.potioneer.group." + abl.getGroup().name().toLowerCase()), mouseX, mouseY);
         }
     }
 

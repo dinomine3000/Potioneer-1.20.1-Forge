@@ -777,5 +777,17 @@
   "message.potioneer.door_opening_too_thick": "Wall is too thick for your level.",
   "tooltip.potioneer.artifact_charge": "Charge left: %s seconds.",
   "tooltip.potioneer.artifact_out_of_charge": "Item out of charge.",
-  "ability.potioneer.cooldown_put": "%s has been put on cooldown"
+  "ability.potioneer.cooldown_put": "%s has been put on cooldown",
+
+  "message.potioneer.recording_full": "There's no more space to record Abilities.",
+  "message.potioneer.recording_success": "Successfuly recorded %s.",
+  "message.potioneer.recording_consume": "You consumed the recorded ability %s.",
+  "tooltip.potioneer.group.recorded": "Recorded",
+  "tooltip.potioneer.group.intrinsic": "Intrinsic",
+  "tooltip.potioneer.group.stolen": "Stolen",
+  "tooltip.potioneer.group.artifact": "Artifact",
+  "tooltip.potioneer.group.analyzed": "Analyzed",
+  "tooltip.potioneer.group.grazed": "Grazed",
+  "tooltip.potioneer.group.mirrored": "Mirrored",
+  "tooltip.potioneer.group.contract": "Contract"
 }

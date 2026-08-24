@@ -515,7 +515,7 @@ public class BeyonderCapability {
     }
 
     public void loadNBTData(CompoundTag nbt){
-        if(entity instanceof Player) System.out.println("[DEBUG-LOAD] Loading capability data from NBT: " + nbt);
+        //if(entity instanceof Player) System.out.println("[DEBUG-LOAD] Loading capability data from NBT: " + nbt);
 //        System.out.println("-------------loading capability nbt-------------------");
 //        System.out.println("loading nbt data for beyonder capability...");
         this.spirituality = nbt.getFloat("spirituality");

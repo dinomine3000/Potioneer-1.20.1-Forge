@@ -51,8 +51,9 @@ public class ArtifactHolder {
      * @param artifactId
      */
     public ArtifactHolder(List<Ability> abilities, UUID artifactId, ItemStack stack){
+        setStack(stack);
         for(Ability abl: abilities){
-            abl.setOnArtifact(stack);
+            abl.setOnArtifact(this.item);
             if(abl.isDownside())
                 this.downsides.put(abl.getInstanceId(), (Downside) abl);
             else {
@@ -60,7 +61,6 @@ public class ArtifactHolder {
                 abilitiesToActivateOnItemInteract.put(abl.getInstanceId(), true);
             }
         }
-        this.item = stack;
         this.artifactId = artifactId;
     }
 
@@ -72,8 +72,16 @@ public class ArtifactHolder {
 
     public ArtifactHolder withStack(ItemStack stack) {
         if(stack == null) return this;
-        this.item = stack;
+        setStack(stack);
+        for(Ability abl: abilities.values()) abl.setOnArtifact(this.item);
         return this;
+    }
+
+    private void setStack(ItemStack stack){
+        this.item = stack.copy();
+        CompoundTag tag = this.item.getOrCreateTag();
+        tag.remove(ModNbtUtils.ARTIFACT_TAG_ID);
+        this.item.setTag(tag);
     }
 
 
@@ -165,18 +173,13 @@ public class ArtifactHolder {
     }
 
     public ItemStack getStack() {
-        return item;
+        return item.copy();
     }
 
     public ArtifactHolder updateItemTags() {
         ItemStack returnItem = item.copy();
         MysticalItemHelper.updateArtifactTagOnItem(this, returnItem);
         return MysticalItemHelper.getArtifactFromItem(returnItem);
-    }
-
-    public void updateItem(ItemStack item) {
-        this.item = item.copy();
-        for(Ability abl: abilities.values()) abl.setOnArtifact(this.item);
     }
 
     public boolean hasAbility(UUID instanceId) {

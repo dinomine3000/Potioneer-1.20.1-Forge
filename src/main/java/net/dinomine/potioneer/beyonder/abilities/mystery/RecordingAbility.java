@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.UUID;
 
 public class RecordingAbility extends AbilityWithOptions {
+    private static final int COST_PER_RECORDING_LEVEL_DIFF = 15;
 
     @Override
     public void onAcquire(BeyonderCapability cap, LivingEntity target) {
@@ -58,41 +59,40 @@ public class RecordingAbility extends AbilityWithOptions {
         return "recording";
     }
 
-    public void onAbilityCast(LivingEntity thisOwner, BeyonderCapability cap, Ability abilityCast){
-        if(thisOwner.level().isClientSide()) return;
+    public void onAbilityCast(LivingEntity target, BeyonderCapability cap, Ability abilityCast){
+        if(target.level().isClientSide()) return;
         List<AbilityRepr> existingAbls = getAbilitiesInData();
         if(abilityCast.isOfGroup(AbilityInfo.Group.RECORDED)){
             if(existingAbls.removeIf(repr -> repr.instanceId.equals(abilityCast.getInstanceId()))){
-                cap.getAbilitiesManager().removeAbility(abilityCast.getInstanceId(), cap, thisOwner, true);
-                thisOwner.sendSystemMessage(Component.literal("Consumed ability: " + abilityCast.getMainDescId()));
-                saveAbilitiesToData(existingAbls, thisOwner);
-                /*
-                 * TODO: Make this verify its not an extension of passive ability.
-                 * this behaviour should only apply to instances OF passive ability, but abilities that extend it
-                 * oftentimes use its behaviours supplementary (like mystery blinking)
-                 * for this reason, this bit of code stays commented until i find a nice solution.
-
-                if(abilityCast instanceof PassiveAbility passiveAbility){
-                    BeyonderEffect eff = passiveAbility.createEffectInstance(cap, thisOwner);
-
-                }*/
+                cap.getAbilitiesManager().removeAbility(abilityCast.getInstanceId(), cap, target, true);
+                target.sendSystemMessage(Component.translatable("message.potioneer.recording_consume", Ability.getNameComponent(abilityCast.getMainDescId())));
+                saveAbilitiesToData(existingAbls, target);
             }
         } else {
             if(!isEnabled()) return;
             if(abilityCast.is(Abilities.RECORDING)) return;
-            if(existingAbls.size() > 5) return;
+            if(existingAbls.size() > 5)  {
+                target.sendSystemMessage(Component.translatable("message.potioneer.recording_full"));
+                setEnabled(cap, target, false);
+                return;
+            };
 
-            ResourceLocation ablId = abilityCast.getAbilityId();
-            int lvl = abilityCast.getSequenceLevel();
-            Ability toAdd = Abilities.getFactoryAndConstruct(ablId, lvl, AbilityInfo.Group.RECORDED);
-            if(toAdd != null) {
-                toAdd.anchor(getInstanceId());
-                existingAbls.add(new AbilityRepr(toAdd.getInstanceId(), ablId, lvl));
-                saveAbilitiesToData(existingAbls, thisOwner);
-                cap.getAbilitiesManager().addAndInitializeAbility(toAdd, cap, thisOwner, true, true);
-                thisOwner.sendSystemMessage(Component.literal("Reorded abiity: " + toAdd.getMainDescId()));
-                setEnabled(cap, thisOwner, false);
-                putOnCooldown(20*5, thisOwner);
+            if(getSequenceLevel() < abilityCast.getSequenceLevel()
+                || cap.getLuckManager().passesLuckCheck(0.5f - 0.2f*(getSequenceLevel() - abilityCast.getSequenceLevel()), 0, 0, target.getRandom())){
+                ResourceLocation ablId = abilityCast.getAbilityId();
+                int lvl = abilityCast.getSequenceLevel();
+                Ability toAdd = Abilities.getFactoryAndConstruct(ablId, lvl, AbilityInfo.Group.RECORDED);
+                if(toAdd != null) {
+                    toAdd.anchor(getInstanceId());
+                    existingAbls.add(new AbilityRepr(toAdd.getInstanceId(), ablId, lvl));
+                    saveAbilitiesToData(existingAbls, target);
+                    cap.getAbilitiesManager().addAndInitializeAbility(toAdd, cap, target, true, true);
+                    target.sendSystemMessage(Component.translatable("message.potioneer.recording_success", Ability.getNameComponent(toAdd.getMainDescId())));
+                    setEnabled(cap, target, false);
+                    putOnCooldown(20*5, target);
+                    int lvlDiff = getSequenceLevel() - abilityCast.getSequenceLevel();
+                    cap.requestActiveSpiritualityCost(Math.max(COST_PER_RECORDING_LEVEL_DIFF, COST_PER_RECORDING_LEVEL_DIFF*(1 + lvlDiff)));
+                }
             }
         }
     }

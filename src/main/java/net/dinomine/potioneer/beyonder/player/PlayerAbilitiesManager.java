@@ -141,7 +141,7 @@ public class PlayerAbilitiesManager {
             if (!artifacts.containsKey(artifactKey)) {
                 addArtifact(artifact, cap, player, true, true);
             } else {
-                artifacts.get(artifactKey).updateItem(artifact.getItem());
+                artifacts.get(artifactKey).withStack(artifact.getItem());
             }
         }
         //remove artifacts from list
