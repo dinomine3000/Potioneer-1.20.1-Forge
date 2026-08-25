@@ -300,6 +300,14 @@ public class BeyonderAbilitiesScreen extends Screen {
         if(main){
             Component name = Ability.getNameComponent(getAbilityDescriptionId(data, abilityDescOffset));
             pGuiGraphics.drawString(this.font, name, leftPos + 24 + imageWidth/2 - this.font.width(name)/2, topPos + 9, 0, false);
+
+            if(data.getGroup() != AbilityInfo.Group.INTRINSIC){
+                Component tx = Component.translatable("tooltip.potioneer.group." + data.getGroup().name().toLowerCase());
+                int width = this.font.width(tx);
+                pGuiGraphics.blitNineSlicedSized(TEXTURE, leftPos + 25 - width/2, topPos - 15, width + 10, this.font.lineHeight + 7, 3, 13, 10, 98, 227, TEXTURE_WIDTH, TEXTURE_HEIGHT);
+                pGuiGraphics.drawString(this.font, tx, leftPos + 30 - width/2, topPos - 10, 0, false);
+
+            }
         }
 
         //right click functionality
@@ -409,12 +417,6 @@ public class BeyonderAbilitiesScreen extends Screen {
             TooltipHelper.drawTooltip(pGuiGraphics, mouseX, mouseY, this.width/2, this.width, this.height,
                     Component.translatable("long_desc.potioneer." + getAbilityDescriptionId(getCurrentAbility(), abilityDescOffset)),
                     0xffffff, this.font);
-        } else if(mouseX > leftPos + 59 && mouseX < leftPos + 163
-                        && mouseY > topPos && mouseY < topPos + 16
-        ){
-            //if hovering over the title
-            AbilityInfo abl = getCurrentAbility();
-            if(abl != null) pGuiGraphics.renderTooltip(this.font, Component.translatable("tooltip.potioneer.group." + abl.getGroup().name().toLowerCase()), mouseX, mouseY);
         }
     }
 
