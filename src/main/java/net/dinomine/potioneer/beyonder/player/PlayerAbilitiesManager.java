@@ -758,7 +758,6 @@ public class PlayerAbilitiesManager {
         for(Ability abl: intrisicAbilitiesBuffer){
             abilities.put(abl.getInstanceId(), abl);
         }
-        intrisicAbilitiesBuffer.clear();
         //finally, regardless of how it was created or what it is, initialize them with the proper state data.
         for (Ability abl : new ArrayList<>(abilities.values())) {
             //anchoredAbilities must be anchored. after loading all abilities, if the anchor is not present, skip and remove this one.
@@ -767,7 +766,11 @@ public class PlayerAbilitiesManager {
                 continue;
             }
             abl.init();
+            //we call on acquire here, because its an intrinsice ability that we didnt find NBT data for.
+            //this means its a brand new ability, so on top of init, we also need to call the onacquire.
+            if(intrisicAbilitiesBuffer.contains(abl)) abl.onAcquire(cap, target);
         }
+        intrisicAbilitiesBuffer.clear();
 
         //back to your scheduled programming...
         if (nbt.contains("hotbar", Tag.TAG_LIST)) {
