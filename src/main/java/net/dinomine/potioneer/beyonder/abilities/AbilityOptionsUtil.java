@@ -17,7 +17,7 @@ public class AbilityOptionsUtil {
      * @return a final option/choice, or empty string if nothing found.
      */
     public static String validadeArguments(CompoundTag args, Ability abl, AbilityOptions options, boolean clientSide, boolean castPrimary){
-        if(options == null) return "";
+        if(options == null || options.isEmpty()) return "";
         //if nothing is selected, prompt choice
         if(options.getPossibleFinalOptions().size() == 1) return options.getPossibleFinalOptions().get(0);
         if(!args.contains("option"))

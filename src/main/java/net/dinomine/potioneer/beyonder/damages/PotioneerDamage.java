@@ -45,9 +45,13 @@ public class PotioneerDamage {
     public static final ResourceKey<DamageType> TYRANT_PURIFICATION = ResourceKey.create(Registries.DAMAGE_TYPE, new ResourceLocation(Potioneer.MOD_ID, "tyrant_purification"));
     public static final ResourceKey<DamageType> AIR_BULLET = ResourceKey.create(Registries.DAMAGE_TYPE, new ResourceLocation(Potioneer.MOD_ID, "air_bullet"));
     public static final ResourceKey<DamageType> PAPER_DAGGER = ResourceKey.create(Registries.DAMAGE_TYPE, new ResourceLocation(Potioneer.MOD_ID, "paper_dagger"));
+    public static final ResourceKey<DamageType> THEFT = ResourceKey.create(Registries.DAMAGE_TYPE, new ResourceLocation(Potioneer.MOD_ID, "theft"));
 //    public static final ResourceKey<DamageType> MENTAL = ResourceKey.create(Registries.DAMAGE_TYPE, new ResourceLocation(Potioneer.MOD_ID, "mental"));
 //    public static final ResourceKey<DamageType> ANNIHILATION = ResourceKey.create(Registries.DAMAGE_TYPE, new ResourceLocation(Potioneer.MOD_ID, "annihilation"));
 
+    public static DamageSource theft(ServerLevel level, LivingEntity attacker) {
+        return getSource(level, THEFT, attacker);
+    }
     public static DamageSource crit(ServerLevel level, LivingEntity attacker) {
         return getSource(level, CRIT, attacker);
     }

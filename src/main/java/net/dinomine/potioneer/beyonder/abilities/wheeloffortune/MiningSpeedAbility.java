@@ -51,14 +51,9 @@ public class MiningSpeedAbility extends PassiveAbility {
     }
 
     @Override
-    protected BeyonderEffect createEffectInstance(BeyonderCapability cap, LivingEntity target) {
+    protected BeyonderEffect createEffectInstance() {
         MiningSpeedEffect eff = (MiningSpeedEffect) effect.createInstance(getSequenceLevel(), 0, -1, true);
-        CompoundTag tag = getData();
-        if(!tag.contains("speed")){
-            tag.putFloat("speed", levelToMaxSpeed.apply(getSequenceLevel()));
-            setData(tag, target);
-        }
-        eff.miningSpeed = getData().getFloat("speed");
+        eff.miningSpeed = getData().contains("speed") ? getData().getFloat("speed") : levelToMaxSpeed.apply(getSequenceLevel());
         return eff;
     }
 

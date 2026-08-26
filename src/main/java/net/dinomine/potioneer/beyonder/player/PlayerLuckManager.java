@@ -41,6 +41,12 @@ public class PlayerLuckManager {
         this.range = new LuckRange(random.nextInt(20, 50), random.nextInt(20, 50));
     }
 
+    /**
+     * creates a proxy luck manager that can evaluate luck clashes between 2 luck managers.
+     * everything is cast from the perspective of the positive luck manager
+     * @param luck1 caster/positive luck manager.
+     * @param luck2 target/negative luck manager
+     */
     public PlayerLuckManager(PlayerLuckManager luck1, PlayerLuckManager luck2){
         this.luck = luck1.getLuck() - luck2.getLuck();
     }

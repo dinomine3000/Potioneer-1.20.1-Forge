@@ -566,7 +566,7 @@ public class BeyonderCapability {
     public void syncSequenceData(Player player){
         if(!player.level().isClientSide()){
             PacketHandler.sendMessageSTC(new PlayerAdvanceMessage(getCharacteristicManager().getLastConsumedCharacteristics()), player);
-            getAbilitiesManager().updateSetClientAbilityInfo(player);
+            getAbilitiesManager().updateLoadClientAbilityInfo(player);
             getAbilitiesManager().updateClientArtifactInfo(player, PlayerArtifactSyncSTC.SET);
             PacketHandler.sendMessageSTC(new PlayerSyncHotbarMessage(getAbilitiesManager().clientHotbar, getAbilitiesManager().quickAbility), player);
             getEffectsManager().syncToClient(player);

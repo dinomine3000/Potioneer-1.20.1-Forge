@@ -17,6 +17,7 @@ import java.util.List;
 @Mod.EventBusSubscriber
 public class ClientEffectVisualHandling {
     private static final List<Integer> mistEntities = new ArrayList<>();
+    private static final List<Integer> ranmaEntities = new ArrayList<>();
 
     public static void addInvisibleEntity(Level level, int target){
         Entity ent = level.getEntity(target);
@@ -42,6 +43,14 @@ public class ClientEffectVisualHandling {
         mistEntities.remove((Object) target);
     }
 
+    public static void addRanmaEntity(int target){
+        ranmaEntities.add(target);
+    }
+
+    public static void removeRanmaEntity(int target){
+        ranmaEntities.remove((Object) target);
+    }
+
     @SubscribeEvent
     public static void tick(TickEvent.ClientTickEvent event){
         if(Minecraft.getInstance().level == null) return;
@@ -49,6 +58,11 @@ public class ClientEffectVisualHandling {
             Entity ent = Minecraft.getInstance().level.getEntity(id);
             if(!(ent instanceof LivingEntity livingEntity)) continue;
             ParticleMaker.summonMistParticles(livingEntity);
+        }
+        for(int id: ranmaEntities){
+            Entity ent = Minecraft.getInstance().level.getEntity(id);
+            if(!(ent instanceof LivingEntity livingEntity) || (ent.tickCount%20 != 0)) continue;
+            ParticleMaker.summonRanmaParticles(livingEntity);
         }
     }
 

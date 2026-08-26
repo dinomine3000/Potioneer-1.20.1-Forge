@@ -347,6 +347,13 @@ public class Abilities {
     public static RegistryObject<AbilityFactory> RECORDING = registerAbility("recording",
             RecordingAbility::new, 1, 2);
 
+    public static RegistryObject<AbilityFactory> RANMA = registerAbility("ranma",
+            () -> PassiveAbility.createAbility(BeyonderEffects.MYSTERY_RANMA, ign -> "ranma").canFlip().withCooldown(20*10, PassiveAbility.CooldownTrigger.ON_REMOVE).withThreshold(0.1f).withCost(10), 1, 2);
+
+
+    public static RegistryObject<AbilityFactory> CONCEPT_THEFT = registerAbility("concept_theft",
+            ConceptualTheftAbility::new, 1, 2);
+
     // -------------------------- RED PRIEST ---------------------------------------------------
 
 /*    public static RegistryObject<AbilityFactory> FIRE_SWORD = registerAbility("fire_sword",

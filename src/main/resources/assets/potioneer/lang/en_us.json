@@ -485,6 +485,7 @@
   "death.attack.potioneer.execution": "%s was ordered for execution by %s",
   "death.attack.potioneer.tyrant_purification": "%s was forcefully purified by %s",
   "death.attack.potioneer.air_bullet": "%s was shot by %s's magical air bullet.",
+  "death.attack.potioneer.theft": "%s's life was stolen by %s.",
 
   "short_desc.potioneer.cogitation": "Your essence... your being... this is what makes you",
   "long_desc.potioneer.cogitation": "Concentrate your spirituality and recuperate in a safe place.",
@@ -738,6 +739,9 @@
   "ability_name.potioneer.theft_2": "Spirit Theft",
   "short_desc.potioneer.theft_2": "Oh I see what's happening here... Very interesting.",
   "long_desc.potioneer.theft_2": "When stealing from someone, also steals some spirituality.",
+  "ability_name.potioneer.ranma": "Ranma Disturb Magic",
+  "short_desc.potioneer.ranma": "During my time here, I failed to come across a definition for that... word",
+  "long_desc.potioneer.ranma": "Cast to disable abilities of non-allies around, as well as your own.",
 
   "ability_name.potioneer.d_dummy": "Hurt",
   "ability_name.potioneer.d_cooldown": "Random Cooldowns",
@@ -789,5 +793,15 @@
   "tooltip.potioneer.group.analyzed": "Analyzed",
   "tooltip.potioneer.group.grazed": "Grazed",
   "tooltip.potioneer.group.mirrored": "Mirrored",
-  "tooltip.potioneer.group.contract": "Contract"
+  "tooltip.potioneer.group.contract": "Contract",
+
+  "abilityoption.potioneer.return_health": "Return %s health.",
+  "abilityoption.potioneer.return_luck": "Return %s luck.",
+  "abilityoption.potioneer.return_effects": "Return mob effects %s.",
+  "abilityoption.potioneer.return_ability": "Return ability %s.",
+
+  "abilityoption.potioneer.steal_health": "Steal health.",
+  "abilityoption.potioneer.steal_luck": "Steal luck.",
+  "abilityoption.potioneer.steal_effects": "Steal mob effects.",
+  "abilityoption.potioneer.steal_ability": "Steal ability."
 }

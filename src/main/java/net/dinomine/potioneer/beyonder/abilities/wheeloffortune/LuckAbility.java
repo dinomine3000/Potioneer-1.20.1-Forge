@@ -25,7 +25,7 @@ public class LuckAbility extends PassiveAbility {
     }
 
     @Override
-    protected BeyonderEffect createEffectInstance(BeyonderCapability cap, LivingEntity target) {
+    protected BeyonderEffect createEffectInstance() {
         LuckEffect eff = (LuckEffect) BeyonderEffects.WHEEL_LUCK_EFFECT.createInstance(getSequenceLevel(), 0, -1, true);
         return eff.withCrit();
     }

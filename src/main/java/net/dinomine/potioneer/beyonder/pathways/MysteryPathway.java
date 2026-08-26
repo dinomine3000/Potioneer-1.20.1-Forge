@@ -78,6 +78,8 @@ public class MysteryPathway extends BeyonderPathway {
             case 6:
                 abilities.add(Abilities.ELYTRA.get());
                 abilities.add(Abilities.RECORDING.get());
+                abilities.add(Abilities.RANMA.get());
+                abilities.add(Abilities.CONCEPT_THEFT.get());
             case 7:
                 abilities.add(Abilities.AIR_BULLET.get());
                 abilities.add(Abilities.TRICKS.get());

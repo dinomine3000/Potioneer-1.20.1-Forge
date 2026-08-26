@@ -212,6 +212,7 @@ public class PlayerAbilitiesManager {
     public void onTick(BeyonderCapability cap, LivingEntity target){
         if(!abilities.isEmpty()){
             abilities.values().forEach(ability -> {
+                if(ability.isRevoked()) return;
                 ability.passive(cap, target);
                 ability.tickCooldown(target);
             });
@@ -224,8 +225,8 @@ public class PlayerAbilitiesManager {
 
 
     public void clearAbilities(BeyonderCapability cap, LivingEntity target){
-        abilities.values().forEach(ability -> ability.onAbilityRemoved(cap, target));
-        abilities = new LinkedHashMap<>();
+        new ArrayList<>(abilities.values()).forEach(ability -> ability.onAbilityRemoved(cap, target));
+        abilities.clear();
     }
 
     public void clearArtifacts(BeyonderCapability cap, LivingEntity target){
@@ -379,10 +380,10 @@ public class PlayerAbilitiesManager {
      * method to set the abilities on the client-side manager to match with server-side, based on the corresponding ability infos
      * @param abilities
      */
-    public void setAbilitiesOnClient(List<AbilityInfo> abilities, BeyonderCapability cap, LivingEntity target) {
+    public void setAbilitiesOnClient(List<AbilityInfo> abilities, BeyonderCapability cap, LivingEntity target, boolean runOnAcquire) {
         if(!target.level().isClientSide()) return;
         clearAbilities(cap, target);
-        addAbilitiesOnClient(abilities, cap, target, true);
+        addAbilitiesOnClient(abilities, cap, target, runOnAcquire);
         updateAbilitiesOnClient(abilities, cap, target);
     }
 
@@ -555,10 +556,13 @@ public class PlayerAbilitiesManager {
         return abilities.stream().anyMatch(abl -> abl.getCooldown() == 0);
     }
 
-    public List<Ability> getAllAbilities() {
+    public List<Ability> getAllAbilities(boolean includeDownsides) {
         List<Ability> res = new ArrayList<>(abilities.values());
-        for(ArtifactHolder art: artifacts.values()) res.addAll(art.getAbilities());
+        for (ArtifactHolder art : artifacts.values()) res.addAll(art.getAbilities(includeDownsides));
         return res;
+    }
+    public List<Ability> getAllAbilities() {
+        return getAllAbilities(false);
     }
     public List<Ability> getAllAbilities(ResourceLocation abilityId) {
         return getAllAbilities().stream().filter(abl -> abl.is(abilityId)).toList();
@@ -671,6 +675,11 @@ public class PlayerAbilitiesManager {
         PacketHandler.sendMessageSTC(new AbilitySyncMessage(getAbilityInfos(), AbilitySyncMessage.SET), player);
     }
 
+    public void updateLoadClientAbilityInfo(Player player){
+        if(player.level().isClientSide()) return;
+        PacketHandler.sendMessageSTC(new AbilitySyncMessage(getAbilityInfos(), AbilitySyncMessage.LOAD), player);
+    }
+
     public void updateClientArtifactInfo(Player player, List<ArtifactHolder> artifacts, int operation) {
         if(player.level().isClientSide()) return;
         PacketHandler.sendMessageSTC(new PlayerArtifactSyncSTC(artifacts, operation), player);
@@ -729,6 +738,7 @@ public class PlayerAbilitiesManager {
                     //if the tag we're loading is an intrinsic ability, it was already added, so just load data.
                     intrinsicToLoad.loadTag(singleAblTag);
                     abilities.put(intrinsicToLoad.getInstanceId(), intrinsicToLoad);
+                    intrisicAbilitiesBuffer.remove(intrinsicToLoad);
                 } else {
                     //otherwise, instantiate a new one.
                     Abilities.getFactory(ablId).ifPresent(factory -> {
@@ -745,6 +755,9 @@ public class PlayerAbilitiesManager {
             }
         }
 
+        for(Ability abl: intrisicAbilitiesBuffer){
+            abilities.put(abl.getInstanceId(), abl);
+        }
         intrisicAbilitiesBuffer.clear();
         //finally, regardless of how it was created or what it is, initialize them with the proper state data.
         for (Ability abl : new ArrayList<>(abilities.values())) {

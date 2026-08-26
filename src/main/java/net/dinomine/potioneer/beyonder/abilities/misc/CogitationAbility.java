@@ -16,9 +16,14 @@ public class CogitationAbility extends PassiveAbility {
     }
 
     @Override
-    protected BeyonderEffect createEffectInstance(BeyonderCapability cap, LivingEntity target) {
+    protected BeyonderEffect createEffectInstance() {
         BeyonderCogitationEffect eff = (BeyonderCogitationEffect) BeyonderEffects.COGITATION.createInstance(getSequenceLevel(), 0, -1, true);
         eff.ablId = getAbilityId();
         return eff;
+    }
+
+    @Override
+    public boolean canBeInstantCast() {
+        return false;
     }
 }

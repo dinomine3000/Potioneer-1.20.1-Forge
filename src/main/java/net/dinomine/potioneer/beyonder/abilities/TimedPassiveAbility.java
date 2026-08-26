@@ -27,8 +27,13 @@ public class TimedPassiveAbility extends PassiveAbility {
 
 
     @Override
-    protected BeyonderEffect createEffectInstance(BeyonderCapability cap, LivingEntity target) {
+    protected BeyonderEffect createEffectInstance() {
         return effect.createInstance(getSequenceLevel(), passiveCost, durationFunction.apply(getSequenceLevel()), true);
+    }
+
+    @Override
+    public BeyonderEffect createInstantWithDuration(int durationTicks) {
+        return createEffectInstance();
     }
 
     @Override

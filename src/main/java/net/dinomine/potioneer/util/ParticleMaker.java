@@ -6,6 +6,7 @@ import com.lowdragmc.photon.client.fx.FX;
 import com.lowdragmc.photon.client.fx.FXHelper;
 import net.dinomine.potioneer.Potioneer;
 import net.dinomine.potioneer.beyonder.abilities.tyrant.AreaOfJurisdictionAbility;
+import net.dinomine.potioneer.beyonder.effects.mystery.RanmaEffect;
 import net.dinomine.potioneer.entities.ModEntities;
 import net.dinomine.potioneer.entities.custom.effects.DiceEffectEntity;
 import net.dinomine.potioneer.entities.custom.effects.SlotMachineEntity;
@@ -189,7 +190,57 @@ public class ParticleMaker {
             level.addParticle(ParticleTypes.FALLING_WATER, pos.x, pos.y, pos.z, 0, 0, 0);
         }
     }
+    public static void summonRanmaParticles(LivingEntity pLivingEntity) {
+        if (!pLivingEntity.level().isClientSide()) return;
+        int radius = RanmaEffect.RANMA_RADIUS;
+        Vec3 center = pLivingEntity.getOnPos().getCenter();
 
+        double minX = center.x - radius;
+        double minY = center.y - radius;
+        double minZ = center.z - radius;
+
+        double maxX = center.x + radius;
+        double maxY = center.y + radius;
+        double maxZ = center.z + radius;
+
+        Level level = pLivingEntity.level();
+        double step = 0.5; // Distance between particles along each edge
+
+        // Bottom square
+        spawnParticleLine(level, minX, minY, minZ, maxX, minY, minZ, step);
+        spawnParticleLine(level, maxX, minY, minZ, maxX, minY, maxZ, step);
+        spawnParticleLine(level, maxX, minY, maxZ, minX, minY, maxZ, step);
+        spawnParticleLine(level, minX, minY, maxZ, minX, minY, minZ, step);
+
+        // Top square
+        spawnParticleLine(level, minX, maxY, minZ, maxX, maxY, minZ, step);
+        spawnParticleLine(level, maxX, maxY, minZ, maxX, maxY, maxZ, step);
+        spawnParticleLine(level, maxX, maxY, maxZ, minX, maxY, maxZ, step);
+        spawnParticleLine(level, minX, maxY, maxZ, minX, maxY, minZ, step);
+
+        // Vertical pillars connecting bottom to top
+        spawnParticleLine(level, minX, minY, minZ, minX, maxY, minZ, step);
+        spawnParticleLine(level, maxX, minY, minZ, maxX, maxY, minZ, step);
+        spawnParticleLine(level, maxX, minY, maxZ, maxX, maxY, maxZ, step);
+        spawnParticleLine(level, minX, minY, maxZ, minX, maxY, maxZ, step);
+    }
+
+    private static void spawnParticleLine(Level level, double x1, double y1, double z1, double x2, double y2, double z2, double step) {
+        double dx = x2 - x1;
+        double dy = y2 - y1;
+        double dz = z2 - z1;
+        double distance = Math.sqrt(dx * dx + dy * dy + dz * dz);
+
+        int count = Math.max(1, (int) (distance / step));
+        for (int i = 0; i <= count; i++) {
+            double t = (double) i / count;
+            double x = x1 + dx * t;
+            double y = y1 + dy * t;
+            double z = z1 + dz * t;
+
+            level.addParticle(ParticleTypes.END_ROD, x, y, z, 0.0, 0.0, 0.0);
+        }
+    }
     public enum Preset{
         AOE_END_ROD,
         AOE_GRAVITY,
@@ -204,9 +255,9 @@ public class ParticleMaker {
 
     public static void spawnEndermanParticles(Level level, Vec3 pos) {
         for (int i = 0; i < 32; ++i) {
-            double x = pos.x() + (level.random.nextDouble() - 0.5D) * 1.0D;
+            double x = pos.x() + (level.random.nextDouble() - 0.5D);
             double y = pos.y() + level.random.nextDouble() * 2.0D - 1.0D;
-            double z = pos.z() + (level.random.nextDouble() - 0.5D) * 1.0D;
+            double z = pos.z() + (level.random.nextDouble() - 0.5D);
 
             double xSpeed = (level.random.nextDouble() - 0.5D) * 2.0D;
             double ySpeed = -level.random.nextDouble();

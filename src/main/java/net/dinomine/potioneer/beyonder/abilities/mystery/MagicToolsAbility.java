@@ -1,6 +1,7 @@
 package net.dinomine.potioneer.beyonder.abilities.mystery;
 
 import net.dinomine.potioneer.beyonder.abilities.Ability;
+import net.dinomine.potioneer.beyonder.abilities.AbilityInfo;
 import net.dinomine.potioneer.beyonder.abilities.misc.MysticalKnowledgeAbility;
 import net.dinomine.potioneer.beyonder.pages.Page;
 import net.dinomine.potioneer.beyonder.pages.PageRegistry;
@@ -25,6 +26,7 @@ public class MagicToolsAbility extends MysticalKnowledgeAbility {
         if(cap.getSpirituality() < cost) return false;
         Ability abl = cap.getAbilitiesManager().getQuickAbility();
         if(abl == null) return false;
+        if(abl.isOfGroup(AbilityInfo.Group.STOLEN)) return false;
         ItemStack stack = target.getMainHandItem();
         if(!MysticalItemHelper.isValidItemForArtifact(stack)) return false;
         ItemStack item = MysticalItemHelper.generateMysticalItem(stack, abl, 5*60);

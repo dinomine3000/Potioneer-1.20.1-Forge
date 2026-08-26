@@ -67,6 +67,7 @@ public class BeyonderCogitationEffect extends BeyonderEffect {
         nbt.putBoolean("darkness", darknessCheck);
         nbt.putBoolean("weakness", weaknessCheck);
         nbt.putBoolean("glowing", glowingCheck);
+        nbt.putString("ablId", ablId.toString());
     }
 
     @Override
@@ -76,5 +77,6 @@ public class BeyonderCogitationEffect extends BeyonderEffect {
         slownlessCheck = nbt.getBoolean("slowlness");
         weaknessCheck = nbt.getBoolean("weakness");
         glowingCheck = nbt.getBoolean("glowing");
+        ablId = new ResourceLocation(nbt.getString("ablId"));
     }
 }

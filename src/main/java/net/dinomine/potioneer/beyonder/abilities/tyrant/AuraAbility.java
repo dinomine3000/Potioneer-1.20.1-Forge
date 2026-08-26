@@ -39,7 +39,7 @@ public class AuraAbility extends PassiveAbility {
     }
 
     @Override
-    protected BeyonderEffect createEffectInstance(BeyonderCapability cap, LivingEntity target) {
+    protected BeyonderEffect createEffectInstance() {
         AuraSourceEffect eff = (AuraSourceEffect) effect.createInstance(getSequenceLevel(), cost, -1, true);
         eff.setCooldown(getData().getInt("aura_cooldown"), getInstanceId());
         return eff;

@@ -145,10 +145,19 @@ public class PassiveAbility extends Ability {
         return false;
     }
 
+    public boolean canBeInstantCast(){return true;}
+
+    public BeyonderEffect createInstantWithDuration(int durationTicks){
+        BeyonderEffect eff = createEffectInstance();
+        eff.setDuration(durationTicks);
+        eff.setLifetime(0);
+        return eff;
+    }
+
     @Override
     public void passive(BeyonderCapability cap, LivingEntity target) {
         if(!isEnabled()) return;
-        cap.getEffectsManager().addOrRefreshEffect(createEffectInstance(cap, target), cap, target);
+        cap.getEffectsManager().addOrRefreshEffect(createEffectInstance(), cap, target);
         if(!hasEnoughSpirituality(cap)) {
             setEnabled(cap, target, false);
         }
@@ -158,7 +167,7 @@ public class PassiveAbility extends Ability {
         return cap.getSpirituality() >= cap.getMaxSpirituality()*minimumSpiritualityThreshold && cap.getSpirituality() >= minSpiritualityAbsolute;
     }
 
-    protected BeyonderEffect createEffectInstance(BeyonderCapability cap, LivingEntity target){
+    protected BeyonderEffect createEffectInstance(){
         return effect.createInstance(getSequenceLevel(), spiritualityCost, -1, true);
     }
 

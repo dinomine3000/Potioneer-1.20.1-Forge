@@ -24,14 +24,10 @@ public class ZeroDamageAbility extends PassiveAbility {
     }
 
     @Override
-    protected BeyonderEffect createEffectInstance(BeyonderCapability cap, LivingEntity target) {
-        if(getSequenceLevel() > 6) return super.createEffectInstance(cap, target);
+    protected BeyonderEffect createEffectInstance() {
+        if(getSequenceLevel() > 6) return super.createEffectInstance();
         ZeroDamageEffect eff = (ZeroDamageEffect) BeyonderEffects.WHEEL_ZERO_DAMAGE.createInstance(getSequenceLevel(), spiritualityCost, -1, true);
         CompoundTag tag = getData();
-        if(!tag.contains("blocks")){
-            tag.putBoolean("blocks", true);
-            setData(tag, target);
-        }
         eff.setBlock(tag.getBoolean("blocks"));
         return eff;
     }

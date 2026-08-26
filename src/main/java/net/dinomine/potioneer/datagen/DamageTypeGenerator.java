@@ -23,18 +23,19 @@ public class DamageTypeGenerator extends DamageTypeTagsProvider {
     @Override
     protected void addTags(HolderLookup.Provider pProvider) {
         tag(DamageTypeTags.BYPASSES_ARMOR).add(LOW_SANITY, ASTEROID, CHRYON_PIERCE, CRIT, ARREST, STRIKE, EXECUTION, AIR_BULLET);
-        tag(DamageTypeTags.BYPASSES_SHIELD).add(LOW_SANITY, ASTEROID, CHRYON_PIERCE, CRIT, STRIKE, EXECUTION, AIR_BULLET);
+        tag(DamageTypeTags.BYPASSES_SHIELD).add(LOW_SANITY, ASTEROID, CHRYON_PIERCE, CRIT, STRIKE, EXECUTION, AIR_BULLET, THEFT);
         tag(DamageTypeTags.BYPASSES_RESISTANCE).add(LOW_SANITY, ASTEROID, CHRYON_PIERCE, CRIT, STRIKE, EXECUTION, AIR_BULLET);
         tag(DamageTypeTags.BYPASSES_EFFECTS).add(LOW_SANITY, ASTEROID, CHRYON_PIERCE, CRIT, STRIKE, EXECUTION, AIR_BULLET);
         tag(DamageTypeTags.BYPASSES_ENCHANTMENTS).add(LOW_SANITY, CHRYON_PIERCE, CRIT, EXECUTION, AIR_BULLET);
         //bypasses damage cooldown, like momentary invulnerabilty after taking damage.
         tag(DamageTypeTags.BYPASSES_COOLDOWN).add(LOW_SANITY, CHRYON_PIERCE, CRIT, EXECUTION, AIR_BULLET);
-        tag(DamageTypeTags.ALWAYS_HURTS_ENDER_DRAGONS).add(LOW_SANITY, CRIT, STRIKE, EXECUTION, AIR_BULLET);
+        tag(DamageTypeTags.ALWAYS_HURTS_ENDER_DRAGONS).add(LOW_SANITY, CRIT, STRIKE, EXECUTION, AIR_BULLET, THEFT);
 //        tag(DamageTypeTags.AVOIDS_GUARDIAN_THORNS).add();
         //eventually add Annihilation-type damage sources to the bypasses invulnerability
+        //invulnerability will also bypass totem and creative.
         tag(DamageTypeTags.BYPASSES_INVULNERABILITY).add(LOW_SANITY, LOW_SANITY_KILL, STRIKE, EXECUTION, AIR_BULLET);
 
-        tag(Tags.ABSOLUTE).add(ARREST, CRIT, LOW_SANITY, LOW_SANITY_KILL, LOW_SPIRITUALITY, EXILE, TYRANT_HEALING, STRIKE, EXECUTION, AIR_BULLET);
+        tag(Tags.ABSOLUTE).add(ARREST, CRIT, LOW_SANITY, LOW_SANITY_KILL, LOW_SPIRITUALITY, EXILE, TYRANT_HEALING, STRIKE, EXECUTION, AIR_BULLET, THEFT);
         tag(Tags.MENTAL).add(LOW_SANITY, LOW_SANITY_KILL, LOW_SPIRITUALITY, EXECUTION);
         tag(Tags.PURIFICATION).add(ARREST, EXILE, STRIKE);
     }

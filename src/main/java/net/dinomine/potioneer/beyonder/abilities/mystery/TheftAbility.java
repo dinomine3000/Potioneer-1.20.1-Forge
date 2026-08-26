@@ -4,6 +4,7 @@ import net.dinomine.potioneer.beyonder.abilities.Ability;
 import net.dinomine.potioneer.beyonder.abilities.AbilityFunctionHelper;
 import net.dinomine.potioneer.beyonder.player.BeyonderCapability;
 import net.dinomine.potioneer.beyonder.player.CapProvider;
+import net.dinomine.potioneer.beyonder.player.PlayerLuckManager;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.LivingEntity;
@@ -16,10 +17,11 @@ import net.minecraftforge.common.ForgeMod;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class TheftAbility extends Ability {
     private static final int LEVEL_FOR_TRADE_THEFT = 6;
-    private int cost = 10;
+    private static final int cost = 10;
 
     @Override
     public void init() {
@@ -31,16 +33,25 @@ public class TheftAbility extends Ability {
         return sequenceLevel < 8 ? "theft_2" : "theft";
     }
 
+    public static double getTheftReach(LivingEntity caster, int level){
+        return caster.getAttributeBaseValue(ForgeMod.ENTITY_REACH.get()) + 0.5f + (9-level)*0.5f;
+    }
+
     @Override
     protected boolean primary(BeyonderCapability cap, LivingEntity caster) {
         if(cap.getSpirituality() < cost && getSequenceLevel() > 7) return false;
         if(caster.level().isClientSide()) return true;
 
-        float extraReach = 0.5f + (9-getSequenceLevel())*0.5f;
-        LivingEntity target = AbilityFunctionHelper.getLivingEntityLooking(caster, caster.getAttributeBaseValue(ForgeMod.ENTITY_REACH.get()) + extraReach, 0);
+        LivingEntity target = AbilityFunctionHelper.getLivingEntityLooking(caster, getTheftReach(caster, getSequenceLevel()), 0);
         if(target == null) return false;
 
         cap.requestActiveSpiritualityCost(cost);
+        Optional<BeyonderCapability> optCap = CapProvider.beyonder(target);
+        if(optCap.isPresent()){
+            if(!canSteal(new PlayerLuckManager(cap.getLuckManager(), optCap.get().getLuckManager()), optCap.get().getSequenceLevel(), getSequenceLevel())) return true;
+        }
+
+
         ItemStack ogStack = null;
         ItemStack toGive = null;
         if(!target.getMainHandItem().isEmpty()){
@@ -107,6 +118,11 @@ public class TheftAbility extends Ability {
             setNextCooldownAs(20*15);
         });
         return true;
+    }
+
+    public static boolean canSteal(PlayerLuckManager luck, int targetLevel, int casterLevel) {
+        if(targetLevel < 0 || targetLevel > casterLevel) return true;
+        return luck.passesLuckCheck(0.6f - 0.25f*(casterLevel - targetLevel), 0, 0, RandomSource.create());
     }
 
     private ItemStack stealVillagerTrade(Villager villager, int maxCount){

@@ -41,7 +41,7 @@ public class CooldownAbility extends PassiveAbility {
     }
 
     @Override
-    protected BeyonderEffect createEffectInstance(BeyonderCapability cap, LivingEntity target) {
+    protected BeyonderEffect createEffectInstance() {
         return effect.createInstance(getSequenceLevel(), 0, -1, true);
     }
 

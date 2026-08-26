@@ -221,7 +221,7 @@ public abstract class Ability {
         return abilityInfo.getMaxCd();
     }
 
-    public void updateCooldownClient(Player player) {
+    public final void updateCooldownClient(Player player) {
         if (player.level().isClientSide()) return;
         sendUpdateMessageToClient(player);
     }
@@ -368,7 +368,7 @@ public abstract class Ability {
             return null;
         }
         Ability abl = obj.get().construct(info.getTrueSequenceLevel(), info.getGroup());
-        abl.abilityInfo = info;
+        abl.abilityInfo.copyFrom(info);
         return abl;
     }
     public static Ability loadAndInitAbility(CompoundTag abilityTag){
@@ -452,6 +452,11 @@ public abstract class Ability {
 
     public static MutableComponent getNameComponent(String abilityDescId) {
         return Component.translatableWithFallback("ability_name.potioneer." + abilityDescId, StringUtils.capitalize(abilityDescId.replace("_", " ")));
+    }
+    public static MutableComponent getNameComponent(ResourceLocation ablId, int sequenceLevel) {
+        Ability abl = Abilities.getFactoryAndConstruct(ablId, sequenceLevel, AbilityInfo.Group.INTRINSIC);
+        if(abl == null) return Component.literal("Null Ability");
+        return getNameComponent(abl.getMainDescId());
     }
 
     public boolean isOfGroup(AbilityInfo.Group group) {

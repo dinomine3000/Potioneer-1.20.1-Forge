@@ -123,8 +123,10 @@ public class ArtifactHolder {
 
     public void passives(BeyonderCapability cap, LivingEntity target){
         if(outOfCharge()) return;
-        abilities.values().forEach(abl -> abl.passive(cap, target));
-        downsides.values().forEach(downside -> downside.passive(cap, target));
+        abilities.values().forEach(abl -> {
+                if(!abl.isRevoked()) abl.passive(cap, target);
+        });
+        downsides.values().forEach(downside -> {if(!downside.isRevoked())downside.passive(cap, target);});
         abilities.values().forEach(abl -> abl.tickCooldown(target));
         downsides.values().forEach(downside -> downside.tickCooldown(target));
         if(abilities.values().stream().anyMatch(abl -> abl.isPassive() && abl.isEnabled()) && needsCharge){
@@ -163,8 +165,14 @@ public class ArtifactHolder {
         return abilities.get(id);
     }
 
+    public Collection<Ability> getAbilities(boolean includeDownsides) {
+        List<Ability> abls = new ArrayList<>(abilities.values());
+        if(includeDownsides) abls.addAll(downsides.values());
+        return abls;
+    }
+
     public Collection<Ability> getAbilities() {
-        return abilities.values();
+        return getAbilities(false);
     }
 
     @Override

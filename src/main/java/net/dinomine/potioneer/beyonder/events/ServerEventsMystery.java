@@ -4,8 +4,10 @@ import net.dinomine.potioneer.beyonder.ModAttributes;
 import net.dinomine.potioneer.beyonder.abilities.Abilities;
 import net.dinomine.potioneer.beyonder.abilities.Ability;
 import net.dinomine.potioneer.beyonder.abilities.AbilityFunctionHelper;
+import net.dinomine.potioneer.beyonder.abilities.mystery.ConceptualTheftAbility;
 import net.dinomine.potioneer.beyonder.abilities.mystery.MagicTricksAbility;
 import net.dinomine.potioneer.beyonder.abilities.mystery.RecordingAbility;
+import net.dinomine.potioneer.beyonder.damages.PotioneerDamage;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
 import net.dinomine.potioneer.beyonder.effects.mystery.GymnasticsEffect;
 import net.dinomine.potioneer.beyonder.player.BeyonderCapability;
@@ -22,6 +24,7 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.event.entity.EntityTravelToDimensionEvent;
 import net.minecraftforge.event.entity.item.ItemEvent;
+import net.minecraftforge.event.entity.living.LivingDamageEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.entity.living.LivingFallEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
@@ -84,6 +87,23 @@ public class ServerEventsMystery {
                 });
             });
         }
+    }
+
+    @SubscribeEvent
+    public static void onEntityTakeDamage(LivingDamageEvent event){
+        if(event.getEntity() == null) return;
+        if(event.getEntity().level().isClientSide()) return;
+        if(!event.getSource().is(PotioneerDamage.THEFT)) return;
+        Entity attacker = event.getSource().getEntity();
+        if(attacker == null) event.getSource().getDirectEntity();
+        if(attacker == null) return;
+        CapProvider.beyonder(attacker).ifPresent(cap -> {
+            cap.getAbilitiesManager().getAllAbilities(Abilities.CONCEPT_THEFT.get().getAblId()).forEach(abl -> {
+                if(abl instanceof ConceptualTheftAbility theftAbility){
+                    theftAbility.onVictimTakeDamage(event.getEntity(), event.getAmount(), (LivingEntity) attacker);
+                }
+            });
+        });
     }
 
 }

@@ -369,6 +369,7 @@ public class PlayerCharacteristicManager {
 
 
         int pathwaySequenceId = getPathwaySequenceId();
+        if(lastConsumedCharacteristics.isEmpty() || pathwaySequenceId < 0) return List.of();
         List<AbilityFactory> factories = new ArrayList<>();
         for(Integer characId: closestToLowerTens(lastConsumedCharacteristics)){
             factories.addAll(Pathways.getPathwayBySequenceId(characId).getAbilities(characId%10));

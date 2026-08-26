@@ -93,6 +93,12 @@ class EntityEffectSyncClient {
                 else
                     for (int entityId : msg.entityIds) ClientEffectVisualHandling.removeInvisibleEntity(level, entityId);
                 break;
+            case "ranma":
+                if(msg.operation == EntityEffectVisualMessage.Operation.ADD)
+                    for (int entityId : msg.entityIds) ClientEffectVisualHandling.addRanmaEntity(entityId);
+                else
+                    for (int entityId : msg.entityIds) ClientEffectVisualHandling.removeRanmaEntity(entityId);
+                break;
         }
     }
 }

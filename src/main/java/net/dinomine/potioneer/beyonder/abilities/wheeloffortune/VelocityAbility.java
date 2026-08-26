@@ -40,23 +40,11 @@ public class VelocityAbility extends PassiveAbility {
     }
 
     @Override
-    protected BeyonderEffect createEffectInstance(BeyonderCapability cap, LivingEntity target) {
+    protected BeyonderEffect createEffectInstance() {
         int cost = spiritualityCost;
         VelocityEffect eff = (VelocityEffect) effect.createInstance(getSequenceLevel(), cost, -1, true);
-        CompoundTag tag = getData();
-        boolean flag = false;
-        if(!tag.contains("movement")){
-            tag.putInt("movement", 1);
-            flag = true;
-        }
-        if(!tag.contains("attack")){
-            tag.putInt("attack", 1);
-            flag = true;
-        }
-        if(flag)
-            setData(tag, target);
-        eff.attackSpeed = getData().getInt("attack");
-        eff.movementSpeed = getData().getInt("movement");
+        eff.attackSpeed = getData().contains("attack") ? getData().getInt("attack") : 1;
+        eff.movementSpeed = getData().contains("movement") ? getData().getInt("movement") : 1;
         return eff;
     }
 

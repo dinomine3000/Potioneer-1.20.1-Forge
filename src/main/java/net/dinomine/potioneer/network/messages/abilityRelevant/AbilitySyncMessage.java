@@ -20,7 +20,8 @@ public class AbilitySyncMessage {
         REMOVE(1),
         SET(2),
         UPDATE(3),
-        CLEAR(4);
+        CLEAR(4),
+        LOAD(5);
 
         private final int id;
 
@@ -45,6 +46,7 @@ public class AbilitySyncMessage {
     public static final int ADD = Operation.ADD.getId();
     public static final int REMOVE = Operation.REMOVE.getId();
     public static final int SET = Operation.SET.getId();
+    public static final int LOAD = Operation.LOAD.getId();
     public static final int UPDATE = Operation.UPDATE.getId();
 
     public List<AbilityInfo> abilities;
@@ -93,7 +95,8 @@ class ClientAbilityStateSTC {
         switch (msg.operation) {
             case ADD -> ClientAbilitiesData.addAbilities(msg.abilities);
             case REMOVE -> ClientAbilitiesData.removeAbilities(msg.abilities);
-            case SET -> ClientAbilitiesData.setAbilities(msg.abilities);
+            case SET -> ClientAbilitiesData.setAbilities(msg.abilities, true);
+            case LOAD -> ClientAbilitiesData.setAbilities(msg.abilities, false);
             case UPDATE -> ClientAbilitiesData.updateAbilities(msg.abilities);
         }
     }

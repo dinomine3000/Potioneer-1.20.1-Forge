@@ -236,4 +236,9 @@ public class AreaOfJurisdictionAbility extends PassiveAbility implements IAreaOf
         int sideLength = 16 + (10 - getSequenceLevel())*4;
         return getCentersCompoundTagList(getData(), true, dimensionLocation).stream().map(ign -> sideLength).toList();
     }
+
+    @Override
+    public boolean canBeInstantCast() {
+        return false;
+    }
 }

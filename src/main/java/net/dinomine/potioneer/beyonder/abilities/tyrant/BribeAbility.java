@@ -43,8 +43,8 @@ public class BribeAbility extends PassiveAbility {
     }
 
     @Override
-    protected BeyonderEffect createEffectInstance(BeyonderCapability cap, LivingEntity target) {
-        BribeSourceEffect eff = (BribeSourceEffect) super.createEffectInstance(cap, target);
+    protected BeyonderEffect createEffectInstance() {
+        BribeSourceEffect eff = (BribeSourceEffect) super.createEffectInstance();
         eff.setup(getData().getString("type"));
         return eff;
     }

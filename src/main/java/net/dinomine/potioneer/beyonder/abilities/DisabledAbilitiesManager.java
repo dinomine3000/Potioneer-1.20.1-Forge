@@ -40,7 +40,7 @@ public class DisabledAbilitiesManager {
     }
 
     private void ensureDisabledAbilities(BeyonderCapability cap, LivingEntity target){
-        for(Ability abl: cap.getAbilitiesManager().getAllAbilities()){
+        for(Ability abl: cap.getAbilitiesManager().getAllAbilities(true)){
             ensureDisabledAbility(abl, cap, target);
         }
         if(target instanceof Player player) cap.getAbilitiesManager().updateClientAbilityInfo(player, AbilitySyncMessage.UPDATE);

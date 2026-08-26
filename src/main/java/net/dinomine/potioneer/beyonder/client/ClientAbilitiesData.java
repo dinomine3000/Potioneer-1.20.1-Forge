@@ -72,7 +72,7 @@ public class ClientAbilitiesData {
         caret = Mth.clamp(caret, 0, hotbar.size() - 1);
     }
 
-    public static void setAbilities(List<AbilityInfo> abilities2) {
+    public static void setAbilities(List<AbilityInfo> abilities2, boolean runOnAcquire) {
         clearAbilitiesOf(false);
         for (AbilityInfo abl : abilities2) {
             abilities.put(abl.getInstanceId(), abl);
@@ -80,7 +80,7 @@ public class ClientAbilitiesData {
         updateHotbarOnChange();
         ClientStatsData.getCapability().ifPresent(cap -> {
             if(Minecraft.getInstance().player != null)
-                cap.getAbilitiesManager().setAbilitiesOnClient(abilities2, cap, Minecraft.getInstance().player);
+                cap.getAbilitiesManager().setAbilitiesOnClient(abilities2, cap, Minecraft.getInstance().player, runOnAcquire);
             else
                 System.out.println("Player is null while trying to set abilities on client side.");
         });

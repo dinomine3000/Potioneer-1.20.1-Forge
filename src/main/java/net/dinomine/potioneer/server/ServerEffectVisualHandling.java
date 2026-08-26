@@ -16,6 +16,7 @@ import java.util.Set;
 public class ServerEffectVisualHandling {
     private static final Set<Integer> mistEntities = new HashSet<>();
     private static final Set<Integer> invisibleEntities = new HashSet<>();
+    private static final Set<Integer> ranmaEntities = new HashSet<>();
 
     // --- Mist Entity Handling ---
     public static void addMistEntity(LivingEntity target) {
@@ -45,12 +46,27 @@ public class ServerEffectVisualHandling {
         }
     }
 
+    // --- Ranma Entity Handling ---
+    public static void addRanmaEntity(LivingEntity target) {
+        if (target.level().isClientSide()) return;
+        ranmaEntities.add(target.getId());
+        PacketHandler.INSTANCE.send(PacketDistributor.ALL.noArg(), new EntityEffectVisualMessage(target.getId(), EntityEffectVisualMessage.Operation.ADD, "ranma"));
+    }
+
+    public static void removeRanmaEntity(LivingEntity target) {
+        if (target.level().isClientSide()) return;
+        if (ranmaEntities.remove(target.getId())) {
+            PacketHandler.INSTANCE.send(PacketDistributor.ALL.noArg(), new EntityEffectVisualMessage(target.getId(), EntityEffectVisualMessage.Operation.REMOVE, "ranma"));
+        }
+    }
+
     // --- Event Listeners ---
     @SubscribeEvent
     public static void onLivingDie(LivingDeathEvent event) {
         if (event.getEntity().level().isClientSide()) return;
         removeMistEntity(event.getEntity());
         removeInvisibleEntity(event.getEntity());
+        removeRanmaEntity(event.getEntity());
     }
 
     @SubscribeEvent
@@ -63,6 +79,9 @@ public class ServerEffectVisualHandling {
         }
         if (!invisibleEntities.isEmpty()) {
             PacketHandler.sendMessageSTC(new EntityEffectVisualMessage(invisibleEntities, EntityEffectVisualMessage.Operation.ADD, "invisible"), event.getEntity());
+        }
+        if (!invisibleEntities.isEmpty()) {
+            PacketHandler.sendMessageSTC(new EntityEffectVisualMessage(ranmaEntities, EntityEffectVisualMessage.Operation.ADD, "ranma"), event.getEntity());
         }
     }
 }
