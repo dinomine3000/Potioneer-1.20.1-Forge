@@ -4,6 +4,7 @@ import net.dinomine.potioneer.beyonder.ModAttributes;
 import net.dinomine.potioneer.beyonder.abilities.Abilities;
 import net.dinomine.potioneer.beyonder.abilities.Ability;
 import net.dinomine.potioneer.beyonder.abilities.AbilityFunctionHelper;
+import net.dinomine.potioneer.beyonder.abilities.DisabledAbilitiesManager;
 import net.dinomine.potioneer.beyonder.abilities.mystery.ConceptualTheftAbility;
 import net.dinomine.potioneer.beyonder.abilities.mystery.MagicTricksAbility;
 import net.dinomine.potioneer.beyonder.abilities.mystery.RecordingAbility;
@@ -33,6 +34,8 @@ import net.minecraftforge.fml.common.Mod;
 
 import java.util.List;
 import java.util.Optional;
+
+import static net.dinomine.potioneer.beyonder.effects.mystery.RanmaEffect.RANMA_RADIUS;
 
 
 @Mod.EventBusSubscriber
@@ -74,6 +77,15 @@ public class ServerEventsMystery {
         AbilityFunctionHelper.pushEntity(player, new Vec3(0, ModAttributes.getJump(player), 0));
     }
 
+    @SubscribeEvent
+    public static void onAbilityCast(AbilityCastEvent.Pre event){
+        AbilityFunctionHelper.getNonAllyLivingEntitiesAround(event.getEntity(), RANMA_RADIUS).forEach(ent -> {
+            if(AbilityFunctionHelper.hasEffect(BeyonderEffects.MYSTERY_RANMA.getEffectId(), ent)){
+                event.setCanceled(true);
+                return;
+            }
+        });
+    }
     @SubscribeEvent
     public static void onAbilityCast(AbilityCastEvent.Post event){
         //try to record

@@ -110,7 +110,14 @@ public class BlinkAbility extends PassiveAbility {
         level.playSound(null,
                 toPos, ModSounds.BLINK.get(),
                 SoundSource.PLAYERS, 1, 1);
-        return AbilityFunctionHelper.teleportEntity(target, level, level, toPos, xRot, yRot, true);
+        boolean flag = AbilityFunctionHelper.teleportEntity(target, level, level, toPos, xRot, yRot, true);
+        if(flag){
+            PacketHandler.sendMessageToClientsAround(target, 16, new GeneralAreaEffectMessage(ParticleMaker.Preset.ENDERMAN, target.getEyePosition().toVector3f(), 0));
+            level.playSound(null,
+                    toPos, ModSounds.BLINK.get(),
+                    SoundSource.PLAYERS, 1, 1);
+        }
+        return flag;
     }
 
     @Override

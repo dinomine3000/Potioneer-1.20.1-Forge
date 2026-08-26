@@ -4,6 +4,8 @@
     "#forge:is_sandy",
     "#forge:is_snowy",
     "#forge:is_cold",
-    "#forge:is_hot"
+    "#forge:is_hot",
+    "!#minecraft:is_end",
+    "!#minecraft:is_nether"
   ]
 }

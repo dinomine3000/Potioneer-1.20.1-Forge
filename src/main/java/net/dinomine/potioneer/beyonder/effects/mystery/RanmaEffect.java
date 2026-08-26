@@ -24,7 +24,6 @@ public class RanmaEffect extends BeyonderEffect {
 
     @Override
     protected void doTick(BeyonderCapability cap, LivingEntity target) {
-        if(target.tickCount%(20*2) == 0) disableInRange(target);
         cap.requestPassiveSpiritualityCost(cost);
     }
 
@@ -32,14 +31,5 @@ public class RanmaEffect extends BeyonderEffect {
     public void stopEffects(BeyonderCapability cap, LivingEntity target) {
         cap.getAbilitiesManager().getDisabledAbilitiesManager().enableAbility("ranma", cap, target);
         if(!target.level().isClientSide()) ServerEffectVisualHandling.removeRanmaEntity(target);
-    }
-
-    private void disableInRange(LivingEntity centerEntity){
-        if(centerEntity.level().isClientSide()) return;
-        AbilityFunctionHelper.getNonAllyLivingEntitiesAround(centerEntity, RANMA_RADIUS).forEach(ent -> {
-            CapProvider.beyonder(ent).ifPresent(cap -> {
-                cap.getAbilitiesManager().getDisabledAbilitiesManager().disableAbility("ranma", DisabledAbilitiesManager.DisabledAbilityProxy.all(20*3), cap, ent);
-            });
-        });
     }
 }

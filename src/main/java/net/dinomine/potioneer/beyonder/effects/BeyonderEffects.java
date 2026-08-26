@@ -101,6 +101,8 @@ public class BeyonderEffects {
     public static final BeyonderEffectType MYSTERY_FLASH = registerEffect("flash", new BeyonderEffectType(BlankEffect::new));
     public static final BeyonderEffectType MYSTERY_ELYTRA = registerEffect("elytra", new BeyonderEffectType(BlankEffect::new));
     public static final BeyonderEffectType MYSTERY_RANMA = registerEffect("ranma", new BeyonderEffectType(RanmaEffect::new));
+    public static final BeyonderEffectType MYSTERY_VOID = registerEffect("void", new BeyonderEffectType(VoidEffect::new));
+    public static final BeyonderEffectType MYSTERY_FLIGHT = registerEffect("flight", new BeyonderEffectType(MysteryFlightEffect::new));
 
     //Red Priest
     public static final BeyonderEffectType RED_FIRE_AURA = registerEffect("fire_aura", new BeyonderEffectType(BeyonderFireAuraEffect::new));

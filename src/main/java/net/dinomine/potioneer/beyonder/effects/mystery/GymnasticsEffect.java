@@ -75,6 +75,7 @@ public class GymnasticsEffect extends BeyonderEffect {
     public boolean onDamageProposal(LivingAttackEvent event, LivingEntity victim, @Nullable LivingEntity attacker, BeyonderCapability victimCap, Optional<BeyonderCapability> attackerCap, boolean calledOnVictim) {
         if(!calledOnVictim) return false;
         if(!event.getSource().is(DamageTypes.FALL)) return false;
+        if(sequenceLevel < 6) return true;
         return (!(victim instanceof Player player) || player.isCrouching()) && event.getAmount() < getResistance();
     }
 

@@ -350,9 +350,14 @@ public class Abilities {
     public static RegistryObject<AbilityFactory> RANMA = registerAbility("ranma",
             () -> PassiveAbility.createAbility(BeyonderEffects.MYSTERY_RANMA, ign -> "ranma").canFlip().withCooldown(20*10, PassiveAbility.CooldownTrigger.ON_REMOVE).withThreshold(0.1f).withCost(10), 1, 2);
 
-
     public static RegistryObject<AbilityFactory> CONCEPT_THEFT = registerAbility("concept_theft",
             ConceptualTheftAbility::new, 1, 2);
+
+    public static RegistryObject<AbilityFactory> VOID_ABILITY = registerAbility("void",
+            () -> PassiveAbility.createAbility(BeyonderEffects.MYSTERY_VOID, ign -> "void"), 1, 2);
+
+    public static RegistryObject<AbilityFactory> FLIGHT = registerAbility("flight",
+            () -> PassiveAbility.createAbility(BeyonderEffects.MYSTERY_FLIGHT, ign -> "flight"), 1, 2);
 
     // -------------------------- RED PRIEST ---------------------------------------------------
 
