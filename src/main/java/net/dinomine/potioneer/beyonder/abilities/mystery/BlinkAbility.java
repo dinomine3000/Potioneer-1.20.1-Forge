@@ -103,7 +103,7 @@ public class BlinkAbility extends PassiveAbility {
             }
         }
 
-        return null;
+        return initialPos;
     }
     public static boolean teleport(LivingEntity target, ServerLevel level, BlockPos toPos, float xRot, float yRot){
         PacketHandler.sendMessageToClientsAround(target, 16, new GeneralAreaEffectMessage(ParticleMaker.Preset.ENDERMAN, target.getEyePosition().toVector3f(), 0));

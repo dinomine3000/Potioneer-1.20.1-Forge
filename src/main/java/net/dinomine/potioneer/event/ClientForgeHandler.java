@@ -1,6 +1,8 @@
 package net.dinomine.potioneer.event;
 
+import com.eliotlash.mclib.math.functions.limit.Min;
 import com.mojang.blaze3d.platform.InputConstants;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.dinomine.potioneer.Potioneer;
 import net.dinomine.potioneer.beyonder.abilities.Abilities;
 import net.dinomine.potioneer.beyonder.abilities.AbilityInfo;
@@ -18,14 +20,18 @@ import net.dinomine.potioneer.util.misc.ModNbtUtils;
 import net.dinomine.potioneer.util.PotioneerMathHelper;
 import net.dinomine.potioneer.util.misc.MysticalItemHelper;
 import net.dinomine.potioneer.util.misc.MysticismHelper;
+import net.dinomine.potioneer.worldgen.dimension.ModDimensions;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.InputEvent;
+import net.minecraftforge.client.event.RenderLevelStageEvent;
+import net.minecraftforge.client.event.ViewportEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
@@ -111,7 +117,16 @@ public class ClientForgeHandler {
                     tooltip.add(Component.translatable("charm.potioneer.no_effect"));
                 }
             }
-                //tooltip.add(Component.literal("★ Special Item!").withStyle(ChatFormatting.GOLD, ChatFormatting.BOLD));
+        }
+    }
+
+    @SubscribeEvent
+    public static void onRenderSkybox(RenderLevelStageEvent event) {
+        if(Minecraft.getInstance().player == null || !Minecraft.getInstance().player.level().dimension().equals(ModDimensions.SPIR_WORLD_LEVEL_KEY)) return;
+        if(event.getStage() != RenderLevelStageEvent.Stage.AFTER_SKY) return;
+        if(event.getCamera().getXRot() > 50f){
+            //RenderSystem.clearColor(0.0f, 0.0f, 0.0f, 1.0f);
+            RenderSystem.clear(16384, Minecraft.ON_OSX);
         }
     }
 

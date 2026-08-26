@@ -7,6 +7,9 @@
     "potioneer:low_spirituality",
     "potioneer:exile",
     "potioneer:tyrant_healing",
-    "potioneer:punishment_strike"
+    "potioneer:punishment_strike",
+    "potioneer:execution",
+    "potioneer:air_bullet",
+    "potioneer:theft"
   ]
 }

@@ -2,6 +2,8 @@
   "values": [
     "potioneer:low_sanity",
     "potioneer:chryon_pierce",
-    "potioneer:crit"
+    "potioneer:crit",
+    "potioneer:execution",
+    "potioneer:air_bullet"
   ]
 }

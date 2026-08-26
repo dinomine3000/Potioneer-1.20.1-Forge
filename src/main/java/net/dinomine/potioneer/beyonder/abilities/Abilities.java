@@ -13,6 +13,7 @@ import net.dinomine.potioneer.beyonder.downsides.SlownessDownside;
 import net.dinomine.potioneer.beyonder.downsides.tyrant.*;
 import net.dinomine.potioneer.beyonder.downsides.wheeloffortune.*;
 import net.dinomine.potioneer.beyonder.effects.BeyonderEffects;
+import net.dinomine.potioneer.rituals.responses.SpiritResponse;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -358,6 +359,9 @@ public class Abilities {
 
     public static RegistryObject<AbilityFactory> FLIGHT = registerAbility("flight",
             () -> PassiveAbility.createAbility(BeyonderEffects.MYSTERY_FLIGHT, ign -> "flight"), 1, 2);
+
+    public static RegistryObject<AbilityFactory> SPIRIT_WORLD = registerAbility("spir_world",
+            BlankSpiritWorldAbility::new, 1, 2);
 
     // -------------------------- RED PRIEST ---------------------------------------------------
 

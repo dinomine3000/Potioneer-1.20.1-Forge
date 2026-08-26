@@ -2,6 +2,9 @@
   "values": [
     "potioneer:low_sanity",
     "potioneer:crit",
-    "potioneer:punishment_strike"
+    "potioneer:punishment_strike",
+    "potioneer:execution",
+    "potioneer:air_bullet",
+    "potioneer:theft"
   ]
 }

@@ -13,11 +13,16 @@ import net.dinomine.potioneer.block.entity.renderer.PotionCauldronBlockEntityRen
 import net.dinomine.potioneer.block.entity.renderer.RitualPedestalBlockEntityRenderer;
 import net.dinomine.potioneer.item.ModItems;
 import net.dinomine.potioneer.item.custom.*;
+import net.dinomine.potioneer.worldgen.dimension.SpiritWorldSpecialEffects;
+import net.minecraft.client.renderer.DimensionSpecialEffects;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.*;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import org.jetbrains.annotations.NotNull;
 
 @OnlyIn(Dist.CLIENT)
 @Mod.EventBusSubscriber(modid = Potioneer.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
@@ -56,5 +61,11 @@ public class ModEventBusClient {
         event.registerAboveAll("beyonder", MagicOrbOverlay.HUD_MAGIC);
         event.registerAboveAll("ability_hotbar", AbilitiesHotbarHUD.ABILITY_HOTBAR);
         event.registerAboveAll("luck_hud", LuckAppraisalHUD.LUCK_OVERLAY);
+    }
+
+    @SubscribeEvent
+    public static void registerEffects(RegisterDimensionSpecialEffectsEvent event) {
+        event.register(new ResourceLocation(Potioneer.MOD_ID, "spirit_effects"),
+                new SpiritWorldSpecialEffects());
     }
 }

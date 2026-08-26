@@ -4,6 +4,9 @@
     "potioneer:asteroid",
     "potioneer:chryon_pierce",
     "potioneer:crit",
-    "potioneer:punishment_strike"
+    "potioneer:punishment_strike",
+    "potioneer:execution",
+    "potioneer:air_bullet",
+    "potioneer:theft"
   ]
 }

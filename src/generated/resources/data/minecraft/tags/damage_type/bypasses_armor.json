@@ -5,6 +5,8 @@
     "potioneer:chryon_pierce",
     "potioneer:crit",
     "potioneer:arrest",
-    "potioneer:punishment_strike"
+    "potioneer:punishment_strike",
+    "potioneer:execution",
+    "potioneer:air_bullet"
   ]
 }
