@@ -16,6 +16,8 @@ import net.dinomine.potioneer.config.PotioneerRitualsConfig;
 import net.dinomine.potioneer.config.PotioneerAbilityConfig;
 import net.dinomine.potioneer.entities.ModEntities;
 import net.dinomine.potioneer.entities.client.*;
+import net.dinomine.potioneer.fluid.ModFluidTypes;
+import net.dinomine.potioneer.fluid.ModFluids;
 import net.dinomine.potioneer.item.ModCreativeModTabs;
 import net.dinomine.potioneer.item.ModItems;
 import net.dinomine.potioneer.item.custom.UnshadowedCrucifixItem;
@@ -104,6 +106,10 @@ public class Potioneer
         Abilities.register(eventBus);
 
         ModAttributes.register(eventBus);
+
+        ModFluids.register(eventBus);
+
+        ModFluidTypes.register(eventBus);
 
 //        ModAttributes.REGISTRY.register(eventBus);
 
@@ -255,6 +261,9 @@ public class Potioneer
                 ItemBlockRenderTypes.setRenderLayer(ModBlocks.FAKE_WATER.get(), RenderType.translucent());
             });
 
+
+            ItemBlockRenderTypes.setRenderLayer(ModFluids.SOURCE_SPIRITUALITY.get(), RenderType.translucent());
+            ItemBlockRenderTypes.setRenderLayer(ModFluids.FLOWING_SPIRITUALITY.get(), RenderType.translucent());
 
             LOGGER.info("HELLO FROM CLIENT SETUP");
             LOGGER.info("MINECRAFT NAME >> {}", Minecraft.getInstance().getUser().getName());

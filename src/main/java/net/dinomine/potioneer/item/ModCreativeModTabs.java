@@ -59,6 +59,7 @@ public class ModCreativeModTabs {
                         output.accept(ModItems.DEATH_KNELL.get());
                         output.accept(ModItems.CURSED_SKULL.get());
                         output.accept(ModItems.SEALED_BUNDLE.get());
+                        output.accept(ModItems.SPIRITUALITY_BUCKET.get());
                     })
                     .build());
 

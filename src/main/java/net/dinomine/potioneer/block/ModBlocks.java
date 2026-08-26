@@ -2,6 +2,7 @@ package net.dinomine.potioneer.block;
 
 import net.dinomine.potioneer.Potioneer;
 import net.dinomine.potioneer.block.custom.*;
+import net.dinomine.potioneer.fluid.ModFluids;
 import net.dinomine.potioneer.item.ModItems;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.util.valueproviders.UniformInt;
@@ -104,6 +105,9 @@ public class ModBlocks {
 
     public static final RegistryObject<Block> RULE_PYLON = BLOCKS.register("rule_pylon",
             () -> new RulePylonBlock(BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK)));
+
+    public static final RegistryObject<LiquidBlock> SPIRITUALITY_BLOCK = BLOCKS.register("spirituality_block",
+            () -> new LiquidBlock(ModFluids.SOURCE_SPIRITUALITY, BlockBehaviour.Properties.copy(Blocks.WATER)));
 
     private static <T extends Block> RegistryObject<T> registerOnlyBlock(String name, Supplier<T> block){
         return BLOCKS.register(name, block);

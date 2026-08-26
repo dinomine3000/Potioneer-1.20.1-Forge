@@ -3,6 +3,7 @@ package net.dinomine.potioneer.item;
 import net.dinomine.potioneer.Potioneer;
 import net.dinomine.potioneer.block.ModBlocks;
 import net.dinomine.potioneer.entities.ModEntities;
+import net.dinomine.potioneer.fluid.ModFluids;
 import net.dinomine.potioneer.item.custom.*;
 import net.dinomine.potioneer.item.custom.BookItem;
 import net.dinomine.potioneer.item.custom.BeyonderPotion.BeyonderPotionItem;
@@ -199,6 +200,10 @@ public class ModItems {
 
     public static final RegistryObject<Item> SEALED_BUNDLE = ITEMS.register("sealed_bundle",
             () -> new SealedBundleItem(new Item.Properties().stacksTo(1)));
+
+    public static final RegistryObject<Item> SPIRITUALITY_BUCKET = ITEMS.register("spirituality_bucket",
+            () -> new BucketItem(ModFluids.SOURCE_SPIRITUALITY,
+                    new Item.Properties().stacksTo(1).craftRemainder(Items.BUCKET)));
 
     /*ublic static final RegistryObject<Item> METAL_ROD = ITEMS.register("metal_detector",
             () -> new MetalDetectorItem(new Item.Properties().stacksTo(1).durability(20)));*/
