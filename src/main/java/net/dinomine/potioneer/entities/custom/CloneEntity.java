@@ -51,11 +51,8 @@ public class CloneEntity extends LivingEntity {
     );
     private ChunkPos lastChunkPos = null;
 
-    @OnlyIn(Dist.CLIENT)
     private ResourceLocation clientSkinLocation;
-    @OnlyIn(Dist.CLIENT)
     private boolean clientIsSlim = false;
-    @OnlyIn(Dist.CLIENT)
     private boolean skinLoaded = false;
 
     private GameProfile profile = null;

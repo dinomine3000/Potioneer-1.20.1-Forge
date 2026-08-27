@@ -1,5 +1,6 @@
 package net.dinomine.potioneer.beyonder.abilities.mystery;
 
+import net.dinomine.potioneer.beyonder.abilities.Abilities;
 import net.dinomine.potioneer.beyonder.abilities.Ability;
 import net.dinomine.potioneer.beyonder.abilities.AbilityInfo;
 import net.dinomine.potioneer.beyonder.abilities.misc.MysticalKnowledgeAbility;
@@ -29,7 +30,8 @@ public class MagicToolsAbility extends MysticalKnowledgeAbility {
         if(abl.isOfGroup(AbilityInfo.Group.STOLEN)) return false;
         ItemStack stack = target.getMainHandItem();
         if(!MysticalItemHelper.isValidItemForArtifact(stack)) return false;
-        ItemStack item = MysticalItemHelper.generateMysticalItem(stack, abl, 5*60);
+        Ability toAdd = Abilities.getFactoryAndConstruct(abl.getAbilityId(), abl.getSequenceLevel(), AbilityInfo.Group.ARTIFACT);
+        ItemStack item = MysticalItemHelper.generateMysticalItem(stack, toAdd, 5*60);
         MysticalItemHelper.chargeArtifact(item, cost, player);
         cap.requestActiveSpiritualityCost(cost);
         return true;
