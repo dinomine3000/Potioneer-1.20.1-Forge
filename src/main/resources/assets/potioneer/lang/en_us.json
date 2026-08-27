@@ -798,11 +798,13 @@
 
   "abilityoption.potioneer.return_health": "Return %s health.",
   "abilityoption.potioneer.return_luck": "Return %s luck.",
-  "abilityoption.potioneer.return_effects": "Return mob effects %s.",
+  "abilityoption.potioneer.return_effects": "Return %s mob effect(s).",
   "abilityoption.potioneer.return_ability": "Return ability %s.",
+  "abilityoption.potioneer.return_cooldown": "Return %s cooldowns.",
 
   "abilityoption.potioneer.steal_health": "Steal health.",
   "abilityoption.potioneer.steal_luck": "Steal luck.",
   "abilityoption.potioneer.steal_effects": "Steal mob effects.",
-  "abilityoption.potioneer.steal_ability": "Steal ability."
+  "abilityoption.potioneer.steal_ability": "Steal ability.",
+  "abilityoption.potioneer.steal_cooldowns": "Steal Cooldowns"
 }
