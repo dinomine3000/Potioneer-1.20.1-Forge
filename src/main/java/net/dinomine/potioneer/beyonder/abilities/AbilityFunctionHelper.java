@@ -85,6 +85,13 @@ public class AbilityFunctionHelper {
     public static boolean teleportEntity(Entity target, ServerLevel fromLevel, ServerLevel toLevel, BlockPos targetPosition, boolean keepMovement){
         return teleportEntity(target, fromLevel, toLevel, targetPosition, target.getXRot(), target.getYRot(), keepMovement);
     }
+
+    public static boolean teleportEntity(Entity target, ServerLevel toLevel, BlockPos targetPosition, boolean keepMovement){
+        return teleportEntity(target, (ServerLevel) target.level(), toLevel, targetPosition, target.getXRot(), target.getYRot(), keepMovement);
+    }
+    public static boolean teleportEntity(Entity target, ServerLevel toLevel, BlockPos targetPosition, float xRot, float yRot, boolean keepMovement){
+        return teleportEntity(target, (ServerLevel) target.level(), toLevel, targetPosition, xRot, yRot, keepMovement);
+    }
     public static boolean teleportEntity(Entity target, ServerLevel fromLevel, ServerLevel toLevel, BlockPos targetPosition, float xRot, float yRot, boolean keepMovement){
         if(target == null) return false;
         Optional<BeyonderCapability> optCap = target.getCapability(CapProvider.BEYONDER_STATS).resolve();
@@ -134,7 +141,8 @@ public class AbilityFunctionHelper {
 
     @SuppressWarnings("unchecked")
     @Nullable
-    public static <T extends BeyonderEffect> T getEffectOnTarget(String effectId, LivingEntity target) {
+    public static <T extends BeyonderEffect> T getEffectOnTarget(String effectId, Entity target) {
+        if(target == null) return null;
         return target.getCapability(CapProvider.BEYONDER_STATS)
                 .resolve()
                 .map(cap -> cap.getEffectsManager().getEffect(effectId))

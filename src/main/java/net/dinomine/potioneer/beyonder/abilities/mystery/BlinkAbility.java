@@ -14,6 +14,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.BlockHitResult;
@@ -105,12 +106,15 @@ public class BlinkAbility extends PassiveAbility {
 
         return initialPos;
     }
-    public static boolean teleport(LivingEntity target, ServerLevel level, BlockPos toPos, float xRot, float yRot){
+    public static boolean teleport(Entity target, ServerLevel level, BlockPos toPos){
+        return teleport(target, level, toPos, target.getXRot(), target.getYRot());
+    }
+    public static boolean teleport(Entity target, ServerLevel level, BlockPos toPos, float xRot, float yRot){
         PacketHandler.sendMessageToClientsAround(target, 16, new GeneralAreaEffectMessage(ParticleMaker.Preset.ENDERMAN, target.getEyePosition().toVector3f(), 0));
         level.playSound(null,
                 toPos, ModSounds.BLINK.get(),
                 SoundSource.PLAYERS, 1, 1);
-        boolean flag = AbilityFunctionHelper.teleportEntity(target, level, level, toPos, xRot, yRot, true);
+        boolean flag = AbilityFunctionHelper.teleportEntity(target, level, toPos, xRot, yRot, true);
         if(flag){
             PacketHandler.sendMessageToClientsAround(target, 16, new GeneralAreaEffectMessage(ParticleMaker.Preset.ENDERMAN, target.getEyePosition().toVector3f(), 0));
             level.playSound(null,

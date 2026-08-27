@@ -131,7 +131,7 @@ public class PacketHandler {
         sendToNear(message, level.dimension(), pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, radius);
     }
 
-    public static <T> void sendMessageToClientsAround(LivingEntity target, int radius, T message) {
+    public static <T> void sendMessageToClientsAround(Entity target, int radius, T message) {
         if (target.level().isClientSide()) return;
         Vec3 pos = target.position();
         sendToNear(message, target.level().dimension(), pos.x, pos.y, pos.z, radius);

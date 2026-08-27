@@ -21,7 +21,7 @@ public class ModFluidTypes {
             DeferredRegister.create(ForgeRegistries.Keys.FLUID_TYPES, Potioneer.MOD_ID);
 
     public static final RegistryObject<FluidType> SPIRITUALITY_FLUID_TYPE = register("spirituality_fluid",
-            FluidType.Properties.create().lightLevel(1).temperature(0).supportsBoating(false).canPushEntity(true).density(1).viscosity(5),
+            FluidType.Properties.create().lightLevel(1).temperature(0).supportsBoating(false).canPushEntity(true).density(0).viscosity(5),
             WATER_STILL_RL, WATER_FLOWING_RL, SPIRITUALITY_OVERLAY_RL,
             0x99ADE8F7, new Vector3f(130f / 255f, 227 / 255f, 255 / 255f));
 

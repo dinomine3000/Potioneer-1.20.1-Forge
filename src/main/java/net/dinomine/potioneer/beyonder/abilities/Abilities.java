@@ -363,6 +363,9 @@ public class Abilities {
     public static RegistryObject<AbilityFactory> SPIRIT_WORLD = registerAbility("spir_world",
             BlankSpiritWorldAbility::new, 1, 2);
 
+    public static RegistryObject<AbilityFactory> BUG = registerAbility("bug",
+            BugAbility::new, 1, 2);
+
     // -------------------------- RED PRIEST ---------------------------------------------------
 
 /*    public static RegistryObject<AbilityFactory> FIRE_SWORD = registerAbility("fire_sword",
