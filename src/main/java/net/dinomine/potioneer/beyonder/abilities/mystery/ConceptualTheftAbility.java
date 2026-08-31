@@ -15,6 +15,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import org.jetbrains.annotations.Nullable;
 
@@ -140,6 +141,12 @@ public class ConceptualTheftAbility extends AbilityWithOptions {
         UUID instanceId = slotTag.getUUID("id");
         cap.getAbilitiesManager().removeAbility(instanceId, cap, caster, true);
 
+        UUID originalId = slotTag.getUUID("original");
+        Entity ent = ((ServerLevel)caster.level()).getEntity(originalId);
+        if(ent != null){
+            CapProvider.beyonder(ent).ifPresent(otherCap -> otherCap.getAbilitiesManager().getDisabledAbilitiesManager().enableAbility("stolen", otherCap, (LivingEntity) ent));
+        }
+
         updateSecondOptions();
         return true;
     }
@@ -232,7 +239,7 @@ public class ConceptualTheftAbility extends AbilityWithOptions {
         if (toAdd == null) return false;
         targetCap.getAbilitiesManager().getDisabledAbilitiesManager().disableAbility("stolen", DisabledAbilitiesManager.DisabledAbilityProxy.byId(ablId, STOLEN_ABILITY_TIME), targetCap, target);
         cap.getAbilitiesManager().addAndInitializeAbility(toAdd, cap, caster, true, true);
-        getSlotManager().add(getAbilityTag(toAdd, caster.level().getGameTime()), caster);
+        getSlotManager().add(getAbilityTag(toAdd, caster.level().getGameTime(), target.getUUID()), caster);
         setNextCooldownAs(20 * 10);
         updateSecondOptions();
         return true;
@@ -308,9 +315,10 @@ public class ConceptualTheftAbility extends AbilityWithOptions {
         return res;
     }
 
-    private CompoundTag getAbilityTag(Ability abl, long timestamp) {
+    private CompoundTag getAbilityTag(Ability abl, long timestamp, UUID originalId) {
         CompoundTag res = new CompoundTag();
         res.putString("name", "ability");
+        res.putUUID("original", originalId);
         res.putString("ablId", abl.getAbilityId().toString());
         res.putInt("level", abl.getTrueSequenceLevel());
         res.putUUID("id", abl.getInstanceId());
