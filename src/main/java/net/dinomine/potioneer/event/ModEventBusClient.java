@@ -2,6 +2,7 @@ package net.dinomine.potioneer.event;
 
 import net.dinomine.potioneer.Potioneer;
 import net.dinomine.potioneer.beyonder.client.HUD.AbilitiesHotbarHUD;
+import net.dinomine.potioneer.beyonder.client.HUD.AbilityHudHandler;
 import net.dinomine.potioneer.beyonder.client.HUD.LuckAppraisalHUD;
 import net.dinomine.potioneer.beyonder.client.HUD.MagicOrbOverlay;
 import net.dinomine.potioneer.beyonder.client.KeyBindings;
@@ -60,7 +61,8 @@ public class ModEventBusClient {
     public static void registerGuiOverlays(RegisterGuiOverlaysEvent event){
         event.registerAboveAll("beyonder", MagicOrbOverlay.HUD_MAGIC);
         event.registerAboveAll("ability_hotbar", AbilitiesHotbarHUD.ABILITY_HOTBAR);
-        event.registerAboveAll("luck_hud", LuckAppraisalHUD.LUCK_OVERLAY);
+        event.registerAboveAll("potioneer_hud", AbilityHudHandler.ABILITY_OVERLAY);
+
     }
 
     @SubscribeEvent

@@ -7,37 +7,39 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraftforge.client.gui.overlay.ForgeGui;
 import net.minecraftforge.client.gui.overlay.IGuiOverlay;
 
-public class LuckAppraisalHUD {
-    private static final ResourceLocation TEXTURE = new ResourceLocation(Potioneer.MOD_ID, "textures/gui/luck_appraisal_atlas.png");
+public class LuckAppraisalHUD extends TimedDataHud{
+    private static final ResourceLocation TEXTURE = new ResourceLocation(Potioneer.MOD_ID, "textures/gui/ability_huds.png");
     private static final int WIDTH = 256, HEIGHT = 256, CORNER_SIZE = 5;
     private static final Minecraft minecraft = Minecraft.getInstance();
 
-    public static boolean shouldDisplayOverlay() {
-        return ClientHudData.shouldDisplayLuckHud();
+    public LuckAppraisalHUD() {
+        super(5);
     }
 
-    public static final IGuiOverlay LUCK_OVERLAY = ((forgeGui, guiGraphics, partialTick, width, height) -> {
+    @Override
+    int render(ForgeGui var1, GuiGraphics guiGraphics, float partialTick) {
         if(minecraft.isPaused()){
-            return;
+            return 0;
         }
-        if(!shouldDisplayOverlay()) return;
         ClientHudData.sendUpdateRequest();
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 0.8f);
         float scale = 1f;
-        int windowHeight = ClientHudData.showLuckNotStats() ? 140 : 90;
-        int windowWidth = ClientHudData.showLuckNotStats() ? 200 : 150;
-        int x1 = width/10, y1 = height / 2 - windowHeight/2, x2 = x1 + windowWidth, y2 = y1 + windowHeight;
+        int windowWidth = width;
+        int windowHeight = (int) ((ClientHudData.showLuckNotStats() ? 140/200f : 90/150f)*windowWidth);
+        int x1 = leftPos, y1 = topPos, x2 = x1 + windowWidth, y2 = y1 + windowHeight;
         drawBgCorners(guiGraphics, scale, x1, y1, x2, y2);
         drawEdgesAndCenter(guiGraphics, scale, x1, y1, x2, y2);
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         RenderSystem.disableBlend();
         drawSnakes(guiGraphics, scale, x1, y1, x2, y2);
         drawText(guiGraphics, scale, x1, y1, x2, y1);
-    });
+        return windowHeight;
+    }
 
     private static void drawBgCorners(GuiGraphics guiGraphics, float scale, int x1, int y1, int x2, int y2){
         int width = x2-x1;

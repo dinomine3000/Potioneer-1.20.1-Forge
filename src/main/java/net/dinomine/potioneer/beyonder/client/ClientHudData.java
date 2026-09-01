@@ -1,5 +1,6 @@
 package net.dinomine.potioneer.beyonder.client;
 
+import net.dinomine.potioneer.beyonder.client.HUD.AbilityHudHandler;
 import net.dinomine.potioneer.network.PacketHandler;
 import net.dinomine.potioneer.network.messages.abilityRelevant.abilitySpecific.AppraisalDataMessage;
 import net.minecraft.client.Minecraft;
@@ -44,6 +45,7 @@ public class ClientHudData {
         startShowTimestamp = System.currentTimeMillis();
         if(luck) startShowTimestamp += 2000l;
         showLuck = luck;
+        AbilityHudHandler.APPRAISAL.trigger();
     }
 
     public static Component getBaseLuck() {

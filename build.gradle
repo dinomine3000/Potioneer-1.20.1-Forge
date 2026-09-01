@@ -107,8 +107,8 @@ minecraft {
         client {
             property 'forge.enabledGameTestNamespaces', mod_id
             property 'forge.logging.console.level', 'debug'
-            //args '--username', "${project.devUsername}",
-            //        '--uuid', "${project.devUUID}"
+            args '--username', "${project.devUsername}",
+                    '--uuid', "${project.devUUID}"
         }
 
         client1 {
