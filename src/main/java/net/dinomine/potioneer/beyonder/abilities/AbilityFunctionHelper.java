@@ -302,7 +302,19 @@ public class AbilityFunctionHelper {
             if(!empty && !air) return true;
             pos = pos.below();
         }
-        return false;
+        AABB feetBox = target.getBoundingBox().expandTowards(0.0D, -0.05D - breathingRoom, 0.0D);
+        return !target.level().getEntities(target, feetBox, entity -> {
+            if (entity.isSpectator()) return false;
+
+            if (entity.canBeCollidedWith()) {
+                AABB entityBox = entity.getBoundingBox();
+                double playerFeetY = target.getY();
+                double entityTopY = entityBox.maxY;
+                return Math.abs(playerFeetY - entityTopY) <= 0.1D + breathingRoom;
+            }
+
+            return false;
+        }).isEmpty();
     }
 
     //Credit to the create mod

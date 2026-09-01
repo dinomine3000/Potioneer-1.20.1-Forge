@@ -169,6 +169,7 @@ public class Potioneer
             EntityRenderers.register(ModEntities.PECAN.get(), PecanRenderer::new);
             EntityRenderers.register(ModEntities.WANDERING_CACTUS.get(), WanderingCactusRenderer::new);
             EntityRenderers.register(ModEntities.DEMONIC_WOLF.get(), DemonicWolfRenderer::new);
+            EntityRenderers.register(ModEntities.DOOR_ENTITY.get(), DoorRenderer::new);
             EntityRenderers.register(ModEntities.DIVINATION_ROD.get(), RodRenderer::new);
             EntityRenderers.register(ModEntities.SEA_GOD_SCEPTER.get(), SeaGodRenderer::new);
             EntityRenderers.register(ModEntities.CHARACTERISTIC.get(), CharRenderer::new);

@@ -122,6 +122,12 @@ public class ModEntities {
                             .sized(0.6f, 1.8f)
                             .build(new ResourceLocation(Potioneer.MOD_ID, "clone").toString()));
 
+    public static final RegistryObject<EntityType<DoorEntity>> DOOR_ENTITY =
+            ENTITY_TYPES.register("door",
+                    () -> EntityType.Builder.of(DoorEntity::new, MobCategory.MISC)
+                            .sized(1f, 2f)
+                            .build(new ResourceLocation(Potioneer.MOD_ID, "door").toString()));
+
     public static void register(IEventBus eventBus){
         ENTITY_TYPES.register(eventBus);
     }
