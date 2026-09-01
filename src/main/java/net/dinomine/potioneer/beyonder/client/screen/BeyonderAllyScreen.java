@@ -374,6 +374,7 @@ public class BeyonderAllyScreen extends Screen {
 
         if (mc.getConnection() != null) {
             PlayerInfo info = mc.getConnection().getPlayerInfo(uuid);
+
             if (info != null) {
                 return info.getSkinLocation();
             }
